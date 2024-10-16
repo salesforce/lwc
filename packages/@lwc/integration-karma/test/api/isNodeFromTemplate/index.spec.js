@@ -60,8 +60,9 @@ it('should return true on elements manually inserted in the DOM inside an elemen
 
 // TODO [#1252]: old behavior that is still used by some pieces of the platform
 // if isNodeFromTemplate() returns true, locker will prevent traversing to such elements from document
-if (!process.env.NATIVE_SHADOW) {
-    it('should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"', () => {
+it.skipIf(process.env.NATIVE_SHADOW)(
+    'should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"',
+    () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
@@ -74,5 +75,5 @@ if (!process.env.NATIVE_SHADOW) {
         }).then(() => {
             expect(isNodeFromTemplate(span)).toBe(false);
         });
-    });
-}
+    }
+);

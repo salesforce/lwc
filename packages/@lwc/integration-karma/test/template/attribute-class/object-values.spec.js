@@ -73,7 +73,7 @@ describe('type coercion', () => {
     }
 });
 
-if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
+describe.runIf(TEMPLATE_CLASS_NAME_OBJECT_BINDING)('class value', () => {
     describe('plain object class value', () => {
         testClassNameValue('empty', {}, '');
         testClassNameValue('single class', { foo: true }, 'foo');
@@ -156,4 +156,4 @@ if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
             'bar'
         );
     });
-}
+});

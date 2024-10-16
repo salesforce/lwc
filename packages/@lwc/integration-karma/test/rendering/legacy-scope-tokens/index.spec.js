@@ -91,67 +91,65 @@ describe('legacy scope tokens', () => {
                 verify();
             });
 
-            if (!process.env.NATIVE_SHADOW) {
-                it('shadow dom', async () => {
-                    const elm = createElement('x-shadow', { is: Shadow });
-                    document.body.appendChild(elm);
+            it.skipIf(process.env.NATIVE_SHADOW)('shadow dom', async () => {
+                const elm = createElement('x-shadow', { is: Shadow });
+                document.body.appendChild(elm);
 
-                    const verify = () => {
-                        const staticDiv = elm.shadowRoot.querySelector('.static');
-                        const dynamicDiv = elm.shadowRoot.querySelector('.dynamic');
-                        const manualDiv = elm.shadowRoot.querySelector('.manual');
-                        const span = elm.shadowRoot.querySelector('span'); // inserted inside dom:manual
-                        const expressionDiv = elm.shadowRoot.querySelector('.expression');
+                const verify = () => {
+                    const staticDiv = elm.shadowRoot.querySelector('.static');
+                    const dynamicDiv = elm.shadowRoot.querySelector('.dynamic');
+                    const manualDiv = elm.shadowRoot.querySelector('.manual');
+                    const span = elm.shadowRoot.querySelector('span'); // inserted inside dom:manual
+                    const expressionDiv = elm.shadowRoot.querySelector('.expression');
 
-                        expect(getClasses(elm)).toEqual(
-                            expectTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
-                        );
-                        expect(getClasses(staticDiv)).toEqual(
-                            expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getClasses(dynamicDiv)).toEqual(
-                            expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getClasses(manualDiv)).toEqual(
-                            expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getClasses(span)).toEqual([]);
-                        expect(getClasses(expressionDiv)).toEqual(
-                            expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
+                    expect(getClasses(elm)).toEqual(
+                        expectTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
+                    );
+                    expect(getClasses(staticDiv)).toEqual(
+                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getClasses(dynamicDiv)).toEqual(
+                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getClasses(manualDiv)).toEqual(
+                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getClasses(span)).toEqual([]);
+                    expect(getClasses(expressionDiv)).toEqual(
+                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
 
-                        expect(getAttributes(elm)).toEqual(
-                            expectShadowAttrTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
-                        );
-                        expect(getAttributes(staticDiv)).toEqual(
-                            expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getAttributes(dynamicDiv)).toEqual(
-                            expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getClasses(manualDiv)).toEqual(
-                            expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getAttributes(span)).toEqual(
-                            expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                        expect(getAttributes(expressionDiv)).toEqual(
-                            expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-                        );
-                    };
+                    expect(getAttributes(elm)).toEqual(
+                        expectShadowAttrTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
+                    );
+                    expect(getAttributes(staticDiv)).toEqual(
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getAttributes(dynamicDiv)).toEqual(
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getClasses(manualDiv)).toEqual(
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getAttributes(span)).toEqual(
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                    expect(getAttributes(expressionDiv)).toEqual(
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                    );
+                };
 
-                    await Promise.resolve();
+                await Promise.resolve();
 
-                    verify();
+                verify();
 
-                    // force re-render
-                    elm.rerender = 1;
-                    await Promise.resolve();
-                    await Promise.resolve(); // second microtask is for MutationObserver callbacks (portal)
+                // force re-render
+                elm.rerender = 1;
+                await Promise.resolve();
+                await Promise.resolve(); // second microtask is for MutationObserver callbacks (portal)
 
-                    verify();
-                });
-            }
+                verify();
+            });
         });
     });
 });

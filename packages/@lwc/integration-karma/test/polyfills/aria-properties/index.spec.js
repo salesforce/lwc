@@ -207,8 +207,11 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
             testAriaProperty(ariaProperty, ariaAttribute);
         }
     }
+}
 
-    describe('non-standard properties do not log/report for LightningElement/BaseBridgeElement', () => {
+describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
+    'non-standard properties do not log/report for LightningElement/BaseBridgeElement',
+    () => {
         let dispatcher;
 
         beforeEach(() => {
@@ -243,5 +246,5 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                 });
             });
         });
-    });
-}
+    }
+);

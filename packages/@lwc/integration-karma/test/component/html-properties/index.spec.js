@@ -170,37 +170,33 @@ describe('global html properties', () => {
                 expect(retrievedPropValue).toEqual(valueToSet);
             });
 
-            if (attribute) {
-                it('attribute reflection', () => {
-                    const initialNumAttributes = elm.attributes.length;
-                    expect(elm.getAttribute(attribute)).toBeNull(); // initial attribute value
+            it.runIf(attribute)('attribute reflection', () => {
+                const initialNumAttributes = elm.attributes.length;
+                expect(elm.getAttribute(attribute)).toBeNull(); // initial attribute value
 
-                    const valueToSet = getValueToSet();
-                    setPropertyValue(valueToSet);
+                const valueToSet = getValueToSet();
+                setPropertyValue(valueToSet);
 
-                    // In the case of non-original descriptors, the attribute is not set
-                    let expectedAttributeValue = isOriginalDescriptor
-                        ? valueToSet.toString()
-                        : null;
-                    if (propName === 'hidden') {
-                        // `hidden` is a special case; it's reflected to the empty string
-                        expectedAttributeValue = '';
-                    }
-                    expect(elm.getAttribute(attribute)).toEqual(expectedAttributeValue);
+                // In the case of non-original descriptors, the attribute is not set
+                let expectedAttributeValue = isOriginalDescriptor ? valueToSet.toString() : null;
+                if (propName === 'hidden') {
+                    // `hidden` is a special case; it's reflected to the empty string
+                    expectedAttributeValue = '';
+                }
+                expect(elm.getAttribute(attribute)).toEqual(expectedAttributeValue);
 
-                    // In the case of non-original descriptors, the attribute is not set
-                    const expectedNumAddedAttributes = isOriginalDescriptor ? 1 : 0;
-                    expect(elm.attributes.length).toEqual(
-                        initialNumAttributes + expectedNumAddedAttributes
-                    );
-                });
-            } else {
-                it('no attribute reflection', () => {
-                    const initialNumAttributes = elm.attributes.length;
-                    setPropertyValue(getValueToSet());
-                    expect(elm.attributes.length).toEqual(initialNumAttributes); // no attributes added
-                });
-            }
+                // In the case of non-original descriptors, the attribute is not set
+                const expectedNumAddedAttributes = isOriginalDescriptor ? 1 : 0;
+                expect(elm.attributes.length).toEqual(
+                    initialNumAttributes + expectedNumAddedAttributes
+                );
+            });
+
+            it.skipIf(attribute)('no attribute reflection', () => {
+                const initialNumAttributes = elm.attributes.length;
+                setPropertyValue(getValueToSet());
+                expect(elm.attributes.length).toEqual(initialNumAttributes); // no attributes added
+            });
         });
     }
 });

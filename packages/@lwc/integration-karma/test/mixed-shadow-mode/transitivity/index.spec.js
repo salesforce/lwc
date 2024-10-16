@@ -5,7 +5,7 @@ import ResetExtendsAny from 'x/resetExtendsAny';
 import LightContainer from 'x/lightContainer';
 import NativeContainer from 'x/nativeContainer';
 
-if (!process.env.NATIVE_SHADOW) {
+describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
     describe('when root component shadowSupportMode="native"', () => {
         let elm;
 
@@ -90,4 +90,4 @@ if (!process.env.NATIVE_SHADOW) {
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
     });
-}
+});

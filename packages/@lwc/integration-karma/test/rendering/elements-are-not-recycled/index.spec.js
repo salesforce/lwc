@@ -37,31 +37,29 @@ describe('custom elements', () => {
 });
 
 describe('elements', () => {
-    if (!process.env.NATIVE_SHADOW) {
-        it('should not be reused when slotted', function () {
-            const elm = createElement('x-container', { is: Container });
-            elm.isElement = true;
-            document.body.appendChild(elm);
+    it.skipIf(process.env.NATIVE_SHADOW)('should not be reused when slotted', function () {
+        const elm = createElement('x-container', { is: Container });
+        elm.isElement = true;
+        document.body.appendChild(elm);
 
-            const child = elm.shadowRoot.querySelector('x-child');
-            let firstRenderElement;
+        const child = elm.shadowRoot.querySelector('x-child');
+        let firstRenderElement;
 
-            return Promise.resolve()
-                .then(() => (child.open = true))
-                .then(() => {
-                    firstRenderElement = elm.shadowRoot.querySelector('button');
-                    child.open = false;
-                })
-                .then(() => (child.open = true))
-                .then(() => {
-                    const btnElement = elm.shadowRoot.querySelector('button');
+        return Promise.resolve()
+            .then(() => (child.open = true))
+            .then(() => {
+                firstRenderElement = elm.shadowRoot.querySelector('button');
+                child.open = false;
+            })
+            .then(() => (child.open = true))
+            .then(() => {
+                const btnElement = elm.shadowRoot.querySelector('button');
 
-                    expect(btnElement).not.toBeNull();
-                    expect(btnElement.assignedSlot).not.toBeNull();
-                    expect(btnElement).not.toBe(firstRenderElement);
-                });
-        });
-    }
+                expect(btnElement).not.toBeNull();
+                expect(btnElement.assignedSlot).not.toBeNull();
+                expect(btnElement).not.toBe(firstRenderElement);
+            });
+    });
 
     it('should not add listener multiple times', function () {
         const elm = createElement('x-container', { is: Container });
@@ -94,8 +92,9 @@ describe('elements', () => {
     });
 });
 
-if (process.env.NATIVE_SHADOW) {
-    it('should render same styles for custom element instances', function () {
+it.runIf(process.env.NATIVE_SHADOW)(
+    'should render same styles for custom element instances',
+    function () {
         const elm = createElement('x-container', { is: Container });
         elm.isStyleCheck = true;
         document.body.appendChild(elm);
@@ -115,5 +114,5 @@ if (process.env.NATIVE_SHADOW) {
             expect(styles[0]).toEqual(styles[1]);
             expect(styles[1]).toEqual(styles[2]);
         });
-    });
-}
+    }
+);

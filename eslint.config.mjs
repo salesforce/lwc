@@ -253,6 +253,12 @@ export default tseslint.config(
         },
     },
     {
+        files: ['packages/@lwc/integration-karma/**'],
+        rules: {
+            'vitest/no-conditional-tests': 'error',
+        },
+    },
+    {
         files: ['**/scripts/**'],
         rules: {
             'no-console': 'off',

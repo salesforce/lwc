@@ -56,18 +56,20 @@ function expectRehydrationEntry(tagName, propString) {
     expect(entries).toEqual(arr([rehydrationEntry(tagName, propString)]));
 }
 
-if (process.env.NODE_ENV === 'production') {
-    it('No perf measures in prod mode', async () => {
-        const elm = createElement('x-child', { is: Child });
-        document.body.appendChild(elm);
+const isProd = process.env.NODE_ENV === 'production';
 
-        await waitForSentinelMeasure();
-        elm.firstName = 'Ferdinand';
+it.runIf(isProd)('No perf measures in prod mode', async () => {
+    const elm = createElement('x-child', { is: Child });
+    document.body.appendChild(elm);
 
-        await waitForSentinelMeasure();
-        expect(entries).toEqual([]);
-    });
-} else {
+    await waitForSentinelMeasure();
+    elm.firstName = 'Ferdinand';
+
+    await waitForSentinelMeasure();
+    expect(entries).toEqual([]);
+});
+
+describe.skipIf(isProd)('Perf measures in dev mode', () => {
     // dev mode
     describe('basic', () => {
         let elm;
@@ -301,4 +303,4 @@ if (process.env.NODE_ENV === 'production') {
             );
         });
     });
-}
+});

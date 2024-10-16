@@ -116,5 +116,21 @@ afterAll(function () {
     throwIfConsoleCalled();
 });
 
+describe.runIf = function (condition) {
+    return condition ? describe : xdescribe;
+};
+
+describe.skipIf = function (condition) {
+    return condition ? xdescribe : describe;
+};
+
+it.runIf = function (condition) {
+    return condition ? it : xit;
+};
+
+it.skipIf = function (condition) {
+    return condition ? xit : it;
+};
+
 // The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
