@@ -15,8 +15,8 @@ function createDynamicClass(value) {
     };
 }
 
-function testClassNameValue(name, value, expected) {
-    it(name, () => {
+function testClassNameValue(name, value, expected, test = it) {
+    test(name, () => {
         const { target } = createDynamicClass(value);
         expect(target.className).toBe(expected);
     });
@@ -68,9 +68,7 @@ describe('type coercion', () => {
     testClassNameValue('object with enumerable prototype props', classSet({ foo: true }), 'foo');
 
     // Passing a symbol as a class name prior to API v61 would throw an error.
-    if (TEMPLATE_CLASS_NAME_OBJECT_BINDING) {
-        testClassNameValue('symbol', Symbol(), '');
-    }
+    testClassNameValue('symbol', Symbol(), '', it.runIf(TEMPLATE_CLASS_NAME_OBJECT_BINDING));
 });
 
 describe.runIf(TEMPLATE_CLASS_NAME_OBJECT_BINDING)('class value', () => {
