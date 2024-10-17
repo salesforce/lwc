@@ -182,6 +182,7 @@ jobs:
             - run: ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 yarn hydration:sauce:ci
             - run: NODE_ENV_FOR_TEST=production yarn hydration:sauce:ci
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn hydration:sauce:ci
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn hydration:sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4

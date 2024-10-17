@@ -9,7 +9,7 @@ export default {
         const p = target.shadowRoot.querySelector('p');
         return {
             p,
-            style: p.getAttribute('style'),
+            classes: p.className,
         };
     },
     test(target, snapshots, consoleCalls) {
@@ -18,18 +18,16 @@ export default {
         // TODO [#4656]: static optimization causes mismatches for style/class only when ordering is different
         if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
             expect(p).toBe(snapshots.p);
-            expect(p.getAttribute('style')).toBe(snapshots.style);
+            expect(p.className).toBe(snapshots.classes);
 
             expect(consoleCalls.error).toHaveSize(0);
         } else {
             expect(p).not.toBe(snapshots.p);
-            expect(p.getAttribute('style')).toBe(
-                'margin: 1px; border-color: red; background-color: red;'
-            );
+            expect(p.className).toBe('c1 c2 c3');
 
             TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [
-                    'Mismatch hydrating element <p>: attribute "style" has different values, expected "margin: 1px; border-color: red; background-color: red;" but found "background-color: red; border-color: red; margin: 1px;"',
+                    'Mismatch hydrating element <p>: attribute "class" has different values, expected "c1 c2 c3" but found "c3 c2 c1"',
                     'Hydration completed with errors.',
                 ],
             });
