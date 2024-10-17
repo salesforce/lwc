@@ -13,6 +13,7 @@ import {
     Root,
     type Config as TemplateCompilerConfig,
 } from '@lwc/template-compiler';
+import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
@@ -107,7 +108,10 @@ export default function compileTemplate(
         for (const warning of warnings) {
             // eslint-disable-next-line no-console
             console.error('Cannot compile:', warning.message);
-            if (warning.level === 0 /* fatal */ || warning.level === 1 /* error */) {
+            if (
+                warning.level === DiagnosticLevel.Fatal ||
+                warning.level === DiagnosticLevel.Error
+            ) {
                 fatal = true;
             }
         }
