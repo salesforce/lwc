@@ -20,6 +20,7 @@ import {
     type Literal as IrLiteral,
     type Property as IrProperty,
     ExternalComponent as IrExternalComponent,
+    Slot as IrSlot,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
 import { irChildrenToEs } from './ir-to-es';
@@ -114,7 +115,7 @@ function reorderAttributes(
     );
 }
 
-export const Element: Transformer<IrElement | IrExternalComponent> = function Element(
+export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = function Element(
     node,
     cxt
 ): EsStatement[] {
