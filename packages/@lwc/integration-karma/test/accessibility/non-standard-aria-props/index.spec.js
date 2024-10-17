@@ -8,8 +8,9 @@ import Light from 'x/light';
 import Shadow from 'x/shadow';
 
 // This test only works if the ARIA reflection polyfill is loaded
-if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
-    describe('non-standard ARIA properties', () => {
+describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
+    'non-standard ARIA properties',
+    () => {
         let dispatcher;
 
         beforeEach(() => {
@@ -121,5 +122,5 @@ if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
                 });
             });
         });
-    });
-}
+    }
+);

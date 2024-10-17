@@ -66,30 +66,28 @@ describe('Properties overrides', () => {
     });
 });
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('synthetic-shadow restrictions', () => {
-        let elm;
+describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () => {
+    let elm;
 
-        beforeAll(() => {
-            elm = createElement('x-test', { is: Test });
-        });
-
-        it(`should throw when invoking ShadowRoot.getSelection`, () => {
-            expect(() => elm.shadowRoot.getSelection()).toThrowError(
-                `Disallowed method "getSelection" on ShadowRoot.`
-            );
-        });
-
-        it(`should throw when invoking ShadowRoot.cloneNode`, () => {
-            expect(() => elm.shadowRoot.cloneNode()).toThrowError(
-                `Disallowed method "cloneNode" on ShadowRoot.`
-            );
-        });
-
-        it(`should throw when invoking ShadowRoot.getElementById`, () => {
-            expect(() => elm.shadowRoot.getElementById()).toThrowError(
-                `Disallowed method "getElementById" on ShadowRoot.`
-            );
-        });
+    beforeAll(() => {
+        elm = createElement('x-test', { is: Test });
     });
-}
+
+    it(`should throw when invoking ShadowRoot.getSelection`, () => {
+        expect(() => elm.shadowRoot.getSelection()).toThrowError(
+            `Disallowed method "getSelection" on ShadowRoot.`
+        );
+    });
+
+    it(`should throw when invoking ShadowRoot.cloneNode`, () => {
+        expect(() => elm.shadowRoot.cloneNode()).toThrowError(
+            `Disallowed method "cloneNode" on ShadowRoot.`
+        );
+    });
+
+    it(`should throw when invoking ShadowRoot.getElementById`, () => {
+        expect(() => elm.shadowRoot.getElementById()).toThrowError(
+            `Disallowed method "getElementById" on ShadowRoot.`
+        );
+    });
+});

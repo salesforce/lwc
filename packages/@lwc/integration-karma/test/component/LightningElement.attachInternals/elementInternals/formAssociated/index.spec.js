@@ -8,12 +8,12 @@ import NotFormAssociatedNoAttachInternals from 'x/notFormAssociatedNoAttachInter
 import FormAssociatedNoAttachInternals from 'x/formAssociatedNoAttachInternals';
 import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachInternals';
 
-if (
+describe.runIf(
     ENABLE_ELEMENT_INTERNALS_AND_FACE &&
-    typeof ElementInternals !== 'undefined' &&
-    !IS_SYNTHETIC_SHADOW_LOADED
-) {
-    it('should throw an error when duplicate tag name used with different formAssociated value', () => {
+        typeof ElementInternals !== 'undefined' &&
+        !IS_SYNTHETIC_SHADOW_LOADED
+)('should throw an error when duplicate tag name used', () => {
+    it('with different formAssociated value', () => {
         // Register tag with formAssociated = true
         createElement('x-form-associated', { is: FormAssociated });
         // Try to register again with formAssociated = false
@@ -37,19 +37,20 @@ if (
             createElement('x-not-form-associated', { is: NotFormAssociated })
         ).not.toThrow();
     });
-}
+});
 
-if (typeof ElementInternals !== 'undefined' && !IS_SYNTHETIC_SHADOW_LOADED) {
-    const isFormAssociated = (elm) => {
-        const form = document.createElement('form');
-        document.body.appendChild(form);
-        form.appendChild(elm);
-        const result = elm.formAssociatedCallbackCalled;
-        document.body.removeChild(form); // cleanup
-        return result;
-    };
+it.runIf(typeof ElementInternals !== 'undefined' && !IS_SYNTHETIC_SHADOW_LOADED)(
+    'disallows form association on older API versions',
+    () => {
+        const isFormAssociated = (elm) => {
+            const form = document.createElement('form');
+            document.body.appendChild(form);
+            form.appendChild(elm);
+            const result = elm.formAssociatedCallbackCalled;
+            document.body.removeChild(form); // cleanup
+            return result;
+        };
 
-    it('disallows form association on older API versions', () => {
         let elm;
 
         // formAssociated = true
@@ -79,11 +80,12 @@ if (typeof ElementInternals !== 'undefined' && !IS_SYNTHETIC_SHADOW_LOADED) {
             is: NotFormAssociatedNoAttachInternals,
         });
         expect(isFormAssociated(elm)).toBe(false);
-    });
-}
+    }
+);
 
-if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
-    it('warns for attachInternals on older API versions', () => {
+it.skipIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)(
+    'warns for attachInternals on older API versions',
+    () => {
         // formAssociated = true
         expect(() => {
             expect(() => createElement('x-form-associated', { is: FormAssociated })).toThrowError(
@@ -102,5 +104,5 @@ if (!ENABLE_ELEMENT_INTERNALS_AND_FACE) {
         expect(() =>
             createElement('x-not-form-associated', { is: NotFormAssociated })
         ).toThrowError(/The attachInternals API is only supported in API version 61 and above/);
-    });
-}
+    }
+);

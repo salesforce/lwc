@@ -183,27 +183,26 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             document.body.appendChild(container);
         });
 
-        if (!process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
-            it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', () =>
-                new Promise((done) => {
-                    const parent = createElement('x-parent', { is: XParent });
-                    container.appendChild(parent);
-                    let observer;
-                    const parentDiv = parent.shadowRoot.querySelector('div');
-                    const callback = function (actualMutationRecords, actualObserver) {
-                        expect(actualObserver).toBe(observer);
-                        expect(actualMutationRecords.length).toBe(1);
-                        expect(actualMutationRecords[0].target).toBe(parentDiv);
-                        expect(actualMutationRecords[0].addedNodes.length).toBe(2);
-                        expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('H3');
-                        expect(actualMutationRecords[0].addedNodes[1].tagName).toBe('P');
-                        done();
-                    };
-                    observer = new MutationObserver(callback);
-                    observer.observe(parent.shadowRoot, observerConfig);
-                    // Mutate the shadow tree of x-parent
-                    parentDiv.innerHTML = `<h3></h3><p></p>`;
-                }));
+        describe.skipIf(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST)('MutationObserver', () => {
+            it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', (done) => {
+                const parent = createElement('x-parent', { is: XParent });
+                container.appendChild(parent);
+                let observer;
+                const parentDiv = parent.shadowRoot.querySelector('div');
+                const callback = function (actualMutationRecords, actualObserver) {
+                    expect(actualObserver).toBe(observer);
+                    expect(actualMutationRecords.length).toBe(1);
+                    expect(actualMutationRecords[0].target).toBe(parentDiv);
+                    expect(actualMutationRecords[0].addedNodes.length).toBe(2);
+                    expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('H3');
+                    expect(actualMutationRecords[0].addedNodes[1].tagName).toBe('P');
+                    done();
+                };
+                observer = new MutationObserver(callback);
+                observer.observe(parent.shadowRoot, observerConfig);
+                // Mutate the shadow tree of x-parent
+                parentDiv.innerHTML = `<h3></h3><p></p>`;
+            });
 
             it('should invoke observer with correct MutationRecords when adding child nodes using appendChild', () => {
                 const parent = createElement('x-parent', { is: XParent });
@@ -361,7 +360,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[1].addedNodes.length).toBe(1);
                 expect(actualMutationRecords[1].addedNodes[0].tagName).toBe('OL');
             });
-        }
+        });
 
         it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', () => {
             const host = createElement('x-template-mutations', { is: XTemplateMutations });
@@ -422,8 +421,10 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
     });
-    if (!process.env.NATIVE_SHADOW) {
-        describe('References to mutation observers are not leaked', () => {
+
+    describe.skipIf(process.env.NATIVE_SHADOW)(
+        'References to mutation observers are not leaked',
+        () => {
             let container;
             beforeEach(() => {
                 container = document.createElement('div');
@@ -478,6 +479,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 observer.disconnect();
                 expect(node.$$lwcNodeObservers$$.length).toBe(0);
             });
-        });
-    }
+        }
+    );
 });

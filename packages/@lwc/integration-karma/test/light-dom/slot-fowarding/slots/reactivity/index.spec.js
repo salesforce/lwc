@@ -183,11 +183,8 @@ describe('light DOM slot forwarding reactivity', () => {
                       },
                   ],
         },
-    ];
-
-    if (process.env.NATIVE_SHADOW) {
-        // TODO [#3885]: Using expressions on forwarded synthetic shadow DOM slots throws an error, only test in native for now
-        testCases.push({
+        {
+            test: it.runIf(process.env.NATIVE_SHADOW),
             testName: 'shadowLight',
             expectedDefaultSlotContent: expectedDefaultSlotContent('shadow'),
             expectedSlotContentAfterParentMutation:
@@ -216,8 +213,8 @@ describe('light DOM slot forwarding reactivity', () => {
                           slotContent: 'Conditional slot content',
                       },
                   ],
-        });
-    }
+        },
+    ];
 
     testCases.forEach(
         ({
@@ -227,8 +224,9 @@ describe('light DOM slot forwarding reactivity', () => {
             expectedSlotContentAfterForwardedSlotMutation,
             expectedSlotContentAfterLeafMutation,
             expectedSlotContentAfterConditionalMutation,
+            test = it,
         }) => {
-            it(`should update correctly for ${testName} slots`, async () => {
+            test(`should update correctly for ${testName} slots`, async () => {
                 const parent = nodes[testName];
                 const leaf = parent.leaf;
                 expect((leaf.shadowRoot?.children ?? leaf.children).length).toBe(3);

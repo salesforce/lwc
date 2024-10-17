@@ -2,8 +2,9 @@ import { createElement } from 'lwc';
 import { ENABLE_THIS_DOT_STYLE } from 'test-utils';
 import Test from 'x/test';
 
-if (ENABLE_THIS_DOT_STYLE) {
-    it('this.style should return the CSSStyleDeclaration of host element', async () => {
+it.runIf(ENABLE_THIS_DOT_STYLE)(
+    'this.style should return the CSSStyleDeclaration of host element',
+    async () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
@@ -31,19 +32,19 @@ if (ENABLE_THIS_DOT_STYLE) {
 
         elm.style.setProperty('color', 'rgb(128, 0, 128)');
         await assertColor('rgb(128, 0, 128)');
-    });
-} else {
-    it('this.style should be undefined for older API versions', () => {
-        const elm = createElement('x-test', { is: Test });
-        document.body.appendChild(elm);
+    }
+);
 
-        expect(elm.style.color).toEqual('');
-        let thisDotStyle;
+it.skipIf(ENABLE_THIS_DOT_STYLE)('this.style should be undefined for older API versions', () => {
+    const elm = createElement('x-test', { is: Test });
+    document.body.appendChild(elm);
 
-        expect(() => {
-            thisDotStyle = elm.thisDotStyle;
-        }).toLogWarningDev(/only supported in API version 62 and above/);
+    expect(elm.style.color).toEqual('');
+    let thisDotStyle;
 
-        expect(thisDotStyle).toBeUndefined();
-    });
-}
+    expect(() => {
+        thisDotStyle = elm.thisDotStyle;
+    }).toLogWarningDev(/only supported in API version 62 and above/);
+
+    expect(thisDotStyle).toBeUndefined();
+});

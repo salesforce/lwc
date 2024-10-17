@@ -74,12 +74,10 @@ describe('setting aria attributes', () => {
 
         // If the polyfill is not enabled, then we can't expect the div to have all the ARIA properties,
         // because some are non-standard or not supported in all browsers
-        if (process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL) {
-            it('aria prop is set', () => {
-                for (const prop of ariaProperties) {
-                    expect(childComponent[prop]).toMatch(/^foo/);
-                }
-            });
-        }
+        it.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)('aria prop is set', () => {
+            for (const prop of ariaProperties) {
+                expect(childComponent[prop]).toMatch(/^foo/);
+            }
+        });
     });
 });
