@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+
+import { HIGHEST_API_VERSION } from '@lwc/shared';
+
+// Helpful error. Remove after a few months.
+if (process.env.NATIVE_SHADOW) {
+    throw new Error('NATIVE_SHADOW is deprecated. Use DISABLE_SYNTHETIC instead!');
+}
+
+export const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
+
+export const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
+
+export const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(
+    process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST
+);
+
+export const ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL = Boolean(
+    process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL
+);
+export const DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER = Boolean(
+    process.env.DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER
+);
+export const DISABLE_STATIC_CONTENT_OPTIMIZATION = Boolean(
+    process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
+);
+export const ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION = Boolean(
+    process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION
+);
+export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
+
+export const API_VERSION = process.env.API_VERSION
+    ? parseInt(process.env.API_VERSION, 10)
+    : HIGHEST_API_VERSION;
+
+export const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
+    process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+);
+
+export const COVERAGE = Boolean(process.env.COVERAGE);
+
+export const baseOptions = {
+    API_VERSION,
+    DISABLE_STATIC_CONTENT_OPTIMIZATION,
+    DISABLE_SYNTHETIC,
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+    ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
+    ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION,
+    FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
+    LEGACY_BROWSERS,
+    NODE_ENV_FOR_TEST,
+    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+} as const;
+
+/** Unique directory name that encodes the flags that the tests were executed with. */
+export const COVERAGE_DIR_FOR_OPTIONS =
+    Object.entries(baseOptions)
+        .filter(([, val]) => val)
+        .map(([key, val]) => `${key}=${val}`)
+        .join('/') || 'no-options';
+
+export const GREP = process.env.GREP;
+
+export const SAUCE_USERNAME = process.env.SAUCE_USERNAME;
+export const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
+export const SAUCE_TUNNEL_ID = process.env.SAUCE_TUNNEL_ID;
+
+export const IS_CI = Boolean(process.env.CI);
+export const GITHUB_RUN_ID = process.env.GITHUB_RUN_ID;

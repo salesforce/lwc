@@ -20,7 +20,7 @@ it('W-15885661 - renders list when key is invalid (preserve backwards compat)', 
     } = spy;
     expect(error.length).toBe(process.env.NODE_ENV === 'production' ? 0 : 2);
     error.forEach((error) =>
-        expect(error).toMatch(/(Invalid key value.*|Invalid "key" attribute.*)/)
+        expect(`${error}`).toMatch(/(Invalid key value.*|Invalid "key" attribute.*)/)
     );
 
     spy.reset();

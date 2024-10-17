@@ -44,81 +44,86 @@ describe('legacy wire adapters (register call)', () => {
     });
 
     describe('with dynamic config', () => {
-        it('should not call config when all initially all props of config are undefined', (done) => {
-            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
-            document.body.appendChild(elm);
-
-            setTimeout(() => {
-                const calls = elm.allUndefinedConfigCalls;
-                expect(calls.length).toBe(0);
-                done();
-            }, 0);
-        });
-
-        it('should call config when at least one prop in config is defined', (done) => {
-            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
-            document.body.appendChild(elm);
-
-            setTimeout(() => {
-                const calls = elm.someDefinedConfigCalls;
-                expect(calls.length).toBe(1);
-                expect(calls[0]).toEqual({ p1: undefined, p3: 'test' });
-
-                done();
-            }, 0);
-        });
-
-        it('should call config when all props become undefined after initialization', (done) => {
-            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
-            document.body.appendChild(elm);
-
-            setTimeout(() => {
-                const calls = elm.someDefinedConfigCalls;
-                expect(calls.length).toBe(1);
-                expect(calls[0]).toEqual({ p1: undefined, p3: 'test' });
-
-                elm.setParam('p3', undefined);
-
-                setTimeout(() => {
-                    const calls = elm.someDefinedConfigCalls;
-                    expect(calls.length).toBe(2);
-                    expect(calls[1]).toEqual({ p1: undefined, p3: undefined });
-                    done();
-                }, 0);
-            }, 0);
-        });
-
-        it('should call config when initially all props of config are undefined and some change', (done) => {
-            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
-            document.body.appendChild(elm);
-
-            setTimeout(() => {
-                const calls = elm.allUndefinedConfigCalls;
-                expect(calls.length).toBe(0);
-
-                elm.setParam('p2', 'test');
+        it('should not call config when all initially all props of config are undefined', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+                document.body.appendChild(elm);
 
                 setTimeout(() => {
                     const calls = elm.allUndefinedConfigCalls;
-                    expect(calls.length).toBe(1);
-                    expect(calls[0]).toEqual({ p1: undefined, p2: 'test' });
-                    done();
+                    expect(calls.length).toBe(0);
+                    resolve();
                 }, 0);
-            }, 0);
-        });
+            }));
+
+        it('should call config when at least one prop in config is defined', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+                document.body.appendChild(elm);
+
+                setTimeout(() => {
+                    const calls = elm.someDefinedConfigCalls;
+                    expect(calls.length).toBe(1);
+                    expect(calls[0]).toEqual({ p1: undefined, p3: 'test' });
+
+                    resolve();
+                }, 0);
+            }));
+
+        it('should call config when all props become undefined after initialization', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+                document.body.appendChild(elm);
+
+                setTimeout(() => {
+                    const calls = elm.someDefinedConfigCalls;
+                    expect(calls.length).toBe(1);
+                    expect(calls[0]).toEqual({ p1: undefined, p3: 'test' });
+
+                    elm.setParam('p3', undefined);
+
+                    setTimeout(() => {
+                        const calls = elm.someDefinedConfigCalls;
+                        expect(calls.length).toBe(2);
+                        expect(calls[1]).toEqual({ p1: undefined, p3: undefined });
+                        resolve();
+                    }, 0);
+                }, 0);
+            }));
+
+        it('should call config when initially all props of config are undefined and some change', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+                document.body.appendChild(elm);
+
+                setTimeout(() => {
+                    const calls = elm.allUndefinedConfigCalls;
+                    expect(calls.length).toBe(0);
+
+                    elm.setParam('p2', 'test');
+
+                    setTimeout(() => {
+                        const calls = elm.allUndefinedConfigCalls;
+                        expect(calls.length).toBe(1);
+                        expect(calls[0]).toEqual({ p1: undefined, p2: 'test' });
+                        resolve();
+                    }, 0);
+                }, 0);
+            }));
     });
 
     describe('with dynamic and static config', () => {
-        it('should not call config when initially all props from params in config are undefined', (done) => {
-            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
-            document.body.appendChild(elm);
+        it('should not call config when initially all props from params in config are undefined', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
+                document.body.appendChild(elm);
 
-            setTimeout(() => {
-                const calls = elm.mixedAllParamsUndefinedCalls;
-                expect(calls.length).toBe(0);
-                done();
-            }, 0);
-        });
+                setTimeout(() => {
+                    const calls = elm.mixedAllParamsUndefinedCalls;
+                    expect(calls.length).toBe(0);
+                    resolve();
+                }, 0);
+            }));
 
         // This following 2 test cases can occur in two scenarios:
         // 1. Because a config param depends on multiple values, some of them change but generates the same config value
@@ -133,52 +138,54 @@ describe('legacy wire adapters (register call)', () => {
         // 1) was not possible to reproduce, a config param could only depend on one property from the component, and since
         //    now is possible, existing adapters may behave incorrectly.
         // 2) was handled at the wire-protocol level and existing adapters may behave incorrectly.
-        it('should not call config when the generated config is the same as the last one (case 1)', (done) => {
-            const elm = createElement('x-same-config', { is: SameConfigCase });
-            elm.a = 3;
-            elm.b = 2;
-            document.body.appendChild(elm);
-
-            setTimeout(() => {
-                const firstResult = elm.resultMultipleDependenciesForConfig;
-                expect(firstResult.sum).toBe(5);
-
-                elm.a = 1;
-                elm.b = 4;
-
-                setTimeout(() => {
-                    const secondResult = elm.resultMultipleDependenciesForConfig;
-
-                    // Based on the RFC: every time that `adapter.update()` is invoked, a new config object will
-                    // be provided as a first argument, no identity is preserved in this case.
-                    expect(firstResult).toBe(secondResult);
-
-                    done();
-                });
-            });
-        });
-
-        it('should not call config when the generated config is the same as the last one (case 2)', (done) => {
-            const elm = createElement('x-same-config', { is: SameConfigCase });
-            elm.a = 3;
-            document.body.appendChild(elm);
-
-            setTimeout(() => {
-                const firstResult = elm.resultApiValueDependency;
-                expect(firstResult.a).toBe(3);
-
-                // setting same api value
+        it('should not call config when the generated config is the same as the last one (case 1)', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-same-config', { is: SameConfigCase });
                 elm.a = 3;
+                elm.b = 2;
+                document.body.appendChild(elm);
 
                 setTimeout(() => {
-                    const secondResult = elm.resultApiValueDependency;
+                    const firstResult = elm.resultMultipleDependenciesForConfig;
+                    expect(firstResult.sum).toBe(5);
 
-                    expect(firstResult).toBe(secondResult);
+                    elm.a = 1;
+                    elm.b = 4;
 
-                    done();
+                    setTimeout(() => {
+                        const secondResult = elm.resultMultipleDependenciesForConfig;
+
+                        // Based on the RFC: every time that `adapter.update()` is invoked, a new config object will
+                        // be provided as a first argument, no identity is preserved in this case.
+                        expect(firstResult).toBe(secondResult);
+
+                        resolve();
+                    });
+                });
+            }));
+
+        it('should not call config when the generated config is the same as the last one (case 2)', () =>
+            new Promise((resolve) => {
+                const elm = createElement('x-same-config', { is: SameConfigCase });
+                elm.a = 3;
+                document.body.appendChild(elm);
+
+                setTimeout(() => {
+                    const firstResult = elm.resultApiValueDependency;
+                    expect(firstResult.a).toBe(3);
+
+                    // setting same api value
+                    elm.a = 3;
+
+                    setTimeout(() => {
+                        const secondResult = elm.resultApiValueDependency;
+
+                        expect(firstResult).toBe(secondResult);
+
+                        resolve();
+                    }, 0);
                 }, 0);
-            }, 0);
-        });
+            }));
     });
 
     describe('with multiple same adapters and different configs', () => {

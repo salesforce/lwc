@@ -1,0 +1,27 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "noEmit": true,
+        "allowJs": true,
+        "module": "ESNext",
+        "target": "ESNext",
+        "strict": true,
+        "lib": ["ES2015.Promise", "DOM"],
+        "types": ["vitest/globals", "@vitest/browser/providers/playwright"],
+        "paths": {
+            "test-utils": ["./vitest-helpers/test-utils.ts"],
+            "test-hydrate": ["./vitest-helpers/test-hydrate.ts"]
+        }
+    },
+    "files": ["../../lwc/types.d.ts"],
+    "include": [
+        "vitest-plugins/**/*.ts",
+        "vitest-scripts/**/*.ts",
+        "vitest-helpers/*.ts",
+        "test/**/*.spec.ts",
+        "test/**/*.spec.js",
+        "test-hydration/**/*.spec.js",
+        "vitest-setup/**/*.ts"
+    ]
+}

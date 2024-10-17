@@ -56,30 +56,31 @@ xit('should not render if the slotted content changes', () => {
     });
 });
 
-it('should not throw error when updating slotted content triggers next tick re-render in component receiving the slotted content', (done) => {
-    // Regression introduced in #1617 refactor(engine): improving the diffing algo for slotted elements
-    const elm = createElement('x-regression-container', {
-        is: RegressionContainer,
-    });
-    document.body.appendChild(elm);
-
-    requestAnimationFrame(() => {
-        const results = elm.shadowRoot.querySelectorAll('.text-result');
-
-        expect(results.length).toBe(1);
-        expect(results[0].textContent).toBe('Inner visible truetoggle');
-        elm.shadowRoot.querySelector('button').click();
+it('should not throw error when updating slotted content triggers next tick re-render in component receiving the slotted content', () =>
+    new Promise((done) => {
+        // Regression introduced in #1617 refactor(engine): improving the diffing algo for slotted elements
+        const elm = createElement('x-regression-container', {
+            is: RegressionContainer,
+        });
+        document.body.appendChild(elm);
 
         requestAnimationFrame(() => {
             const results = elm.shadowRoot.querySelectorAll('.text-result');
 
             expect(results.length).toBe(1);
-            expect(results[0].textContent).toBe('Inner visible falsetoggle');
+            expect(results[0].textContent).toBe('Inner visible truetoggle');
+            elm.shadowRoot.querySelector('button').click();
 
-            done();
+            requestAnimationFrame(() => {
+                const results = elm.shadowRoot.querySelectorAll('.text-result');
+
+                expect(results.length).toBe(1);
+                expect(results[0].textContent).toBe('Inner visible falsetoggle');
+
+                done();
+            });
         });
-    });
-});
+    }));
 
 describe('does not log an error/warning on unknown slot name', () => {
     let consoleSpy;
