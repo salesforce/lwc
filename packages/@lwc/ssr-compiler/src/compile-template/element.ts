@@ -151,6 +151,8 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     }
 
     let childContent: EsStatement[];
+    // An element can have children or lwc:inner-html, but not both
+    // If it has both, the template compiler will throw an error before reaching here
     if (node.children.length) {
         childContent = irChildrenToEs(node.children, cxt);
     } else if (innerHtmlDirective) {
