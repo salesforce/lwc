@@ -116,6 +116,9 @@ afterAll(function () {
     throwIfConsoleCalled();
 });
 
+// The following (`runIf`, `skipIf`, etc.) are based on Vite's APIs: https://vitest.dev/api/
+// This allows us to use the vitest/no-conditional-tests ESLint rule and get the same total # of tests for
+// every variant of a test run (e.g. `DISABLE_SYNTHETIC=1`, `NODE_ENV_FOR_TEST=production`, etc.)
 describe.runIf = function (condition) {
     return condition ? describe : xdescribe;
 };
