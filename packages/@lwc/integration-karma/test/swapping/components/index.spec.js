@@ -10,7 +10,7 @@ import X from 'base/libraryx';
 import Z from 'base/libraryz';
 
 // Swapping is only enabled in dev mode
-describe.runIf(process.env.NODE_ENV !== 'production')('component swapping', () => {
+describe.skipIf(process.env.NODE_ENV === 'production')('component swapping', () => {
     it('should work before and after instantiation', () => {
         expect(swapComponent(A, B)).toBe(true);
         const elm = createElement('x-container', { is: Container });

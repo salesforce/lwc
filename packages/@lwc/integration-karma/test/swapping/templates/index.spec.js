@@ -8,7 +8,7 @@ const simpleBaseTemplate = Simple.baseTemplate;
 const advancedBaseTemplate = Advanced.baseTemplate;
 
 // Swapping is only enabled in dev mode
-describe.runIf(process.env.NODE_ENV !== 'production')('template swapping', () => {
+describe.skipIf(process.env.NODE_ENV === 'production')('template swapping', () => {
     it('should work with components with implicit template definition', () => {
         const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);

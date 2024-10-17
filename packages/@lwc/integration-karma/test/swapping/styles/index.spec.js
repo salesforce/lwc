@@ -24,7 +24,7 @@ function expectStyles(elm, styles) {
 }
 
 // Swapping is only enabled in dev mode
-describe.runIf(process.env.NODE_ENV !== 'production')('style swapping', () => {
+describe.skipIf(process.env.NODE_ENV === 'production')('style swapping', () => {
     afterEach(() => {
         window.__lwcResetHotSwaps();
         window.__lwcResetStylesheetCache();
