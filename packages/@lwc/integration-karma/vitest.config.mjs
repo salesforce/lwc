@@ -11,6 +11,8 @@ import {
     NODE_ENV_FOR_TEST,
 } from './vitest-plugins/shared/options';
 
+import { browser } from './vitest-config';
+
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
@@ -46,22 +48,6 @@ export default defineConfig({
             reportOnFailure: true,
             excludeAfterRemap: true,
         },
-        browser: {
-            api: {
-                port: 5174,
-            },
-            enabled: true,
-            headless: true,
-            ui: false,
-            screenshotFailures: false,
-            name: 'chromium',
-            provider: 'playwright',
-            testerScripts: [
-                {
-                    src: '@lwc/engine-dom/dist/index.js?iife',
-                },
-            ],
-            providerOptions: { launch: { devtools: true } },
-        },
+        browser,
     },
 });

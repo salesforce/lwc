@@ -1,0 +1,1 @@
+export { browser } from './browser';
