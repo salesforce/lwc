@@ -6,7 +6,7 @@
  */
 import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
-import { CustomRendererConfig } from '@lwc/template-compiler';
+import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
  * Flag indicating that a warning about still using the deprecated `enableLwcSpread`

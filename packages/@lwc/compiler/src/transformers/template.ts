@@ -12,8 +12,8 @@ import {
 } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler';
 
-import { NormalizedTransformOptions } from '../options';
-import { TransformResult } from './transformer';
+import type { NormalizedTransformOptions } from '../options';
+import type { TransformResult } from './shared';
 
 /**
  * Transforms a HTML template into module exporting a template function.
