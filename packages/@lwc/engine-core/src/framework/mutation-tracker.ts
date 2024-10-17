@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isNull, isObject } from '@lwc/shared';
+import { hasOwnProperty, isNull, isObject, SIGNAL_SYMBOL } from '@lwc/shared';
 import { Signal } from '@lwc/signals';
 import {
     JobFunction,
@@ -46,9 +46,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
         isObject(target) &&
         !isNull(target) &&
-        'value' in target &&
-        'subscribe' in target &&
-        isFunction(target.subscribe) &&
+        hasOwnProperty.call(target, SIGNAL_SYMBOL) &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
     ) {
