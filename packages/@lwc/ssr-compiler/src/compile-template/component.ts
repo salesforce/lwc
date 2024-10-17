@@ -9,9 +9,10 @@ import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplateWithYield } from '../estemplate';
-import { isValidIdentifier } from './shared';
+import { isValidIdentifier, optimizeAdjacentYieldStmts } from './shared';
 import { TransformerContext } from './types';
 import { expressionIrToEs } from './expression';
+import { irChildrenToEs } from './ir-to-es';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -28,8 +29,10 @@ const bYieldFromChildGenerator = esTemplateWithYield<EsBlockStatement>`
     {
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
-        const childSlottedContentGenerators = {};
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerators);
+        async function* childSlottedContentGenerator() {
+            ${is.statement}
+        };
+        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerator);
     }
 `;
 
@@ -96,6 +99,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(attributes, cxt),
+            optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt)),
             b.identifier(childGeneratorLocalName),
             b.literal(childTagName)
         ),
