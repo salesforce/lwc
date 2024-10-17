@@ -48,13 +48,14 @@ it('returns an HTMLElement', () => {
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
-if (!process.env.NATIVE_SHADOW) {
-    it('should create an element with a synthetic shadow root by default', () => {
+it.skipIf(process.env.NATIVE_SHADOW)(
+    'should create an element with a synthetic shadow root by default',
+    () => {
         const elm = createElement('x-component', { is: Test });
         expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
         expect(elm.isSynthetic()).toBeTrue();
-    });
-}
+    }
+);
 
 it('supports component constructors in circular dependency', () => {
     function Circular() {
@@ -66,7 +67,7 @@ it('supports component constructors in circular dependency', () => {
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
-if (process.env.NATIVE_SHADOW) {
+describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
     it('should create an element with a native shadow root if fallback is false', () => {
         const elm = createElement('x-component', { is: Test });
         expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
@@ -93,7 +94,7 @@ if (process.env.NATIVE_SHADOW) {
         expect(shadowRoot).toBeInstanceOf(ShadowRoot);
         expect(shadowRoot.mode).toBe('closed');
     });
-}
+});
 
 describe('locker integration', () => {
     it('should support component class that extend a mirror of the LightningElement', () => {

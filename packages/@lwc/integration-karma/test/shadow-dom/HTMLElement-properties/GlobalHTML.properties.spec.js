@@ -67,13 +67,11 @@ describe('global HTML Properties', () => {
     cases.forEach((testCase) => {
         const { prop, value } = testCase;
         describe(`#${prop}`, () => {
-            if (prop !== 'hidden') {
-                it(`should reflect ${prop} attribute by default`, () => {
-                    const element = createElement(`prop-reflect-${prop}`, { is: Test });
-                    element[prop] = value;
-                    expect(HTMLEmbedElement.prototype.getAttribute.call(element, prop)).toBe(value);
-                });
-            }
+            it.skipIf(prop === 'hidden')(`should reflect ${prop} attribute by default`, () => {
+                const element = createElement(`prop-reflect-${prop}`, { is: Test });
+                element[prop] = value;
+                expect(HTMLEmbedElement.prototype.getAttribute.call(element, prop)).toBe(value);
+            });
 
             it(`should return correct value from native ${prop} getter`, () => {
                 const element = createElement(`prop-getter-${prop}`, { is: Test });

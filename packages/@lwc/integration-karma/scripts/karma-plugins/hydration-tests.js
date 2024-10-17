@@ -111,6 +111,8 @@ function throwOnUnexpectedConsoleCalls(runnable) {
         console[method] = function (error) {
             if (
                 method === 'warn' &&
+                // This is a false positive due to RegExp.prototype.test
+                // eslint-disable-next-line vitest/no-conditional-tests
                 /Cannot set property "(inner|outer)HTML"/.test(error?.message)
             ) {
                 return;

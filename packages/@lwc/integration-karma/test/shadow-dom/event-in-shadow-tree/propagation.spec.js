@@ -534,8 +534,9 @@ describe('event propagation', () => {
 
     // This test does not work with native custom element lifecycle because disconnected
     // fragments cannot fire connectedCallback/disconnectedCallback events
-    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        describe('dispatched within a disconnected tree', () => {
+    describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
+        'dispatched within a disconnected tree',
+        () => {
             it('{bubbles: true, composed: true}', () => {
                 const nodes = createDisconnectedTestElement();
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
@@ -606,8 +607,8 @@ describe('event propagation', () => {
                 const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
                 expect(actualLogs).toEqual(expectedLogs);
             });
-        });
-    }
+        }
+    );
 });
 
 describe('declarative event listener', () => {

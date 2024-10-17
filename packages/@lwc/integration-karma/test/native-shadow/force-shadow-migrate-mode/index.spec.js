@@ -19,8 +19,9 @@ function isClaimingToBeSyntheticShadow(shadowRoot) {
 // This test only makes sense for true native shadow mode, because if ENABLE_FORCE_SHADOW_MIGRATE_MODE is true,
 // then the polyfill should not be loaded at all.
 
-if (process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
-    describe('shadow migrate mode', () => {
+describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST)(
+    'shadow migrate mode',
+    () => {
         beforeEach(() => {
             const style = document.createElement('style');
             style.textContent = 'h1 { color: blue }';
@@ -143,5 +144,5 @@ if (process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST)
                 );
             });
         });
-    });
-}
+    }
+);

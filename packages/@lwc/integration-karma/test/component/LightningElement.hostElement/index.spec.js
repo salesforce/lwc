@@ -9,8 +9,9 @@ function createWrapper() {
     return elm;
 }
 
-if (ENABLE_THIS_DOT_HOST_ELEMENT) {
-    it('should provide the root element for light rendering', () => {
+it.runIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
+    'should provide the root element for light rendering',
+    () => {
         const elm = createWrapper();
 
         const divElement = elm.getDivElement();
@@ -23,9 +24,12 @@ if (ENABLE_THIS_DOT_HOST_ELEMENT) {
 
         expect(hostElement).toEqual(lightElement);
         expect(hostElement.parentElement).toEqual(divElement);
-    });
+    }
+);
 
-    it('should provide the root element for shadow rendering', () => {
+it.runIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
+    'should provide the root element for shadow rendering',
+    () => {
         const elm = createWrapper();
 
         const divElement = elm.getDivElement();
@@ -38,10 +42,13 @@ if (ENABLE_THIS_DOT_HOST_ELEMENT) {
 
         expect(hostElement).toEqual(shadowElement);
         expect(hostElement.parentElement).toEqual(divElement);
-    });
-} else {
-    // this.hostElement unsupported
-    it('this.hostElement unsupported in older API versions', () => {
+    }
+);
+
+// this.hostElement unsupported
+it.skipIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
+    'this.hostElement unsupported in older API versions',
+    () => {
         const elm = createWrapper();
 
         const shadowElement = elm.getShadowElement();
@@ -53,5 +60,5 @@ if (ENABLE_THIS_DOT_HOST_ELEMENT) {
         }).toLogWarningDev(/Increase the API version to use it/);
 
         expect(hostElement).toBeUndefined();
-    });
-}
+    }
+);

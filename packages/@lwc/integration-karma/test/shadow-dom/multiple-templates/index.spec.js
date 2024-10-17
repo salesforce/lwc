@@ -2,8 +2,9 @@ import { createElement } from 'lwc';
 import Multi from 'x/multi';
 import MultiNoStyleInFirst from 'x/multiNoStyleInFirst';
 
-if (process.env.NATIVE_SHADOW) {
-    describe('Shadow DOM styling - multiple shadow DOM components', () => {
+describe.runIf(process.env.NATIVE_SHADOW)(
+    'Shadow DOM styling - multiple shadow DOM components',
+    () => {
         it('Does not duplicate styles if template is re-rendered', () => {
             const element = createElement('x-multi', { is: Multi });
 
@@ -39,8 +40,8 @@ if (process.env.NATIVE_SHADOW) {
                     expect(getNumStyleSheets()).toEqual(2);
                 });
         });
-    });
-}
+    }
+);
 
 describe('multiple stylesheets rendered in same component', () => {
     it('works when first template has no style but second template does', () => {

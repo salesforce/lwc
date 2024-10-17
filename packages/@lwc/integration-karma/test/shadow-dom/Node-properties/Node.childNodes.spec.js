@@ -54,8 +54,9 @@ describe('Node.childNodes', () => {
 
     // TODO [#1761]: Difference in behavior of slot.childNodes in native and synthetic-shadow
     // enable this test in synthetic-shadow mode once the bug is fixed
-    if (process.env.NATIVE_SHADOW) {
-        it('should always return an default content for slots not rendering default content', () => {
+    it.runIf(process.env.NATIVE_SHADOW)(
+        'should always return an default content for slots not rendering default content',
+        () => {
             const elm = createElement('x-slotted-parent', { is: SlottedParent });
             document.body.appendChild(elm);
             const slot = elm.shadowRoot
@@ -64,8 +65,8 @@ describe('Node.childNodes', () => {
             // Per spec, slot elements will retain default content
             expect(slot.childNodes.length).toBe(1);
             expect(slot.assignedNodes().length).toBe(2);
-        });
-    }
+        }
+    );
 
     it('should return correct elements for slots rendering default content', () => {
         const elm = createElement('x-unslotted-parent', { is: UnslottedParent });
