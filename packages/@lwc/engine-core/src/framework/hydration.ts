@@ -73,13 +73,13 @@ const enum EnvNodeTypes {
 // A function that indicates whether an attribute with the given name should be validated.
 type AttrValidationPredicate = (attrName: string) => boolean;
 
-// `data-lwc-ignore-hydration-mismatch` is a special attribute designed for ignoring cases where the developer "knows
+// `data-lwc-validation-opt-out` is a special attribute designed for ignoring cases where the developer "knows
 // what they're doing" and wants to ignore hydration mismatches for the entire element and all its descendants. This is
 // mostly designed for `<style>` deduplication, i.e. replacing `<style>`s with `<link rel=stylesheet>`s.
 function shouldIgnoreAllMismatches(elm: Node, renderer: RendererAPI) {
     return (
         renderer.getProperty(elm, 'nodeType') === EnvNodeTypes.ELEMENT &&
-        !isNull(renderer.getAttribute(elm, 'data-lwc-ignore-hydration-mismatch'))
+        !isNull(renderer.getAttribute(elm, 'data-lwc-validation-opt-out'))
     );
 }
 

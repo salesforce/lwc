@@ -15,7 +15,7 @@ export default {
     test(target, snapshots, consoleCalls) {
         const { div } = this.snapshot(target);
         expect(div).toBe(snapshots.div);
-        expect(div.getAttribute('data-lwc-ignore-hydration-mismatch')).toBe('true');
+        expect(div.getAttribute('data-lwc-validation-opt-out')).toBe('true');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             warn: [],
