@@ -69,10 +69,11 @@ describe('if:true directive', () => {
                 expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
             });
     });
-    if (process.env.NATIVE_SHADOW) {
-        // In native shadow, the slotted content from parent is always queriable, its only the
-        // child's <slot> that is rendered/unrendered based on the directive
-        it('should update child with slot content if value changes', () => {
+    // In native shadow, the slotted content from parent is always queriable, its only the
+    // child's <slot> that is rendered/unrendered based on the directive
+    it.runIf(process.env.NATIVE_SHADOW)(
+        'should update child with slot content if value changes',
+        () => {
             const elm = createElement('x-test', { is: XSlotted });
             document.body.appendChild(elm);
             const assignedSlotContent = elm.shadowRoot.querySelector('div.content');
@@ -102,9 +103,11 @@ describe('if:true directive', () => {
                     expect(assignedNodes.length).toBe(1);
                     expect(assignedNodes[0]).toBe(assignedSlotContent);
                 });
-        });
-    } else {
-        it('should update child with slot content if value changes', () => {
+        }
+    );
+    it.skipIf(process.env.NATIVE_SHADOW)(
+        'should update child with slot content if value changes',
+        () => {
             const elm = createElement('x-test', { is: XSlotted });
             document.body.appendChild(elm);
             const child = elm.shadowRoot.querySelector('x-child');
@@ -125,8 +128,8 @@ describe('if:true directive', () => {
                 .then(() => {
                     expect(child.querySelector('.content')).not.toBeNull();
                 });
-        });
-    }
+        }
+    );
 
     it('should continue rendering content for nested slots after multiple rehydrations', () => {
         const elm = createElement('x-multiple-slot', { is: MultipleSlot });

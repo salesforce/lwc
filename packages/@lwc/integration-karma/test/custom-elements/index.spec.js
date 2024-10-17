@@ -341,106 +341,104 @@ const supportsFACE =
     'ElementInternals' in window &&
     'setFormValue' in window.ElementInternals.prototype;
 
-if (supportsFACE) {
-    describe('form-associated custom element (FACE) lifecycle callbacks', () => {
-        function testFormAssociated(shouldBeFormAssociated, tagName, Ctor) {
-            const calls = [];
+describe.runIf(supportsFACE)('form-associated custom element (FACE) lifecycle callbacks', () => {
+    function testFormAssociated(shouldBeFormAssociated, tagName, Ctor) {
+        const calls = [];
 
-            Ctor.prototype.formAssociatedCallback = function (form) {
-                calls.push({
-                    name: 'formAssociatedCallback',
-                    elm: this,
-                    form: form,
-                });
-            };
-
-            Ctor.prototype.formDisabledCallback = function (disabled) {
-                calls.push({
-                    name: 'formDisabledCallback',
-                    elm: this,
-                    disabled,
-                });
-            };
-
-            Ctor.prototype.formResetCallback = function () {
-                calls.push({
-                    name: 'formResetCallback',
-                    elm: this,
-                });
-            };
-
-            Ctor.prototype.formStateRestoreCallback = function (state, mode) {
-                calls.push({
-                    name: 'formStateRestoreCallback',
-                    elm: this,
-                    state,
-                    mode,
-                });
-            };
-
-            customElements.define(tagName, Ctor);
-
-            const form = document.createElement('form');
-            const fieldset = document.createElement('fieldset');
-            const elm = document.createElement(tagName);
-            form.appendChild(fieldset);
-            fieldset.appendChild(elm);
-            document.body.appendChild(form);
-
-            // formAssociatedCallback should be called with the form
-            expect(calls.length).toEqual(shouldBeFormAssociated ? 1 : 0);
-            expect(calls[0]).toEqual(
-                shouldBeFormAssociated ? { name: 'formAssociatedCallback', elm, form } : undefined
-            );
-
-            // check formDisabledCallback
-            fieldset.disabled = true;
-            expect(calls.length).toEqual(shouldBeFormAssociated ? 2 : 0);
-            expect(calls[1]).toEqual(
-                shouldBeFormAssociated
-                    ? { name: 'formDisabledCallback', elm, disabled: true }
-                    : undefined
-            );
-
-            // check formResetCallback
-            form.reset();
-            expect(calls.length).toEqual(shouldBeFormAssociated ? 3 : 0);
-            expect(calls[2]).toEqual(
-                shouldBeFormAssociated ? { name: 'formResetCallback', elm } : undefined
-            );
-
-            // formStateRestoreCallback cannot be manually invoked, just call it ourselves
-            elm.formStateRestoreCallback('foo', 'bar');
-            expect(calls.length).toEqual(shouldBeFormAssociated ? 4 : 1);
-            expect(calls.at(-1)).toEqual({
-                name: 'formStateRestoreCallback',
-                elm,
-                state: 'foo',
-                mode: 'bar',
+        Ctor.prototype.formAssociatedCallback = function (form) {
+            calls.push({
+                name: 'formAssociatedCallback',
+                elm: this,
+                form: form,
             });
-        }
+        };
 
-        it('supports FACE callbacks', () => {
-            testFormAssociated(
-                true,
-                'x-face-callbacks',
-                class extends HTMLElement {
-                    static formAssociated = true;
-                }
-            );
-        });
+        Ctor.prototype.formDisabledCallback = function (disabled) {
+            calls.push({
+                name: 'formDisabledCallback',
+                elm: this,
+                disabled,
+            });
+        };
 
-        it('does not call FACE callbacks if not form-associated', () => {
-            testFormAssociated(
-                false,
-                'x-face-callbacks-not-form-associated',
-                class extends HTMLElement {
-                    static formAssociated = false;
-                }
-            );
+        Ctor.prototype.formResetCallback = function () {
+            calls.push({
+                name: 'formResetCallback',
+                elm: this,
+            });
+        };
+
+        Ctor.prototype.formStateRestoreCallback = function (state, mode) {
+            calls.push({
+                name: 'formStateRestoreCallback',
+                elm: this,
+                state,
+                mode,
+            });
+        };
+
+        customElements.define(tagName, Ctor);
+
+        const form = document.createElement('form');
+        const fieldset = document.createElement('fieldset');
+        const elm = document.createElement(tagName);
+        form.appendChild(fieldset);
+        fieldset.appendChild(elm);
+        document.body.appendChild(form);
+
+        // formAssociatedCallback should be called with the form
+        expect(calls.length).toEqual(shouldBeFormAssociated ? 1 : 0);
+        expect(calls[0]).toEqual(
+            shouldBeFormAssociated ? { name: 'formAssociatedCallback', elm, form } : undefined
+        );
+
+        // check formDisabledCallback
+        fieldset.disabled = true;
+        expect(calls.length).toEqual(shouldBeFormAssociated ? 2 : 0);
+        expect(calls[1]).toEqual(
+            shouldBeFormAssociated
+                ? { name: 'formDisabledCallback', elm, disabled: true }
+                : undefined
+        );
+
+        // check formResetCallback
+        form.reset();
+        expect(calls.length).toEqual(shouldBeFormAssociated ? 3 : 0);
+        expect(calls[2]).toEqual(
+            shouldBeFormAssociated ? { name: 'formResetCallback', elm } : undefined
+        );
+
+        // formStateRestoreCallback cannot be manually invoked, just call it ourselves
+        elm.formStateRestoreCallback('foo', 'bar');
+        expect(calls.length).toEqual(shouldBeFormAssociated ? 4 : 1);
+        expect(calls.at(-1)).toEqual({
+            name: 'formStateRestoreCallback',
+            elm,
+            state: 'foo',
+            mode: 'bar',
         });
+    }
+
+    it('supports FACE callbacks', () => {
+        testFormAssociated(
+            true,
+            'x-face-callbacks',
+            class extends HTMLElement {
+                static formAssociated = true;
+            }
+        );
     });
-}
+
+    it('does not call FACE callbacks if not form-associated', () => {
+        testFormAssociated(
+            false,
+            'x-face-callbacks-not-form-associated',
+            class extends HTMLElement {
+                static formAssociated = false;
+            }
+        );
+    });
+});
 
 describe('observedAttributes', () => {
     it('custom element with observedAttributes but no attributeChangedCallback', () => {

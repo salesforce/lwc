@@ -20,8 +20,10 @@ import {
     type Literal as IrLiteral,
     type Property as IrProperty,
     ExternalComponent as IrExternalComponent,
+    Slot as IrSlot,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../estemplate';
+import { expressionIrToEs } from './expression';
 import { irChildrenToEs } from './ir-to-es';
 import { bImportHtmlEscape, importHtmlEscapeKey } from './shared';
 
@@ -114,10 +116,13 @@ function reorderAttributes(
     );
 }
 
-export const Element: Transformer<IrElement | IrExternalComponent> = function Element(
+export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = function Element(
     node,
     cxt
 ): EsStatement[] {
+    const innerHtmlDirective =
+        node.type === 'Element' && node.directives.find((dir) => dir.name === 'InnerHTML');
+
     const attrsAndProps: (IrAttribute | IrProperty)[] = reorderAttributes(
         node.attributes,
         node.properties
@@ -145,13 +150,27 @@ export const Element: Transformer<IrElement | IrExternalComponent> = function El
         return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];
     }
 
+    let childContent: EsStatement[];
+    // An element can have children or lwc:inner-html, but not both
+    // If it has both, the template compiler will throw an error before reaching here
+    if (node.children.length) {
+        childContent = irChildrenToEs(node.children, cxt);
+    } else if (innerHtmlDirective) {
+        const value = innerHtmlDirective.value;
+        const unsanitizedHtmlExpression =
+            value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
+        childContent = [bYield(unsanitizedHtmlExpression)];
+    } else {
+        childContent = [];
+    }
+
     return [
         bYield(b.literal(`<${node.name}`)),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bYield(b.identifier('stylesheetScopeTokenClass'))]),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),
-        ...irChildrenToEs(node.children, cxt),
+        ...childContent,
         bYield(b.literal(`</${node.name}>`)),
     ].filter(Boolean);
 };

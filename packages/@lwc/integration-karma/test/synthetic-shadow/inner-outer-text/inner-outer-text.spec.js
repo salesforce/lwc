@@ -6,7 +6,7 @@ import Container from 'x/container';
 // synthetic shadow behavior, which is not necessarily consistent with native shadow behavior.
 // If you're wondering why so many of the tests are doing toMatch() on a regex, it's because of
 // differences in how browsers serialize text using innerText/outerText.
-if (!process.env.NATIVE_SHADOW) {
+describe.skipIf(process.env.NATIVE_SHADOW)('innerText and outerText', () => {
     describe('innerText', () => {
         let elm;
         beforeEach(() => {
@@ -140,37 +140,35 @@ if (!process.env.NATIVE_SHADOW) {
     const outerTextDescriptor = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'outerText');
 
     // Firefox does not have outerText.
-    if (outerTextDescriptor) {
-        describe('outerText', () => {
-            let elm;
-            beforeEach(() => {
-                elm = createElement('x-container', { is: Container });
-                document.body.appendChild(elm);
-            });
-
-            it('should go inside custom element shadow', () => {
-                const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
-
-                expect(testElement.outerText).toMatch(
-                    /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/
-                );
-            });
-
-            it('should process custom elements light dom', () => {
-                const testElement = elm.shadowRoot.querySelector('.with-slotted-content');
-
-                expect(testElement.outerText).toMatch(
-                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
-                );
-            });
-
-            it('should process custom elements light dom across multiple shadows', () => {
-                const testElement = elm.shadowRoot.querySelector('.with-slotted-content-2-levels');
-
-                expect(testElement.outerText).toMatch(
-                    /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
-                );
-            });
+    describe.runIf(outerTextDescriptor)('outerText', () => {
+        let elm;
+        beforeEach(() => {
+            elm = createElement('x-container', { is: Container });
+            document.body.appendChild(elm);
         });
-    }
-}
+
+        it('should go inside custom element shadow', () => {
+            const testElement = elm.shadowRoot.querySelector('.without-slotted-content');
+
+            expect(testElement.outerText).toMatch(
+                /first text\n+shadow start text\n+default slot content\n+shadow end text\n+second text/
+            );
+        });
+
+        it('should process custom elements light dom', () => {
+            const testElement = elm.shadowRoot.querySelector('.with-slotted-content');
+
+            expect(testElement.outerText).toMatch(
+                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
+            );
+        });
+
+        it('should process custom elements light dom across multiple shadows', () => {
+            const testElement = elm.shadowRoot.querySelector('.with-slotted-content-2-levels');
+
+            expect(testElement.outerText).toMatch(
+                /first text\n+shadow start text\n+slotted element\n+shadow end text\n+second text/
+            );
+        });
+    });
+});

@@ -25,29 +25,27 @@ import TableWithExpression from 'x/tableWithExpressions';
 import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
 import TextWithPreserveComments from 'x/textWithPreserveComments';
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('Mixed mode for static content', () => {
-        ['native', 'synthetic'].forEach((firstRenderMode) => {
-            it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
-                const elm = createElement('x-container', { is: Container });
-                elm.syntheticFirst = firstRenderMode === 'synthetic';
-                document.body.appendChild(elm);
+describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () => {
+    ['native', 'synthetic'].forEach((firstRenderMode) => {
+        it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
+            const elm = createElement('x-container', { is: Container });
+            elm.syntheticFirst = firstRenderMode === 'synthetic';
+            document.body.appendChild(elm);
 
-                const syntheticMode = elm.shadowRoot
-                    .querySelector('x-component')
-                    .shadowRoot.querySelector('div');
-                const nativeMode = elm.shadowRoot
-                    .querySelector('x-native')
-                    .shadowRoot.querySelector('x-component')
-                    .shadowRoot.querySelector('div');
+            const syntheticMode = elm.shadowRoot
+                .querySelector('x-component')
+                .shadowRoot.querySelector('div');
+            const nativeMode = elm.shadowRoot
+                .querySelector('x-native')
+                .shadowRoot.querySelector('x-component')
+                .shadowRoot.querySelector('div');
 
-                const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
-                expect(syntheticMode.hasAttribute(token)).toBe(true);
-                expect(nativeMode.hasAttribute(token)).toBe(false);
-            });
+            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
+            expect(syntheticMode.hasAttribute(token)).toBe(true);
+            expect(nativeMode.hasAttribute(token)).toBe(false);
         });
     });
-}
+});
 
 describe('static content when stylesheets change', () => {
     it('should reflect correct token for scoped styles', () => {

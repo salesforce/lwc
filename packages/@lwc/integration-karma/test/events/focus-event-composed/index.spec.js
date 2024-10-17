@@ -9,7 +9,7 @@ function isFocusEventConstructorSupported() {
     }
 }
 
-if (isFocusEventConstructorSupported()) {
+describe.runIf(isFocusEventConstructorSupported())('FocusEvent constructor supported', () => {
     it('should set composed to false by default', () => {
         const focusEvent = new FocusEvent('focus');
         expect(focusEvent.composed).toBe(false);
@@ -22,4 +22,4 @@ if (isFocusEventConstructorSupported()) {
         const nonComposedEvt = new FocusEvent('focus', { composed: false });
         expect(nonComposedEvt.composed).toBe(false);
     });
-}
+});

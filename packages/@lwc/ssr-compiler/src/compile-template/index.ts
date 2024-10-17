@@ -32,7 +32,7 @@ const bExportTemplate = esTemplate<
     EsExportDefaultDeclaration,
     [EsLiteral, EsStatement[], EsLiteral]
 >`
-    export default async function* tmpl(props, attrs, slotted, Cmp, instance) {
+    export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
@@ -57,6 +57,10 @@ const bExportTemplate = esTemplate<
 
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield '</template>';
+        }
+
+        if (slottedContent) {
+            yield* slottedContent();
         }
     }
 `;
