@@ -1,0 +1,39 @@
+<x-outer>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+        a
+        <slot name="x">
+        </slot>
+        b
+        <slot name="y">
+        </slot>
+        c
+        <slot>
+        </slot>
+        d
+      </template>
+      default1
+      <div slot="y">
+        y
+      </div>
+      default2
+      <div slot="x">
+        x
+      </div>
+      default3
+      <div slot="y">
+        y2
+      </div>
+      default4
+      <div slot="y">
+        y3
+      </div>
+      default5
+      <div slot="does-not-exist">
+        does-not-exist
+      </div>
+      default6
+    </x-inner>
+  </template>
+</x-outer>
