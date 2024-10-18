@@ -47,6 +47,7 @@ import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText
 import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
+import { report, ReportingEventId } from './reporting';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -104,6 +105,7 @@ function validateLightDomTemplate(template: Template, vm: VM) {
     if (template === defaultEmptyTemplate) {
         return;
     }
+    // TODO [#4663]: `renderMode` mismatch between template/compiler & light/shadow causes `console.error` but no error
     if (vm.renderMode === RenderMode.Light) {
         if (template.renderMode !== 'light') {
             logError(
@@ -111,6 +113,10 @@ function validateLightDomTemplate(template: Template, vm: VM) {
                     vm
                 )}.`
             );
+            report(ReportingEventId.RenderModeMismatch, {
+                tagName: vm.tagName,
+                mode: vm.renderMode,
+            });
         }
     } else {
         if (!isUndefined(template.renderMode)) {
@@ -119,6 +125,10 @@ function validateLightDomTemplate(template: Template, vm: VM) {
                     vm
                 )} or set it to 'lwc:render-mode="shadow"`
             );
+            report(ReportingEventId.RenderModeMismatch, {
+                tagName: vm.tagName,
+                mode: vm.renderMode,
+            });
         }
     }
 }
