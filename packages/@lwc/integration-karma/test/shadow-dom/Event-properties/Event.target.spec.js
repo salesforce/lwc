@@ -103,8 +103,8 @@ describe('Event.target', () => {
                 span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
             });
 
-            expect(first).toEqual(container);
-            expect(second).toEqual(span);
+            expect(first).toBe(container);
+            expect(second).toBe(span);
         });
 
         it('should not retarget when the target was manually added without lwc:dom="manual" and accessed in a document event listener [W-6626752]', async () => {
