@@ -21,7 +21,7 @@ describe('Event.target', () => {
             const div = child.shadowRoot.querySelector('div');
             div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
-        expect(target).toEqual(child);
+        expect(target).toBe(child);
     });
 
     it('should patch the prototype instead of the instance', () => {
