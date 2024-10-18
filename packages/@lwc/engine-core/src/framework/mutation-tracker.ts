@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isNull, isObject } from '@lwc/shared';
+import { isNull, isObject, isUndefined } from '@lwc/shared';
 import { Signal } from '@lwc/signals';
 import {
     JobFunction,
@@ -15,6 +15,7 @@ import {
 } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
 import { VM } from './vm';
+import { getSignalIdentity } from './signal-identity';
 
 const DUMMY_REACTIVE_OBSERVER = {
     observe(job: JobFunction) {
@@ -46,14 +47,14 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
         isObject(target) &&
         !isNull(target) &&
-        'value' in target &&
-        'subscribe' in target &&
-        isFunction(target.subscribe) &&
+        '__id' in target &&
+        !isUndefined(getSignalIdentity()) &&
+        target['__id'] === getSignalIdentity() &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
     ) {
         // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
-        subscribeToSignal(component, target as Signal<any>, tro.notify.bind(tro));
+        subscribeToSignal(component, target as unknown as Signal<any>, tro.notify.bind(tro));
     }
 }
 

@@ -629,6 +629,16 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         });
     }
 
+    let signalIdentity;
+    function setupAndGetSignalIdentity() {
+        if (!signalIdentity) {
+            signalIdentity = Symbol('signal');
+            lwc.setSignalIdentity(signalIdentity);
+        }
+
+        return signalIdentity;
+    }
+
     // These values are based on the API versions in @lwc/shared/api-version
     const apiFeatures = {
         LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
@@ -667,6 +677,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCalls,
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
+        setupAndGetSignalIdentity,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

@@ -1,6 +1,9 @@
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
+import { setupAndGetSignalIdentity } from 'test-utils';
+
 export class Signal {
+    __id = setupAndGetSignalIdentity();
     subscribers = new Set();
 
     constructor(initialValue) {
