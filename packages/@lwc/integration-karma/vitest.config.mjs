@@ -25,6 +25,7 @@ export default defineConfig({
         globals: true,
         passWithNoTests: true,
         silent: true,
+        expandSnapshotDiff: false,
         setupFiles: ['./vitest-setup/index.ts'],
         env: {
             NODE_ENV: 'development',
@@ -42,12 +43,6 @@ export default defineConfig({
                 replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
             },
         ],
-        coverage: {
-            exclude: ['**/@lwc/integration-karma/**'],
-            allowExternal: true,
-            reportOnFailure: true,
-            excludeAfterRemap: true,
-        },
         browser,
     },
 });

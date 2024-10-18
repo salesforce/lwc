@@ -18,6 +18,10 @@ export default function vitestPluginLwcConfig(): Plugin {
                 throw new Error('Expected browser configuration');
             }
 
+            if (config.test.browser.name === 'safari' && config.test.browser.headless) {
+                config.test.browser.headless = false;
+            }
+
             config.test.browser.testerScripts ??= [];
 
             if (ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION) {
@@ -33,6 +37,19 @@ export default function vitestPluginLwcConfig(): Plugin {
             }
 
             return config;
+        },
+        configResolved(config) {
+            if (!config.test) {
+                throw new Error('Expected test configuration');
+            }
+
+            if (!config.test.browser) {
+                throw new Error('Expected browser configuration');
+            }
+
+            if (config.test.browser.name === 'safari' && config.test.browser.headless === true) {
+                config.test.browser.headless = false;
+            }
         },
     };
 }

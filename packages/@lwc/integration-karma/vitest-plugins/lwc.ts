@@ -30,6 +30,27 @@ export default function lwcPreprocessor(): VitestPlugin {
     return {
         name: 'vitest-plugin-lwc-preprocessor',
         enforce: 'pre',
+        resolveId(source, importer) {
+            if (!importer) {
+                return;
+            }
+
+            if (!importer.endsWith('.spec.js')) {
+                return;
+            }
+
+            /// check if source is in the form name/namespace
+            if (
+                !source.includes('/') ||
+                source.startsWith('.') ||
+                source.startsWith('/') ||
+                source.endsWith('/')
+            ) {
+                return;
+            }
+
+            return source;
+        },
         async transform(_code, id) {
             if (!filter(id)) {
                 return;

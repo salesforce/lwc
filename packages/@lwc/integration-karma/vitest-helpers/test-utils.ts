@@ -21,7 +21,7 @@ export function expectComposedPath(
     });
 }
 
-type ConsoleMethods = keyof Omit<Console, 'Console'>;
+type ConsoleMethods = 'log' | 'warn' | 'error' | 'group' | 'groupEnd';
 
 type ConsoleCalls = {
     [K in ConsoleMethods]: any[];
@@ -29,9 +29,14 @@ type ConsoleCalls = {
     [key: string]: any[];
 };
 
+type ConsoleSpy = {
+    calls: ConsoleCalls;
+    reset: () => void;
+};
+
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
 // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
-export function spyConsole() {
+export function spyConsole(): ConsoleSpy {
     const originalConsole = window.console;
 
     const calls: ConsoleCalls = {
@@ -40,27 +45,10 @@ export function spyConsole() {
         error: [],
         group: [],
         groupEnd: [],
-        dir: [],
-        assert: [],
-        clear: [],
-        count: [],
-        countReset: [],
-        debug: [],
-        dirxml: [],
-        groupCollapsed: [],
-        info: [],
-        table: [],
-        time: [],
-        timeEnd: [],
-        timeLog: [],
-        timeStamp: [],
-        trace: [],
-        profile: [],
-        profileEnd: [],
     };
 
-    // @ts-expect-error temporary override of console
     window.console = {
+        ...originalConsole,
         log: function () {
             calls.log.push(Array.prototype.slice.call(arguments));
         },

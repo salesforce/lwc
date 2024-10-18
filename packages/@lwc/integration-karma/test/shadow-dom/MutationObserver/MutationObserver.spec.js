@@ -184,25 +184,26 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
         });
 
         describe.skipIf(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST)('MutationObserver', () => {
-            it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', (done) => {
-                const parent = createElement('x-parent', { is: XParent });
-                container.appendChild(parent);
-                let observer;
-                const parentDiv = parent.shadowRoot.querySelector('div');
-                const callback = function (actualMutationRecords, actualObserver) {
-                    expect(actualObserver).toBe(observer);
-                    expect(actualMutationRecords.length).toBe(1);
-                    expect(actualMutationRecords[0].target).toBe(parentDiv);
-                    expect(actualMutationRecords[0].addedNodes.length).toBe(2);
-                    expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('H3');
-                    expect(actualMutationRecords[0].addedNodes[1].tagName).toBe('P');
-                    done();
-                };
-                observer = new MutationObserver(callback);
-                observer.observe(parent.shadowRoot, observerConfig);
-                // Mutate the shadow tree of x-parent
-                parentDiv.innerHTML = `<h3></h3><p></p>`;
-            });
+            it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', () =>
+                new Promise((done) => {
+                    const parent = createElement('x-parent', { is: XParent });
+                    container.appendChild(parent);
+                    let observer;
+                    const parentDiv = parent.shadowRoot.querySelector('div');
+                    const callback = function (actualMutationRecords, actualObserver) {
+                        expect(actualObserver).toBe(observer);
+                        expect(actualMutationRecords.length).toBe(1);
+                        expect(actualMutationRecords[0].target).toBe(parentDiv);
+                        expect(actualMutationRecords[0].addedNodes.length).toBe(2);
+                        expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('H3');
+                        expect(actualMutationRecords[0].addedNodes[1].tagName).toBe('P');
+                        done();
+                    };
+                    observer = new MutationObserver(callback);
+                    observer.observe(parent.shadowRoot, observerConfig);
+                    // Mutate the shadow tree of x-parent
+                    parentDiv.innerHTML = `<h3></h3><p></p>`;
+                }));
 
             it('should invoke observer with correct MutationRecords when adding child nodes using appendChild', () => {
                 const parent = createElement('x-parent', { is: XParent });

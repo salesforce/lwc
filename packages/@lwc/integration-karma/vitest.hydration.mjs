@@ -3,6 +3,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import plugins from './vitest-plugins';
+import { browser } from './vitest-config';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
@@ -13,7 +14,6 @@ export default defineConfig({
         include: ['**/*.spec.js'],
         exclude: ['**/__screenshots__/**'],
         globals: true,
-        silent: true,
         alias: [
             {
                 find: 'test-utils',
@@ -32,23 +32,6 @@ export default defineConfig({
                 process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         },
         isolate: false,
-        coverage: {
-            exclude: ['**/@lwc/integration-karma/**'],
-            allowExternal: true,
-            reportOnFailure: true,
-            excludeAfterRemap: true,
-        },
-        browser: {
-            api: {
-                port: 5175,
-            },
-            enabled: true,
-            isolate: false,
-            screenshotFailures: false,
-            ui: false,
-            name: 'safari',
-            provider: 'webdriverio',
-            providerOptions: { launch: { devtools: true } },
-        },
+        browser,
     },
 });

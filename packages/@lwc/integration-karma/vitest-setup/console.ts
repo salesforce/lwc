@@ -19,14 +19,16 @@ function throwIfConsoleCalled() {
     }
 }
 
-beforeAll(function () {
-    patchConsole();
-});
+export default function () {
+    beforeAll(function () {
+        patchConsole();
+    });
 
-afterAll(function () {
-    throwIfConsoleCalled();
-});
+    afterAll(function () {
+        throwIfConsoleCalled();
+    });
 
-afterEach(function () {
-    consoleCallCount = 0;
-});
+    afterEach(function () {
+        consoleCallCount = 0;
+    });
+}
