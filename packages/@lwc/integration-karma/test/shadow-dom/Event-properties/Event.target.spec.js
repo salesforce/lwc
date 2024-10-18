@@ -58,7 +58,7 @@ describe('Event.target', () => {
         const div = child.shadowRoot.querySelector('div');
         div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
 
-        expect(event.target).toEqual(container);
+        expect(event.target).toBe(container);
     });
 
     it('should retarget when accessed in a document event listener', async () => {
