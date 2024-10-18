@@ -36,7 +36,7 @@ describe('Event.currentTarget', () => {
             child.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
 
-        expect(currentTarget).toEqual(container);
+        expect(currentTarget).ToBe(container);
     });
 
     it('should reference the shadow root', async () => {
