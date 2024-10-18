@@ -123,7 +123,7 @@ describe('Event.target', () => {
                 span.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
             });
 
-            expect(target).toEqual(span);
+            expect(target).toBe(span);
         });
     });
 });
