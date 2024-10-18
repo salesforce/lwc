@@ -14,8 +14,8 @@ import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 
-import { NormalizedTransformOptions } from '../options';
-import { TransformResult } from './transformer';
+import type { NormalizedTransformOptions } from '../options';
+import type { TransformResult } from './shared';
 
 /**
  * Transforms a JavaScript file.
