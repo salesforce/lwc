@@ -76,7 +76,7 @@ describe('Event.target', () => {
             div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
 
-        expect(target).toEqual(container);
+        expect(target).toBe(container);
     });
 
     describe.skipIf(process.env.NATIVE_SHADOW)('legacy behavior', () => {
