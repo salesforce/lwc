@@ -138,7 +138,7 @@ describe('error boundary', () => {
         });
     });
 
-    it('should render alternative view if child throws during self rehydration cycle', (done) => {
+    it('should render alternative view if child throws during self rehydration cycle', async () => {
         const elm = createElement('x-boundary-child-self-rehydrate-throw', {
             is: XBoundaryChildSelfRehydrateThrow,
         });
@@ -149,14 +149,12 @@ describe('error boundary', () => {
 
         // Using a setTimeout instead of a Promise here because it takes multiple microtasks for the engine to render
         // the alternative view
-        setTimeout(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
+        await new Promise(setTimeout);
 
-            expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
+        const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
 
-            done();
-        });
+        expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
+        expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
     });
 
     it('should fail to unmount alternative offender when root element is not a boundary', () => {
