@@ -1,0 +1,6 @@
+<template lwc:render-mode="light">
+    <x-leaf>
+        <!-- Note the slot mapping does not work for scoped slots -->
+        <slot lwc:slot-bind={title} slot="foo"></slot>
+    </x-leaf>
+</template>
