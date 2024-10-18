@@ -19,7 +19,7 @@ describe('Event.currentTarget', () => {
             div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
 
-        expect(first).toEqual(container);
+        expect(first).toBe(container);
         expect(second).toBeNull();
     });
 
