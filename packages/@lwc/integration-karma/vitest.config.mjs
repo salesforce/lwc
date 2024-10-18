@@ -11,7 +11,7 @@ import {
     NODE_ENV_FOR_TEST,
 } from './vitest-plugins/shared/options';
 
-import { browser } from './vitest-config';
+import config from './vitest-config';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -24,7 +24,6 @@ export default defineConfig({
         exclude: [...configDefaults.exclude, '**/__screenshots__/**'],
         globals: true,
         passWithNoTests: true,
-        silent: true,
         expandSnapshotDiff: false,
         setupFiles: ['./vitest-setup/index.ts'],
         env: {
@@ -43,6 +42,6 @@ export default defineConfig({
                 replacement: path.resolve(__dirname, 'vitest-helpers/test-utils.ts'),
             },
         ],
-        browser,
+        ...config,
     },
 });

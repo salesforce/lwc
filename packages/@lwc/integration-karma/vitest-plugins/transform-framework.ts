@@ -79,26 +79,24 @@ export default function transformFramework(): VitestPlugin {
             // pad to keep things pretty in Istanbul coverage HTML
             magicString.replaceAll(replacee, 'true'.padEnd(replacee.length, ' '));
 
-            if (id.endsWith('?iife')) {
-                // Convert ESM to IIFE. Change `export { foo as bar }` to `return { bar: foo }`
-                magicString.replace(/\bexport \{/, 'return {');
+            // Convert ESM to IIFE. Change `export { foo as bar }` to `return { bar: foo }`
+            magicString.replace(/\bexport \{/, 'return {');
 
-                await init;
+            await init;
 
-                const exportees = parse(code)[1].map((_) => ({ variable: _.ln, alias: _.n }));
+            const exportees = parse(code)[1].map((_) => ({ variable: _.ln, alias: _.n }));
 
-                for (const { variable, alias } of exportees) {
-                    if (variable !== alias) {
-                        magicString.replace(`${variable} as ${alias}`, `${alias}: ${variable}`);
-                    }
+            for (const { variable, alias } of exportees) {
+                if (variable !== alias) {
+                    magicString.replace(`${variable} as ${alias}`, `${alias}: ${variable}`);
                 }
-
-                const iifeName = getIifeName(id);
-
-                // Wrap in an IIFE. Note we explicitly don't add newlines, since that would mess up Istanbul's coverage report
-                magicString.prepend(`${iifeName ? `var ${iifeName} = ` : ''}(function () {`);
-                magicString.append('})();');
             }
+
+            const iifeName = getIifeName(id);
+
+            // Wrap in an IIFE. Note we explicitly don't add newlines, since that would mess up Istanbul's coverage report
+            magicString.prepend(`${iifeName ? `var ${iifeName} = ` : ''}(function () {`);
+            magicString.append('})();');
 
             return {
                 code: magicString.toString(),

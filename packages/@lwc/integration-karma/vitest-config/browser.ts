@@ -13,7 +13,9 @@ type BrowserConfig = Required<TestConfig>['browser'];
 function getBrowser() {
     // process.argv contains --browser=name or --browser.name=name
     const args = process.argv.slice(2);
-    const browserArg = args.find((arg) => arg.startsWith('--browser'));
+    const browserArg = args.find(
+        (arg) => arg.startsWith('--browser=') || arg.startsWith('--browser.name=')
+    );
     const browser = browserArg ? browserArg.split('=')[1] : undefined;
     return browser ?? process.env.BROWSER ?? 'chrome';
 }
@@ -73,8 +75,21 @@ export const browser: BrowserConfig = {
     provider: 'webdriverio',
     testerScripts: [
         {
-            src: '@lwc/engine-dom/dist/index.js?iife',
+            src: '@lwc/wire-service/dist/index.js',
+            type: 'text/javascript',
         },
+        {
+            src: '@lwc/engine-dom/dist/index.js',
+            type: 'text/javascript',
+        },
+        // {
+        //     content: `
+        //         import * as LWC from '../../lwc';
+        //         console.log('LWC', {...LWC});
+        //         window.LWC = LWC;
+        //     `,
+        //     type: 'module',
+        // }
     ],
     providerOptions: {
         strictSSL: false,

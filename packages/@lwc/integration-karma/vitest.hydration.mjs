@@ -3,7 +3,7 @@
 import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 import plugins from './vitest-plugins';
-import { browser } from './vitest-config';
+import test from './vitest-config';
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 export default defineConfig({
@@ -32,6 +32,6 @@ export default defineConfig({
                 process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         },
         isolate: false,
-        browser,
+        ...test,
     },
 });

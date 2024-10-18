@@ -1,13 +1,9 @@
-import * as lwc from 'lwc';
-import * as wireService from '@lwc/wire-service';
 import { vi } from 'vitest';
 import { LWC_VERSION } from '@lwc/shared';
 
 import * as testUtils from 'test-utils';
 
-vi.stubGlobal('LWC', { ...lwc });
 vi.stubGlobal('TestUtils', { ...testUtils });
-vi.stubGlobal('WireService', { ...wireService });
 
 vi.stubGlobal('process', {
     env: {
@@ -113,7 +109,8 @@ vi.stubGlobal('xit', it.skip);
 vi.stubGlobal('xdescribe', describe.skip);
 
 declare global {
-    var LWC: typeof lwc;
+    var WireService: typeof import('@lwc/wire-service');
+    var LWC: typeof import('@lwc/engine-dom');
     var spyOn: typeof vi.spyOn;
     var xit: typeof it.skip;
     var xdescribe: typeof describe.skip;
