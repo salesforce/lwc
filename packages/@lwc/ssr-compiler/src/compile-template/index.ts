@@ -7,12 +7,7 @@
 
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
-import {
-    ElementDirective,
-    parse,
-    Root,
-    type Config as TemplateCompilerConfig,
-} from '@lwc/template-compiler';
+import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
 import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
@@ -70,15 +65,6 @@ const bExportTemplate = esTemplate<
     }
 `;
 
-function templateUsesDirective(root: Root, target: ElementDirective['name']): boolean {
-    return root.children.some(function hasDirective(child) {
-        return (
-            ('directives' in child && child.directives.some((dir) => dir.name === target)) ||
-            ('children' in child && child.children.some(hasDirective))
-        );
-    });
-}
-
 export default function compileTemplate(
     src: string,
     filename: string,
@@ -119,12 +105,6 @@ export default function compileTemplate(
         if (fatal || !root) {
             throw new Error('Template compilation failure; see warnings in the console.');
         }
-    }
-
-    if (templateUsesDirective(root, 'Dynamic')) {
-        throw new Error(
-            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
-        );
     }
 
     const tmplRenderMode =

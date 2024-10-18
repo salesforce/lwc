@@ -72,6 +72,11 @@ export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext)
 }
 
 export function irToEs<T extends IrNode>(node: T, cxt: TransformerContext): EsStatement[] {
+    if ('directives' in node && node.directives.some((d) => d.name === 'Dynamic')) {
+        throw new Error(
+            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
+        );
+    }
     const transformer = transformers[node.type] as Transformer<T>;
     return transformer(node, cxt);
 }
