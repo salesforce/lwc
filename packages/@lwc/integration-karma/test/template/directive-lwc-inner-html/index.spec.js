@@ -68,19 +68,16 @@ describe('type conversion', () => {
     });
 });
 
-it('applies styles to injected content', () =>
-    new Promise((done) => {
-        const elm = createElement('x-inner-html', { is: XInnerHtml });
-        elm.content = '<b>Test</b>';
-        document.body.appendChild(elm);
+it('applies styles to injected content', async () => {
+    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    elm.content = '<b>Test</b>';
+    document.body.appendChild(elm);
 
-        // When running with synthetic shadow a micro task is needed to for the MutationObserver to add
-        // the styling tokens. For IE11 specifically, we need to wait for a full task.
-        setTimeout(() => {
-            const b = elm.shadowRoot.querySelector('b');
-            const styles = window.getComputedStyle(b);
-            expect(styles.borderBottomStyle).toContain('dashed');
+    // When running with synthetic shadow a micro task is needed to for the MutationObserver to add
+    // the styling tokens.
+    await Promise.resolve();
 
-            done();
-        });
-    }));
+    const b = elm.shadowRoot.querySelector('b');
+    const styles = window.getComputedStyle(b);
+    expect(styles.borderBottomStyle).toContain('dashed');
+});

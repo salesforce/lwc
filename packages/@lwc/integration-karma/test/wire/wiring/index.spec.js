@@ -233,34 +233,27 @@ describe('wiring', () => {
                 });
         });
 
-        it('should trigger component rerender when field is updated', () =>
-            new Promise((resolve) => {
-                const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
-                document.body.appendChild(elm);
+        it('should trigger component rerender when field is updated', async () => {
+            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            document.body.appendChild(elm);
 
-                void Promise.resolve()
-                    .then(() => Promise.resolve()) // In this tick, the config is injected.
-                    .then(() => {
-                        // Now the component have re-rendered.
-                        const staticValue = elm.shadowRoot.querySelector('.static');
-                        const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
+            await Promise.resolve();
+            await Promise.resolve(); // In this tick, the config is injected.
 
-                        expect(staticValue.textContent).toBe('1,2,3');
-                        expect(dynamicValue.textContent).toBe('');
+            // Now the component has re-rendered.
+            const staticValue = elm.shadowRoot.querySelector('.static');
+            const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
 
-                        elm.setDynamicParamSource('modified value');
+            expect(staticValue.textContent).toBe('1,2,3');
+            expect(dynamicValue.textContent).toBe('');
 
-                        setTimeout(() => {
-                            const staticValue = elm.shadowRoot.querySelector('.static');
-                            const dynamicValue = elm.shadowRoot.querySelector('.dynamic');
+            elm.setDynamicParamSource('modified value');
 
-                            expect(staticValue.textContent).toBe('1,2,3');
-                            expect(dynamicValue.textContent).toBe('modified value');
+            await new Promise((resolve) => setTimeout(resolve, 5));
 
-                            resolve();
-                        }, 5);
-                    });
-            }));
+            expect(staticValue.textContent).toBe('1,2,3');
+            expect(dynamicValue.textContent).toBe('modified value');
+        });
 
         it('should not call update when component is disconnected.', () => {
             const spy = [];

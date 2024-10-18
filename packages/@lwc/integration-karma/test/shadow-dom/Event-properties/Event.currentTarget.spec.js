@@ -3,47 +3,55 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Event.currentTarget', () => {
-    it('should be null when accessed asynchronously', () =>
-        new Promise((done) => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+    it('should be null when accessed asynchronously', async () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
 
+        const [first, second] = await new Promise((resolve) => {
             container.addEventListener('test', (event) => {
-                expect(event.currentTarget).toEqual(container);
+                const first = event.currentTarget;
                 setTimeout(() => {
-                    expect(event.currentTarget).toBeNull();
-                    done();
+                    const second = event.currentTarget;
+                    resolve([first, second]);
                 });
             });
             const div = container.shadowRoot.querySelector('div');
             div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-        }));
+        });
 
-    it('should reference the host element', () =>
-        new Promise((done) => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+        expect(first).toBe(container);
+        expect(second).toBeNull();
+    });
 
+    it('should reference the host element', async () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        const currentTarget = await new Promise((resolve) => {
             container.addEventListener('test', (event) => {
-                expect(event.currentTarget).toEqual(container);
-                done();
+                resolve(event.currentTarget);
             });
 
             const child = container.shadowRoot.querySelector('x-child');
             child.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-        }));
+        });
 
-    it('should reference the shadow root', () =>
-        new Promise((done) => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+        expect(currentTarget).toBe(container);
+    });
 
+    it('should reference the shadow root', async () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        const currentTarget = await new Promise((resolve) => {
             container.shadowRoot.addEventListener('test', (event) => {
-                expect(event.currentTarget).toEqual(container.shadowRoot);
-                done();
+                resolve(event.currentTarget);
             });
 
             const child = container.shadowRoot.querySelector('x-child');
             child.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
-        }));
+        });
+
+        expect(currentTarget).toBe(container.shadowRoot);
+    });
 });

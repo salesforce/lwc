@@ -3,17 +3,17 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Event.defaultPrevented', () => {
-    it('should return true if cancelable and preventDefault() was invoked', () =>
-        new Promise((done) => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+    it('should return true if cancelable and preventDefault() was invoked', async () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
 
-            container.shadowRoot.addEventListener('test', (event) => {
-                event.preventDefault();
-            });
+        container.shadowRoot.addEventListener('test', (event) => {
+            event.preventDefault();
+        });
+
+        const defaultPrevented = await new Promise((resolve) => {
             container.addEventListener('test', (event) => {
-                expect(event.defaultPrevented).toBeTrue();
-                done();
+                resolve(event.defaultPrevented);
             });
 
             const div = container.shadowRoot.querySelector('div');
@@ -24,16 +24,18 @@ describe('Event.defaultPrevented', () => {
                     composed: true,
                 })
             );
-        }));
+        });
 
-    it('should return false if cancelable and preventDefault() was not invoked', () =>
-        new Promise((done) => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+        expect(defaultPrevented).toBeTrue();
+    });
 
+    it('should return false if cancelable and preventDefault() was not invoked', async () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        const defaultPrevented = await new Promise((resolve) => {
             container.addEventListener('test', (event) => {
-                expect(event.defaultPrevented).toBeFalse();
-                done();
+                resolve(event.defaultPrevented);
             });
 
             const div = container.shadowRoot.querySelector('div');
@@ -44,19 +46,22 @@ describe('Event.defaultPrevented', () => {
                     composed: true,
                 })
             );
-        }));
+        });
 
-    it('should return false if not cancelable and preventDefault() was invoked', () =>
-        new Promise((done) => {
-            const container = createElement('x-container', { is: Container });
-            document.body.appendChild(container);
+        expect(defaultPrevented).toBeFalse();
+    });
 
-            container.shadowRoot.addEventListener('test', (event) => {
-                event.preventDefault();
-            });
+    it('should return false if not cancelable and preventDefault() was invoked', async () => {
+        const container = createElement('x-container', { is: Container });
+        document.body.appendChild(container);
+
+        container.shadowRoot.addEventListener('test', (event) => {
+            event.preventDefault();
+        });
+
+        const defaultPrevented = await new Promise((resolve) => {
             container.addEventListener('test', (event) => {
-                expect(event.defaultPrevented).toBeFalse();
-                done();
+                resolve(event.defaultPrevented);
             });
 
             const div = container.shadowRoot.querySelector('div');
@@ -67,5 +72,8 @@ describe('Event.defaultPrevented', () => {
                     composed: true,
                 })
             );
-        }));
+        });
+
+        expect(defaultPrevented).toBeFalse();
+    });
 });

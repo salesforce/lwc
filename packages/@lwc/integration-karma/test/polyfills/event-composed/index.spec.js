@@ -15,10 +15,12 @@ it('should set composed to true for click events dispatched by the user agent', 
     const elm = document.createElement('div');
     document.body.appendChild(elm);
 
-    const evt = await new Promise((resolve) => {
-        elm.addEventListener('click', resolve);
+    const composed = await new Promise((resolve) => {
+        elm.addEventListener('click', (evt) => {
+            resolve(evt.composed);
+        });
         elm.click();
     });
 
-    expect(evt.composed).toBe(true);
+    expect(composed).toBe(true);
 });
