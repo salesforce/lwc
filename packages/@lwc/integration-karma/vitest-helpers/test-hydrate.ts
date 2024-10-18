@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as lwc from 'lwc';
 import testUtils from './test-utils';
 
 testUtils.setHooks({
@@ -100,7 +99,7 @@ export function runTest(
         const props = testConfig.props || {};
         const clientProps = testConfig.clientProps || props;
 
-        lwc.hydrateComponent(target, Component, clientProps);
+        LWC.hydrateComponent(target, Component, clientProps);
 
         // let's select again the target, it should be the same elements as in the snapshot
         target = container.querySelector(selector);
@@ -108,7 +107,7 @@ export function runTest(
     } else if (testConfig.advancedTest) {
         testResult = testConfig.advancedTest(target, {
             Component,
-            hydrateComponent: lwc.hydrateComponent.bind(lwc),
+            hydrateComponent: LWC.hydrateComponent.bind(LWC),
             consoleSpy,
             container,
             selector,

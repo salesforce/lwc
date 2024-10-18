@@ -31,7 +31,6 @@ export default defineConfig({
             DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
                 process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         },
-        isolate: false,
         ...test,
     },
 });
