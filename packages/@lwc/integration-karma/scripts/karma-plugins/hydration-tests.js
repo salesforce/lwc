@@ -11,6 +11,7 @@ const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const ssr = require('@lwc/engine-server');
+const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
 const context = {
@@ -70,6 +71,7 @@ async function getCompiledModule(dirName) {
                     strict: true,
                 },
                 enableDynamicComponents: true,
+                enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
             }),
         ],
         cache,
