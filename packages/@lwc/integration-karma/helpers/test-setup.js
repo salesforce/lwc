@@ -116,5 +116,24 @@ afterAll(function () {
     throwIfConsoleCalled();
 });
 
+// The following (`runIf`, `skipIf`, etc.) are based on Vite's APIs: https://vitest.dev/api/
+// This allows us to use the vitest/no-conditional-tests ESLint rule and get the same total # of tests for
+// every variant of a test run (e.g. `DISABLE_SYNTHETIC=1`, `NODE_ENV_FOR_TEST=production`, etc.)
+describe.runIf = function (condition) {
+    return condition ? describe : xdescribe;
+};
+
+describe.skipIf = function (condition) {
+    return condition ? xdescribe : describe;
+};
+
+it.runIf = function (condition) {
+    return condition ? it : xit;
+};
+
+it.skipIf = function (condition) {
+    return condition ? xit : it;
+};
+
 // The default of 5000ms seems to get surpassed frequently in Safari 14 in SauceLabs
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;

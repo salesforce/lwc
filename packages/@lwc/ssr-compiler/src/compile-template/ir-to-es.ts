@@ -56,7 +56,7 @@ const transformers: Transformers = {
     // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
-    Slot: defaultTransformer,
+    Slot: Element,
     Lwc: defaultTransformer,
 };
 

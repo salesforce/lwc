@@ -97,160 +97,158 @@ describe('standard slotting', () => {
     });
 });
 
-if (USE_LIGHT_DOM_SLOT_FORWARDING) {
-    describe('slot forwarding', () => {
-        describe('static', () => {
-            let elm;
-            const setup = async () => {
-                elm = createElement('x-slot-forwarding', { is: SlotForwarding });
-                document.body.appendChild(elm);
-                await Promise.resolve();
+describe.runIf(USE_LIGHT_DOM_SLOT_FORWARDING)('slot forwarding', () => {
+    describe('static', () => {
+        let elm;
+        const setup = async () => {
+            elm = createElement('x-slot-forwarding', { is: SlotForwarding });
+            document.body.appendChild(elm);
+            await Promise.resolve();
 
-                expect(window.timingBuffer).toEqual([
-                    '0:connectedCallback',
-                    '1:connectedCallback',
-                    '2:connectedCallback',
-                ]);
+            expect(window.timingBuffer).toEqual([
+                '0:connectedCallback',
+                '1:connectedCallback',
+                '2:connectedCallback',
+            ]);
 
-                resetTimingBuffer();
+            resetTimingBuffer();
 
-                elm.showTop = true;
-                await Promise.resolve();
+            elm.showTop = true;
+            await Promise.resolve();
 
-                expect(window.timingBuffer).toEqual([
-                    '3:connectedCallback',
-                    '4:connectedCallback',
-                    '5:connectedCallback',
-                    '2:disconnectedCallback',
-                    '0:disconnectedCallback',
-                    '1:disconnectedCallback',
-                ]);
+            expect(window.timingBuffer).toEqual([
+                '3:connectedCallback',
+                '4:connectedCallback',
+                '5:connectedCallback',
+                '2:disconnectedCallback',
+                '0:disconnectedCallback',
+                '1:disconnectedCallback',
+            ]);
 
-                resetTimingBuffer();
-            };
+            resetTimingBuffer();
+        };
 
-            it('invokes lifecycle methods in correct order', async () => {
-                await setup();
+        it('invokes lifecycle methods in correct order', async () => {
+            await setup();
 
-                elm.showTop = false;
-                await Promise.resolve();
+            elm.showTop = false;
+            await Promise.resolve();
 
-                expect(window.timingBuffer).toEqual([
-                    '6:connectedCallback',
-                    '7:connectedCallback',
-                    '8:connectedCallback',
-                    '5:disconnectedCallback',
-                    '3:disconnectedCallback',
-                    '4:disconnectedCallback',
-                ]);
-            });
-
-            it('invokes disconnectedCallback after removing entire element', async () => {
-                await setup();
-
-                // remove entire element
-                document.body.removeChild(elm);
-                await Promise.resolve();
-
-                expect(window.timingBuffer).toEqual([
-                    '5:disconnectedCallback',
-                    '3:disconnectedCallback',
-                    '4:disconnectedCallback',
-                ]);
-            });
+            expect(window.timingBuffer).toEqual([
+                '6:connectedCallback',
+                '7:connectedCallback',
+                '8:connectedCallback',
+                '5:disconnectedCallback',
+                '3:disconnectedCallback',
+                '4:disconnectedCallback',
+            ]);
         });
 
-        describe('dynamic', () => {
-            let elm;
-            const setup = async () => {
-                elm = createElement('x-dynamic-slot-forwarding', { is: DynamicSlotForwarding });
-                document.body.appendChild(elm);
-                await Promise.resolve();
+        it('invokes disconnectedCallback after removing entire element', async () => {
+            await setup();
 
-                // Initial connection
-                expect(window.timingBuffer).toEqual([
-                    '0:connectedCallback',
-                    '1:connectedCallback',
-                    '2:connectedCallback',
-                ]);
+            // remove entire element
+            document.body.removeChild(elm);
+            await Promise.resolve();
 
-                resetTimingBuffer();
-
-                // Trigger vdom diffing
-                elm.showTop = true;
-                await Promise.resolve();
-
-                expect(window.timingBuffer).toEqual([
-                    '3:connectedCallback',
-                    '4:connectedCallback',
-                    '5:connectedCallback',
-                    '2:disconnectedCallback',
-                    '0:disconnectedCallback',
-                    '1:disconnectedCallback',
-                ]);
-
-                resetTimingBuffer();
-
-                // Trigger vdom diffing from top level
-                elm.topTop = 'bottom';
-                elm.topBottom = 'top';
-                await Promise.resolve();
-
-                expect(window.timingBuffer).toEqual([
-                    '6:connectedCallback',
-                    '5:disconnectedCallback',
-                    '7:connectedCallback',
-                    '3:disconnectedCallback',
-                ]);
-
-                resetTimingBuffer();
-
-                const { topSlot } = extractDataIds(elm);
-                // Trigger vdom diffing from forwarded slot level
-                topSlot.top = 'top';
-                topSlot.bottom = 'bottom';
-                await Promise.resolve();
-
-                expect(window.timingBuffer).toEqual([
-                    '8:connectedCallback',
-                    '6:disconnectedCallback',
-                    '9:connectedCallback',
-                    '7:disconnectedCallback',
-                ]);
-
-                resetTimingBuffer();
-            };
-
-            it('invokes lifecycle methods in correct order', async () => {
-                await setup();
-
-                // vdom diffing after changing vnodes
-                elm.showTop = false;
-                await Promise.resolve();
-
-                expect(window.timingBuffer).toEqual([
-                    '10:connectedCallback',
-                    '11:connectedCallback',
-                    '12:connectedCallback',
-                    '8:disconnectedCallback',
-                    '9:disconnectedCallback',
-                    '4:disconnectedCallback',
-                ]);
-            });
-
-            it('invokes disconnectedCallback after removing entire element', async () => {
-                await setup();
-
-                // remove entire element
-                document.body.removeChild(elm);
-                await Promise.resolve();
-
-                expect(window.timingBuffer).toEqual([
-                    '8:disconnectedCallback',
-                    '9:disconnectedCallback',
-                    '4:disconnectedCallback',
-                ]);
-            });
+            expect(window.timingBuffer).toEqual([
+                '5:disconnectedCallback',
+                '3:disconnectedCallback',
+                '4:disconnectedCallback',
+            ]);
         });
     });
-}
+
+    describe('dynamic', () => {
+        let elm;
+        const setup = async () => {
+            elm = createElement('x-dynamic-slot-forwarding', { is: DynamicSlotForwarding });
+            document.body.appendChild(elm);
+            await Promise.resolve();
+
+            // Initial connection
+            expect(window.timingBuffer).toEqual([
+                '0:connectedCallback',
+                '1:connectedCallback',
+                '2:connectedCallback',
+            ]);
+
+            resetTimingBuffer();
+
+            // Trigger vdom diffing
+            elm.showTop = true;
+            await Promise.resolve();
+
+            expect(window.timingBuffer).toEqual([
+                '3:connectedCallback',
+                '4:connectedCallback',
+                '5:connectedCallback',
+                '2:disconnectedCallback',
+                '0:disconnectedCallback',
+                '1:disconnectedCallback',
+            ]);
+
+            resetTimingBuffer();
+
+            // Trigger vdom diffing from top level
+            elm.topTop = 'bottom';
+            elm.topBottom = 'top';
+            await Promise.resolve();
+
+            expect(window.timingBuffer).toEqual([
+                '6:connectedCallback',
+                '5:disconnectedCallback',
+                '7:connectedCallback',
+                '3:disconnectedCallback',
+            ]);
+
+            resetTimingBuffer();
+
+            const { topSlot } = extractDataIds(elm);
+            // Trigger vdom diffing from forwarded slot level
+            topSlot.top = 'top';
+            topSlot.bottom = 'bottom';
+            await Promise.resolve();
+
+            expect(window.timingBuffer).toEqual([
+                '8:connectedCallback',
+                '6:disconnectedCallback',
+                '9:connectedCallback',
+                '7:disconnectedCallback',
+            ]);
+
+            resetTimingBuffer();
+        };
+
+        it('invokes lifecycle methods in correct order', async () => {
+            await setup();
+
+            // vdom diffing after changing vnodes
+            elm.showTop = false;
+            await Promise.resolve();
+
+            expect(window.timingBuffer).toEqual([
+                '10:connectedCallback',
+                '11:connectedCallback',
+                '12:connectedCallback',
+                '8:disconnectedCallback',
+                '9:disconnectedCallback',
+                '4:disconnectedCallback',
+            ]);
+        });
+
+        it('invokes disconnectedCallback after removing entire element', async () => {
+            await setup();
+
+            // remove entire element
+            document.body.removeChild(elm);
+            await Promise.resolve();
+
+            expect(window.timingBuffer).toEqual([
+                '8:disconnectedCallback',
+                '9:disconnectedCallback',
+                '4:disconnectedCallback',
+            ]);
+        });
+    });
+});

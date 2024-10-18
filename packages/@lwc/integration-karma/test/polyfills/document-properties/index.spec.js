@@ -51,11 +51,12 @@ describe('dynamic nodes', () => {
             expect(document.querySelector('span.manual-span')).toBe(null);
         });
     });
-    if (!process.env.NATIVE_SHADOW) {
-        // TODO [#1252]: old behavior that is still used by some pieces of the platform
-        // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
-        // are still considered global elements
-        it('if parent node does not have lwc:dom="manual", child node is accessible', () => {
+    // TODO [#1252]: old behavior that is still used by some pieces of the platform
+    // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
+    // are still considered global elements
+    it.skipIf(process.env.NATIVE_SHADOW)(
+        'if parent node does not have lwc:dom="manual", child node is accessible',
+        () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual
@@ -69,8 +70,8 @@ describe('dynamic nodes', () => {
             }).then(() => {
                 expect(document.querySelector('h2.manual-h2')).toBe(h2);
             });
-        });
-    }
+        }
+    );
 });
 
 describe('should provide access to elements outside shadow tree', () => {

@@ -145,75 +145,79 @@ const testFaceLifecycleMethodsNotCallable = (createFace) => {
     // Note there is no good way to test formStateRestoreCallback in karma tests
 };
 
-if (typeof ElementInternals !== 'undefined') {
-    if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
-        // native lifecycle enabled
-        describe('ElementInternals/FACE enabled', () => {
-            if (process.env.NATIVE_SHADOW) {
-                describe('native shadow', () => {
-                    faceSanityTest('native-shadow', FormAssociated);
-                    notFormAssociatedSanityTest('native-shadow', NotFormAssociated);
+describe.runIf(typeof ElementInternals !== 'undefined')('ElementInternals', () => {
+    // native lifecycle enabled
+    describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals/FACE enabled', () => {
+        describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
+            faceSanityTest('native-shadow', FormAssociated);
+            notFormAssociatedSanityTest('native-shadow', NotFormAssociated);
+        });
+        describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow', () => {
+            createFaceTests('synthetic-shadow', FormAssociated, (createFace) => {
+                it('cannot be used and throws an error', () => {
+                    const face = createFace();
+                    const form = createFormElement();
+                    expect(() =>
+                        form.appendChild(face)
+                    ).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
+                        'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
+                    );
                 });
-            } else {
-                describe('synthetic shadow', () => {
-                    createFaceTests('synthetic-shadow', FormAssociated, (createFace) => {
-                        it('cannot be used and throws an error', () => {
-                            const face = createFace();
-                            const form = createFormElement();
-                            expect(() =>
-                                form.appendChild(face)
-                            ).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
+            });
+        });
+        describe('light DOM', () => {
+            faceSanityTest('light-dom', LightDomFormAssociated);
+            notFormAssociatedSanityTest('light-dom', LightDomNotFormAssociated);
+        });
+    });
+
+    describe.skipIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals/FACE disabled', () => {
+        [
+            { name: 'shadow DOM', tagName: 'synthetic-lifecycle-shadow', ctor: FormAssociated },
+            {
+                name: 'light DOM',
+                tagName: 'synthetic-lifecycle-light',
+                ctor: LightDomFormAssociated,
+            },
+        ].forEach(({ name, tagName, ctor }) => {
+            createFaceTests(tagName, ctor, (createFace, scenario) => {
+                it.runIf(scenario === 'lwc.createElement')(
+                    `${name} does not call face lifecycle methods when upgraded by LWC`,
+                    () => {
+                        testFaceLifecycleMethodsNotCallable(createFace);
+                    }
+                );
+
+                describe.skipIf(scenario === 'lwc.createElement')(name, () => {
+                    const lightOrNativeShadow = name === 'light DOM' || process.env.NATIVE_SHADOW;
+
+                    // Face throws error message when synthetic shadow is enabled
+                    it.runIf(lightOrNativeShadow)(
+                        `${name} calls face lifecycle methods when using CustomElementConstructor`,
+                        () => {
+                            // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
+                            testFaceLifecycleMethodsCallable(createFace);
+                        }
+                    );
+
+                    // synthetic shadow mode
+                    it.skipIf(lightOrNativeShadow)(
+                        `${name} cannot call face lifecycle methods when using CustomElementConstructor`,
+                        () => {
+                            // this is always a callback reaction error, even in "synthetic lifecycle" mode,
+                            // because synthetic lifecycle mode only includes connected/disconnected callbacks,
+                            // not the FACE callbacks
+                            expect(() => {
+                                const face = createFace();
+                                const form = createFormElement();
+                                form.appendChild(face);
+                            }).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
                                 'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
                             );
-                        });
-                    });
-                });
-            }
-            describe('light DOM', () => {
-                faceSanityTest('light-dom', LightDomFormAssociated);
-                notFormAssociatedSanityTest('light-dom', LightDomNotFormAssociated);
-            });
-        });
-    } else {
-        describe('ElementInternals/FACE disabled', () => {
-            [
-                { name: 'shadow DOM', tagName: 'synthetic-lifecycle-shadow', ctor: FormAssociated },
-                {
-                    name: 'light DOM',
-                    tagName: 'synthetic-lifecycle-light',
-                    ctor: LightDomFormAssociated,
-                },
-            ].forEach(({ name, tagName, ctor }) => {
-                createFaceTests(tagName, ctor, (createFace, scenario) => {
-                    if (scenario === 'lwc.createElement') {
-                        it(`${name} does not call face lifecycle methods when upgraded by LWC`, () => {
-                            testFaceLifecycleMethodsNotCallable(createFace);
-                        });
-                    } else {
-                        // Face throws error message when synthetic shadow is enabled
-                        if (name === 'light DOM' || process.env.NATIVE_SHADOW) {
-                            it(`${name} calls face lifecycle methods when using CustomElementConstructor`, () => {
-                                // CustomElementConstructor is to be upgraded independently of LWC, it will always use native lifecycle
-                                testFaceLifecycleMethodsCallable(createFace);
-                            });
-                        } else {
-                            // synthetic shadow mode
-                            it(`${name} cannot call face lifecycle methods when using CustomElementConstructor`, () => {
-                                // this is always a callback reaction error, even in "synthetic lifecycle" mode,
-                                // because synthetic lifecycle mode only includes connected/disconnected callbacks,
-                                // not the FACE callbacks
-                                expect(() => {
-                                    const face = createFace();
-                                    const form = createFormElement();
-                                    form.appendChild(face);
-                                }).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
-                                    'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
-                                );
-                            });
                         }
-                    }
+                    );
                 });
             });
         });
-    }
-}
+    });
+});

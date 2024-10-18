@@ -105,20 +105,18 @@ describe('LightningElement.focus', () => {
             return isCEFocused;
         };
 
-        if (
+        it.runIf(
             !(process.env.NATIVE_SHADOW && delegatesFocus) &&
-            !customElementFocusableWhenFormAssociated()
-        ) {
-            it(`should not move focus if an internal element is already focused ${category}`, () => {
-                const elm = createElement('x-focus', { is: Ctor });
-                document.body.appendChild(elm);
+                !customElementFocusableWhenFormAssociated()
+        )(`should not move focus if an internal element is already focused ${category}`, () => {
+            const elm = createElement('x-focus', { is: Ctor });
+            document.body.appendChild(elm);
 
-                const input = elm.shadowRoot.querySelector('.second');
-                input.focus();
-                elm.focus();
-                expect(elm.shadowRoot.activeElement).toBe(input);
-            });
-        }
+            const input = elm.shadowRoot.querySelector('.second');
+            input.focus();
+            elm.focus();
+            expect(elm.shadowRoot.activeElement).toBe(input);
+        });
     }
 
     runFocusTests({ delegatesFocus: true });

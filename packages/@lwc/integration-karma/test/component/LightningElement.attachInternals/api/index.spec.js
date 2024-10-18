@@ -58,34 +58,36 @@ const attachInternalsSanityTest = (tagName, ctor) => {
     });
 };
 
-if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
-    if (typeof ElementInternals !== 'undefined') {
-        // ElementInternals API is supported in the browser
-        if (process.env.NATIVE_SHADOW) {
-            describe('native shadow', () => {
-                attachInternalsSanityTest('native-shadow', ShadowDomCmp);
+describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals', () => {
+    // ElementInternals API is supported in the browser
+    const elementInternalsSupported = typeof ElementInternals !== 'undefined';
+    describe.runIf(elementInternalsSupported)('supported in browser', () => {
+        describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
+            attachInternalsSanityTest('native-shadow', ShadowDomCmp);
+        });
+
+        describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow', () => {
+            it('should throw error when used inside a component', () => {
+                const elm = createElement('synthetic-shadow', { is: ShadowDomCmp });
+                testConnectedCallbackError(
+                    elm,
+                    'attachInternals API is not supported in synthetic shadow.'
+                );
             });
-        } else {
-            describe('synthetic shadow', () => {
-                it('should throw error when used inside a component', () => {
-                    const elm = createElement('synthetic-shadow', { is: ShadowDomCmp });
-                    testConnectedCallbackError(
-                        elm,
-                        'attachInternals API is not supported in synthetic shadow.'
-                    );
-                });
-            });
-        }
+        });
 
         describe('light DOM', () => {
             attachInternalsSanityTest('light-dom', LightDomCmp);
         });
-    } else if (!IS_SYNTHETIC_SHADOW_LOADED) {
-        // ElementInternals API is not supported in the browser
-        // Because of the order error messages are thrown, this error only appears when synthetic shadow
-        // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
-        // is thrown instead.
-        it('should throw an error when used with unsupported browser environments', () => {
+    });
+
+    // ElementInternals API is not supported in the browser
+    // Because of the order error messages are thrown, this error only appears when synthetic shadow
+    // is disabled. Otherwise, 'attachInternals API is not supported in synthetic shadow.'
+    // is thrown instead.
+    it.runIf(!elementInternalsSupported && !IS_SYNTHETIC_SHADOW_LOADED)(
+        'should throw an error when used with unsupported browser environments',
+        () => {
             createElementsThroughLwcAndCustomElementConstructor(
                 'unsupported-env-component',
                 ShadowDomCmp
@@ -95,18 +97,18 @@ if (ENABLE_ELEMENT_INTERNALS_AND_FACE) {
                     'attachInternals API is not supported in this browser environment.'
                 );
             });
-        });
-    }
-} else {
-    it(`should throw an error when api version < 61`, () => {
-        const elm = createElement('unsupported-api-version-component', { is: ShadowDomCmp });
-        // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
-        // attachInternals API.
-        expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
-            /The attachInternals API is only supported in API version 61 and above/
-        );
-    });
-}
+        }
+    );
+});
+
+it.skipIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)(`should throw an error when api version < 61`, () => {
+    const elm = createElement('unsupported-api-version-component', { is: ShadowDomCmp });
+    // Note CustomElementConstructor is not upgraded by LWC and inherits directly from HTMLElement which means it calls the native
+    // attachInternals API.
+    expect(() => document.body.appendChild(elm)).toThrowCallbackReactionError(
+        /The attachInternals API is only supported in API version 61 and above/
+    );
+});
 
 it('should not be callable outside a component', () => {
     createElementsThroughLwcAndCustomElementConstructor('element-internal', BasicCmp).forEach(
