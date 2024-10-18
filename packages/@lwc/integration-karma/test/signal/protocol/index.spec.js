@@ -183,11 +183,36 @@ describe('signal protocol', () => {
         expect(elm.getSignalRemovedSubscriberCount()).toBe(2);
     });
 
-    it('does not subscribe if the signal shape is incorrect', async () => {
+    it('does not subscribe if the signal shape has no "__id" as own key', async () => {
         const elm = createElement('x-child', { is: Child });
         const subscribe = jasmine.createSpy();
-        // Note the signals property is value's' and not value
-        const signal = { values: 'initial value', subscribe };
+        // Note this follows the shape of the signal implementation
+        // but the __id is not an own property
+        const signal = {
+            get value() {
+                return 'initial value';
+            },
+            subscribe,
+        };
+        elm.signal = signal;
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        expect(subscribe).not.toHaveBeenCalled();
+    });
+
+    it('does not subscribe if the signal shape has no __id of type symbol known to the engine', async () => {
+        const elm = createElement('x-child', { is: Child });
+        const subscribe = jasmine.createSpy();
+        // Note this follows the shape of the signal implementation
+        // but the __id is not of type symbol known to the engine (set using lwc.setSignalIdentity)
+        const signal = {
+            __id: Symbol('some-other-signal'),
+            get value() {
+                return 'initial value';
+            },
+            subscribe,
+        };
         elm.signal = signal;
         document.body.appendChild(elm);
         await Promise.resolve();
