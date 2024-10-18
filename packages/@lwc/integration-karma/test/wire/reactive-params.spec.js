@@ -3,16 +3,17 @@ import { createElement } from 'lwc';
 import CascadeWiredProps from 'x/cascadeWiredProps';
 
 describe('@wire reactive parameters', () => {
-    it('should provide complete configuration to dependent adapter', (done) => {
+    it('should provide complete configuration to dependent adapter', async () => {
         const elm = createElement('x-cascade-wire', { is: CascadeWiredProps });
-        elm.addEventListener('dependantwirevalue', (evt) => {
-            const secondWireValue = evt.detail.providedValue;
+        document.body.appendChild(elm);
 
-            expect(secondWireValue.firstParam).toBe('first-param-value');
-            expect(secondWireValue.secondParam).toBe('second-param-value');
-            done();
+        const secondWireValue = await new Promise((resolve) => {
+            elm.addEventListener('dependantwirevalue', (evt) => {
+                resolve(evt.detail.providedValue);
+            });
         });
 
-        document.body.appendChild(elm);
+        expect(secondWireValue.firstParam).toBe('first-param-value');
+        expect(secondWireValue.secondParam).toBe('second-param-value');
     });
 });
