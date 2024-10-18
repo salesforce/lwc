@@ -29,6 +29,8 @@ interface PropsAvailableAtConstruction {
     tagName: string;
 }
 
+export const SYMBOL__SET_INTERNALS = Symbol();
+
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
 
@@ -47,8 +49,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
         Object.assign(this, propsAvailableAtConstruction);
     }
 
-    // TODO [W-14977927]: protect internals from userland
-    private __internal__setState(
+    [SYMBOL__SET_INTERNALS](
         props: Record<string, any>,
         reflectedProps: string[],
         attrs: Record<string, any>
