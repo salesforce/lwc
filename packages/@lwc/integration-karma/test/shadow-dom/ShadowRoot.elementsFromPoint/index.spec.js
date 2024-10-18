@@ -33,6 +33,14 @@ const onlyIncludesElementsInImmediateShadowRoot = (() => {
     };
 })();
 
+/**
+ * Tests the elementsFromPoint method on a given root node.
+ *
+ * @param {ShadowRoot} rootNode - The root node to test the elementsFromPoint method on.
+ * @param {number} x - The x-coordinate for the elementsFromPoint method.
+ * @param {number} y - The y-coordinate for the elementsFromPoint method.
+ * @param {Element[]} expectedElements - The array of elements expected to be returned by the elementsFromPoint method.
+ */
 function testElementsFromPoint(rootNode, x, y, expectedElements) {
     const elementsFromPoint = rootNode.elementsFromPoint(x, y);
 
@@ -74,7 +82,7 @@ it('shadow example', () => {
         inSlottableInner,
     } = nodes;
 
-    function test(element, expectedElements) {
+    function check(element, expectedElements) {
         const { left, top, width, height } = element.getBoundingClientRect();
         const rootNode = element.getRootNode();
         const x = left + width / 2;
@@ -82,16 +90,16 @@ it('shadow example', () => {
         testElementsFromPoint(rootNode, x, y, [...expectedElements, elm, body, html]);
     }
 
-    test(elm, []);
-    test(aboveContainer, [aboveContainer]);
-    test(inContainer, [slottable, inContainer]);
-    test(slottable, [slottable, inContainer]);
-    test(aroundSlotted, [slotted, aroundSlotted, slottable, inContainer]);
-    test(slotted, [slotted, aroundSlotted, slottable, inContainer]);
-    test(inSlotted, [inSlotted, slotted, aroundSlotted, slottable, inContainer]);
-    test(slotWrapper, [slotted, aroundSlotted, slotWrapper, slottable, inContainer]);
-    test(inSlottable, [inSlottableInner, inSlottable, slottable, inContainer]);
-    test(inSlottableInner, [inSlottableInner, inSlottable, slottable, inContainer]);
+    check(elm, []);
+    check(aboveContainer, [aboveContainer]);
+    check(inContainer, [slottable, inContainer]);
+    check(slottable, [slottable, inContainer]);
+    check(aroundSlotted, [slotted, aroundSlotted, slottable, inContainer]);
+    check(slotted, [slotted, aroundSlotted, slottable, inContainer]);
+    check(inSlotted, [inSlotted, slotted, aroundSlotted, slottable, inContainer]);
+    check(slotWrapper, [slotted, aroundSlotted, slotWrapper, slottable, inContainer]);
+    check(inSlottable, [inSlottableInner, inSlottable, slottable, inContainer]);
+    check(inSlottableInner, [inSlottableInner, inSlottable, slottable, inContainer]);
 });
 
 it('host elements are not all visible', () => {
@@ -107,57 +115,57 @@ it('host elements are not all visible', () => {
         });
     };
 
-    function test(element, expectedElements) {
+    function check(element, expectedElements) {
         testElementsFromPoint(element.getRootNode(), 50, 50, [...expectedElements, html]);
     }
 
-    test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent]);
-    test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv, grandparent]);
+    check(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
     grandparent.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv]);
-    test(parentDiv, [child, parentDiv, parent, grandparentDiv]);
-    test(grandparentDiv, [parent, grandparentDiv]);
+    check(childDiv, [childDiv, child, parentDiv, parent, grandparentDiv]);
+    check(parentDiv, [child, parentDiv, parent, grandparentDiv]);
+    check(grandparentDiv, [parent, grandparentDiv]);
 
     resetStyles();
     parent.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent]);
-    test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, child, parentDiv, grandparentDiv, grandparent]);
+    check(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
     resetStyles();
     child.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent]);
-    test(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, parentDiv, parent, grandparentDiv, grandparent]);
+    check(parentDiv, [child, parentDiv, parent, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
     resetStyles();
     parent.style = 'width: 0px; height: 0px;';
     parentDiv.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [childDiv, child, grandparentDiv, grandparent]);
-    test(parentDiv, [child, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, child, grandparentDiv, grandparent]);
+    check(parentDiv, [child, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
     resetStyles();
     parent.style = 'width: 0px; height: 0px;';
     parentDiv.style = 'width: 0px; height: 0px;';
     child.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [childDiv, grandparentDiv, grandparent]);
-    test(parentDiv, [child, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, grandparentDiv, grandparent]);
+    check(parentDiv, [child, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
     resetStyles();
     parent.style = 'width: 0px; height: 0px;';
     child.style = 'width: 0px; height: 0px;';
-    test(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent]);
-    test(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, parentDiv, grandparentDiv, grandparent]);
+    check(parentDiv, [child, parentDiv, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 
     resetStyles();
     parent.style = 'width: 0px; height: 0px;';
@@ -165,15 +173,15 @@ it('host elements are not all visible', () => {
     child.style = 'width: 0px; height: 0px;';
     childDiv.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [grandparentDiv, grandparent]);
-    test(parentDiv, [grandparentDiv, grandparent]);
-    test(grandparentDiv, [grandparentDiv, grandparent]);
+    check(childDiv, [grandparentDiv, grandparent]);
+    check(parentDiv, [grandparentDiv, grandparent]);
+    check(grandparentDiv, [grandparentDiv, grandparent]);
 
     resetStyles();
     parentDiv.style = 'width: 0px; height: 0px;';
     child.style = 'width: 0px; height: 0px;';
 
-    test(childDiv, [childDiv, parent, grandparentDiv, grandparent]);
-    test(parentDiv, [child, parent, grandparentDiv, grandparent]);
-    test(grandparentDiv, [parent, grandparentDiv, grandparent]);
+    check(childDiv, [childDiv, parent, grandparentDiv, grandparent]);
+    check(parentDiv, [child, parent, grandparentDiv, grandparent]);
+    check(grandparentDiv, [parent, grandparentDiv, grandparent]);
 });

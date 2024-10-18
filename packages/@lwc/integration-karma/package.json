@@ -11,7 +11,11 @@
         "hydration:sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
         "sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/test/sauce.js --single-run",
-        "coverage": "node ./scripts/merge-coverage.js"
+        "coverage": "node ./scripts/merge-coverage.js",
+        "test:browser": "vitest --project=lwc-karma:test",
+        "test:browser:debug": "vitest --project=lwc-karma:test --inspect --no-file-parallelism --browser.headless=false",
+        "hydration:browser": "vitest --project=lwc-karma:test-hydration",
+        "hydration:browser:debug": "vitest --project=lwc-karma:test-hydration --inspect --no-file-parallelism --browser.headless=false"
     },
     "//": {
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
@@ -23,6 +27,7 @@
         "@lwc/rollup-plugin": "8.2.0",
         "@lwc/synthetic-shadow": "8.2.0",
         "@types/jasmine": "^5.1.4",
+        "@types/karma-jasmine": "^4.0.5",
         "chokidar": "^4.0.1",
         "istanbul-lib-coverage": "^3.2.2",
         "istanbul-lib-report": "^3.0.1",

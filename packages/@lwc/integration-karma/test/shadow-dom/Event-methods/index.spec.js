@@ -1,6 +1,5 @@
 import { createElement } from 'lwc';
 import { extractDataIds } from 'test-utils';
-
 import Container from 'x/container';
 
 function dispatchEventWithLog(target, nodes, event) {
@@ -129,18 +128,17 @@ describe('Event.stopImmediatePropagation', () => {
 });
 
 describe('Event.composedPath', () => {
-    it('should return an empty array when asynchronously invoked', () => {
+    it('should return an empty array when asynchronously invoked', async () => {
         const nodes = createTestElement();
-        const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        let _event;
-        nodes['x-container'].addEventListener(event.type, (event) => {
-            _event = event;
+        const event = await new Promise((resolve) => {
+            nodes.container_div.addEventListener('test', resolve);
+            nodes.child_div.dispatchEvent(
+                new CustomEvent('test', { bubbles: true, composed: true })
+            );
         });
 
-        nodes.child_div.dispatchEvent(event);
-
-        expect(_event.composedPath()).toHaveSize(0);
+        expect(event.composedPath().length).toBe(0);
     });
 
     it('should not throw when invoked on an event with a target that is not an instance of Node', async () => {

@@ -17,36 +17,6 @@ function testInvalidComponentConstructor(name, ctor) {
     });
 }
 
-beforeAll(function () {
-    const getNormalizedFunctionAsString = (fn) => fn.toString().replace(/(\s|\n)/g, '');
-
-    jasmine.addMatchers({
-        toEqualWireSettings: function () {
-            return {
-                compare: function (actual, expected) {
-                    Object.keys(actual).forEach((currentKey) => {
-                        const normalizedActual = Object.assign({}, actual[currentKey], {
-                            config: getNormalizedFunctionAsString(actual[currentKey].config),
-                        });
-
-                        const normalizedExpected = Object.assign({}, expected[currentKey], {
-                            config: getNormalizedFunctionAsString(
-                                expected[currentKey].config || function () {}
-                            ),
-                        });
-
-                        expect(normalizedActual).toEqual(normalizedExpected);
-                    });
-
-                    return {
-                        pass: true,
-                    };
-                },
-            };
-        },
-    });
-});
-
 testInvalidComponentConstructor('null', null);
 testInvalidComponentConstructor('undefined', undefined);
 testInvalidComponentConstructor('String', 'component');
