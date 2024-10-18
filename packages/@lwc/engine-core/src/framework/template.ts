@@ -47,7 +47,7 @@ import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText
 import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
-import { report, ReportingEventId } from './reporting';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -100,35 +100,30 @@ function validateSlots(vm: VM) {
     }
 }
 
-function validateLightDomTemplate(template: Template, vm: VM) {
-    assertNotProd(); // should never leak to prod mode
+function checkHasMatchingRenderMode(template: Template, vm: VM) {
+    // don't validate in prod environments where reporting is disabled
+    if (process.env.NODE_ENV === 'production' && !isReportingEnabled()) {
+        return;
+    }
+    // don't validate the default empty template - it is not inherently light or shadow
     if (template === defaultEmptyTemplate) {
         return;
     }
-    // TODO [#4663]: `renderMode` mismatch between template/compiler & light/shadow causes `console.error` but no error
-    if (vm.renderMode === RenderMode.Light) {
-        if (template.renderMode !== 'light') {
-            logError(
-                `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
-                    vm
-                )}.`
-            );
-            report(ReportingEventId.RenderModeMismatch, {
-                tagName: vm.tagName,
-                mode: vm.renderMode,
-            });
-        }
-    } else {
-        if (!isUndefined(template.renderMode)) {
-            logError(
-                `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
-                    vm
-                )} or set it to 'lwc:render-mode="shadow"`
-            );
-            report(ReportingEventId.RenderModeMismatch, {
-                tagName: vm.tagName,
-                mode: vm.renderMode,
-            });
+    // TODO [#4663]: `renderMode` mismatch between template and component causes `console.error` but no error
+    const vmIsLight = vm.renderMode === RenderMode.Light;
+    const templateIsLight = template.renderMode === 'light';
+    if (vmIsLight !== templateIsLight) {
+        report(ReportingEventId.RenderModeMismatch, {
+            tagName: vm.tagName,
+            mode: vm.renderMode,
+        });
+        if (process.env.NODE_ENV !== 'production') {
+            const tagName = getComponentTag(vm);
+            const message = vmIsLight
+                ? `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${tagName}.`
+                : `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${tagName} or set it to 'lwc:render-mode="shadow"`;
+
+            logError(message);
         }
     }
 }
@@ -400,9 +395,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                         );
                     }
 
-                    if (process.env.NODE_ENV !== 'production') {
-                        validateLightDomTemplate(html, vm);
-                    }
+                    checkHasMatchingRenderMode(html, vm);
 
                     // Perf opt: do not reset the shadow root during the first rendering (there is
                     // nothing to reset).
