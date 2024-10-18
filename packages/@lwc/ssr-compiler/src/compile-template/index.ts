@@ -68,8 +68,6 @@ const bExportTemplate = esTemplate<
 export default function compileTemplate(
     src: string,
     filename: string,
-    // Technically this is @lwc/compiler's TransformOptions, but we can't use that without
-    // introducing a circular dependency. @lwc/template-compiler's options are close enough.
     options: TemplateCompilerConfig
 ) {
     const { root, warnings } = parse(src, {
