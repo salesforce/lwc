@@ -1,0 +1,17 @@
+<x-light-container>
+  <x-scoped-slot-parent>
+    <x-scoped-slot-child>
+      <x-leaf>
+        <template shadowrootmode="open">
+          <slot>
+          </slot>
+          <slot name="foo">
+          </slot>
+        </template>
+        <h2>
+          Hello world!
+        </h2>
+      </x-leaf>
+    </x-scoped-slot-child>
+  </x-scoped-slot-parent>
+</x-light-container>
