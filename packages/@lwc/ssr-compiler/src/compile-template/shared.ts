@@ -11,9 +11,9 @@ import { esTemplate } from '../estemplate';
 
 import type { ImportDeclaration as EsImportDeclaration, Statement as EsStatement } from 'estree';
 
-export const bImportHtmlEscape = esTemplate<EsImportDeclaration>`
+export const bImportHtmlEscape = esTemplate`
     import { htmlEscape } from '@lwc/shared';
-`;
+`<EsImportDeclaration>;
 export const importHtmlEscapeKey = 'import:htmlEscape';
 
 // This is a mostly-correct regular expression will only match if the entire string

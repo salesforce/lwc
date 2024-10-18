@@ -15,7 +15,6 @@ import type {
     Expression as EsExpression,
     ForOfStatement as EsForOfStatement,
     Identifier as EsIdentifier,
-    Statement as EsStatement,
     MemberExpression as EsMemberExpression,
 } from 'estree';
 import type { Transformer } from './types';
@@ -29,14 +28,11 @@ function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
     return is.identifier(rootMemberExpression?.object) ? rootMemberExpression.object : null;
 }
 
-const bForOfYieldFrom = esTemplate<
-    EsForOfStatement,
-    [EsIdentifier, EsIdentifier, EsExpression, EsStatement[]]
->`
+const bForOfYieldFrom = esTemplate`
     for (let [${is.identifier}, ${is.identifier}] of Object.entries(${is.expression} ?? {})) {
         ${is.statement};
     }
-`;
+`<EsForOfStatement>;
 
 export const ForEach: Transformer<IrForEach> = function ForEach(node, cxt): EsForOfStatement[] {
     const forItemId = node.item.name;

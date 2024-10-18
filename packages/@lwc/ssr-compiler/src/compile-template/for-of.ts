@@ -15,7 +15,6 @@ import type {
     Expression as EsExpression,
     ForOfStatement as EsForOfStatement,
     Identifier as EsIdentifier,
-    Statement as EsStatement,
     MemberExpression as EsMemberExpression,
     ImportDeclaration as EsImportDeclaration,
 } from 'estree';
@@ -30,15 +29,15 @@ function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
     return is.identifier(rootMemberExpression?.object) ? rootMemberExpression.object : null;
 }
 
-const bForOfYieldFrom = esTemplate<EsForOfStatement, [EsIdentifier, EsExpression, EsStatement[]]>`
+const bForOfYieldFrom = esTemplate`
     for (let ${is.identifier} of toIteratorDirective(${is.expression} ?? [])) {
         ${is.statement};
     }
-`;
+`<EsForOfStatement>;
 
-const bToIteratorDirectiveImport = esTemplate<EsImportDeclaration>`
+const bToIteratorDirectiveImport = esTemplate`
     import { toIteratorDirective } from '@lwc/ssr-runtime';
-`;
+`<EsImportDeclaration>;
 
 export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfStatement[] {
     const id = node.iterator.name;
