@@ -74,7 +74,7 @@ it('applies styles to injected content', async () => {
     document.body.appendChild(elm);
 
     // When running with synthetic shadow a micro task is needed to for the MutationObserver to add
-    // the styling tokens. For IE11 specifically, we need to wait for a full task.
+    // the styling tokens.
     await Promise.resolve();
 
     const b = elm.shadowRoot.querySelector('b');
