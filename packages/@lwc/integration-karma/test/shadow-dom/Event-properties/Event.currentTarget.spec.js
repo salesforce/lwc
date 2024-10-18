@@ -52,6 +52,6 @@ describe('Event.currentTarget', () => {
             child.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
 
-        expect(currentTarget).toEqual(container.shadowRoot);
+        expect(currentTarget).toBe(container.shadowRoot);
     });
 });
