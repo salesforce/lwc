@@ -1,0 +1,9 @@
+<template>
+    <x-light-leaf data-id="shadow-light-leaf">
+        <!-- Note upper and lower have mapping swapped here -->
+        <slot slot="lower" name="upper" data-id="lower-slot"></slot>
+        <slot slot="upper" name="lower" data-id="upper-slot"></slot>
+        <!-- Note default slot is mapped to a new slot name -->
+        <slot slot="defaultSlotReassigned" data-id="default-slot">Default slot not yet forwarded</slot>
+    </x-light-leaf>
+</template>
