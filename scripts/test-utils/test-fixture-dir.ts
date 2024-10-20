@@ -61,6 +61,11 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
     return JSON.parse(contents);
 }
 
+export interface TestFixtureDirConfig {
+    pattern: string;
+    root: string;
+}
+
 /**
  * Test a fixture directory against a set of snapshot files. This method generates a test for each
  * file matching the `config.pattern` glob. The `testFn` fixture is invoked for each test and is
@@ -83,7 +88,7 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
  * )
  */
 export function testFixtureDir<T extends TestFixtureConfig>(
-    config: { pattern: string; root: string },
+    config: TestFixtureDirConfig,
     testFn: (options: {
         src: string;
         filename: string;

@@ -17,6 +17,7 @@ import type { ComponentMetaState } from './types';
  *
  *  1. it replaces "lwc" with "@lwc/ssr-runtime" in an import specifier
  *  2. it makes note of the local var name associated with the `LightningElement` import
+ *  3. it throws an error when importing unsupported APIs from "lwc"
  */
 export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
     if (!path.node || path.node.source.value !== 'lwc') {
@@ -24,17 +25,9 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
     }
 
     for (const specifier of path.node.specifiers) {
-        if (
-            specifier.type === 'ImportSpecifier' &&
-            specifier.imported.type === 'Identifier' &&
-            specifier.imported.name === 'LightningElement'
-        ) {
-            state.lightningElementIdentifier = specifier.local.name;
-            break;
-        }
         if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier') {
             if (!allowedLwcImports.has(specifier.imported.name)) {
-                throw new Error(`Cannot import "${specifier.imported.name}" in SSR context.`);
+                throw new Error(`Unsupported import "${specifier.imported.name}" in SSR context.`);
             }
             if (specifier.imported.name === 'LightningElement') {
                 state.lightningElementIdentifier = specifier.local.name;

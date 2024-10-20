@@ -1,0 +1,2 @@
+SSR compilation error:
+Unsupported import "SYMBOL__SET_INTERNALS" in SSR context.

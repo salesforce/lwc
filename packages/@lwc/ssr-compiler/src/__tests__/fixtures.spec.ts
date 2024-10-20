@@ -10,7 +10,7 @@ import { vi } from 'vitest';
 import { rollup, RollupLog } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
-import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { formatHTML, testFixtureDir, TestFixtureDirConfig } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 
 interface FixtureModule {
@@ -55,60 +55,63 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-function testFixtures() {
-    testFixtureDir(
-        {
-            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
-            pattern: '**/index.js',
-        },
-        async ({ filename, dirname, config }) => {
-            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
-            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+function testFixtures(config: TestFixtureDirConfig) {
+    testFixtureDir(config, async ({ filename, dirname, config }) => {
+        const errorFile = config?.ssrFiles?.error ?? 'error.txt';
+        const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
 
-            let compiledFixturePath;
-            try {
-                compiledFixturePath = await compileFixture({
-                    input: filename,
-                    dirname,
-                });
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
-
-            const module = (await import(compiledFixturePath)) as FixtureModule;
-
-            let result;
-            try {
-                result = await serverSideRenderComponent(
-                    module!.tagName,
-                    module!.generateMarkup,
-                    config?.props ?? {}
-                );
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
-
-            try {
-                return {
-                    [errorFile]: '',
-                    [expectedFile]: formatHTML(result),
-                };
-            } catch (_err: any) {
-                return {
-                    [errorFile]: `Test helper could not format HTML:\n\n${result}`,
-                    [expectedFile]: '',
-                };
-            }
+        let compiledFixturePath;
+        try {
+            compiledFixturePath = await compileFixture({
+                input: filename,
+                dirname,
+            });
+        } catch (err: any) {
+            return {
+                [errorFile]: `SSR compilation error:\n${err.message}`,
+                [expectedFile]: '',
+            };
         }
-    );
+
+        const module = (await import(compiledFixturePath)) as FixtureModule;
+
+        let result;
+        try {
+            result = await serverSideRenderComponent(
+                module!.tagName,
+                module!.generateMarkup,
+                config?.props ?? {}
+            );
+        } catch (err: any) {
+            return {
+                [errorFile]: err.message,
+                [expectedFile]: '',
+            };
+        }
+
+        try {
+            return {
+                [errorFile]: '',
+                [expectedFile]: formatHTML(result),
+            };
+        } catch (_err: any) {
+            return {
+                [errorFile]: `Test helper could not format HTML:\n\n${result}`,
+                [expectedFile]: '',
+            };
+        }
+    });
 }
 
 describe('fixtures', () => {
-    testFixtures();
+    testFixtures({
+        root: path.resolve(__dirname, 'fixtures'),
+        pattern: '**/index.js',
+    });
+    if (process.env.TEST_SSR_COMPILER) {
+        testFixtures({
+            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
+            pattern: '**/index.js',
+        });
+    }
 });
