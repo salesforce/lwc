@@ -6,9 +6,9 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { esTemplateWithYield } from '../estemplate';
-import { bImportHtmlEscape, importHtmlEscapeKey } from './shared';
-import { expressionIrToEs } from './expression';
+import { esTemplateWithYield } from '../../estemplate';
+import { bImportHtmlEscape, importHtmlEscapeKey } from '../shared';
+import { expressionIrToEs } from '../expression';
 
 import type { Expression as EsExpression, Statement as EsStatement } from 'estree';
 import type {
@@ -17,7 +17,7 @@ import type {
     Literal as IrLiteral,
     Text as IrText,
 } from '@lwc/template-compiler';
-import type { Transformer } from './types';
+import type { Transformer } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 

@@ -6,7 +6,6 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-
 import {
     HTML_NAMESPACE,
     isVoidElement,
@@ -23,10 +22,10 @@ import {
     ExternalComponent as IrExternalComponent,
     Slot as IrSlot,
 } from '@lwc/template-compiler';
-import { esTemplate, esTemplateWithYield } from '../estemplate';
-import { expressionIrToEs } from './expression';
-import { irChildrenToEs } from './ir-to-es';
-import { bImportHtmlEscape, importHtmlEscapeKey } from './shared';
+import { esTemplateWithYield } from '../../estemplate';
+import { expressionIrToEs } from '../expression';
+import { irChildrenToEs } from '../ir-to-es';
+import { bImportHtmlEscape, importHtmlEscapeKey } from '../shared';
 
 import type {
     BinaryExpression,
@@ -34,9 +33,7 @@ import type {
     Expression as EsExpression,
     Statement as EsStatement,
 } from 'estree';
-import type { Transformer } from './types';
-
-import { Element } from './element';
+import type { Transformer } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 const bConditionalLiveYield = esTemplateWithYield`
@@ -119,17 +116,61 @@ function reorderAttributes(
     );
 }
 
-const bConditionalSlot = esTemplate`
-    if (isLightDom) {
-        ${is.statement}
-    } else {
-        ${0}
-    }
-`
-
-export const Slot: Transformer<IrSlot> = function Slot(
+export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = function Element(
     node,
-    ctx
+    cxt
 ): EsStatement[] {
-    return bConditionalSlot(Element(node, ctx));
+    const innerHtmlDirective =
+        node.type === 'Element' && node.directives.find((dir) => dir.name === 'InnerHTML');
+
+    const attrsAndProps: (IrAttribute | IrProperty)[] = reorderAttributes(
+        node.attributes,
+        node.properties
+    );
+
+    let hasClassAttribute = false;
+    const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
+        const { name, value, type } = attr;
+
+        // For classes, these may need to be prefixed with the scope token
+        const isClass = type === 'Attribute' && name === 'class';
+        if (isClass) {
+            hasClassAttribute = true;
+        }
+
+        cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+        if (value.type === 'Literal') {
+            return yieldAttrOrPropLiteralValue(name, value, isClass);
+        } else {
+            return yieldAttrOrPropLiveValue(name, value, isClass);
+        }
+    });
+
+    if (isVoidElement(node.name, HTML_NAMESPACE)) {
+        return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];
+    }
+
+    let childContent: EsStatement[];
+    // An element can have children or lwc:inner-html, but not both
+    // If it has both, the template compiler will throw an error before reaching here
+    if (node.children.length) {
+        childContent = irChildrenToEs(node.children, cxt);
+    } else if (innerHtmlDirective) {
+        const value = innerHtmlDirective.value;
+        const unsanitizedHtmlExpression =
+            value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
+        childContent = [bYield(unsanitizedHtmlExpression)];
+    } else {
+        childContent = [];
+    }
+
+    return [
+        bYield(b.literal(`<${node.name}`)),
+        // If we haven't already prefixed the scope token to an existing class, add an explicit class here
+        ...(hasClassAttribute ? [] : [bYield(b.identifier('stylesheetScopeTokenClass'))]),
+        ...yieldAttrsAndProps,
+        bYield(b.literal(`>`)),
+        ...childContent,
+        bYield(b.literal(`</${node.name}>`)),
+    ].filter(Boolean);
 };

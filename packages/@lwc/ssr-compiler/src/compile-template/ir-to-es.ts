@@ -9,12 +9,12 @@ import { inspect } from 'util';
 
 import { Comment } from './comment';
 import { Component } from './component';
-import { Element } from './element';
+import { Element } from './transformers/element';
 import { ForEach } from './for-each';
 import { ForOf } from './for-of';
-import { If, IfBlock } from './if';
-import { Slot } from './slot';
-import { Text } from './text';
+import { If, IfBlock } from './transformers/if';
+import { Slot } from './transformers/slot';
+import { Text } from './transformers/text';
 import { createNewContext } from './context';
 
 import type {
@@ -57,7 +57,7 @@ const transformers: Transformers = {
     // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
-    Slot: Slot,
+    Slot,
     Lwc: defaultTransformer,
 };
 
