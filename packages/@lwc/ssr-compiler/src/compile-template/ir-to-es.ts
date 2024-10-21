@@ -13,6 +13,7 @@ import { Element } from './element';
 import { ForEach } from './for-each';
 import { ForOf } from './for-of';
 import { If, IfBlock } from './if';
+import { Slot } from './slot';
 import { Text } from './text';
 import { createNewContext } from './context';
 
@@ -56,7 +57,7 @@ const transformers: Transformers = {
     // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
-    Slot: Element,
+    Slot: Slot,
     Lwc: defaultTransformer,
 };
 

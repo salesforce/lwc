@@ -26,7 +26,8 @@ const bStyleValidationImport = esTemplate`
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
     export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
-        if (Cmp.renderMode !== 'light') {
+        const isLightDom = Cmp.renderMode === 'light';
+        if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
         
@@ -48,7 +49,7 @@ const bExportTemplate = esTemplate`
 
         ${is.statement};
 
-        if (Cmp.renderMode !== 'light') {
+        if (!isLightDom) {
             yield '</template>';
         }
 
