@@ -7,11 +7,11 @@
 
 import { inspect } from 'util';
 
-import { Comment } from './comment';
-import { Component } from './component';
+import { Comment } from './transformers/comment';
+import { Component } from './transformers/component';
 import { Element } from './transformers/element';
-import { ForEach } from './for-each';
-import { ForOf } from './for-of';
+import { ForEach } from './transformers/for-each';
+import { ForOf } from './transformers/for-of';
 import { If, IfBlock } from './transformers/if';
 import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';

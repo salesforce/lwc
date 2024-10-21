@@ -55,3 +55,5 @@ export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStateme
         })
         .filter((el): el is NonNullable<EsStatement> => el !== null);
 }
+
+//
