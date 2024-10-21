@@ -73,7 +73,7 @@ function testFixtures() {
                 });
             } catch (err: any) {
                 return {
-                    [errorFile]: `SSR compilation error:\n${err.message}`,
+                    [errorFile]: err.message,
                     [expectedFile]: '',
                 };
             }

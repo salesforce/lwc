@@ -7,12 +7,8 @@
 
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
-import {
-    ElementDirective,
-    parse,
-    Root,
-    type Config as TemplateCompilerConfig,
-} from '@lwc/template-compiler';
+import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
+import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
@@ -66,20 +62,9 @@ const bExportTemplate = esTemplate`
     }
 `<EsExportDefaultDeclaration>;
 
-function templateUsesDirective(root: Root, target: ElementDirective['name']): boolean {
-    return root.children.some(function hasDirective(child) {
-        return (
-            ('directives' in child && child.directives.some((dir) => dir.name === target)) ||
-            ('children' in child && child.children.some(hasDirective))
-        );
-    });
-}
-
 export default function compileTemplate(
     src: string,
     filename: string,
-    // Technically this is @lwc/compiler's TransformOptions, but we can't use that without
-    // introducing a circular dependency. @lwc/template-compiler's options are close enough.
     options: TemplateCompilerConfig
 ) {
     const { root, warnings } = parse(src, {
@@ -104,7 +89,10 @@ export default function compileTemplate(
         for (const warning of warnings) {
             // eslint-disable-next-line no-console
             console.error('Cannot compile:', warning.message);
-            if (warning.level === 0 /* fatal */ || warning.level === 1 /* error */) {
+            if (
+                warning.level === DiagnosticLevel.Fatal ||
+                warning.level === DiagnosticLevel.Error
+            ) {
                 fatal = true;
             }
         }
@@ -112,12 +100,6 @@ export default function compileTemplate(
         if (fatal || !root) {
             throw new Error('Template compilation failure; see warnings in the console.');
         }
-    }
-
-    if (templateUsesDirective(root, 'Dynamic')) {
-        throw new Error(
-            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
-        );
     }
 
     const tmplRenderMode =

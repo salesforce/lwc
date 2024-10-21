@@ -143,33 +143,31 @@ describe('Event.composedPath', () => {
         expect(_event.composedPath()).toHaveSize(0);
     });
 
-    it('should not throw when invoked on an event with a target that is not an instance of Node', (done) => {
+    it('should not throw when invoked on an event with a target that is not an instance of Node', async () => {
         const req = new XMLHttpRequest();
-        req.addEventListener('test', (event) => {
-            // Not looking at return value because browsers have different implementations.
-            expect(() => {
-                event.composedPath();
-            }).not.toThrowError();
-            done();
+        const event = await new Promise((resolve) => {
+            req.addEventListener('test', resolve);
+            req.dispatchEvent(new CustomEvent('test'));
         });
-        req.dispatchEvent(new CustomEvent('test'));
+        // Not looking at return value because browsers have different implementations.
+        expect(() => {
+            event.composedPath();
+        }).not.toThrowError();
     });
 
-    it('should return expected composed path when the target is a text node', (done) => {
+    it('should return expected composed path when the target is a text node', async () => {
         const nodes = createTestElement();
         const event = new CustomEvent('test', { bubbles: true, composed: false });
 
         const textNode = nodes.child_div.childNodes[0];
 
-        textNode.addEventListener('test', (event) => {
-            expect(event.composedPath()).toEqual([
-                textNode,
-                nodes.child_div,
-                nodes['x-child.shadowRoot'],
-            ]);
-            done();
+        const composedPath = await new Promise((resolve) => {
+            textNode.addEventListener('test', (event) => {
+                resolve(event.composedPath());
+            });
+            textNode.dispatchEvent(event);
         });
 
-        textNode.dispatchEvent(event);
+        expect(composedPath).toEqual([textNode, nodes.child_div, nodes['x-child.shadowRoot']]);
     });
 });
