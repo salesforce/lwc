@@ -52,9 +52,9 @@ function getFiles() {
         throw new Error(`More than one .only file found in ${BASE_DIR}`);
     } else if (onlyFile.length === 1) {
         const dir = path.dirname(onlyFile[0]);
-        files.push(createPattern(`${dir}/**/*.spec.js`));
+        files.push(createPattern(`${dir}/**/*.spec.js`, { watched: false }));
     } else {
-        files.push(createPattern('**/*.spec.js'));
+        files.push(createPattern('**/*.spec.js', { watched: false }));
     }
 
     return files;
