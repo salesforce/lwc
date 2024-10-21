@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isObject } from '@lwc/shared';
+import { isNull, isObject, isTrustedSignal } from '@lwc/shared';
 import { Signal } from '@lwc/signals';
 import {
     JobFunction,
@@ -15,7 +15,6 @@ import {
 } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
 import { VM } from './vm';
-import { isTrustedSignal } from './signal-identity';
 
 const DUMMY_REACTIVE_OBSERVER = {
     observe(job: JobFunction) {
@@ -47,7 +46,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
         isObject(target) &&
         !isNull(target) &&
-        isTrustedSignal(target as Signal<unknown>) &&
+        isTrustedSignal(target) &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
     ) {

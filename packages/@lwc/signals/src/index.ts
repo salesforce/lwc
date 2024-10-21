@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { addTrustedSignal } from '@lwc/engine-dom';
+import { addTrustedSignal } from '@lwc/shared';
+export { setSignalValidator } from '@lwc/shared';
 
 export type OnUpdate = () => void;
 export type Unsubscribe = () => void;
@@ -18,7 +19,7 @@ export interface Signal<T> {
 export abstract class SignalBaseClass<T> implements Signal<T> {
     constructor() {
         // Add the signal to the set of trusted signals
-        // This allows the lwc-engine to track the signal and trigger re-renders when the signal changes
+        // that rendering engine can track
         addTrustedSignal(this);
     }
 

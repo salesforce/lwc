@@ -642,6 +642,13 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         TEMPLATE_CLASS_NAME_OBJECT_BINDING: process.env.API_VERSION >= 62,
     };
 
+    const signalValidator = new WeakSet();
+    lwc.setSignalValidator(signalValidator);
+
+    function addTrustedSignal(signal) {
+        signalValidator.add(signal);
+    }
+
     return {
         clearRegister,
         extractDataIds,
@@ -667,6 +674,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCalls,
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
+        addTrustedSignal,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

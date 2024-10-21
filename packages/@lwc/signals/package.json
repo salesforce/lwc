@@ -41,7 +41,7 @@
             }
         }
     },
-    "dependencies": {
-        "@lwc/engine-dom": "8.2.0"
+    "devDependencies": {
+        "@lwc/shared": "8.2.0"
     }
 }

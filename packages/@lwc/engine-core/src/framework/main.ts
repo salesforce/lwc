@@ -70,6 +70,6 @@ export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';
 export { default as wire } from './decorators/wire';
 export { readonly } from './readonly';
-export { addTrustedSignal } from './signal-identity';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
+export { setSignalValidator } from '@lwc/shared';
