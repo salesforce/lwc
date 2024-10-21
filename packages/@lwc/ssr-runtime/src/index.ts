@@ -6,7 +6,11 @@
  */
 
 export { ClassList } from './class-list';
-export { LightningElement, LightningElementConstructor } from './lightning-element';
+export {
+    LightningElement,
+    LightningElementConstructor,
+    SYMBOL__SET_INTERNALS,
+} from './lightning-element';
 export { MutationTracker } from './mutation-tracker';
 // renderComponent is an alias for serverSideRenderComponent
 export {
