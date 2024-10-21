@@ -9,7 +9,7 @@
 
 const path = require('node:path');
 
-const { globSync } = require('node:fs');
+const { globSync } = require('glob');
 const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION } = require('../../shared/options');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
