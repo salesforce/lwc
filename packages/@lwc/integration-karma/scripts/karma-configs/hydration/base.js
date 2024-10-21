@@ -9,7 +9,7 @@
 
 const path = require('path');
 
-const { globSync } = require('fs');
+const { globSync } = require('node:fs');
 const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION } = require('../../shared/options');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
@@ -48,11 +48,11 @@ function getFiles() {
     // check if a .only file exists
     const onlyFile = globSync('**/*/.only', { cwd: BASE_DIR, absolute: true });
 
-    if (onlyFile.length > 1) {
-        throw new Error(`More than one .only file found in ${BASE_DIR}`);
-    } else if (onlyFile.length === 1) {
-        const dir = path.dirname(onlyFile[0]);
-        files.push(createPattern(`${dir}/**/*.spec.js`, { watched: false }));
+    if (onlyFile.length > 0) {
+        for (const file of onlyFile) {
+            const dir = path.dirname(file);
+            files.push(createPattern(`${dir}/**/*.spec.js`, { watched: false }));
+        }
     } else {
         files.push(createPattern('**/*.spec.js', { watched: false }));
     }
