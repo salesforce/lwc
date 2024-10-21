@@ -24,6 +24,14 @@ import type {
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
+/** Node representing `<something>.render()`. */
+type RenderCallExpression = SimpleCallExpression & {
+    callee: MemberExpression & { property: Identifier & { name: 'render' } };
+};
+
+/** Node representing a string literal. */
+type StringLiteral = SimpleLiteral & { value: string };
+
 const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
         attrs = attrs ?? {};
@@ -142,18 +150,13 @@ export function addGenerateMarkupExport(
         ? (b.callExpression(
               b.memberExpression(b.identifier('instance'), b.identifier('render')),
               []
-          ) as SimpleCallExpression & {
-              callee: MemberExpression & { property: Identifier & { name: 'render' } };
-          })
+          ) as RenderCallExpression)
         : b.identifier('tmpl');
 
     if (!tmplExplicitImports) {
         const defaultTmplPath = filename.replace(/\.js$/, '.html');
         program.body.unshift(
-            bImportDeclaration(
-                b.identifier('tmpl'),
-                b.literal(defaultTmplPath) as SimpleLiteral & { value: string }
-            )
+            bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath) as StringLiteral)
         );
     }
 

@@ -10,14 +10,18 @@ import type { CallExpression, Identifier, MemberExpression, SimpleLiteral } from
 import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
 
-export const isStringLiteral = (
-    node: Node | null | undefined
-): node is SimpleLiteral & { value: string } => {
+/** Node representing a string literal. */
+type StringLiteral = SimpleLiteral & { value: string };
+
+export const isStringLiteral = (node: Node | null | undefined): node is StringLiteral => {
     return is.literal(node) && typeof node.value === 'string';
 };
 
+/** Node representing an identifier named "render". */
 type RenderIdentifier = Identifier & { name: 'render' };
+/** Node representing a member expression `<something>.render`. */
 type RenderMemberExpression = MemberExpression & { property: RenderIdentifier };
+/** Node representing a method call `<something>.render()`. */
 type RenderCall = CallExpression & { callee: RenderMemberExpression };
 
 /** Returns `true` if the node is an identifier or `<something>.render()`. */

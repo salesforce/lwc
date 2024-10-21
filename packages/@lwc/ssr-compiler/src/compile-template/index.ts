@@ -109,9 +109,7 @@ export default function compileTemplate(
     const tmplRenderMode =
         root.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
         'shadow';
-    const astShadowModeBool = b.literal(tmplRenderMode === 'light') as SimpleLiteral & {
-        value: boolean;
-    };
+    const astShadowModeBool = b.literal(tmplRenderMode === 'light') as BooleanLiteral;
 
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
