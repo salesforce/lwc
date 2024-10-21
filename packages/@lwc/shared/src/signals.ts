@@ -19,5 +19,5 @@ export function addTrustedSignal(signal: object) {
 }
 
 export function isTrustedSignal(target: object): boolean {
-    return trustedSignals.has(target);
+    return trustedSignals?.has(target);
 }
