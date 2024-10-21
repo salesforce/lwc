@@ -21,8 +21,12 @@ import type {
     SimpleLiteral,
 } from 'estree';
 
-const isBool = (node: EsNode | null | undefined): node is SimpleLiteral & { value: boolean } =>
-    is.literal(node) && typeof node.value === 'boolean';
+type Nullable<T> = T | null | undefined;
+type BooleanLiteral = SimpleLiteral & { value: boolean };
+
+const isBool = (node: Nullable<EsNode>): node is BooleanLiteral => {
+    return is.literal(node) && typeof node.value === 'boolean';
+};
 
 const bStyleValidationImport = esTemplate`
     import { validateStyleTextContents } from '@lwc/ssr-runtime';
