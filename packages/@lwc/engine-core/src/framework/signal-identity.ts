@@ -4,17 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import type { Signal } from '@lwc/signals';
 
-import { assert } from '@lwc/shared';
+const trustedSignals = new WeakSet<Signal<unknown>>();
 
-let signalIdentity: symbol | undefined;
-
-export function setSignalIdentity(identity: symbol) {
-    assert.isFalse(signalIdentity, 'signalIdentity is already set');
-
-    signalIdentity = identity;
+export function addTrustedSignal(signal: Signal<unknown>) {
+    trustedSignals.add(signal);
 }
 
-export function getSignalIdentity(): symbol | undefined {
-    return signalIdentity;
+export function isTrustedSignal(signal: Signal<unknown>): boolean {
+    return trustedSignals.has(signal);
 }

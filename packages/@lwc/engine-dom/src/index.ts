@@ -30,7 +30,7 @@ export {
     isComponentConstructor,
     parseFragment,
     parseSVGFragment,
-    setSignalIdentity,
+    addTrustedSignal,
     swapComponent,
     swapStyle,
     swapTemplate,

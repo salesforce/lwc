@@ -5,8 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getSignalIdentity } from './signal-identity';
-export { setSignalIdentity } from './signal-identity';
+import { addTrustedSignal } from '@lwc/engine-dom';
 
 export type OnUpdate = () => void;
 export type Unsubscribe = () => void;
@@ -17,7 +16,12 @@ export interface Signal<T> {
 }
 
 export abstract class SignalBaseClass<T> implements Signal<T> {
-    __id = getSignalIdentity();
+    constructor() {
+        // Add the signal to the set of trusted signals
+        // This allows the lwc-engine to track the signal and trigger re-renders when the signal changes
+        addTrustedSignal(this);
+    }
+
     abstract get value(): T;
 
     private subscribers: Set<OnUpdate> = new Set();
