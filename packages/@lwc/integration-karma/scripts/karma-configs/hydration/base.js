@@ -7,7 +7,7 @@
 
 'use strict';
 
-const path = require('path');
+const path = require('node:path');
 
 const { globSync } = require('node:fs');
 const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION } = require('../../shared/options');
