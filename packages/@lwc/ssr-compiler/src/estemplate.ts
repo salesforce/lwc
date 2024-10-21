@@ -37,7 +37,7 @@ type ValidatorPlaceholder<T extends EsNode | null> =
     | typeof NO_VALIDATION;
 
 /**
- * Converts the validators and refs used in the template to the list of paramters required by the
+ * Converts the validators and refs used in the template to the list of parameters required by the
  * created template function. Removes back references to previous slots from the list.
  */
 type ToReplacementParameters<Arr extends unknown[]> = Arr extends [infer Head, ...infer Rest]
