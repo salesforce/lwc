@@ -16,5 +16,6 @@ export {
     serverSideRenderComponent,
     serverSideRenderComponent as renderComponent,
 } from './render';
+export * from './stubs';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
