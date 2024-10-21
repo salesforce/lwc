@@ -11,6 +11,6 @@ import { isStringLiteral } from './validators';
 
 import type { ImportDeclaration } from 'estree';
 
-export const bImportDeclaration = esTemplate<ImportDeclaration>`
+export const bImportDeclaration = esTemplate`
     import ${is.identifier} from "${isStringLiteral}";
-`;
+`<ImportDeclaration>;

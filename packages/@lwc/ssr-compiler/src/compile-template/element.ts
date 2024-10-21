@@ -36,7 +36,7 @@ import type {
 import type { Transformer } from './types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
-const bConditionalLiveYield = esTemplateWithYield<EsBlockStatement>`
+const bConditionalLiveYield = esTemplateWithYield`
     {
         const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
         const attrOrPropValue = ${is.expression};
@@ -48,14 +48,14 @@ const bConditionalLiveYield = esTemplateWithYield<EsBlockStatement>`
             }
         }
     }
-`;
+`<EsBlockStatement>;
 
-const bStringLiteralYield = esTemplateWithYield<EsBlockStatement>`
+const bStringLiteralYield = esTemplateWithYield`
     {
         const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
         yield ' ' + ${is.literal} + '="' + prefix + "${is.literal}" + '"'
     }
-`;
+`<EsBlockStatement>;
 
 function yieldAttrOrPropLiteralValue(
     name: string,

@@ -17,10 +17,22 @@ import type {
     Program,
     ImportDeclaration,
     Property,
+    SimpleLiteral,
+    SimpleCallExpression,
+    Identifier,
+    MemberExpression,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
+/** Node representing `<something>.render()`. */
+type RenderCallExpression = SimpleCallExpression & {
+    callee: MemberExpression & { property: Identifier & { name: 'render' } };
+};
+
+/** Node representing a string literal. */
+type StringLiteral = SimpleLiteral & { value: string };
+
+const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
         attrs = attrs ?? {};
         ${isNullableOf(is.expressionStatement)};
@@ -35,18 +47,18 @@ const bGenerateMarkup = esTemplate<ExportNamedDeclaration>`
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
         yield *__renderAttrs(instance, attrs)
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${is.identifier}, instance);
+        yield* tmplFn(props, attrs, slotted, ${1}, instance);
         yield \`</\${tagName}>\`;
     }
-`;
+`<ExportNamedDeclaration>;
 
-const bInsertFallbackTmplImport = esTemplate<ImportDeclaration>`
+const bInsertFallbackTmplImport = esTemplate`
     import { fallbackTmpl as __fallbackTmpl, renderAttrs as __renderAttrs } from '@lwc/ssr-runtime';
-`;
+`<ImportDeclaration>;
 
-const bCreateReflectedPropArr = esTemplate<ExpressionStatement>`
+const bCreateReflectedPropArr = esTemplate`
     const __REFLECTED_PROPS__ = ${is.arrayExpression};
-`;
+`<ExpressionStatement>;
 
 function bReflectedAttrsObj(reflectedPropNames: (keyof typeof AriaPropNameToAttrNameMap)[]) {
     // This will build getter properties for each reflected property. It'll look
@@ -135,12 +147,17 @@ export function addGenerateMarkupExport(
 
     const classIdentifier = b.identifier(state.lwcClassName!);
     const renderCall = hasRenderMethod
-        ? b.callExpression(b.memberExpression(b.identifier('instance'), b.identifier('render')), [])
+        ? (b.callExpression(
+              b.memberExpression(b.identifier('instance'), b.identifier('render')),
+              []
+          ) as RenderCallExpression)
         : b.identifier('tmpl');
 
     if (!tmplExplicitImports) {
         const defaultTmplPath = filename.replace(/\.js$/, '.html');
-        program.body.unshift(bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath)));
+        program.body.unshift(
+            bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath) as StringLiteral)
+        );
     }
 
     let attrsAugmentation: ExpressionStatement | null = null;
@@ -153,7 +170,5 @@ export function addGenerateMarkupExport(
 
     program.body.unshift(bInsertFallbackTmplImport());
     program.body.push(bCreateReflectedPropArr(reflectedPropArr));
-    program.body.push(
-        bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall, classIdentifier)
-    );
+    program.body.push(bGenerateMarkup(attrsAugmentation, classIdentifier, renderCall));
 }
