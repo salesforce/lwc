@@ -73,6 +73,16 @@ const enum EnvNodeTypes {
 // A function that indicates whether an attribute with the given name should be validated.
 type AttrValidationPredicate = (attrName: string) => boolean;
 
+// `data-lwc-validation-opt-out` is a special attribute designed for ignoring cases where the developer "knows
+// what they're doing" and wants to ignore hydration mismatches for the entire element and all its descendants. This is
+// mostly designed for `<style>` deduplication, i.e. replacing `<style>`s with `<link rel=stylesheet>`s.
+function shouldIgnoreAllMismatches(elm: Node, renderer: RendererAPI) {
+    return (
+        renderer.getProperty(elm, 'nodeType') === EnvNodeTypes.ELEMENT &&
+        !isNull(renderer.getAttribute(elm, 'data-lwc-validation-opt-out'))
+    );
+}
+
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
@@ -265,6 +275,9 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 }
 
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
+    if (shouldIgnoreAllMismatches(elm, renderer)) {
+        return elm;
+    }
     if (
         !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
         !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer)
@@ -305,6 +318,9 @@ function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): No
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
+    if (shouldIgnoreAllMismatches(elm, renderer)) {
+        return elm;
+    }
     if (
         !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
         !isMatchingElement(vnode, elm, renderer)
