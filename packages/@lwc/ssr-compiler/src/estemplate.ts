@@ -45,7 +45,7 @@ type ValidatedType<T> =
             ? // estree validator
               C | C[]
             : // custom validator
-              V | Array<null extends V ? NonNullable<V> : V> // avoid invalid `Array<V | null>`
+              V | Array<NonNullable<V>> // avoid invalid `Array<V | null>`
         : T extends typeof NO_VALIDATION
           ? // no validation = broadest type possible
             EsNode | EsNode[] | null
