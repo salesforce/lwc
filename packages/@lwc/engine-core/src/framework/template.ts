@@ -110,6 +110,7 @@ function checkHasMatchingRenderMode(template: Template, vm: VM) {
         return;
     }
     // TODO [#4663]: `renderMode` mismatch between template and component causes `console.error` but no error
+    // Note that `undefined` means shadow in this case, because shadow is the default.
     const vmIsLight = vm.renderMode === RenderMode.Light;
     const templateIsLight = template.renderMode === 'light';
     if (vmIsLight !== templateIsLight) {
