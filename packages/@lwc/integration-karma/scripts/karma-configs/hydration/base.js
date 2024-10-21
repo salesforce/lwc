@@ -9,6 +9,7 @@
 
 const path = require('path');
 
+const { globSync } = require('fs');
 const { ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION } = require('../../shared/options');
 
 const karmaPluginHydrationTests = require('../../karma-plugins/hydration-tests');
@@ -36,14 +37,27 @@ const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE];
 process.setMaxListeners(1000);
 
 function getFiles() {
-    return [
+    const files = [
         ...(ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION ? [createPattern(SYNTHETIC_SHADOW)] : []),
         createPattern(LWC_ENGINE),
         createPattern(TEST_SETUP),
         createPattern(TEST_UTILS),
         createPattern(TEST_HYDRATE),
-        createPattern('**/*.spec.js', { watched: false }),
     ];
+
+    // check if a .only file exists
+    const onlyFile = globSync('**/*/.only', { cwd: BASE_DIR, absolute: true });
+
+    if (onlyFile.length > 1) {
+        throw new Error(`More than one .only file found in ${BASE_DIR}`);
+    } else if (onlyFile.length === 1) {
+        const dir = path.dirname(onlyFile[0]);
+        files.push(createPattern(`${dir}/**/*.spec.js`));
+    } else {
+        files.push(createPattern('**/*.spec.js'));
+    }
+
+    return files;
 }
 
 /**
