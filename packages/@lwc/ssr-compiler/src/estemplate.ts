@@ -36,26 +36,33 @@ type ValidatorPlaceholder<T extends EsNode | null> =
     | ValidatorReference
     | typeof NO_VALIDATION;
 
+/** Extracts the type being validated from the validator function. */
+type ValidatedType<T> =
+    T extends Validator<infer V>
+        ? // estree's `Checker<T>` satisfies our `Validator<T>`, but has an extra overload that
+          // messes with the inferred type `V`, so we must check `Checker` explicitly
+          T extends Checker<infer C>
+            ? // estree validator
+              C | C[]
+            : // custom validator
+              V | Array<null extends V ? NonNullable<V> : V> // avoid invalid `Array<V | null>`
+        : T extends typeof NO_VALIDATION
+          ? // no validation = broadest type possible
+            EsNode | EsNode[] | null
+          : // not a validator!
+            never;
+
 /**
  * Converts the validators and refs used in the template to the list of parameters required by the
  * created template function. Removes back references to previous slots from the list.
  */
 type ToReplacementParameters<Arr extends unknown[]> = Arr extends [infer Head, ...infer Rest]
-    ? // `Checker` is estree's validator type, and has overloads that mess with inferencing
-      Head extends Checker<infer C>
-        ? [C | C[], ...ToReplacementParameters<Rest>]
-        : Head extends Validator<infer V>
-          ? // If it's a validator, extract the validated type
-            null extends V
-              ? // Avoid `(V | null)[]` if it's nullable
-                [V | (V & {})[], ...ToReplacementParameters<Rest>]
-              : [V | V[], ...ToReplacementParameters<Rest>]
-          : Head extends typeof NO_VALIDATION
-            ? // If it's NO_VALIDATION, use `unknown`
-              [unknown, ...ToReplacementParameters<Rest>]
-            : // If it's a back ref, just drop it
-              ToReplacementParameters<Rest>
-    : [];
+    ? Head extends number
+        ? // `Head` is a back reference, drop it from the parameter list
+          ToReplacementParameters<Rest>
+        : // `Head` is a validator, extract the type that it validates
+          [ValidatedType<Head>, ...ToReplacementParameters<Rest>]
+    : []; // `Arr` is an empty array -- nothing to transform
 
 const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PLACEHOLDER__`;
 
