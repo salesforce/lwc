@@ -53,6 +53,8 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
             // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
             const shouldIgnoreWarning =
                 message.includes('LWC1187') ||
+                // TODO [#4497]: stop warning on duplicate slots or disallow them entirely (LWC1137 is duplicate slots)
+                message.includes('LWC1137') ||
                 message.includes('-h-t-m-l') ||
                 code === 'CIRCULAR_DEPENDENCY';
             if (!shouldIgnoreWarning) {

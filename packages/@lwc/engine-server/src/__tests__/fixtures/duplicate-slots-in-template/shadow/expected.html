@@ -1,0 +1,21 @@
+<x-outer>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+        a
+        <slot name="foo">
+        </slot>
+        b
+        <slot name="foo">
+        </slot>
+        c
+        <slot name="foo">
+        </slot>
+        d
+      </template>
+      <div slot="foo">
+        yolo
+      </div>
+    </x-inner>
+  </template>
+</x-outer>
