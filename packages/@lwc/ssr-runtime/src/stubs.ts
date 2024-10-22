@@ -43,9 +43,6 @@ export function registerDecorators(..._: unknown[]): never {
 export function registerTemplate(..._: unknown[]): never {
     throw new Error('registerTemplate cannot be used in SSR context.');
 }
-export function renderComponent(..._: unknown[]): never {
-    throw new Error('renderComponent cannot be used in SSR context.');
-}
 export function sanitizeAttribute(..._: unknown[]): never {
     throw new Error('sanitizeAttribute cannot be used in SSR context.');
 }
