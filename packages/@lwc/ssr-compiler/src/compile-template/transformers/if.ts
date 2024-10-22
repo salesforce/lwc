@@ -6,9 +6,9 @@
  */
 
 import { builders as b } from 'estree-toolkit';
-import { irToEs } from './ir-to-es';
-import { expressionIrToEs } from './expression';
-import { optimizeAdjacentYieldStmts } from './shared';
+import { irToEs } from '../ir-to-es';
+import { expressionIrToEs } from '../expression';
+import { optimizeAdjacentYieldStmts } from '../shared';
 
 import type {
     ChildNode as IrChildNode,
@@ -17,7 +17,7 @@ import type {
     IfBlock as IrIfBlock,
 } from '@lwc/template-compiler';
 import type { BlockStatement as EsBlockStatement, IfStatement as EsIfStatement } from 'estree';
-import type { Transformer, TransformerContext } from './types';
+import type { Transformer, TransformerContext } from '../types';
 
 function bYieldComment(text = '') {
     return b.expressionStatement(b.yieldExpression(b.literal(`<!--${text}-->`)));

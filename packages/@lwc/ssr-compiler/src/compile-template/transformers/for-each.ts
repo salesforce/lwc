@@ -6,9 +6,9 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { esTemplate } from '../estemplate';
-import { irToEs } from './ir-to-es';
-import { optimizeAdjacentYieldStmts } from './shared';
+import { esTemplate } from '../../estemplate';
+import { irToEs } from '../ir-to-es';
+import { optimizeAdjacentYieldStmts } from '../shared';
 
 import type { ForEach as IrForEach } from '@lwc/template-compiler';
 import type {
@@ -17,7 +17,7 @@ import type {
     Identifier as EsIdentifier,
     MemberExpression as EsMemberExpression,
 } from 'estree';
-import type { Transformer } from './types';
+import type { Transformer } from '../types';
 
 function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
     return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
