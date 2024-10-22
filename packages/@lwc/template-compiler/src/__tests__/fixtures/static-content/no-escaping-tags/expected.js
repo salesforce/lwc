@@ -2,16 +2,20 @@ import _implicitStylesheets from "./no-escaping-tags.css";
 import _implicitScopedStylesheets from "./no-escaping-tags.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<xmp${3}>&lt;/xmp&gt;Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></xmp>`;
-const $fragment2 = parseFragment`<iframe${3}>Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></iframe>`;
-const $fragment3 = parseFragment`<noembed${3}>Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></noembed>`;
-const $fragment4 = parseFragment`<noframes${3}><p>It seems your browser does not support frames or is configured to not allow them.</p></noframes>`;
+const $fragment2 = parseFragment`<noembed${3}>Hello &lt;div&gt;world&lt;/div&gt; <div>foo</div></noembed>`;
+const $fragment3 = parseFragment`<noframes${3}><p>It seems your browser does not support frames or is configured to not allow them.</p></noframes>`;
+const stc0 = {
+  key: 2,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { st: api_static_fragment } = $api;
+  const { st: api_static_fragment, t: api_text, h: api_element } = $api;
   return [
     api_static_fragment($fragment1, 1),
-    api_static_fragment($fragment2, 3),
-    api_static_fragment($fragment3, 5),
-    api_static_fragment($fragment4, 7),
+    api_element("iframe", stc0, [
+      api_text("Hello <div>world</div> <div>foo</div>"),
+    ]),
+    api_static_fragment($fragment2, 4),
+    api_static_fragment($fragment3, 6),
   ];
   /*LWC compiler vX.X.X*/
 }

@@ -29,16 +29,19 @@ interface PropsAvailableAtConstruction {
     tagName: string;
 }
 
+export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
+
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
 
     isConnected = false;
     className = '';
-    // TODO [W-14977927]: protect internals from userland
-    private __attrs!: Attributes;
-    private __classList: ClassList | null = null;
+
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
+
+    #attrs!: Attributes;
+    #classList: ClassList | null = null;
 
     constructor(
         propsAvailableAtConstruction: PropsAvailableAtConstruction & Record<string, unknown>
@@ -46,14 +49,13 @@ export class LightningElement implements PropsAvailableAtConstruction {
         Object.assign(this, propsAvailableAtConstruction);
     }
 
-    // TODO [W-14977927]: protect internals from userland
-    private __internal__setState(
+    [SYMBOL__SET_INTERNALS](
         props: Record<string, any>,
         reflectedProps: string[],
         attrs: Record<string, any>
     ) {
         Object.assign(this, props);
-        this.__attrs = attrs;
+        this.#attrs = attrs;
 
         // Whenever a reflected prop changes, we'll update the original props object
         // that was passed in. That'll be referenced when the attrs are rendered later.
@@ -83,14 +85,14 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     get classList() {
-        if (this.__classList) {
-            return this.__classList;
+        if (this.#classList) {
+            return this.#classList;
         }
-        return (this.__classList = new ClassList(this));
+        return (this.#classList = new ClassList(this));
     }
 
     #setAttribute(attrName: string, attrValue: string | null): void {
-        this.__attrs[attrName] = attrValue;
+        this.#attrs[attrName] = attrValue;
         mutationTracker.add(this, attrName);
     }
 
@@ -100,13 +102,13 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     getAttribute(attrName: unknown): string | null {
         if (this.hasAttribute(attrName)) {
-            return this.__attrs[attrName as string];
+            return this.#attrs[attrName as string];
         }
         return null;
     }
 
     hasAttribute(attrName: unknown): boolean {
-        return typeof attrName === 'string' && typeof this.__attrs[attrName] === 'string';
+        return typeof attrName === 'string' && typeof this.#attrs[attrName] === 'string';
     }
 
     removeAttribute(attrName: string): void {

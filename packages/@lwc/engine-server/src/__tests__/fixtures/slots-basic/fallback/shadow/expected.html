@@ -1,0 +1,17 @@
+<x-outer>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+        a
+        <slot>
+          fallback for default
+        </slot>
+        b
+        <slot name="foo">
+          fallback for foo
+        </slot>
+        c
+      </template>
+    </x-inner>
+  </template>
+</x-outer>
