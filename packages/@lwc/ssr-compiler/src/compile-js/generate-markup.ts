@@ -41,11 +41,15 @@ const bGenerateMarkup = esTemplate`
         });
         instance[__SYMBOL__SET_INTERNALS](props, __REFLECTED_PROPS__, attrs);
         instance.isConnected = true;
-        instance.connectedCallback?.();
+        if (instance.connectedCallback) {
+            __mutationTracker.enable(instance);
+            instance.connectedCallback();
+            __mutationTracker.disable(instance);
+        }
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
-        yield *__renderAttrs(instance, attrs)
+        yield* __renderAttrs(instance, attrs)
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${1}, instance);
         yield \`</\${tagName}>\`;
@@ -55,6 +59,7 @@ const bGenerateMarkup = esTemplate`
 const bInsertFallbackTmplImport = esTemplate`
     import {
         fallbackTmpl as __fallbackTmpl,
+	mutationTracker as __mutationTracker,
         renderAttrs as __renderAttrs,
         SYMBOL__SET_INTERNALS as __SYMBOL__SET_INTERNALS,
     } from '@lwc/ssr-runtime';

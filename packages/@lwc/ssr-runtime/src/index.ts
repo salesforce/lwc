@@ -11,7 +11,7 @@ export {
     LightningElementConstructor,
     SYMBOL__SET_INTERNALS,
 } from './lightning-element';
-export { MutationTracker } from './mutation-tracker';
+export { mutationTracker } from './mutation-tracker';
 // renderComponent is an alias for serverSideRenderComponent
 export {
     fallbackTmpl,
