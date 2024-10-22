@@ -41,9 +41,11 @@ const bGenerateMarkup = esTemplate`
         });
         instance[__SYMBOL__SET_INTERNALS](props, __REFLECTED_PROPS__, attrs);
         instance.isConnected = true;
-        __mutationTracker.enable(instance);
-        instance.connectedCallback?.();
-        __mutationTracker.disable(instance);
+        if (instance.connectedCallback) {
+            __mutationTracker.enable(instance);
+            instance.connectedCallback();
+            __mutationTracker.disable(instance);
+        }
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
