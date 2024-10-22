@@ -9,14 +9,14 @@ import { LightningElement } from './lightning-element';
 
 export class MutationTracker {
     #enabledSet = new WeakSet<LightningElement>();
-    mutationMap = new WeakMap<LightningElement, Set<string>>();
+    #mutationMap = new WeakMap<LightningElement, Set<string>>();
 
     add(instance: LightningElement, attrName: string): void {
         if (this.#enabledSet.has(instance)) {
-            let mutatedAttrs = this.mutationMap.get(instance);
+            let mutatedAttrs = this.#mutationMap.get(instance);
             if (!mutatedAttrs) {
                 mutatedAttrs = new Set();
-                this.mutationMap.set(instance, mutatedAttrs);
+                this.#mutationMap.set(instance, mutatedAttrs);
             }
             mutatedAttrs.add(attrName.toLowerCase());
         }
@@ -31,7 +31,7 @@ export class MutationTracker {
     }
 
     renderMutatedAttrs(instance: LightningElement): string {
-        const mutatedAttrs = this.mutationMap.get(instance);
+        const mutatedAttrs = this.#mutationMap.get(instance);
         if (mutatedAttrs) {
             return ` data-lwc-host-mutated="${[...mutatedAttrs].sort().join(' ')}"`;
         } else {
