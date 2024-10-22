@@ -7,7 +7,6 @@
 
 import { builders as b } from 'estree-toolkit';
 
-import { allowedLwcImports } from '../runtime';
 import type { ImportDeclaration } from 'estree';
 import type { NodePath } from 'estree-toolkit';
 import type { ComponentMetaState } from './types';
@@ -31,14 +30,6 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
         ) {
             state.lightningElementIdentifier = specifier.local.name;
             break;
-        }
-        if (specifier.type === 'ImportSpecifier' && specifier.imported.type === 'Identifier') {
-            if (!allowedLwcImports.has(specifier.imported.name)) {
-                throw new Error(`Cannot import "${specifier.imported.name}" in SSR context.`);
-            }
-            if (specifier.imported.name === 'LightningElement') {
-                state.lightningElementIdentifier = specifier.local.name;
-            }
         }
     }
 
