@@ -39,7 +39,7 @@ const bGenerateMarkup = esTemplate`
         const instance = new ${is.identifier}({
             tagName: tagName.toUpperCase(),
         });
-        instance.__internal__setState(props, __REFLECTED_PROPS__, attrs);
+        instance[__SYMBOL__SET_INTERNALS](props, __REFLECTED_PROPS__, attrs);
         instance.isConnected = true;
         instance.connectedCallback?.();
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
@@ -53,7 +53,11 @@ const bGenerateMarkup = esTemplate`
 `<ExportNamedDeclaration>;
 
 const bInsertFallbackTmplImport = esTemplate`
-    import { fallbackTmpl as __fallbackTmpl, renderAttrs as __renderAttrs } from '@lwc/ssr-runtime';
+    import {
+        fallbackTmpl as __fallbackTmpl,
+        renderAttrs as __renderAttrs,
+        SYMBOL__SET_INTERNALS as __SYMBOL__SET_INTERNALS,
+    } from '@lwc/ssr-runtime';
 `<ImportDeclaration>;
 
 const bCreateReflectedPropArr = esTemplate`
