@@ -6,7 +6,7 @@
  */
 
 import { addTrustedSignal } from '@lwc/shared';
-export { setSignalValidator } from '@lwc/shared';
+export { setTrustedSignalSet } from '@lwc/shared';
 
 export type OnUpdate = () => void;
 export type Unsubscribe = () => void;

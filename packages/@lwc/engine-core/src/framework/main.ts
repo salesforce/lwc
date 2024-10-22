@@ -72,4 +72,4 @@ export { default as wire } from './decorators/wire';
 export { readonly } from './readonly';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
-export { setSignalValidator } from '@lwc/shared';
+export { setTrustedSignalSet } from '@lwc/shared';

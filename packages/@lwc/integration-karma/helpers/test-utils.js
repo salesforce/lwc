@@ -643,7 +643,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     };
 
     const signalValidator = new WeakSet();
-    lwc.setSignalValidator(signalValidator);
+    lwc.setTrustedSignalSet(signalValidator);
 
     function addTrustedSignal(signal) {
         signalValidator.add(signal);
