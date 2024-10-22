@@ -183,6 +183,18 @@ describe('signal protocol', () => {
         expect(elm.getSignalRemovedSubscriberCount()).toBe(2);
     });
 
+    it('does not subscribe if the signal shape is incorrect', async () => {
+        const elm = createElement('x-child', { is: Child });
+        const subscribe = jasmine.createSpy();
+        // Note the signals property is value's' and not value
+        const signal = { values: 'initial value', subscribe };
+        elm.signal = signal;
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        expect(subscribe).not.toHaveBeenCalled();
+    });
+
     it('does not subscribe if the signal is not added as trusted signal', async () => {
         const elm = createElement('x-child', { is: Child });
         const subscribe = jasmine.createSpy();

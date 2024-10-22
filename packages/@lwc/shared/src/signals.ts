@@ -8,16 +8,23 @@ import { isFalse } from './assert';
 
 let trustedSignals: WeakSet<object>;
 
-export function setSignalValidator(signals: WeakSet<object>) {
-    isFalse(trustedSignals, 'Already added a signal validator');
+export function setTrustedSignalSet(signals: WeakSet<object>) {
+    isFalse(trustedSignals, 'Trusted Signal Set is already set!');
 
     trustedSignals = signals;
 }
 
 export function addTrustedSignal(signal: object) {
+    // This should be a no-op when the trustedSignals set isn't set by runtime
     trustedSignals?.add(signal);
 }
 
 export function isTrustedSignal(target: object): boolean {
-    return trustedSignals?.has(target);
+    if (!trustedSignals) {
+        // The runtime didn't set a trustedSignals set
+        // this check should only be performed for runtimes that care about filtering signals to track
+        // our default behavior should be to track all signals
+        return true;
+    }
+    return trustedSignals.has(target);
 }
