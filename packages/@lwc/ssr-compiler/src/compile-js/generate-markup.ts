@@ -45,7 +45,7 @@ const bGenerateMarkup = esTemplate`
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
-        yield *__renderAttrs(instance, attrs)
+        yield* __renderAttrs(instance, attrs)
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${1}, instance);
         yield \`</\${tagName}>\`;

@@ -7,7 +7,7 @@
 
 import { LightningElement } from './lightning-element';
 
-export class MutationTracker {
+class MutationTracker {
     #enabledSet = new WeakSet<LightningElement>();
     #mutationMap = new WeakMap<LightningElement, Set<string>>();
 
