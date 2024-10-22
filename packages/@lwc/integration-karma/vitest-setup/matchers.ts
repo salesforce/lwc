@@ -1,4 +1,5 @@
 import type { MatchersObject, RawMatcherFn } from '@vitest/expect';
+import type { Mock } from 'vitest';
 
 function pass() {
     return {
@@ -234,6 +235,17 @@ const customMatchers = {
                 `Expected array ${to} have size ${size}, but received ${received.length}`,
         };
     },
+    toHaveBeenCalledOnceWith(received: Mock, expected: any) {
+        const { isNot } = this;
+        const to = isNot ? 'not to' : 'to';
+        return {
+            pass: received.mock.calls.length === 1 && received.mock.calls[0][0] === expected,
+            message: () =>
+                `Expected function ${to} have been called once with ${expected}, but received ${received.mock.calls.length} calls with ${received.mock.calls.map(
+                    (call) => call[0]
+                )}`,
+        };
+    },
 } as const satisfies MatchersObject;
 
 expect.extend(customMatchers);
@@ -251,7 +263,7 @@ interface CustomMatchers<R = unknown> {
     toThrowCallbackReactionError: (expected: ExpectedMessage | ExpectedMessage[]) => R;
 
     toHaveSize: (size: number) => R;
-
+    toHaveBeenCalledOnceWith: (expected: any) => R;
     toEqualWireSettings: (actual: any, expected: any) => R;
 }
 
