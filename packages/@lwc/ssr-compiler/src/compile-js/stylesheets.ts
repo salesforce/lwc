@@ -12,13 +12,13 @@ import type { NodePath } from 'estree-toolkit';
 import type { ImportDeclaration } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const bDefaultStyleImport = esTemplate<ImportDeclaration>`
+const bDefaultStyleImport = esTemplate`
     import defaultStylesheets from '${is.literal}';
-`;
+`<ImportDeclaration>;
 
-const bDefaultScopedStyleImport = esTemplate<ImportDeclaration>`
+const bDefaultScopedStyleImport = esTemplate`
     import defaultScopedStylesheets from '${is.literal}';
-`;
+`<ImportDeclaration>;
 
 export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
     const specifier = path.node!.specifiers[0];

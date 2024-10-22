@@ -16,22 +16,23 @@ import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type {
     Node as EsNode,
-    Statement as EsStatement,
-    Literal as EsLiteral,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
     ImportDeclaration as EsImportDeclaration,
+    SimpleLiteral,
 } from 'estree';
 
-const isBool = (node: EsNode | null) => is.literal(node) && typeof node.value === 'boolean';
+type Nullable<T> = T | null | undefined;
+type BooleanLiteral = SimpleLiteral & { value: boolean };
 
-const bStyleValidationImport = esTemplate<EsImportDeclaration>`
+const isBool = (node: Nullable<EsNode>): node is BooleanLiteral => {
+    return is.literal(node) && typeof node.value === 'boolean';
+};
+
+const bStyleValidationImport = esTemplate`
     import { validateStyleTextContents } from '@lwc/ssr-runtime';
-`;
+`<EsImportDeclaration>;
 
-const bExportTemplate = esTemplate<
-    EsExportDefaultDeclaration,
-    [EsLiteral, EsStatement[], EsLiteral]
->`
+const bExportTemplate = esTemplate`
     export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
         if (!${isBool} && Cmp.renderMode !== 'light') {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -55,7 +56,7 @@ const bExportTemplate = esTemplate<
 
         ${is.statement};
 
-        if (!${isBool} && Cmp.renderMode !== 'light') {
+        if (!${0} && Cmp.renderMode !== 'light') {
             yield '</template>';
         }
 
@@ -63,7 +64,7 @@ const bExportTemplate = esTemplate<
             yield* slottedContent();
         }
     }
-`;
+`<EsExportDefaultDeclaration>;
 
 export default function compileTemplate(
     src: string,
@@ -108,7 +109,7 @@ export default function compileTemplate(
     const tmplRenderMode =
         root.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
         'shadow';
-    const astShadowModeBool = tmplRenderMode === 'light' ? b.literal(true) : b.literal(false);
+    const astShadowModeBool = b.literal(tmplRenderMode === 'light') as BooleanLiteral;
 
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
@@ -119,11 +120,7 @@ export default function compileTemplate(
     const moduleBody = [
         ...hoisted,
         bStyleValidationImport(),
-        bExportTemplate(
-            astShadowModeBool,
-            optimizeAdjacentYieldStmts(statements),
-            astShadowModeBool
-        ),
+        bExportTemplate(astShadowModeBool, optimizeAdjacentYieldStmts(statements)),
     ];
     const program = b.program(moduleBody, 'module');
 

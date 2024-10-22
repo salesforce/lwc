@@ -46,7 +46,7 @@
     "dependencies": {
         "@lwc/shared": "8.2.0",
         "@lwc/template-compiler": "8.2.0",
-        "acorn": "8.12.1",
+        "acorn": "8.13.0",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.8",
         "immer": "^10.1.1",
