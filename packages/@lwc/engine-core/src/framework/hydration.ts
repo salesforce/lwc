@@ -275,17 +275,15 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 }
 
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
-    if (shouldIgnoreAllMismatches(elm, renderer)) {
-        return elm;
-    }
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer)
+        !shouldIgnoreAllMismatches(elm, renderer) &&
+        (!hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+            !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer))
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
 
-    return hydrateStaticElementParts(elm, vnode, renderer);
+    return hydrateStaticElementParts(elm as Element, vnode, renderer);
 }
 
 function hydrateStaticElementParts(elm: Element, vnode: VStatic, renderer: RendererAPI) {
@@ -318,17 +316,15 @@ function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): No
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
-    if (shouldIgnoreAllMismatches(elm, renderer)) {
-        return elm;
-    }
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
+        !shouldIgnoreAllMismatches(elm, renderer) &&
+        (!hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+            !isMatchingElement(vnode, elm, renderer))
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
 
-    vnode.elm = elm;
+    vnode.elm = elm as Element;
 
     const { owner } = vnode;
     const { context } = vnode.data;
@@ -368,7 +364,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, owner, false);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, owner, false);
     }
 
     return elm;
