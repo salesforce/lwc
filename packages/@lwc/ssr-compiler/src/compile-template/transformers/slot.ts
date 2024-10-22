@@ -10,11 +10,14 @@ import { builders as b, is } from 'estree-toolkit';
 import { Slot as IrSlot } from '@lwc/template-compiler';
 import { esTemplate } from '../../estemplate';
 
+import { irChildrenToEs } from '../ir-to-es';
 import { Element } from './element';
-import type { Expression as EsExpression, Statement as EsStatement, IfStatement as EsIfStatement } from 'estree';
-import type {Transformer, TransformerContext} from '../types';
-import {irChildrenToEs, irToEs} from "../ir-to-es";
-import type {ChildNode as IrChildNode} from "@lwc/template-compiler/dist/shared/types";
+import type {
+    Expression as EsExpression,
+    Statement as EsStatement,
+    IfStatement as EsIfStatement,
+} from 'estree';
+import type { Transformer } from '../types';
 
 const bConditionalSlot = esTemplate`
     if (isLightDom) {
@@ -31,6 +34,7 @@ const bConditionalSlot = esTemplate`
             // without the generator yielding at least a text node / element.
             // FIXME: how does this work with comments and lwc:preserve-comments?
             // TODO: default/fallback slot content
+            ${/* slot fallback content */ is.statement}
         }
 
         // FIXME: why do we need yield*?
@@ -40,18 +44,6 @@ const bConditionalSlot = esTemplate`
         ${/* slot element AST */ is.statement}
     }
 `<EsIfStatement>;
-
-export function bYieldLightDomSlotChildren(slot: IrSlot, cxt: TransformerContext): EsStatement[] {
-    // FIXME: how does light DOM handle slot attributes that aren't immediate children of the <slot>?
-    const result = children.flatMap((child, idx) => {
-        cxt.prevSibling = children[idx - 1];
-        cxt.nextSibling = children[idx + 1];
-        return irToEs(child, cxt);
-    });
-    cxt.prevSibling = undefined;
-    cxt.nextSibling = undefined;
-    return result;
-}
 
 export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[] {
     const nameAttrValue = node.attributes.find((attr) => attr.name === 'name')?.value;
@@ -68,9 +60,7 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     // FIXME: avoid serializing the slot's children twice
     const slotAst = Element(node, ctx);
 
-
-
     const slotChildren = irChildrenToEs(node.children, ctx);
 
-    return bConditionalSlot(slotName, slotAst);
+    return [bConditionalSlot(slotName, slotChildren, slotAst)];
 };
