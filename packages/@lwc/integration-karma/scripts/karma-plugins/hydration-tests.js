@@ -147,7 +147,7 @@ function getSsrCode(moduleCode, testConfig, filename) {
 
     throwOnUnexpectedConsoleCalls(() => {
         vm.createContext(context);
-        script.runInContext(context, { filename });
+        script.runInContext(context);
     });
 
     return context.moduleOutput;
