@@ -8,7 +8,7 @@
 import { builders as b, is } from 'estree-toolkit';
 
 import { Slot as IrSlot } from '@lwc/template-compiler';
-import { esTemplate } from '../../estemplate';
+import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
 import { Element } from './element';
@@ -19,11 +19,10 @@ import type {
 } from 'estree';
 import type { Transformer } from '../types';
 
-const bConditionalSlot = esTemplate`
+const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
-        // FIXME: why do we need yield*?
         // start bookend HTML comment
-        yield* '<!---->';
+        yield '<!---->';
 
         const generator = slottedContent[${/* slotName */ is.expression} ?? ""];
         if (generator) {
@@ -37,9 +36,8 @@ const bConditionalSlot = esTemplate`
             ${/* slot fallback content */ is.statement}
         }
 
-        // FIXME: why do we need yield*?
         // end bookend HTML comment
-        yield* '<!---->';
+        yield '<!---->';
     } else {
         ${/* slot element AST */ is.statement}
     }
