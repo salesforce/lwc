@@ -11,29 +11,29 @@ import { builders as b } from 'estree-toolkit/dist/builders';
 import { esTemplate } from '../estemplate';
 import type { BlockStatement, ExportNamedDeclaration, Program, VariableDeclaration } from 'estree';
 
-const bStylesheetTokenDeclaration = esTemplate<VariableDeclaration>`
+const bStylesheetTokenDeclaration = esTemplate`
     const stylesheetScopeToken = '${is.literal}';
-`;
+`<VariableDeclaration>;
 
 const bAdditionalDeclarations = [
-    esTemplate<VariableDeclaration>`
+    esTemplate`
         const hasScopedStylesheets = defaultScopedStylesheets && defaultScopedStylesheets.length > 0;
-    `,
-    esTemplate<ExportNamedDeclaration>`
+    `<VariableDeclaration>,
+    esTemplate`
         const stylesheetScopeTokenClass = hasScopedStylesheets ? \` class="\${stylesheetScopeToken}"\` : '';
-    `,
-    esTemplate<ExportNamedDeclaration>`
+    `<ExportNamedDeclaration>,
+    esTemplate`
         const stylesheetScopeTokenHostClass = hasScopedStylesheets ? \` class="\${stylesheetScopeToken}-host"\` : '';
-    `,
-    esTemplate<ExportNamedDeclaration>`
+    `<ExportNamedDeclaration>,
+    esTemplate`
         const stylesheetScopeTokenClassPrefix = hasScopedStylesheets ? (stylesheetScopeToken + ' ') : '';
-    `,
+    `<ExportNamedDeclaration>,
 ];
 
 // Scope tokens are associated with a given template. This is assigned here so that it can be used in `generateMarkup`.
-const tmplAssignmentBlock = esTemplate<BlockStatement>`
+const tmplAssignmentBlock = esTemplate`
     ${is.identifier}.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
-`;
+`<BlockStatement>;
 
 export function addScopeTokenDeclarations(
     program: Program,

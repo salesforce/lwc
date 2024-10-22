@@ -7,8 +7,8 @@
 import * as styleCompiler from '@lwc/style-compiler';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
-import { NormalizedTransformOptions } from '../options';
-import { TransformResult } from './transformer';
+import type { NormalizedTransformOptions } from '../options';
+import type { TransformResult } from './shared';
 
 /**
  * Transform the passed source code

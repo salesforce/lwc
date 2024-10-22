@@ -7,33 +7,14 @@
 import * as path from 'path';
 
 import { isString } from '@lwc/shared';
-import {
-    TransformerErrors,
-    generateCompilerError,
-    invariant,
-    CompilerDiagnostic,
-} from '@lwc/errors';
+import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
-
-/** The object returned after transforming code. */
-export interface TransformResult {
-    /** The compiled source code. */
-    code: string;
-    /** The generated source map. */
-    map: unknown;
-    /** Any diagnostic warnings that may have occurred. */
-    warnings?: CompilerDiagnostic[];
-    /**
-     * String tokens used for style scoping in synthetic shadow DOM and `*.scoped.css`, as either
-     * attributes or classes.
-     */
-    cssScopeTokens?: string[];
-}
+import type { TransformResult } from './shared';
 
 /**
  * Transform the passed source code.

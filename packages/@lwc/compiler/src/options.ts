@@ -6,7 +6,7 @@
  */
 import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
-import { CustomRendererConfig } from '@lwc/template-compiler';
+import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
  * Flag indicating that a warning about still using the deprecated `enableLwcSpread`
@@ -131,8 +131,7 @@ export interface TransformOptions {
     targetSSR?: boolean;
 }
 
-type RequiredTransformOptions = Omit<
-    TransformOptions,
+type OptionalTransformKeys =
     | 'name'
     | 'namespace'
     | 'scopedStyles'
@@ -142,20 +141,14 @@ type RequiredTransformOptions = Omit<
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
-    | 'instrumentation'
->;
-export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
-    name?: string;
-    namespace?: string;
-    scopedStyles?: boolean;
-    customRendererConfig?: CustomRendererConfig;
-    enableLwcSpread?: boolean;
-    enableLightningWebSecurityTransforms?: boolean;
-    enableDynamicComponents?: boolean;
-    experimentalDynamicDirective?: boolean;
-    experimentalDynamicComponent?: DynamicImportConfig;
-    instrumentation?: InstrumentationObject;
-}
+    | 'instrumentation';
+
+type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;
+type OptionalTransformOptions = Pick<TransformOptions, OptionalTransformKeys>;
+
+export interface NormalizedTransformOptions
+    extends RequiredTransformOptions,
+        OptionalTransformOptions {}
 
 /**
  * Validates that the options conform to the expected shape and normalizes them to a standard format

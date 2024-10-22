@@ -6,7 +6,7 @@
  */
 import { noop } from '@lwc/shared';
 
-import { ShadowMode, ShadowSupportMode } from './vm';
+import { RenderMode, ShadowMode, ShadowSupportMode } from './vm';
 
 export const enum ReportingEventId {
     CrossRootAriaInSyntheticShadow = 'CrossRootAriaInSyntheticShadow',
@@ -17,6 +17,7 @@ export const enum ReportingEventId {
     ConnectedCallbackWhileDisconnected = 'ConnectedCallbackWhileDisconnected',
     ShadowModeUsage = 'ShadowModeUsage',
     ShadowSupportModeUsage = 'ShadowSupportModeUsage',
+    RenderModeMismatch = 'RenderModeMismatch',
 }
 
 export interface BasePayload {
@@ -49,6 +50,10 @@ export interface StylesheetMutationPayload extends BasePayload {
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ConnectedCallbackWhileDisconnectedPayload extends BasePayload {}
 
+export interface RenderModeMismatchPayload extends BasePayload {
+    mode: RenderMode;
+}
+
 export interface ShadowModeUsagePayload extends BasePayload {
     mode: ShadowMode;
 }
@@ -68,6 +73,7 @@ export type ReportingPayloadMapping = {
     [ReportingEventId.ConnectedCallbackWhileDisconnected]: ConnectedCallbackWhileDisconnectedPayload;
     [ReportingEventId.ShadowModeUsage]: ShadowModeUsagePayload;
     [ReportingEventId.ShadowSupportModeUsage]: ShadowSupportModeUsagePayload;
+    [ReportingEventId.RenderModeMismatch]: RenderModeMismatchPayload;
 };
 
 export type ReportingDispatcher<T extends ReportingEventId = ReportingEventId> = (
