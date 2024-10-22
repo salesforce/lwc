@@ -15,26 +15,19 @@ import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token'
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type {
-    Node as EsNode,
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
     ImportDeclaration as EsImportDeclaration,
-    SimpleLiteral,
 } from 'estree';
-
-type Nullable<T> = T | null | undefined;
-type BooleanLiteral = SimpleLiteral & { value: boolean };
-
-const isBool = (node: Nullable<EsNode>): node is BooleanLiteral => {
-    return is.literal(node) && typeof node.value === 'boolean';
-};
 
 const bStyleValidationImport = esTemplate`
     import { validateStyleTextContents } from '@lwc/ssr-runtime';
 `<EsImportDeclaration>;
 
+// TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
     export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
-        if (!${isBool} && Cmp.renderMode !== 'light') {
+        const isLightDom = Cmp.renderMode === 'light';
+        if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
         
@@ -56,7 +49,7 @@ const bExportTemplate = esTemplate`
 
         ${is.statement};
 
-        if (!${0} && Cmp.renderMode !== 'light') {
+        if (!isLightDom) {
             yield '</template>';
         }
 
@@ -106,11 +99,6 @@ export default function compileTemplate(
         }
     }
 
-    const tmplRenderMode =
-        root.directives.find((directive) => directive.name === 'RenderMode')?.value?.value ??
-        'shadow';
-    const astShadowModeBool = b.literal(tmplRenderMode === 'light') as BooleanLiteral;
-
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
@@ -120,7 +108,7 @@ export default function compileTemplate(
     const moduleBody = [
         ...hoisted,
         bStyleValidationImport(),
-        bExportTemplate(astShadowModeBool, optimizeAdjacentYieldStmts(statements)),
+        bExportTemplate(optimizeAdjacentYieldStmts(statements)),
     ];
     const program = b.program(moduleBody, 'module');
 

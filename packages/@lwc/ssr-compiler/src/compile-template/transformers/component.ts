@@ -8,11 +8,11 @@
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
-import { esTemplateWithYield } from '../estemplate';
-import { isValidIdentifier, optimizeAdjacentYieldStmts } from './shared';
-import { TransformerContext } from './types';
-import { expressionIrToEs } from './expression';
-import { irChildrenToEs } from './ir-to-es';
+import { esTemplateWithYield } from '../../estemplate';
+import { isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
+import { TransformerContext } from '../types';
+import { expressionIrToEs } from '../expression';
+import { irChildrenToEs } from '../ir-to-es';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -23,7 +23,7 @@ import type {
     Component as IrComponent,
     Property as IrProperty,
 } from '@lwc/template-compiler';
-import type { Transformer } from './types';
+import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {

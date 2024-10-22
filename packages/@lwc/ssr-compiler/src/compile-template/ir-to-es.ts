@@ -7,13 +7,14 @@
 
 import { inspect } from 'util';
 
-import { Comment } from './comment';
-import { Component } from './component';
-import { Element } from './element';
-import { ForEach } from './for-each';
-import { ForOf } from './for-of';
-import { If, IfBlock } from './if';
-import { Text } from './text';
+import { Comment } from './transformers/comment';
+import { Component } from './transformers/component';
+import { Element } from './transformers/element';
+import { ForEach } from './transformers/for-each';
+import { ForOf } from './transformers/for-of';
+import { If, IfBlock } from './transformers/if';
+import { Slot } from './transformers/slot';
+import { Text } from './transformers/text';
 import { createNewContext } from './context';
 
 import type {
@@ -56,7 +57,7 @@ const transformers: Transformers = {
     // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
-    Slot: Element,
+    Slot,
     Lwc: defaultTransformer,
 };
 

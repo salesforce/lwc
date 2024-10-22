@@ -22,10 +22,10 @@ import {
     ExternalComponent as IrExternalComponent,
     Slot as IrSlot,
 } from '@lwc/template-compiler';
-import { esTemplateWithYield } from '../estemplate';
-import { expressionIrToEs } from './expression';
-import { irChildrenToEs } from './ir-to-es';
-import { bImportHtmlEscape, importHtmlEscapeKey } from './shared';
+import { esTemplateWithYield } from '../../estemplate';
+import { expressionIrToEs } from '../expression';
+import { irChildrenToEs } from '../ir-to-es';
+import { bImportHtmlEscape, importHtmlEscapeKey } from '../shared';
 
 import type {
     BinaryExpression,
@@ -33,7 +33,7 @@ import type {
     Expression as EsExpression,
     Statement as EsStatement,
 } from 'estree';
-import type { Transformer } from './types';
+import type { Transformer } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 const bConditionalLiveYield = esTemplateWithYield`
