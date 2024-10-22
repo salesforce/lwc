@@ -664,7 +664,7 @@ function validateClassAttr(
 
     const elmClassName = getAttribute(elm, 'class');
 
-    if (!isUndefined(className) && String(className) !== elmClassName) {
+    if (!isUndefined(className) && String(className) !== elmClassName && className !== '') {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
         // stringify for pretty-printing
