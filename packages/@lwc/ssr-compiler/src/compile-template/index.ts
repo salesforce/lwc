@@ -12,6 +12,7 @@ import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
+import { transmogrify } from '../transmogrify';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type {
@@ -20,6 +21,7 @@ import type {
     ImportDeclaration as EsImportDeclaration,
     SimpleLiteral,
 } from 'estree';
+import type { CompilationMode } from '../shared';
 
 type Nullable<T> = T | null | undefined;
 type BooleanLiteral = SimpleLiteral & { value: boolean };
@@ -69,7 +71,8 @@ const bExportTemplate = esTemplate`
 export default function compileTemplate(
     src: string,
     filename: string,
-    options: TemplateCompilerConfig
+    options: TemplateCompilerConfig,
+    compilationMode: CompilationMode
 ) {
     const { root, warnings } = parse(src, {
         // `options` is from @lwc/compiler, and may have flags that @lwc/template-compiler doesn't
@@ -122,12 +125,16 @@ export default function compileTemplate(
         bStyleValidationImport(),
         bExportTemplate(astShadowModeBool, optimizeAdjacentYieldStmts(statements)),
     ];
-    const program = b.program(moduleBody, 'module');
+    let program = b.program(moduleBody, 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
     const stylesheetImports = getStylesheetImports(filename);
     program.body.unshift(...stylesheetImports);
+
+    if (compilationMode === 'async' || compilationMode === 'sync') {
+        program = transmogrify(program, compilationMode);
+    }
 
     return {
         code: generate(program, {}),

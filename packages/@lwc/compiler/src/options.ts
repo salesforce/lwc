@@ -6,6 +6,7 @@
  */
 import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
+import { CompilationMode } from '@lwc/ssr-compiler';
 import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
@@ -128,7 +129,7 @@ export interface TransformOptions {
     instrumentation?: InstrumentationObject;
     /** API version to associate with the compiled module. Values correspond to Salesforce platform releases. */
     apiVersion?: number;
-    targetSSR?: boolean;
+    targetSSR?: CompilationMode | null;
 }
 
 type OptionalTransformKeys =
@@ -237,6 +238,6 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         outputConfig,
         experimentalDynamicComponent,
         apiVersion,
-        targetSSR: !!options.targetSSR,
+        targetSSR: options.targetSSR ?? null,
     };
 }

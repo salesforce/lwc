@@ -12,6 +12,7 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
+import type { CompilationMode } from '../index';
 
 interface FixtureModule {
     tagName: string;
@@ -22,6 +23,8 @@ interface FixtureModule {
 }
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
+
+const SSR_MODE: CompilationMode = 'sync';
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -34,7 +37,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
         external: ['lwc'],
         plugins: [
             lwcRollupPlugin({
-                targetSSR: true,
+                targetSSR: SSR_MODE,
                 enableDynamicComponents: true,
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
@@ -85,7 +88,8 @@ function testFixtures() {
                 result = await serverSideRenderComponent(
                     module!.tagName,
                     module!.generateMarkup,
-                    config?.props ?? {}
+                    config?.props ?? {},
+                    SSR_MODE
                 );
             } catch (err: any) {
                 return {

@@ -14,10 +14,11 @@ import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compi
 import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
 import { APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
+import type { CompilationMode } from '@lwc/ssr-compiler';
 
 export interface RollupLwcOptions {
     /** A boolean indicating whether to compile for SSR runtime target. */
-    targetSSR?: boolean;
+    targetSSR?: CompilationMode;
     /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should transform on. By default all files are targeted. */
     include?: FilterPattern;
     /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should not transform. By default no files are ignored. */

@@ -8,7 +8,11 @@ import * as path from 'path';
 
 import { isString } from '@lwc/shared';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
-import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
+import {
+    compileComponentForSSR,
+    compileTemplateForSSR,
+    type CompilationMode,
+} from '@lwc/ssr-compiler';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
@@ -77,9 +81,10 @@ export function transformSync(
     filename: string,
     options: TransformOptions
 ): TransformResult {
+    const ssrCompilationMode = options?.targetSSR ?? null;
     validateArguments(src, filename);
     const normalizedOptions = validateTransformOptions(options);
-    return transformFile(src, filename, normalizedOptions);
+    return transformFile(src, filename, normalizedOptions, ssrCompilationMode);
 }
 
 function validateArguments(src: string, filename: string) {
@@ -90,18 +95,18 @@ function validateArguments(src: string, filename: string) {
 function transformFile(
     src: string,
     filename: string,
-    options: NormalizedTransformOptions
+    options: NormalizedTransformOptions,
+    ssrCompilationMode: CompilationMode | null
 ): TransformResult {
-    let transformer;
-
     switch (path.extname(filename)) {
         case '.html':
-            transformer = options.targetSSR ? compileTemplateForSSR : templateTransformer;
-            break;
+            if (ssrCompilationMode) {
+                return compileTemplateForSSR(src, filename, options, ssrCompilationMode);
+            }
+            return templateTransformer(src, filename, options);
 
         case '.css':
-            transformer = styleTransform;
-            break;
+            return styleTransform(src, filename, options);
 
         case '.tsx':
         case '.jsx':
@@ -109,8 +114,10 @@ function transformFile(
         case '.js':
         case '.mts':
         case '.mjs':
-            transformer = options.targetSSR ? compileComponentForSSR : scriptTransformer;
-            break;
+            if (ssrCompilationMode) {
+                return compileComponentForSSR(src, filename, options, ssrCompilationMode);
+            }
+            return scriptTransformer(src, filename, options);
 
         default:
             throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
@@ -118,6 +125,4 @@ function transformFile(
                 origin: { filename },
             });
     }
-
-    return transformer(src, filename, options);
 }

@@ -59,3 +59,5 @@ export interface IHoistInstantiation {
 }
 
 export type TransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
+
+export type CompilationMode = 'asyncYield' | 'async' | 'sync';
