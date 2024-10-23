@@ -5,18 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { is } from 'estree-toolkit';
 
 import { Slot as IrSlot } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
+import { bAttributeValue } from '../shared';
 import { Element } from './element';
-import type {
-    Expression as EsExpression,
-    Statement as EsStatement,
-    IfStatement as EsIfStatement,
-} from 'estree';
+import type { Statement as EsStatement, IfStatement as EsIfStatement } from 'estree';
 import type { Transformer } from '../types';
 
 const bConditionalSlot = esTemplateWithYield`
@@ -44,21 +41,9 @@ const bConditionalSlot = esTemplateWithYield`
 `<EsIfStatement>;
 
 export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[] {
-    const nameAttrValue = node.attributes.find((attr) => attr.name === 'name')?.value;
-    let slotName: EsExpression;
-    if (!nameAttrValue) {
-        slotName = b.literal('');
-    } else if (nameAttrValue.type === 'Literal') {
-        const name = typeof nameAttrValue.value === 'string' ? nameAttrValue.value : '';
-        slotName = b.literal(name);
-    } else {
-        slotName = b.memberExpression(b.literal('instance'), nameAttrValue as EsExpression);
-    }
-
+    const slotName = bAttributeValue(node, 'name');
     // FIXME: avoid serializing the slot's children twice
     const slotAst = Element(node, ctx);
-
     const slotChildren = irChildrenToEs(node.children, ctx);
-
     return [bConditionalSlot(slotName, slotChildren, slotAst)];
 };

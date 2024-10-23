@@ -8,11 +8,12 @@
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
-import { esTemplateWithYield } from '../../estemplate';
-import { isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
+import { esTemplate, esTemplateWithYield } from '../../estemplate';
+import { bAttributeValue, isValidIdentifier } from '../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
-import { irChildrenToEs } from '../ir-to-es';
+import { irToEs } from '../ir-to-es';
+import type { Statement as EsStatement } from 'estree';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -29,12 +30,26 @@ const bYieldFromChildGenerator = esTemplateWithYield`
     {
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
-        async function* childSlottedContentGenerator() {
-            ${is.statement}
-        };
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerator);
+        const slottedContent = Object.create(null);
+        function addContent(name, fn) {
+            let contentList = slottedContent[name]
+            if (contentList) {
+                contentList.push(fn)
+            } else {
+                slottedContent[name] = [fn]
+            }
+        }
+        // FIXME: adding a validator makes this sad
+        ${/* addContent statements */ false}
+        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
     }
 `<EsBlockStatement>;
+
+const bAddContent = esTemplate`
+    addContent(${/* slot name */ is.expression} ?? "", async function* () {
+        ${/* slot content */ is.statement}
+    });
+`<EsStatement>;
 
 const bImportGenerateMarkup = (localName: string, importPath: string) =>
     b.importDeclaration(
@@ -95,11 +110,22 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
 
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
+    const slotContent = node.children
+        .filter((child) => 'attributes' in child)
+        .map((child) => {
+            const slotName = bAttributeValue(child, 'slot');
+            // FIXME: We don't know what happens for slot attributes inside an lwc:if block
+            const clone = structuredClone(child);
+            clone.attributes = clone.attributes.filter((attr) => attr.name !== 'slot');
+            const slotContent = irToEs(child, cxt);
+            return bAddContent(slotName, slotContent);
+        });
+
     return [
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(attributes, cxt),
-            optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt)),
+            slotContent,
             b.identifier(childGeneratorLocalName),
             b.literal(childTagName)
         ),
