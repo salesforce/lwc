@@ -20,7 +20,7 @@ export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>
 const EMIT_IDENT = b.identifier('$$emit');
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
 const TMPL_FN_PATTERN = /tmpl($\d+)?/;
-const GEN_MARKUP_PATTERN = /generateMarkup.*/;
+const GEN_MARKUP_PATTERN = /generateMarkup($\d+)?/;
 
 const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     const { node } = nodePath;
