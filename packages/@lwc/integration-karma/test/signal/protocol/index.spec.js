@@ -194,6 +194,24 @@ describe('signal protocol', () => {
 
         expect(subscribe).not.toHaveBeenCalled();
     });
+
+    it('does not subscribe if the signal is not added as trusted signal', async () => {
+        const elm = createElement('x-child', { is: Child });
+        const subscribe = jasmine.createSpy();
+        // Note this follows the shape of the signal implementation
+        // but it's not added as a trusted signal (add using lwc.addTrustedSignal)
+        const signal = {
+            get value() {
+                return 'initial value';
+            },
+            subscribe,
+        };
+        elm.signal = signal;
+        document.body.appendChild(elm);
+        await Promise.resolve();
+
+        expect(subscribe).not.toHaveBeenCalled();
+    });
 });
 
 describe('ENABLE_EXPERIMENTAL_SIGNALS not set', () => {
