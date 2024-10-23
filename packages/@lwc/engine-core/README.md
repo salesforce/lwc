@@ -115,3 +115,9 @@ This experimental API enables the sanitization of HTML content by external servi
 ### unwrap()
 
 This experimental API enables the removal of an object's observable membrane proxy wrapper.
+
+### setTrustedSignalSet()
+
+This experimental API enables the addition of a signal as a trusted signal. If the [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature is enabled, any signal value change will trigger a re-render.
+
+If `setTrustedSignalSet` is called more than once, it will throw an error. If it is never called, then no trusted signal validation will be performed. The same `setTrustedSignalSet` API must be called on both `@lwc/engine-dom` and `@lwc/signals`.

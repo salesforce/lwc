@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { basename } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 import { esTemplate } from '../estemplate';
@@ -163,7 +164,7 @@ export function addGenerateMarkupExport(
         : b.identifier('tmpl');
 
     if (!tmplExplicitImports) {
-        const defaultTmplPath = filename.replace(/\.js$/, '.html');
+        const defaultTmplPath = `./${basename(filename, 'js')}html`;
         program.body.unshift(
             bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath) as StringLiteral)
         );
