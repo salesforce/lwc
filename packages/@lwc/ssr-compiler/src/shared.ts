@@ -60,4 +60,5 @@ export interface IHoistInstantiation {
 
 export type TransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
 
+/* SSR compilation mode. `async` refers to async functions, `sync` to sync functions, and `asyncYield` to async generator functions. */
 export type CompilationMode = 'asyncYield' | 'async' | 'sync';
