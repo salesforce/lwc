@@ -47,11 +47,7 @@ const visitors: Visitors = {
         // Component authors might conceivably use async generator functions in their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated async
         // generator functions from those that were written by the component author.
-        if (
-            // !isGeneratedAsyncGenFn(node.id.name) &&
-            !isWithinFn(GEN_MARKUP_PATTERN, path) &&
-            !isWithinFn(TMPL_FN_PATTERN, path)
-        ) {
+        if (!isWithinFn(GEN_MARKUP_PATTERN, path) && !isWithinFn(TMPL_FN_PATTERN, path)) {
             return;
         }
         node.generator = false;
