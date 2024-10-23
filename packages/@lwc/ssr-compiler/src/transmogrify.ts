@@ -37,7 +37,6 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
 };
 
 const visitors: Visitors = {
-    $: { scope: true },
     FunctionDeclaration(path, state) {
         const { node } = path;
         if (!node?.async || !node?.generator) {
