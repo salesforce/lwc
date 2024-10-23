@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { traverse, builders as b } from 'estree-toolkit';
+import { traverse, builders as b, type NodePath } from 'estree-toolkit';
 import { produce } from 'immer';
 import type { Node } from 'estree';
 import type { Program as EsProgram } from 'estree';
@@ -18,12 +18,39 @@ interface TransmogrificationState {
 export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>>[1];
 
 const EMIT_IDENT = b.identifier('$$emit');
+const TMPL_FN_PATTERN = /tmpl($\d+)?/;
+const GEN_MARKUP_PATTERN = /generateMarkup.*/;
+
+const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
+    const { node } = nodePath;
+    if (!node) {
+        return false;
+    }
+    if (node.type === 'FunctionDeclaration' && pattern.test(node.id.name)) {
+        return true;
+    }
+    if (nodePath.parentPath) {
+        return isWithinFn(pattern, nodePath.parentPath);
+    }
+    return false;
+};
 
 const visitors: Visitors = {
     $: { scope: true },
     FunctionDeclaration(path, state) {
         const { node } = path;
         if (!node?.async || !node?.generator) {
+            return;
+        }
+
+        // Component authors might conceivably use async generator functions in their own code. Therefore,
+        // when traversing & transforming written+generated code, we need to disambiguate generated async
+        // generator functions from those that were written by the component author.
+        if (
+            // !isGeneratedAsyncGenFn(node.id.name) &&
+            !isWithinFn(GEN_MARKUP_PATTERN, path) &&
+            !isWithinFn(TMPL_FN_PATTERN, path)
+        ) {
             return;
         }
         node.generator = false;
@@ -33,6 +60,13 @@ const visitors: Visitors = {
     YieldExpression(path, state) {
         const { node } = path;
         if (!node) {
+            return;
+        }
+
+        // Component authors might conceivably use generator functions within their own code. Therefore,
+        // when traversing & transforming written+generated code, we need to disambiguate generated yield
+        // expressions from those that were written by the component author.
+        if (!isWithinFn(TMPL_FN_PATTERN, path) && !isWithinFn(GEN_MARKUP_PATTERN, path)) {
             return;
         }
 
