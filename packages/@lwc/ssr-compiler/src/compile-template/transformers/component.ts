@@ -110,16 +110,18 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
 
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
-    const slotContent = node.children
-        .filter((child) => 'attributes' in child)
-        .map((child) => {
+    const slotContent = node.children.map((child) => {
+        if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
             // FIXME: We don't know what happens for slot attributes inside an lwc:if block
             const clone = structuredClone(child);
             clone.attributes = clone.attributes.filter((attr) => attr.name !== 'slot');
-            const slotContent = irToEs(child, cxt);
+            const slotContent = irToEs(clone, cxt);
             return bAddContent(slotName, slotContent);
-        });
+        } else {
+            return bAddContent(b.literal(''), irToEs(child, cxt));
+        }
+    });
 
     return [
         bYieldFromChildGenerator(
