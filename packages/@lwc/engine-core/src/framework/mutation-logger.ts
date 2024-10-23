@@ -50,6 +50,16 @@ function toPrettyMemberNotation(parent: PropertyKey | undefined, child: Property
     }
 }
 
+function safelyCallGetter(target: any, key: PropertyKey) {
+    // Arbitrary getters can throw. We don't want to throw an error just due to dev-mode-only mutation tracking
+    // (which is only used for performance debugging) so ignore errors here.
+    try {
+        return target[key];
+    } catch (_err) {
+        /* ignore */
+    }
+}
+
 /**
  * Flush all the logs we've written so far and return the current logs.
  */
@@ -123,7 +133,10 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
         // Deeply traverse arrays and objects to track every object within
         if (isArray(target)) {
             for (let i = 0; i < target.length; i++) {
-                trackTargetForMutationLogging(toPrettyMemberNotation(key, i), target[i]);
+                trackTargetForMutationLogging(
+                    toPrettyMemberNotation(key, i),
+                    safelyCallGetter(target, i)
+                );
             }
         } else {
             // Track only own property names and symbols (including non-enumerated)
@@ -133,13 +146,13 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
             for (const prop of getOwnPropertyNames(target)) {
                 trackTargetForMutationLogging(
                     toPrettyMemberNotation(key, prop),
-                    (target as any)[prop]
+                    safelyCallGetter(target, prop)
                 );
             }
             for (const prop of getOwnPropertySymbols(target)) {
                 trackTargetForMutationLogging(
                     toPrettyMemberNotation(key, prop),
-                    (target as any)[prop]
+                    safelyCallGetter(target, prop)
                 );
             }
         }
