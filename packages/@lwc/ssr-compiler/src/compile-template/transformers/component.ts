@@ -12,8 +12,8 @@ import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { bAttributeValue, isValidIdentifier } from '../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
-import { irToEs } from '../ir-to-es';
-import type { Statement as EsStatement } from 'estree';
+import { irChildrenToEs, irToEs } from '../ir-to-es';
+import type { CallExpression as EsCallExpression } from 'estree';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -30,9 +30,14 @@ const bYieldFromChildGenerator = esTemplateWithYield`
     {
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
-        const slottedContent = Object.create(null);
+        const slottedContent = {
+            light: Object.create(null),
+            shadow: async function* () {
+                ${/* shadow slot content */ is.statement}
+            }
+        };
         function addContent(name, fn) {
-            let contentList = slottedContent[name]
+            let contentList = slottedContent.light[name]
             if (contentList) {
                 contentList.push(fn)
             } else {
@@ -40,7 +45,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             }
         }
         // FIXME: adding a validator makes this sad
-        ${/* addContent statements */ false}
+        ${/* addContent statements */ is.callExpression}
         yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
     }
 `<EsBlockStatement>;
@@ -49,7 +54,7 @@ const bAddContent = esTemplate`
     addContent(${/* slot name */ is.expression} ?? "", async function* () {
         ${/* slot content */ is.statement}
     });
-`<EsStatement>;
+`<EsCallExpression>;
 
 const bImportGenerateMarkup = (localName: string, importPath: string) =>
     b.importDeclaration(
@@ -110,7 +115,9 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
 
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
-    const slotContent = node.children.map((child) => {
+    const shadowSlotContent = irChildrenToEs(node.children, cxt);
+
+    const lightSlotContent = node.children.map((child) => {
         if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
             // FIXME: We don't know what happens for slot attributes inside an lwc:if block
@@ -127,7 +134,8 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(attributes, cxt),
-            slotContent,
+            shadowSlotContent,
+            lightSlotContent,
             b.identifier(childGeneratorLocalName),
             b.literal(childTagName)
         ),

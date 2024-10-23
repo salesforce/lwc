@@ -21,9 +21,11 @@ const bConditionalSlot = esTemplateWithYield`
         // start bookend HTML comment
         yield '<!---->';
 
-        const generator = slottedContent[${/* slotName */ is.expression} ?? ""];
-        if (generator) {
-            yield* generator();
+        const generators = slottedContent?.light?.[${/* slotName */ is.expression} ?? ""];
+        if (generators) {
+            for (const generator of generators) {
+                yield* generator();
+            }
         } else {
             // If we're in this else block, then the generator _must_ have yielded
             // something. It's impossible for a slottedContent["foo"] to exist

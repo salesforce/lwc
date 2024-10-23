@@ -51,10 +51,9 @@ const bExportTemplate = esTemplate`
 
         if (!isLightDom) {
             yield '</template>';
-        }
-
-        if (slottedContent) {
-            yield* slottedContent();
+            if (slottedContent?.shadow) {
+                yield* slottedContent.shadow();
+            }
         }
     }
 `<EsExportDefaultDeclaration>;
