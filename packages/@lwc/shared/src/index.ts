@@ -18,5 +18,6 @@ export * from './namespaces';
 export * from './meta';
 export * from './static-part-tokens';
 export * from './style';
+export * from './signals';
 
 export { assert };

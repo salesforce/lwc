@@ -4,6 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
+import { addTrustedSignal } from '@lwc/shared';
+export { setTrustedSignalSet } from '@lwc/shared';
+
 export type OnUpdate = () => void;
 export type Unsubscribe = () => void;
 
@@ -13,6 +17,12 @@ export interface Signal<T> {
 }
 
 export abstract class SignalBaseClass<T> implements Signal<T> {
+    constructor() {
+        // Add the signal to the set of trusted signals
+        // that rendering engine can track
+        addTrustedSignal(this);
+    }
+
     abstract get value(): T;
 
     private subscribers: Set<OnUpdate> = new Set();
