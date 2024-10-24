@@ -17,24 +17,27 @@ export function reflectAttrToProp(
     attrValue: string | null
 ) {
     const reflectedPropName = attrsToProps[attrName];
-    // If the reflected property was not overriden by the instance
-    if (!hasOwnProperty.call(instance, reflectedPropName)) {
-        (instance as any)[reflectedPropName] = attrValue;
+    // If it is a reflected property and it was not overriden by the instance
+    if (reflectedPropName && !hasOwnProperty.call(instance, reflectedPropName)) {
+        const currentValue = (instance as any)[reflectedPropName];
+        if (currentValue !== attrValue) {
+            (instance as any)[reflectedPropName] = attrValue;
+        }
     }
 }
 
 export const descriptors = create(null);
 for (const [attrName, propName] of entries(attrsToProps)) {
     descriptors[propName] = {
-        get(this: LightningElement): any {
+        get(this: LightningElement): string | null {
             return this.getAttribute(attrName);
         },
-        set(this: LightningElement, newValue: unknown) {
+        set(this: LightningElement, newValue: unknown): void {
             const currentValue = this.getAttribute(attrName);
             if (newValue !== currentValue) {
-                // According to the spec, IDL nullable type values (null and
-                // undefined) should remove the attribute; however, we only do
-                // so in the case of null for historical reasons.
+                // TODO [#3284]: According to the spec, IDL nullable type values
+                // (null and undefined) should remove the attribute; however, we
+                // only do so in the case of null for historical reasons.
                 if (isNull(newValue)) {
                     this.removeAttribute(attrName);
                 } else {
@@ -42,7 +45,6 @@ for (const [attrName, propName] of entries(attrsToProps)) {
                 }
             }
         },
-        // configurable and enumerable to allow it to be overridden – this mimics Safari's/Chrome's behavior
         configurable: true,
         enumerable: true,
     };

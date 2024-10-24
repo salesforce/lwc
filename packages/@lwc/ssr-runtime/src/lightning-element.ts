@@ -13,7 +13,7 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
-import { defineProperties } from '@lwc/shared';
+import { assign, defineProperty, defineProperties, hasOwnProperty } from '@lwc/shared';
 
 import { ClassList } from './class-list';
 import { Attributes } from './types';
@@ -30,8 +30,6 @@ export type LightningElementConstructor = typeof LightningElement;
 interface PropsAvailableAtConstruction {
     tagName: string;
 }
-
-const hasOwnProperty = Object.prototype.hasOwnProperty;
 
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 
@@ -50,14 +48,14 @@ export class LightningElement implements PropsAvailableAtConstruction {
     constructor(
         propsAvailableAtConstruction: PropsAvailableAtConstruction & Record<string, unknown>
     ) {
-        Object.assign(this, propsAvailableAtConstruction);
+        assign(this, propsAvailableAtConstruction);
     }
 
     [SYMBOL__SET_INTERNALS](props: Record<string, any>, attrs: Record<string, any>) {
         this.#attrs = attrs;
-        Object.assign(this, props);
+        assign(this, props);
 
-        Object.defineProperty(this, 'className', {
+        defineProperty(this, 'className', {
             get() {
                 return props.class ?? '';
             },
