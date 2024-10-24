@@ -21,4 +21,13 @@ describe('component compilation', () => {
         const { code } = compileComponentForSSR(src, filename, {});
         expect(code).toContain('import explicit from "./explicit.html"');
     });
+    test('supports .ts file imports', () => {
+        const src = `
+            import { LightningElement } from 'lwc';
+            export default class extends LightningElement {}
+        `;
+        const filename = path.resolve('component.ts');
+        const { code } = compileComponentForSSR(src, filename, {});
+        expect(code).toContain('import tmpl from "./component.html"');
+    });
 });
