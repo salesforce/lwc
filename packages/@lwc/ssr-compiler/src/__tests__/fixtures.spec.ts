@@ -37,7 +37,8 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
         external: ['lwc'],
         plugins: [
             lwcRollupPlugin({
-                targetSSR: SSR_MODE,
+                targetSSR: true,
+                ssrMode: SSR_MODE,
                 enableDynamicComponents: true,
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,

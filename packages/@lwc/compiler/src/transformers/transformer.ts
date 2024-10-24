@@ -8,11 +8,7 @@ import * as path from 'path';
 
 import { isString } from '@lwc/shared';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
-import {
-    compileComponentForSSR,
-    compileTemplateForSSR,
-    type CompilationMode,
-} from '@lwc/ssr-compiler';
+import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 
 import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
 import styleTransform from './style';
@@ -81,10 +77,9 @@ export function transformSync(
     filename: string,
     options: TransformOptions
 ): TransformResult {
-    const ssrCompilationMode = options?.targetSSR ?? null;
     validateArguments(src, filename);
     const normalizedOptions = validateTransformOptions(options);
-    return transformFile(src, filename, normalizedOptions, ssrCompilationMode);
+    return transformFile(src, filename, normalizedOptions);
 }
 
 function validateArguments(src: string, filename: string) {
@@ -95,13 +90,12 @@ function validateArguments(src: string, filename: string) {
 function transformFile(
     src: string,
     filename: string,
-    options: NormalizedTransformOptions,
-    ssrCompilationMode: CompilationMode | null
+    options: NormalizedTransformOptions
 ): TransformResult {
     switch (path.extname(filename)) {
         case '.html':
-            if (ssrCompilationMode) {
-                return compileTemplateForSSR(src, filename, options, ssrCompilationMode);
+            if (options.targetSSR) {
+                return compileTemplateForSSR(src, filename, options, options.ssrMode);
             }
             return templateTransformer(src, filename, options);
 
@@ -114,8 +108,8 @@ function transformFile(
         case '.js':
         case '.mts':
         case '.mjs':
-            if (ssrCompilationMode) {
-                return compileComponentForSSR(src, filename, options, ssrCompilationMode);
+            if (options.targetSSR) {
+                return compileComponentForSSR(src, filename, options, options.ssrMode);
             }
             return scriptTransformer(src, filename, options);
 

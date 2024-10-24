@@ -32,6 +32,8 @@ const DEFAULT_OPTIONS = {
     experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
+    targetSSR: false,
+    ssrMode: 'sync' as CompilationMode,
 };
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -129,7 +131,8 @@ export interface TransformOptions {
     instrumentation?: InstrumentationObject;
     /** API version to associate with the compiled module. Values correspond to Salesforce platform releases. */
     apiVersion?: number;
-    targetSSR?: CompilationMode | null;
+    targetSSR?: boolean;
+    ssrMode?: CompilationMode;
 }
 
 type OptionalTransformKeys =
@@ -238,6 +241,5 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         outputConfig,
         experimentalDynamicComponent,
         apiVersion,
-        targetSSR: options.targetSSR ?? null,
     };
 }
