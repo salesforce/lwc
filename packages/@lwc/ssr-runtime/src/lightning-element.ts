@@ -28,6 +28,8 @@ interface PropsAvailableAtConstruction {
     tagName: string;
 }
 
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 
 export class LightningElement implements PropsAvailableAtConstruction {
@@ -71,35 +73,28 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return (this.#classList = new ClassList(this));
     }
 
-    #setAttribute(attrName: string, attrValue: string | null): void {
-        this.#attrs[attrName] = attrValue;
-        mutationTracker.add(this, attrName);
-    }
-
-    setAttribute(attrName: string, attrValue: unknown): void {
-        this.#setAttribute(attrName, String(attrValue));
+    setAttribute(attrName: unknown, attrValue: unknown): void {
+        if (typeof attrName === 'string') {
+            this.#attrs[attrName] = String(attrValue);
+            mutationTracker.add(this, attrName);
+        }
     }
 
     getAttribute(attrName: unknown): string | null {
-        if (this.hasAttribute(attrName)) {
-            return this.#attrs[attrName as string];
+        if (typeof attrName === 'string' && hasOwnProperty.call(this.#attrs, attrName)) {
+            return this.#attrs[attrName];
         }
         return null;
     }
 
     hasAttribute(attrName: unknown): boolean {
-        return typeof attrName === 'string' && typeof this.#attrs[attrName] === 'string';
+        return typeof attrName === 'string' && hasOwnProperty.call(this.#attrs, attrName);
     }
 
-    removeAttribute(attrName: string): void {
-        if (this.hasAttribute(attrName)) {
-            // Reflected attributes use accessor methods to update their
-            // corresponding properties so we can't simply `delete`. Instead,
-            // we use `null` when we want to remove.
-            this.#setAttribute(attrName, null);
-        } else {
-            // This interprets the removal of a non-existing attribute as an
-            // attribute mutation. We may want to revisit this.
+    removeAttribute(attrName: unknown): void {
+        if (typeof attrName === 'string') {
+            delete this.#attrs[attrName];
+            // Track mutations for removal of non-existing attributes
             mutationTracker.add(this, attrName);
         }
     }
