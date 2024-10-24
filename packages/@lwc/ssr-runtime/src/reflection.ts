@@ -5,7 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { AriaAttrNameToPropNameMap, create, entries, hasOwnProperty, isNull } from '@lwc/shared';
+import {
+    AriaAttrNameToPropNameMap,
+    create,
+    entries,
+    hasOwnProperty,
+    isNull,
+    toString,
+} from '@lwc/shared';
 import { LightningElement } from './lightning-element';
 
 // Eventually include globals that also reflect
@@ -41,7 +48,7 @@ for (const [attrName, propName] of entries(attrsToProps)) {
                 if (isNull(newValue)) {
                     this.removeAttribute(attrName);
                 } else {
-                    this.setAttribute(attrName, newValue);
+                    this.setAttribute(attrName, toString(newValue));
                 }
             }
         },

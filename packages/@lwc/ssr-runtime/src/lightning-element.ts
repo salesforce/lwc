@@ -13,10 +13,17 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
-import { assign, defineProperty, defineProperties, hasOwnProperty } from '@lwc/shared';
+import {
+    assign,
+    defineProperty,
+    defineProperties,
+    hasOwnProperty,
+    StringToLowerCase,
+    toString,
+} from '@lwc/shared';
 
 import { ClassList } from './class-list';
-import { Attributes } from './types';
+import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
 import { reflectAttrToProp, descriptors as reflectionDescriptors } from './reflection';
 
@@ -45,13 +52,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     #attrs!: Attributes;
     #classList: ClassList | null = null;
 
-    constructor(
-        propsAvailableAtConstruction: PropsAvailableAtConstruction & Record<string, unknown>
-    ) {
+    constructor(propsAvailableAtConstruction: PropsAvailableAtConstruction & Properties) {
         assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](props: Record<string, any>, attrs: Record<string, any>) {
+    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
         this.#attrs = attrs;
         assign(this, props);
 
@@ -74,33 +79,31 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return (this.#classList = new ClassList(this));
     }
 
-    setAttribute(attrName: unknown, attrValue: unknown): void {
-        if (typeof attrName === 'string') {
-            const normalizedValue = String(attrValue);
-            this.#attrs[attrName] = normalizedValue;
-            reflectAttrToProp(this, attrName, normalizedValue);
-            mutationTracker.add(this, attrName);
-        }
+    setAttribute(attrName: string, attrValue: string): void {
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        const normalizedValue = String(attrValue);
+        this.#attrs[normalizedName] = normalizedValue;
+        reflectAttrToProp(this, normalizedName, normalizedValue);
+        mutationTracker.add(this, normalizedName);
     }
 
-    getAttribute(attrName: unknown): string | null {
+    getAttribute(attrName: string): string | null {
         if (typeof attrName === 'string' && hasOwnProperty.call(this.#attrs, attrName)) {
             return this.#attrs[attrName];
         }
         return null;
     }
 
-    hasAttribute(attrName: unknown): boolean {
+    hasAttribute(attrName: string): boolean {
         return typeof attrName === 'string' && hasOwnProperty.call(this.#attrs, attrName);
     }
 
-    removeAttribute(attrName: unknown): void {
-        if (typeof attrName === 'string') {
-            delete this.#attrs[attrName];
-            reflectAttrToProp(this, attrName, null);
-            // Track mutations for removal of non-existing attributes
-            mutationTracker.add(this, attrName);
-        }
+    removeAttribute(attrName: string): void {
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        delete this.#attrs[normalizedName];
+        reflectAttrToProp(this, normalizedName, null);
+        // Track mutations for removal of non-existing attributes
+        mutationTracker.add(this, normalizedName);
     }
 
     addEventListener(

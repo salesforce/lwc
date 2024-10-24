@@ -6,3 +6,4 @@
  */
 
 export type Attributes = Record<string, string>;
+export type Properties = Record<string, unknown>;
