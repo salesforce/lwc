@@ -8,7 +8,6 @@
 import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
-import { AriaPropNameToAttrNameMap } from '@lwc/shared';
 
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
@@ -20,12 +19,6 @@ import type { Visitors, ComponentMetaState } from './types';
 
 const visitors: Visitors = {
     $: { scope: true },
-    Identifier(path, state) {
-        const reflectedAttrName = AriaPropNameToAttrNameMap[path.node!.name];
-        if (reflectedAttrName) {
-            state.reflectedPropsInPlay.add(path.node!.name);
-        }
-    },
     ImportDeclaration(path, state) {
         if (!path.node || !path.node.source.value || typeof path.node.source.value !== 'string') {
             return;
@@ -131,7 +124,6 @@ export default function compileJS(src: string, filename: string) {
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        reflectedPropsInPlay: new Set(),
     };
 
     traverse(ast, visitors, state);

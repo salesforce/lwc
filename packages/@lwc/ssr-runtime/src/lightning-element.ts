@@ -13,7 +13,6 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
-import { htmlPropertyToAttribute } from '@lwc/shared';
 import { ClassList } from './class-list';
 import { Attributes } from './types';
 import { mutationTracker } from './mutation-tracker';
@@ -49,28 +48,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
         Object.assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](
-        props: Record<string, any>,
-        reflectedProps: string[],
-        attrs: Record<string, any>
-    ) {
+    [SYMBOL__SET_INTERNALS](props: Record<string, any>, attrs: Record<string, any>) {
         Object.assign(this, props);
         this.#attrs = attrs;
-
-        // Whenever a reflected prop changes, we'll update the original props object
-        // that was passed in. That'll be referenced when the attrs are rendered later.
-        for (const reflectedPropName of reflectedProps) {
-            Object.defineProperty(this, reflectedPropName, {
-                get() {
-                    return props[reflectedPropName] ?? null;
-                },
-                set(newValue) {
-                    props[reflectedPropName] = newValue;
-                    mutationTracker.add(this, htmlPropertyToAttribute(reflectedPropName));
-                },
-                enumerable: true,
-            });
-        }
 
         Object.defineProperty(this, 'className', {
             get() {
