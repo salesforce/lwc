@@ -1,0 +1,11 @@
+<x-parent>
+  <template shadowrootmode="open">
+    <x-child aria-describedby="statically set by parent" aria-description="statically set by parent" aria-label="dynamically set by child" data-lwc-host-mutated="aria-label">
+      <template shadowrootmode="open">
+        <div>
+          ariaDescribedBy: statically set by parent
+        </div>
+      </template>
+    </x-child>
+  </template>
+</x-parent>
