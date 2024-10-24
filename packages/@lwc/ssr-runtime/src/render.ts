@@ -132,6 +132,8 @@ export async function serverSideRenderComponent(
             markup += segment;
         };
         (compiledGenerateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null);
+    } else {
+      throw new Error(`Invalid mode: ${mode}`);
     }
 
     return markup;
