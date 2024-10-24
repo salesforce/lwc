@@ -24,11 +24,15 @@ vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
-    lwcEngineServer!.setHooks({
-        sanitizeHtmlContent(content: unknown) {
-            return content as string;
-        },
-    });
+    try {
+        lwcEngineServer!.setHooks({
+            sanitizeHtmlContent(content: unknown) {
+                return content as string;
+            },
+        });
+    } catch (_err) {
+        // Ignore error if the hook is already overridden
+    }
     return lwcEngineServer;
 });
 
@@ -120,6 +124,6 @@ function testFixtures() {
     );
 }
 
-describe('fixtures', () => {
+describe.concurrent('fixtures', () => {
     testFixtures();
 });
