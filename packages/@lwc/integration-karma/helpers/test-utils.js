@@ -629,6 +629,66 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         });
     }
 
+    // Succeeds if the given DOM element is equivalent to the given HTML in terms of nodes and elements. This is
+    // basically the same as `expect(element.outerHTML).toBe(html)` except that it works despite bugs in synthetic shadow.
+    function expectEquivalentDOM(element, html) {
+        const fragment = Document.parseHTMLUnsafe(html);
+
+        // When the fragment is parsed, the string "abc" is considered one text node. Whereas the engine
+        // may have produced it as three adjacent text nodes: "a", "b", "c". We want to consider these equivalent
+        // for the purposes of diffing
+        function concatenateAdjacentTextNodes(nodes) {
+            const result = [];
+            for (const node of nodes) {
+                const lastNode = result[result.length - 1];
+                if (node.nodeType === Node.TEXT_NODE && lastNode?.nodeType === Node.TEXT_NODE) {
+                    const newLastNode = (result[result.length - 1] = lastNode.cloneNode(true));
+                    newLastNode.nodeValue += node.nodeValue;
+                } else {
+                    result.push(node);
+                }
+            }
+            return result;
+        }
+
+        function expectEquivalent(a, b) {
+            if (!a || !b) {
+                // null/undefined
+                expect(a).toBe(b);
+                return;
+            }
+
+            expect(a.tagName).toBe(b.tagName);
+            expect(a.nodeType).toBe(b.nodeType);
+            if (a.nodeType === Node.TEXT_NODE || a.nodeType === Node.COMMENT_NODE) {
+                expect(a.textContent).toBe(b.textContent);
+            }
+
+            // attrs
+            if (a.nodeType === Node.ELEMENT_NODE && b.nodeType === Node.ELEMENT_NODE) {
+                expect(a.attributes.length).toBe(b.attributes.length);
+                for (const { name, value } of a.attributes) {
+                    expect(b.getAttribute(name)).toBe(value);
+                }
+            }
+
+            // child nodes (recursive)
+            const aChildNodes = concatenateAdjacentTextNodes(a.childNodes);
+            const bChildNodes = concatenateAdjacentTextNodes(b.childNodes);
+            expect(aChildNodes.length).toBe(bChildNodes.length);
+            for (let i = 0; i < aChildNodes.length; i++) {
+                expectEquivalent(aChildNodes[i], bChildNodes[i]);
+            }
+
+            // shadow root (recursive)
+            expectEquivalent(a.shadowRoot, b.shadowRoot);
+        }
+
+        expect(fragment.body.childNodes.length).toBe(1); // only supports one top-level element
+
+        expectEquivalent(element, fragment.body.firstChild);
+    }
+
     // These values are based on the API versions in @lwc/shared/api-version
     const apiFeatures = {
         LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
@@ -675,6 +735,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
         addTrustedSignal,
+        expectEquivalentDOM,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);
