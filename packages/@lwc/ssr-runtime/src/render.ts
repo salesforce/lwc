@@ -133,7 +133,7 @@ export async function serverSideRenderComponent(
         };
         (compiledGenerateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null);
     } else {
-      throw new Error(`Invalid mode: ${mode}`);
+        throw new Error(`Invalid mode: ${mode}`);
     }
 
     return markup;
