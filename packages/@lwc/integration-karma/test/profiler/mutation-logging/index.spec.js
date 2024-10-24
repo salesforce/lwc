@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Parent from 'x/parent';
 import Child from 'x/child';
+import GetterThrows from 'x/getterThrows';
 
 const arr = jasmine.arrayWithExactContents;
 const obj = jasmine.objectContaining;
@@ -301,4 +302,13 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             );
         });
     });
+});
+
+it('handles case where the getter throws an error', async () => {
+    const elm = createElement('x-getter-throws', { is: GetterThrows });
+    document.body.appendChild(elm);
+
+    await Promise.resolve();
+
+    expect(elm.shadowRoot.querySelector('div').textContent).toBe('hello');
 });
