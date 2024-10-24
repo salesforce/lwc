@@ -7,7 +7,7 @@
 
 import { LightningElement, type LightningElementConstructor } from './lightning-element';
 import { mutationTracker } from './mutation-tracker';
-import type { Attributes } from './types';
+import type { Attributes, Properties } from './types';
 
 const escapeAttrVal = (attrVal: string) =>
     attrVal.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
@@ -41,7 +41,7 @@ export function* fallbackTmpl(
 
 export type GenerateMarkupFn = (
     tagName: string,
-    props: Record<string, any> | null,
+    props: Properties | null,
     attrs: Attributes | null,
     slotted: Record<number | string, AsyncGenerator<string>> | null
 ) => AsyncGenerator<string>;
@@ -49,7 +49,7 @@ export type GenerateMarkupFn = (
 export async function serverSideRenderComponent(
     tagName: string,
     compiledGenerateMarkup: GenerateMarkupFn,
-    props: Record<string, any>
+    props: Properties
 ): Promise<string> {
     let markup = '';
 
