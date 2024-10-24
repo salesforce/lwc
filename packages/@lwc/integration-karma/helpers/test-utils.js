@@ -642,7 +642,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         function expectEquivalent(a, b) {
             expect(a.tagName).toBe(b.tagName);
             expect(a.nodeType).toBe(b.nodeType);
-            expect(a.textContent).toBe(b.textContent);
+
+            if (a.nodeType === Node.TEXT_NODE || a.nodeType === Node.COMMENT_NODE) {
+                expect(a.textContent).toBe(b.textContent);
+            }
 
             // attrs
             if (a.nodeType === Node.ELEMENT_NODE && b.nodeType === Node.ELEMENT_NODE) {
@@ -658,6 +661,13 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             expect(aChildNodes.length).toBe(bChildNodes.length);
             for (let i = 0; i < aChildNodes.length; i++) {
                 expectEquivalent(aChildNodes[i], bChildNodes[i]);
+            }
+
+            // shadow root (recursive)
+            if (a.shadowRoot) {
+                expectEquivalent(a.shadowRoot, b.shadowRoot);
+            } else {
+                expect(a.shadowRoot).toBe(b.shadowRoot);
             }
         }
 
