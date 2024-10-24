@@ -73,6 +73,16 @@ const enum EnvNodeTypes {
 // A function that indicates whether an attribute with the given name should be validated.
 type AttrValidationPredicate = (attrName: string) => boolean;
 
+// `data-lwc-validation-opt-out` is a special attribute designed for ignoring cases where the developer "knows
+// what they're doing" and wants to ignore hydration mismatches for the entire element and all its descendants. This is
+// mostly designed for `<style>` deduplication, i.e. replacing `<style>`s with `<link rel=stylesheet>`s.
+function shouldIgnoreAllMismatches(elm: Node, renderer: RendererAPI) {
+    return (
+        renderer.getProperty(elm, 'nodeType') === EnvNodeTypes.ELEMENT &&
+        !isNull(renderer.getAttribute(elm, 'data-lwc-validation-opt-out'))
+    );
+}
+
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
@@ -266,13 +276,14 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
 
 function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer)
+        !shouldIgnoreAllMismatches(elm, renderer) &&
+        (!hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+            !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer))
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
 
-    return hydrateStaticElementParts(elm, vnode, renderer);
+    return hydrateStaticElementParts(elm as Element, vnode, renderer);
 }
 
 function hydrateStaticElementParts(elm: Element, vnode: VStatic, renderer: RendererAPI) {
@@ -306,13 +317,14 @@ function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): No
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
+        !shouldIgnoreAllMismatches(elm, renderer) &&
+        (!hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
+            !isMatchingElement(vnode, elm, renderer))
     ) {
         return handleMismatch(elm, vnode, renderer);
     }
 
-    vnode.elm = elm;
+    vnode.elm = elm as Element;
 
     const { owner } = vnode;
     const { context } = vnode.data;
@@ -352,7 +364,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
 
     if (!isDomManual) {
         const { getFirstChild } = renderer;
-        hydrateChildren(getFirstChild(elm), vnode.children, elm, owner, false);
+        hydrateChildren(getFirstChild(elm), vnode.children, elm as Element, owner, false);
     }
 
     return elm;
