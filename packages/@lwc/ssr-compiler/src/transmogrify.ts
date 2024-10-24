@@ -77,11 +77,7 @@ const visitors: Visitors = {
             const callExpr = node.argument;
             callExpr.arguments.unshift(EMIT_IDENT);
 
-            if (state.mode === 'sync') {
-                path.replaceWith(callExpr);
-            } else {
-                path.replaceWith(b.awaitExpression(callExpr));
-            }
+            path.replaceWith(state.mode === 'sync' ? callExpr : b.awaitExpression(callExpr));
         } else {
             // transform `yield foo` into `$$emit(foo)`
             const emittedExpression = node.argument;
