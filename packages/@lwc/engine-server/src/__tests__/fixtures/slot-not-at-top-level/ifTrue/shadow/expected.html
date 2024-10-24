@@ -1,0 +1,23 @@
+<x-outer>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+        a
+        <slot>
+          fallback for default
+        </slot>
+        b
+        <slot name="foo">
+          fallback for foo
+        </slot>
+        c
+      </template>
+      <div slot="foo">
+        I am the foo slot
+      </div>
+      <div slot="foo">
+        I am also the foo slot
+      </div>
+    </x-inner>
+  </template>
+</x-outer>

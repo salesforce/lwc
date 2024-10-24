@@ -629,6 +629,43 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         });
     }
 
+    // Return true if the given DOM element is equivalent to the given HTML in terms of nodes and elements This is
+    // basically the same as `expect(element.outerHTML).toBe((html)` except that it works despite bugs in synthetic shadow.
+    function expectEquivalentDOM(element, html) {
+        // parseHTMLUnsafe landed in Chrome 124 https://caniuse.com/mdn-api_document_parsehtmlunsafe_static
+        const fragment = Document.parseHTMLUnsafe
+            ? Document.parseHTMLUnsafe(html)
+            : new DOMParser().parseFromString(html, 'text/html', {
+                  includeShadowRoots: true,
+              });
+
+        function expectEquivalent(a, b) {
+            expect(a.tagName).toBe(b.tagName);
+            expect(a.nodeType).toBe(b.nodeType);
+            expect(a.textContent).toBe(b.textContent);
+
+            // attrs
+            if (a.nodeType === Node.ELEMENT_NODE && b.nodeType === Node.ELEMENT_NODE) {
+                expect(a.attributes.length).toBe(b.attributes.length);
+                for (const { name, value } of a.attributes) {
+                    expect(b.getAttribute(name)).toBe(value);
+                }
+            }
+
+            // child nodes (recursive)
+            const { childNodes: aChildNodes } = a;
+            const { childNodes: bChildNodes } = b;
+            expect(aChildNodes.length).toBe(bChildNodes.length);
+            for (let i = 0; i < aChildNodes.length; i++) {
+                expectEquivalent(aChildNodes[i], bChildNodes[i]);
+            }
+        }
+
+        expect(fragment.body.childNodes.length).toBe(1); // only supports one top-level element
+
+        expectEquivalent(element, fragment.body.firstChild);
+    }
+
     // These values are based on the API versions in @lwc/shared/api-version
     const apiFeatures = {
         LOWERCASE_SCOPE_TOKENS: process.env.API_VERSION >= 59,
@@ -675,6 +712,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         expectConsoleCallsDev,
         catchUnhandledRejectionsAndErrors,
         addTrustedSignal,
+        expectEquivalentDOM,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);
