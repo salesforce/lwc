@@ -92,16 +92,15 @@ function transformFile(
     filename: string,
     options: NormalizedTransformOptions
 ): TransformResult {
-    let transformer;
-
     switch (path.extname(filename)) {
         case '.html':
-            transformer = options.targetSSR ? compileTemplateForSSR : templateTransformer;
-            break;
+            if (options.targetSSR) {
+                return compileTemplateForSSR(src, filename, options, options.ssrMode);
+            }
+            return templateTransformer(src, filename, options);
 
         case '.css':
-            transformer = styleTransform;
-            break;
+            return styleTransform(src, filename, options);
 
         case '.tsx':
         case '.jsx':
@@ -109,8 +108,10 @@ function transformFile(
         case '.js':
         case '.mts':
         case '.mjs':
-            transformer = options.targetSSR ? compileComponentForSSR : scriptTransformer;
-            break;
+            if (options.targetSSR) {
+                return compileComponentForSSR(src, filename, options, options.ssrMode);
+            }
+            return scriptTransformer(src, filename, options);
 
         default:
             throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
@@ -118,6 +119,4 @@ function transformFile(
                 origin: { filename },
             });
     }
-
-    return transformer(src, filename, options);
 }
