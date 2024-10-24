@@ -640,9 +640,14 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
               });
 
         function expectEquivalent(a, b) {
+            if (!a || !b) {
+                // null/undefined
+                expect(a).toBe(b);
+                return;
+            }
+
             expect(a.tagName).toBe(b.tagName);
             expect(a.nodeType).toBe(b.nodeType);
-
             if (a.nodeType === Node.TEXT_NODE || a.nodeType === Node.COMMENT_NODE) {
                 expect(a.textContent).toBe(b.textContent);
             }
@@ -664,11 +669,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             }
 
             // shadow root (recursive)
-            if (a.shadowRoot) {
-                expectEquivalent(a.shadowRoot, b.shadowRoot);
-            } else {
-                expect(a.shadowRoot).toBe(b.shadowRoot);
-            }
+            expectEquivalent(a.shadowRoot, b.shadowRoot);
         }
 
         expect(fragment.body.childNodes.length).toBe(1); // only supports one top-level element
