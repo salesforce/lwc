@@ -1,0 +1,10 @@
+<template lwc:render-mode="light">
+    <x-inner>
+        <template lwc:if={isTrue}>
+            <div slot="foo">I am the foo slot</div>
+        </template>
+        <template lwc:if={isTrue}>
+            <div slot="foo">I am also the foo slot</div>
+        </template>
+    </x-inner>
+</template>
