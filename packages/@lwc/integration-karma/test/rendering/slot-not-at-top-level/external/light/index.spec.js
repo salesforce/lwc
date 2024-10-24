@@ -6,7 +6,8 @@ beforeAll(() => {
     customElements.define('x-external-light', class extends HTMLElement {});
 });
 
-it('renders slots not at the top level', async () => {
+// `expectEquivalentDOM` requires `Document.parseHTMLUnsafe`
+it.runIf(Document.parseHTMLUnsafe)('renders slots not at the top level', async () => {
     const elm = createElement('x-outer', { is: Outer });
     document.body.appendChild(elm);
 
