@@ -121,6 +121,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
             // FIXME: We don't know what happens for slot attributes inside an lwc:if block
+            // Light DOM slots do not actually render the `slot` attribute.
             const clone = produce(child, (draft) => {
                 draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
             });
