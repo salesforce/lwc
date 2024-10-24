@@ -634,6 +634,23 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function expectEquivalentDOM(element, html) {
         const fragment = Document.parseHTMLUnsafe(html);
 
+        // When the fragment is parsed, the string "abc" is considered one text node. Whereas the engine
+        // may have produced it as three adjacent text nodes: "a", "b", "c". We want to consider these equivalent
+        // for the purposes of diffing
+        function concatenateAdjacentTextNodes(nodes) {
+            const result = [];
+            for (const node of nodes) {
+                const lastNode = result[result.length - 1];
+                if (node.nodeType === Node.TEXT_NODE && lastNode?.nodeType === Node.TEXT_NODE) {
+                    const newLastNode = (result[result.length - 1] = lastNode.cloneNode(true));
+                    newLastNode.nodeValue += node.nodeValue;
+                } else {
+                    result.push(node);
+                }
+            }
+            return result;
+        }
+
         function expectEquivalent(a, b) {
             if (!a || !b) {
                 // null/undefined
@@ -656,8 +673,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
             }
 
             // child nodes (recursive)
-            const { childNodes: aChildNodes } = a;
-            const { childNodes: bChildNodes } = b;
+            const aChildNodes = concatenateAdjacentTextNodes(a.childNodes);
+            const bChildNodes = concatenateAdjacentTextNodes(b.childNodes);
             expect(aChildNodes.length).toBe(bChildNodes.length);
             for (let i = 0; i < aChildNodes.length; i++) {
                 expectEquivalent(aChildNodes[i], bChildNodes[i]);
