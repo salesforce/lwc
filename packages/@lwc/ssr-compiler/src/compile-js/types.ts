@@ -35,6 +35,4 @@ export interface ComponentMetaState {
     cssExplicitImports: Map<string, string> | null;
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
-    // tracks the aria-reflected attrs/props that show up in the JS code
-    reflectedPropsInPlay: Set<string>;
 }
