@@ -5,11 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { bAttributeValue, isValidIdentifier } from '../shared';
+import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
@@ -41,10 +42,9 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             if (contentList) {
                 contentList.push(fn)
             } else {
-                slottedContent[name] = [fn]
+                slottedContent.light[name] = [fn]
             }
         }
-        // FIXME: adding a validator makes this sad
         ${/* addContent statements */ is.callExpression}
         yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
     }
@@ -115,14 +115,15 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
 
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
-    const shadowSlotContent = irChildrenToEs(node.children, cxt);
+    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt));
 
     const lightSlotContent = node.children.map((child) => {
         if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
             // FIXME: We don't know what happens for slot attributes inside an lwc:if block
-            const clone = structuredClone(child);
-            clone.attributes = clone.attributes.filter((attr) => attr.name !== 'slot');
+            const clone = produce(child, (draft) => {
+                draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
+            });
             const slotContent = irToEs(clone, cxt);
             return bAddContent(slotName, slotContent);
         } else {
