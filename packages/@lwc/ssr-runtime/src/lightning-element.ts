@@ -13,10 +13,12 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
+import { defineProperties } from '@lwc/shared';
+
 import { ClassList } from './class-list';
 import { Attributes } from './types';
 import { mutationTracker } from './mutation-tracker';
-import { reflectAttrToProp } from './reflection';
+import { reflectAttrToProp, descriptors as reflectionDescriptors } from './reflection';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
@@ -52,8 +54,8 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     [SYMBOL__SET_INTERNALS](props: Record<string, any>, attrs: Record<string, any>) {
-        Object.assign(this, props);
         this.#attrs = attrs;
+        Object.assign(this, props);
 
         Object.defineProperty(this, 'className', {
             get() {
@@ -206,3 +208,5 @@ export class LightningElement implements PropsAvailableAtConstruction {
         throw new Error('Method "setAttributeNS" not implemented.');
     }
 }
+
+defineProperties(LightningElement.prototype, reflectionDescriptors);
