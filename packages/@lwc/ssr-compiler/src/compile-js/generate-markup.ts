@@ -48,7 +48,7 @@ const bGenerateMarkup = esTemplate`
         yield tmplFn.stylesheetScopeTokenHostClass ?? '';
         yield* __renderAttrs(instance, attrs)
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${1}, instance);
+        yield* tmplFn(props, attrs, slotted, ${0}, instance);
         yield \`</\${tagName}>\`;
     }
 `<ExportNamedDeclaration>;
@@ -56,7 +56,7 @@ const bGenerateMarkup = esTemplate`
 const bInsertFallbackTmplImport = esTemplate`
     import {
         fallbackTmpl as __fallbackTmpl,
-	mutationTracker as __mutationTracker,
+        mutationTracker as __mutationTracker,
         renderAttrs as __renderAttrs,
         SYMBOL__SET_INTERNALS as __SYMBOL__SET_INTERNALS,
     } from '@lwc/ssr-runtime';
