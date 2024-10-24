@@ -629,8 +629,8 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         });
     }
 
-    // Return true if the given DOM element is equivalent to the given HTML in terms of nodes and elements This is
-    // basically the same as `expect(element.outerHTML).toBe((html)` except that it works despite bugs in synthetic shadow.
+    // Succeeds if the given DOM element is equivalent to the given HTML in terms of nodes and elements. This is
+    // basically the same as `expect(element.outerHTML).toBe(html)` except that it works despite bugs in synthetic shadow.
     function expectEquivalentDOM(element, html) {
         // parseHTMLUnsafe landed in Chrome 124 https://caniuse.com/mdn-api_document_parsehtmlunsafe_static
         const fragment = Document.parseHTMLUnsafe
