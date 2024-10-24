@@ -33,8 +33,8 @@ const DEFAULT_OPTIONS = {
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
-    ssrMode: 'sync' as CompilationMode,
-};
+    ssrMode: 'sync',
+} as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
     loader: '',
