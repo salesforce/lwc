@@ -5,14 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
-import { esTemplateWithYield } from '../../estemplate';
-import { isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
+import { esTemplate, esTemplateWithYield } from '../../estemplate';
+import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
-import { irChildrenToEs } from '../ir-to-es';
+import { irChildrenToEs, irToEs } from '../ir-to-es';
+import type { CallExpression as EsCallExpression } from 'estree';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -29,12 +31,30 @@ const bYieldFromChildGenerator = esTemplateWithYield`
     {
         const childProps = ${is.objectExpression};
         const childAttrs = ${is.objectExpression};
-        async function* childSlottedContentGenerator() {
-            ${is.statement}
+        const slottedContent = {
+            light: Object.create(null),
+            shadow: async function* () {
+                ${/* shadow slot content */ is.statement}
+            }
         };
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, childSlottedContentGenerator);
+        function addContent(name, fn) {
+            let contentList = slottedContent.light[name]
+            if (contentList) {
+                contentList.push(fn)
+            } else {
+                slottedContent.light[name] = [fn]
+            }
+        }
+        ${/* addContent statements */ is.callExpression}
+        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
     }
 `<EsBlockStatement>;
+
+const bAddContent = esTemplate`
+    addContent(${/* slot name */ is.expression} ?? "", async function* () {
+        ${/* slot content */ is.statement}
+    });
+`<EsCallExpression>;
 
 const bImportGenerateMarkup = (localName: string, importPath: string) =>
     b.importDeclaration(
@@ -95,11 +115,29 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
 
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
+    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt));
+
+    const lightSlotContent = node.children.map((child) => {
+        if ('attributes' in child) {
+            const slotName = bAttributeValue(child, 'slot');
+            // FIXME: We don't know what happens for slot attributes inside an lwc:if block
+            // Light DOM slots do not actually render the `slot` attribute.
+            const clone = produce(child, (draft) => {
+                draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
+            });
+            const slotContent = irToEs(clone, cxt);
+            return bAddContent(slotName, slotContent);
+        } else {
+            return bAddContent(b.literal(''), irToEs(child, cxt));
+        }
+    });
+
     return [
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(attributes, cxt),
-            optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt)),
+            shadowSlotContent,
+            lightSlotContent,
             b.identifier(childGeneratorLocalName),
             b.literal(childTagName)
         ),
