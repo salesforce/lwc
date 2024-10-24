@@ -16,6 +16,7 @@
 import { ClassList } from './class-list';
 import { Attributes } from './types';
 import { mutationTracker } from './mutation-tracker';
+import { reflectAttrToProp } from './reflection';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
@@ -75,7 +76,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     setAttribute(attrName: unknown, attrValue: unknown): void {
         if (typeof attrName === 'string') {
-            this.#attrs[attrName] = String(attrValue);
+            const normalizedValue = String(attrValue);
+            this.#attrs[attrName] = normalizedValue;
+            reflectAttrToProp(this, attrName, normalizedValue);
             mutationTracker.add(this, attrName);
         }
     }
@@ -94,6 +97,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     removeAttribute(attrName: unknown): void {
         if (typeof attrName === 'string') {
             delete this.#attrs[attrName];
+            reflectAttrToProp(this, attrName, null);
             // Track mutations for removal of non-existing attributes
             mutationTracker.add(this, attrName);
         }
