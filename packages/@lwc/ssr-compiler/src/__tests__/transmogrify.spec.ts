@@ -69,8 +69,10 @@ describe('transmogrify', () => {
             expect(COMPILED_CMP_SYNC).not.toContain('async function* generateMarkup');
             expect(COMPILED_CMP_SYNC).not.toContain('async function generateMarkup');
             expect(COMPILED_CMP_SYNC).toContain('function generateMarkup($$emit');
+
             expect(COMPILED_CMP_SYNC).not.toContain('yield* renderAttrs');
             expect(COMPILED_CMP_SYNC).toContain('renderAttrs($$emit');
+
             expect(COMPILED_CMP_SYNC).not.toContain('yield ">"');
             expect(COMPILED_CMP_SYNC).not.toContain("yield '>'");
             expect(COMPILED_CMP_SYNC).toContain('$$emit(">")');
@@ -80,8 +82,10 @@ describe('transmogrify', () => {
             expect(COMPILED_CMP_SYNC).not.toContain('async function* tmpl');
             expect(COMPILED_CMP_SYNC).not.toContain('async function tmpl');
             expect(COMPILED_CMP_SYNC).toContain('function tmpl($$emit');
+
             expect(COMPILED_CMP_SYNC).not.toContain('yield "<p"');
             expect(COMPILED_CMP_SYNC).toContain('$$emit("<p")');
+
             expect(COMPILED_CMP_SYNC).not.toContain('yield stylesheetScopeTokenClass');
             expect(COMPILED_CMP_SYNC).toContain('$$emit(stylesheetScopeTokenClass)');
         });
@@ -101,8 +105,10 @@ describe('transmogrify', () => {
         test('generateMarkup is transformed into async mode', () => {
             expect(COMPILED_CMP_ASYNC).not.toContain('async function* generateMarkup');
             expect(COMPILED_CMP_ASYNC).toContain('async function generateMarkup($$emit');
+
             expect(COMPILED_CMP_ASYNC).not.toContain('yield* renderAttrs');
             expect(COMPILED_CMP_ASYNC).toContain('renderAttrs($$emit');
+
             expect(COMPILED_CMP_ASYNC).not.toContain('yield ">"');
             expect(COMPILED_CMP_ASYNC).not.toContain("yield '>'");
             expect(COMPILED_CMP_ASYNC).toContain('$$emit(">")');
@@ -111,8 +117,10 @@ describe('transmogrify', () => {
         test('tmpl is transformed into async mode', () => {
             expect(COMPILED_CMP_ASYNC).not.toContain('async function* tmpl');
             expect(COMPILED_CMP_ASYNC).toContain('async function tmpl($$emit');
+
             expect(COMPILED_CMP_ASYNC).not.toContain('yield "<p"');
             expect(COMPILED_CMP_ASYNC).toContain('$$emit("<p")');
+
             expect(COMPILED_CMP_ASYNC).not.toContain('yield stylesheetScopeTokenClass');
             expect(COMPILED_CMP_ASYNC).toContain('$$emit(stylesheetScopeTokenClass)');
         });
