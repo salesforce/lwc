@@ -67,7 +67,7 @@ export function isBooleanAttribute(attrName: string, tagName: string): boolean {
 }
 
 // This list is based on https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
-const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
+export const GLOBAL_ATTRIBUTES = /*@__PURE__*/ new Set([
     'accesskey',
     'autocapitalize',
     'autofocus',
@@ -103,7 +103,7 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
  * @param attrName
  */
 export function isGlobalHtmlAttribute(attrName: string): boolean {
-    return GLOBAL_ATTRIBUTE.has(attrName);
+    return GLOBAL_ATTRIBUTES.has(attrName);
 }
 
 // These are HTML standard prop/attribute IDL mappings, but are not predictable based on camel/kebab-case conversion
