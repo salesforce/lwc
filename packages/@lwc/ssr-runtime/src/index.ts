@@ -25,3 +25,4 @@ export {
 export * from './stubs';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
+export { htmlEscape } from '@lwc/shared';
