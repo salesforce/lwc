@@ -102,7 +102,7 @@ type GenerateMarkupFnVariants =
 export async function serverSideRenderComponent(
     tagName: string,
     compiledGenerateMarkup: GenerateMarkupFnVariants,
-    props: Properties
+    props: Properties,
     mode: 'asyncYield' | 'async' | 'sync' = 'asyncYield'
 ): Promise<string> {
     let markup = '';
