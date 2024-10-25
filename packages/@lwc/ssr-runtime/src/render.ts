@@ -106,6 +106,9 @@ export async function serverSideRenderComponent(
     mode: 'asyncYield' | 'async' | 'sync' = 'asyncYield'
 ): Promise<string> {
     let markup = '';
+    const emit = (segment: string) => {
+        markup += segment;
+    };
 
     if (mode === 'asyncYield') {
         for await (const segment of (compiledGenerateMarkup as GenerateMarkupFn)(
@@ -117,9 +120,6 @@ export async function serverSideRenderComponent(
             markup += segment;
         }
     } else if (mode === 'async') {
-        const emit = (segment: string) => {
-            markup += segment;
-        };
         await (compiledGenerateMarkup as GenerateMarkupFnAsyncNoGen)(
             emit,
             tagName,
@@ -128,9 +128,6 @@ export async function serverSideRenderComponent(
             null
         );
     } else if (mode === 'sync') {
-        const emit = (segment: string) => {
-            markup += segment;
-        };
         (compiledGenerateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null);
     } else {
         throw new Error(`Invalid mode: ${mode}`);
