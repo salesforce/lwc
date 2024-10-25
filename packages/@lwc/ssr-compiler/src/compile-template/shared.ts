@@ -91,7 +91,8 @@ function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
 /**
  * Given an expression in a context, return an expression that may be scoped to that context.
  * For example, for the expression `foo`, it will typically be `instance.foo`, but if we're
- * inside a `for:each` block then the `foo` variable may refer to the scoped `foo`.
+ * inside a `for:each` block then the `foo` variable may refer to the scoped `foo`,
+ * e.g. `<template for:each={foos} for:item="foo">`
  * @param expression
  */
 export function getScopedExpression(expression: EsExpression, cxt: TransformerContext) {
