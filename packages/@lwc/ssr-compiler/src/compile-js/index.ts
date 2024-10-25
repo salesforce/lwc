@@ -9,6 +9,7 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
+import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogStyleImport } from './stylesheets';
@@ -16,6 +17,7 @@ import { addGenerateMarkupExport } from './generate-markup';
 
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
+import type { CompilationMode } from '../shared';
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -105,8 +107,8 @@ const visitors: Visitors = {
     },
 };
 
-export default function compileJS(src: string, filename: string) {
-    const ast = parseModule(src, {
+export default function compileJS(src: string, filename: string, compilationMode: CompilationMode) {
+    let ast = parseModule(src, {
         module: true,
         next: true,
     }) as EsProgram;
@@ -146,6 +148,10 @@ export default function compileJS(src: string, filename: string) {
     }
 
     addGenerateMarkupExport(ast, state, filename);
+
+    if (compilationMode === 'async' || compilationMode === 'sync') {
+        ast = transmogrify(ast, compilationMode);
+    }
 
     return {
         code: generate(ast, {}),
