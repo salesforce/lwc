@@ -16,7 +16,6 @@ import {
 import { Token } from 'parse5';
 
 import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
-import { toPropertyName } from '../shared/utils';
 import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -32,12 +31,14 @@ import {
     ATTR_NAME,
     DATA_RE,
     SUPPORTED_SVG_TAGS,
-    ATTRS_PROPS_TRANFORMS,
     HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
     KNOWN_HTML_AND_SVG_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';
+
+// Originally defined here, so this re-export is just for backwards compatibility
+export { attributeToPropertyName } from '@lwc/shared';
 
 function isQuotedAttribute(attrVal: string) {
     return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');
@@ -245,14 +246,6 @@ function isTemplateDirective(attrName: string): boolean {
     return TEMPLATE_DIRECTIVES.some((directive: RegExp) => {
         return directive.test(attrName);
     });
-}
-
-/**
- * Convert attribute name from kebab case to camel case property name
- * @param attrName
- */
-export function attributeToPropertyName(attrName: string): string {
-    return ATTRS_PROPS_TRANFORMS[attrName] || toPropertyName(attrName);
 }
 
 export class ParsedAttribute {

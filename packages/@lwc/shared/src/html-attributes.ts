@@ -4,8 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
+import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
+import {
+    isUndefined,
+    StringCharAt,
+    StringCharCodeAt,
+    StringFromCharCode,
+    StringReplace,
+} from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -177,4 +183,53 @@ export function kebabCaseToCamelCase(attrName: string): string {
     }
 
     return result;
+}
+
+/**
+ * Converts an attribute name to a property name using kebab-case to camelCase conversion.
+ */
+export function toPropertyName(attr: string) {
+    let prop = '';
+    let shouldUpperCaseNext = false;
+
+    for (let i = 0; i < attr.length; i++) {
+        const char = StringCharAt.call(attr, i);
+
+        if (char === '-') {
+            shouldUpperCaseNext = true;
+        } else {
+            prop += shouldUpperCaseNext ? char.toUpperCase() : char;
+            shouldUpperCaseNext = false;
+        }
+    }
+
+    return prop;
+}
+
+export const ATTRS_PROPS_TRANSFORMS: { [name: string]: string } = {
+    accesskey: 'accessKey',
+    readonly: 'readOnly',
+    tabindex: 'tabIndex',
+    bgcolor: 'bgColor',
+    colspan: 'colSpan',
+    rowspan: 'rowSpan',
+    contenteditable: 'contentEditable',
+    crossorigin: 'crossOrigin',
+    datetime: 'dateTime',
+    formaction: 'formAction',
+    ismap: 'isMap',
+    maxlength: 'maxLength',
+    minlength: 'minLength',
+    novalidate: 'noValidate',
+    usemap: 'useMap',
+    for: 'htmlFor',
+    ...AriaAttrNameToPropNameMap,
+};
+
+/**
+ * Convert attribute name from kebab case to camel case property name
+ * @param attrName
+ */
+export function attributeToPropertyName(attrName: string): string {
+    return ATTRS_PROPS_TRANSFORMS[attrName] || toPropertyName(attrName);
 }

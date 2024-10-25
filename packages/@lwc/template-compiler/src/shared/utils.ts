@@ -4,26 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { StringCharAt } from '@lwc/shared';
 import { DASHED_TAGNAME_ELEMENT_SET } from './constants';
 
-export function toPropertyName(attr: string) {
-    let prop = '';
-    let shouldUpperCaseNext = false;
-
-    for (let i = 0; i < attr.length; i++) {
-        const char = StringCharAt.call(attr, i);
-
-        if (char === '-') {
-            shouldUpperCaseNext = true;
-        } else {
-            prop += shouldUpperCaseNext ? char.toUpperCase() : char;
-            shouldUpperCaseNext = false;
-        }
-    }
-
-    return prop;
-}
+// Originally defined here, so this re-export is just for backwards compatibility
+export { toPropertyName } from '@lwc/shared';
 
 /**
  * Test if given tag name is a custom element.
