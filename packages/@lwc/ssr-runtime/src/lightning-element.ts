@@ -13,10 +13,19 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
-import { htmlPropertyToAttribute } from '@lwc/shared';
+import {
+    assign,
+    defineProperty,
+    defineProperties,
+    hasOwnProperty,
+    StringToLowerCase,
+    toString,
+} from '@lwc/shared';
+
 import { ClassList } from './class-list';
-import { Attributes } from './types';
+import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
+import { reflectAttrToProp, descriptors as reflectionDescriptors } from './reflection';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
@@ -43,36 +52,15 @@ export class LightningElement implements PropsAvailableAtConstruction {
     #attrs!: Attributes;
     #classList: ClassList | null = null;
 
-    constructor(
-        propsAvailableAtConstruction: PropsAvailableAtConstruction & Record<string, unknown>
-    ) {
-        Object.assign(this, propsAvailableAtConstruction);
+    constructor(propsAvailableAtConstruction: PropsAvailableAtConstruction & Properties) {
+        assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](
-        props: Record<string, any>,
-        reflectedProps: string[],
-        attrs: Record<string, any>
-    ) {
-        Object.assign(this, props);
+    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
         this.#attrs = attrs;
+        assign(this, props);
 
-        // Whenever a reflected prop changes, we'll update the original props object
-        // that was passed in. That'll be referenced when the attrs are rendered later.
-        for (const reflectedPropName of reflectedProps) {
-            Object.defineProperty(this, reflectedPropName, {
-                get() {
-                    return props[reflectedPropName] ?? null;
-                },
-                set(newValue) {
-                    props[reflectedPropName] = newValue;
-                    mutationTracker.add(this, htmlPropertyToAttribute(reflectedPropName));
-                },
-                enumerable: true,
-            });
-        }
-
-        Object.defineProperty(this, 'className', {
+        defineProperty(this, 'className', {
             get() {
                 return props.class ?? '';
             },
@@ -91,37 +79,33 @@ export class LightningElement implements PropsAvailableAtConstruction {
         return (this.#classList = new ClassList(this));
     }
 
-    #setAttribute(attrName: string, attrValue: string | null): void {
-        this.#attrs[attrName] = attrValue;
-        mutationTracker.add(this, attrName);
+    setAttribute(attrName: string, attrValue: string): void {
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        const normalizedValue = String(attrValue);
+        this.#attrs[normalizedName] = normalizedValue;
+        reflectAttrToProp(this, normalizedName, normalizedValue);
+        mutationTracker.add(this, normalizedName);
     }
 
-    setAttribute(attrName: string, attrValue: unknown): void {
-        this.#setAttribute(attrName, String(attrValue));
-    }
-
-    getAttribute(attrName: unknown): string | null {
-        if (this.hasAttribute(attrName)) {
-            return this.#attrs[attrName as string];
+    getAttribute(attrName: string): string | null {
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        if (hasOwnProperty.call(this.#attrs, normalizedName)) {
+            return this.#attrs[normalizedName];
         }
         return null;
     }
 
-    hasAttribute(attrName: unknown): boolean {
-        return typeof attrName === 'string' && typeof this.#attrs[attrName] === 'string';
+    hasAttribute(attrName: string): boolean {
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        return hasOwnProperty.call(this.#attrs, normalizedName);
     }
 
     removeAttribute(attrName: string): void {
-        if (this.hasAttribute(attrName)) {
-            // Reflected attributes use accessor methods to update their
-            // corresponding properties so we can't simply `delete`. Instead,
-            // we use `null` when we want to remove.
-            this.#setAttribute(attrName, null);
-        } else {
-            // This interprets the removal of a non-existing attribute as an
-            // attribute mutation. We may want to revisit this.
-            mutationTracker.add(this, attrName);
-        }
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        delete this.#attrs[normalizedName];
+        reflectAttrToProp(this, normalizedName, null);
+        // Track mutations for removal of non-existing attributes
+        mutationTracker.add(this, normalizedName);
     }
 
     addEventListener(
@@ -227,3 +211,5 @@ export class LightningElement implements PropsAvailableAtConstruction {
         throw new Error('Method "setAttributeNS" not implemented.');
     }
 }
+
+defineProperties(LightningElement.prototype, reflectionDescriptors);

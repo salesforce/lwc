@@ -29,8 +29,9 @@ for (const [propName, attrName] of entries(AriaPropNameToAttrNameMap)) {
                 return this.getAttribute(attrName);
             },
             set(this: HTMLElement, newValue: any) {
-                // TODO [#3284]: there is disagreement between browsers and the spec on how to treat undefined
-                // Our historical behavior is to only treat null as removing the attribute
+                // TODO [#3284]: According to the spec, IDL nullable type values
+                // (null and undefined) should remove the attribute; however, we
+                // only do so in the case of null for historical reasons.
                 // See also https://github.com/w3c/aria/issues/1858
                 if (isNull(newValue)) {
                     this.removeAttribute(attrName);
