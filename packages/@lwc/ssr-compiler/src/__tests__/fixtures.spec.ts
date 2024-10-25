@@ -24,7 +24,7 @@ interface FixtureModule {
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
-const SSR_MODE: CompilationMode = 'sync';
+const SSR_MODE: CompilationMode = 'asyncYield';
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
