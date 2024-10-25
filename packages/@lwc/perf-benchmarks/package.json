@@ -11,12 +11,14 @@
         "test:best:ci": "best src --runner remote"
     },
     "//": [
-        "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies."
+        "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
+        "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
         "@lwc/engine-dom": "8.3.0",
         "@lwc/engine-server": "8.3.0",
         "@lwc/perf-benchmarks-components": "8.3.0",
+        "@lwc/ssr-runtime": "8.3.0",
         "@lwc/synthetic-shadow": "8.3.0"
     },
     "devDependencies": {
