@@ -15,15 +15,12 @@ import {
 } from '@lwc/shared';
 import { LightningElement } from './lightning-element';
 
-// Eventually include globals that also reflect
-const attrsToProps = AriaAttrNameToPropNameMap;
-
 export function reflectAttrToProp(
     instance: LightningElement,
     attrName: string,
     attrValue: string | null
 ) {
-    const reflectedPropName = attrsToProps[attrName];
+    const reflectedPropName = AriaAttrNameToPropNameMap[attrName];
     // If it is a reflected property and it was not overriden by the instance
     if (reflectedPropName && !hasOwnProperty.call(instance, reflectedPropName)) {
         const currentValue = (instance as any)[reflectedPropName];
@@ -34,7 +31,7 @@ export function reflectAttrToProp(
 }
 
 export const descriptors = create(null);
-for (const [attrName, propName] of entries(attrsToProps)) {
+for (const [attrName, propName] of entries(AriaAttrNameToPropNameMap)) {
     descriptors[propName] = {
         get(this: LightningElement): string | null {
             return this.getAttribute(attrName);
