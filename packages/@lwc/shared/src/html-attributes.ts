@@ -6,6 +6,8 @@
  */
 import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
 import {
+    assign,
+    create,
     isUndefined,
     StringCharAt,
     StringCharCodeAt,
@@ -206,7 +208,7 @@ export function toPropertyName(attr: string) {
     return prop;
 }
 
-export const ATTRS_PROPS_TRANSFORMS: { [name: string]: string } = {
+export const ATTRS_PROPS_TRANSFORMS: Record<string, string> = assign(create(null), {
     accesskey: 'accessKey',
     readonly: 'readOnly',
     tabindex: 'tabIndex',
@@ -224,7 +226,7 @@ export const ATTRS_PROPS_TRANSFORMS: { [name: string]: string } = {
     usemap: 'useMap',
     for: 'htmlFor',
     ...AriaAttrNameToPropNameMap,
-};
+} as const);
 
 /**
  * Convert attribute name from kebab case to camel case property name
