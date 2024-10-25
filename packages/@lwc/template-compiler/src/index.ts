@@ -11,9 +11,6 @@ import {
     ParserDiagnostics,
 } from '@lwc/errors';
 
-// Originally defined here, so this re-export is just for backwards compatibility
-export { toPropertyName } from '@lwc/shared';
-
 import State from './state';
 import { normalizeConfig, Config } from './config';
 
@@ -25,6 +22,7 @@ import { Root, TemplateCompileResult, TemplateParseResult } from './shared/types
 export * from './shared/types';
 export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
 export { Config } from './config';
+export { toPropertyName } from './shared/utils';
 export { kebabcaseToCamelcase } from './shared/naming';
 export { generateScopeTokens } from './scopeTokens';
 

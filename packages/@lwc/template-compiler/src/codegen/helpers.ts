@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIFeature, IMPORTANT_FLAG, isAPIFeatureEnabled, toPropertyName } from '@lwc/shared';
+import { APIFeature, IMPORTANT_FLAG, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
+import { toPropertyName } from '../shared/utils';
 import { ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
 import { isBaseElement, isForBlock, isIf, isParentNode, isSlot } from '../shared/ast';
 import { IMPLICIT_STYLESHEET_IMPORTS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';

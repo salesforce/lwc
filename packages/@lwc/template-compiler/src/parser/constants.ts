@@ -4,14 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import {
+    AriaAttrNameToPropNameMap,
+    entries,
+    fromEntries,
+    SPECIAL_PROPERTY_ATTRIBUTE_MAPPING,
+} from '@lwc/shared';
 import { ElementDirectiveName } from '../shared/types';
 import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
 import { HTML_ELEMENTS } from './utils/html-elements';
 import { SVG_ELEMENTS } from './utils/svg-elements';
-
-// Originally defined here, so this re-export is just for backwards compatibility
-// Also, it had a typo!
-export { ATTRS_PROPS_TRANSFORMS as ATTRS_PROPS_TRANFORMS } from '@lwc/shared';
 
 export const EXPRESSION_RE = /(\{(?:.)+?\})/g;
 
@@ -109,11 +111,14 @@ export const SUPPORTED_SVG_TAGS = new Set([
 
 export const DISALLOWED_MATHML_TAGS = new Set(['script', 'link', 'base', 'object']);
 
+export const ATTRS_PROPS_TRANFORMS: { [attr: string]: string } = {
+    ...fromEntries(entries(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING).map(([prop, attr]) => [attr, prop])),
+    ...AriaAttrNameToPropNameMap,
+};
+
 export const DISALLOWED_HTML_TAGS = new Set(['base', 'link', 'meta', 'script', 'title']);
 
-export const HTML_ATTRIBUTES_REVERSE_LOOKUP: {
-    [attr: string]: string[];
-} = HTML_ATTRIBUTE_ELEMENT_MAP;
+export const HTML_ATTRIBUTES_REVERSE_LOOKUP = HTML_ATTRIBUTE_ELEMENT_MAP;
 
 export const KNOWN_HTML_AND_SVG_ELEMENTS = new Set([...HTML_ELEMENTS, ...SVG_ELEMENTS]);
 

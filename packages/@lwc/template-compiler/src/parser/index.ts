@@ -8,7 +8,6 @@ import {
     HTML_NAMESPACE,
     SVG_NAMESPACE,
     MATHML_NAMESPACE,
-    attributeToPropertyName,
     isVoidElement,
     isUndefined,
     isNull,
@@ -62,6 +61,7 @@ import {
 } from './expression';
 import {
     attributeName,
+    attributeToPropertyName,
     isAttribute,
     isProhibitedIsAttribute,
     isTabIndexAttribute,

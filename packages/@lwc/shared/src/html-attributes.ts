@@ -4,17 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
-import {
-    assign,
-    create,
-    fromEntries,
-    isUndefined,
-    StringCharAt,
-    StringCharCodeAt,
-    StringFromCharCode,
-    StringReplace,
-} from './language';
+import { AriaPropNameToAttrNameMap } from './aria';
+import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -67,7 +58,7 @@ export function isBooleanAttribute(attrName: string, tagName: string): boolean {
 }
 
 // This list is based on https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
-export const GLOBAL_ATTRIBUTES = /*@__PURE__*/ new Set([
+const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'accesskey',
     'autocapitalize',
     'autofocus',
@@ -103,11 +94,11 @@ export const GLOBAL_ATTRIBUTES = /*@__PURE__*/ new Set([
  * @param attrName
  */
 export function isGlobalHtmlAttribute(attrName: string): boolean {
-    return GLOBAL_ATTRIBUTES.has(attrName);
+    return GLOBAL_ATTRIBUTE.has(attrName);
 }
 
 // These are HTML standard prop/attribute IDL mappings, but are not predictable based on camel/kebab-case conversion
-const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
+export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
     ['accessKey', 'accesskey'],
     ['readOnly', 'readonly'],
     ['tabIndex', 'tabindex'],
@@ -186,38 +177,4 @@ export function kebabCaseToCamelCase(attrName: string): string {
     }
 
     return result;
-}
-
-/**
- * Converts an attribute name to a property name using kebab-case to camelCase conversion.
- */
-export function toPropertyName(attr: string) {
-    let prop = '';
-    let shouldUpperCaseNext = false;
-
-    for (let i = 0; i < attr.length; i++) {
-        const char = StringCharAt.call(attr, i);
-
-        if (char === '-') {
-            shouldUpperCaseNext = true;
-        } else {
-            prop += shouldUpperCaseNext ? char.toUpperCase() : char;
-            shouldUpperCaseNext = false;
-        }
-    }
-
-    return prop;
-}
-
-export const ATTRS_PROPS_TRANSFORMS: Record<string, string> = assign(create(null), {
-    ...fromEntries(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING),
-    ...AriaAttrNameToPropNameMap,
-} as const);
-
-/**
- * Convert attribute name from kebab case to camel case property name
- * @param attrName
- */
-export function attributeToPropertyName(attrName: string): string {
-    return ATTRS_PROPS_TRANSFORMS[attrName] || toPropertyName(attrName);
 }
