@@ -88,14 +88,16 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     getAttribute(attrName: string): string | null {
-        if (typeof attrName === 'string' && hasOwnProperty.call(this.#attrs, attrName)) {
-            return this.#attrs[attrName];
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        if (hasOwnProperty.call(this.#attrs, normalizedName)) {
+            return this.#attrs[normalizedName];
         }
         return null;
     }
 
     hasAttribute(attrName: string): boolean {
-        return typeof attrName === 'string' && hasOwnProperty.call(this.#attrs, attrName);
+        const normalizedName = StringToLowerCase.call(toString(attrName));
+        return hasOwnProperty.call(this.#attrs, normalizedName);
     }
 
     removeAttribute(attrName: string): void {
