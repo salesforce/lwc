@@ -8,6 +8,7 @@ import { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } from './aria';
 import {
     assign,
     create,
+    fromEntries,
     isUndefined,
     StringCharAt,
     StringCharCodeAt,
@@ -209,22 +210,7 @@ export function toPropertyName(attr: string) {
 }
 
 export const ATTRS_PROPS_TRANSFORMS: Record<string, string> = assign(create(null), {
-    accesskey: 'accessKey',
-    readonly: 'readOnly',
-    tabindex: 'tabIndex',
-    bgcolor: 'bgColor',
-    colspan: 'colSpan',
-    rowspan: 'rowSpan',
-    contenteditable: 'contentEditable',
-    crossorigin: 'crossOrigin',
-    datetime: 'dateTime',
-    formaction: 'formAction',
-    ismap: 'isMap',
-    maxlength: 'maxLength',
-    minlength: 'minLength',
-    novalidate: 'noValidate',
-    usemap: 'useMap',
-    for: 'htmlFor',
+    ...fromEntries(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING),
     ...AriaAttrNameToPropNameMap,
 } as const);
 
