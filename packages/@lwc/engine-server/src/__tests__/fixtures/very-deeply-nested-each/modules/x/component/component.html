@@ -1,0 +1,5 @@
+<template>
+	<template for:each={rows} for:item="row">
+		<div key={row.id} data-value={row.foo.bar.baz}>{row.foo.bar.baz}</div>
+	</template>
+</template>

@@ -10,14 +10,17 @@ import { reservedKeywords } from '@lwc/shared';
 import { Node as IrNode } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
 
+import { TransformerContext } from './types';
 import type {
     ImportDeclaration as EsImportDeclaration,
     Statement as EsStatement,
     Expression as EsExpression,
+    MemberExpression as EsMemberExpression,
+    Identifier as EsIdentifier,
 } from 'estree';
 
 export const bImportHtmlEscape = esTemplate`
-    import { htmlEscape } from '@lwc/shared';
+    import { htmlEscape } from '@lwc/ssr-runtime';
 `<EsImportDeclaration>;
 export const importHtmlEscapeKey = 'import:htmlEscape';
 
@@ -74,4 +77,28 @@ export function bAttributeValue(node: IrNode, attrName: string): EsExpression {
     } else {
         return b.memberExpression(b.literal('instance'), nameAttrValue as EsExpression);
     }
+}
+
+function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
+    return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
+}
+
+function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
+    const rootMemberExpression = getRootMemberExpression(node);
+    return is.identifier(rootMemberExpression?.object) ? rootMemberExpression.object : null;
+}
+
+/**
+ * Given an expression in a context, return an expression that may be scoped to that context.
+ * For example, for the expression `foo`, it will typically be `instance.foo`, but if we're
+ * inside a `for:each` block then the `foo` variable may refer to the scoped `foo`.
+ * @param expression
+ */
+export function getScopedExpression(expression: EsExpression, cxt: TransformerContext) {
+    const scopeReferencedId = is.memberExpression(expression)
+        ? getRootIdentifier(expression)
+        : null;
+    return cxt.isLocalVar(scopeReferencedId?.name)
+        ? expression
+        : b.memberExpression(b.identifier('instance'), expression);
 }
