@@ -32,6 +32,7 @@ for (const [propName, attrName] of entries(AriaPropNameToAttrNameMap)) {
                 // TODO [#3284]: According to the spec, IDL nullable type values
                 // (null and undefined) should remove the attribute; however, we
                 // only do so in the case of null for historical reasons.
+                // See also https://github.com/w3c/aria/issues/1858
                 if (isNull(newValue)) {
                     this.removeAttribute(attrName);
                 } else {

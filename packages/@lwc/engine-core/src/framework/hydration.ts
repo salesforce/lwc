@@ -664,7 +664,12 @@ function validateClassAttr(
 
     const elmClassName = getAttribute(elm, 'class');
 
-    if (!isUndefined(className) && String(className) !== elmClassName) {
+    if (
+        !isUndefined(className) &&
+        String(className) !== elmClassName &&
+        // No mismatch if SSR `class` attribute is missing and CSR `class` is the empty string
+        !(className === '' && isNull(elmClassName))
+    ) {
         // className is used when class is bound to an expr.
         nodesAreCompatible = false;
         // stringify for pretty-printing
