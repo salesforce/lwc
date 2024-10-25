@@ -15,8 +15,10 @@ export { mutationTracker } from './mutation-tracker';
 // renderComponent is an alias for serverSideRenderComponent
 export {
     fallbackTmpl,
+    fallbackTmplNoYield,
     GenerateMarkupFn,
     renderAttrs,
+    renderAttrsNoYield,
     serverSideRenderComponent,
     serverSideRenderComponent as renderComponent,
 } from './render';

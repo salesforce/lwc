@@ -5,11 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is } from 'estree-toolkit';
+import { builders as b, is } from 'estree-toolkit';
 import { reservedKeywords } from '@lwc/shared';
+import { Node as IrNode } from '@lwc/template-compiler';
 import { esTemplate } from '../estemplate';
 
-import type { ImportDeclaration as EsImportDeclaration, Statement as EsStatement } from 'estree';
+import type {
+    ImportDeclaration as EsImportDeclaration,
+    Statement as EsStatement,
+    Expression as EsExpression,
+} from 'estree';
 
 export const bImportHtmlEscape = esTemplate`
     import { htmlEscape } from '@lwc/shared';
@@ -54,4 +59,19 @@ export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStateme
             return stmt;
         })
         .filter((el): el is NonNullable<EsStatement> => el !== null);
+}
+
+export function bAttributeValue(node: IrNode, attrName: string): EsExpression {
+    if (!('attributes' in node)) {
+        throw new TypeError(`Cannot get attribute value from ${node.type}`);
+    }
+    const nameAttrValue = node.attributes.find((attr) => attr.name === attrName)?.value;
+    if (!nameAttrValue) {
+        return b.literal(null);
+    } else if (nameAttrValue.type === 'Literal') {
+        const name = typeof nameAttrValue.value === 'string' ? nameAttrValue.value : '';
+        return b.literal(name);
+    } else {
+        return b.memberExpression(b.literal('instance'), nameAttrValue as EsExpression);
+    }
 }

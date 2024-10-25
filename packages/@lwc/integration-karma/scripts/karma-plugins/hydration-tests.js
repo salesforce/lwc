@@ -130,13 +130,19 @@ function throwOnUnexpectedConsoleCalls(runnable) {
     }
 }
 
-function getSsrCode(moduleCode, testConfig) {
+/**
+ * @param {string} moduleCode
+ * @param {string} testConfig
+ * @param {string} filename
+ */
+function getSsrCode(moduleCode, testConfig, filename) {
     const script = new vm.Script(
         `
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`,
+        { filename }
     );
 
     throwOnUnexpectedConsoleCalls(() => {
@@ -189,7 +195,7 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await exists(path.join(suiteDir, '.only'));
 
-            const ssrOutput = getSsrCode(componentDef, testCode);
+            const ssrOutput = getSsrCode(componentDef, testCode, path.join(suiteDir, 'ssr.js'));
 
             watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFiles));
             const newContent = format(

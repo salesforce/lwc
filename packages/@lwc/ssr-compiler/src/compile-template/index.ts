@@ -12,12 +12,14 @@ import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
+import { transmogrify } from '../transmogrify';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type {
     ExportDefaultDeclaration as EsExportDefaultDeclaration,
     ImportDeclaration as EsImportDeclaration,
 } from 'estree';
+import type { CompilationMode } from '../shared';
 
 const bStyleValidationImport = esTemplate`
     import { validateStyleTextContents } from '@lwc/ssr-runtime';
@@ -51,10 +53,9 @@ const bExportTemplate = esTemplate`
 
         if (!isLightDom) {
             yield '</template>';
-        }
-
-        if (slottedContent) {
-            yield* slottedContent();
+            if (slottedContent?.shadow) {
+                yield* slottedContent.shadow();
+            }
         }
     }
 `<EsExportDefaultDeclaration>;
@@ -62,7 +63,8 @@ const bExportTemplate = esTemplate`
 export default function compileTemplate(
     src: string,
     filename: string,
-    options: TemplateCompilerConfig
+    options: TemplateCompilerConfig,
+    compilationMode: CompilationMode
 ) {
     const { root, warnings } = parse(src, {
         // `options` is from @lwc/compiler, and may have flags that @lwc/template-compiler doesn't
@@ -110,12 +112,16 @@ export default function compileTemplate(
         bStyleValidationImport(),
         bExportTemplate(optimizeAdjacentYieldStmts(statements)),
     ];
-    const program = b.program(moduleBody, 'module');
+    let program = b.program(moduleBody, 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
     const stylesheetImports = getStylesheetImports(filename);
     program.body.unshift(...stylesheetImports);
+
+    if (compilationMode === 'async' || compilationMode === 'sync') {
+        program = transmogrify(program, compilationMode);
+    }
 
     return {
         code: generate(program, {}),
