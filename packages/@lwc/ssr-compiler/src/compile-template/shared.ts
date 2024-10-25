@@ -17,7 +17,7 @@ import type {
 } from 'estree';
 
 export const bImportHtmlEscape = esTemplate`
-    import { htmlEscape } from '@lwc/shared';
+    import { htmlEscape } from '@lwc/ssr-runtime';
 `<EsImportDeclaration>;
 export const importHtmlEscapeKey = 'import:htmlEscape';
 

@@ -20,13 +20,20 @@ function createConfig(componentFile, engineType) {
     const rootDir = componentFile.includes(tmpDir)
         ? path.join(tmpDir, 'src')
         : path.join(__dirname, 'src');
-    const lwcImportModule = engineType === 'server' ? '@lwc/engine-server' : '@lwc/engine-dom';
+    const lwcImportModule =
+        engineType === 'server'
+            ? '@lwc/engine-server'
+            : engineType === 'ssr'
+              ? '@lwc/ssr-runtime'
+              : '@lwc/engine-dom';
     return {
         input: componentFile,
         plugins: [
             lwc({
                 rootDir,
                 experimentalComplexExpressions: true,
+                targetSSR: engineType === 'ssr',
+                ssrMode: 'asyncYield',
             }),
             replace({
                 preventAssignment: true,
@@ -49,13 +56,18 @@ function createConfig(componentFile, engineType) {
         },
         // These packages need to be external so that @lwc/perf-benchmarks can potentially swap them out
         // (e.g. to allow them to run in server mode or DOM mode), and so that Tachometer can swap them out.
-        external: ['lwc', '@lwc/engine-server', '@lwc/engine-dom'],
+        external: ['lwc', '@lwc/engine-server', '@lwc/engine-dom', '@lwc/ssr-runtime'],
+        onwarn({ message, code }) {
+            if (!['CIRCULAR_DEPENDENCY', 'UNUSED_EXTERNAL_IMPORT'].includes(code)) {
+                throw new Error(message);
+            }
+        },
     };
 }
 
 const components = [...globSync(path.join(__dirname, 'src/**/*.js')), ...styledComponents];
 
-const config = ['server', 'dom']
+const config = ['server', 'dom', 'ssr']
     .map((engineType) => components.map((component) => createConfig(component, engineType)))
     .flat();
 

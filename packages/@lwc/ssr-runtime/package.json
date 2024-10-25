@@ -43,7 +43,7 @@
             }
         }
     },
-    "dependencies": {
+    "devDependencies": {
         "@lwc/shared": "8.3.0"
     }
 }
