@@ -218,6 +218,7 @@ function parseElement(
         applyLwcDirectives(ctx, parsedAttr, element);
         applyAttributes(ctx, parsedAttr, element);
 
+        validateSlotAttribute(ctx, parsedAttr, parentNode, element);
         validateElement(ctx, element, parse5Elm);
         validateAttributes(ctx, parsedAttr, element);
         validateProperties(ctx, element);
@@ -1722,6 +1723,33 @@ function validateAttributes(
         if (tag === 'iframe' && attrName === 'srcdoc') {
             ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, element);
         }
+    }
+}
+
+function validateSlotAttribute(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parentNode: ParentNode,
+    element: BaseElement
+): void {
+    const slotAttr = parsedAttr.get('slot');
+
+    if (!slotAttr) {
+        return;
+    }
+
+    if (
+        ast.isElement(parentNode) ||
+        ast.isSlot(parentNode) ||
+        ast.isForEach(parentNode) ||
+        ast.isForOf(parentNode)
+    ) {
+        ctx.warnOnNode(ParserDiagnostics.IGNORED_SLOT_ATTRIBUTE_IN_CHILD, slotAttr, [
+            `<${element.name}>`,
+            ast.isElement(parentNode) || ast.isSlot(parentNode)
+                ? `<${parentNode.name}>`
+                : 'iteration block',
+        ]);
     }
 }
 

@@ -59,6 +59,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 message.includes('LWC1187') ||
                 // TODO [#4497]: stop warning on duplicate slots or disallow them entirely (LWC1137 is duplicate slots)
                 message.includes('LWC1137') ||
+                message.includes('LWC1201') ||
                 message.includes('-h-t-m-l') ||
                 code === 'CIRCULAR_DEPENDENCY';
             if (!shouldIgnoreWarning) {
