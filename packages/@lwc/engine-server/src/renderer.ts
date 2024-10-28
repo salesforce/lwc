@@ -5,15 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
-    isNull,
-    isBooleanAttribute,
-    isGlobalHtmlAttribute,
-    isAriaAttribute,
-    htmlPropertyToAttribute,
-    noop,
-    isFunction,
     HTML_NAMESPACE,
+    htmlPropertyToAttribute,
+    isAriaAttribute,
+    isBooleanAttribute,
+    isFunction,
+    isGlobalHtmlAttribute,
+    isNull,
+    isUndefined,
+    noop,
+    StringToLowerCase,
 } from '@lwc/shared';
 import { LifecycleCallback } from '@lwc/engine-core';
 
@@ -251,16 +252,19 @@ function setText(node: N, content: string) {
 }
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
+    const normalizedName = StringToLowerCase.call(String(name));
     const attribute = element[HostAttributesKey].find(
-        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
+        (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
 }
 
 function setAttribute(element: E, name: string, value: unknown, namespace: string | null = null) {
-    reportMutation(element, name);
+    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedValue = String(value);
+    reportMutation(element, normalizedName);
     const attribute = element[HostAttributesKey].find(
-        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
+        (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
 
     if (isUndefined(namespace)) {
@@ -269,19 +273,20 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
 
     if (isUndefined(attribute)) {
         element[HostAttributesKey].push({
-            name,
+            name: normalizedName,
             [HostNamespaceKey]: namespace,
-            value: String(value),
+            value: normalizedValue,
         });
     } else {
-        attribute.value = String(value);
+        attribute.value = normalizedValue;
     }
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    reportMutation(element, name);
+    const normalizedName = StringToLowerCase.call(String(name));
+    reportMutation(element, normalizedName);
     element[HostAttributesKey] = element[HostAttributesKey].filter(
-        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
+        (attr) => attr.name !== normalizedName && attr[HostNamespaceKey] !== namespace
     );
 }
 

@@ -8,5 +8,11 @@ export default class extends LightningElement {
     this.classList.add('yolo')
     this.classList.add('woot')
     this.setAttribute('aria-label', 'haha')
+
+    this.setAttribute('FOO', '');
+    this.removeAttribute('foo');
+
+    this.setAttribute('bar', '');
+    this.removeAttribute('BAR');
   }
 }
