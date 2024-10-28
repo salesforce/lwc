@@ -49,7 +49,8 @@ const stringDescriptor = (attrName: string): TypedPropertyDescriptor<string | nu
     },
 });
 
-const booleanDescriptor = (
+/** Descriptor for a boolean that checks for `attr="true"` or `attr="false"`. */
+const explicitBooleanDescriptor = (
     attrName: string,
     defaultValue: boolean
 ): TypedPropertyDescriptor<boolean> => ({
@@ -64,6 +65,29 @@ const booleanDescriptor = (
         const normalizedValue = String(Boolean(newValue));
         if (normalizedValue !== currentValue) {
             this.setAttribute(attrName, normalizedValue);
+        }
+    },
+});
+
+/**
+ * Descriptor for a "true" boolean attribute that checks solely for presence, e.g. `hidden`.
+ */
+const booleanAttributeDescriptor = (attrName: string): TypedPropertyDescriptor<boolean> => ({
+    configurable: true,
+    enumerable: true,
+    get(this: LightningElement): boolean {
+        return this.hasAttribute(attrName);
+    },
+    set(this: LightningElement, newValue: boolean): void {
+        const hasAttribute = this.hasAttribute(attrName);
+        if (newValue) {
+            if (!hasAttribute) {
+                this.setAttribute(attrName, '');
+            }
+        } else {
+            if (hasAttribute) {
+                this.removeAttribute(attrName);
+            }
         }
     },
 });
@@ -107,11 +131,11 @@ export function reflectAttrToProp(
 export const descriptors: Record<string, PropertyDescriptor> = {
     accessKey: stringDescriptor('accesskey'),
     dir: stringDescriptor('dir'),
-    draggable: booleanDescriptor('draggable', true),
-    hidden: booleanDescriptor('hidden', true),
+    draggable: explicitBooleanDescriptor('draggable', true),
+    hidden: booleanAttributeDescriptor('hidden'),
     id: stringDescriptor('id'),
     lang: stringDescriptor('lang'),
-    spellcheck: booleanDescriptor('spellcheck', false),
+    spellcheck: explicitBooleanDescriptor('spellcheck', false),
     tabIndex: {
         get(this: LightningElement): number {
             const str = this.getAttribute('tabindex');
