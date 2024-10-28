@@ -95,7 +95,7 @@ export function reflectAttrToProp(
     attrValue: string | null
 ) {
     const reflectedPropName = attrsToProps[attrName as keyof typeof attrsToProps];
-    // If it is a reflected property and it was not overriden by the instance
+    // If it is a reflected property and it was not overridden by the instance
     if (reflectedPropName && !hasOwnProperty.call(instance, reflectedPropName)) {
         const currentValue = (instance as any)[reflectedPropName];
         if (currentValue !== attrValue) {
