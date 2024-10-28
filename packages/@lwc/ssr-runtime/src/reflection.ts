@@ -35,8 +35,8 @@ const attrsToProps = assign(create(null), {
 });
 
 /**
-  * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
-  */
+ * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
+ */
 const stringDescriptor = (attrName: string): TypedPropertyDescriptor<string | null> => ({
     configurable: true,
     enumerable: true,
@@ -96,8 +96,8 @@ const booleanAttributeDescriptor = (attrName: string): TypedPropertyDescriptor<b
 });
 
 /**
-  * Descriptor for ARIA reflections, e.g. `ariaLabel` and `role`.
-  */
+ * Descriptor for ARIA reflections, e.g. `ariaLabel` and `role`.
+ */
 const ariaDescriptor = (attrName: string): TypedPropertyDescriptor<string | null> => ({
     configurable: true,
     enumerable: true,
@@ -146,7 +146,7 @@ export const descriptors: Record<string, PropertyDescriptor> = {
         get(this: LightningElement): number {
             const str = this.getAttribute('tabindex');
             const num = Number(str);
-            return Number.isNaN(num) ? -1 : Math.trunc(num);
+            return isFinite(num) ? Math.trunc(num) : -1;
         },
         set(this: LightningElement, newValue: number): void {
             const currentValue = this.getAttribute('tabindex');
