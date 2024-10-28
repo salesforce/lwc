@@ -49,7 +49,7 @@ const stringDescriptor = (attrName: string): TypedPropertyDescriptor<string | nu
     },
 });
 
-/** Descriptor for a boolean that checks for `attr="true"` or `attr="false"`. */
+/** Descriptor for a boolean that checks for `attr="true"` or `attr="false"`, e.g. `spellcheck` and `draggable`. */
 const explicitBooleanDescriptor = (
     attrName: string,
     defaultValue: boolean
