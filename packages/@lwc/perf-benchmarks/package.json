@@ -24,7 +24,7 @@
         "@best/runner-headless": "^13.0.0",
         "@best/runner-remote": "^13.0.0",
         "folder-hash": "4.0.4",
-        "markdown-table": "^3.0.3",
+        "markdown-table": "^3.0.4",
         "tachometer": "^0.7.1"
     },
     "nx": {
