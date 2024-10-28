@@ -33,11 +33,11 @@ import {
     DATA_RE,
     SUPPORTED_SVG_TAGS,
     ATTRS_PROPS_TRANFORMS,
-    HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
     KNOWN_HTML_AND_SVG_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';
+import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
 
 function isQuotedAttribute(attrVal: string) {
     return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');
@@ -237,7 +237,7 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
         return true;
     }
 
-    const validElements = HTML_ATTRIBUTES_REVERSE_LOOKUP[attrName];
+    const validElements = HTML_ATTRIBUTE_ELEMENT_MAP[attrName];
     return !!validElements && (!validElements.length || validElements.includes(tagName));
 }
 
