@@ -20,7 +20,10 @@ const bDefaultScopedStyleImport = esTemplate`
     import defaultScopedStylesheets from '${is.literal}';
 `<ImportDeclaration>;
 
-export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
+export function catalogAndReplaceStyleImports(
+    path: NodePath<ImportDeclaration>,
+    state: ComponentMetaState
+) {
     const specifier = path.node!.specifiers[0];
 
     if (
@@ -30,6 +33,17 @@ export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: Com
         specifier.type !== 'ImportDefaultSpecifier'
     ) {
         return;
+    }
+
+    // Any file ending in `*.scoped.css` which is directly imported into a Component `*.js` file (and assumed
+    // to be used for `static stylesheets` is assumed to be scoped, so needs to be marked as such with a query param.
+    if (path.node!.source.value.endsWith('.scoped.css')) {
+        path.replaceWith(
+            b.importDeclaration(
+                path.node!.specifiers,
+                b.literal(path.node!.source.value + '?scoped=true')
+            )
+        );
     }
 
     state.cssExplicitImports = state.cssExplicitImports ?? new Map();

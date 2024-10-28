@@ -19,6 +19,7 @@ import type {
     SimpleCallExpression,
     Identifier,
     MemberExpression,
+    ImportDeclaration as EsImportDeclaration,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -30,10 +31,14 @@ type RenderCallExpression = SimpleCallExpression & {
 /** Node representing a string literal. */
 type StringLiteral = SimpleLiteral & { value: string };
 
+const bHasScopedStylesImport = esTemplate`
+    import { hasScopedStaticStylesheets } from '@lwc/ssr-runtime';
+`<EsImportDeclaration>;
+
 const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
         attrs = attrs ?? {};
-        const instance = new ${is.identifier}({
+        const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
         instance[__SYMBOL__SET_INTERNALS](props, attrs);
@@ -45,8 +50,11 @@ const bGenerateMarkup = esTemplate`
         }
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
-        yield tmplFn.stylesheetScopeTokenHostClass ?? '';
-        yield* __renderAttrs(instance, attrs)
+        const shouldRenderScopeToken = tmplFn.hasScopedStylesheets || hasScopedStaticStylesheets(${/*Component class */ 0});
+        if (shouldRenderScopeToken) {
+            yield \` class="\${tmplFn.stylesheetScopeToken}-host"\`;
+        }
+        yield* __renderAttrs(instance, attrs);
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${0}, instance);
         yield \`</\${tagName}>\`;
@@ -97,5 +105,6 @@ export function addGenerateMarkupExport(
     }
 
     program.body.unshift(bInsertFallbackTmplImport());
+    program.body.unshift(bHasScopedStylesImport());
     program.body.push(bGenerateMarkup(classIdentifier, renderCall));
 }

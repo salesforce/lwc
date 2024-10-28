@@ -9,30 +9,24 @@ import { is } from 'estree-toolkit';
 import { generateScopeTokens } from '@lwc/template-compiler';
 import { builders as b } from 'estree-toolkit/dist/builders';
 import { esTemplate } from '../estemplate';
-import type { BlockStatement, ExportNamedDeclaration, Program, VariableDeclaration } from 'estree';
+import type { BlockStatement, Program, VariableDeclaration } from 'estree';
 
 const bStylesheetTokenDeclaration = esTemplate`
     const stylesheetScopeToken = '${is.literal}';
 `<VariableDeclaration>;
 
-const bAdditionalDeclarations = [
-    esTemplate`
-        const hasScopedStylesheets = defaultScopedStylesheets && defaultScopedStylesheets.length > 0;
-    `<VariableDeclaration>,
-    esTemplate`
-        const stylesheetScopeTokenClass = hasScopedStylesheets ? \` class="\${stylesheetScopeToken}"\` : '';
-    `<ExportNamedDeclaration>,
-    esTemplate`
-        const stylesheetScopeTokenHostClass = hasScopedStylesheets ? \` class="\${stylesheetScopeToken}-host"\` : '';
-    `<ExportNamedDeclaration>,
-    esTemplate`
-        const stylesheetScopeTokenClassPrefix = hasScopedStylesheets ? (stylesheetScopeToken + ' ') : '';
-    `<ExportNamedDeclaration>,
-];
+const bHasScopedStylesheetsDeclaration = esTemplate`
+    const hasScopedStylesheets = defaultScopedStylesheets !== undefined && defaultScopedStylesheets.length > 0;
+`<VariableDeclaration>;
 
 // Scope tokens are associated with a given template. This is assigned here so that it can be used in `generateMarkup`.
+// We also need to keep track of whether the template has any scoped styles or not so that we can render (or not) the
+// scope token.
 const tmplAssignmentBlock = esTemplate`
-    ${is.identifier}.stylesheetScopeTokenHostClass = stylesheetScopeTokenHostClass;
+  {
+    ${/* template */ is.identifier}.hasScopedStylesheets = hasScopedStylesheets;
+    ${/* template */ 0}.stylesheetScopeToken = stylesheetScopeToken;
+  }
 `<BlockStatement>;
 
 export function addScopeTokenDeclarations(
@@ -45,7 +39,7 @@ export function addScopeTokenDeclarations(
 
     program.body.unshift(
         bStylesheetTokenDeclaration(b.literal(scopeToken)),
-        ...bAdditionalDeclarations.map((declaration) => declaration())
+        bHasScopedStylesheetsDeclaration()
     );
 
     program.body.push(tmplAssignmentBlock(b.identifier('tmpl')));

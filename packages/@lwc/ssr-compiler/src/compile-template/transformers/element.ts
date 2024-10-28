@@ -36,9 +36,12 @@ import type {
 import type { Transformer, TransformerContext } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
+
+// TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
 const bConditionalLiveYield = esTemplateWithYield`
     {
-        const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
+        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
+        const prefix = (${/* isClass */ is.literal} && shouldRenderScopeToken && (stylesheetScopeToken + ' ')) || '';
         const attrValue = ${/* attribute value expression */ is.expression};
         const valueType = typeof attrValue;
         if (attrValue && (valueType === 'string' || valueType === 'boolean')) {
@@ -50,10 +53,21 @@ const bConditionalLiveYield = esTemplateWithYield`
     }
 `<EsBlockStatement>;
 
+// TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
 const bStringLiteralYield = esTemplateWithYield`
     {
-        const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
-        yield ' ' + ${is.literal} + '="' + prefix + "${is.literal}" + '"'
+        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
+        const suffix = (${/* isClass */ is.literal} && shouldRenderScopeToken && (' ' + stylesheetScopeToken)) || '';
+        yield ' ' + ${/* attribute name */ is.literal} + '="' + "${/* attribute value */ is.literal}" + suffix + '"'
+    }
+`<EsBlockStatement>;
+
+const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
+    {
+        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
+        if (shouldRenderScopeToken) {
+            yield \` class="\${stylesheetScopeToken}"\`;
+        }
     }
 `<EsBlockStatement>;
 
@@ -168,7 +182,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     return [
         bYield(b.literal(`<${node.name}`)),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
-        ...(hasClassAttribute ? [] : [bYield(b.identifier('stylesheetScopeTokenClass'))]),
+        ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,
         bYield(b.literal(`>`)),
         ...childContent,

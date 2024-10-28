@@ -12,7 +12,7 @@ import { parseModule } from 'meriyah';
 import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
-import { catalogStaticStylesheets, catalogStyleImport } from './stylesheets';
+import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupExport } from './generate-markup';
 
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
@@ -28,7 +28,7 @@ const visitors: Visitors = {
 
         replaceLwcImport(path, state);
         catalogTmplImport(path, state);
-        catalogStyleImport(path, state);
+        catalogAndReplaceStyleImports(path, state);
     },
     ClassDeclaration(path, state) {
         if (!path.node?.superClass) {
@@ -137,14 +137,6 @@ export default function compileJS(src: string, filename: string, compilationMode
         return {
             code: generate(ast, {}),
         };
-    }
-
-    if (state.cssExplicitImports || state.staticStylesheetIds) {
-        throw new Error(
-            `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
-                '  \n'
-            )}`
-        );
     }
 
     addGenerateMarkupExport(ast, state, filename);
