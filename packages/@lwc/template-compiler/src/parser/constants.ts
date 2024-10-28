@@ -6,7 +6,7 @@
  */
 import {
     AriaAttrNameToPropNameMap,
-    entries,
+    ArrayFrom,
     fromEntries,
     SPECIAL_PROPERTY_ATTRIBUTE_MAPPING,
 } from '@lwc/shared';
@@ -112,7 +112,7 @@ export const SUPPORTED_SVG_TAGS = new Set([
 export const DISALLOWED_MATHML_TAGS = new Set(['script', 'link', 'base', 'object']);
 
 export const ATTRS_PROPS_TRANFORMS: { [attr: string]: string } = {
-    ...fromEntries(entries(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING).map(([prop, attr]) => [attr, prop])),
+    ...fromEntries(ArrayFrom(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING, ([prop, attr]) => [attr, prop])),
     ...AriaAttrNameToPropNameMap,
 };
 
