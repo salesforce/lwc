@@ -161,6 +161,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     let { rootDir, modules = [] } = pluginOptions;
     const {
         targetSSR,
+        ssrMode,
         stylesheetConfig,
         sourcemap = false,
         preserveHtmlComments,
@@ -348,6 +349,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                     enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
                 }),
                 targetSSR,
+                ssrMode,
             });
 
             if (warnings) {

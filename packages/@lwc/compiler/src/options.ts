@@ -33,7 +33,7 @@ const DEFAULT_OPTIONS = {
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
-    ssrMode: 'sync',
+    ssrMode: 'asyncYield',
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {

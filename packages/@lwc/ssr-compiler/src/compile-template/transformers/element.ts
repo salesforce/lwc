@@ -25,7 +25,7 @@ import {
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import { bImportHtmlEscape, importHtmlEscapeKey } from '../shared';
+import { bImportHtmlEscape, getScopedExpression, importHtmlEscapeKey } from '../shared';
 
 import type {
     BinaryExpression,
@@ -33,18 +33,18 @@ import type {
     Expression as EsExpression,
     Statement as EsStatement,
 } from 'estree';
-import type { Transformer } from '../types';
+import type { Transformer, TransformerContext } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 const bConditionalLiveYield = esTemplateWithYield`
     {
         const prefix = (${/* isClass */ is.literal} && stylesheetScopeTokenClassPrefix) || '';
-        const attrOrPropValue = ${is.expression};
-        const valueType = typeof attrOrPropValue;
-        if (attrOrPropValue && (valueType === 'string' || valueType === 'boolean')) {
-            yield ' ' + ${is.literal};
+        const attrValue = ${/* attribute value expression */ is.expression};
+        const valueType = typeof attrValue;
+        if (attrValue && (valueType === 'string' || valueType === 'boolean')) {
+            yield ' ' + ${/* attribute name */ is.literal};
             if (valueType === 'string') {
-                yield \`="\${prefix}\${htmlEscape(attrOrPropValue, true)}"\`;
+                yield \`="\${prefix}\${htmlEscape(attrValue, true)}"\`;
             }
         }
     }
@@ -83,10 +83,11 @@ function yieldAttrOrPropLiteralValue(
 function yieldAttrOrPropLiveValue(
     name: string,
     value: IrExpression | BinaryExpression,
-    isClass: boolean
+    isClass: boolean,
+    cxt: TransformerContext
 ): EsStatement[] {
-    const instanceMemberRef = b.memberExpression(b.identifier('instance'), value as EsExpression);
-    return [bConditionalLiveYield(b.literal(isClass), instanceMemberRef, b.literal(name))];
+    const scopedExpression = getScopedExpression(value as EsExpression, cxt);
+    return [bConditionalLiveYield(b.literal(isClass), scopedExpression, b.literal(name))];
 }
 
 function reorderAttributes(
@@ -142,7 +143,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         if (value.type === 'Literal') {
             return yieldAttrOrPropLiteralValue(name, value, isClass);
         } else {
-            return yieldAttrOrPropLiveValue(name, value, isClass);
+            return yieldAttrOrPropLiveValue(name, value, isClass, cxt);
         }
     });
 

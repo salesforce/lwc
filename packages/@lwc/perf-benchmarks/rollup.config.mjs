@@ -7,10 +7,17 @@
 
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { readFileSync } from 'node:fs';
 import { globSync } from 'glob';
 import inject from '@rollup/plugin-inject';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const packageJson = JSON.parse(readFileSync(path.join(__dirname, './package.json'), 'utf-8'));
+
+// lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
+const swappablePackages = Object.keys(packageJson.dependencies).filter((_) =>
+    _.startsWith('@lwc/')
+);
 
 // Figure out all the packages we might be importing from @lwc/perf-benchmarks-components
 // so that we can tell Rollup that those are `external`.
@@ -40,12 +47,7 @@ function createConfig(benchmarkFile) {
         },
         // These packages need to be external so that Tachometer can dynamically swap them out
         // when comparing the current PR to the tip-of-tree
-        external: [
-            '@lwc/engine-server',
-            '@lwc/engine-dom',
-            '@lwc/synthetic-shadow',
-            ...componentModules,
-        ],
+        external: [...swappablePackages, ...componentModules],
     };
 }
 
