@@ -92,6 +92,9 @@ const booleanAttributeDescriptor = (attrName: string): TypedPropertyDescriptor<b
     },
 });
 
+/**
+  * Descriptor for ARIA reflections, e.g. `ariaLabel` and `role`.
+  */
 const ariaDescriptor = (attrName: string): TypedPropertyDescriptor<string | null> => ({
     configurable: true,
     enumerable: true,
