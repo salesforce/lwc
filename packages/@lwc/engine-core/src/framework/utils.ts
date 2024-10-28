@@ -7,7 +7,6 @@
 import {
     ArrayPush,
     create,
-    isArray,
     isFunction,
     keys,
     seal,
@@ -17,7 +16,6 @@ import {
 import { logWarnOnce } from '../shared/logger';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
-import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 type Callback = () => void;
 
@@ -76,18 +74,6 @@ export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: strin
         }
     }
     return result;
-}
-
-export function flattenStylesheets(stylesheets: Stylesheets): Stylesheet[] {
-    const list: Stylesheet[] = [];
-    for (const stylesheet of stylesheets) {
-        if (!isArray(stylesheet)) {
-            list.push(stylesheet);
-        } else {
-            list.push(...flattenStylesheets(stylesheet));
-        }
-    }
-    return list;
 }
 
 // Throw an error if we're running in prod mode. Ensures code is truly removed from prod mode.

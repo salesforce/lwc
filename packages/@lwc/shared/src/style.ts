@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { isArray } from './language';
+
 export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
 const PROPERTY_DELIMITER = /:(.+)/s; // `/s` (dotAll) required to match styles across newlines, e.g. `color: \n red;`
@@ -53,4 +55,16 @@ export function normalizeStyleAttribute(style: string): string {
     });
 
     return styles.join(' ');
+}
+
+export function flattenStylesheets(stylesheets: Stylesheets): Stylesheet[] {
+    const list: Stylesheet[] = [];
+    for (const stylesheet of stylesheets) {
+        if (!isArray(stylesheet)) {
+            list.push(stylesheet);
+        } else {
+            list.push(...flattenStylesheets(stylesheet));
+        }
+    }
+    return list;
 }

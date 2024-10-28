@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isNull, isUndefined } from '@lwc/shared';
+import { isFalse, isNull, isUndefined, flattenStylesheets } from '@lwc/shared';
 import { VM, scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { LightningElementConstructor } from './base-lightning-element';
@@ -13,7 +13,7 @@ import { Template } from './template';
 import { markComponentAsDirty } from './component';
 import { isTemplateRegistered } from './secure-template';
 import { unrenderStylesheet } from './stylesheet';
-import { assertNotProd, flattenStylesheets } from './utils';
+import { assertNotProd } from './utils';
 import { WeakMultiMap } from './weak-multimap';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
 

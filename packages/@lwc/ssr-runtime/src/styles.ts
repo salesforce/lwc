@@ -4,15 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Stylesheets, Stylesheet } from '@lwc/engine-core';
+import { flattenStylesheets } from '@lwc/shared';
 import { validateStyleTextContents } from './validate-style-text-contents';
 import type { LightningElementConstructor } from './lightning-element';
-
-function flattenStylesheets(stylesheets: Stylesheets): Array<Stylesheet> {
-    // recursively flatten
-    // @ts-expect-error we can optimize this function later
-    return stylesheets.filter(Boolean).flat(Infinity);
-}
+import type { Stylesheets } from '@lwc/shared';
 
 export function hasScopedStaticStylesheets(Component: LightningElementConstructor): boolean {
     const { stylesheets } = Component;

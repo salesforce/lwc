@@ -26,7 +26,7 @@ import { ClassList } from './class-list';
 import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
 import { reflectAttrToProp, descriptors as reflectionDescriptors } from './reflection';
-import type { Stylesheets } from '@lwc/engine-core';
+import type { Stylesheets } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
