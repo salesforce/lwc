@@ -34,6 +34,9 @@ const attrsToProps = assign(create(null), {
     ...AriaAttrNameToPropNameMap,
 });
 
+/**
+  * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
+  */
 const stringDescriptor = (attrName: string): TypedPropertyDescriptor<string | null> => ({
     configurable: true,
     enumerable: true,
