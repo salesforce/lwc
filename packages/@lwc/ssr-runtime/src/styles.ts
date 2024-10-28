@@ -12,7 +12,7 @@ import type { Stylesheets } from '@lwc/shared';
 export function hasScopedStaticStylesheets(Component: LightningElementConstructor): boolean {
     const { stylesheets } = Component;
     if (stylesheets) {
-        return flattenStylesheets(stylesheets).some((stylesheet: any) => stylesheet.$scoped$);
+        return flattenStylesheets(stylesheets).some((stylesheet) => stylesheet.$scoped$);
     }
     return false;
 }
@@ -31,9 +31,8 @@ export function renderStylesheets(
         // TODO [#2869]: `<style>`s should not have scope token classes
         result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">`;
 
-        const token = (stylesheet as any).$scoped$ ? scopeToken : undefined;
-        const useActualHostSelector =
-            !(stylesheet as any).$scoped$ || Component.renderMode !== 'light';
+        const token = stylesheet.$scoped$ ? scopeToken : undefined;
+        const useActualHostSelector = !stylesheet.$scoped$ || Component.renderMode !== 'light';
         const useNativeDirPseudoclass = true;
 
         const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);

@@ -15,11 +15,22 @@ const PROPERTY_DELIMITER = /:(.+)/s; // `/s` (dotAll) required to match styles a
  * Function producing style based on a host and a shadow selector. This function is invoked by
  * the engine with different values depending on the mode that the component is running on.
  */
-export type Stylesheet = (
-    stylesheetToken: string | undefined,
-    useActualHostSelector: boolean,
-    useNativeDirPseudoclass: boolean
-) => string;
+export type Stylesheet = {
+    /**
+     * Function taking a stylesheet token (string), whether to render actual or "scoped" `:host()` pseudo-classes,
+     * and whether to render actual or synthetic `:dir()` pseudo-classes and returning a CSS string.
+     * This function signature should _not_ be considered a stable API surface - it is internal to the LWC engine.
+     */
+    (
+        stylesheetToken: string | undefined,
+        useActualHostSelector: boolean,
+        useNativeDirPseudoclass: boolean
+    ): string;
+    /**
+     * True if this is a scoped style (e.g. `foo.scoped.css`)
+     */
+    $scoped$?: boolean;
+};
 
 /**
  * The list of stylesheets associated with a template. Each entry is either a `Stylesheet` or
