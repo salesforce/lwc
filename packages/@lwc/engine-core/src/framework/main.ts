@@ -72,3 +72,4 @@ export { readonly } from './readonly';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 export { setTrustedSignalSet } from '@lwc/shared';
+export type { Stylesheet, Stylesheets } from '@lwc/shared';
