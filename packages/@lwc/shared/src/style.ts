@@ -9,6 +9,22 @@ export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
 const PROPERTY_DELIMITER = /:(.+)/s; // `/s` (dotAll) required to match styles across newlines, e.g. `color: \n red;`
 
+/**
+ * Function producing style based on a host and a shadow selector. This function is invoked by
+ * the engine with different values depending on the mode that the component is running on.
+ */
+export type Stylesheet = (
+    stylesheetToken: string | undefined,
+    useActualHostSelector: boolean,
+    useNativeDirPseudoclass: boolean
+) => string;
+
+/**
+ * The list of stylesheets associated with a template. Each entry is either a `Stylesheet` or
+ * an array of stylesheets that a given stylesheet depends on via CSS `@import` declarations.
+ */
+export type Stylesheets = Array<Stylesheet | Stylesheets>;
+
 // Borrowed from Vue template compiler.
 // https://github.com/vuejs/vue/blob/531371b818b0e31a989a06df43789728f23dc4e8/src/platforms/web/util/style.js#L5-L16
 export function parseStyleText(cssText: string): { [name: string]: string } {

@@ -47,7 +47,6 @@ export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
 export type { RendererAPI, LifecycleCallback } from './renderer';
-export type { Stylesheets, Stylesheet } from './stylesheet';
 export type { Template } from './template';
 export type {
     ConfigValue as WireConfigValue,

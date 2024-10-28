@@ -56,9 +56,9 @@ import { getVMBeingRendered, isUpdatingTemplate, Template } from './template';
 import { HTMLElementConstructor } from './base-bridge-element';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
-import { Stylesheets } from './stylesheet';
 import { instrumentInstance } from './runtime-instrumentation';
 import { applyShadowMigrateMode } from './shadow-migration-mode';
+import type { Stylesheets } from '@lwc/shared';
 
 /**
  * This operation is called with a descriptor of an standard html property

@@ -15,9 +15,9 @@ import {
     APIFeature,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
-import { Stylesheet, Stylesheets } from './stylesheet';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import { LightningElementConstructor } from './base-lightning-element';
+import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 type Callback = () => void;
 

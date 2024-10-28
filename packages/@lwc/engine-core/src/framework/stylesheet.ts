@@ -16,6 +16,7 @@ import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 import { getComponentInternalDef } from './def';
 import { assertNotProd, EmptyArray } from './utils';
+import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 // These are only used for HMR in dev mode
 // The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
@@ -30,22 +31,6 @@ if (process.env.NODE_ENV === 'test-karma-lwc') {
         cssContentToAbortControllers = new Map();
     };
 }
-
-/**
- * Function producing style based on a host and a shadow selector. This function is invoked by
- * the engine with different values depending on the mode that the component is running on.
- */
-export type Stylesheet = (
-    stylesheetToken: string | undefined,
-    useActualHostSelector: boolean,
-    useNativeDirPseudoclass: boolean
-) => string;
-
-/**
- * The list of stylesheets associated with a template. Each entry is either a `Stylesheet` or
- * an array of stylesheets that a given stylesheet depends on via CSS `@import` declarations.
- */
-export type Stylesheets = Array<Stylesheet | Stylesheets>;
 
 function linkStylesheetToCssContentInDevMode(stylesheet: Stylesheet, cssContent: string) {
     // Should never leak to prod; only used for HMR

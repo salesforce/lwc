@@ -22,8 +22,8 @@ import {
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
-import { Stylesheet, Stylesheets } from './stylesheet';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
+import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 // See @lwc/engine-core/src/framework/template.ts
 const TEMPLATE_PROPS = [

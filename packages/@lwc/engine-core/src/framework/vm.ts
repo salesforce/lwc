@@ -64,8 +64,8 @@ import {
     isVFragment,
     VStaticPartElement,
 } from './vnodes';
-import { Stylesheet, Stylesheets } from './stylesheet';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 type ShadowRootMode = 'open' | 'closed';
 
