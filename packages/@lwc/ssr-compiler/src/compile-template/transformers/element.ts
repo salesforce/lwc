@@ -45,12 +45,11 @@ const bConditionalLiveYield = esTemplateWithYield`
         const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
 
         const attrValue = ${/* attribute value expression */ is.expression};
-        const valueType = typeof attrValue;
 
-        if (attrValue && (valueType === 'string' || valueType === 'boolean')) {
+        if (attrValue !== undefined && attrValue !== null) {
             yield ' ' + ${/* attribute name */ is.literal};
-            if (valueType === 'string') {
-                yield \`="\${prefix}\${htmlEscape(attrValue, true)}"\`;
+            if (attrValue !== '') {
+                yield \`="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
             }
         }
     }
