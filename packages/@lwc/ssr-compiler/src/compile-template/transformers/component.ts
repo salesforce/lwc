@@ -14,6 +14,7 @@ import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
+import { isNullableOf } from '../../estree/validators';
 import type { CallExpression as EsCallExpression } from 'estree';
 
 import type {
@@ -51,7 +52,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 `<EsBlockStatement>;
 
 const bAddContent = esTemplate`
-    addContent(${/* slot name */ is.expression} ?? "", async function* () {
+    addContent(${/* slot name */ is.expression} ?? "", async function* (${/* scoped slot data */ isNullableOf(is.identifier)}) {
         ${/* slot content */ is.statement}
     });
 `<EsCallExpression>;
@@ -126,9 +127,9 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
                 draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
             });
             const slotContent = irToEs(clone, cxt);
-            return bAddContent(slotName, slotContent);
+            return bAddContent(slotName, null, slotContent);
         } else {
-            return bAddContent(b.literal(''), irToEs(child, cxt));
+            return bAddContent(b.literal(''), null, irToEs(child, cxt));
         }
     });
 

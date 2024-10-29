@@ -11,9 +11,14 @@ import { Slot as IrSlot } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
-import { bAttributeValue } from '../shared';
+import { bAttributeValue, getScopedExpression } from '../shared';
+import { isNullableOf } from '../../estree/validators';
 import { Element } from './element';
-import type { Statement as EsStatement, IfStatement as EsIfStatement } from 'estree';
+import type {
+    Statement as EsStatement,
+    IfStatement as EsIfStatement,
+    Expression as EsExpression,
+} from 'estree';
 import type { Transformer } from '../types';
 
 const bConditionalSlot = esTemplateWithYield`
@@ -24,7 +29,7 @@ const bConditionalSlot = esTemplateWithYield`
         const generators = slottedContent?.light[${/* slotName */ is.expression} ?? ""];
         if (generators) {
             for (const generator of generators) {
-                yield* generator();
+                yield* generator(${/* scoped slot data */ isNullableOf(is.expression)});
             }
         } else {
             // If we're in this else block, then the generator _must_ have yielded
@@ -43,9 +48,13 @@ const bConditionalSlot = esTemplateWithYield`
 `<EsIfStatement>;
 
 export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[] {
+    const slotBindDirective = node.directives.find((dir) => dir.name === 'SlotBind');
+    const slotBound = slotBindDirective?.value
+        ? getScopedExpression(slotBindDirective.value as EsExpression, ctx)
+        : null;
     const slotName = bAttributeValue(node, 'name');
     // FIXME: avoid serializing the slot's children twice
     const slotAst = Element(node, ctx);
     const slotChildren = irChildrenToEs(node.children, ctx);
-    return [bConditionalSlot(slotName, slotChildren, slotAst)];
+    return [bConditionalSlot(slotName, slotBound, slotChildren, slotAst)];
 };

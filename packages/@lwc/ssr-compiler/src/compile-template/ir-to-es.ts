@@ -17,6 +17,7 @@ import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';
 import { createNewContext } from './context';
 
+import { ScopedSlotFragment } from './transformers/scoped-slot-fragment';
 import type {
     ChildNode as IrChildNode,
     Node as IrNode,
@@ -56,7 +57,7 @@ const transformers: Transformers = {
     ElseifBlock: defaultTransformer,
     // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
     ElseBlock: defaultTransformer,
-    ScopedSlotFragment: defaultTransformer,
+    ScopedSlotFragment,
     Slot,
     Lwc: defaultTransformer,
 };
