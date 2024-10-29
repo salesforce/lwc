@@ -35,4 +35,8 @@ export interface ComponentMetaState {
     cssExplicitImports: Map<string, string> | null;
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
+    // the public fields of the component class
+    publicFields: Array<string>;
+    // the private fields of the component class
+    privateFields: Array<string>;
 }
