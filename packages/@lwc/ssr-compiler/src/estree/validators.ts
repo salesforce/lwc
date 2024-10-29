@@ -6,16 +6,9 @@
  */
 
 import { is } from 'estree-toolkit';
-import type { CallExpression, Identifier, MemberExpression, SimpleLiteral } from 'estree';
+import type { CallExpression, Identifier, MemberExpression } from 'estree';
 import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
-
-/** Node representing a string literal. */
-export type StringLiteral = SimpleLiteral & { value: string };
-
-export const isStringLiteral = (node: Node | null | undefined): node is StringLiteral => {
-    return is.literal(node) && typeof node.value === 'string';
-};
 
 /** Node representing an identifier named "render". */
 type RenderIdentifier = Identifier & { name: 'render' };
