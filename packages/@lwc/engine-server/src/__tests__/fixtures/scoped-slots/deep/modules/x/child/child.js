@@ -1,6 +1,6 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
 export default class Child extends LightningElement {
     static renderMode = 'light';
-    item = {id: 99}
+    @api param
 }

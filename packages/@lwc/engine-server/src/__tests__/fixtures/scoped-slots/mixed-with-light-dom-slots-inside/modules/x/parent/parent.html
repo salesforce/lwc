@@ -1,0 +1,37 @@
+<template>
+    <x-child>
+        a
+        <template lwc:slot-data="data1">
+            <span>1 default {data1.id} - {foo}</span>
+        </template>
+        b
+        <template lwc:slot-data="data2" slot="slot1">
+            <span>2 slot1 {data2.id} - {foo}</span>
+        </template>
+        c
+        <template lwc:slot-data="data3" slot="slot1">
+            <span>3 slot1 {data3.id} - {foo}</span>
+        </template>
+        d
+        <template lwc:slot-data="data4">
+            <span>4 default {data4.id} - {foo}</span>
+        </template>
+        e
+        <template lwc:slot-data="data5" slot="slot2">
+            <span>5 slot2 {data5.id} - {foo}</span>
+        </template>
+        f
+        <template lwc:slot-data="data6">
+            <span>6 default {data6.id} - {foo}</span>
+        </template>
+        g
+        <template lwc:slot-data="data7" slot="doesnotexist">
+            <span>7 doesnotexist {data7.id} - {foo}</span>
+        </template>
+        h
+        <template lwc:slot-data="data8">
+            <span>8 default {data8.id} - {foo}</span>
+        </template>
+        i
+    </x-child>
+</template>
