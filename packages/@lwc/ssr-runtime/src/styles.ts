@@ -38,8 +38,7 @@ export function renderStylesheets(
         const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
         validateStyleTextContents(styleContents);
 
-        result += styleContents;
-        result += '</style>';
+        result += styleContents + '</style>';
     }
 
     return result;
