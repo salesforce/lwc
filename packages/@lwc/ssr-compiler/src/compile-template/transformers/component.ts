@@ -7,7 +7,7 @@
 
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
-import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
+import {kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName} from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
@@ -15,7 +15,7 @@ import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
-import type { CallExpression as EsCallExpression } from 'estree';
+import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -46,7 +46,8 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 slottedContent.light[name] = [fn]
             }
         }
-        ${/* addContent statements */ is.callExpression}
+        ${/* light DOM addContent statements */ is.callExpression}
+        ${/* scoped slot addContent statements */ is.callExpression}
         yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
     }
 `<EsBlockStatement>;
@@ -116,9 +117,15 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
 
     const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
-    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt));
+    // FIXME: is there more stuff here we need to filter out?
+    const slottableChildren = node.children.filter(child => child.type !== "ScopedSlotFragment")
+    const scopedSlottableChildren = node.children.filter(child => child.type === "ScopedSlotFragment") as ScopedSlotFragment[]
 
-    const lightSlotContent = node.children.map((child) => {
+    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(
+        slottableChildren, cxt
+    ));
+
+    const lightSlotContent = slottableChildren.map((child) => {
         if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
             // FIXME: We don't know what happens for slot attributes inside an lwc:if block
@@ -133,12 +140,27 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         }
     });
 
+    const scopedSlotContent = scopedSlottableChildren.map(child => {
+        const boundVariable = b.identifier(child.slotData.value.name)
+
+        // FIXME: how do we shadow this slotContent to the `data` variable properly?
+
+        // FIXME: can you do `<template lwc:slot-data="data.foo.bar">` ?
+        // FIXME: what if the bound variable is `generateMarkup` or some framework-specific identifier?
+        return bAddContent(
+            child.slotName as EsExpression,
+            boundVariable,
+            slotContent
+        )
+    })
+
     return [
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(attributes, cxt),
             shadowSlotContent,
             lightSlotContent,
+            scopedSlotContent,
             b.identifier(childGeneratorLocalName),
             b.literal(childTagName)
         ),

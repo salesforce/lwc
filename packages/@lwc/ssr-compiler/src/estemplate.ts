@@ -92,7 +92,7 @@ const getReplacementNode = (
             : validateReplacement(replacementNode))
     ) {
         const nodeType = Array.isArray(replacementNode)
-            ? `[${replacementNode.map((n) => n.type)}.join(', ')]`
+            ? `[${replacementNode.map((n) => n.type).join(', ')}]`
             : replacementNode?.type;
         throw new Error(`Validation failed for templated node of type ${nodeType}`);
     }
