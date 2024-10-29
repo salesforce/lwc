@@ -53,5 +53,5 @@ jobs:
               run: yarn add -W chromedriver@^131
               working-directory: ./
 
-            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod
-            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod:ci
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev:ci
