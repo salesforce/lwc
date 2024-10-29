@@ -39,7 +39,7 @@ export function renderStylesheets(
         validateStyleTextContents(styleContents);
 
         result += styleContents;
-        result += '</' + 'style>';
+        result += '</style>';
     }
 
     return result;
