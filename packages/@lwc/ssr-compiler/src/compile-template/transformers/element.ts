@@ -40,10 +40,13 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
 const bConditionalLiveYield = esTemplateWithYield`
     {
-        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
-        const prefix = ${/* isClass */ is.literal} && shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
+        const shouldRenderScopeToken = ${/* isClass */ is.literal} &&
+            (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
+        const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
+
         const attrValue = ${/* attribute value expression */ is.expression};
         const valueType = typeof attrValue;
+
         if (attrValue && (valueType === 'string' || valueType === 'boolean')) {
             yield ' ' + ${/* attribute name */ is.literal};
             if (valueType === 'string') {
@@ -56,8 +59,9 @@ const bConditionalLiveYield = esTemplateWithYield`
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
 const bStringLiteralYield = esTemplateWithYield`
     {
-        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
-        const suffix = (${/* isClass */ is.literal} && shouldRenderScopeToken && (' ' + stylesheetScopeToken)) || '';
+        const shouldRenderScopeToken = ${/* isClass */ is.literal} &&
+            (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
+        const suffix = shouldRenderScopeToken ? ' ' + stylesheetScopeToken : '';
         yield ' ' + ${/* attribute name */ is.literal} + '="' + "${/* attribute value */ is.literal}" + suffix + '"'
     }
 `<EsBlockStatement>;

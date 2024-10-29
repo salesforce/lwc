@@ -34,7 +34,7 @@ const bExportTemplate = esTemplate`
         }
         
         const { stylesheets: staticStylesheets } = Cmp;
-        if (staticStylesheets || defaultStylesheets || defaultScopedStylesheets) {
+        if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
             const stylesheets = [defaultStylesheets, defaultScopedStylesheets, staticStylesheets];
             yield renderStylesheets(
                 stylesheets, 

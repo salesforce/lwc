@@ -36,7 +36,10 @@ export function catalogAndReplaceStyleImports(
     }
 
     // Any file ending in `*.scoped.css` which is directly imported into a Component `*.js` file (and assumed
-    // to be used for `static stylesheets` is assumed to be scoped, so needs to be marked as such with a query param.
+    // to be used for `static stylesheets`) is assumed to be scoped, so needs to be marked as such with a query param.
+    // Outside of SSR, this is done by `@lwc/babel-plugin-component`, so we need to emulate its behavior. The goal here
+    // is for `@lwc/template-compiler` to know to add `stylesheet.$scoped$ = true` to its compiled output, which it
+    // detects using the query param.
     if (path.node?.source.value.endsWith('.scoped.css')) {
         path.replaceWith(
             b.importDeclaration(

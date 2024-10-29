@@ -18,7 +18,7 @@ export function hasScopedStaticStylesheets(Component: LightningElementConstructo
 }
 
 export function renderStylesheets(
-    stylesheets: Stylesheets,
+    stylesheets: Array<Stylesheets | undefined>,
     scopeToken: string,
     Component: LightningElementConstructor,
     hasScopedTemplateStyles: boolean
@@ -27,7 +27,8 @@ export function renderStylesheets(
 
     let result = '';
 
-    for (const stylesheet of flattenStylesheets(stylesheets)) {
+    const truthyStylesheets = stylesheets.filter(Boolean) as Array<Stylesheets>;
+    for (const stylesheet of flattenStylesheets(truthyStylesheets)) {
         // TODO [#2869]: `<style>`s should not have scope token classes
         result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">`;
 
