@@ -28,20 +28,20 @@ jobs:
                 working-directory: ./packages/@lwc/integration-tests
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: '20.12.2'
+                  node-version: '20.18.0'
                   cache: 'yarn'
 
             # Needed for local browser integration tests
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
-            - name: Setup chrome v127
+            - name: Setup chrome v128
               uses: browser-actions/setup-chrome@v1
               with:
-                  chrome-version: 127
+                  chrome-version: 128
               id: setup-chrome
 
             - name: Install dependencies
@@ -49,9 +49,9 @@ jobs:
               working-directory: ./
 
             # Pin chromedriver to the same version as Chrome above
-            - name: Install chromedriver v127
-              run: yarn add -W chromedriver@^127
+            - name: Install chromedriver v128
+              run: yarn add -W chromedriver@^128
               working-directory: ./
 
-            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod
-            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod:ci
+            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev:ci

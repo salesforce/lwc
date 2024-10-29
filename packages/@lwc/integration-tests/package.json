@@ -9,6 +9,8 @@
         "local": "yarn local:prod",
         "local:dev": "yarn build:dev && MODE=dev wdio ./scripts/wdio.local.conf.js",
         "local:prod": "yarn build:prod && MODE=prod wdio ./scripts/wdio.local.conf.js",
+        "local:dev:ci": "yarn build:dev && MODE=dev ../../../scripts/ci/retry.sh wdio ./scripts/wdio.local.conf.js",
+        "local:prod:ci": "yarn build:prod && MODE=prod ../../../scripts/ci/retry.sh wdio ./scripts/wdio.local.conf.js",
         "sauce": "yarn sauce:prod",
         "sauce:dev": "MODE=dev yarn build:dev && MODE=dev wdio ./scripts/wdio.sauce.conf.js",
         "sauce:prod": "MODE=prod yarn build:prod && MODE=prod wdio ./scripts/wdio.sauce.conf.js",
