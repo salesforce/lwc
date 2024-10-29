@@ -44,7 +44,7 @@
     "dependencies": {
         "@lwc/errors": "8.4.0",
         "@lwc/shared": "8.4.0",
-        "acorn": "~8.13.0",
+        "acorn": "~8.14.0",
         "astring": "~1.9.0",
         "he": "~1.2.0"
     },
@@ -53,6 +53,6 @@
         "@types/estree": "1.0.6",
         "@types/he": "^1.2.3",
         "estree-walker": "~3.0.3",
-        "parse5": "^7.2.0"
+        "parse5": "^7.2.1"
     }
 }
