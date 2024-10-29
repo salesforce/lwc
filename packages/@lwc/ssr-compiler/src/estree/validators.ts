@@ -11,7 +11,7 @@ import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
 
 /** Node representing a string literal. */
-type StringLiteral = SimpleLiteral & { value: string };
+export type StringLiteral = SimpleLiteral & { value: string };
 
 export const isStringLiteral = (node: Node | null | undefined): node is StringLiteral => {
     return is.literal(node) && typeof node.value === 'string';
