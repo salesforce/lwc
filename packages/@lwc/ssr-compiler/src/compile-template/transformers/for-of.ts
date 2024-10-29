@@ -51,7 +51,7 @@ export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfS
         ? (node.expression as EsExpression)
         : b.memberExpression(b.identifier('instance'), node.expression as EsExpression);
 
-    cxt.hoist(bImportDeclaration(['toIteratorDirective']), 'toIteratorDirective');
+    cxt.hoist(bImportDeclaration(['toIteratorDirective']), 'import:toIteratorDirective');
 
     return [
         bForOfYieldFrom(b.identifier(id), iterable, optimizeAdjacentYieldStmts(forEachStatements)),
