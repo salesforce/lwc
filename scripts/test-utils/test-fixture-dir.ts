@@ -141,6 +141,8 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                     }
                 } catch (err) {
                     if (typeof err === 'object' && err !== null) {
+                        // Hide unhelpful noise in the stack trace
+                        // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
                         Error.captureStackTrace(err, testFixtureDir);
                     }
 
