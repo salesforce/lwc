@@ -26,6 +26,7 @@ import { ClassList } from './class-list';
 import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
 import { reflectAttrToProp, descriptors as reflectionDescriptors } from './reflection';
+import type { Stylesheets } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
@@ -42,6 +43,7 @@ export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
+    static stylesheets?: Stylesheets;
 
     // Using ! because these are defined by descriptors in ./reflection
     accessKey!: string;

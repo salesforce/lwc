@@ -35,12 +35,7 @@ import {
 } from './vm';
 import { assertNotProd, EmptyObject } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
-import {
-    createStylesheet,
-    getStylesheetsContent,
-    Stylesheets,
-    updateStylesheetToken,
-} from './stylesheet';
+import { createStylesheet, getStylesheetsContent, updateStylesheetToken } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
@@ -48,6 +43,7 @@ import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { Stylesheets } from '@lwc/shared';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
