@@ -10,6 +10,7 @@ export {
     LightningElement,
     LightningElementConstructor,
     SYMBOL__SET_INTERNALS,
+    SYMBOL__GENERATE_MARKUP,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
 // renderComponent is an alias for serverSideRenderComponent

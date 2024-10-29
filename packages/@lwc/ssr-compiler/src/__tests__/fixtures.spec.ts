@@ -17,7 +17,6 @@ import type { CompilationMode } from '../index';
 interface FixtureModule {
     tagName: string;
     default: any;
-    generateMarkup: any;
     props?: { [key: string]: any };
     features?: FeatureFlagName[];
 }
@@ -88,7 +87,7 @@ function testFixtures() {
             try {
                 result = await serverSideRenderComponent(
                     module!.tagName,
-                    module!.generateMarkup,
+                    module!.default,
                     config?.props ?? {},
                     SSR_MODE
                 );
