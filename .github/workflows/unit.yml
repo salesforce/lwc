@@ -34,10 +34,10 @@ jobs:
 
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
-            - name: Setup chrome v130
+            - name: Setup chrome v129
               uses: browser-actions/setup-chrome@v1
               with:
-                  chrome-version: 130
+                  chrome-version: 129
               id: setup-chrome
 
             - name: Install dependencies
@@ -45,8 +45,8 @@ jobs:
 
             # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
             # See: https://github.com/google/tachometer#on-demand-dependencies
-            - name: Install chromedriver v130
-              run: yarn add -W chromedriver@^130
+            - name: Install chromedriver v129
+              run: yarn add -W chromedriver@^129
 
             - name: Check package.json integrity
               run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
