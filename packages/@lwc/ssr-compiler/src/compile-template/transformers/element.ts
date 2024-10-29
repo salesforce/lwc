@@ -8,6 +8,7 @@
 import { builders as b, is } from 'estree-toolkit';
 import {
     HTML_NAMESPACE,
+    isBooleanAttribute,
     isVoidElement,
     normalizeStyleAttribute,
     StringReplace,
@@ -41,17 +42,31 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
 const bConditionalLiveYield = esTemplateWithYield`
     {
-        const shouldRenderScopeToken = ${/* isClass */ is.literal} &&
+        const attrName = ${/* attribute name */ is.literal};
+        let attrValue = ${/* attribute value expression */ is.expression};
+        const isHtmlBooleanAttr = ${/* isHtmlBooleanAttr */ is.literal};
+
+        const shouldRenderScopeToken = attrName === 'class' &&
             (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
         const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
 
-        const attrValue = ${/* attribute value expression */ is.expression};
-        const valueType = typeof attrValue;
+        // Global HTML attributes are specially coerced into booleans
+        if (isHtmlBooleanAttr) {
+            attrValue = attrValue ? '' : undefined;
+        }
 
-        if (attrValue && (valueType === 'string' || valueType === 'boolean')) {
-            yield ' ' + ${/* attribute name */ is.literal};
-            if (valueType === 'string') {
-                yield \`="\${prefix}\${htmlEscape(attrValue, true)}"\`;
+        // Global HTML "tabindex" attribute is specially massaged into a stringified number
+        // This follows the historical behavior in api.ts:
+        // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/engine-core/src/framework/api.ts#L193-L211
+        if (attrName === 'tabindex') {
+            const shouldNormalize = attrValue > 0 && !(attrValue === true || attrValue === false);
+            attrValue = shouldNormalize ? 0 : attrValue;
+        }
+
+        if (attrValue !== undefined && attrValue !== null) {
+            yield ' ' + attrName;
+            if (attrValue !== '') {
+                yield \`="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
             }
         }
     }
@@ -60,10 +75,18 @@ const bConditionalLiveYield = esTemplateWithYield`
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
 const bStringLiteralYield = esTemplateWithYield`
     {
-        const shouldRenderScopeToken = ${/* isClass */ is.literal} &&
+        const attrName = ${/* attribute name */ is.literal}
+        const attrValue = ${/* attribute value */ is.literal};
+
+        const shouldRenderScopeToken = attrName === 'class' &&
             (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
         const suffix = shouldRenderScopeToken ? ' ' + stylesheetScopeToken : '';
-        yield ' ' + ${/* attribute name */ is.literal} + '="' + "${/* attribute value */ is.literal}" + suffix + '"'
+
+        yield ' ' + attrName;
+        if (attrValue !== '' || shouldRenderScopeToken) {
+            yield '="' + attrValue + suffix + '"';
+        }
+        
     }
 `<EsBlockStatement>;
 
@@ -80,11 +103,7 @@ const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
 `;
 
-function yieldAttrOrPropLiteralValue(
-    name: string,
-    valueNode: IrLiteral,
-    isClass: boolean
-): EsStatement[] {
+function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStatement[] {
     const { value, type } = valueNode;
     if (typeof value === 'string') {
         let yieldedValue: string;
@@ -93,10 +112,13 @@ function yieldAttrOrPropLiteralValue(
         } else if (name === 'class') {
             // @ts-expect-error weird indirection results in wrong overload being picked up
             yieldedValue = StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+        } else if (name === 'spellcheck') {
+            // `spellcheck` string values are specially handled to massage them into booleans.
+            yieldedValue = String(value.toLowerCase() !== 'false');
         } else {
             yieldedValue = value;
         }
-        return [bStringLiteralYield(b.literal(isClass), b.literal(name), b.literal(yieldedValue))];
+        return [bStringLiteralYield(b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
         return [bYield(b.literal(` ${name}`))];
     }
@@ -104,13 +126,15 @@ function yieldAttrOrPropLiteralValue(
 }
 
 function yieldAttrOrPropLiveValue(
+    elementName: string,
     name: string,
     value: IrExpression | BinaryExpression,
-    isClass: boolean,
     cxt: TransformerContext
 ): EsStatement[] {
+    const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-    return [bConditionalLiveYield(b.literal(isClass), scopedExpression, b.literal(name))];
+
+    return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
 }
 
 function reorderAttributes(
@@ -153,26 +177,30 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     );
 
     let hasClassAttribute = false;
-    const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
-        const { name, value, type } = attr;
+    const yieldAttrsAndProps = attrsAndProps
+        .filter(({ name }) => {
+            // `<input checked>`/`<input value>` is treated as a property, not an attribute,
+            // so should never be SSR'd. See https://github.com/salesforce/lwc/issues/4763
+            return !(node.name === 'input' && (name === 'value' || name === 'checked'));
+        })
+        .flatMap((attr) => {
+            const { name, value, type } = attr;
 
-        let isClass = false;
-        if (type === 'Attribute') {
-            if (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l') {
-                throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
-            } else if (name === 'class') {
-                isClass = true;
-                hasClassAttribute = true;
+            if (type === 'Attribute') {
+                if (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l') {
+                    throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
+                } else if (name === 'class') {
+                    hasClassAttribute = true;
+                }
             }
-        }
 
-        cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-        if (value.type === 'Literal') {
-            return yieldAttrOrPropLiteralValue(name, value, isClass);
-        } else {
-            return yieldAttrOrPropLiveValue(name, value, isClass, cxt);
-        }
-    });
+            cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+            if (value.type === 'Literal') {
+                return yieldAttrOrPropLiteralValue(name, value);
+            } else {
+                return yieldAttrOrPropLiveValue(node.name, name, value, cxt);
+            }
+        });
 
     if (isVoidElement(node.name, HTML_NAMESPACE)) {
         return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];

@@ -23,12 +23,16 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 
 const bYieldEscapedString = esTemplateWithYield`
     const ${is.identifier} = ${is.expression};
-    if (typeof ${0} === 'string') {
-        yield (${is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
-    } else if (typeof ${0} === 'number') {
-        yield ${0}.toString();
-    } else {
-        yield ${0} ? htmlEscape(${0}.toString()) : '\\u200D';
+    switch (typeof ${0}) {
+        case 'string':
+            yield (${is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
+            break;
+        case 'number':
+        case 'boolean':
+            yield ${0}.toString();
+            break;
+        default:
+            yield ${0} ? htmlEscape(${0}.toString()) : '\\u200D';
     }
 `<EsStatement[]>;
 
