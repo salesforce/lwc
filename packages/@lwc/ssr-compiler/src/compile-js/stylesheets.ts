@@ -37,11 +37,11 @@ export function catalogAndReplaceStyleImports(
 
     // Any file ending in `*.scoped.css` which is directly imported into a Component `*.js` file (and assumed
     // to be used for `static stylesheets` is assumed to be scoped, so needs to be marked as such with a query param.
-    if (path.node!.source.value.endsWith('.scoped.css')) {
+    if (path.node?.source.value.endsWith('.scoped.css')) {
         path.replaceWith(
             b.importDeclaration(
-                path.node!.specifiers,
-                b.literal(path.node!.source.value + '?scoped=true')
+                path.node.specifiers,
+                b.literal(path.node.source.value + '?scoped=true')
             )
         );
     }
