@@ -13,17 +13,11 @@ import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
+import { bImportDeclaration } from '../estree/builders';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
-import type {
-    ExportDefaultDeclaration as EsExportDefaultDeclaration,
-    ImportDeclaration as EsImportDeclaration,
-} from 'estree';
+import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
 import type { CompilationMode } from '../shared';
-
-const bStylesheetUtilitiesImport = esTemplate`
-    import { renderStylesheets, hasScopedStaticStylesheets } from '@lwc/ssr-runtime';
-`<EsImportDeclaration>;
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
@@ -104,7 +98,7 @@ export default function compileTemplate(
 
     const moduleBody = [
         ...hoisted,
-        bStylesheetUtilitiesImport(),
+        bImportDeclaration(['renderStylesheets', 'hasScopedStaticStylesheets']),
         bExportTemplate(optimizeAdjacentYieldStmts(statements)),
     ];
     let program = b.program(moduleBody, 'module');
