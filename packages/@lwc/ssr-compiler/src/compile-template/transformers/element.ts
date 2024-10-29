@@ -41,7 +41,7 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 const bConditionalLiveYield = esTemplateWithYield`
     {
         const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
-        const prefix = (${/* isClass */ is.literal} && shouldRenderScopeToken && (stylesheetScopeToken + ' ')) || '';
+        const prefix = ${/* isClass */ is.literal} && shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
         const attrValue = ${/* attribute value expression */ is.expression};
         const valueType = typeof attrValue;
         if (attrValue && (valueType === 'string' || valueType === 'boolean')) {
