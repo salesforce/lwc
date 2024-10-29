@@ -18,6 +18,8 @@ const {
     entries,
     /** Detached {@linkcode Object.freeze}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze MDN Reference}. */
     freeze,
+    /** Detached {@linkcode Object.fromEntries}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries MDN Reference}. */
+    fromEntries,
     /** Detached {@linkcode Object.getOwnPropertyDescriptor}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor MDN Reference}. */
     getOwnPropertyDescriptor,
     /** Detached {@linkcode Object.getOwnPropertyDescriptors}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptors MDN Reference}. */
@@ -217,6 +219,7 @@ export {
     defineProperty,
     entries,
     freeze,
+    fromEntries,
     getOwnPropertyDescriptor,
     getOwnPropertyDescriptors,
     getOwnPropertyNames,

@@ -43,6 +43,17 @@ export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
 
+    // Using ! because these are defined by descriptors in ./reflection
+    accessKey!: string;
+    dir!: string;
+    draggable!: boolean;
+    hidden!: boolean;
+    id!: string;
+    lang!: string;
+    spellcheck!: boolean;
+    tabIndex!: number;
+    title!: string;
+
     isConnected = false;
     className = '';
 
@@ -187,16 +198,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     // The interface is not explicitly referenced here, so this may become outdated //
     // -------------------------------------------------------------------------- //
 
-    accessKey?: string;
-    dir?: string;
-    draggable?: boolean;
-    hidden?: boolean;
-    id?: string;
-    lang?: string;
     shadowRoot?: ShadowRoot | null;
-    spellcheck?: boolean;
-    tabIndex?: number;
-    title?: string;
 
     getAttributeNS(_namespace: string | null, _localName: string): string | null {
         throw new Error('Method "getAttributeNS" not implemented.');

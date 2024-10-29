@@ -98,7 +98,7 @@ export function isGlobalHtmlAttribute(attrName: string): boolean {
 }
 
 // These are HTML standard prop/attribute IDL mappings, but are not predictable based on camel/kebab-case conversion
-const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
+export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
     ['accessKey', 'accesskey'],
     ['readOnly', 'readonly'],
     ['tabIndex', 'tabindex'],
