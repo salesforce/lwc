@@ -49,7 +49,7 @@ jobs:
               working-directory: ./
 
             # Pin chromedriver to the same version as Chrome above
-            - name: Install chromedriver v129
+            - name: Install chromedriver
               run: yarn add -W chromedriver@^129
               working-directory: ./
 
