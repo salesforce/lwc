@@ -19,13 +19,16 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
             '.second-inside'
         );
         await secondInside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         const secondOutside = await browser.shadowDeep$(
             'integration-tabindex-zero-after-inside-click',
             '.second-outside'
         );
         await secondOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         await browser.keys(['Tab']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
@@ -38,12 +41,15 @@ describe('Tab navigation when tabindex 0 after inside click', () => {
             '.second-inside'
         );
         await secondInside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         const thirdOutside = await browser.shadowDeep$(
             'integration-tabindex-zero-after-inside-click',
             '.third-outside'
         );
         await thirdOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Shift', 'Tab', 'Shift']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');
