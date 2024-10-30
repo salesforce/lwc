@@ -23,6 +23,20 @@ interface FixtureModule {
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
+vi.mock('@lwc/ssr-runtime', async () => {
+    const runtime = await import('@lwc/ssr-runtime');
+    try {
+        runtime.setHooks({
+            sanitizeHtmlContent(content: unknown) {
+                return String(content);
+            },
+        });
+    } catch (_err) {
+        // Ignore error if the hook is already overridden
+    }
+    return runtime;
+});
+
 const SSR_MODE: CompilationMode = 'asyncYield';
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {

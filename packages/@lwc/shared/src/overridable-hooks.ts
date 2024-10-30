@@ -22,7 +22,7 @@ let hooksAreSet = false;
  * lwc:inner-html directive.
  * It is meant to be overridden via `setHooks`; it throws an error by default.
  */
-export let sanitizeHtmlContentHook: SanitizeHtmlContentHook = (): string => {
+export let sanitizeHtmlContent: SanitizeHtmlContentHook = (): string => {
     // locker-service patches this function during runtime to sanitize HTML content.
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 };
@@ -30,5 +30,5 @@ export let sanitizeHtmlContentHook: SanitizeHtmlContentHook = (): string => {
 export function setHooks(hooks: OverridableHooks) {
     assert.isFalse(hooksAreSet, 'Hooks are already overridden, only one definition is allowed.');
     hooksAreSet = true;
-    sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
+    sanitizeHtmlContent = hooks.sanitizeHtmlContent;
 }

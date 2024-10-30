@@ -25,7 +25,7 @@ import {
     StringTrim,
     toString,
     keys as ObjectKeys,
-    sanitizeHtmlContentHook,
+    sanitizeHtmlContent,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -709,7 +709,7 @@ function sc(vnodes: VNodes): VNodes {
 
 // [s]anitize [h]tml [c]ontent
 function shc(content: unknown): SanitizedHtmlContent {
-    const sanitizedString = sanitizeHtmlContentHook(content);
+    const sanitizedString = sanitizeHtmlContent(content);
     return createSanitizedHtmlContent(sanitizedString);
 }
 
