@@ -42,6 +42,8 @@ interface PropsAvailableAtConstruction {
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 
+const FORBIDDEN_ATTRIBUTES = new Set(['inner-h-t-m-l', 'outer-h-t-m-l']);
+
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
     static stylesheets?: Stylesheets;
@@ -95,6 +97,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     setAttribute(attrName: string, attrValue: string): void {
         const normalizedName = StringToLowerCase.call(toString(attrName));
+        if (FORBIDDEN_ATTRIBUTES.has(normalizedName)) {
+            throw new Error(`Cannot set attribute "${attrName}" on <${this.tagName}>.`);
+        }
         const normalizedValue = String(attrValue);
         this.#attrs[normalizedName] = normalizedValue;
         reflectAttrToProp(this, normalizedName, normalizedValue);
