@@ -46,7 +46,7 @@ async function compileComponent({
     return outputFile;
 }
 
-describe('renderCompponent', () => {
+describe('renderComponent', () => {
     let module;
 
     beforeAll(async () => {
