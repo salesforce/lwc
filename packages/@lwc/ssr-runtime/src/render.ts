@@ -119,7 +119,7 @@ export async function serverSideRenderComponent(
 
     // TODO [#4726]: remove `generateMarkup` export
     const generateMarkup =
-        (Component as ComponentWithGenerateMarkup)[SYMBOL__GENERATE_MARKUP] ?? Component;
+        SYMBOL__GENERATE_MARKUP in Component ? Component[SYMBOL__GENERATE_MARKUP] : Component;
 
     let markup = '';
     const emit = (segment: string) => {
