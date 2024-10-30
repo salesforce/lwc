@@ -75,6 +75,10 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
     }
 `<EsBlockStatement>;
 
+const bYieldSanitizedHtml = esTemplateWithYield`
+    yield sanitizeHtml(${/* lwc:inner-html content */ is.expression})
+`;
+
 function yieldAttrOrPropLiteralValue(
     name: string,
     valueNode: IrLiteral,
@@ -178,7 +182,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         const value = innerHtmlDirective.value;
         const unsanitizedHtmlExpression =
             value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
-        childContent = [bYield(unsanitizedHtmlExpression)];
+        childContent = [bYieldSanitizedHtml(unsanitizedHtmlExpression)];
     } else {
         childContent = [];
     }
