@@ -37,7 +37,7 @@ jobs:
             - name: Setup chrome
               uses: browser-actions/setup-chrome@v1
               with:
-                  chrome-version: 129
+                  chrome-version: 130
               id: setup-chrome
 
             - name: Install dependencies
@@ -46,7 +46,7 @@ jobs:
             # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
             # See: https://github.com/google/tachometer#on-demand-dependencies
             - name: Install chromedriver
-              run: yarn add -W chromedriver@^129
+              run: yarn add -W chromedriver@^130
 
             - name: Check package.json integrity
               run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
