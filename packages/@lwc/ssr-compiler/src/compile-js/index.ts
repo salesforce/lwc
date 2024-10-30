@@ -13,7 +13,7 @@ import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
-import { addGenerateMarkupExport } from './generate-markup';
+import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './generate-markup';
 
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
@@ -140,6 +140,7 @@ export default function compileJS(src: string, filename: string, compilationMode
     }
 
     addGenerateMarkupExport(ast, state, filename);
+    assignGenerateMarkupToComponent(ast, state);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

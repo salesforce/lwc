@@ -6,6 +6,7 @@
  */
 
 import { parse as pathParse } from 'node:path';
+import { BlockStatement as EsBlockStatement } from 'estree';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
@@ -51,6 +52,12 @@ const bGenerateMarkup = esTemplate`
     }
 `<ExportNamedDeclaration>;
 
+const bAssignGenerateMarkupToComponentClass = esTemplate`
+    {
+        ${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+    }
+`<EsBlockStatement>;
+
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
  * compilation output. `generateMarkup` acts as the glue between component JS and its
@@ -95,4 +102,19 @@ export function addGenerateMarkupExport(
     );
     program.body.unshift(bImportDeclaration(['hasScopedStaticStylesheets']));
     program.body.push(bGenerateMarkup(classIdentifier, renderCall));
+}
+
+/**
+ * Attach the `generateMarkup` function to the Component class so that it can be found later
+ * during `renderComponent`.
+ */
+export function assignGenerateMarkupToComponent(program: Program, state: ComponentMetaState) {
+    program.body.unshift(
+        bImportDeclaration([
+            {
+                SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+            },
+        ])
+    );
+    program.body.push(bAssignGenerateMarkupToComponentClass(b.identifier(state.lwcClassName!)));
 }

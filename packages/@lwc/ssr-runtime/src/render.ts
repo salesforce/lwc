@@ -6,7 +6,11 @@
  */
 
 import { mutationTracker } from './mutation-tracker';
-import type { LightningElement, LightningElementConstructor } from './lightning-element';
+import {
+    LightningElement,
+    LightningElementConstructor,
+    SYMBOL__GENERATE_MARKUP,
+} from './lightning-element';
 import type { Attributes, Properties } from './types';
 
 const escapeAttrVal = (attrVal: string) =>
@@ -99,19 +103,31 @@ type GenerateMarkupFnVariants =
     | GenerateMarkupFnAsyncNoGen
     | GenerateMarkupFnSyncNoGen;
 
+interface ComponentWithGenerateMarkup {
+    [SYMBOL__GENERATE_MARKUP]: GenerateMarkupFnVariants;
+}
+
 export async function serverSideRenderComponent(
     tagName: string,
-    compiledGenerateMarkup: GenerateMarkupFnVariants,
-    props: Properties,
+    Component: GenerateMarkupFnVariants | ComponentWithGenerateMarkup,
+    props: Properties = {},
     mode: 'asyncYield' | 'async' | 'sync' = 'asyncYield'
 ): Promise<string> {
+    if (typeof tagName !== 'string') {
+        throw new Error(`tagName must be a string, found: ${tagName}`);
+    }
+
+    // TODO [#4726]: remove `generateMarkup` export
+    const generateMarkup =
+        SYMBOL__GENERATE_MARKUP in Component ? Component[SYMBOL__GENERATE_MARKUP] : Component;
+
     let markup = '';
     const emit = (segment: string) => {
         markup += segment;
     };
 
     if (mode === 'asyncYield') {
-        for await (const segment of (compiledGenerateMarkup as GenerateMarkupFn)(
+        for await (const segment of (generateMarkup as GenerateMarkupFn)(
             tagName,
             props,
             null,
@@ -120,15 +136,9 @@ export async function serverSideRenderComponent(
             markup += segment;
         }
     } else if (mode === 'async') {
-        await (compiledGenerateMarkup as GenerateMarkupFnAsyncNoGen)(
-            emit,
-            tagName,
-            props,
-            null,
-            null
-        );
+        await (generateMarkup as GenerateMarkupFnAsyncNoGen)(emit, tagName, props, null, null);
     } else if (mode === 'sync') {
-        (compiledGenerateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null);
+        (generateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null);
     } else {
         throw new Error(`Invalid mode: ${mode}`);
     }
