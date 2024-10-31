@@ -1738,10 +1738,16 @@ function validateSlotAttribute(
         return;
     }
 
-    if (ast.isElement(parentNode) || ast.isSlot(parentNode)) {
+    const elementOrSlotAncestor = ctx.findAncestor(
+        (node) => ast.isElement(node) || ast.isSlot(node),
+        ({ current }) => current && !ast.isComponent(current) && !ast.isExternalComponent(current),
+        parentNode
+    );
+
+    if (elementOrSlotAncestor) {
         ctx.warnOnNode(ParserDiagnostics.IGNORED_SLOT_ATTRIBUTE_IN_CHILD, slotAttr, [
             `<${element.name}>`,
-            `<${parentNode.name}>`,
+            `<${elementOrSlotAncestor.name}>`,
         ]);
     }
 }
