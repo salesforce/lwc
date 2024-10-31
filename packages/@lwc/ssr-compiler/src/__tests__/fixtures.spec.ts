@@ -6,7 +6,7 @@
  */
 
 import path from 'node:path';
-import { vi } from 'vitest';
+import { vi, describe } from 'vitest';
 import { rollup, RollupLog } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';

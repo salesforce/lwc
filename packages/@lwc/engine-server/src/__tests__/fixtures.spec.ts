@@ -5,11 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
-
+import path from 'node:path';
+import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { vi } from 'vitest';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import type * as lwc from '../index';
 
@@ -42,7 +41,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 
     const bundle = await rollup({
         input,
-        external: ['lwc'],
+        external: ['lwc', 'vitest'],
         plugins: [
             lwcRollupPlugin({
                 enableDynamicComponents: true,

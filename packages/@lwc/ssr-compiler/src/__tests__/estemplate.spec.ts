@@ -6,6 +6,7 @@
  */
 
 import { is, builders as b } from 'estree-toolkit';
+import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 
 describe.each(
@@ -54,7 +55,7 @@ describe.each(
             const tmpl = topLevelFn`
                     const ${is.identifier} = 'foo';
                 `;
-            const doReplacement = () => tmpl(b.literal('I am not an identifier'));
+            const doReplacement = () => tmpl(b.literal('I am not an identifier') as any);
             expect(doReplacement).toThrow(
                 'Validation failed for templated node of type Identifier'
             );
