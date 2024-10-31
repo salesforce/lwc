@@ -50,6 +50,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                         dir: modulesDir,
                     },
                 ],
+                enableStaticContentOptimization: false,
             }),
         ],
         onwarn({ message, code }) {
