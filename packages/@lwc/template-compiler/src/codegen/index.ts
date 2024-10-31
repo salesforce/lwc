@@ -145,20 +145,33 @@ function transform(codeGen: CodeGen): t.Expression {
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<ChildNode>;
 
+        function isTextOrIgnoredComment(node: ChildNode): node is Text | Comment {
+            return isText(node) || (isComment(node) && !codeGen.preserveComments);
+        }
+
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
 
-            if (isText(child)) {
+            // Concatenate contiguous text nodes together (while skipping ignored comments)
+            // E.g. `<div>{foo}{bar}</div>` can be concatenated into a single text node expression,
+            // and so can `<div>{foo}<!-- baz -->{bar}</div>` if comments are ignored.
+            if (isTextOrIgnoredComment(child)) {
                 const continuousText: Text[] = [];
 
                 // Consume all the contiguous text nodes.
                 do {
-                    continuousText.push(child);
+                    if (isText(child)) {
+                        continuousText.push(child);
+                    }
                     current = childrenIterator.next();
                     child = current.value;
-                } while (!current.done && isText(child));
+                } while (!current.done && isTextOrIgnoredComment(child));
 
-                res.push(transformText(continuousText));
+                // Only push an api_text call if we actually have text to render.
+                // (We might just have iterated through a sequence of ignored comments.)
+                if (continuousText.length) {
+                    res.push(transformText(continuousText));
+                }
 
                 // Early exit if a text node is the last child node.
                 if (current.done) {
