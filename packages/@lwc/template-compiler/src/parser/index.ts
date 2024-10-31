@@ -1744,6 +1744,12 @@ function validateSlotAttribute(
         parentNode
     );
 
+    // Warn if a `slot` attribute is on an element that isn't an immediate child of a containing LWC component or
+    // `lwc:external` component. This is a case that all three of native-shadow/synthetic-shadow/light DOM will
+    // simply ignore, but it's good to warn, so that developers realize that they may be making a mistake.
+    // Note that, for the purposes of being considered an "immediate child," virtual elements like `for:each` and
+    // `lwc:if` don't count - only rendered elements (including `<slot>`s) count.
+    // Example of invalid usage: `<x-foo><div><span slot=bar></span></div></x-foo>`
     if (elementOrSlotAncestor) {
         ctx.warnOnNode(ParserDiagnostics.IGNORED_SLOT_ATTRIBUTE_IN_CHILD, slotAttr, [
             `<${element.name}>`,
