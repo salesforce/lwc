@@ -90,21 +90,6 @@ function getChildAttrsOrProps(
     return b.objectExpression(objectAttrsOrProps);
 }
 
-function reflectAriaPropsAsAttrs(props: IrProperty[]): IrAttribute[] {
-    return props
-        .map((prop) => {
-            if (prop.attributeName.startsWith('aria-') || prop.attributeName === 'role') {
-                return {
-                    type: 'Attribute',
-                    name: prop.attributeName,
-                    value: prop.value,
-                } as IrAttribute;
-            }
-            return null;
-        })
-        .filter((el): el is NonNullable<IrAttribute> => el !== null);
-}
-
 export const Component: Transformer<IrComponent> = function Component(node, cxt) {
     // Import the custom component's generateMarkup export.
     const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
@@ -112,8 +97,6 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
     cxt.hoist(componentImport, childGeneratorLocalName);
     const childTagName = node.name;
-
-    const attributes = [...node.attributes, ...reflectAriaPropsAsAttrs(node.properties)];
 
     const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt));
 
@@ -135,7 +118,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     return [
         bYieldFromChildGenerator(
             getChildAttrsOrProps(node.properties, cxt),
-            getChildAttrsOrProps(attributes, cxt),
+            getChildAttrsOrProps(node.attributes, cxt),
             shadowSlotContent,
             lightSlotContent,
             b.identifier(childGeneratorLocalName),

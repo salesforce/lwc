@@ -215,6 +215,60 @@ export class LightningElement implements PropsAvailableAtConstruction {
     setAttributeNS(_namespace: string | null, _qualifiedName: string, _value: string): void {
         throw new Error('Method "setAttributeNS" not implemented.');
     }
+
+    // ARIA properties
+    ariaActiveDescendant!: string | null;
+    ariaAtomic!: string | null;
+    ariaAutoComplete!: string | null;
+    ariaBusy!: string | null;
+    ariaChecked!: string | null;
+    ariaColCount!: string | null;
+    ariaColIndex!: string | null;
+    ariaColIndexText!: string | null;
+    ariaColSpan!: string | null;
+    ariaControls!: string | null;
+    ariaCurrent!: string | null;
+    ariaDescribedBy!: string | null;
+    ariaDescription!: string | null;
+    ariaDetails!: string | null;
+    ariaDisabled!: string | null;
+    ariaErrorMessage!: string | null;
+    ariaExpanded!: string | null;
+    ariaFlowTo!: string | null;
+    ariaHasPopup!: string | null;
+    ariaHidden!: string | null;
+    ariaInvalid!: string | null;
+    ariaKeyShortcuts!: string | null;
+    ariaLabel!: string | null;
+    ariaLabelledBy!: string | null;
+    ariaLevel!: string | null;
+    ariaLive!: string | null;
+    ariaModal!: string | null;
+    ariaMultiLine!: string | null;
+    ariaMultiSelectable!: string | null;
+    ariaOrientation!: string | null;
+    ariaOwns!: string | null;
+    ariaPlaceholder!: string | null;
+    ariaPosInSet!: string | null;
+    ariaPressed!: string | null;
+    ariaReadOnly!: string | null;
+    ariaRelevant!: string | null;
+    ariaRequired!: string | null;
+    ariaRoleDescription!: string | null;
+    ariaRowCount!: string | null;
+    ariaRowIndex!: string | null;
+    ariaRowIndexText!: string | null;
+    ariaRowSpan!: string | null;
+    ariaSelected!: string | null;
+    ariaSetSize!: string | null;
+    ariaSort!: string | null;
+    ariaValueMax!: string | null;
+    ariaValueMin!: string | null;
+    ariaValueNow!: string | null;
+    ariaValueText!: string | null;
+    ariaBrailleLabel!: string | null;
+    ariaBrailleRoleDescription!: string | null;
+    role!: string | null;
 }
 
 defineProperties(LightningElement.prototype, reflectionDescriptors);
