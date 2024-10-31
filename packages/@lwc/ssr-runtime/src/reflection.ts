@@ -21,18 +21,21 @@ import type { LightningElement } from './lightning-element';
  * Map of global attribute or ARIA attribute to the corresponding property name.
  * Not all global attributes are included, just those from `HTMLElementTheGoodParts`.
  */
-const attrsToProps = assign(create(null), {
-    accesskey: 'accessKey',
-    dir: 'dir',
-    draggable: 'draggable',
-    hidden: 'hidden',
-    id: 'id',
-    lang: 'lang',
-    spellcheck: 'spellcheck',
-    tabindex: 'tabIndex',
-    title: 'title',
-    ...AriaAttrNameToPropNameMap,
-});
+const attrsToProps = assign(
+    create(null) as object,
+    {
+        accesskey: 'accessKey',
+        dir: 'dir',
+        draggable: 'draggable',
+        hidden: 'hidden',
+        id: 'id',
+        lang: 'lang',
+        spellcheck: 'spellcheck',
+        tabindex: 'tabIndex',
+        title: 'title',
+        ...AriaAttrNameToPropNameMap,
+    } as const
+);
 
 /**
  * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
@@ -127,9 +130,10 @@ export function reflectAttrToProp(
     const reflectedPropName = attrsToProps[attrName as keyof typeof attrsToProps];
     // If it is a reflected property and it was not overridden by the instance
     if (reflectedPropName && !hasOwnProperty.call(instance, reflectedPropName)) {
-        const currentValue = (instance as any)[reflectedPropName];
+        const currentValue = instance[reflectedPropName];
         if (currentValue !== attrValue) {
-            (instance as any)[reflectedPropName] = attrValue;
+            // Type assertion because we're providing a string, but some props accept boolean/number
+            (instance[reflectedPropName] as string | null) = attrValue;
         }
     }
 }

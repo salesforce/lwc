@@ -127,7 +127,8 @@ const CACHED_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map<string, string>
  * @param propName
  */
 export function htmlPropertyToAttribute(propName: string): string {
-    const ariaAttributeName = AriaPropNameToAttrNameMap[propName];
+    const ariaAttributeName =
+        AriaPropNameToAttrNameMap[propName as keyof typeof AriaPropNameToAttrNameMap];
     if (!isUndefined(ariaAttributeName)) {
         return ariaAttributeName;
     }
