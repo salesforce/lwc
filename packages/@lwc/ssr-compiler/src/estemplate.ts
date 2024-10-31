@@ -91,10 +91,16 @@ const getReplacementNode = (
             ? replacementNode.every(validateReplacement)
             : validateReplacement(replacementNode))
     ) {
-        const nodeType = Array.isArray(replacementNode)
+        const expectedType =
+            (validateReplacement as any).__name ||
+            validateReplacement.name ||
+            '(could not determine)';
+        const actualType = Array.isArray(replacementNode)
             ? `[${replacementNode.map((n) => n.type)}.join(', ')]`
             : replacementNode?.type;
-        throw new Error(`Validation failed for templated node of type ${nodeType}`);
+        throw new Error(
+            `Validation failed for templated node. Expected type ${expectedType}, but received ${actualType}.`
+        );
     }
 
     return replacementNode;
