@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { vi } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { Signal } from './signal';
 
 describe('signal protocol', () => {

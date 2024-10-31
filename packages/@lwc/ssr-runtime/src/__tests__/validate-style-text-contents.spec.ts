@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { describe, it, expect } from 'vitest';
 import { validateStyleTextContents } from '../validate-style-text-contents';
 
 // See https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions

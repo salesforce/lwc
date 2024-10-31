@@ -1,3 +1,4 @@
+import { expect } from 'vitest';
 import { LightningElement } from 'lwc';
 
 export default class MethodsUnsupported extends LightningElement {
