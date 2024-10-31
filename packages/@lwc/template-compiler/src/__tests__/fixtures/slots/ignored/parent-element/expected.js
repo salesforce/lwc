@@ -1,5 +1,5 @@
-import _implicitStylesheets from "./ignored-warning.css";
-import _implicitScopedStylesheets from "./ignored-warning.scoped.css?scoped=true";
+import _implicitStylesheets from "./parent-element.css";
+import _implicitScopedStylesheets from "./parent-element.scoped.css?scoped=true";
 import _xInner from "x/inner";
 import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
@@ -25,8 +25,8 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 }
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
-tmpl.stylesheetToken = "lwc-4q5hvj892j4";
-tmpl.legacyStylesheetToken = "x-ignored-warning_ignored-warning";
+tmpl.stylesheetToken = "lwc-4k671nk0qrh";
+tmpl.legacyStylesheetToken = "x-parent-element_parent-element";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
