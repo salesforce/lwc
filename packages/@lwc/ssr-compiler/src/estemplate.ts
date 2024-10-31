@@ -73,7 +73,8 @@ interface TraversalState {
 
 const getReplacementNode = (
     state: TraversalState,
-    placeholderId: string
+    placeholderId: string,
+    placeholderType: string
 ): EsNode | EsNode[] | null => {
     const key = Number(placeholderId.slice(PLACEHOLDER_PREFIX.length));
     const nodeCount = state.replacementNodes.length;
@@ -94,7 +95,9 @@ const getReplacementNode = (
         const nodeType = Array.isArray(replacementNode)
             ? `[${replacementNode.map((n) => n.type)}.join(', ')]`
             : replacementNode?.type;
-        throw new Error(`Validation failed for templated node of type ${nodeType}`);
+        throw new Error(
+            `Validation failed for template. Expected node of type '${placeholderType}' but received node of type '${nodeType}'.`
+        );
     }
 
     return replacementNode;
@@ -103,7 +106,7 @@ const getReplacementNode = (
 const visitors: Visitors<TraversalState> = {
     Identifier(path, state) {
         if (path.node?.name.startsWith(PLACEHOLDER_PREFIX)) {
-            const replacementNode = getReplacementNode(state, path.node.name);
+            const replacementNode = getReplacementNode(state, path.node.name, path.node.type);
 
             if (replacementNode === null) {
                 path.remove();
@@ -128,7 +131,11 @@ const visitors: Visitors<TraversalState> = {
             path.node.value.startsWith(PLACEHOLDER_PREFIX)
         ) {
             // A literal can only be replaced with a single node
-            const replacementNode = getReplacementNode(state, path.node.value) as EsNode;
+            const replacementNode = getReplacementNode(
+                state,
+                path.node.value,
+                path.node.type
+            ) as EsNode;
 
             path.replaceWith(replacementNode);
         }
