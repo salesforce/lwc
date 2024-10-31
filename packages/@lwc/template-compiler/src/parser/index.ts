@@ -1738,17 +1738,10 @@ function validateSlotAttribute(
         return;
     }
 
-    if (
-        ast.isElement(parentNode) ||
-        ast.isSlot(parentNode) ||
-        ast.isForEach(parentNode) ||
-        ast.isForOf(parentNode)
-    ) {
+    if (ast.isElement(parentNode) || ast.isSlot(parentNode)) {
         ctx.warnOnNode(ParserDiagnostics.IGNORED_SLOT_ATTRIBUTE_IN_CHILD, slotAttr, [
             `<${element.name}>`,
-            ast.isElement(parentNode) || ast.isSlot(parentNode)
-                ? `<${parentNode.name}>`
-                : 'iteration block',
+            `<${parentNode.name}>`,
         ]);
     }
 }
