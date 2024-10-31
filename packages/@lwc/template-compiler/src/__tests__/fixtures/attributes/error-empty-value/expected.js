@@ -2,7 +2,7 @@ import _implicitStylesheets from "./error-empty-value.css";
 import _implicitScopedStylesheets from "./error-empty-value.scoped.css?scoped=true";
 import _fooBar from "foo/bar";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<p title=""${3}></p>`;
+const $fragment1 = parseFragment`<p title${3}></p>`;
 const stc0 = {
   props: {
     content: "",
