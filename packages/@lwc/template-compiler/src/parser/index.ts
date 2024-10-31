@@ -1738,11 +1738,15 @@ function validateSlotAttribute(
         return;
     }
 
+    function isElementOrSlot(node: ParentNode): node is Element | Slot {
+        return ast.isElement(node) || ast.isSlot(node);
+    }
+
     // Find the nearest ancestor that is an element or `<slot>`, and stop if we hit a component.
     // E.g. this should warn due to the `<div>`: `<x-foo><div><span slot=bar></span></div></x-foo>`
     // And this should _not_ warn: `<div><x-foo><span slot=bar></span></x-foo></div>`
     const elementOrSlotAncestor = ctx.findAncestor(
-        (node) => ast.isElement(node) || ast.isSlot(node),
+        isElementOrSlot,
         ({ current }) => current && !ast.isComponent(current) && !ast.isExternalComponent(current),
         parentNode
     );
