@@ -3,7 +3,7 @@ import _implicitScopedStylesheets from "./required.scoped.css?scoped=true";
 import _xFoo from "x/foo";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<input required value="boolean present"${3}>`;
-const $fragment2 = parseFragment`<input required="" value="empty string"${3}>`;
+const $fragment2 = parseFragment`<input required value="empty string"${3}>`;
 const $fragment3 = parseFragment`<input required="other than true" value="string value"${3}>`;
 const $fragment4 = parseFragment`<input${"a0:required"} value="computed value"${3}>`;
 const $fragment5 = parseFragment`<input required="3" value="integer value"${3}>`;
