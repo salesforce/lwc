@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <aside>{data}</aside>
+    <div data-should-be-from-child={data}>
+        <aside>{data}</aside>
+        <slot lwc:slot-bind={bound}>Fallback slot content</slot>
+        <aside>{data}</aside>
+    </div>
+    <aside>{data}</aside>
+</template>

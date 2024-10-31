@@ -1,0 +1,8 @@
+<template>
+    <x-child>
+        <template lwc:slot-data="data">
+            <span data-foo={data.id}>{data.id}</span>
+            <p>{prop.id}</p>
+        </template>
+    </x-child>
+</template>
