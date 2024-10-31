@@ -22,11 +22,10 @@ export const ScopedSlotFragment: Transformer<IrScopedSlotFragment> = function Sc
     node,
     cxt
 ) {
-    throw new Error('yolo!!!')
-    // const slotName = node.slotName;
-    // const slotContent = node.children.map((child) => {
-    //     const slotContent = irToEs(child, cxt);
-    //     return bAddContent(slotName as EsExpression, null, slotContent);
-    // });
-    // return slotContent as any;
+    const slotName = node.slotName;
+    const slotContent = node.children.map((child) => {
+        const slotContent = irToEs(child, cxt);
+        return bAddContent(slotName as EsExpression, null, slotContent);
+    });
+    return slotContent as any;
 };
