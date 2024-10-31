@@ -108,10 +108,17 @@ function reorderAttributes(attributesRaw: string) {
     const numQuotes = attributesRaw.match(/"/g)?.length || 0;
     if (numQuotes % 2 !== 0) return attributesRaw;
 
-    const matches = [...attributesRaw.matchAll(/[:\w-]+(="[^"]*")?/gi)];
+    const matches = [...attributesRaw.matchAll(/([:\w-]+)(="([^"]*)")?/gi)];
 
     const results = matches
-        .map((_) => _[0])
+        .map(([_whole, name, equalsQuotedValue, value]) => {
+            // TODO [#4714]: Scope token classes render in an inconsistent order for static vs dynamic classes
+            if (name === 'class' && value) {
+                // sort classes to ignore differences, e.g. `class="a b"` vs `class="b a"`
+                value = value.split(' ').sort().join(' ');
+            }
+            return name + (equalsQuotedValue ? `="${value}"` : '');
+        })
         .sort()
         .join(' ');
 
