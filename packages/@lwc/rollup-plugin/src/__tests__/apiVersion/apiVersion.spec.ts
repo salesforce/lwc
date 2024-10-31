@@ -6,7 +6,6 @@
  */
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-
 import { rollup, RollupLog } from 'rollup';
 import { APIVersion, HIGHEST_API_VERSION, LOWEST_API_VERSION } from '@lwc/shared';
 
