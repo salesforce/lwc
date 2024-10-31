@@ -10,13 +10,13 @@ import { esTemplate } from '../../estemplate';
 import { irToEs } from '../ir-to-es';
 import { optimizeAdjacentYieldStmts } from '../shared';
 
+import { bImportDeclaration } from '../../estree/builders';
 import type { ForOf as IrForOf } from '@lwc/template-compiler';
 import type {
     Expression as EsExpression,
     ForOfStatement as EsForOfStatement,
     Identifier as EsIdentifier,
     MemberExpression as EsMemberExpression,
-    ImportDeclaration as EsImportDeclaration,
 } from 'estree';
 import type { Transformer } from '../types';
 
@@ -35,10 +35,6 @@ const bForOfYieldFrom = esTemplate`
     }
 `<EsForOfStatement>;
 
-const bToIteratorDirectiveImport = esTemplate`
-    import { toIteratorDirective } from '@lwc/ssr-runtime';
-`<EsImportDeclaration>;
-
 export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfStatement[] {
     const id = node.iterator.name;
     cxt.pushLocalVars([id]);
@@ -55,7 +51,7 @@ export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfS
         ? (node.expression as EsExpression)
         : b.memberExpression(b.identifier('instance'), node.expression as EsExpression);
 
-    cxt.hoist(bToIteratorDirectiveImport(), 'toIteratorDirective');
+    cxt.hoist(bImportDeclaration(['toIteratorDirective']), 'import:toIteratorDirective');
 
     return [
         bForOfYieldFrom(b.identifier(id), iterable, optimizeAdjacentYieldStmts(forEachStatements)),

@@ -45,12 +45,15 @@ describe('sequential focus navigation coverage', () => {
                 await start.click();
 
                 // Set the type
-                await browser.execute(function (type) {
+                await browser.execute(async function (type) {
                     const container = document.querySelector('integration-focusable-coverage');
                     container.type = type;
+                    await new Promise(requestAnimationFrame); // wait a tick
                 }, type);
 
                 await browser.keys(['Tab']);
+
+                await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
                 const activeElement = await browser.activeElementShadowDeep();
                 assert.strictEqual(await activeElement.getAttribute('data-focus'), type);

@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "8.3.0",
+    "version": "8.5.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -11,20 +11,22 @@
         "test:best:ci": "best src --runner remote"
     },
     "//": [
-        "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies."
+        "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
+        "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "8.3.0",
-        "@lwc/engine-server": "8.3.0",
-        "@lwc/perf-benchmarks-components": "8.3.0",
-        "@lwc/synthetic-shadow": "8.3.0"
+        "@lwc/engine-dom": "8.5.0",
+        "@lwc/engine-server": "8.5.0",
+        "@lwc/perf-benchmarks-components": "8.5.0",
+        "@lwc/ssr-runtime": "8.5.0",
+        "@lwc/synthetic-shadow": "8.5.0"
     },
     "devDependencies": {
         "@best/cli": "^13.0.0",
         "@best/runner-headless": "^13.0.0",
         "@best/runner-remote": "^13.0.0",
         "folder-hash": "4.0.4",
-        "markdown-table": "^3.0.3",
+        "markdown-table": "^3.0.4",
         "tachometer": "^0.7.1"
     },
     "nx": {

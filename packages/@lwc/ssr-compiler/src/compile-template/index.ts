@@ -13,17 +13,11 @@ import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
+import { bImportDeclaration } from '../estree/builders';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
-import type {
-    ExportDefaultDeclaration as EsExportDefaultDeclaration,
-    ImportDeclaration as EsImportDeclaration,
-} from 'estree';
+import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
 import type { CompilationMode } from '../shared';
-
-const bStyleValidationImport = esTemplate`
-    import { validateStyleTextContents } from '@lwc/ssr-runtime';
-`<EsImportDeclaration>;
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
@@ -33,20 +27,15 @@ const bExportTemplate = esTemplate`
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
         }
         
-        if (defaultStylesheets || defaultScopedStylesheets) {
-            // Flatten all stylesheets infinitely and concatenate
-            const stylesheets = [defaultStylesheets, defaultScopedStylesheets].filter(Boolean).flat(Infinity);
-    
-            for (const stylesheet of stylesheets) {
-                const token = stylesheet.$scoped$ ? stylesheetScopeToken : undefined;
-                const useActualHostSelector = !stylesheet.$scoped$ || Cmp.renderMode !== 'light';
-                const useNativeDirPseudoclass = true;
-                yield '<style' + stylesheetScopeTokenClass + ' type="text/css">';
-                const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-                validateStyleTextContents(styleContents);
-                yield styleContents;
-                yield '</style>';
-            }
+        const { stylesheets: staticStylesheets } = Cmp;
+        if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
+            const stylesheets = [defaultStylesheets, defaultScopedStylesheets, staticStylesheets];
+            yield renderStylesheets(
+                stylesheets, 
+                stylesheetScopeToken, 
+                Cmp, 
+                hasScopedStylesheets,
+            );
         }
 
         ${is.statement};
@@ -109,7 +98,7 @@ export default function compileTemplate(
 
     const moduleBody = [
         ...hoisted,
-        bStyleValidationImport(),
+        bImportDeclaration(['renderStylesheets', 'hasScopedStaticStylesheets']),
         bExportTemplate(optimizeAdjacentYieldStmts(statements)),
     ];
     let program = b.program(moduleBody, 'module');

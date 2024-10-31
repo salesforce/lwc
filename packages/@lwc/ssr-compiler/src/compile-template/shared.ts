@@ -8,20 +8,17 @@
 import { builders as b, is } from 'estree-toolkit';
 import { reservedKeywords } from '@lwc/shared';
 import { Node as IrNode } from '@lwc/template-compiler';
-import { esTemplate } from '../estemplate';
 
+import { bImportDeclaration } from '../estree/builders';
 import { TransformerContext } from './types';
 import type {
-    ImportDeclaration as EsImportDeclaration,
     Statement as EsStatement,
     Expression as EsExpression,
     MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
 } from 'estree';
 
-export const bImportHtmlEscape = esTemplate`
-    import { htmlEscape } from '@lwc/ssr-runtime';
-`<EsImportDeclaration>;
+export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
 export const importHtmlEscapeKey = 'import:htmlEscape';
 
 // This is a mostly-correct regular expression will only match if the entire string

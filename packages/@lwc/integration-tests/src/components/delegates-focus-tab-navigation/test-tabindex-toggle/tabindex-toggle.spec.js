@@ -18,7 +18,9 @@ describe('Tab navigation without tabindex', () => {
             '.second-outside'
         );
         await secondOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Tab']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         let activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
@@ -26,18 +28,24 @@ describe('Tab navigation without tabindex', () => {
         // Toggle the tabindex <x-child tabindex="-1">
         const toggle = await browser.shadowDeep$('integration-tabindex-toggle', '.toggle');
         await toggle.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         await secondOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Tab']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'third-outside');
 
         // Toggle the tabindex <x-child>
         await toggle.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         await secondOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Tab']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');

@@ -7,10 +7,10 @@
 
 import { renderComponent } from '@lwc/engine-server';
 
-import Table from '@lwc/perf-benchmarks-components/dist/server/benchmark/cardComponent/cardComponent.js';
+import Table from '@lwc/perf-benchmarks-components/dist/server/benchmark/table/table.js';
 import Store from '@lwc/perf-benchmarks-components/dist/server/benchmark/store/store.js';
 
-benchmark(`server/table/render/10k`, () => {
+benchmark(`server/table-v2/render/10k`, () => {
     run(() => {
         const store = new Store();
         store.runLots();

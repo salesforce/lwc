@@ -4,9 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaAttrNameToPropNameMap } from '@lwc/shared';
+import {
+    AriaAttrNameToPropNameMap,
+    ArrayFrom,
+    fromEntries,
+    SPECIAL_PROPERTY_ATTRIBUTE_MAPPING,
+} from '@lwc/shared';
 import { ElementDirectiveName } from '../shared/types';
-import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
 import { HTML_ELEMENTS } from './utils/html-elements';
 import { SVG_ELEMENTS } from './utils/svg-elements';
 
@@ -106,31 +110,12 @@ export const SUPPORTED_SVG_TAGS = new Set([
 
 export const DISALLOWED_MATHML_TAGS = new Set(['script', 'link', 'base', 'object']);
 
-export const ATTRS_PROPS_TRANFORMS: { [name: string]: string } = {
-    accesskey: 'accessKey',
-    readonly: 'readOnly',
-    tabindex: 'tabIndex',
-    bgcolor: 'bgColor',
-    colspan: 'colSpan',
-    rowspan: 'rowSpan',
-    contenteditable: 'contentEditable',
-    crossorigin: 'crossOrigin',
-    datetime: 'dateTime',
-    formaction: 'formAction',
-    ismap: 'isMap',
-    maxlength: 'maxLength',
-    minlength: 'minLength',
-    novalidate: 'noValidate',
-    usemap: 'useMap',
-    for: 'htmlFor',
+export const ATTRS_PROPS_TRANFORMS: { [attr: string]: string } = {
+    ...fromEntries(ArrayFrom(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING, ([prop, attr]) => [attr, prop])),
     ...AriaAttrNameToPropNameMap,
 };
 
 export const DISALLOWED_HTML_TAGS = new Set(['base', 'link', 'meta', 'script', 'title']);
-
-export const HTML_ATTRIBUTES_REVERSE_LOOKUP: {
-    [attr: string]: string[];
-} = HTML_ATTRIBUTE_ELEMENT_MAP;
 
 export const KNOWN_HTML_AND_SVG_ELEMENTS = new Set([...HTML_ELEMENTS, ...SVG_ELEMENTS]);
 

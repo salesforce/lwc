@@ -20,6 +20,7 @@ import {
     isObject,
     isTrue,
     isUndefined,
+    flattenStylesheets,
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
@@ -33,7 +34,7 @@ import {
     getComponentAPIVersion,
     resetTemplateObserverAndUnsubscribe,
 } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
+import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
 import { Template } from './template';
 import { ComponentDef, getComponentInternalDef } from './def';
@@ -64,8 +65,8 @@ import {
     isVFragment,
     VStaticPartElement,
 } from './vnodes';
-import { Stylesheet, Stylesheets } from './stylesheet';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 type ShadowRootMode = 'open' | 'closed';
 

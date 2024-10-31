@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
@@ -116,7 +116,7 @@ export function testFixtureDir<T extends TestFixtureConfig>(
         const description = fixtureConfig?.description ?? path.relative(root, filename);
         const tester = getTestFunc(dirname);
 
-        tester(description, async () => {
+        tester(description, async ({ expect }) => {
             const outputs = await testFn({
                 src,
                 filename,
@@ -132,7 +132,22 @@ export function testFixtureDir<T extends TestFixtureConfig>(
 
             for (const [outputName, content] of Object.entries(outputs)) {
                 const outputPath = path.resolve(dirname, outputName);
-                expect(content).toMatchFile(outputPath);
+
+                try {
+                    if (content === undefined) {
+                        expect(fs.existsSync(outputPath)).toBe(false);
+                    } else {
+                        await expect(content).toMatchFileSnapshot(outputPath);
+                    }
+                } catch (err) {
+                    if (typeof err === 'object' && err !== null) {
+                        // Hide unhelpful noise in the stack trace
+                        // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
+                        Error.captureStackTrace(err, testFixtureDir);
+                    }
+
+                    throw err;
+                }
             }
         });
     }

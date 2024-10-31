@@ -6,16 +6,15 @@
  */
 
 import { parse as pathParse } from 'node:path';
+import { BlockStatement as EsBlockStatement } from 'estree';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
-import { bImportDeclaration } from '../estree/builders';
+import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
 
 import type {
     ExportNamedDeclaration,
     Program,
-    ImportDeclaration,
-    SimpleLiteral,
     SimpleCallExpression,
     Identifier,
     MemberExpression,
@@ -27,13 +26,10 @@ type RenderCallExpression = SimpleCallExpression & {
     callee: MemberExpression & { property: Identifier & { name: 'render' } };
 };
 
-/** Node representing a string literal. */
-type StringLiteral = SimpleLiteral & { value: string };
-
 const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
         attrs = attrs ?? {};
-        const instance = new ${is.identifier}({
+        const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
         instance[__SYMBOL__SET_INTERNALS](props, attrs);
@@ -45,22 +41,22 @@ const bGenerateMarkup = esTemplate`
         }
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
-        yield tmplFn.stylesheetScopeTokenHostClass ?? '';
-        yield* __renderAttrs(instance, attrs)
+        const shouldRenderScopeToken = tmplFn.hasScopedStylesheets || hasScopedStaticStylesheets(${/*Component class */ 0});
+        if (shouldRenderScopeToken) {
+            yield \` class="\${tmplFn.stylesheetScopeToken}-host"\`;
+        }
+        yield* __renderAttrs(instance, attrs);
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${0}, instance);
         yield \`</\${tagName}>\`;
     }
 `<ExportNamedDeclaration>;
 
-const bInsertFallbackTmplImport = esTemplate`
-    import {
-        fallbackTmpl as __fallbackTmpl,
-        mutationTracker as __mutationTracker,
-        renderAttrs as __renderAttrs,
-        SYMBOL__SET_INTERNALS as __SYMBOL__SET_INTERNALS,
-    } from '@lwc/ssr-runtime';
-`<ImportDeclaration>;
+const bAssignGenerateMarkupToComponentClass = esTemplate`
+    {
+        ${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+    }
+`<EsBlockStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -91,11 +87,34 @@ export function addGenerateMarkupExport(
 
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(
-            bImportDeclaration(b.identifier('tmpl'), b.literal(defaultTmplPath) as StringLiteral)
-        );
+        program.body.unshift(bImportDefaultDeclaration('tmpl', defaultTmplPath));
     }
 
-    program.body.unshift(bInsertFallbackTmplImport());
+    program.body.unshift(
+        bImportDeclaration([
+            {
+                fallbackTmpl: '__fallbackTmpl',
+                mutationTracker: '__mutationTracker',
+                renderAttrs: '__renderAttrs',
+                SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
+            },
+        ])
+    );
+    program.body.unshift(bImportDeclaration(['hasScopedStaticStylesheets']));
     program.body.push(bGenerateMarkup(classIdentifier, renderCall));
+}
+
+/**
+ * Attach the `generateMarkup` function to the Component class so that it can be found later
+ * during `renderComponent`.
+ */
+export function assignGenerateMarkupToComponent(program: Program, state: ComponentMetaState) {
+    program.body.unshift(
+        bImportDeclaration([
+            {
+                SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+            },
+        ])
+    );
+    program.body.push(bAssignGenerateMarkupToComponentClass(b.identifier(state.lwcClassName!)));
 }

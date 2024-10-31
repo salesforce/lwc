@@ -5,22 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
-import { esTemplate } from '../estemplate';
+import { builders as b } from 'estree-toolkit';
 
+import { bImportDefaultDeclaration } from '../estree/builders';
 import type { NodePath } from 'estree-toolkit';
 import type { ImportDeclaration } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const bDefaultStyleImport = esTemplate`
-    import defaultStylesheets from '${is.literal}';
-`<ImportDeclaration>;
-
-const bDefaultScopedStyleImport = esTemplate`
-    import defaultScopedStylesheets from '${is.literal}';
-`<ImportDeclaration>;
-
-export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
+export function catalogAndReplaceStyleImports(
+    path: NodePath<ImportDeclaration>,
+    state: ComponentMetaState
+) {
     const specifier = path.node!.specifiers[0];
 
     if (
@@ -30,6 +25,20 @@ export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: Com
         specifier.type !== 'ImportDefaultSpecifier'
     ) {
         return;
+    }
+
+    // Any file ending in `*.scoped.css` which is directly imported into a Component `*.js` file (and assumed
+    // to be used for `static stylesheets`) is assumed to be scoped, so needs to be marked as such with a query param.
+    // Outside of SSR, this is done by `@lwc/babel-plugin-component`, so we need to emulate its behavior. The goal here
+    // is for `@lwc/template-compiler` to know to add `stylesheet.$scoped$ = true` to its compiled output, which it
+    // detects using the query param.
+    if (path.node?.source.value.endsWith('.scoped.css')) {
+        path.replaceWith(
+            b.importDeclaration(
+                path.node.specifiers,
+                b.literal(path.node.source.value + '?scoped=true')
+            )
+        );
     }
 
     state.cssExplicitImports = state.cssExplicitImports ?? new Map();
@@ -46,8 +55,11 @@ export function getStylesheetImports(filepath: string) {
     }
 
     return [
-        bDefaultStyleImport(b.literal(`./${moduleName}.css`)),
-        bDefaultScopedStyleImport(b.literal(`./${moduleName}.scoped.css?scoped=true`)),
+        bImportDefaultDeclaration('defaultStylesheets', `./${moduleName}.css`),
+        bImportDefaultDeclaration(
+            'defaultScopedStylesheets',
+            `./${moduleName}.scoped.css?scoped=true`
+        ),
     ];
 }
 

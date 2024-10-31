@@ -11,6 +11,7 @@
 
 const path = require('node:path');
 const { readFile, writeFile } = require('node:fs/promises');
+const { readFileSync } = require('node:fs');
 const { glob } = require('glob');
 const { hashElement } = require('folder-hash');
 
@@ -38,14 +39,12 @@ BENCHMARK_CPU_THROTTLING_RATE =
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 const packageRootDir = path.resolve(__dirname, '..');
+const packageJson = JSON.parse(readFileSync(path.resolve(packageRootDir, 'package.json'), 'utf-8'));
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
-const swappablePackages = [
-    '@lwc/engine-dom',
-    '@lwc/engine-server',
-    '@lwc/synthetic-shadow',
-    '@lwc/perf-benchmarks-components',
-];
+const swappablePackages = Object.keys(packageJson.dependencies).filter((_) =>
+    _.startsWith('@lwc/')
+);
 
 function createHtml(benchmarkFile) {
     return `
