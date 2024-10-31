@@ -111,8 +111,12 @@ function testFixtures() {
                     config?.props ?? {}
                 );
             } catch (_err: any) {
+                if (_err.name === 'AssertionError') {
+                    throw _err;
+                }
                 err = _err.message;
             }
+
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });
