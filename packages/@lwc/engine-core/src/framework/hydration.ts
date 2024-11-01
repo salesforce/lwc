@@ -850,6 +850,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
         return true;
     }
 
+    // TODO: validate props
     const shouldValidateAttr = (data: VStaticPartData, attrName: string) => attrName in data;
     // The validation here relies on 2 key invariants:
     // 1. It's never the case that `parts` is undefined on the server but defined on the client (or vice-versa)
