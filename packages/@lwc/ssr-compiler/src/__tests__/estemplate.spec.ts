@@ -10,7 +10,7 @@ import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 
 // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
-(is.identifier as any).__name = 'identifier';
+(is.identifier as any).__debugName = 'identifier';
 
 describe.each(
     Object.entries({

@@ -31,7 +31,7 @@ export const isIdentOrRenderCall = (
     );
 };
 
-isIdentOrRenderCall.__name = 'identifier or .render() call';
+isIdentOrRenderCall.__debugName = 'identifier or .render() call';
 
 /** A validator that returns `true` if the node is `null`. */
 type NullableChecker<T extends Node> = (node: Node | null | undefined) => node is T | null;
@@ -42,16 +42,16 @@ export function isNullableOf<T extends Node>(validator: Checker<T>): NullableChe
         return node === null || validator(node);
     };
     if (process.env.NODE_ENV !== 'production') {
-        nullableValidator.__name = `nullable(${(validator as any).__name || validator.name || 'unknown validator'})`;
+        nullableValidator.__debugName = `nullable(${(validator as any).__debugName || validator.name || 'unknown validator'})`;
     }
     return nullableValidator;
 }
 
-isNullableOf.__name = 'isNullableOf';
+isNullableOf.__debugName = 'isNullableOf';
 
 if (process.env.NODE_ENV !== 'production') {
     // Modifying another package's exports is a code smell!
     for (const [key, val] of entries(is)) {
-        (val as any).__name = key;
+        (val as any).__debugName = key;
     }
 }

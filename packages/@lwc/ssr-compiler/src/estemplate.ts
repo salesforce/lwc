@@ -92,7 +92,7 @@ const getReplacementNode = (
             : validateReplacement(replacementNode))
     ) {
         const expectedType =
-            (validateReplacement as any).__name ||
+            (validateReplacement as any).__debugName ||
             validateReplacement.name ||
             '(could not determine)';
         const actualType = Array.isArray(replacementNode)
