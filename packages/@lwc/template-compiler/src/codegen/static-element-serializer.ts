@@ -79,14 +79,6 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         // See W-16614169
         const escapedAttributeName = templateStringEscape(name);
 
-        // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
-        // has historically treated them as props rather than attributes:
-        // https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
-        // For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
-        // still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
-        // because the attributes actually represent the "default" value rather than the current one:
-        // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
-        // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
         if (typeof value === 'string') {
             let v = templateStringEscape(value);
 
@@ -127,7 +119,6 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
             // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
             // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
-            // `isProp` corresponds to `value` or `checked` on an `<input>` which is treated as a prop at runtime.
             const needsPlaceholder = hasExpression || hasSvgUseHref || needsScoping;
 
             let nameAndValue;
@@ -192,25 +183,21 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         })
         .forEach(collector);
 
-    // See note above about `<input value>`/`<input checked>`
-    element.properties
-        .forEach((prop) => {
-            const { attributeName } = prop;
-
-            // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
-            /* v8 ignore start */
-            if (process.env.NODE_ENV === 'test') {
-                if (
-                    element.name !== 'input' &&
-                    !(attributeName === 'checked' || attributeName === 'value')
-                ) {
-                    throw new Error(
-                        'Expected to only see `<input value>`/`<input checked>` here; instead found `<${element.name} ${attributeName}>'
-                    );
-                }
+    // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
+    /* v8 ignore start */
+    if (process.env.NODE_ENV === 'test') {
+        for (const { attributeName } of element.properties) {
+            if (
+                element.name !== 'input' &&
+                !(attributeName === 'checked' || attributeName === 'value')
+            ) {
+                throw new Error(
+                    'Expected to only see `<input value>`/`<input checked>` here; instead found `<${element.name} ${attributeName}>'
+                );
             }
-            /* v8 ignore stop */
-        })
+        }
+    }
+    /* v8 ignore stop */
 
     // ${2} maps to style token attribute
     // ${3} maps to class attribute token + style token attribute
