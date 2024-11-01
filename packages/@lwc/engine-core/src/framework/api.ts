@@ -25,6 +25,7 @@ import {
     StringTrim,
     toString,
     keys as ObjectKeys,
+    sanitizeHtmlContent,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -706,30 +707,9 @@ function sc(vnodes: VNodes): VNodes {
     return vnodes;
 }
 
-/**
- * EXPERIMENTAL: This function acts like a hook for Lightning Locker Service and other similar
- * libraries to sanitize HTML content. This hook process the content passed via the template to
- * lwc:inner-html directive.
- * It is meant to be overridden with setSanitizeHtmlContentHook, it throws an error by default.
- */
-let sanitizeHtmlContentHook: SanitizeHtmlContentHook = (): string => {
-    // locker-service patches this function during runtime to sanitize HTML content.
-    throw new Error('sanitizeHtmlContent hook must be implemented.');
-};
-
-export type SanitizeHtmlContentHook = (content: unknown) => string;
-
-/**
- * Sets the sanitizeHtmlContentHook.
- * @param newHookImpl
- */
-export function setSanitizeHtmlContentHook(newHookImpl: SanitizeHtmlContentHook) {
-    sanitizeHtmlContentHook = newHookImpl;
-}
-
 // [s]anitize [h]tml [c]ontent
 function shc(content: unknown): SanitizedHtmlContent {
-    const sanitizedString = sanitizeHtmlContentHook(content);
+    const sanitizedString = sanitizeHtmlContent(content);
     return createSanitizedHtmlContent(sanitizedString);
 }
 
