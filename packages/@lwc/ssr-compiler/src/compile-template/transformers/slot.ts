@@ -24,10 +24,10 @@ import type { Transformer } from '../types';
 const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
-        // start bookend HTML comment
+        // start bookend HTML comment for light DOM slot vfragment
         yield '<!---->';
 
-        // scoped slots render an extra bookend???
+        // scoped slot factory has its own vfragment hence its own bookend
         if (isScopedSlot) {
             yield '<!---->';
         }
@@ -45,14 +45,14 @@ const bConditionalSlot = esTemplateWithYield`
             // TODO: default/fallback slot content
             ${/* slot fallback content */ is.statement}
         }
-
-        // end bookend HTML comment
-        yield '<!---->';
         
-        // scoped slots render an extra bookend???
+        // scoped slot factory has its own vfragment hence its own bookend
         if (isScopedSlot) {
             yield '<!---->';
         }
+
+        // end bookend HTML comment for light DOM slot vfragment
+        yield '<!---->';
     } else {
         ${/* slot element AST */ is.statement}
     }

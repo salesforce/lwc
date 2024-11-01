@@ -8,7 +8,6 @@
 import { traverse, Visitors } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
-import { is } from 'estree-toolkit';
 import type {
     Node as EsNode,
     Program as EsProgram,
@@ -16,10 +15,6 @@ import type {
     Statement as EsStatement,
 } from 'estree';
 import type { Checker } from 'estree-toolkit/dist/generated/is-type';
-
-Object.entries(is).forEach(([key, value]: any) => {
-    value.__name = key;
-});
 
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;

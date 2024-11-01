@@ -102,7 +102,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     cxt.hoist(componentImport, childGeneratorLocalName);
     const childTagName = node.name;
 
-    // FIXME: is there more stuff here we need to filter out?
+    // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
     const slottableChildren = node.children.filter((child) => child.type !== 'ScopedSlotFragment');
     const scopedSlottableChildren = node.children.filter(
         (child) => child.type === 'ScopedSlotFragment'
@@ -113,7 +113,6 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const lightSlotContent = slottableChildren.map((child) => {
         if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
-            // FIXME: We don't know what happens for slot attributes inside an lwc:if block
             // Light DOM slots do not actually render the `slot` attribute.
             const clone = produce(child, (draft) => {
                 draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
@@ -129,7 +128,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         const boundVariableName = child.slotData.value.name;
         const boundVariable = b.identifier(boundVariableName);
         cxt.pushLocalVars([boundVariableName]);
-        // FIXME: what if the bound variable is `generateMarkup` or some framework-specific identifier?
+        // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
         const addContentExpr = bAddContent(
             child.slotName as EsExpression,
             boundVariable,
