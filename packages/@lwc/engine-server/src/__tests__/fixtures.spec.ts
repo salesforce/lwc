@@ -8,7 +8,7 @@
 import path from 'node:path';
 import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
-import lwcRollupPlugin from '@lwc/rollup-plugin';
+import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import type * as lwc from '../index';
 
@@ -35,9 +35,21 @@ vi.mock('lwc', async () => {
     return lwcEngineServer;
 });
 
-async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
+async function compileFixture({
+    input,
+    dirname,
+    options,
+}: {
+    input: string;
+    dirname: string;
+    options?: RollupLwcOptions;
+}) {
+    const optionsAsString =
+        Object.entries(options ?? {})
+            .map(([key, value]) => `${key}=${value}`)
+            .join('-') || 'default';
     const modulesDir = path.resolve(dirname, './modules');
-    const outputFile = path.resolve(dirname, './dist/compiled.js');
+    const outputFile = path.resolve(dirname, `./dist/compiled-${optionsAsString}.js`);
 
     const bundle = await rollup({
         input,
@@ -50,6 +62,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                         dir: modulesDir,
                     },
                 ],
+                ...options,
             }),
         ],
         onwarn({ message, code }) {
@@ -77,7 +90,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-function testFixtures() {
+function testFixtures(options?: RollupLwcOptions) {
     testFixtureDir(
         {
             root: path.resolve(__dirname, 'fixtures'),
@@ -87,6 +100,7 @@ function testFixtures() {
             const compiledFixturePath = await compileFixture({
                 input: filename,
                 dirname,
+                options,
             });
 
             // The LWC engine holds global state like the current VM index, which has an impact on
@@ -130,5 +144,12 @@ function testFixtures() {
 }
 
 describe.concurrent('fixtures', () => {
-    testFixtures();
+    describe.concurrent('default', () => {
+        testFixtures();
+    });
+
+    // Test with and without the static content optimization to ensure the fixtures are the same
+    describe.concurrent('enableStaticContentOptimization=false', () => {
+        testFixtures({ enableStaticContentOptimization: false });
+    });
 });
