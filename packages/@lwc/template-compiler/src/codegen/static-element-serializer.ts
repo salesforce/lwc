@@ -210,6 +210,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             const { attributeName, value } = prop;
 
             // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
+            /* v8 ignore start */
             if (process.env.NODE_ENV === 'test') {
                 if (
                     element.name !== 'input' &&
@@ -220,6 +221,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
                     );
                 }
             }
+            /* v8 ignore stop */
 
             return {
                 name: attributeName,
