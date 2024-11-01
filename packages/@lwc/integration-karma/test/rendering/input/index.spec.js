@@ -8,7 +8,7 @@ import Dynamic from 'x/dynamic';
 // because the attributes actually represent the "default" value rather than the current one:
 // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
 // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
-
+// TODO [#4763]: fix attribute discrepancies, not just prop discrepancies
 function getRelevantInputProps(input) {
     const { disabled, checked, type, value } = input;
     return {
