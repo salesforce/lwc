@@ -1,0 +1,158 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 89,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 78,
+                "end": 89
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "span",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 67,
+                    "start": 15,
+                    "end": 77,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 11,
+                        "start": 15,
+                        "end": 21
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 60,
+                        "endLine": 2,
+                        "endColumn": 67,
+                        "start": 70,
+                        "end": 77
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": " yolo ",
+                        "value": " yolo ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 11,
+                            "endLine": 2,
+                            "endColumn": 24,
+                            "start": 21,
+                            "end": 34
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{foo}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 24,
+                                "endLine": 2,
+                                "endColumn": 29,
+                                "start": 34,
+                                "end": 39
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 24,
+                            "endLine": 2,
+                            "endColumn": 29,
+                            "start": 34,
+                            "end": 39
+                        }
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " yolo ",
+                        "value": " yolo ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 29,
+                            "endLine": 2,
+                            "endColumn": 42,
+                            "start": 39,
+                            "end": 52
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{bar}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "bar",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 42,
+                                "endLine": 2,
+                                "endColumn": 47,
+                                "start": 52,
+                                "end": 57
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 42,
+                            "endLine": 2,
+                            "endColumn": 47,
+                            "start": 52,
+                            "end": 57
+                        }
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " yolo ",
+                        "value": " yolo ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 47,
+                            "endLine": 2,
+                            "endColumn": 60,
+                            "start": 57,
+                            "end": 70
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

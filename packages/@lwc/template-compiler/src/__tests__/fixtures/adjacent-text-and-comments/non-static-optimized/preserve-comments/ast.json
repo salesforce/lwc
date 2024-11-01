@@ -1,0 +1,175 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 111,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 33,
+                "start": 0,
+                "end": 32
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 100,
+                "end": 111
+            }
+        },
+        "directives": [
+            {
+                "type": "Directive",
+                "name": "PreserveComments",
+                "value": {
+                    "type": "Literal",
+                    "value": true
+                },
+                "location": {
+                    "startLine": 1,
+                    "startColumn": 11,
+                    "endLine": 1,
+                    "endColumn": 32,
+                    "start": 10,
+                    "end": 31
+                }
+            }
+        ],
+        "children": [
+            {
+                "type": "Element",
+                "name": "span",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 67,
+                    "start": 37,
+                    "end": 99,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 11,
+                        "start": 37,
+                        "end": 43
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 60,
+                        "endLine": 2,
+                        "endColumn": 67,
+                        "start": 92,
+                        "end": 99
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Comment",
+                        "raw": " yolo ",
+                        "value": " yolo ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 11,
+                            "endLine": 2,
+                            "endColumn": 24,
+                            "start": 43,
+                            "end": 56
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{foo}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "foo",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 24,
+                                "endLine": 2,
+                                "endColumn": 29,
+                                "start": 56,
+                                "end": 61
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 24,
+                            "endLine": 2,
+                            "endColumn": 29,
+                            "start": 56,
+                            "end": 61
+                        }
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " yolo ",
+                        "value": " yolo ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 29,
+                            "endLine": 2,
+                            "endColumn": 42,
+                            "start": 61,
+                            "end": 74
+                        }
+                    },
+                    {
+                        "type": "Text",
+                        "raw": "{bar}",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 4,
+                            "name": "bar",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 42,
+                                "endLine": 2,
+                                "endColumn": 47,
+                                "start": 74,
+                                "end": 79
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 42,
+                            "endLine": 2,
+                            "endColumn": 47,
+                            "start": 74,
+                            "end": 79
+                        }
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " yolo ",
+                        "value": " yolo ",
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 47,
+                            "endLine": 2,
+                            "endColumn": 60,
+                            "start": 79,
+                            "end": 92
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
