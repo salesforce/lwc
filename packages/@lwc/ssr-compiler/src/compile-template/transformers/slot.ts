@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is } from 'estree-toolkit';
+import { is, builders as b } from 'estree-toolkit';
 
 import { Slot as IrSlot } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
@@ -23,8 +23,14 @@ import type { Transformer } from '../types';
 
 const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
+        const isScopedSlot = ${/* isScopedSlot */ is.literal};
         // start bookend HTML comment
         yield '<!---->';
+
+        // scoped slots render an extra bookend???
+        if (isScopedSlot) {
+            yield '<!---->';
+        }
 
         const generators = slottedContent?.light[${/* slotName */ is.expression} ?? ""];
         if (generators) {
@@ -42,6 +48,11 @@ const bConditionalSlot = esTemplateWithYield`
 
         // end bookend HTML comment
         yield '<!---->';
+        
+        // scoped slots render an extra bookend???
+        if (isScopedSlot) {
+            yield '<!---->';
+        }
     } else {
         ${/* slot element AST */ is.statement}
     }
@@ -56,5 +67,6 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     // FIXME: avoid serializing the slot's children twice
     const slotAst = Element(node, ctx);
     const slotChildren = irChildrenToEs(node.children, ctx);
-    return [bConditionalSlot(slotName, slotBound, slotChildren, slotAst)];
+    const isScopedSlot = b.literal(Boolean(slotBound));
+    return [bConditionalSlot(isScopedSlot, slotName, slotBound, slotChildren, slotAst)];
 };

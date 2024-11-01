@@ -56,7 +56,7 @@ const bAddContent = esTemplate`
     addContent(${/* slot name */ is.expression} ?? "", async function* (${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
-        ${/* slot content */ is.statement}
+        ${/* slot content */ false}
     });
 `<EsCallExpression>;
 
@@ -129,14 +129,12 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         const boundVariableName = child.slotData.value.name;
         const boundVariable = b.identifier(boundVariableName);
         cxt.pushLocalVars([boundVariableName]);
-        debugger;
         // FIXME: what if the bound variable is `generateMarkup` or some framework-specific identifier?
         const addContentExpr = bAddContent(
             child.slotName as EsExpression,
             boundVariable,
-            irToEs(child, cxt)
+            irChildrenToEs(child.children, cxt)
         );
-        debugger;
         cxt.popLocalVars();
         return addContentExpr;
     });
