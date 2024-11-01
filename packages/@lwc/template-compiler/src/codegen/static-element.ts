@@ -14,7 +14,6 @@ import {
     isArray,
     isNull,
 } from '@lwc/shared';
-import { isLiteral } from '../shared/estree';
 import {
     BaseElement,
     ChildNode,
@@ -47,7 +46,7 @@ const STATIC_ELEMENT_TO_DYNAMIC_TEXT_CHILDREN_CACHE = new WeakMap<
 
 function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     let result = true;
-    const { namespace = '', attributes, directives, properties } = node;
+    const { namespace = '', attributes, directives } = node;
 
     // SVG is excluded from static content optimization in older API versions due to issues with case sensitivity
     // in CSS scope tokens. See https://github.com/salesforce/lwc/issues/3313
@@ -74,9 +73,6 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
 
     // all directives are static-safe
     result &&= !directives.some((directive) => !STATIC_SAFE_DIRECTIVES.has(directive.name));
-
-    // all properties are static
-    result &&= properties.every((prop) => isLiteral(prop.value));
 
     return result;
 }
