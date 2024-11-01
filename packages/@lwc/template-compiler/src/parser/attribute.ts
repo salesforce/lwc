@@ -216,6 +216,8 @@ export function isAttribute(element: BaseElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
+    // Note: this is tightly-coupled with static-element-serializer.ts which treats `<input checked="...">`
+    // and `<input value="...">` as special because of the logic below.
     if (element.name === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
