@@ -9,23 +9,46 @@ const $fragment4 = parseFragment`<input${"a0:required"}${3}>`;
 const $fragment5 = parseFragment`<input required="3"${3}>`;
 const stc0 = {
   props: {
+    value: "boolean present",
+  },
+};
+const stc1 = {
+  props: {
+    value: "empty string",
+  },
+};
+const stc2 = {
+  props: {
+    value: "string value",
+  },
+};
+const stc3 = {
+  value: "computed value",
+};
+const stc4 = {
+  props: {
+    value: "integer value",
+  },
+};
+const stc5 = {
+  props: {
     required: true,
   },
   key: 10,
 };
-const stc1 = {
+const stc6 = {
   props: {
     required: "",
   },
   key: 11,
 };
-const stc2 = {
+const stc7 = {
   props: {
     required: "other than true",
   },
   key: 12,
 };
-const stc3 = {
+const stc8 = {
   props: {
     required: "3",
   },
@@ -33,19 +56,20 @@ const stc3 = {
 };
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    st: api_static_fragment,
     sp: api_static_part,
+    st: api_static_fragment,
     t: api_text,
     c: api_custom_element,
   } = $api;
   return [
-    api_static_fragment($fragment1, 1),
-    api_static_fragment($fragment2, 3),
-    api_static_fragment($fragment3, 5),
+    api_static_fragment($fragment1, 1, [api_static_part(0, stc0, null)]),
+    api_static_fragment($fragment2, 3, [api_static_part(0, stc1, null)]),
+    api_static_fragment($fragment3, 5, [api_static_part(0, stc2, null)]),
     api_static_fragment($fragment4, 7, [
       api_static_part(
         0,
         {
+          props: stc3,
           attrs: {
             required: $cmp.computed ? "" : null,
           },
@@ -53,10 +77,10 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         null
       ),
     ]),
-    api_static_fragment($fragment5, 9),
-    api_custom_element("x-foo", _xFoo, stc0, [api_text("boolean present")]),
-    api_custom_element("x-foo", _xFoo, stc1, [api_text("empty string")]),
-    api_custom_element("x-foo", _xFoo, stc2, [api_text("string value")]),
+    api_static_fragment($fragment5, 9, [api_static_part(0, stc4, null)]),
+    api_custom_element("x-foo", _xFoo, stc5, [api_text("boolean present")]),
+    api_custom_element("x-foo", _xFoo, stc6, [api_text("empty string")]),
+    api_custom_element("x-foo", _xFoo, stc7, [api_text("string value")]),
     api_custom_element(
       "x-foo",
       _xFoo,
@@ -68,7 +92,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
       },
       [api_text("computed value, should be resolved in component")]
     ),
-    api_custom_element("x-foo", _xFoo, stc3, [api_text("integer value")]),
+    api_custom_element("x-foo", _xFoo, stc8, [api_text("integer value")]),
   ];
   /*LWC compiler vX.X.X*/
 }

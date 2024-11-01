@@ -28,6 +28,7 @@ import {
     Text,
     StaticElement,
     Attribute,
+    Property,
     KeyDirective,
     StaticChildNode,
 } from '../shared/types';
@@ -188,7 +189,7 @@ export default class CodeGen {
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
 
-    staticExpressionMap = new WeakMap<Attribute | Text, string>();
+    staticExpressionMap = new WeakMap<Attribute | Property | Text, string>();
 
     constructor({
         root,
@@ -775,6 +776,57 @@ export default class CodeGen {
                     if (directive.name === 'Ref') {
                         databag.push(this.genRef(directive));
                     }
+                }
+
+                const propertyExpressions = [];
+
+                // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
+                // has historically treated them as props rather than attributes:
+                // https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
+                // For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
+                // still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
+                // because the attributes actually represent the "default" value rather than the current one:
+                // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
+                // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
+                for (const property of currentNode.properties) {
+                    const { attributeName, value } = property;
+                    // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
+                    /* v8 ignore start */
+                    if (process.env.NODE_ENV === 'test') {
+                        if (
+                            element.name !== 'input' &&
+                            !(attributeName === 'checked' || attributeName === 'value')
+                        ) {
+                            throw new Error(
+                                'Expected to only see `<input value>`/`<input checked>` here; instead found `<${element.name} ${attributeName}>'
+                            );
+                        }
+                    }
+                    /* v8 ignore stop */
+
+                    let valueExpression;
+                    if (isExpression(value)) {
+                        valueExpression = bindAttributeExpression(
+                            property,
+                            currentNode,
+                            this,
+                            // `addLegacySanitizationHook` is true because `isCustomRendererHookRequired`
+                            // being false is a precondition for static nodes.
+                            true
+                        );
+                        const partToken = `${STATIC_PART_TOKEN_ID.ATTRIBUTE}${partId}:${attributeName}`;
+                        this.staticExpressionMap.set(property, partToken);
+                    } else {
+                        // literal
+                        valueExpression = value;
+                    }
+                    propertyExpressions.push(t.property(t.literal(attributeName), valueExpression));
+                }
+
+                if (propertyExpressions.length) {
+                    databag.push(
+                        t.property(t.identifier('props'), t.objectExpression(propertyExpressions))
+                    );
                 }
 
                 const attributeExpressions = [];

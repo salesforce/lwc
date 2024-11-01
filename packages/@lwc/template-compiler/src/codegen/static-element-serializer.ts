@@ -183,22 +183,6 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         })
         .forEach(collector);
 
-    // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
-    /* v8 ignore start */
-    if (process.env.NODE_ENV === 'test') {
-        for (const { attributeName } of element.properties) {
-            if (
-                element.name !== 'input' &&
-                !(attributeName === 'checked' || attributeName === 'value')
-            ) {
-                throw new Error(
-                    'Expected to only see `<input value>`/`<input checked>` here; instead found `<${element.name} ${attributeName}>'
-                );
-            }
-        }
-    }
-    /* v8 ignore stop */
-
     // ${2} maps to style token attribute
     // ${3} maps to class attribute token + style token attribute
     // See buildParseFragmentFn for details.
