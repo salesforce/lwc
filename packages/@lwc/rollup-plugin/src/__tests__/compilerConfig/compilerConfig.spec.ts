@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
+import path from 'node:path';
+import { describe, it, expect } from 'vitest';
 import { rollup, type RollupLog, type RollupBuild } from 'rollup';
 
 import lwc, { type RollupLwcOptions } from '../../index';

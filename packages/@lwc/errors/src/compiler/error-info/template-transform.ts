@@ -939,4 +939,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    IGNORED_SLOT_ATTRIBUTE_IN_CHILD: {
+        code: 1201,
+        message:
+            'The slot attribute in {0} will be ignored due to its ancestor {1}. It must be a direct child of the containing component.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
 };

@@ -6,7 +6,7 @@
  */
 
 import path from 'node:path';
-import { vi } from 'vitest';
+import { vi, describe } from 'vitest';
 import { rollup, RollupLog } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
@@ -22,6 +22,20 @@ interface FixtureModule {
 }
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
+
+vi.mock('@lwc/ssr-runtime', async () => {
+    const runtime = await import('@lwc/ssr-runtime');
+    try {
+        runtime.setHooks({
+            sanitizeHtmlContent(content: unknown) {
+                return String(content);
+            },
+        });
+    } catch (_err) {
+        // Ignore error if the hook is already overridden
+    }
+    return runtime;
+});
 
 const SSR_MODE: CompilationMode = 'asyncYield';
 

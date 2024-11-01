@@ -1,6 +1,6 @@
 import { parseModule } from 'meriyah';
 import { generate } from 'astring';
-import { beforeAll } from 'vitest';
+import { describe, beforeAll, test, expect } from 'vitest';
 import { transmogrify } from '../transmogrify';
 import type { Program as EsProgram } from 'estree';
 

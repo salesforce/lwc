@@ -5,11 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
-
+import path from 'node:path';
+import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { vi } from 'vitest';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import type * as lwc from '../index';
 
@@ -25,7 +24,7 @@ vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
     try {
-        lwcEngineServer!.setHooks({
+        lwcEngineServer.setHooks({
             sanitizeHtmlContent(content: unknown) {
                 return content as string;
             },
@@ -42,7 +41,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 
     const bundle = await rollup({
         input,
-        external: ['lwc'],
+        external: ['lwc', 'vitest'],
         plugins: [
             lwcRollupPlugin({
                 enableDynamicComponents: true,
@@ -59,6 +58,8 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 message.includes('LWC1187') ||
                 // TODO [#4497]: stop warning on duplicate slots or disallow them entirely (LWC1137 is duplicate slots)
                 message.includes('LWC1137') ||
+                // IGNORED_SLOT_ATTRIBUTE_IN_CHILD is fine; it is used in some of these tests
+                message.includes('LWC1201') ||
                 message.includes('-h-t-m-l') ||
                 code === 'CIRCULAR_DEPENDENCY';
             if (!shouldIgnoreWarning) {
@@ -110,8 +111,12 @@ function testFixtures() {
                     config?.props ?? {}
                 );
             } catch (_err: any) {
+                if (_err.name === 'AssertionError') {
+                    throw _err;
+                }
                 err = _err.message;
             }
+
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });

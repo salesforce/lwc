@@ -121,13 +121,21 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
             const needsPlaceholder = hasExpression || hasSvgUseHref || needsScoping;
 
-            // Inject a placeholder where the staticPartId will go when an expression occurs.
-            // This is only needed for SSR to inject the expression value during serialization.
-            attrs.push(
-                needsPlaceholder
-                    ? `\${"${v}"}`
-                    : ` ${escapedAttributeName}="${htmlEscape(v, true)}"`
-            );
+            let nameAndValue;
+            if (needsPlaceholder) {
+                // Inject a placeholder where the staticPartId will go when an expression occurs.
+                // This is only needed for SSR to inject the expression value during serialization.
+                nameAndValue = `\${"${v}"}`;
+            } else if (v === '') {
+                // In HTML, there is no difference between the empty string value (`<div foo="">`) and "boolean true"
+                // (`<div foo>`). They are both parsed identically, and the DOM treats them the same (`getAttribute`
+                // returns the empty string). Here we prefer the shorter format.
+                // https://html.spec.whatwg.org/multipage/introduction.html#a-quick-introduction-to-html:syntax-attributes
+                nameAndValue = ` ${escapedAttributeName}`;
+            } else {
+                nameAndValue = ` ${escapedAttributeName}="${htmlEscape(v, true)}"`;
+            }
+            attrs.push(nameAndValue);
         } else {
             attrs.push(` ${escapedAttributeName}`);
         }

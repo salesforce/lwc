@@ -1,0 +1,9 @@
+<template>
+  <x-foo>
+    <div> <!-- Invalid grandparent -->
+      <template lwc:if={isTrue}> <!-- Valid parent -->
+        <span slot=foo></span> <!-- Invalid! -->
+      </template>
+    </div>
+  </x-foo>
+</template>

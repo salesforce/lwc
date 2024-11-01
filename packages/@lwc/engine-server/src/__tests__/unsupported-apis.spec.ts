@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { it, expect } from 'vitest';
 import { swapComponent, swapStyle, swapTemplate } from '../index';
 
 it('throws error for swapComponent', () => {

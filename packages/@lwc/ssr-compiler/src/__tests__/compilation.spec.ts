@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { describe, test, expect } from 'vitest';
 import { compileComponentForSSR } from '../index';
 
 describe('component compilation', () => {

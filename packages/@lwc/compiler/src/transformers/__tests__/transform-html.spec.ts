@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { vi } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { APIVersion, noop } from '@lwc/shared';
 import { TransformOptions } from '../../options';
 import { transformSync } from '../transformer';

@@ -3,7 +3,7 @@ import _implicitScopedStylesheets from "./hidden-global-attr.scoped.css?scoped=t
 import _xFoo from "x/foo";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
 const $fragment1 = parseFragment`<p hidden${3}>boolean present</p>`;
-const $fragment2 = parseFragment`<p hidden=""${3}>empty string, should be true</p>`;
+const $fragment2 = parseFragment`<p hidden${3}>empty string, should be true</p>`;
 const $fragment3 = parseFragment`<p hidden="other than true"${3}>string value, should be true</p>`;
 const $fragment4 = parseFragment`<p${"a0:hidden"}${3}>computed value, should be resolved in component</p>`;
 const $fragment5 = parseFragment`<p hidden="3"${3}>integer value, should be true</p>`;
