@@ -448,7 +448,9 @@ function hydrateChildren(
                     }
                 }
                 mount(childVnode, parentNode, renderer, nextNode);
-                nextNode = renderer.nextSibling(childVnode.elm!);
+                nextNode = renderer.nextSibling(
+                    childVnode.type === VNodeType.Fragment ? childVnode.trailing : childVnode.elm!
+                );
             }
         }
     }
