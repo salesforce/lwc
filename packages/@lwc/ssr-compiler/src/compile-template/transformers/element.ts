@@ -156,10 +156,14 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
         const { name, value, type } = attr;
 
-        // For classes, these may need to be prefixed with the scope token
-        const isClass = type === 'Attribute' && name === 'class';
-        if (isClass) {
-            hasClassAttribute = true;
+        let isClass = false;
+        if (type === 'Attribute') {
+            if (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l') {
+                throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
+            } else if (name === 'class') {
+                isClass = true;
+                hasClassAttribute = true;
+            }
         }
 
         cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
