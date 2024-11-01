@@ -56,6 +56,7 @@ const bAddContent = esTemplate`
     addContent(${/* slot name */ is.expression} ?? "", async function* (${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
+        // FIXME: make validation work again  
         ${/* slot content */ false}
     });
 `<EsCallExpression>;
