@@ -24,7 +24,7 @@ vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
     try {
-        lwcEngineServer!.setHooks({
+        lwcEngineServer.setHooks({
             sanitizeHtmlContent(content: unknown) {
                 return content as string;
             },
@@ -111,8 +111,12 @@ function testFixtures() {
                     config?.props ?? {}
                 );
             } catch (_err: any) {
+                if (_err.name === 'AssertionError') {
+                    throw _err;
+                }
                 err = _err.message;
             }
+
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });

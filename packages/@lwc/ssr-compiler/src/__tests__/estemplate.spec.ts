@@ -9,12 +9,17 @@ import { is, builders as b } from 'estree-toolkit';
 import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 
+if (process.env.NODE_ENV !== 'production') {
+    // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
+    (is.identifier as any).__debugName = 'identifier';
+}
+
 describe.each(
     Object.entries({
         esTemplate,
         esTemplateWithYield,
     })
-)('%i', (topLevelFnName, topLevelFn) => {
+)('%s', (topLevelFnName, topLevelFn) => {
     const yieldStmtsAllowed = topLevelFnName === 'esTemplateWithYield';
     describe('failure upon parse', () => {
         if (!yieldStmtsAllowed) {
@@ -57,7 +62,7 @@ describe.each(
                 `;
             const doReplacement = () => tmpl(b.literal('I am not an identifier') as any);
             expect(doReplacement).toThrow(
-                'Validation failed for templated node of type Identifier'
+                'Validation failed for templated node. Expected type identifier, but received Literal.'
             );
         });
     });

@@ -27,6 +27,7 @@ import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
 import { bImportHtmlEscape, getScopedExpression, importHtmlEscapeKey } from '../shared';
 
+import { bImportDeclaration } from '../../estree/builders';
 import type {
     BinaryExpression,
     BlockStatement as EsBlockStatement,
@@ -74,6 +75,10 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
         }
     }
 `<EsBlockStatement>;
+
+const bYieldSanitizedHtml = esTemplateWithYield`
+    yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
+`;
 
 function yieldAttrOrPropLiteralValue(
     name: string,
@@ -151,10 +156,14 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     const yieldAttrsAndProps = attrsAndProps.flatMap((attr) => {
         const { name, value, type } = attr;
 
-        // For classes, these may need to be prefixed with the scope token
-        const isClass = type === 'Attribute' && name === 'class';
-        if (isClass) {
-            hasClassAttribute = true;
+        let isClass = false;
+        if (type === 'Attribute') {
+            if (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l') {
+                throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
+            } else if (name === 'class') {
+                isClass = true;
+                hasClassAttribute = true;
+            }
         }
 
         cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
@@ -178,7 +187,8 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         const value = innerHtmlDirective.value;
         const unsanitizedHtmlExpression =
             value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
-        childContent = [bYield(unsanitizedHtmlExpression)];
+        childContent = [bYieldSanitizedHtml(unsanitizedHtmlExpression)];
+        cxt.hoist(bImportDeclaration(['sanitizeHtmlContent']), 'import:sanitizeHtmlContent');
     } else {
         childContent = [];
     }
