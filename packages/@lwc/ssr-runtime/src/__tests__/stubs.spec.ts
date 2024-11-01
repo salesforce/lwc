@@ -1,3 +1,4 @@
+import { describe, expect, test } from 'vitest';
 import * as runtime from '../index';
 import * as stubs from '../stubs';
 
