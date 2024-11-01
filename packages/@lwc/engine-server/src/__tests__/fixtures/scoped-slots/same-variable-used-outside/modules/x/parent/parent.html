@@ -1,0 +1,11 @@
+<template>
+    <p>{data.id}</p>
+    <x-child param={data1}>
+        <p>{data.id}</p>
+        <template lwc:slot-data="data" slot="scoped">
+            <span>{data.id}</span>
+        </template>
+        <p>{data.id}</p>
+    </x-child>
+    <p>{data.id}</p>
+</template>
