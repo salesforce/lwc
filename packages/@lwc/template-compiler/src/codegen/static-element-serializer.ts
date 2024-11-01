@@ -61,14 +61,12 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
     const collector = ({
         name,
         value,
-        isProp,
         hasExpression,
         hasSvgUseHref,
         needsScoping,
     }: {
         name: string;
         value: string | boolean;
-        isProp: boolean;
         hasExpression?: boolean;
         hasSvgUseHref?: boolean;
         needsScoping?: boolean;
@@ -89,16 +87,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         // because the attributes actually represent the "default" value rather than the current one:
         // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
         // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
-        if (isProp) {
-            // The below logic matches the behavior of non-static-optimized DOM nodes.
-            // There is no functional difference between e.g. `checked="checked"` and `checked` but we
-            // match byte-for-byte the non-static-optimized HTML that would be rendered.
-            if (name === 'checked' || (name === 'value' && value === '')) {
-                attrs.push(` ${escapedAttributeName}`);
-            } else {
-                attrs.push(` ${escapedAttributeName}="${htmlEscape(String(value), true)}"`);
-            }
-        } else if (typeof value === 'string') {
+        if (typeof value === 'string') {
             let v = templateStringEscape(value);
 
             if (name === 'class') {
@@ -192,7 +181,6 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             return {
                 hasExpression,
                 hasSvgUseHref,
-                isProp: false,
                 needsScoping,
                 name,
                 value:
@@ -206,8 +194,8 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
 
     // See note above about `<input value>`/`<input checked>`
     element.properties
-        .map((prop) => {
-            const { attributeName, value } = prop;
+        .forEach((prop) => {
+            const { attributeName } = prop;
 
             // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
             /* v8 ignore start */
@@ -222,14 +210,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
                 }
             }
             /* v8 ignore stop */
-
-            return {
-                name: attributeName,
-                value: (value as Literal).value,
-                isProp: true,
-            };
         })
-        .forEach(collector);
 
     // ${2} maps to style token attribute
     // ${3} maps to class attribute token + style token attribute
