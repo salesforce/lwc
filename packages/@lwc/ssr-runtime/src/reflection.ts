@@ -5,34 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    AriaAttrNameToPropNameMap,
-    assign,
-    create,
-    entries,
-    hasOwnProperty,
-    isNull,
-    toString,
-} from '@lwc/shared';
+import { AriaAttrNameToPropNameMap, entries, isNull, toString } from '@lwc/shared';
 
 import type { LightningElement } from './lightning-element';
-
-/**
- * Map of global attribute or ARIA attribute to the corresponding property name.
- * Not all global attributes are included, just those from `HTMLElementTheGoodParts`.
- */
-const attrsToProps = assign(create(null), {
-    accesskey: 'accessKey',
-    dir: 'dir',
-    draggable: 'draggable',
-    hidden: 'hidden',
-    id: 'id',
-    lang: 'lang',
-    spellcheck: 'spellcheck',
-    tabindex: 'tabIndex',
-    title: 'title',
-    ...AriaAttrNameToPropNameMap,
-});
 
 /**
  * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
@@ -118,21 +93,6 @@ const ariaDescriptor = (attrName: string): TypedPropertyDescriptor<string | null
         }
     },
 });
-
-export function reflectAttrToProp(
-    instance: LightningElement,
-    attrName: string,
-    attrValue: string | null
-) {
-    const reflectedPropName = attrsToProps[attrName as keyof typeof attrsToProps];
-    // If it is a reflected property and it was not overridden by the instance
-    if (reflectedPropName && !hasOwnProperty.call(instance, reflectedPropName)) {
-        const currentValue = (instance as any)[reflectedPropName];
-        if (currentValue !== attrValue) {
-            (instance as any)[reflectedPropName] = attrValue;
-        }
-    }
-}
 
 export const descriptors: Record<string, PropertyDescriptor> = {
     accessKey: stringDescriptor('accesskey'),
