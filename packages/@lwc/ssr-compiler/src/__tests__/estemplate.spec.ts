@@ -9,8 +9,10 @@ import { is, builders as b } from 'estree-toolkit';
 import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 
-// vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
-(is.identifier as any).__debugName = 'identifier';
+if (process.env.NODE_ENV !== 'production') {
+    // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
+    (is.identifier as any).__debugName = 'identifier';
+}
 
 describe.each(
     Object.entries({
