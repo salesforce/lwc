@@ -25,7 +25,7 @@ import {
 import { ClassList } from './class-list';
 import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
-import { reflectAttrToProp, descriptors as reflectionDescriptors } from './reflection';
+import { descriptors as reflectionDescriptors } from './reflection';
 import type { Stylesheets } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;
@@ -97,7 +97,6 @@ export class LightningElement implements PropsAvailableAtConstruction {
         const normalizedName = StringToLowerCase.call(toString(attrName));
         const normalizedValue = String(attrValue);
         this.#attrs[normalizedName] = normalizedValue;
-        reflectAttrToProp(this, normalizedName, normalizedValue);
         mutationTracker.add(this, normalizedName);
     }
 
@@ -117,7 +116,6 @@ export class LightningElement implements PropsAvailableAtConstruction {
     removeAttribute(attrName: string): void {
         const normalizedName = StringToLowerCase.call(toString(attrName));
         delete this.#attrs[normalizedName];
-        reflectAttrToProp(this, normalizedName, null);
         // Track mutations for removal of non-existing attributes
         mutationTracker.add(this, normalizedName);
     }
