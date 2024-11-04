@@ -5,9 +5,44 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { AriaAttrNameToPropNameMap, entries, isNull, toString } from '@lwc/shared';
+import {
+    AriaAttrNameToPropNameMap,
+    create,
+    entries,
+    htmlPropertyToAttribute,
+    isAriaAttribute,
+    isGlobalHtmlAttribute,
+    isNull,
+    keys,
+    toString,
+} from '@lwc/shared';
 
 import type { LightningElement } from './lightning-element';
+
+/**
+ * Filters out the following types of properties that should not be set.
+ * - Properties that are not public.
+ * - Properties that are not global.
+ * - Properties that are global but are internally overridden.
+ */
+export function filterProperties(
+    props: Record<string, unknown>,
+    publicFields: Array<string>,
+    privateFields: Array<string>
+): Record<string, unknown> {
+    const propsToAssign = create(null);
+    keys(props).forEach((propName) => {
+        const attrName = htmlPropertyToAttribute(propName);
+        if (
+            publicFields.includes(propName) ||
+            ((isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) &&
+                !privateFields.includes(propName))
+        ) {
+            propsToAssign[propName] = props[propName];
+        }
+    });
+    return propsToAssign;
+}
 
 /**
  * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
