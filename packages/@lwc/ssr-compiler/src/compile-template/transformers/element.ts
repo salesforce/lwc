@@ -115,6 +115,7 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
             yieldedValue = StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
         } else if (name === 'spellcheck') {
             // `spellcheck` string values are specially handled to massage them into booleans.
+            // https://github.com/salesforce/lwc/blob/fe4e95f/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
             yieldedValue = String(value.toLowerCase() !== 'false');
         } else {
             yieldedValue = value;
