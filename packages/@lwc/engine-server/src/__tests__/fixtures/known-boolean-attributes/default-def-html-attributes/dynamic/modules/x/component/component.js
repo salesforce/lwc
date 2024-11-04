@@ -11,7 +11,6 @@ export default class extends LightningElement {
   isInfinity = Infinity;
   isNegInfinity = -Infinity;
   isEmptyString = '';
-  isSymbol = Symbol('yolo')
   isArray = ['foo', 'bar']
   isObject = {foo: 'bar', baz: 'quux'}
 }
