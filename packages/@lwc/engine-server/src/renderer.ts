@@ -210,6 +210,19 @@ function setProperty(node: N, key: string, value: any): void {
             return;
         }
 
+        // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
+        // has historically treated them as props rather than attributes:
+        // https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
+        // For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
+        // still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
+        // because the attributes actually represent the "default" value rather than the current one:
+        // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
+        // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
+        // For this reason, we do not render these values in SSR - they are purely a runtime (prop) concern.
+        if (node.tagName === 'input' && (attrName === 'value' || attrName === 'checked')) {
+            return;
+        }
+
         // Handle all the boolean properties.
         if (isBooleanAttribute(attrName, node.tagName)) {
             return value === true
@@ -220,14 +233,6 @@ function setProperty(node: N, key: string, value: any): void {
         // Handle global html attributes and AOM.
         if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
             return setAttribute(node, attrName, value);
-        }
-
-        // Handle special elements live bindings. The checked property is already handled above
-        // in the boolean case.
-        if (node.tagName === 'input' && attrName === 'value') {
-            return isNull(value) || isUndefined(value)
-                ? removeAttribute(node, 'value')
-                : setAttribute(node, 'value', value);
         }
     }
 
