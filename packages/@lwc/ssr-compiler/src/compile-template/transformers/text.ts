@@ -29,7 +29,7 @@ const bYieldEscapedString = esTemplateWithYield`
             break;
         case 'number':
         case 'boolean':
-            yield ${0}.toString();
+            yield String(${0});
             break;
         default:
             yield ${0} ? htmlEscape(${0}.toString()) : '\\u200D';
