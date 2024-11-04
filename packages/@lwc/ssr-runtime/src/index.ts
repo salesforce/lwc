@@ -31,3 +31,4 @@ export {
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
+export { cloneAndDeepFreeze } from './clone-and-deep-freeze';

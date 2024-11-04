@@ -15,6 +15,7 @@ import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
+import { bImportDeclaration } from '../../estree/builders';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
@@ -30,8 +31,8 @@ import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = ${is.objectExpression};
-        const childAttrs = ${is.objectExpression};
+        const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
+        const childAttrs = ${/* child attrs */ is.objectExpression};
         const slottedContent = {
             light: Object.create(null),
             shadow: async function* () {
@@ -101,6 +102,10 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const importPath = kebabcaseToCamelcase(node.name);
     const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
     cxt.hoist(componentImport, childGeneratorLocalName);
+    cxt.hoist(
+        bImportDeclaration([{ cloneAndDeepFreeze: '__cloneAndDeepFreeze' }]),
+        'import:cloneAndDeepFreeze'
+    );
     const childTagName = node.name;
 
     // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
