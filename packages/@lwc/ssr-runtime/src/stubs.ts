@@ -52,9 +52,6 @@ export function setFeatureFlag(..._: unknown[]): never {
 export function setFeatureFlagForTest(..._: unknown[]): never {
     throw new Error('setFeatureFlagForTest cannot be used in SSR context.');
 }
-export function setHooks(..._: unknown[]): never {
-    throw new Error('setHooks cannot be used in SSR context.');
-}
 export function swapComponent(..._: unknown[]): never {
     throw new Error('swapComponent cannot be used in SSR context.');
 }

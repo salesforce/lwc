@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { vi } from 'vitest';
+import { describe, beforeEach, expect, it, vi } from 'vitest';
 
 describe('signals', () => {
     let setTrustedSignalSet: (signals: WeakSet<object>) => void;

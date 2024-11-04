@@ -1,0 +1,6 @@
+<template lwc:render-mode="light">
+    <div>
+        <slot></slot>
+        <slot lwc:slot-bind={param} name="scoped">Fallback slot content</slot>
+    </div>
+</template>

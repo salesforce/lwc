@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
-import vm from 'vm';
+import path from 'node:path';
+import vm from 'node:vm';
+import { vi, describe, it, expect } from 'vitest';
 import { parseFragment, serialize } from 'parse5';
 import { rollup, RollupLog } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { vi } from 'vitest';
 import * as engineServer from '../index';
 
 /**

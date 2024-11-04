@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
+import { describe, it, expect } from 'vitest';
 import { rollup, type RollupLog, type Plugin, type RollupBuild } from 'rollup';
 import nodeResolve from '@rollup/plugin-node-resolve';
 

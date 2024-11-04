@@ -37,7 +37,7 @@ export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
 export { reportingControl as __unstable__ReportingControl } from './reporting';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
-export { setHooks } from './overridable-hooks';
+export { setHooks } from '@lwc/shared';
 export { freezeTemplate } from './freeze-template';
 export { getComponentAPIVersion } from './component';
 export { shouldBeFormAssociated } from './utils';

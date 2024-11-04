@@ -1,0 +1,10 @@
+<template>
+  <div> <!-- this element is fine -->
+    <x-foo> <!-- nearest component -->
+      <span slot="bar"></span> <!-- valid -->
+    </x-foo>
+  </div>
+  <x-external lwc:external>
+    <div slot="foo">I am the foo slot</div>
+  </x-external>
+</template>

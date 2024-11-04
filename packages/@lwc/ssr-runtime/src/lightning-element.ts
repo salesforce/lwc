@@ -40,6 +40,7 @@ interface PropsAvailableAtConstruction {
 }
 
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
+export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';

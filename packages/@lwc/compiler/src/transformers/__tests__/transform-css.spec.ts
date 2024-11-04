@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { describe, expect, it } from 'vitest';
 import { TransformOptions } from '../../options';
 import { transform } from '../transformer';
 

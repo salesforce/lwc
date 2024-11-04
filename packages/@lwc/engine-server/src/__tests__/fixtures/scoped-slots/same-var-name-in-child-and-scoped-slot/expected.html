@@ -1,0 +1,30 @@
+<x-parent>
+  <template shadowrootmode="open">
+    <x-child>
+      <aside>
+        from-child
+      </aside>
+      <div data-should-be-from-child="from-child">
+        <aside>
+          from-child
+        </aside>
+        <!---->
+        <!---->
+        <span data-foo="prop">
+          prop
+        </span>
+        <p>
+          from-parent
+        </p>
+        <!---->
+        <!---->
+        <aside>
+          from-child
+        </aside>
+      </div>
+      <aside>
+        from-child
+      </aside>
+    </x-child>
+  </template>
+</x-parent>

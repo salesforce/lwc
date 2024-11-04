@@ -218,6 +218,7 @@ function parseElement(
         applyLwcDirectives(ctx, parsedAttr, element);
         applyAttributes(ctx, parsedAttr, element);
 
+        validateSlotAttribute(ctx, parsedAttr, parentNode, element);
         validateElement(ctx, element, parse5Elm);
         validateAttributes(ctx, parsedAttr, element);
         validateProperties(ctx, element);
@@ -1722,6 +1723,45 @@ function validateAttributes(
         if (tag === 'iframe' && attrName === 'srcdoc') {
             ctx.throwOnNode(ParserDiagnostics.FORBIDDEN_IFRAME_SRCDOC_ATTRIBUTE, element);
         }
+    }
+}
+
+function validateSlotAttribute(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    parentNode: ParentNode,
+    element: BaseElement
+): void {
+    const slotAttr = parsedAttr.get('slot');
+
+    if (!slotAttr) {
+        return;
+    }
+
+    function isElementOrSlot(node: ParentNode): node is Element | Slot {
+        return ast.isElement(node) || ast.isSlot(node);
+    }
+
+    // Find the nearest ancestor that is an element or `<slot>`, and stop if we hit a component.
+    // E.g. this should warn due to the `<div>`: `<x-foo><div><span slot=bar></span></div></x-foo>`
+    // And this should _not_ warn: `<div><x-foo><span slot=bar></span></x-foo></div>`
+    const elementOrSlotAncestor = ctx.findAncestor(
+        isElementOrSlot,
+        ({ current }) => current && !ast.isComponent(current) && !ast.isExternalComponent(current),
+        parentNode
+    );
+
+    // Warn if a `slot` attribute is on an element that isn't an immediate child of a containing LWC component or
+    // `lwc:external` component. This is a case that all three of native-shadow/synthetic-shadow/light DOM will
+    // simply ignore, but it's good to warn, so that developers realize that they may be making a mistake.
+    // Note that, for the purposes of being considered an "immediate child," virtual elements like `for:each` and
+    // `lwc:if` don't count - only rendered elements (including `<slot>`s) count.
+    // Example of invalid usage: `<x-foo><div><span slot=bar></span></div></x-foo>`
+    if (elementOrSlotAncestor) {
+        ctx.warnOnNode(ParserDiagnostics.IGNORED_SLOT_ATTRIBUTE_IN_CHILD, slotAttr, [
+            `<${element.name}>`,
+            `<${elementOrSlotAncestor.name}>`,
+        ]);
     }
 }
 

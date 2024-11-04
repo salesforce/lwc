@@ -7,6 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { test } from 'vitest';
 import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;

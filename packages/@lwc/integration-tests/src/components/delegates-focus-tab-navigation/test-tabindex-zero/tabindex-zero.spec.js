@@ -18,7 +18,9 @@ describe('Tab navigation when tabindex 0', () => {
             '.second-outside'
         );
         await secondOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Tab']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
@@ -30,7 +32,9 @@ describe('Tab navigation when tabindex 0', () => {
             '.third-outside'
         );
         await thirdOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Shift', 'Tab', 'Shift']);
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'third-inside');

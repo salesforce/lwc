@@ -7,14 +7,15 @@
 
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
-import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
+import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
-import type { CallExpression as EsCallExpression } from 'estree';
+import { isNullableOf } from '../../estree/validators';
+import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -45,14 +46,18 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 slottedContent.light[name] = [fn]
             }
         }
-        ${/* addContent statements */ is.callExpression}
+        ${/* light DOM addContent statements */ is.callExpression}
+        ${/* scoped slot addContent statements */ is.callExpression}
         yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
     }
 `<EsBlockStatement>;
 
 const bAddContent = esTemplate`
-    addContent(${/* slot name */ is.expression} ?? "", async function* () {
-        ${/* slot content */ is.statement}
+    addContent(${/* slot name */ is.expression} ?? "", async function* (${
+        /* scoped slot data variable */ isNullableOf(is.identifier)
+    }) {
+        // FIXME: make validation work again  
+        ${/* slot content */ false}
     });
 `<EsCallExpression>;
 
@@ -98,21 +103,40 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     cxt.hoist(componentImport, childGeneratorLocalName);
     const childTagName = node.name;
 
-    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(node.children, cxt));
+    // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
+    const slottableChildren = node.children.filter((child) => child.type !== 'ScopedSlotFragment');
+    const scopedSlottableChildren = node.children.filter(
+        (child) => child.type === 'ScopedSlotFragment'
+    ) as ScopedSlotFragment[];
 
-    const lightSlotContent = node.children.map((child) => {
+    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(slottableChildren, cxt));
+
+    const lightSlotContent = slottableChildren.map((child) => {
         if ('attributes' in child) {
             const slotName = bAttributeValue(child, 'slot');
-            // FIXME: We don't know what happens for slot attributes inside an lwc:if block
             // Light DOM slots do not actually render the `slot` attribute.
             const clone = produce(child, (draft) => {
                 draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
             });
             const slotContent = irToEs(clone, cxt);
-            return bAddContent(slotName, slotContent);
+            return bAddContent(slotName, null, slotContent);
         } else {
-            return bAddContent(b.literal(''), irToEs(child, cxt));
+            return bAddContent(b.literal(''), null, irToEs(child, cxt));
         }
+    });
+
+    const scopedSlotContent = scopedSlottableChildren.map((child) => {
+        const boundVariableName = child.slotData.value.name;
+        const boundVariable = b.identifier(boundVariableName);
+        cxt.pushLocalVars([boundVariableName]);
+        // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
+        const addContentExpr = bAddContent(
+            child.slotName as EsExpression,
+            boundVariable,
+            irChildrenToEs(child.children, cxt)
+        );
+        cxt.popLocalVars();
+        return addContentExpr;
     });
 
     return [
@@ -121,6 +145,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
             getChildAttrsOrProps(node.attributes, cxt),
             shadowSlotContent,
             lightSlotContent,
+            scopedSlotContent,
             b.identifier(childGeneratorLocalName),
             b.literal(childTagName)
         ),

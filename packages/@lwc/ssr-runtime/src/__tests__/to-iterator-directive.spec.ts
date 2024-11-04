@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { toIteratorDirective } from '../to-iterator-directive';
 
 describe('toIteratorDirective', () => {

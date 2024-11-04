@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
-import { rollup } from 'rollup';
+import path from 'node:path';
+import { describe, it, expect } from 'vitest';
 
+import { rollup, type RollupLog } from 'rollup';
 import lwc from '../../index';
 
 describe('rootDir', () => {
@@ -35,7 +36,7 @@ describe('rootDir', () => {
     });
 
     it('warns if an "input" object is passed and when "rootDir" is not set', async () => {
-        const warnings: any = [];
+        const warnings: RollupLog[] = [];
 
         await rollup({
             input: {

@@ -7,7 +7,7 @@
 
 import { renderComponent } from '@lwc/ssr-runtime';
 
-import { generateMarkup } from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/table/table.js';
+import Table from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/table/table.js';
 import Store from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/store/store.js';
 
 const SSR_MODE = 'asyncYield';
@@ -19,7 +19,7 @@ benchmark(`ssr/table-v2/render/10k`, () => {
 
         return renderComponent(
             'benchmark-table',
-            generateMarkup,
+            Table,
             {
                 rows: store.data,
             },

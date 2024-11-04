@@ -6,6 +6,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { describe, test, expect } from 'vitest';
 
 /** Packages that only contain type definitions, no JavaScript. */
 const tsPackages = ['@lwc/types'];
