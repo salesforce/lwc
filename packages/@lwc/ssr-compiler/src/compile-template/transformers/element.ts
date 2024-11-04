@@ -50,7 +50,8 @@ const bConditionalLiveYield = esTemplateWithYield`
             (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
         const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
 
-        // Global HTML attributes are specially coerced into booleans
+        // Global HTML boolean attributes are specially coerced into booleans
+        // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/template-compiler/src/codegen/index.ts#L450-L454
         if (isHtmlBooleanAttr) {
             attrValue = attrValue ? '' : undefined;
         }
