@@ -16,7 +16,14 @@ function getRelevantStyles(node) {
     ];
 
     const style = getComputedStyle(node);
-    return Object.fromEntries(props.map((prop) => [prop, style.getPropertyValue(prop)]));
+    return Object.fromEntries(
+        props.map((prop) => {
+            // The browsers disagree on whether this should be a single quote or double quote
+            // Safari 17 uses a double quote, Chrome 130 and Firefox 132 use a single quote
+            const value = style.getPropertyValue(prop).replace(/"/g, '');
+            return [prop, value];
+        })
+    );
 }
 
 const expectedSyntheticStyles = {
