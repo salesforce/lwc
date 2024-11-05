@@ -48,10 +48,10 @@ it.runIf(process.env.NODE_ENV === 'production')('No perf measures in prod mode',
     const elm = createElement('x-child', { is: Child });
     document.body.appendChild(elm);
 
-    await Promise.resolve();
+    await new Promise(requestAnimationFrame);
     elm.firstName = 'Ferdinand';
 
-    await Promise.resolve();
+    await new Promise(requestAnimationFrame);
     expect(entries).toEqual([]);
 });
 
@@ -64,7 +64,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm = createElement('x-child', { is: Child });
             document.body.appendChild(elm);
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expect(entries).toEqual(arr([obj({ name: 'lwc-hydrate' })]));
             entries = []; // reset
         });
@@ -72,62 +72,62 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
         it('Does basic mutation logging', async () => {
             elm.firstName = 'Ferdinand';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'firstName');
         });
 
         it('Logs subsequent mutations on the same component', async () => {
             elm.firstName = 'Ferdinand';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'firstName');
             entries = []; // reset
 
             elm.lastName = 'Magellan';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'lastName');
             entries = []; // reset
 
             elm.firstName = 'Vasco';
             elm.lastName = 'da Gama';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'firstName, lastName');
         });
 
         it('Logs deep mutation on an object', async () => {
             elm.setPreviousName('first', 'Vancouver');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'previousName.first');
         });
 
         it('Logs deep mutation on an object - characters requiring bracket member notation', async () => {
             elm.setPreviousNameFullName('George Vancouver');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'previousName["full name"]');
         });
 
         it('Logs doubly-deep mutation on an object', async () => {
             elm.setPreviousNameSuffix('short', 'Jr.');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'previousName.suffix.short');
         });
 
         it('Logs deep mutation on an array', async () => {
             elm.addAlias('Magellan');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'aliases.length');
         });
 
         it('Logs deep mutation on an object within an array', async () => {
             elm.setFavoriteIceCreamFlavor('vanilla');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'favoriteFlavors[0].flavor');
         });
 
@@ -136,7 +136,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.setPreviousNameSuffix('short', 'Jr.');
             elm.setFavoriteIceCreamFlavor('vanilla');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry(
                 'x-child',
                 'favoriteFlavors[0].flavor, firstName, previousName.suffix.short'
@@ -148,7 +148,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             document.body.appendChild(elm2);
             elm.firstName = 'Ferdinand';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expect(entries).toEqual(
                 arr([
                     obj({
@@ -163,7 +163,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             const elm2 = createElement('x-child', { is: Child });
             document.body.appendChild(elm2);
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expect(entries).toEqual(
                 arr([
                     obj({
@@ -176,7 +176,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.firstName = 'Marco';
             elm2.lastName = 'Polo';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
 
             expect(entries).toEqual(
                 arr([
@@ -204,28 +204,28 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
         it('Logs for deep non-enumerable prop mutation', async () => {
             elm.setWackyAccessorDeepValue('yolo');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'wackyAccessors.foo.bar');
         });
 
         it('Logs for deep symbol prop mutation', async () => {
             elm.setWackyAccessorSymbol('haha');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(yolo)]');
         });
 
         it('Logs for doubly deep symbol prop mutation', async () => {
             elm.setWackyAccessorDoublyDeepSymbol('wahoo');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(whoa)].baz');
         });
 
         it('Logs for mutation on deeply-recursive object', async () => {
             elm.setOnRecursiveObject('woohoo');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'recursiveObject.foo');
         });
     });
@@ -237,10 +237,10 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
         beforeEach(async () => {
             elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             child = elm.shadowRoot.querySelector('x-child');
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expect(entries).toEqual(
                 arr(
                     // synthetic lifecycle considers this one hydration event rather than two
@@ -255,14 +255,14 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
         it('Logs a mutation on the parent only', async () => {
             elm.firstName = 'Ferdinand';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-parent', 'firstName');
         });
 
         it('Logs a mutation on the child only', async () => {
             child.lastName = 'Magellan';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expectRehydrationEntry('x-child', 'lastName');
         });
 
@@ -270,7 +270,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.firstName = 'Ferdinand';
             child.lastName = 'Magellan';
 
-            await Promise.resolve();
+            await new Promise(requestAnimationFrame);
             expect(entries).toEqual(
                 arr([
                     obj({
@@ -295,7 +295,7 @@ it('handles case where the getter throws an error', async () => {
     const elm = createElement('x-getter-throws', { is: GetterThrows });
     document.body.appendChild(elm);
 
-    await Promise.resolve();
+    await new Promise(requestAnimationFrame);
 
     expect(elm.shadowRoot.querySelector('div').textContent).toBe('hello');
 });
