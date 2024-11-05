@@ -19,6 +19,8 @@ import {
     getOwnPropertyDescriptor,
     isArray,
     isUndefined,
+    KEY__SCOPED_CSS,
+    KEY__NATIVE_ONLY_CSS,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { Template } from './template';
@@ -35,10 +37,7 @@ const TEMPLATE_PROPS = [
 ] as const;
 
 // Expandos that may be placed on a stylesheet factory function, and which are meaningful to LWC at runtime
-const STYLESHEET_PROPS = [
-    // SEE `KEY__SCOPED_CSS` in @lwc/style-compiler
-    '$scoped$',
-] as const;
+const STYLESHEET_PROPS = [KEY__SCOPED_CSS, KEY__NATIVE_ONLY_CSS] as const;
 
 // Via https://www.npmjs.com/package/object-observer
 const ARRAY_MUTATION_METHODS = [
