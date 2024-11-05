@@ -9,6 +9,7 @@ import {
     ArrayPush,
     isArray,
     isNull,
+    isTrue,
     isUndefined,
     KEY__NATIVE_ONLY_CSS,
     KEY__SCOPED_CSS,
@@ -185,8 +186,8 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            const isScopedCss = stylesheet[KEY__SCOPED_CSS];
-            const isNativeOnlyCss = stylesheet[KEY__NATIVE_ONLY_CSS];
+            const isScopedCss = isTrue(stylesheet[KEY__SCOPED_CSS]);
+            const isNativeOnlyCss = isTrue(stylesheet[KEY__NATIVE_ONLY_CSS]);
             const { renderMode, shadowMode } = vm;
 
             if (
