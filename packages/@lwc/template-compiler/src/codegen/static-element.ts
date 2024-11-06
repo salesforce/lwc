@@ -14,7 +14,6 @@ import {
     isArray,
     isNull,
 } from '@lwc/shared';
-import { isLiteral } from '../shared/estree';
 import {
     BaseElement,
     ChildNode,
@@ -75,8 +74,35 @@ function isStaticNode(node: BaseElement, apiVersion: APIVersion): boolean {
     // all directives are static-safe
     result &&= !directives.some((directive) => !STATIC_SAFE_DIRECTIVES.has(directive.name));
 
-    // all properties are static
-    result &&= properties.every((prop) => isLiteral(prop.value));
+    // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props for elements
+    /* v8 ignore start */
+    if (process.env.NODE_ENV === 'test' && isElement(node)) {
+        for (const { attributeName } of properties) {
+            if (
+                node.name !== 'input' &&
+                !(attributeName === 'checked' || attributeName === 'value')
+            ) {
+                throw new Error(
+                    `Expected to only see <input value>/<input checked> treated as an element prop. ` +
+                        `Instead found <${node.name} ${attributeName}>`
+                );
+            }
+        }
+    }
+    /* v8 ignore stop */
+
+    // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
+    // has historically treated them as props rather than attributes:
+    // https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
+    // For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
+    // still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
+    // because the attributes actually represent the "default" value rather than the current one:
+    // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
+    // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
+    // For this reason, we currently avoid the static content optimization, and treat `value`/`checked` only as
+    // runtime props.
+    // TODO [#4775]: allow static optimization for `<input value>`/`<input checked>`
+    result &&= properties.length === 0;
 
     return result;
 }

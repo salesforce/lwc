@@ -1,3 +1,25 @@
+// `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
+// has historically treated them as props rather than attributes:
+// https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
+// For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
+// still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
+// because the attributes actually represent the "default" value rather than the current one:
+// - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
+// - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
+// Here we check both the "default" and "runtime" variants of `checked`/`value`. Note that
+// `defaultChecked`/`defaultValue` correspond to the `checked`/`value` attributes.
+function getRelevantInputProps(input) {
+    const { defaultChecked, defaultValue, disabled, checked, type, value } = input;
+    return {
+        checked,
+        defaultChecked,
+        defaultValue,
+        disabled,
+        type,
+        value,
+    };
+}
+
 export default {
     snapshot(target) {
         const inputs = target.shadowRoot.querySelectorAll('input');
@@ -10,8 +32,301 @@ export default {
 
         expect(inputs.length).toBe(snapshots.inputs.length);
         for (let i = 0; i < inputs.length; i++) {
-            expect(inputs[i]).toBe(snapshots.inputs[i]);
+            const input = inputs[i];
+            expect(input).toBe(snapshots.inputs[i]);
         }
+
+        // prop values are as expected
+        expect([...inputs].map(getRelevantInputProps)).toEqual([
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: true,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: true,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: true,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: true,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: true,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'checkbox',
+                value: 'on',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: 'undefined',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: 'false',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: 'true',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '0',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '0',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: 'NaN',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: 'Infinity',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '-Infinity',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: 'foo,bar',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '[object Object]',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: true,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: true,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: true,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: false,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: true,
+                type: 'text',
+                value: '',
+            },
+            {
+                checked: false,
+                defaultChecked: false,
+                defaultValue: '',
+                disabled: true,
+                type: 'text',
+                value: '',
+            },
+        ]);
 
         expect(consoleCalls.warn).toHaveSize(0);
         expect(consoleCalls.error).toHaveSize(0);

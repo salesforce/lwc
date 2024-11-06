@@ -61,14 +61,12 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
     const collector = ({
         name,
         value,
-        isProp,
         hasExpression,
         hasSvgUseHref,
         needsScoping,
     }: {
         name: string;
         value: string | boolean;
-        isProp: boolean;
         hasExpression?: boolean;
         hasSvgUseHref?: boolean;
         needsScoping?: boolean;
@@ -81,24 +79,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         // See W-16614169
         const escapedAttributeName = templateStringEscape(name);
 
-        // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
-        // has historically treated them as props rather than attributes:
-        // https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
-        // For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
-        // still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
-        // because the attributes actually represent the "default" value rather than the current one:
-        // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
-        // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
-        if (isProp) {
-            // The below logic matches the behavior of non-static-optimized DOM nodes.
-            // There is no functional difference between e.g. `checked="checked"` and `checked` but we
-            // match byte-for-byte the non-static-optimized HTML that would be rendered.
-            if (name === 'checked' || (name === 'value' && value === '')) {
-                attrs.push(` ${escapedAttributeName}`);
-            } else {
-                attrs.push(` ${escapedAttributeName}="${htmlEscape(String(value), true)}"`);
-            }
-        } else if (typeof value === 'string') {
+        if (typeof value === 'string') {
             let v = templateStringEscape(value);
 
             if (name === 'class') {
@@ -138,7 +119,6 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             // Skip serializing here and handle it as if it were a dynamic attribute instead.
             // Note that, to maintain backwards compatibility with the non-static output, we treat the valueless
             // "boolean" format (e.g. `<div id>`) as the empty string, which is semantically equivalent.
-            // `isProp` corresponds to `value` or `checked` on an `<input>` which is treated as a prop at runtime.
             const needsPlaceholder = hasExpression || hasSvgUseHref || needsScoping;
 
             let nameAndValue;
@@ -192,7 +172,6 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             return {
                 hasExpression,
                 hasSvgUseHref,
-                isProp: false,
                 needsScoping,
                 name,
                 value:
@@ -204,32 +183,14 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
         })
         .forEach(collector);
 
-    // See note above about `<input value>`/`<input checked>`
-    element.properties
-        .map((prop) => {
-            const { attributeName, value } = prop;
-
-            // Sanity check to ensure that only `<input value>`/`<input checked>` are treated as props
-            /* v8 ignore start */
-            if (process.env.NODE_ENV === 'test') {
-                if (
-                    element.name !== 'input' &&
-                    !(attributeName === 'checked' || attributeName === 'value')
-                ) {
-                    throw new Error(
-                        'Expected to only see `<input value>`/`<input checked>` here; instead found `<${element.name} ${attributeName}>'
-                    );
-                }
-            }
-            /* v8 ignore stop */
-
-            return {
-                name: attributeName,
-                value: (value as Literal).value,
-                isProp: true,
-            };
-        })
-        .forEach(collector);
+    /* v8 ignore start */
+    // TODO [#4775]: allow static optimization for `<input value>`/`<input checked>`
+    if (process.env.NODE_ENV === 'test' && element.properties.length > 0) {
+        throw new Error(
+            'Expected zero properties at this point, found ' + element.properties.length
+        );
+    }
+    /* v8 ignore stop */
 
     // ${2} maps to style token attribute
     // ${3} maps to class attribute token + style token attribute
