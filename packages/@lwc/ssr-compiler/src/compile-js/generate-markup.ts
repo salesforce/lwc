@@ -32,8 +32,8 @@ const bGenerateMarkup = esTemplate`
         props = props ?? Object.create(null);
         props = __filterProperties(
             props,
-            new Set(${/*public fields*/ is.arrayExpression}),
-            new Set(${/*private fields*/ is.arrayExpression}),
+            ${/*public fields*/ is.arrayExpression},
+            ${/*private fields*/ is.arrayExpression},
         );
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
