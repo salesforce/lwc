@@ -443,7 +443,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 if (!isNull(styleVNodes)) {
                     // It's important here not to mutate the underlying `vnodes` returned from `html.call()`.
                     // The reason for this is because, due to the static content optimization, the vnodes array
-                    // may be a static array shared across multiple templates. This occurs for example in the
+                    // may be a static array shared across multiple component instances. E.g. this occurs in the
                     // case of an empty `<template></template>` in a `component.html` file.
                     vnodes = [...styleVNodes, ...vnodes];
                 }
