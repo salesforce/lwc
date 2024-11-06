@@ -4,7 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, ArrayPush, isArray, isNull, isUndefined, KEY__SCOPED_CSS } from '@lwc/shared';
+import {
+    ArrayMap,
+    ArrayPush,
+    isArray,
+    isNull,
+    isTrue,
+    isUndefined,
+    KEY__NATIVE_ONLY_CSS,
+    KEY__SCOPED_CSS,
+} from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 
@@ -177,12 +186,14 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            const isScopedCss = (stylesheet as any)[KEY__SCOPED_CSS];
+            const isScopedCss = isTrue(stylesheet[KEY__SCOPED_CSS]);
+            const isNativeOnlyCss = isTrue(stylesheet[KEY__NATIVE_ONLY_CSS]);
+            const { renderMode, shadowMode } = vm;
 
             if (
                 lwcRuntimeFlags.DISABLE_LIGHT_DOM_UNSCOPED_CSS &&
                 !isScopedCss &&
-                vm.renderMode === RenderMode.Light
+                renderMode === RenderMode.Light
             ) {
                 logError(
                     'Unscoped CSS is not supported in Light DOM in this environment. Please use scoped CSS ' +
@@ -193,20 +204,18 @@ function evaluateStylesheetsContent(
             // Apply the scope token only if the stylesheet itself is scoped, or if we're rendering synthetic shadow.
             const scopeToken =
                 isScopedCss ||
-                (vm.shadowMode === ShadowMode.Synthetic && vm.renderMode === RenderMode.Shadow)
+                (shadowMode === ShadowMode.Synthetic && renderMode === RenderMode.Shadow)
                     ? stylesheetToken
                     : undefined;
             // Use the actual `:host` selector if we're rendering global CSS for light DOM, or if we're rendering
             // native shadow DOM. Synthetic shadow DOM never uses `:host`.
             const useActualHostSelector =
-                vm.renderMode === RenderMode.Light
-                    ? !isScopedCss
-                    : vm.shadowMode === ShadowMode.Native;
+                renderMode === RenderMode.Light ? !isScopedCss : shadowMode === ShadowMode.Native;
             // Use the native :dir() pseudoclass only in native shadow DOM. Otherwise, in synthetic shadow,
             // we use an attribute selector on the host to simulate :dir().
             let useNativeDirPseudoclass;
-            if (vm.renderMode === RenderMode.Shadow) {
-                useNativeDirPseudoclass = vm.shadowMode === ShadowMode.Native;
+            if (renderMode === RenderMode.Shadow) {
+                useNativeDirPseudoclass = shadowMode === ShadowMode.Native;
             } else {
                 // Light DOM components should only render `[dir]` if they're inside of a synthetic shadow root.
                 // At the top level (root is null) or inside of a native shadow root, they should use `:dir()`.
@@ -216,11 +225,20 @@ function evaluateStylesheetsContent(
                 }
                 useNativeDirPseudoclass = isNull(root) || root.shadowMode === ShadowMode.Native;
             }
-            const cssContent = stylesheet(
-                scopeToken,
-                useActualHostSelector,
-                useNativeDirPseudoclass
-            );
+
+            let cssContent;
+            if (
+                isNativeOnlyCss &&
+                renderMode === RenderMode.Shadow &&
+                shadowMode === ShadowMode.Synthetic
+            ) {
+                // Native-only (i.e. disableSyntheticShadowSupport) CSS should be ignored entirely
+                // in synthetic shadow. It's fine to use in either native shadow or light DOM, but in
+                // synthetic shadow it wouldn't be scoped properly and so should be ignored.
+                cssContent = '/* ignored native-only CSS */';
+            } else {
+                cssContent = stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass);
+            }
 
             if (process.env.NODE_ENV !== 'production') {
                 linkStylesheetToCssContentInDevMode(stylesheet, cssContent);

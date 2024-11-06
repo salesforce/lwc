@@ -16,5 +16,6 @@ export const KEY__LEGACY_SHADOW_TOKEN = '$legacyShadowToken$';
 export const KEY__LEGACY_SHADOW_TOKEN_PRIVATE = '$$LegacyShadowTokenKey$$';
 export const KEY__SYNTHETIC_MODE = '$$lwc-synthetic-mode';
 export const KEY__SCOPED_CSS = '$scoped$';
+export const KEY__NATIVE_ONLY_CSS = '$nativeOnly$';
 export const KEY__NATIVE_GET_ELEMENT_BY_ID = '$nativeGetElementById$';
 export const KEY__NATIVE_QUERY_SELECTOR_ALL = '$nativeQuerySelectorAll$';

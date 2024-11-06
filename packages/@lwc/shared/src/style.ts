@@ -6,6 +6,7 @@
  */
 
 import { isArray } from './language';
+import { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
 
 export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
@@ -29,7 +30,11 @@ export type Stylesheet = {
     /**
      * True if this is a scoped style (e.g. `foo.scoped.css`)
      */
-    $scoped$?: boolean;
+    [KEY__SCOPED_CSS]?: boolean;
+    /**
+     * True if this is a native-only style (i.e. compiled with `disableSyntheticShadowSupport`).
+     */
+    [KEY__NATIVE_ONLY_CSS]?: boolean;
 };
 
 /**

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import postcss, { Result } from 'postcss';
-import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT } from '@lwc/shared';
+import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT, KEY__NATIVE_ONLY_CSS } from '@lwc/shared';
 import { Config } from './index';
 import { isImportMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
@@ -92,6 +92,10 @@ export default function serialize(result: Result, config: Config): string {
         if (scoped) {
             // Mark the stylesheet as scoped so that we can distinguish it later at runtime
             buffer += `${STYLESHEET_IDENTIFIER}.${KEY__SCOPED_CSS} = true;\n`;
+        }
+        if (disableSyntheticShadow) {
+            // Mark the stylesheet as $nativeOnly$ so it can be ignored in synthetic shadow mode
+            buffer += `${STYLESHEET_IDENTIFIER}.${KEY__NATIVE_ONLY_CSS} = true;\n`;
         }
 
         // add import at the end
