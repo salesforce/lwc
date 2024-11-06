@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayUnshift,
     assert,
     create,
     htmlEscape,
@@ -38,7 +37,7 @@ import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import { createStylesheet, getStylesheetsContent, updateStylesheetToken } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
+import { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
 import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
@@ -365,7 +364,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     }
     const isUpdatingTemplateInception = isUpdatingTemplate;
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
-    let vnodes: MutableVNodes = [];
+    let vnodes: VNodes = [];
 
     runWithBoundaryProtection(
         vm,
@@ -439,16 +438,14 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                vnodes = html.call(
-                    undefined,
-                    api,
-                    component,
-                    cmpSlots,
-                    context.tplCache
-                ) as MutableVNodes;
+                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {
-                    ArrayUnshift.apply(vnodes, styleVNodes);
+                    // It's important here not to mutate the underlying `vnodes` returned from `html.call()`.
+                    // The reason for this is because, due to the static content optimization, the vnodes array
+                    // may be a static array shared across multiple templates. This occurs for example in the
+                    // case of an empty `<template></template>` in a `component.html` file.
+                    vnodes = [...styleVNodes, ...vnodes];
                 }
             });
         },
