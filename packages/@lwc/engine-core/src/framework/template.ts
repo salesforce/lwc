@@ -444,7 +444,9 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     // It's important here not to mutate the underlying `vnodes` returned from `html.call()`.
                     // The reason for this is because, due to the static content optimization, the vnodes array
                     // may be a static array shared across multiple component instances. E.g. this occurs in the
-                    // case of an empty `<template></template>` in a `component.html` file.
+                    // case of an empty `<template></template>` in a `component.html` file, due to the underlying
+                    // children being `[]` (no children). If we append the `<style>` vnode to this array, then the same
+                    // array will be reused for every component instance, i.e. whenever `tmpl()` is called.
                     vnodes = [...styleVNodes, ...vnodes];
                 }
             });
