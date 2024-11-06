@@ -18,6 +18,7 @@ export {
     SYMBOL__GENERATE_MARKUP,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
+export { filterProperties } from './reflection';
 export {
     fallbackTmpl,
     fallbackTmplNoYield,

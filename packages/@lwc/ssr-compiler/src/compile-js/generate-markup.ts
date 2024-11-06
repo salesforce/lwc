@@ -28,7 +28,13 @@ type RenderCallExpression = SimpleCallExpression & {
 
 const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
-        attrs = attrs ?? {};
+        attrs = attrs ?? Object.create(null);
+        props = props ?? Object.create(null);
+        props = __filterProperties(
+            props,
+            ${/*public fields*/ is.arrayExpression},
+            ${/*private fields*/ is.arrayExpression},
+        );
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
@@ -41,13 +47,15 @@ const bGenerateMarkup = esTemplate`
         }
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
-        const shouldRenderScopeToken = tmplFn.hasScopedStylesheets || hasScopedStaticStylesheets(${/*Component class */ 0});
+        const shouldRenderScopeToken =
+            tmplFn.hasScopedStylesheets ||
+            hasScopedStaticStylesheets(${/*component class*/ 2});
         if (shouldRenderScopeToken) {
             yield \` class="\${tmplFn.stylesheetScopeToken}-host"\`;
         }
         yield* __renderAttrs(instance, attrs);
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${0}, instance);
+        yield* tmplFn(props, attrs, slotted, ${/*component class*/ 2}, instance);
         yield \`</\${tagName}>\`;
     }
 `<ExportNamedDeclaration>;
@@ -75,7 +83,7 @@ export function addGenerateMarkupExport(
     state: ComponentMetaState,
     filename: string
 ) {
-    const { hasRenderMethod, tmplExplicitImports } = state;
+    const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
 
     const classIdentifier = b.identifier(state.lwcClassName!);
     const renderCall = hasRenderMethod
@@ -94,6 +102,7 @@ export function addGenerateMarkupExport(
         bImportDeclaration([
             {
                 fallbackTmpl: '__fallbackTmpl',
+                filterProperties: '__filterProperties',
                 mutationTracker: '__mutationTracker',
                 renderAttrs: '__renderAttrs',
                 SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
@@ -101,7 +110,14 @@ export function addGenerateMarkupExport(
         ])
     );
     program.body.unshift(bImportDeclaration(['hasScopedStaticStylesheets']));
-    program.body.push(bGenerateMarkup(classIdentifier, renderCall));
+    program.body.push(
+        bGenerateMarkup(
+            b.arrayExpression(publicFields.map(b.literal)),
+            b.arrayExpression(privateFields.map(b.literal)),
+            classIdentifier,
+            renderCall
+        )
+    );
 }
 
 /**

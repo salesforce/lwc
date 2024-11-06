@@ -51,16 +51,27 @@ const visitors: Visitors = {
         }
     },
     PropertyDefinition(path, state) {
+        const node = path.node;
+        if (!is.identifier(node?.key)) {
+            return;
+        }
+
+        // TODO [#4773]: Why do we get conflicting PropertyDefinition types when removing "vitest/globals"?
+        const decorators = (node as any).decorators;
+        if (is.identifier(decorators[0]?.expression) && decorators[0].expression.name === 'api') {
+            state.publicFields.push(node.key.name);
+        } else {
+            state.privateFields.push(node.key.name);
+        }
+
         if (
-            path.node &&
-            path.node.static &&
-            is.identifier(path.node.key) &&
-            path.node.key.name === 'stylesheets' &&
-            is.arrayExpression(path.node.value) &&
-            path.node.value.elements.every((el) => is.identifier(el))
+            node.static &&
+            node.key.name === 'stylesheets' &&
+            is.arrayExpression(node.value) &&
+            node.value.elements.every((el) => is.identifier(el))
         ) {
             catalogStaticStylesheets(
-                path.node.value.elements.map((el) => (el as EsIdentifier).name),
+                node.value.elements.map((el) => (el as EsIdentifier).name),
                 state
             );
         }
@@ -69,6 +80,7 @@ const visitors: Visitors = {
         if (path.node?.key.type !== 'Identifier') {
             return;
         }
+
         switch (path.node.key.name) {
             case 'constructor':
                 path.node.value.params = [b.identifier('propsAvailableAtConstruction')];
@@ -126,6 +138,8 @@ export default function compileJS(src: string, filename: string, compilationMode
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
+        publicFields: [],
+        privateFields: [],
     };
 
     traverse(ast, visitors, state);
