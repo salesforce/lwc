@@ -19,9 +19,9 @@ export function cloneAndDeepFreeze(obj: any): any {
         }
         freeze(res);
         return res;
-    } else if (!isNull(obj) && isObject(obj)) {
+    } else if (isObject(obj) && !isNull(obj)) {
         const res = create(null);
-        for (const [key, value] of entries(obj as any)) {
+        for (const [key, value] of entries(obj)) {
             (res as any)[key] = cloneAndDeepFreeze(value);
         }
         freeze(res);
