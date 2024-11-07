@@ -70,6 +70,7 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'exportparts',
     'hidden',
     'id',
+    'inert',
     'inputmode',
     'is',
     'itemid',
@@ -80,12 +81,14 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'lang',
     'nonce',
     'part',
+    'popover',
     'slot',
     'spellcheck',
     'style',
     'tabindex',
     'title',
     'translate',
+    'writingsuggestions',
 ]);
 
 /**

@@ -31,11 +31,17 @@ const globalHtmlProperties = {
     id: {
         attribute: 'id',
     },
+    inert: {
+        attribute: 'inert',
+    },
     inputMode: {
         attribute: 'inputmode',
     },
     lang: {
         attribute: 'lang',
+    },
+    popover: {
+        attribute: 'popover',
     },
     slot: {
         attribute: 'slot',
@@ -51,6 +57,9 @@ const globalHtmlProperties = {
     },
     translate: {
         attribute: 'translate',
+    },
+    writingSuggestions: {
+        attribute: 'writingsuggestions',
     },
 
     // additional "global attributes" that are not present in the link above.
