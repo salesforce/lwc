@@ -15,7 +15,7 @@ export function styledComponentSsrBenchmark(
         run(async () => {
             for (let i = 0; i < numComponents; i++) {
                 await renderComponent(
-                    'benchmark-table',
+                    isArray ? `styled-component${i}` : 'styled-component',
                     isArray ? componentOrComponents[i] : componentOrComponents,
                     {},
                     SSR_MODE
