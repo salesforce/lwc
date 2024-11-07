@@ -1,0 +1,91 @@
+<x-outer>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+        !
+        <slot>
+          fallback for default
+        </slot>
+        @
+        <slot name="foo">
+          fallback for foo
+        </slot>
+        #
+        <slot name="bar">
+          fallback for bar
+        </slot>
+        $
+      </template>
+      a
+      <div slot="foo">
+        b
+      </div>
+      c
+      <div slot="bar">
+        d
+      </div>
+      e
+      <div slot="foo">
+        f
+      </div>
+      g
+      <div slot="bar">
+        h
+      </div>
+      ij
+      <div slot="foo">
+        k
+      </div>
+      <div slot="bar">
+        l
+      </div>
+      m
+      <div slot="foo">
+        n
+      </div>
+      opq
+      <div slot="foo">
+        r
+      </div>
+      stu
+      <x-another>
+        <template shadowrootmode="open">
+          %
+          <slot>
+            fallback for default
+          </slot>
+          ^
+          <slot name="foo">
+            fallback for foo
+          </slot>
+          *
+          <slot name="bar">
+            fallback for bar
+          </slot>
+          ~
+        </template>
+        v
+        <div slot="foo">
+          w
+        </div>
+        <div slot="foo">
+          x
+        </div>
+        y
+      </x-another>
+      z
+      <external-another>
+        1
+        <div slot="foo">
+          2
+        </div>
+        34
+        <div slot="foo">
+          5
+        </div>
+        67
+      </external-another>
+      8
+    </x-inner>
+  </template>
+</x-outer>

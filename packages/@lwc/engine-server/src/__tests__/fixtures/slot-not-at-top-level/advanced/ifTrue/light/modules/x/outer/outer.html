@@ -1,0 +1,59 @@
+<template lwc:render-mode="light">
+    <x-inner>
+        a
+        <template if:true={isTrue}>
+            <div slot="foo">b</div>
+        </template>
+        c
+        <div slot="bar">d</div>
+        e
+        <template if:true={isTrue}>
+            <div slot="foo">f</div>
+        </template>
+        g
+        <div slot="bar">h</div>
+        i
+        <template if:true={isTrue}>
+            j
+            <div slot="foo">k</div>
+            <div slot="bar">l</div>
+            m
+            <div slot="foo">n</div>
+        </template>
+        o
+        <template if:true={isTrue}>
+            p
+            <template if:true={isTrue}>
+                q
+                <div slot="foo">r</div>
+                s
+            </template>
+            t
+        </template>
+        u
+        <x-another>
+                v
+                <div slot="foo">w</div>
+            <template if:true={isTrue}>
+                <div slot="foo">x</div>
+            </template>
+            y
+        </x-another>
+        z
+        <external-another lwc:external>
+            1
+            <div slot="foo">2</div>
+            3
+            <template if:true={isTrue}>
+                4
+                <div slot="foo">5</div>
+                6
+            </template>
+            7
+        </external-another>
+        8
+        <template if:true={isFalse}>
+            <div slot="foo">9</div>
+        </template>
+    </x-inner>
+</template>
