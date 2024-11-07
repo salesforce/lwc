@@ -15,7 +15,7 @@ export function cloneAndDeepFreeze<T>(obj: T): T {
     if (isArray(obj)) {
         const res: any[] = [];
         for (const item of obj) {
-            ArrayPush.call(res, item);
+            ArrayPush.call(res, cloneAndDeepFreeze(item));
         }
         freeze(res);
         return res as T;
