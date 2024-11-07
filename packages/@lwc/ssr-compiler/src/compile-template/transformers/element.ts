@@ -60,7 +60,7 @@ const bConditionalLiveYield = esTemplateWithYield`
         // This follows the historical behavior in api.ts:
         // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/engine-core/src/framework/api.ts#L193-L211
         if (attrName === 'tabindex') {
-            const shouldNormalize = attrValue > 0 && !(attrValue === true || attrValue === false);
+            const shouldNormalize = attrValue > 0 && typeof attrValue !== 'boolean';
             attrValue = shouldNormalize ? 0 : attrValue;
         }
 
