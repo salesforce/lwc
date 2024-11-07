@@ -5,7 +5,7 @@ import pkg from './package.json';
 export default defineConfig({
     test: {
         // Don't time out if we detect a debugger attached
-        testTimeout: inspector.url() ? Number.MAX_SAFE_INTEGER : undefined,
+        testTimeout: inspector.url() ? 2147483647 : undefined,
         include: ['**/*.{test,spec}.{mjs,js,ts}'],
         snapshotFormat: {
             printBasicPrototype: true,
