@@ -6,7 +6,7 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { reservedKeywords } from '@lwc/shared';
+import { reservedKeywords, StringReplace, StringTrim } from '@lwc/shared';
 import { Node as IrNode } from '@lwc/template-compiler';
 
 import { bImportDeclaration } from '../estree/builders';
@@ -99,4 +99,9 @@ export function getScopedExpression(expression: EsExpression, cxt: TransformerCo
     return cxt.isLocalVar(scopeReferencedId?.name)
         ? expression
         : b.memberExpression(b.identifier('instance'), expression);
+}
+
+export function normalizeClassAttributeValue(value: string) {
+    // @ts-expect-error weird indirection results in wrong overload being picked up
+    return StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
 }
