@@ -31,7 +31,7 @@ import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
+        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
         const slottedContent = {
             light: Object.create(null),
@@ -103,8 +103,8 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
     cxt.hoist(componentImport, childGeneratorLocalName);
     cxt.hoist(
-        bImportDeclaration([{ cloneAndDeepFreeze: '__cloneAndDeepFreeze' }]),
-        'import:cloneAndDeepFreeze'
+        bImportDeclaration([{ getReadOnlyProxy: '__getReadOnlyProxy' }]),
+        'import:getReadOnlyProxy'
     );
     const childTagName = node.name;
 
