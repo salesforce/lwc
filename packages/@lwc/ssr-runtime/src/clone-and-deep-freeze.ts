@@ -11,7 +11,7 @@ import { freeze, entries, isObject, isArray, create, isNull } from '@lwc/shared'
 // that they are immutable. This is one of the normal guarantees of both engine-dom and engine-server that we want to
 // emulate in ssr-runtime. The goal here is that a child cannot mutate the props of its parent and thus affect
 // the parent's rendering, which would lead to bidirectional reactivity and mischief.
-export function cloneAndDeepFreeze(obj: any): any {
+export function cloneAndDeepFreeze<T>(obj: T): T {
     if (isArray(obj)) {
         const res = [];
         for (let i = 0; i < obj.length; i++) {
