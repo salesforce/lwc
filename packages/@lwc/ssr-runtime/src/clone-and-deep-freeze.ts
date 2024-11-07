@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { freeze, entries, isObject, isArray, create, isNull } from '@lwc/shared';
+import { freeze, entries, isObject, isArray, create, isNull, ArrayMap } from '@lwc/shared';
 
 // Deep freeze and clone an object. Designed for cloning/freezing child props when passed from a parent to a child so
 // that they are immutable. This is one of the normal guarantees of both engine-dom and engine-server that we want to
@@ -13,10 +13,7 @@ import { freeze, entries, isObject, isArray, create, isNull } from '@lwc/shared'
 // the parent's rendering, which would lead to bidirectional reactivity and mischief.
 export function cloneAndDeepFreeze<T>(obj: T): T {
     if (isArray(obj)) {
-        const res = [];
-        for (let i = 0; i < obj.length; i++) {
-            res[i] = cloneAndDeepFreeze(obj[i]);
-        }
+        const res = ArrayMap.call(obj, cloneAndDeepFreeze);
         freeze(res);
         return res;
     } else if (isObject(obj) && !isNull(obj)) {
