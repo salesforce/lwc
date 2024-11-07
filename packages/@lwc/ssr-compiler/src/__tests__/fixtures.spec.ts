@@ -7,7 +7,7 @@
 
 import path from 'node:path';
 import { vi, describe } from 'vitest';
-import { rollup, RollupLog } from 'rollup';
+import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
@@ -42,12 +42,10 @@ const SSR_MODE: CompilationMode = 'asyncYield';
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
-    // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
-    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,
-        external: ['lwc'],
+        external: ['lwc', '@lwc/ssr-runtime', 'vitest'],
         plugins: [
             lwcRollupPlugin({
                 targetSSR: true,
@@ -58,8 +56,14 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn(warning) {
-            warnings.push(warning);
+        onwarn({ message, code }) {
+            if (
+                code !== 'CIRCULAR_DEPENDENCY' &&
+                // TODO [#4793]: fix unused imports
+                code !== 'UNUSED_EXTERNAL_IMPORT'
+            ) {
+                throw new Error(message);
+            }
         },
     });
 
