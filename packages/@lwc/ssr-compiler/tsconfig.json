@@ -1,5 +1,7 @@
 {
     "extends": "../../../tsconfig.json",
-
+    "compilerOptions": {
+        "types": ["rollup", "node"]
+    },
     "include": ["src/"]
 }
