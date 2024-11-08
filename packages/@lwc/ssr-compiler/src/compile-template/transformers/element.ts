@@ -133,9 +133,9 @@ function yieldAttrOrPropLiveValue(
     value: IrExpression | BinaryExpression,
     cxt: TransformerContext
 ): EsStatement[] {
+    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-
     return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
 }
 
@@ -196,7 +196,6 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
                 }
             }
 
-            cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
             if (value.type === 'Literal') {
                 return yieldAttrOrPropLiteralValue(name, value);
             } else {

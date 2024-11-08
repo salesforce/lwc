@@ -56,14 +56,15 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code }) {
+        onwarn({ message, code, names = [] }) {
             if (
-                code !== 'CIRCULAR_DEPENDENCY' &&
+                code === 'CIRCULAR_DEPENDENCY' ||
                 // TODO [#4793]: fix unused imports
-                code !== 'UNUSED_EXTERNAL_IMPORT'
+                (code === 'UNUSED_EXTERNAL_IMPORT' && !names.includes('htmlEscape'))
             ) {
-                throw new Error(message);
+                return;
             }
+            throw new Error(message);
         },
     });
 
