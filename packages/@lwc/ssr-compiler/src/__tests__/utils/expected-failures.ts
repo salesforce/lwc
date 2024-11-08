@@ -34,6 +34,7 @@ export const expectedFailures = new Set([
     'dynamic-components/index.js',
     'empty-text-with-comments-non-static-optimized/index.js',
     'global-html-attributes/index.js',
+    // In engine-server we do a no-op, but in ssr-compiler we throw an error. Long-term we probably want an error
     'inner-outer-html/index.js',
     // lwc:dynamic not supported in SSR since it's deprecated
     'lwc-dynamic/index.js',
