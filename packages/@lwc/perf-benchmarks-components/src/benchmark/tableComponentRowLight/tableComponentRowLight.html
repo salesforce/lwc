@@ -1,0 +1,11 @@
+<!--
+Copyright (c) 2018, salesforce.com, inc.
+All rights reserved.
+SPDX-License-Identifier: MIT
+For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+-->
+<template lwc:render-mode="light">
+    <span>{row.id}</span>
+    <div><a onclick={handleSelect} data-id={row.id}>{row.label}</a></div>
+    <div><a onclick={handleRemove} data-id={row.id}>Remove</a></div>
+</template>
