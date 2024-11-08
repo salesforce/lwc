@@ -43,7 +43,7 @@ export const expectedFailures = new Set([
     'global-html-attributes/index.js',
     // In engine-server we do a no-op, but in ssr-compiler we throw an error. Long-term we probably want an error
     'inner-outer-html/index.js',
-    // lwc:dynamic not supported in SSR since it's deprecated
+    // lwc:dynamic not supported in ssr-compiler since it's deprecated
     'lwc-dynamic/index.js',
     'rehydration/index.js',
     'render-dynamic-value/index.js',
