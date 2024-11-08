@@ -818,6 +818,8 @@ if (process.env.IS_BROWSER) {
     // On the server, we cannot use createBridgeToElementDescriptor because getAttribute/setAttribute are
     // not supported on HTMLElement. So apply the polyfill directly on top of LightningElement
     defineProperties(LightningElement.prototype, ariaReflectionPolyfillDescriptors);
+    // TODO:
+    defineProperties(LightningElement.prototype, globalAttributeDescriptors);
 }
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);
