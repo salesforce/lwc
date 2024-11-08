@@ -12,6 +12,7 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
+import { expectedFailures } from './utils/expected-failures';
 import type { CompilationMode } from '../index';
 
 interface FixtureModule {
@@ -38,6 +39,9 @@ vi.mock('@lwc/ssr-runtime', async () => {
 });
 
 const SSR_MODE: CompilationMode = 'asyncYield';
+
+const errorFile = 'error.txt';
+const expectedFile = 'expected.html';
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -84,10 +88,12 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
+            expectedFailures,
         },
         async ({ filename, dirname, config }) => {
-            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
-            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+            // TODO [#4815]: enable all SSR v2 tests
+            const shortFilename = filename.split('fixtures/')[1];
+            const expectedFailure = expectedFailures.has(shortFilename);
 
             let compiledFixturePath;
             try {
@@ -102,7 +108,14 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
                 };
             }
 
-            const module = (await import(compiledFixturePath)) as FixtureModule;
+            let module;
+            try {
+                module = (await import(compiledFixturePath)) as FixtureModule;
+            } catch (err: any) {
+                if (!expectedFailure) {
+                    throw err;
+                }
+            }
 
             let result;
             try {
