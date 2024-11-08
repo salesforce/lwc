@@ -56,7 +56,6 @@ const visitors: Visitors = {
             return;
         }
 
-        // TODO [#4773]: Why do we get conflicting PropertyDefinition types when removing "vitest/globals"?
         const decorators = node.decorators;
         if (is.identifier(decorators[0]?.expression) && decorators[0].expression.name === 'api') {
             state.publicFields.push(node.key.name);
