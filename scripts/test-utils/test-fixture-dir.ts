@@ -40,6 +40,11 @@ export interface TestFixtureConfig extends StyleCompilerConfig {
     namespace?: string;
     /** Props to provide to the top-level component. */
     props?: Record<string, string | string[]>;
+    /** Output files used by ssr-compiler, when the output needs to differ fron engine-server */
+    ssrFiles?: {
+        error?: string;
+        expected?: string;
+    };
 }
 
 /** Loads the the contents of the `config.json` in the provided directory, if present. */

@@ -40,9 +40,6 @@ vi.mock('@lwc/ssr-runtime', async () => {
 
 const SSR_MODE: CompilationMode = 'asyncYield';
 
-const errorFile = 'error.txt';
-const expectedFile = 'expected.html';
-
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
@@ -91,6 +88,8 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
             expectedFailures,
         },
         async ({ filename, dirname, config }) => {
+            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
+            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
             // TODO [#4815]: enable all SSR v2 tests
             const shortFilename = filename.split('fixtures/')[1];
             const expectedFailure = expectedFailures.has(shortFilename);
