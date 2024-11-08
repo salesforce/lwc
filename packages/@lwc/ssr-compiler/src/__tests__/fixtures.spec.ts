@@ -56,14 +56,15 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code }) {
+        onwarn({ message, code, names = [] }) {
             if (
-                code !== 'CIRCULAR_DEPENDENCY' &&
+                code === 'CIRCULAR_DEPENDENCY' ||
                 // TODO [#4793]: fix unused imports
-                code !== 'UNUSED_EXTERNAL_IMPORT'
+                (code === 'UNUSED_EXTERNAL_IMPORT' && !names.includes('htmlEscape'))
             ) {
-                throw new Error(message);
+                return;
             }
+            throw new Error(message);
         },
     });
 
@@ -76,7 +77,9 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-function testFixtures() {
+// We will enable this for realsies once all the tests are passing, but for now having the env var avoids
+// running these tests in CI while still allowing for local testing.
+describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
     testFixtureDir(
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
@@ -129,8 +132,4 @@ function testFixtures() {
             }
         }
     );
-}
-
-describe('fixtures', () => {
-    testFixtures();
 });

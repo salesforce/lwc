@@ -141,9 +141,9 @@ function yieldAttrOrPropLiveValue(
     value: IrExpression | BinaryExpression,
     cxt: TransformerContext
 ): EsStatement[] {
+    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-
     return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
 }
 
