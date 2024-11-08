@@ -44,6 +44,7 @@
         }
     },
     "devDependencies": {
-        "@lwc/shared": "8.7.0"
+        "@lwc/shared": "8.7.0",
+        "observable-membrane": "2.0.0"
     }
 }
