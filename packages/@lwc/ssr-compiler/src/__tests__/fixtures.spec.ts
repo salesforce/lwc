@@ -109,8 +109,7 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
                 result = await serverSideRenderComponent(
                     module!.tagName,
                     module!.default,
-                    config?.props ?? {},
-                    SSR_MODE
+                    config?.props ?? {}
                 );
             } catch (err: any) {
                 return {
