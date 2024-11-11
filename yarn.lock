@@ -1725,7 +1725,7 @@
   resolved "https://registry.yarnpkg.com/@eslint-community/regexpp/-/regexpp-4.12.1.tgz#cfc6cffe39df390a3841cde2abccf92eaa7ae0e0"
   integrity sha512-CCZCDJuduB9OUkFkY2IgppNZMi2lBQgD2qzwXkEia16cge2pijY/aXi96CJMquDMn3nJdlPV1A5KrJEXwfLNzQ==
 
-"@eslint/compat@^1.1.1", "@eslint/compat@^1.2.2":
+"@eslint/compat@^1.1.1":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@eslint/compat/-/compat-1.2.2.tgz#46d02898df7e32ccc04166b6ea2689c52dee10da"
   integrity sha512-jhgiIrsw+tRfcBQ4BFl2C3vCrIUw2trCY0cnDvGZpwTtKCEDmZhAtMfrEUP/KpnwM6PrO0T+Ltm+ccW74olG3Q==
@@ -2060,9 +2060,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4", "@napi-rs/wasm-runtime@^0.2.4":
   version "0.2.4"
