@@ -10,7 +10,8 @@ import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
+import { bAttributeValue, optimizeAdjacentYieldStmts } from '../shared';
+import { isValidIdentifier } from '../../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
@@ -35,7 +36,11 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         const childAttrs = ${/* child attrs */ is.objectExpression};
         const slottedContent = {
             light: Object.create(null),
-            shadow: async function* () {
+
+            // The 'instance' variable is shadowed here so that a contextful relationship
+            // is established between components rendered in slotted content & the "parent"
+            // component that contains the <slot>.
+            shadow: async function* (instance) {
                 ${/* shadow slot content */ is.statement}
             }
         };
@@ -49,7 +54,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         }
         ${/* light DOM addContent statements */ is.callExpression}
         ${/* scoped slot addContent statements */ is.callExpression}
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
+        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent, instance);
     }
 `<EsBlockStatement>;
 

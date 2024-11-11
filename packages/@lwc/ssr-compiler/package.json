@@ -53,6 +53,7 @@
         "meriyah": "^5.0.0"
     },
     "devDependencies": {
+        "@types/babel__helper-validator-identifier": "^7.15.2",
         "@types/estree": "^1.0.6"
     }
 }

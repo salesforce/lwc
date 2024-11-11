@@ -52,6 +52,7 @@ export type {
     ConfigValue as WireConfigValue,
     ContextConsumer as WireContextConsumer,
     ContextProvider as WireContextProvider,
+    ContextProviderOptions as WireContextProviderOptions,
     ContextValue as WireContextValue,
     DataCallback as WireDataCallback,
     WireAdapter,

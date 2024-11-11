@@ -10,9 +10,6 @@
 export function api(..._: unknown[]): never {
     throw new Error('@api cannot be used in SSR context.');
 }
-export function createContextProvider(..._: unknown[]): never {
-    throw new Error('createContextProvider cannot be used in SSR context.');
-}
 export function createElement(..._: unknown[]): never {
     throw new Error('createElement cannot be used in SSR context.');
 }
