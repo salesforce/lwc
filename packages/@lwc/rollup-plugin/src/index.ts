@@ -327,6 +327,17 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             const [namespace, name] =
                 specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
 
+            if (!namespace || !name) {
+                this.warn(
+                    'The namespace and name could not be determined from the specifier ' +
+                        JSON.stringify(specifier) +
+                        ' or filename ' +
+                        JSON.stringify(filename) +
+                        '. ' +
+                        'This will throw an error in @lwc/babel-plugin-component.'
+                );
+            }
+
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
             const { code, map, warnings } = transformSync(src, filename, {

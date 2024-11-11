@@ -48,8 +48,17 @@ function needsComponentRegistration(path: DeclarationPath) {
 
 function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
     const { namespace, name } = state.opts;
-    const kebabCasedName = name?.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    const componentName = namespace && kebabCasedName ? `${namespace}-${kebabCasedName}` : '';
+    if (!namespace || !name) {
+        throw new Error(
+            'The namespace and name passed in to @lwc/babel-plugin-component must both be non-empty strings. ' +
+                'Found: namespace=' +
+                JSON.stringify(namespace) +
+                ' and name=' +
+                JSON.stringify(namespace)
+        );
+    }
+    const kebabCasedName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const componentName = `${namespace}-${kebabCasedName}`;
     return t.stringLiteral(componentName);
 }
 

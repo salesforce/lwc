@@ -51,6 +51,16 @@ export default function scriptTransform(
         apiVersion,
     };
 
+    if (!namespace || !name) {
+        throw new Error(
+            'The namespace and name passed in to @lwc/babel-plugin-component must both be non-empty strings. ' +
+                'Found: namespace=' +
+                JSON.stringify(namespace) +
+                ' and name=' +
+                JSON.stringify(namespace)
+        );
+    }
+
     const plugins: babel.PluginItem[] = [
         [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
