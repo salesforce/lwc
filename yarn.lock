@@ -2904,11 +2904,6 @@
     "@types/babel__core" "*"
     "@types/babel__traverse" "*"
 
-"@types/babel__helper-validator-identifier@^7.15.2":
-  version "7.15.2"
-  resolved "https://registry.yarnpkg.com/@types/babel__helper-validator-identifier/-/babel__helper-validator-identifier-7.15.2.tgz#e75af42eb71d7f91a4f2805dca331f776a7d6241"
-  integrity sha512-l3dkwCt890NFhMwPKXbxsWXC0Por0/+KaFIiQP1j38/vWSH2P3Tn6m+IuJHkx2SBI3VLFqincFe9JtBk2NFHOw==
-
 "@types/babel__template@*":
   version "7.4.4"
   resolved "https://registry.yarnpkg.com/@types/babel__template/-/babel__template-7.4.4.tgz#5672513701c1b2199bc6dad636a9d7491586766f"
