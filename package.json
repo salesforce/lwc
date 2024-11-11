@@ -34,7 +34,6 @@
     },
     "devDependencies": {
         "@commitlint/cli": "^19.5.0",
-        "@eslint/compat": "^1.2.2",
         "@eslint/js": "^9.14.0",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/test-utils-lwc-internals": "link:./scripts/test-utils",
