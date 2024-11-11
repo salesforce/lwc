@@ -144,8 +144,12 @@ function transformHost(selector: Selector) {
     }
 }
 
-export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
-    validateSelectors(root);
+export default function transformSelector(
+    root: Root,
+    transformConfig: SelectorScopingConfig,
+    disableSyntheticShadowSupport: boolean
+) {
+    validateSelectors(root, disableSyntheticShadowSupport);
 
     root.each(scopeSelector);
 
