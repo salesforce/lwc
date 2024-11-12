@@ -1,6 +1,6 @@
 {
     "name": "CssSyntaxError",
-    "reason": "Invalid usage of unsupported selector \":host-context\".",
+    "reason": "Invalid usage of unsupported selector \":host-context\". This selector is only supported in non-scoped CSS where the `disableSyntheticShadowSupport` flag is set to true.",
     "column": 1,
     "line": 1
 }

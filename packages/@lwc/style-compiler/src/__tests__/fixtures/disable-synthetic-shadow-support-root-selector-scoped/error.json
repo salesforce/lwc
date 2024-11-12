@@ -1,6 +1,6 @@
 {
     "name": "CssSyntaxError",
-    "reason": "Invalid usage of unsupported selector \":root\".",
+    "reason": "Invalid usage of unsupported selector \":root\". This selector is only supported in non-scoped CSS where the `disableSyntheticShadowSupport` flag is set to true.",
     "column": 1,
     "line": 1
 }
