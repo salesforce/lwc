@@ -29,7 +29,7 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName, props, attrs, slotted, parent) {
+    export async function* generateMarkup(tagName, props, attrs, slotted, parent, scopeToken) {
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
         props = __filterProperties(
@@ -53,13 +53,13 @@ const bGenerateMarkup = esTemplate`
         }
         const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
-        const shouldRenderScopeToken =
+
+        const hostHasScopedStylesheets =
             tmplFn.hasScopedStylesheets ||
             hasScopedStaticStylesheets(${/*component class*/ 2});
-        if (shouldRenderScopeToken) {
-            yield \` class="\${tmplFn.stylesheetScopeToken}-host"\`;
-        }
-        yield* __renderAttrs(instance, attrs);
+        const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
+
+        yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
         yield* tmplFn(props, attrs, slotted, ${/*component class*/ 2}, instance);
         yield \`</\${tagName}>\`;

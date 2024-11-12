@@ -62,7 +62,7 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
     return styleMap;
 }
 
-export function normalizeStyleAttribute(style: string): string {
+export function normalizeStyleAttributeValue(style: string): string {
     const styleMap = parseStyleText(style);
 
     const styles = Object.entries(styleMap).map(([key, value]) => {

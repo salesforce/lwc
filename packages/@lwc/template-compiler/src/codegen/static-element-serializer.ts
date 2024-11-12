@@ -4,7 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { HTML_NAMESPACE, htmlEscape, isVoidElement, normalizeStyleAttribute } from '@lwc/shared';
+import {
+    HTML_NAMESPACE,
+    htmlEscape,
+    isVoidElement,
+    normalizeStyleAttributeValue,
+} from '@lwc/shared';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -108,7 +113,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             }
 
             if (name === 'style' && !hasExpression) {
-                v = normalizeStyleAttribute(v);
+                v = normalizeStyleAttributeValue(v);
                 if (v === '') {
                     // Do not serialize empty style attribute (consistent with non-static optimized)
                     return;

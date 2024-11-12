@@ -10,9 +10,7 @@ import {
     HTML_NAMESPACE,
     isBooleanAttribute,
     isVoidElement,
-    normalizeStyleAttribute,
-    StringReplace,
-    StringTrim,
+    normalizeStyleAttributeValue,
 } from '@lwc/shared';
 import {
     type Attribute as IrAttribute,
@@ -26,7 +24,12 @@ import {
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import { bImportHtmlEscape, getScopedExpression, importHtmlEscapeKey } from '../shared';
+import {
+    bImportHtmlEscape,
+    getScopedExpression,
+    importHtmlEscapeKey,
+    normalizeClassAttributeValue,
+} from '../shared';
 
 import { bImportDeclaration } from '../../estree/builders';
 import type {
@@ -109,10 +112,12 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
     if (typeof value === 'string') {
         let yieldedValue: string;
         if (name === 'style') {
-            yieldedValue = normalizeStyleAttribute(value);
+            yieldedValue = normalizeStyleAttributeValue(value);
         } else if (name === 'class') {
-            // @ts-expect-error weird indirection results in wrong overload being picked up
-            yieldedValue = StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+            yieldedValue = normalizeClassAttributeValue(value);
+            if (yieldedValue === '') {
+                return [];
+            }
         } else if (name === 'spellcheck') {
             // `spellcheck` string values are specially handled to massage them into booleans.
             // https://github.com/salesforce/lwc/blob/fe4e95f/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
@@ -122,6 +127,9 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
         }
         return [bStringLiteralYield(b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
+        if (name === 'class') {
+            return [];
+        }
         return [bYield(b.literal(` ${name}`))];
     }
     throw new Error(`Unknown attr/prop literal: ${type}`);
@@ -185,22 +193,27 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             // so should never be SSR'd. See https://github.com/salesforce/lwc/issues/4763
             return !(node.name === 'input' && (name === 'value' || name === 'checked'));
         })
-        .flatMap((attr) => {
-            const { name, value, type } = attr;
+        .flatMap(({ name, value, type }) => {
+            if (type === 'Attribute' && (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l')) {
+                throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
+            }
 
-            if (type === 'Attribute') {
-                if (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l') {
-                    throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
-                } else if (name === 'class') {
+            let result;
+            if (value.type === 'Literal') {
+                result = yieldAttrOrPropLiteralValue(name, value);
+            } else {
+                result = yieldAttrOrPropLiveValue(node.name, name, value, cxt);
+            }
+
+            if (result.length > 0) {
+                // actually yielded something
+                cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+                if (name === 'class') {
                     hasClassAttribute = true;
                 }
             }
 
-            if (value.type === 'Literal') {
-                return yieldAttrOrPropLiteralValue(name, value);
-            } else {
-                return yieldAttrOrPropLiveValue(node.name, name, value, cxt);
-            }
+            return result;
         });
 
     if (isVoidElement(node.name, HTML_NAMESPACE)) {
