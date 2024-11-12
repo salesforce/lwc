@@ -6,7 +6,6 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { reservedKeywords } from '@lwc/shared';
 import { Node as IrNode } from '@lwc/template-compiler';
 
 import { bImportDeclaration } from '../estree/builders';
@@ -20,16 +19,6 @@ import type {
 
 export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
 export const importHtmlEscapeKey = 'import:htmlEscape';
-
-// This is a mostly-correct regular expression will only match if the entire string
-// provided is a valid ECMAScript identifier. Its imperfections lie in the fact that
-// it will match strings like "export" when "export" is actually a reserved keyword
-// and therefore not a valid identifier. When combined with a check against reserved
-// keywords, it is a reliable test for whether a provided string is a valid identifier.
-const imperfectIdentifierMatcher = /^[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*$/;
-
-export const isValidIdentifier = (str: string) =>
-    !reservedKeywords.has(str) && imperfectIdentifierMatcher.test(str);
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
     let prevStmt: EsStatement | null = null;
