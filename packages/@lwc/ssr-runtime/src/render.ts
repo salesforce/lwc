@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isGeneratorFunction, isAsyncFunction } from 'node:util/types';
 import { getOwnPropertyNames, isNull, isString, isUndefined } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import {
@@ -13,7 +12,6 @@ import {
     SYMBOL__GENERATE_MARKUP,
 } from './lightning-element';
 import type { Attributes, Properties } from './types';
-import type { CompilationMode } from '@lwc/ssr-compiler';
 
 const escapeAttrVal = (attrValue: string) =>
     attrValue.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
@@ -139,7 +137,8 @@ interface ComponentWithGenerateMarkup {
 export async function serverSideRenderComponent(
     tagName: string,
     Component: GenerateMarkupFnVariants | ComponentWithGenerateMarkup,
-    props: Properties = {}
+    props: Properties = {},
+    mode: 'asyncYield' | 'async' | 'sync' = 'asyncYield'
 ): Promise<string> {
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);
@@ -148,11 +147,6 @@ export async function serverSideRenderComponent(
     // TODO [#4726]: remove `generateMarkup` export
     const generateMarkup =
         SYMBOL__GENERATE_MARKUP in Component ? Component[SYMBOL__GENERATE_MARKUP] : Component;
-    const mode: CompilationMode = isAsyncFunction(generateMarkup)
-        ? isGeneratorFunction(generateMarkup)
-            ? 'asyncYield'
-            : 'async'
-        : 'sync';
 
     let markup = '';
     const emit = (segment: string) => {

@@ -1,5 +1,7 @@
 import { renderComponent } from '@lwc/ssr-runtime';
 
+const SSR_MODE = 'asyncYield';
+
 // Generic benchmark for styled components, SSR-flavored!
 export function styledComponentSsrBenchmark(
     name,
@@ -15,7 +17,8 @@ export function styledComponentSsrBenchmark(
                 await renderComponent(
                     isArray ? `styled-component${i}` : 'styled-component',
                     isArray ? componentOrComponents[i] : componentOrComponents,
-                    {}
+                    {},
+                    SSR_MODE
                 );
             }
         });
