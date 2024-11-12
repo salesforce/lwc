@@ -25,7 +25,7 @@ function validateSelectors(root: Root, native: boolean) {
 
             // Ensure the selector doesn't use an unsupported selector.
             if (!native && UNSUPPORTED_SELECTORS.has(value)) {
-                throw root.error(`Invalid usage of unsupported selector "${value}".`, {
+                throw root.error(`Invalid usage of unsupported selector "${value}". This selector is only supported in non-scoped CSS where the \`disableSyntheticShadowSupport\` flag is set to true.`, {
                     index: sourceIndex,
                     word: value,
                 });
