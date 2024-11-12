@@ -16,6 +16,7 @@ import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './style
 import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
+import { removeDecoratorImport } from './remove-decorator-import';
 import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '../shared';
@@ -34,6 +35,7 @@ const visitors: Visitors = {
         replaceLwcImport(path, state);
         catalogTmplImport(path, state);
         catalogAndReplaceStyleImports(path, state);
+        removeDecoratorImport(path);
     },
     ClassDeclaration(path, state) {
         if (!path.node?.superClass) {
