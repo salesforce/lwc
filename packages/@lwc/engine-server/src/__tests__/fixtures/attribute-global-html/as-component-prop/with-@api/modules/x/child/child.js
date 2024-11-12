@@ -59,7 +59,6 @@ export default class extends LightningElement {
     @api colSpan
     @api command
     @api contentEditable
-    @api contextMenu
     @api crossorigin
     @api datetime
     @api details
