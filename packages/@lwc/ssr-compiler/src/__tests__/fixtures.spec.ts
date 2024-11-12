@@ -57,11 +57,11 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code, names = [] }) {
+        onwarn({ message, code }) {
             if (
                 code === 'CIRCULAR_DEPENDENCY' ||
                 // TODO [#4793]: fix unused imports
-                (code === 'UNUSED_EXTERNAL_IMPORT' && !names.includes('htmlEscape'))
+                code === 'UNUSED_EXTERNAL_IMPORT'
             ) {
                 return;
             }
