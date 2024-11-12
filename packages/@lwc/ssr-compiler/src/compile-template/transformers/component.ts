@@ -123,7 +123,7 @@ function getChildAttrsOrProps(
             }
             throw new Error(`Unimplemented child attr IR node type: ${value.type}`);
         })
-        .filter(v => v is EsProperty => Boolean(v));
+        .filter(Boolean) as EsProperty[];
 
     return b.objectExpression(objectAttrsOrProps);
 }
