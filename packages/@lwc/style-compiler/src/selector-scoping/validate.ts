@@ -10,7 +10,7 @@ const DEPRECATED_SELECTORS = new Set(['/deep/', '::shadow', '>>>']);
 const UNSUPPORTED_SELECTORS = new Set([':root', ':host-context']);
 const TEMPLATE_DIRECTIVES = [/^key$/, /^lwc:*/, /^if:*/, /^for:*/, /^iterator:*/];
 
-function validateSelectors(root: Root) {
+function validateSelectors(root: Root, native: boolean) {
     root.walk((node) => {
         const { value, sourceIndex } = node;
 
@@ -24,11 +24,14 @@ function validateSelectors(root: Root) {
             }
 
             // Ensure the selector doesn't use an unsupported selector.
-            if (UNSUPPORTED_SELECTORS.has(value)) {
-                throw root.error(`Invalid usage of unsupported selector "${value}".`, {
-                    index: sourceIndex,
-                    word: value,
-                });
+            if (!native && UNSUPPORTED_SELECTORS.has(value)) {
+                throw root.error(
+                    `Invalid usage of unsupported selector "${value}". This selector is only supported in non-scoped CSS where the \`disableSyntheticShadowSupport\` flag is set to true.`,
+                    {
+                        index: sourceIndex,
+                        word: value,
+                    }
+                );
             }
         }
     });
@@ -55,7 +58,7 @@ function validateAttribute(root: Root) {
     });
 }
 
-export default function validate(root: Root) {
-    validateSelectors(root);
+export default function validate(root: Root, native: boolean) {
+    validateSelectors(root, native);
     validateAttribute(root);
 }

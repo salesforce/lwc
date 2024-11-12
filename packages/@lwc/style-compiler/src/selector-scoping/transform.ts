@@ -27,6 +27,10 @@ type ChildNode = Exclude<Node, Selector>;
 export interface SelectorScopingConfig {
     /** When set to true, the :host selector gets replace with the the scoping token. */
     transformHost: boolean;
+    /** When set to true, the synthetic shadow support is disabled. */
+    disableSyntheticShadowSupport: boolean;
+    /** When set to true, the selector is scoped. */
+    scoped: boolean;
 }
 
 function isHostPseudoClass(node: Node): node is Pseudo {
@@ -145,7 +149,10 @@ function transformHost(selector: Selector) {
 }
 
 export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
-    validateSelectors(root);
+    validateSelectors(
+        root,
+        transformConfig.disableSyntheticShadowSupport && !transformConfig.scoped
+    );
 
     root.each(scopeSelector);
 
