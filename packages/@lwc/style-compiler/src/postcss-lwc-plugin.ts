@@ -20,14 +20,11 @@ function shouldTransformSelector(rule: Rule) {
     return rule.parent?.type !== 'atrule' || (rule.parent as AtRule).name !== 'keyframes';
 }
 
-function selectorProcessorFactory(
-    transformConfig: SelectorScopingConfig,
-    disableSyntheticShadowSupport: boolean
-) {
+function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
     return postCssSelector((root) => {
         validateIdSelectors(root);
 
-        transformSelectorScoping(root, transformConfig, disableSyntheticShadowSupport);
+        transformSelectorScoping(root, transformConfig);
         transformDirPseudoClass(root);
     });
 }
@@ -40,18 +37,14 @@ export default function postCssLwcPlugin(options: {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     // This distinction also applies to light DOM in scoped (synthetic-like) vs unscoped (native-like) mode.
-    const nativeShadowSelectorProcessor = selectorProcessorFactory(
-        {
-            transformHost: false,
-        },
-        options.disableSyntheticShadowSupport
-    );
-    const syntheticShadowSelectorProcessor = selectorProcessorFactory(
-        {
-            transformHost: true,
-        },
-        options.disableSyntheticShadowSupport
-    );
+    const nativeShadowSelectorProcessor = selectorProcessorFactory({
+        transformHost: false,
+        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+    });
+    const syntheticShadowSelectorProcessor = selectorProcessorFactory({
+        transformHost: true,
+        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+    });
 
     return (root, result) => {
         transformImport(root, result, options.scoped);
