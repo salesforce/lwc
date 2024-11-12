@@ -10,9 +10,9 @@ import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
 import { normalizeStyleAttributeValue } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
+import { isValidIdentifier } from '../../shared';
 import {
     bAttributeValue,
-    isValidIdentifier,
     normalizeClassAttributeValue,
     optimizeAdjacentYieldStmts,
 } from '../shared';
@@ -44,7 +44,11 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         const childAttrs = ${/* child attrs */ is.objectExpression};
         const slottedContent = {
             light: Object.create(null),
-            shadow: async function* () {
+
+            // The 'instance' variable is shadowed here so that a contextful relationship
+            // is established between components rendered in slotted content & the "parent"
+            // component that contains the <slot>.
+            shadow: async function* (instance) {
                 ${/* shadow slot content */ is.statement}
             }
         };
@@ -60,7 +64,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 
         ${/* light DOM addContent statements */ is.callExpression}
         ${/* scoped slot addContent statements */ is.callExpression}
-       
+
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
 
         yield* ${/* generateMarkup */ is.identifier}(
@@ -68,6 +72,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             childProps, 
             childAttrs, 
             slottedContent,
+            instance,
             scopeToken,
         );
     }

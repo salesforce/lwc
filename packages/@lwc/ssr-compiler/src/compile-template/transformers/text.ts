@@ -32,7 +32,7 @@ const bYieldEscapedString = esTemplateWithYield`
             yield String(${0});
             break;
         default:
-            yield ${0} ? htmlEscape(${0}.toString()) : '\\u200D';
+            yield ${0} ? htmlEscape(${0}.toString()) : ${2} ? '\\u200D' : '';
     }
 `<EsStatement[]>;
 

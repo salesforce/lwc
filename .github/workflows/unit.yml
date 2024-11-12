@@ -66,6 +66,9 @@ jobs:
               run: yarn test:types
             - name: Run unit tests
               run: yarn test:ci
+            # TODO [#4815]: enable all SSR v2 tests
+            - name: Run experimental SSR fixture tests
+              run: TEST_SSR_COMPILER=1 yarn test packages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts
             - name: Upload unit test coverage report
               uses: actions/upload-artifact@v4
               with:

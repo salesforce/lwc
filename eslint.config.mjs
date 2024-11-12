@@ -6,10 +6,8 @@
  */
 import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
-// @ts-expect-error CJS module; TS can't detect that it has a default export
 import _import from 'eslint-plugin-import';
 import header from 'eslint-plugin-header';
-import { fixupPluginRules } from '@eslint/compat';
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -37,7 +35,7 @@ export default tseslint.config(
     {
         plugins: {
             '@lwc/lwc-internal': lwcInternal,
-            import: fixupPluginRules(_import),
+            import: _import,
             header,
             vitest,
         },
