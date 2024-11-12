@@ -6,18 +6,20 @@
  */
 
 import { parse as pathParse } from 'node:path';
-import { BlockStatement as EsBlockStatement } from 'estree';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
+import { bWireAdaptersPlumbing } from './wire';
 
 import type {
+    BlockStatement,
     ExportNamedDeclaration,
     Program,
     SimpleCallExpression,
     Identifier,
     MemberExpression,
+    Statement,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -27,7 +29,7 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName, props, attrs, slotted) {
+    export async function* generateMarkup(tagName, props, attrs, slotted, parent) {
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
         props = __filterProperties(
@@ -38,6 +40,10 @@ const bGenerateMarkup = esTemplate`
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
+
+        __establishContextfulRelationship(parent, instance);
+        ${/*connect wire*/ is.statement}
+
         instance[__SYMBOL__SET_INTERNALS](props, attrs);
         instance.isConnected = true;
         if (instance.connectedCallback) {
@@ -64,7 +70,7 @@ const bAssignGenerateMarkupToComponentClass = esTemplate`
     {
         ${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
     }
-`<EsBlockStatement>;
+`<BlockStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -98,6 +104,12 @@ export function addGenerateMarkupExport(
         program.body.unshift(bImportDefaultDeclaration('tmpl', defaultTmplPath));
     }
 
+    // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
+    let connectWireAdapterCode: Statement[] = [];
+    if (state.wireAdapters.length) {
+        connectWireAdapterCode = bWireAdaptersPlumbing(state.wireAdapters);
+    }
+
     program.body.unshift(
         bImportDeclaration([
             {
@@ -106,6 +118,8 @@ export function addGenerateMarkupExport(
                 mutationTracker: '__mutationTracker',
                 renderAttrs: '__renderAttrs',
                 SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
+                establishContextfulRelationship: '__establishContextfulRelationship',
+                connectContext: '__connectContext',
             },
         ])
     );
@@ -115,6 +129,7 @@ export function addGenerateMarkupExport(
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
+            connectWireAdapterCode,
             renderCall
         )
     );
