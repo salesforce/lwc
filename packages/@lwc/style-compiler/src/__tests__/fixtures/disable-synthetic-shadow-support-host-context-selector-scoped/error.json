@@ -1,0 +1,6 @@
+{
+    "name": "CssSyntaxError",
+    "reason": "Invalid usage of unsupported selector \":host-context\".",
+    "column": 1,
+    "line": 1
+}

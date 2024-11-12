@@ -29,6 +29,8 @@ export interface SelectorScopingConfig {
     transformHost: boolean;
     /** When set to true, the synthetic shadow support is disabled. */
     disableSyntheticShadowSupport: boolean;
+    /** When set to true, the selector is scoped. */
+    scoped: boolean;
 }
 
 function isHostPseudoClass(node: Node): node is Pseudo {
@@ -147,7 +149,10 @@ function transformHost(selector: Selector) {
 }
 
 export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
-    validateSelectors(root, transformConfig.disableSyntheticShadowSupport);
+    validateSelectors(
+        root,
+        transformConfig.disableSyntheticShadowSupport && !transformConfig.scoped
+    );
 
     root.each(scopeSelector);
 

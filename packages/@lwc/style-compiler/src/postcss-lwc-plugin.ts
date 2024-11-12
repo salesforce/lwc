@@ -40,10 +40,12 @@ export default function postCssLwcPlugin(options: {
     const nativeShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: false,
         disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+        scoped: options.scoped,
     });
     const syntheticShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: true,
         disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+        scoped: options.scoped,
     });
 
     return (root, result) => {
