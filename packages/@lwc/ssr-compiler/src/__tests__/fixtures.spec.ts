@@ -38,11 +38,17 @@ vi.mock('@lwc/ssr-runtime', async () => {
     return runtime;
 });
 
-const SSR_MODE: CompilationMode = 'asyncYield';
-
-async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
+async function compileFixture({
+    input,
+    dirname,
+    ssrMode,
+}: {
+    input: string;
+    dirname: string;
+    ssrMode: CompilationMode;
+}) {
     const modulesDir = path.resolve(dirname, './modules');
-    const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
+    const outputFile = path.resolve(dirname, `./dist/compiled-experimental-ssr-${ssrMode}.js`);
 
     const bundle = await rollup({
         input,
@@ -50,7 +56,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
         plugins: [
             lwcRollupPlugin({
                 targetSSR: true,
-                ssrMode: SSR_MODE,
+                ssrMode,
                 enableDynamicComponents: true,
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
@@ -81,67 +87,71 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 // We will enable this for realsies once all the tests are passing, but for now having the env var avoids
 // running these tests in CI while still allowing for local testing.
 describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
-    testFixtureDir(
-        {
-            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
-            pattern: '**/index.js',
-            expectedFailures,
-        },
-        async ({ filename, dirname, config }) => {
-            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
-            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
-            // TODO [#4815]: enable all SSR v2 tests
-            const shortFilename = filename.split('fixtures/')[1];
-            const expectedFailure = expectedFailures.has(shortFilename);
+    const compilationModes: CompilationMode[] = ['sync', 'async', 'asyncYield'];
+    describe.concurrent.each(compilationModes)('ssrMode=%s', (ssrMode) => {
+        testFixtureDir(
+            {
+                root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
+                pattern: '**/index.js',
+                expectedFailures,
+            },
+            async ({ filename, dirname, config }) => {
+                const errorFile = config?.ssrFiles?.error ?? 'error.txt';
+                const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+                // TODO [#4815]: enable all SSR v2 tests
+                const shortFilename = filename.split('fixtures/')[1];
+                const expectedFailure = expectedFailures.has(shortFilename);
 
-            let compiledFixturePath;
-            try {
-                compiledFixturePath = await compileFixture({
-                    input: filename,
-                    dirname,
-                });
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
+                let compiledFixturePath;
+                try {
+                    compiledFixturePath = await compileFixture({
+                        input: filename,
+                        dirname,
+                        ssrMode,
+                    });
+                } catch (err: any) {
+                    return {
+                        [errorFile]: err.message,
+                        [expectedFile]: '',
+                    };
+                }
 
-            let module;
-            try {
-                module = (await import(compiledFixturePath)) as FixtureModule;
-            } catch (err: any) {
-                if (!expectedFailure) {
-                    throw err;
+                let module;
+                try {
+                    module = (await import(compiledFixturePath)) as FixtureModule;
+                } catch (err: any) {
+                    if (!expectedFailure) {
+                        throw err;
+                    }
+                }
+
+                let result;
+                try {
+                    result = await serverSideRenderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {},
+                        ssrMode
+                    );
+                } catch (err: any) {
+                    return {
+                        [errorFile]: err.message,
+                        [expectedFile]: '',
+                    };
+                }
+
+                try {
+                    return {
+                        [errorFile]: '',
+                        [expectedFile]: formatHTML(result),
+                    };
+                } catch (_err: any) {
+                    return {
+                        [errorFile]: `Test helper could not format HTML:\n\n${result}`,
+                        [expectedFile]: '',
+                    };
                 }
             }
-
-            let result;
-            try {
-                result = await serverSideRenderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config?.props ?? {},
-                    SSR_MODE
-                );
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
-
-            try {
-                return {
-                    [errorFile]: '',
-                    [expectedFile]: formatHTML(result),
-                };
-            } catch (_err: any) {
-                return {
-                    [errorFile]: `Test helper could not format HTML:\n\n${result}`,
-                    [expectedFile]: '',
-                };
-            }
-        }
-    );
+        );
+    });
 });
