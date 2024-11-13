@@ -29,6 +29,7 @@ import {
     setPrototypeOf,
     APIFeature,
     assert,
+    propToAttrReflectionPolyfillDescriptors,
 } from '@lwc/shared';
 
 import { logError, logWarnOnce } from '../shared/logger';
@@ -817,9 +818,7 @@ if (process.env.IS_BROWSER) {
 } else {
     // On the server, we cannot use createBridgeToElementDescriptor because getAttribute/setAttribute are
     // not supported on HTMLElement. So apply the polyfill directly on top of LightningElement
-    defineProperties(LightningElement.prototype, ariaReflectionPolyfillDescriptors);
-    // TODO:
-    defineProperties(LightningElement.prototype, globalAttributeDescriptors);
+    defineProperties(LightningElement.prototype, propToAttrReflectionPolyfillDescriptors);
 }
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);

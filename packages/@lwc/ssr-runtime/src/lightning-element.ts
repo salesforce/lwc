@@ -18,15 +18,15 @@ import {
     defineProperty,
     defineProperties,
     hasOwnProperty,
+    propToAttrReflectionPolyfillDescriptors,
     StringToLowerCase,
+    Stylesheets,
     toString,
 } from '@lwc/shared';
 
 import { ClassList } from './class-list';
 import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
-import { descriptors as reflectionDescriptors } from './reflection';
-import type { Stylesheets } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
@@ -269,4 +269,4 @@ export class LightningElement implements PropsAvailableAtConstruction {
     role!: string | null;
 }
 
-defineProperties(LightningElement.prototype, reflectionDescriptors);
+defineProperties(LightningElement.prototype, propToAttrReflectionPolyfillDescriptors);
