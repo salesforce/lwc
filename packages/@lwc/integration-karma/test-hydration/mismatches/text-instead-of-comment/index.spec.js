@@ -18,6 +18,7 @@ export default {
         expect(text.nodeValue).toBe(snapshots.comment.nodeValue);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
             warn: [
                 'Hydration mismatch: incorrect node type received',
                 'Hydration completed with errors.',

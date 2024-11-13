@@ -20,6 +20,7 @@ export default {
         expect(text.nodeType).toBe(Node.ELEMENT_NODE);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
             warn: [
                 '[LWC warn]: Hydration mismatch: incorrect node type received',
                 'Hydration completed with errors.',

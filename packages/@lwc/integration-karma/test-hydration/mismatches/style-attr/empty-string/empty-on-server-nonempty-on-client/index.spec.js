@@ -18,6 +18,7 @@ export default {
         expect(p.getAttribute('style')).toBe('color: burlywood;');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
             warn: [
                 'Mismatch hydrating element <p>: attribute "style" has different values, expected "color: burlywood;" but found ""',
                 'Hydration completed with errors.',
