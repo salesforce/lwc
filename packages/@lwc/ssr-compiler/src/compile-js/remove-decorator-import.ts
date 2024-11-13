@@ -18,6 +18,7 @@ export function removeDecoratorImport(path: NodePath<ImportDeclaration>) {
             !(
                 specifier.type === 'ImportSpecifier' &&
                 specifier.imported.type === 'Identifier' &&
+                // Excluding track because it also has a non-decorator signature that might be used
                 (specifier.imported.name === 'api' || specifier.imported.name === 'wire')
             )
     );
