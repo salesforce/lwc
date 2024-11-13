@@ -79,5 +79,9 @@ gh pr create \
   --body "External contributors do not have access to CI secrets. This PR serves as a workaround to trigger CI with secrets for #$NUMBER."
 git switch -
 gh pr close "$INTERNAL_BRANCH" --delete-branch
+
+# Trigger nucleus tests
+gh pr comment "$NUMBER" -b '/nucleus test'
+
 # Open the original PR in browser to validate that CI is running correctly
 gh pr view --web "$NUMBER"
