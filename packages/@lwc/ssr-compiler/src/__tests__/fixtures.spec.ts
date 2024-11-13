@@ -57,14 +57,18 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code }) {
-            if (
-                code === 'CIRCULAR_DEPENDENCY' ||
-                // TODO [#4793]: fix unused imports
-                code === 'UNUSED_EXTERNAL_IMPORT'
-            ) {
+        onwarn({ message, code, names }) {
+            if (code === 'CIRCULAR_DEPENDENCY') {
                 return;
             }
+            // TODO [#4793]: fix unused imports
+            if (code === 'UNUSED_EXTERNAL_IMPORT') {
+                const unexpected = new Set(names);
+                const expected = ['connectContext', 'htmlEscape', 'track'];
+                expected.forEach((name) => unexpected.delete(name));
+                if (unexpected.size === 0) return;
+            }
+
             throw new Error(message);
         },
     });
