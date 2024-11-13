@@ -18,13 +18,13 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
     {
         const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
-        yield* ${is.expression}[SYMBOL__GENERATE_MARKUP](null, childProps, childAttrs);
+        yield* ${/*component ctor*/ is.expression}[SYMBOL__GENERATE_MARKUP](null, childProps, childAttrs);
     }
 `<EsBlockStatement>;
 
 const bThrowErrorForInvalidConstructor = esTemplate`
     {
-        throw new Error(\`Invalid constructor \${String(${is.expression})} is not a LightningElement constructor.\`)
+        throw new Error(\`Invalid constructor \${String(${/*component ctor*/ is.expression})} is not a LightningElement constructor.\`)
     }
 `<EsBlockStatement>;
 
