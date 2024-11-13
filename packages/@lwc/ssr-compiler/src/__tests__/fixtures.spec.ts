@@ -79,10 +79,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 function testFixtures() {
     testFixtureDir(
         {
-            root: path.resolve(
-                __dirname,
-                '../../../engine-server/src/__tests__/fixtures/dynamic-components'
-            ),
+            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures/'),
             pattern: '**/index.js',
         },
         async ({ filename, dirname, config }) => {
