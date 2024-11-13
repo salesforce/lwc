@@ -66,7 +66,6 @@ function bifLwcIsExpressionTypeCorrect(
     return b.ifStatement(comparison, consequent, alternate);
 }
 
-// jtu-todo: add a comment for the default tag name to explain why it's there
 export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(node, cxt) {
     const { directives } = node;
 
