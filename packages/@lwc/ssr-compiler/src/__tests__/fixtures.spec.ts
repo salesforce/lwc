@@ -89,14 +89,12 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
+            // TODO [#4815]: enable all SSR v2 tests
             expectedFailures,
         },
         async ({ filename, dirname, config }) => {
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';
             const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
-            // TODO [#4815]: enable all SSR v2 tests
-            const shortFilename = filename.split('fixtures/')[1];
-            const expectedFailure = expectedFailures.has(shortFilename);
 
             let compiledFixturePath;
             try {
@@ -111,14 +109,7 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
                 };
             }
 
-            let module;
-            try {
-                module = (await import(compiledFixturePath)) as FixtureModule;
-            } catch (err: any) {
-                if (!expectedFailure) {
-                    throw err;
-                }
-            }
+            const module = (await import(compiledFixturePath)) as FixtureModule;
 
             let result;
             try {
