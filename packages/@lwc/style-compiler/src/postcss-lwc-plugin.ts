@@ -32,15 +32,20 @@ function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
 export default function postCssLwcPlugin(options: {
     scoped: boolean;
     apiVersion: APIVersion;
+    disableSyntheticShadowSupport: boolean;
 }): TransformCallback {
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     // This distinction also applies to light DOM in scoped (synthetic-like) vs unscoped (native-like) mode.
     const nativeShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: false,
+        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+        scoped: options.scoped,
     });
     const syntheticShadowSelectorProcessor = selectorProcessorFactory({
         transformHost: true,
+        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+        scoped: options.scoped,
     });
 
     return (root, result) => {

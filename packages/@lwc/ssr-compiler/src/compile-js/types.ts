@@ -10,6 +10,16 @@ import type { Node } from 'estree';
 
 export type Visitors = Parameters<typeof traverse<Node, ComponentMetaState>>[1];
 
+export interface WireAdapter {
+    fieldName: string;
+    adapterConstructorId: string;
+    config: Array<{
+        configKey: string;
+        referencedField: string;
+    }>;
+    fieldType: 'property' | 'method';
+}
+
 export interface ComponentMetaState {
     // indicates whether the LightningElement subclass is found in the JS being traversed
     isLWC: boolean;
@@ -39,4 +49,6 @@ export interface ComponentMetaState {
     publicFields: Array<string>;
     // the private fields of the component class
     privateFields: Array<string>;
+    // indicates whether the LightningElement has any wired props
+    wireAdapters: WireAdapter[];
 }

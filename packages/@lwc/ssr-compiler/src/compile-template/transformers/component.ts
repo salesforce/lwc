@@ -8,15 +8,24 @@
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
-import { normalizeStyleAttribute } from '@lwc/shared';
+import { normalizeStyleAttributeValue } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
+import { isValidIdentifier } from '../../shared';
+import {
+    bAttributeValue,
+    normalizeClassAttributeValue,
+    optimizeAdjacentYieldStmts,
+} from '../shared';
 import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
 import { bImportDeclaration } from '../../estree/builders';
-import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
+import type {
+    CallExpression as EsCallExpression,
+    Expression as EsExpression,
+    Property as EsProperty,
+} from 'estree';
 
 import type {
     BlockStatement as EsBlockStatement,
@@ -31,14 +40,19 @@ import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
+        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
         const slottedContent = {
             light: Object.create(null),
-            shadow: async function* () {
+
+            // The 'instance' variable is shadowed here so that a contextful relationship
+            // is established between components rendered in slotted content & the "parent"
+            // component that contains the <slot>.
+            shadow: async function* (instance) {
                 ${/* shadow slot content */ is.statement}
             }
         };
+
         function addContent(name, fn) {
             let contentList = slottedContent.light[name]
             if (contentList) {
@@ -47,9 +61,20 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 slottedContent.light[name] = [fn]
             }
         }
+
         ${/* light DOM addContent statements */ is.callExpression}
         ${/* scoped slot addContent statements */ is.callExpression}
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
+
+        const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
+
+        yield* ${/* generateMarkup */ is.identifier}(
+            ${/* tag name */ is.literal}, 
+            childProps, 
+            childAttrs, 
+            slottedContent,
+            instance,
+            scopeToken,
+        );
     }
 `<EsBlockStatement>;
 
@@ -72,26 +97,33 @@ function getChildAttrsOrProps(
     attrs: (IrAttribute | IrProperty)[],
     cxt: TransformerContext
 ): EsObjectExpression {
-    const objectAttrsOrProps = attrs.map((attr) => {
-        const key = isValidIdentifier(attr.name) ? b.identifier(attr.name) : b.literal(attr.name);
-        if (attr.value.type === 'Literal' && typeof attr.value.value === 'string') {
-            const value =
-                attr.name === 'style'
-                    ? normalizeStyleAttribute(attr.value.value)
-                    : attr.value.value;
-            return b.property('init', key, b.literal(value));
-        } else if (attr.value.type === 'Literal' && typeof attr.value.value === 'boolean') {
-            return b.property(
-                'init',
-                key,
-                b.literal(attr.type === 'Attribute' ? '' : attr.value.value)
-            );
-        } else if (attr.value.type === 'Identifier' || attr.value.type === 'MemberExpression') {
-            const propValue = expressionIrToEs(attr.value, cxt);
-            return b.property('init', key, propValue);
-        }
-        throw new Error(`Unimplemented child attr IR node type: ${attr.value.type}`);
-    });
+    const objectAttrsOrProps = attrs
+        .map(({ name, value, type }) => {
+            const key = isValidIdentifier(name) ? b.identifier(name) : b.literal(name);
+            if (value.type === 'Literal' && typeof value.value === 'string') {
+                let literalValue = value.value;
+                if (name === 'style') {
+                    literalValue = normalizeStyleAttributeValue(literalValue);
+                } else if (name === 'class') {
+                    literalValue = normalizeClassAttributeValue(literalValue);
+                    if (literalValue === '') {
+                        return; // do not render empty `class=""`
+                    }
+                }
+                return b.property('init', key, b.literal(literalValue));
+            } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
+                if (name === 'class') {
+                    return; // do not render empty `class=""`
+                }
+
+                return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
+            } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
+                const propValue = expressionIrToEs(value, cxt);
+                return b.property('init', key, propValue);
+            }
+            throw new Error(`Unimplemented child attr IR node type: ${value.type}`);
+        })
+        .filter(Boolean) as EsProperty[];
 
     return b.objectExpression(objectAttrsOrProps);
 }
@@ -103,8 +135,8 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
     cxt.hoist(componentImport, childGeneratorLocalName);
     cxt.hoist(
-        bImportDeclaration([{ cloneAndDeepFreeze: '__cloneAndDeepFreeze' }]),
-        'import:cloneAndDeepFreeze'
+        bImportDeclaration([{ getReadOnlyProxy: '__getReadOnlyProxy' }]),
+        'import:getReadOnlyProxy'
     );
     const childTagName = node.name;
 

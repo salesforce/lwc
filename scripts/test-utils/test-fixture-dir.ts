@@ -71,6 +71,7 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
  * @param config The config object
  * @param config.pattern The glob pattern to locate each individual fixture.
  * @param config.root The directory from where the pattern is executed.
+ * @param config.expectedFailures Any tests that you expect to fail
  * @param testFn The test function executed for each fixture.
  * @throws On invalid input or output
  * @example
@@ -84,7 +85,11 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
  * )
  */
 export function testFixtureDir<T extends TestFixtureConfig>(
-    config: { pattern: string; root: string },
+    config: {
+        pattern: string;
+        root: string;
+        expectedFailures?: Set<string>;
+    },
     testFn: (options: {
         src: string;
         filename: string;
@@ -131,6 +136,12 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                 );
             }
 
+            // TODO [#4815]: enable all SSR v2 tests
+            const shortFilename = filename.split('fixtures/')[1];
+            const expectedFailure = config.expectedFailures?.has(shortFilename);
+
+            let error: Error | undefined;
+
             for (const [outputName, content] of Object.entries(outputs)) {
                 const outputPath = path.resolve(dirname, outputName);
 
@@ -146,9 +157,16 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                         // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
                         Error.captureStackTrace(err, testFixtureDir);
                     }
-
-                    throw err;
+                    if (!error) {
+                        error = err as Error;
+                    }
                 }
+            }
+
+            if (expectedFailure && !error) {
+                throw new Error('Expected a failure in fixture: ' + shortFilename);
+            } else if (!expectedFailure && error) {
+                throw error;
             }
         });
     }
