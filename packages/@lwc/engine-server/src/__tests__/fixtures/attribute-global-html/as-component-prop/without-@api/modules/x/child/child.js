@@ -59,7 +59,6 @@ export default class extends LightningElement {
     colSpan
     command
     contentEditable
-    contextMenu
     crossorigin
     datetime
     details
