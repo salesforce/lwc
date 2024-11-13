@@ -6,16 +6,22 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { reservedKeywords } from '@lwc/shared';
-import { Node as IrNode } from '@lwc/template-compiler';
+import { normalizeStyleAttribute, reservedKeywords } from '@lwc/shared';
+import {
+    Node as IrNode,
+    Attribute as IrAttribute,
+    Property as IrProperty,
+} from '@lwc/template-compiler';
 
 import { bImportDeclaration } from '../estree/builders';
 import { TransformerContext } from './types';
+import { expressionIrToEs } from './expression';
 import type {
     Statement as EsStatement,
     Expression as EsExpression,
     MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
+    ObjectExpression as EsObjectExpression,
 } from 'estree';
 
 export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
@@ -99,4 +105,32 @@ export function getScopedExpression(expression: EsExpression, cxt: TransformerCo
     return cxt.isLocalVar(scopeReferencedId?.name)
         ? expression
         : b.memberExpression(b.identifier('instance'), expression);
+}
+
+export function getChildAttrsOrProps(
+    attrs: (IrAttribute | IrProperty)[],
+    cxt: TransformerContext
+): EsObjectExpression {
+    const objectAttrsOrProps = attrs.map((attr) => {
+        const key = isValidIdentifier(attr.name) ? b.identifier(attr.name) : b.literal(attr.name);
+        if (attr.value.type === 'Literal' && typeof attr.value.value === 'string') {
+            const value =
+                attr.name === 'style'
+                    ? normalizeStyleAttribute(attr.value.value)
+                    : attr.value.value;
+            return b.property('init', key, b.literal(value));
+        } else if (attr.value.type === 'Literal' && typeof attr.value.value === 'boolean') {
+            return b.property(
+                'init',
+                key,
+                b.literal(attr.type === 'Attribute' ? '' : attr.value.value)
+            );
+        } else if (attr.value.type === 'Identifier' || attr.value.type === 'MemberExpression') {
+            const propValue = expressionIrToEs(attr.value, cxt);
+            return b.property('init', key, propValue);
+        }
+        throw new Error(`Unimplemented child attr IR node type: ${attr.value.type}`);
+    });
+
+    return b.objectExpression(objectAttrsOrProps);
 }

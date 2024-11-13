@@ -8,25 +8,15 @@
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
-import { normalizeStyleAttribute } from '@lwc/shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { bAttributeValue, isValidIdentifier, optimizeAdjacentYieldStmts } from '../shared';
-import { TransformerContext } from '../types';
-import { expressionIrToEs } from '../expression';
+import { bAttributeValue, getChildAttrsOrProps, optimizeAdjacentYieldStmts } from '../shared';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
 import { bImportDeclaration } from '../../estree/builders';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
-import type {
-    BlockStatement as EsBlockStatement,
-    ObjectExpression as EsObjectExpression,
-} from 'estree';
-import type {
-    Attribute as IrAttribute,
-    Component as IrComponent,
-    Property as IrProperty,
-} from '@lwc/template-compiler';
+import type { BlockStatement as EsBlockStatement } from 'estree';
+import type { Component as IrComponent } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
@@ -67,34 +57,6 @@ const bImportGenerateMarkup = (localName: string, importPath: string) =>
         [b.importSpecifier(b.identifier('generateMarkup'), b.identifier(localName))],
         b.literal(importPath)
     );
-
-function getChildAttrsOrProps(
-    attrs: (IrAttribute | IrProperty)[],
-    cxt: TransformerContext
-): EsObjectExpression {
-    const objectAttrsOrProps = attrs.map((attr) => {
-        const key = isValidIdentifier(attr.name) ? b.identifier(attr.name) : b.literal(attr.name);
-        if (attr.value.type === 'Literal' && typeof attr.value.value === 'string') {
-            const value =
-                attr.name === 'style'
-                    ? normalizeStyleAttribute(attr.value.value)
-                    : attr.value.value;
-            return b.property('init', key, b.literal(value));
-        } else if (attr.value.type === 'Literal' && typeof attr.value.value === 'boolean') {
-            return b.property(
-                'init',
-                key,
-                b.literal(attr.type === 'Attribute' ? '' : attr.value.value)
-            );
-        } else if (attr.value.type === 'Identifier' || attr.value.type === 'MemberExpression') {
-            const propValue = expressionIrToEs(attr.value, cxt);
-            return b.property('init', key, propValue);
-        }
-        throw new Error(`Unimplemented child attr IR node type: ${attr.value.type}`);
-    });
-
-    return b.objectExpression(objectAttrsOrProps);
-}
 
 export const Component: Transformer<IrComponent> = function Component(node, cxt) {
     // Import the custom component's generateMarkup export.

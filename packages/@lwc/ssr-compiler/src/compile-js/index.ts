@@ -17,7 +17,7 @@ import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './gene
 
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode } from '../shared';
+import type { CompilationMode, TransformOptions } from '../shared';
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -119,7 +119,12 @@ const visitors: Visitors = {
     },
 };
 
-export default function compileJS(src: string, filename: string, compilationMode: CompilationMode) {
+export default function compileJS(
+    src: string,
+    filename: string,
+    options: TransformOptions,
+    compilationMode: CompilationMode
+) {
     let ast = parseModule(src, {
         module: true,
         next: true,
@@ -153,7 +158,8 @@ export default function compileJS(src: string, filename: string, compilationMode
         };
     }
 
-    addGenerateMarkupExport(ast, state, filename);
+    // Add the tag name here, either export tag name as additional export or just attach it to the class
+    addGenerateMarkupExport(ast, state, options, filename);
     assignGenerateMarkupToComponent(ast, state);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {

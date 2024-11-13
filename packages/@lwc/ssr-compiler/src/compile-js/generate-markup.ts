@@ -8,6 +8,7 @@
 import { parse as pathParse } from 'node:path';
 import { BlockStatement as EsBlockStatement } from 'estree';
 import { is, builders as b } from 'estree-toolkit';
+import { TransformOptions } from '@lwc/compiler';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
@@ -28,6 +29,7 @@ type RenderCallExpression = SimpleCallExpression & {
 
 const bGenerateMarkup = esTemplate`
     export async function* generateMarkup(tagName, props, attrs, slotted) {
+        tagName = tagName ?? ${/*component tag name*/ is.literal}
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
         props = __filterProperties(
@@ -81,10 +83,17 @@ const bAssignGenerateMarkupToComponentClass = esTemplate`
 export function addGenerateMarkupExport(
     program: Program,
     state: ComponentMetaState,
+    options: TransformOptions,
     filename: string
 ) {
     const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
+    const { namespace, name } = options;
 
+    // The default tag name represents the component name that's passed to the transformer.
+    // This is needed to generate markup for dynamic components which are invoked through
+    // the generateMarkup function on the constructor.
+    // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
+    const defaultTagName = b.literal(`${namespace}-${name}`);
     const classIdentifier = b.identifier(state.lwcClassName!);
     const renderCall = hasRenderMethod
         ? (b.callExpression(
@@ -112,6 +121,7 @@ export function addGenerateMarkupExport(
     program.body.unshift(bImportDeclaration(['hasScopedStaticStylesheets']));
     program.body.push(
         bGenerateMarkup(
+            defaultTagName,
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,

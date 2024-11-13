@@ -19,10 +19,10 @@ export type { CompilationMode };
 export function compileComponentForSSR(
     src: string,
     filename: string,
-    _options: TransformOptions,
+    options: TransformOptions,
     mode: CompilationMode = 'asyncYield'
 ): CompilationResult {
-    const { code } = compileJS(src, filename, mode);
+    const { code } = compileJS(src, filename, options, mode);
     return { code, map: undefined };
 }
 
