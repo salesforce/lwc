@@ -43,7 +43,7 @@ describe('Node.textContent - setter', () => {
 
         const div = elm.shadowRoot.querySelector('div');
 
-        // eslint-disable-next-line jest/valid-expect
+        // eslint-disable-next-line vitest/valid-expect
         let expected = expect(() => {
             div.textContent = '<span>Hello World!</span>';
         });

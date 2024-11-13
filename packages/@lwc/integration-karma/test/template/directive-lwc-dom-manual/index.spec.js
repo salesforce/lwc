@@ -15,7 +15,7 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
             document.body.appendChild(root);
             const elm = root.shadowRoot.querySelector('div');
 
-            // eslint-disable-next-line jest/valid-expect
+            // eslint-disable-next-line vitest/valid-expect
             let expected = expect(() => fn(elm));
             if (process.env.NATIVE_SHADOW) {
                 expected = expected.not; // no error

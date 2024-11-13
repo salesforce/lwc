@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
 import _import from 'eslint-plugin-import';
 import header from 'eslint-plugin-header';
@@ -234,13 +233,13 @@ export default tseslint.config(
         },
 
         plugins: {
-            jest,
+            vitest,
         },
 
         rules: {
-            'jest/no-focused-tests': 'error',
-            'jest/valid-expect': 'error',
-            'jest/valid-expect-in-promise': 'error',
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect': 'error',
+            'vitest/valid-expect-in-promise': 'error',
         },
     },
     {
