@@ -19,6 +19,7 @@ export default {
         expect(p.textContent).toBe('bye!');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
             warn: [
                 'Hydration mismatch: text values do not match, will recover from the difference',
             ],

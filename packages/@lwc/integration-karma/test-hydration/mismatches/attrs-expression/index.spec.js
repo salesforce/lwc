@@ -18,7 +18,8 @@ export default {
         expect(div.getAttribute('data-static')).toBe('same-value');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "client" but found "server"',
                 'Hydration completed with errors.',
             ],
