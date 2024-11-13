@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
+import { getOwnPropertyNames, isNull, isString, isUndefined } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import {
     LightningElement,
@@ -13,41 +13,68 @@ import {
 } from './lightning-element';
 import type { Attributes, Properties } from './types';
 
-const escapeAttrVal = (attrVal: string) =>
-    attrVal.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+const escapeAttrVal = (attrValue: string) =>
+    attrValue.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
 
-export function* renderAttrs(instance: LightningElement, attrs: Attributes) {
-    if (!attrs) {
-        return;
-    }
-    for (const attrName of Object.getOwnPropertyNames(attrs)) {
-        const attrVal = attrs[attrName];
-        if (typeof attrVal === 'string') {
-            yield attrVal === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrVal)}"`;
-        } else if (attrVal === null) {
-            yield '';
+function renderAttrsPrivate(
+    instance: LightningElement,
+    attrs: Attributes,
+    hostScopeToken: string | undefined,
+    scopeToken: string | undefined
+): string {
+    // The scopeToken is e.g. `lwc-xyz123` which is the token our parent gives us.
+    // The hostScopeToken is e.g. `lwc-abc456-host` which is the token for our own component.
+    // It's possible to have both, one, the other, or neither.
+    const combinedScopeToken =
+        scopeToken && hostScopeToken
+            ? `${scopeToken} ${hostScopeToken}`
+            : scopeToken || hostScopeToken || '';
+
+    let result = '';
+    let hasClassAttribute = false;
+
+    for (const attrName of getOwnPropertyNames(attrs)) {
+        let attrValue = attrs[attrName];
+        if (isNull(attrValue) || isUndefined(attrValue)) {
+            attrValue = '';
+        } else if (!isString(attrValue)) {
+            attrValue = String(attrValue);
         }
+        if (combinedScopeToken && attrName === 'class') {
+            attrValue += ' ' + combinedScopeToken;
+            hasClassAttribute = true;
+        }
+
+        result += attrValue === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrValue)}"`;
     }
-    yield mutationTracker.renderMutatedAttrs(instance);
+
+    // If we didn't render any `class` attribute, render one for the scope token(s)
+    if (!hasClassAttribute && combinedScopeToken) {
+        result += ` class="${combinedScopeToken}"`;
+    }
+
+    result += mutationTracker.renderMutatedAttrs(instance);
+
+    return result;
+}
+
+export function* renderAttrs(
+    instance: LightningElement,
+    attrs: Attributes,
+    hostScopeToken: string | undefined,
+    scopeToken: string | undefined
+) {
+    yield renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken);
 }
 
 export function renderAttrsNoYield(
     emit: (segment: string) => void,
     instance: LightningElement,
-    attrs: Attributes
+    attrs: Attributes,
+    hostScopeToken: string | undefined,
+    scopeToken: string | undefined
 ) {
-    if (!attrs) {
-        return;
-    }
-    for (const attrName of Object.getOwnPropertyNames(attrs)) {
-        const attrVal = attrs[attrName];
-        if (typeof attrVal === 'string') {
-            emit(attrVal === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrVal)}"`);
-        } else if (attrVal === null) {
-            emit('');
-        }
-    }
-    emit(mutationTracker.renderMutatedAttrs(instance));
+    emit(renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken));
 }
 
 export function* fallbackTmpl(

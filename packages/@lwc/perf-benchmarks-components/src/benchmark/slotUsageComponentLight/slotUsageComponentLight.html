@@ -1,0 +1,21 @@
+<!--
+Copyright (c) 2018, salesforce.com, inc.
+All rights reserved.
+SPDX-License-Identifier: MIT
+For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+-->
+<template lwc:render-mode="light">
+    <h1>{componentContent}</h1>
+    <benchmark-card-component-light title={titleOfComponentWithSlot} rows={rowsOfComponentWithSlot}>
+
+        <template for:each={rowsOfSlottedContent} for:item="row">
+            <benchmark-table-component-row-light
+                    key={row.id}
+                    class={row.className}
+                    row={row}
+            >
+            </benchmark-table-component-row-light>
+        </template>
+
+    </benchmark-card-component-light>
+</template>

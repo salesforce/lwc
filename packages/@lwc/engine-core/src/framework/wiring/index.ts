@@ -12,6 +12,7 @@ export {
     ConfigValue,
     ContextConsumer,
     ContextProvider,
+    ContextProviderOptions,
     ContextValue,
     DataCallback,
     ReplaceReactiveValues,

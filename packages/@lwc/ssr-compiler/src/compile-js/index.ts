@@ -14,10 +14,15 @@ import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './generate-markup';
+import { catalogWireAdapters } from './wire';
 
-import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
+import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode, TransformOptions } from '../shared';
+import type {
+    PropertyDefinition as DecoratatedPropertyDefinition,
+    MethodDefinition as DecoratatedMethodDefinition,
+} from 'meriyah/dist/src/estree';
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -56,10 +61,17 @@ const visitors: Visitors = {
             return;
         }
 
-        // TODO [#4773]: Why do we get conflicting PropertyDefinition types when removing "vitest/globals"?
-        const decorators = (node as any).decorators;
-        if (is.identifier(decorators[0]?.expression) && decorators[0].expression.name === 'api') {
+        const decorators = (node as DecoratatedPropertyDefinition).decorators;
+        const decoratedExpression = decorators?.[0]?.expression as Expression;
+        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
+        } else if (
+            is.callExpression(decoratedExpression) &&
+            is.identifier(decoratedExpression.callee) &&
+            decoratedExpression.callee.name === 'wire'
+        ) {
+            catalogWireAdapters(state, node);
+            state.privateFields.push(node.key.name);
         } else {
             state.privateFields.push(node.key.name);
         }
@@ -77,13 +89,30 @@ const visitors: Visitors = {
         }
     },
     MethodDefinition(path, state) {
-        if (path.node?.key.type !== 'Identifier') {
+        const node = path.node;
+        if (!is.identifier(node?.key)) {
             return;
         }
 
-        switch (path.node.key.name) {
+        // If we mutate any class-methods that are piped through this compiler, then we'll be
+        // inadvertently mutating things like Wire adapters.
+        if (!state.isLWC) {
+            return;
+        }
+
+        const decorators = (node as DecoratatedMethodDefinition).decorators;
+        const decoratedExpression = decorators?.[0]?.expression as Expression;
+        if (
+            is.callExpression(decoratedExpression) &&
+            is.identifier(decoratedExpression.callee) &&
+            decoratedExpression.callee.name === 'wire'
+        ) {
+            catalogWireAdapters(state, node);
+        }
+
+        switch (node.key.name) {
             case 'constructor':
-                path.node.value.params = [b.identifier('propsAvailableAtConstruction')];
+                node.value.params = [b.identifier('propsAvailableAtConstruction')];
                 break;
             case 'connectedCallback':
                 state.hasConnectedCallback = true;
@@ -145,6 +174,7 @@ export default function compileJS(
         staticStylesheetIds: null,
         publicFields: [],
         privateFields: [],
+        wireAdapters: [],
     };
 
     traverse(ast, visitors, state);

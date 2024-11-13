@@ -6,14 +6,15 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { normalizeStyleAttribute, reservedKeywords } from '@lwc/shared';
 import {
     Node as IrNode,
     Attribute as IrAttribute,
     Property as IrProperty,
 } from '@lwc/template-compiler';
+import { normalizeStyleAttributeValue } from '@lwc/shared';
 
 import { bImportDeclaration } from '../estree/builders';
+import { isValidIdentifier } from '../shared';
 import { TransformerContext } from './types';
 import { expressionIrToEs } from './expression';
 import type {
@@ -22,20 +23,11 @@ import type {
     MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
     ObjectExpression as EsObjectExpression,
+    Property as EsProperty,
 } from 'estree';
 
 export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
 export const importHtmlEscapeKey = 'import:htmlEscape';
-
-// This is a mostly-correct regular expression will only match if the entire string
-// provided is a valid ECMAScript identifier. Its imperfections lie in the fact that
-// it will match strings like "export" when "export" is actually a reserved keyword
-// and therefore not a valid identifier. When combined with a check against reserved
-// keywords, it is a reliable test for whether a provided string is a valid identifier.
-const imperfectIdentifierMatcher = /^[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*$/;
-
-export const isValidIdentifier = (str: string) =>
-    !reservedKeywords.has(str) && imperfectIdentifierMatcher.test(str);
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
     let prevStmt: EsStatement | null = null;
@@ -107,30 +99,42 @@ export function getScopedExpression(expression: EsExpression, cxt: TransformerCo
         : b.memberExpression(b.identifier('instance'), expression);
 }
 
+export function normalizeClassAttributeValue(value: string) {
+    // @ts-expect-error weird indirection results in wrong overload being picked up
+    return StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+}
+
 export function getChildAttrsOrProps(
     attrs: (IrAttribute | IrProperty)[],
     cxt: TransformerContext
 ): EsObjectExpression {
-    const objectAttrsOrProps = attrs.map((attr) => {
-        const key = isValidIdentifier(attr.name) ? b.identifier(attr.name) : b.literal(attr.name);
-        if (attr.value.type === 'Literal' && typeof attr.value.value === 'string') {
-            const value =
-                attr.name === 'style'
-                    ? normalizeStyleAttribute(attr.value.value)
-                    : attr.value.value;
-            return b.property('init', key, b.literal(value));
-        } else if (attr.value.type === 'Literal' && typeof attr.value.value === 'boolean') {
-            return b.property(
-                'init',
-                key,
-                b.literal(attr.type === 'Attribute' ? '' : attr.value.value)
-            );
-        } else if (attr.value.type === 'Identifier' || attr.value.type === 'MemberExpression') {
-            const propValue = expressionIrToEs(attr.value, cxt);
-            return b.property('init', key, propValue);
-        }
-        throw new Error(`Unimplemented child attr IR node type: ${attr.value.type}`);
-    });
+    const objectAttrsOrProps = attrs
+        .map(({ name, value, type }) => {
+            const key = isValidIdentifier(name) ? b.identifier(name) : b.literal(name);
+            if (value.type === 'Literal' && typeof value.value === 'string') {
+                let literalValue = value.value;
+                if (name === 'style') {
+                    literalValue = normalizeStyleAttributeValue(literalValue);
+                } else if (name === 'class') {
+                    literalValue = normalizeClassAttributeValue(literalValue);
+                    if (literalValue === '') {
+                        return; // do not render empty `class=""`
+                    }
+                }
+                return b.property('init', key, b.literal(literalValue));
+            } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
+                if (name === 'class') {
+                    return; // do not render empty `class=""`
+                }
+
+                return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
+            } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
+                const propValue = expressionIrToEs(value, cxt);
+                return b.property('init', key, propValue);
+            }
+            throw new Error(`Unimplemented child attr IR node type: ${value.type}`);
+        })
+        .filter(Boolean) as EsProperty[];
 
     return b.objectExpression(objectAttrsOrProps);
 }

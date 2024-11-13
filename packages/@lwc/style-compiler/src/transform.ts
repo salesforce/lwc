@@ -53,8 +53,9 @@ export function transform(src: string, id: string, config: Config = {}): { code:
 
     const scoped = !!config.scoped;
     const apiVersion = getAPIVersionFromNumber(config.apiVersion);
+    const disableSyntheticShadowSupport = !!config.disableSyntheticShadowSupport;
 
-    const plugins = [postcssLwc({ scoped, apiVersion })];
+    const plugins = [postcssLwc({ scoped, apiVersion, disableSyntheticShadowSupport })];
 
     const result = postcss(plugins).process(src, { from: id }).sync();
 

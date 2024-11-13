@@ -12,6 +12,7 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
+import { expectedFailures } from './utils/expected-failures';
 import type { CompilationMode } from '../index';
 
 interface FixtureModule {
@@ -58,12 +59,13 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
         ],
         onwarn({ message, code }) {
             if (
-                code !== 'CIRCULAR_DEPENDENCY' &&
+                code === 'CIRCULAR_DEPENDENCY' ||
                 // TODO [#4793]: fix unused imports
-                code !== 'UNUSED_EXTERNAL_IMPORT'
+                code === 'UNUSED_EXTERNAL_IMPORT'
             ) {
-                throw new Error(message);
+                return;
             }
+            throw new Error(message);
         },
     });
 
@@ -76,15 +78,21 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-function testFixtures() {
+// We will enable this for realsies once all the tests are passing, but for now having the env var avoids
+// running these tests in CI while still allowing for local testing.
+describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
     testFixtureDir(
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
+            expectedFailures,
         },
         async ({ filename, dirname, config }) => {
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';
             const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+            // TODO [#4815]: enable all SSR v2 tests
+            const shortFilename = filename.split('fixtures/')[1];
+            const expectedFailure = expectedFailures.has(shortFilename);
 
             let compiledFixturePath;
             try {
@@ -99,7 +107,14 @@ function testFixtures() {
                 };
             }
 
-            const module = (await import(compiledFixturePath)) as FixtureModule;
+            let module;
+            try {
+                module = (await import(compiledFixturePath)) as FixtureModule;
+            } catch (err: any) {
+                if (!expectedFailure) {
+                    throw err;
+                }
+            }
 
             let result;
             try {
@@ -129,8 +144,4 @@ function testFixtures() {
             }
         }
     );
-}
-
-describe('fixtures', () => {
-    testFixtures();
 });

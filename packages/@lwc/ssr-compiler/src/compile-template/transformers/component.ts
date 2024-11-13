@@ -10,6 +10,8 @@ import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { bAttributeValue, getChildAttrsOrProps, optimizeAdjacentYieldStmts } from '../shared';
+import { esTemplate, esTemplateWithYield } from '../../estemplate';
+import { bAttributeValue, optimizeAdjacentYieldStmts } from '../shared';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
 import { bImportDeclaration } from '../../estree/builders';
@@ -21,14 +23,19 @@ import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
+        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
         const slottedContent = {
             light: Object.create(null),
-            shadow: async function* () {
+
+            // The 'instance' variable is shadowed here so that a contextful relationship
+            // is established between components rendered in slotted content & the "parent"
+            // component that contains the <slot>.
+            shadow: async function* (instance) {
                 ${/* shadow slot content */ is.statement}
             }
         };
+
         function addContent(name, fn) {
             let contentList = slottedContent.light[name]
             if (contentList) {
@@ -37,9 +44,20 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 slottedContent.light[name] = [fn]
             }
         }
+
         ${/* light DOM addContent statements */ is.callExpression}
         ${/* scoped slot addContent statements */ is.callExpression}
-        yield* ${is.identifier}(${is.literal}, childProps, childAttrs, slottedContent);
+
+        const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
+
+        yield* ${/* generateMarkup */ is.identifier}(
+            ${/* tag name */ is.literal}, 
+            childProps, 
+            childAttrs, 
+            slottedContent,
+            instance,
+            scopeToken,
+        );
     }
 `<EsBlockStatement>;
 
@@ -65,8 +83,8 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
     cxt.hoist(componentImport, childGeneratorLocalName);
     cxt.hoist(
-        bImportDeclaration([{ cloneAndDeepFreeze: '__cloneAndDeepFreeze' }]),
-        'import:cloneAndDeepFreeze'
+        bImportDeclaration([{ getReadOnlyProxy: '__getReadOnlyProxy' }]),
+        'import:getReadOnlyProxy'
     );
     const childTagName = node.name;
 

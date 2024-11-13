@@ -11,7 +11,7 @@ import type { ComponentMetaState } from './types';
 
 /**
  * While traversing the component JS, this takes note of any .html files that are
- * explicitly imported..
+ * explicitly imported.
  */
 export function catalogTmplImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
     if (!path.node) {
