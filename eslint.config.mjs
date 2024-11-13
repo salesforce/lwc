@@ -250,6 +250,10 @@ export default tseslint.config(
         },
         rules: {
             ...vitest.configs.recommended.rules,
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect-in-promise': 'error',
+            'vitest/no-conditional-tests': 'error',
+            'vitest/no-done-callback': 'error',
         },
     },
     {
