@@ -8,10 +8,8 @@
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
-import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { bAttributeValue, getChildAttrsOrProps, optimizeAdjacentYieldStmts } from '../shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { bAttributeValue, optimizeAdjacentYieldStmts } from '../shared';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
 import { bImportDeclaration } from '../../estree/builders';

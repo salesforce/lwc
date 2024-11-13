@@ -11,7 +11,10 @@ import { expressionIrToEs } from '../expression';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { bImportDeclaration } from '../../estree/builders';
 import { getChildAttrsOrProps } from '../shared';
-import type { LwcComponent as IrLwcComponent } from '@lwc/template-compiler';
+import type {
+    LwcComponent as IrLwcComponent,
+    Expression as IrExpression,
+} from '@lwc/template-compiler';
 import type { BlockStatement as EsBlockStatement, Expression, Statement } from 'estree';
 
 const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
@@ -79,7 +82,8 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
             'import:cloneAndDeepFreeze'
         );
 
-        const lwcIsExpression = expressionIrToEs(lwcIs.value, cxt);
+        // The template compiler has validation to prevent lwcIs.value from being a literal
+        const lwcIsExpression = expressionIrToEs(lwcIs.value as IrExpression, cxt);
         return [
             bIfLwcIsExpressionDefined(
                 lwcIsExpression,

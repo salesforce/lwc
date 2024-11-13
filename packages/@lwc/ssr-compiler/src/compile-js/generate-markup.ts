@@ -7,10 +7,10 @@
 
 import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
-import { TransformOptions } from '@lwc/compiler';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
+import { TransformOptions } from '../shared';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
