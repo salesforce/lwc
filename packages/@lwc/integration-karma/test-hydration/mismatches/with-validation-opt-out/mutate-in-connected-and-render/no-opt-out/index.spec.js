@@ -9,8 +9,8 @@ export default {
         expect(hydratedSnapshot.child).not.toBe(snapshots.child);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            warn: [],
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <x-child>: attribute "data-mutate-during-render" has different values, expected "false" but found "true"',
                 'Hydration completed with errors.',
             ],
