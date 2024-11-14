@@ -108,6 +108,7 @@ export function addGenerateMarkupExport(
     let connectWireAdapterCode: Statement[] = [];
     if (state.wireAdapters.length) {
         connectWireAdapterCode = bWireAdaptersPlumbing(state.wireAdapters);
+        program.body.unshift(bImportDeclaration([{ connectContext: '__connectContext' }]));
     }
 
     program.body.unshift(
@@ -119,7 +120,6 @@ export function addGenerateMarkupExport(
                 renderAttrs: '__renderAttrs',
                 SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
                 establishContextfulRelationship: '__establishContextfulRelationship',
-                connectContext: '__connectContext',
             },
         ])
     );
