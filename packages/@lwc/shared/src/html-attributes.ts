@@ -64,7 +64,6 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'autofocus',
     'class',
     'contenteditable',
-    'contextmenu',
     'dir',
     'draggable',
     'enterkeyhint',

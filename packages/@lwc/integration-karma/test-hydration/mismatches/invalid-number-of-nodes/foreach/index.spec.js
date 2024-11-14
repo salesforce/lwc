@@ -16,7 +16,8 @@ export default {
         expect(hydratedSnapshot.text).not.toBe(snapshots.text);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
                 'Server rendered more nodes than the client.',
                 'Hydration completed with errors.',
             ],

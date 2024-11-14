@@ -57,14 +57,18 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code }) {
-            if (
-                code === 'CIRCULAR_DEPENDENCY' ||
-                // TODO [#4793]: fix unused imports
-                code === 'UNUSED_EXTERNAL_IMPORT'
-            ) {
+        onwarn({ message, code, names }) {
+            if (code === 'CIRCULAR_DEPENDENCY') {
                 return;
             }
+            // TODO [#4793]: fix unused imports
+            if (code === 'UNUSED_EXTERNAL_IMPORT') {
+                const unexpected = new Set(names);
+                const expected = ['connectContext', 'htmlEscape', 'track'];
+                expected.forEach((name) => unexpected.delete(name));
+                if (unexpected.size === 0) return;
+            }
+
             throw new Error(message);
         },
     });
@@ -85,14 +89,12 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
+            // TODO [#4815]: enable all SSR v2 tests
             expectedFailures,
         },
         async ({ filename, dirname, config }) => {
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';
             const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
-            // TODO [#4815]: enable all SSR v2 tests
-            const shortFilename = filename.split('fixtures/')[1];
-            const expectedFailure = expectedFailures.has(shortFilename);
 
             let compiledFixturePath;
             try {
@@ -107,14 +109,7 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
                 };
             }
 
-            let module;
-            try {
-                module = (await import(compiledFixturePath)) as FixtureModule;
-            } catch (err: any) {
-                if (!expectedFailure) {
-                    throw err;
-                }
-            }
+            const module = (await import(compiledFixturePath)) as FixtureModule;
 
             let result;
             try {

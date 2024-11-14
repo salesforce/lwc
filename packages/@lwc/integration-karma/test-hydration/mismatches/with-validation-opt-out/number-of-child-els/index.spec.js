@@ -15,8 +15,8 @@ export default {
         expect(hydratedSnapshot.childMarkup).not.toBe(snapshots.childMarkup);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            warn: [],
-            error: [
+            error: [],
+            warn: [
                 'Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.',
                 'Hydration completed with errors.',
             ],

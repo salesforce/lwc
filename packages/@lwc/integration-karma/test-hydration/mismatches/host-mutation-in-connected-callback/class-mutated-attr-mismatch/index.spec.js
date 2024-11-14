@@ -24,8 +24,8 @@ export default {
         expect(child.getAttribute('data-mismatched-attr')).toBe('is-client');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            warn: [],
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <x-child>: attribute "data-mismatched-attr" has different values, expected "is-client" but found "is-server"',
                 'Hydration completed with errors.',
             ],

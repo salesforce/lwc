@@ -23,7 +23,6 @@ export const expectedFailures = new Set([
     'attribute-class/with-scoped-styles/dynamic/index.js',
     'attribute-component-global-html/index.js',
     'attribute-global-html/as-component-prop/undeclared/index.js',
-    'attribute-global-html/as-component-prop/with-@api/index.js',
     'attribute-global-html/as-component-prop/without-@api/index.js',
     'attribute-namespace/index.js',
     'attribute-style/basic/index.js',

@@ -17,23 +17,21 @@ type TestFixtureOutput = { [filename: string]: unknown };
 /**
  * Facilitates the use of vitest's `test.only`/`test.skip` in fixture files.
  * @param dirname fixture directory to check for "directive" files
- * @returns `test.only` if `.only` exists, `test.skip` if `.skip` exists, otherwise `test`
+ * @returns `{ only: true }` if `.only` exists, `{ skip: true }` if `.skip` exists, otherwise `{}`
  * @throws if you have both `.only` and `.skip` in the directory
- * @example getTestFunc('/fixtures/some-test')
+ * @example getTestOptions('/fixtures/some-test')
  */
-function getTestFunc(dirname: string) {
+function getTestOptions(dirname: string) {
     const isOnly = fs.existsSync(path.join(dirname, '.only'));
     const isSkip = fs.existsSync(path.join(dirname, '.skip'));
     if (isOnly && isSkip) {
         const relpath = path.relative(process.cwd(), dirname);
         throw new Error(`Cannot have both .only and .skip in ${relpath}`);
     }
-    return isOnly ? test.only : isSkip ? test.skip : test;
+    return isOnly ? { only: true } : isSkip ? { skip: true } : {};
 }
 
 export interface TestFixtureConfig extends StyleCompilerConfig {
-    /** Human-readable test description. A proxy for `test(description, ...)`. */
-    description?: string;
     /** Component name. */
     name?: string;
     /** Component namespace. */
@@ -119,10 +117,11 @@ export function testFixtureDir<T extends TestFixtureConfig>(
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
         const fixtureConfig = getFixtureConfig<T>(dirname);
-        const description = fixtureConfig?.description ?? path.relative(root, filename);
-        const tester = getTestFunc(dirname);
+        const relpath = path.relative(root, filename);
+        const options = getTestOptions(dirname);
+        const fails = config.expectedFailures?.has(relpath);
 
-        tester(description, async ({ expect }) => {
+        test(relpath, { fails, ...options }, async ({ expect }) => {
             const outputs = await testFn({
                 src,
                 filename,
@@ -135,12 +134,6 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                     'Expected test function to returns a object with fixtures outputs'
                 );
             }
-
-            // TODO [#4815]: enable all SSR v2 tests
-            const shortFilename = filename.split('fixtures/')[1];
-            const expectedFailure = config.expectedFailures?.has(shortFilename);
-
-            let error: Error | undefined;
 
             for (const [outputName, content] of Object.entries(outputs)) {
                 const outputPath = path.resolve(dirname, outputName);
@@ -157,16 +150,9 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                         // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
                         Error.captureStackTrace(err, testFixtureDir);
                     }
-                    if (!error) {
-                        error = err as Error;
-                    }
-                }
-            }
 
-            if (expectedFailure && !error) {
-                throw new Error('Expected a failure in fixture: ' + shortFilename);
-            } else if (!expectedFailure && error) {
-                throw error;
+                    throw err;
+                }
             }
         });
     }

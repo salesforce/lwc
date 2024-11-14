@@ -18,7 +18,8 @@ export default {
         expect(p.className).toBe('');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <p>: attribute "class" has different values, expected "" but found "yolo"',
                 'Hydration completed with errors.',
             ],
