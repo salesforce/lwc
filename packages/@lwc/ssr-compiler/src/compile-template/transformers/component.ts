@@ -48,7 +48,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             // The 'instance' variable is shadowed here so that a contextful relationship
             // is established between components rendered in slotted content & the "parent"
             // component that contains the <slot>.
-            shadow: async function* (instance) {
+            shadow: async function* generateSlottedContent(instance) {
                 ${/* shadow slot content */ is.statement}
             }
         };
@@ -79,7 +79,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 `<EsBlockStatement>;
 
 const bAddContent = esTemplate`
-    addContent(${/* slot name */ is.expression} ?? "", async function* (${
+    addContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
         // FIXME: make validation work again  

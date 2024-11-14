@@ -6,8 +6,9 @@
  */
 import { traverse, builders as b, type NodePath } from 'estree-toolkit';
 import { produce } from 'immer';
-import type { Node } from 'estree';
+import type { FunctionDeclaration, FunctionExpression, Node } from 'estree';
 import type { Program as EsProgram } from 'estree';
+import type { Node as EstreeToolkitNode } from 'estree-toolkit/dist/helpers';
 
 export type TransmogrificationMode = 'sync' | 'async';
 
@@ -20,14 +21,18 @@ export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>
 const EMIT_IDENT = b.identifier('$$emit');
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
 const TMPL_FN_PATTERN = /tmpl($\d+)?/;
-const GEN_MARKUP_PATTERN = /generateMarkup($\d+)?/;
+const GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN = /generate(?:Markup|SlottedContent)($\d+)?/;
 
 const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     const { node } = nodePath;
     if (!node) {
         return false;
     }
-    if (node.type === 'FunctionDeclaration' && pattern.test(node.id.name)) {
+    if (
+        (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') &&
+        node.id &&
+        pattern.test(node.id.name)
+    ) {
         return true;
     }
     if (nodePath.parentPath) {
@@ -36,23 +41,32 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     return false;
 };
 
-const visitors: Visitors = {
-    FunctionDeclaration(path, state) {
-        const { node } = path;
-        if (!node?.async || !node?.generator) {
-            return;
-        }
+function transformFunction(
+    path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
+    state: TransmogrificationState
+): undefined {
+    const { node } = path;
+    if (!node?.async || !node?.generator) {
+        return;
+    }
 
-        // Component authors might conceivably use async generator functions in their own code. Therefore,
-        // when traversing & transforming written+generated code, we need to disambiguate generated async
-        // generator functions from those that were written by the component author.
-        if (!isWithinFn(GEN_MARKUP_PATTERN, path) && !isWithinFn(TMPL_FN_PATTERN, path)) {
-            return;
-        }
-        node.generator = false;
-        node.async = state.mode === 'async';
-        node.params.unshift(EMIT_IDENT);
-    },
+    // Component authors might conceivably use async generator functions in their own code. Therefore,
+    // when traversing & transforming written+generated code, we need to disambiguate generated async
+    // generator functions from those that were written by the component author.
+    if (
+        !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path) &&
+        !isWithinFn(TMPL_FN_PATTERN, path)
+    ) {
+        return;
+    }
+    node.generator = false;
+    node.async = state.mode === 'async';
+    node.params.unshift(EMIT_IDENT);
+}
+
+const visitors: Visitors = {
+    FunctionDeclaration: transformFunction,
+    FunctionExpression: transformFunction,
     YieldExpression(path, state) {
         const { node } = path;
         if (!node) {
@@ -62,7 +76,10 @@ const visitors: Visitors = {
         // Component authors might conceivably use generator functions within their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated yield
         // expressions from those that were written by the component author.
-        if (!isWithinFn(TMPL_FN_PATTERN, path) && !isWithinFn(GEN_MARKUP_PATTERN, path)) {
+        if (
+            !isWithinFn(TMPL_FN_PATTERN, path) &&
+            !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path)
+        ) {
             return;
         }
 

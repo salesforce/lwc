@@ -12,6 +12,7 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
+import { DEFAULT_SSR_MODE } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
 import type { CompilationMode } from '../index';
 
@@ -38,7 +39,7 @@ vi.mock('@lwc/ssr-runtime', async () => {
     return runtime;
 });
 
-const SSR_MODE: CompilationMode = 'asyncYield';
+const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
