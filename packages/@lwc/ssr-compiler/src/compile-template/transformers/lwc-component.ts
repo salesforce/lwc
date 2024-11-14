@@ -27,7 +27,7 @@ const bDynamicComponentConstructorDeclaration = esTemplate`
 const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
     if (Ctor) {
         if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
-            throw new Error(\`Invalid constructor "\${String(Ctor)}" is not a LightningElement constructor.\`)
+            throw new Error(\`Invalid constructor: "\${String(Ctor)}" is not a LightningElement constructor.\`)
         }
         const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
