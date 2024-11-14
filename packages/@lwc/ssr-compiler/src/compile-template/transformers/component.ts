@@ -101,7 +101,7 @@ function getChildAttrsOrProps(
         .map(({ name, value, type }) => {
             const key = isValidIdentifier(name) ? b.identifier(name) : b.literal(name);
             if (value.type === 'Literal' && typeof value.value === 'string') {
-                let literalValue = value.value;
+                let literalValue: string | boolean = value.value;
                 if (name === 'style') {
                     literalValue = normalizeStyleAttributeValue(literalValue);
                 } else if (name === 'class') {
@@ -109,6 +109,10 @@ function getChildAttrsOrProps(
                     if (literalValue === '') {
                         return; // do not render empty `class=""`
                     }
+                } else if (name === 'spellcheck') {
+                    // `spellcheck` string values are specially handled to massage them into booleans:
+                    // https://github.com/salesforce/lwc/blob/574ffbd/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
+                    literalValue = literalValue.toLowerCase() !== 'false';
                 }
                 return b.property('init', key, b.literal(literalValue));
             } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
