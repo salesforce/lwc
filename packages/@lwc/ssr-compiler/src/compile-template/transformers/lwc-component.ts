@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { builders as b, is } from 'estree-toolkit';
+import { is } from 'estree-toolkit';
 import { isUndefined } from '@lwc/shared';
 import { Transformer } from '../types';
 import { expressionIrToEs } from '../expression';
@@ -15,56 +15,25 @@ import type {
     LwcComponent as IrLwcComponent,
     Expression as IrExpression,
 } from '@lwc/template-compiler';
-import type { BlockStatement as EsBlockStatement, Expression, Statement } from 'estree';
+import type {
+    IfStatement as EsIfStatement,
+    VariableDeclaration as EsVariableDeclaration,
+} from 'estree';
+
+const bDynamicComponentConstructorDeclaration = esTemplate`
+    const Ctor = '${/*lwcIs attribute value*/ is.expression}';
+`<EsVariableDeclaration>;
 
 const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
-    {
+    if (Ctor) {
+        if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
+            throw new Error(\`Invalid constructor "\${String(Ctor)}" is not a LightningElement constructor.\`)
+        }
         const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
-        yield* ${/*component ctor*/ is.expression}[SYMBOL__GENERATE_MARKUP](null, childProps, childAttrs);
+        yield* Ctor[SYMBOL__GENERATE_MARKUP](null, childProps, childAttrs);
     }
-`<EsBlockStatement>;
-
-const bThrowErrorForInvalidConstructor = esTemplate`
-    {
-        throw new Error(\`Invalid constructor \${String(${/*component ctor*/ is.expression})} is not a LightningElement constructor.\`)
-    }
-`<EsBlockStatement>;
-
-function bIfLwcIsExpressionDefined(lwcIsExpression: Expression, consequent: Statement) {
-    // instance.lwcIsValue !== undefined && instance.lwcIsValue !== null
-    const lwcIsExpressionDefined = b.logicalExpression(
-        '&&',
-        b.binaryExpression('!==', lwcIsExpression, b.identifier('undefined')),
-        b.binaryExpression('!==', lwcIsExpression, b.identifier('null'))
-    );
-
-    return b.ifStatement(lwcIsExpressionDefined, b.blockStatement([consequent]));
-}
-
-function bifLwcIsExpressionTypeCorrect(
-    lwcIsExpression: Expression,
-    consequent: Statement,
-    alternate: Statement
-) {
-    // typeof instance.lwcIsValue === 'function'
-    const typeComparison = b.binaryExpression(
-        '===',
-        b.unaryExpression('typeof', lwcIsExpression),
-        b.literal('function')
-    );
-
-    // instance.lwcIsValue.prototype instanceof LightningElement
-    const protoComparison = b.binaryExpression(
-        'instanceof',
-        b.memberExpression(lwcIsExpression, b.identifier('prototype')),
-        b.identifier('LightningElement')
-    );
-
-    const comparison = b.logicalExpression('&&', typeComparison, protoComparison);
-
-    return b.ifStatement(comparison, consequent, alternate);
-}
+`<EsIfStatement>;
 
 export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(node, cxt) {
     const { directives } = node;
@@ -81,20 +50,14 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
             'import:cloneAndDeepFreeze'
         );
 
-        // The template compiler has validation to prevent lwcIs.value from being a literal
-        const lwcIsExpression = expressionIrToEs(lwcIs.value as IrExpression, cxt);
         return [
-            bIfLwcIsExpressionDefined(
-                lwcIsExpression,
-                bifLwcIsExpressionTypeCorrect(
-                    lwcIsExpression,
-                    bYieldFromDynamicComponentConstructorGenerator(
-                        getChildAttrsOrProps(node.properties, cxt),
-                        getChildAttrsOrProps(node.attributes, cxt),
-                        lwcIsExpression
-                    ),
-                    bThrowErrorForInvalidConstructor(lwcIsExpression)
-                )
+            bDynamicComponentConstructorDeclaration(
+                // The template compiler has validation to prevent lwcIs.value from being a literal
+                expressionIrToEs(lwcIs.value as IrExpression, cxt)
+            ),
+            bYieldFromDynamicComponentConstructorGenerator(
+                getChildAttrsOrProps(node.properties, cxt),
+                getChildAttrsOrProps(node.attributes, cxt)
             ),
         ];
     } else {

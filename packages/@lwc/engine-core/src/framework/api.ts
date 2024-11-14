@@ -667,7 +667,7 @@ function dc(
 
     if (!isComponentConstructor(Ctor)) {
         throw new Error(
-            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`
+            `Invalid constructor "${toString(Ctor)}" is not a LightningElement constructor.`
         );
     }
 

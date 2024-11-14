@@ -10,7 +10,6 @@ import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
-import { TransformOptions } from '../shared';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
@@ -30,8 +29,7 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName, props, attrs, slotted, parent, scopeToken) {
-        tagName = tagName ?? ${/*component tag name*/ is.literal}
+    export async function* generateMarkup(tagName = ${/*component tag name*/ is.literal}, props, attrs, slotted, parent, scopeToken) {
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
         props = __filterProperties(
@@ -89,17 +87,16 @@ const bAssignGenerateMarkupToComponentClass = esTemplate`
 export function addGenerateMarkupExport(
     program: Program,
     state: ComponentMetaState,
-    options: TransformOptions,
+    tagName: string,
     filename: string
 ) {
     const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
-    const { namespace, name } = options;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
     // the generateMarkup function on the constructor.
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
-    const defaultTagName = b.literal(`${namespace}-${name}`);
+    const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
     const renderCall = hasRenderMethod
         ? (b.callExpression(
