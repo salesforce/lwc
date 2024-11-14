@@ -58,12 +58,12 @@ const bGenerateMarkup = esTemplate`
 
         const hostHasScopedStylesheets =
             tmplFn.hasScopedStylesheets ||
-            hasScopedStaticStylesheets(${/*component class*/ 2});
+            hasScopedStaticStylesheets(${/*component class*/ 3});
         const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
 
         yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${/*component class*/ 2}, instance);
+        yield* tmplFn(props, attrs, slotted, ${/*component class*/ 3}, instance);
         yield \`</\${tagName}>\`;
     }
 `<ExportNamedDeclaration>;
