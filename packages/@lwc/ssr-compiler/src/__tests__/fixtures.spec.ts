@@ -64,7 +64,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
             // TODO [#4793]: fix unused imports
             if (code === 'UNUSED_EXTERNAL_IMPORT') {
                 const unexpected = new Set(names);
-                const expected = ['connectContext', 'htmlEscape', 'track'];
+                const expected = ['connectContext', 'htmlEscape'];
                 expected.forEach((name) => unexpected.delete(name));
                 if (unexpected.size === 0) return;
             }
