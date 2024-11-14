@@ -5,46 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    AriaAttrNameToPropNameMap,
-    create,
-    entries,
-    htmlPropertyToAttribute,
-    isAriaAttribute,
-    isGlobalHtmlAttribute,
-    isNull,
-    keys,
-    toString,
-} from '@lwc/shared';
-
-import type { LightningElement } from './lightning-element';
-
-/**
- * Filters out the following types of properties that should not be set.
- * - Properties that are not public.
- * - Properties that are not global.
- * - Properties that are global but are internally overridden.
- */
-export function filterProperties(
-    props: Record<string, unknown>,
-    publicFields: Array<string>,
-    privateFields: Array<string>
-): Record<string, unknown> {
-    const propsToAssign = create(null);
-    const publicFieldSet = new Set(publicFields);
-    const privateFieldSet = new Set(privateFields);
-    keys(props).forEach((propName) => {
-        const attrName = htmlPropertyToAttribute(propName);
-        if (
-            publicFieldSet.has(propName) ||
-            ((isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) &&
-                !privateFieldSet.has(propName))
-        ) {
-            propsToAssign[propName] = props[propName];
-        }
-    });
-    return propsToAssign;
-}
+import { entries, isNull, toString, AriaAttrNameToPropNameMap } from '@lwc/shared';
+import type { LightningElement } from '../../framework/base-lightning-element';
 
 /**
  * Descriptor for IDL attribute reflections that merely reflect the string, e.g. `title`.
@@ -152,7 +114,7 @@ const tabIndexDescriptor = (): TypedPropertyDescriptor<number> => ({
     },
 });
 
-export const descriptors: Record<string, PropertyDescriptor> = {
+const descriptors: Record<string, PropertyDescriptor> = {
     accessKey: stringDescriptor('accesskey'),
     dir: stringDescriptor('dir'),
     draggable: explicitBooleanDescriptor('draggable', true),
@@ -168,3 +130,5 @@ export const descriptors: Record<string, PropertyDescriptor> = {
 for (const [attrName, propName] of entries(AriaAttrNameToPropNameMap)) {
     descriptors[propName] = ariaDescriptor(attrName);
 }
+
+export { descriptors as propToAttrReflectionPolyfillDescriptors };
