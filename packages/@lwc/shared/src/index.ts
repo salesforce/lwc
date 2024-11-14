@@ -17,7 +17,6 @@ export * from './html-escape';
 export * from './meta';
 export * from './namespaces';
 export * from './overridable-hooks';
-export * from './attr-reflection';
 export * from './static-part-tokens';
 export * from './style';
 export * from './signals';

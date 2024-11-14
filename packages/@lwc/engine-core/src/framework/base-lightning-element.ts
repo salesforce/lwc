@@ -29,13 +29,13 @@ import {
     setPrototypeOf,
     APIFeature,
     assert,
-    propToAttrReflectionPolyfillDescriptors,
 } from '@lwc/shared';
 
 import { logError, logWarnOnce } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
 
+import { propToAttrReflectionPolyfillDescriptors } from '../libs/aria-reflection/attr-reflection';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getComponentAPIVersion, getWrappedComponentsListener } from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
