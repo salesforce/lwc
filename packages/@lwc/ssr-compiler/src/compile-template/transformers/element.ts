@@ -37,7 +37,7 @@ import type { Transformer, TransformerContext } from '../types';
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
-const bConditionalLiveYield = esTemplateWithYield`
+const bYieldDynamicValue = esTemplateWithYield`
     {
         const attrName = ${/* attribute name */ is.literal};
         let attrValue = ${/* attribute value expression */ is.expression};
@@ -129,7 +129,7 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
     throw new Error(`Unknown attr/prop literal: ${type}`);
 }
 
-function yieldAttrOrPropLiveValue(
+function yieldAttrOrPropDynamicValue(
     elementName: string,
     name: string,
     value: IrExpression | BinaryExpression,
@@ -138,7 +138,7 @@ function yieldAttrOrPropLiveValue(
     cxt.import('htmlEscape');
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-    return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
+    return [bYieldDynamicValue(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
 }
 
 function reorderAttributes(
@@ -196,7 +196,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             if (value.type === 'Literal') {
                 result = yieldAttrOrPropLiteralValue(name, value);
             } else {
-                result = yieldAttrOrPropLiveValue(node.name, name, value, cxt);
+                result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
 
             if (result.length > 0) {
