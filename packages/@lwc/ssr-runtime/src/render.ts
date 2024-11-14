@@ -53,6 +53,11 @@ function renderAttrsPrivate(
         result += ` class="${combinedScopeToken}"`;
     }
 
+    // For the host scope token only, we encode a special attribute for hydration
+    if (hostScopeToken) {
+        result += ` data-lwc-host-scope-token="${hostScopeToken}"`;
+    }
+
     result += mutationTracker.renderMutatedAttrs(instance);
 
     return result;
