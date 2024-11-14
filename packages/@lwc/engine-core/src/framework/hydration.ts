@@ -663,7 +663,7 @@ function validateClassAttr(
 
     // This tells us which `*-host` scope token was rendered to the element's class.
     // For now we just ignore any mismatches involving this class.
-    // FIXME: correctly validate the host scope token class
+    // TODO [#4866]: correctly validate the host scope token class
     const elmHostScopeToken = renderer.getAttribute(elm, 'data-lwc-host-scope-token');
     if (!isNull(elmHostScopeToken)) {
         elmClasses.delete(elmHostScopeToken);
