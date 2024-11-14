@@ -137,6 +137,7 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
                     [expectedFile]: '',
                 };
             }
-        }
+        },
+        {}
     );
 });

@@ -12,8 +12,6 @@ import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
 
-type TestFixtureOutput = { [filename: string]: unknown };
-
 /**
  * Facilitates the use of vitest's `test.only`/`test.skip` in fixture files.
  * @param dirname fixture directory to check for "directive" files
@@ -82,7 +80,7 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
  *   }
  * )
  */
-export function testFixtureDir<T extends TestFixtureConfig>(
+export function testFixtureDir<R>(
     config: {
         pattern: string;
         root: string;
@@ -92,8 +90,9 @@ export function testFixtureDir<T extends TestFixtureConfig>(
         src: string;
         filename: string;
         dirname: string;
-        config?: T;
-    }) => TestFixtureOutput | Promise<TestFixtureOutput>
+        config?: TestFixtureConfig;
+    }) => R | Promise<R>,
+    formatters: Record<string, (result: R) => string | undefined | Promise<string | undefined>>
 ) {
     if (typeof config !== 'object' || config === null) {
         throw new TypeError(`Expected first argument to be an object`);
@@ -104,7 +103,7 @@ export function testFixtureDir<T extends TestFixtureConfig>(
     }
 
     const { pattern, root } = config;
-    if (!pattern || !root) {
+    if (!pattern || !root || !formatters) {
         throw new TypeError(`Expected a "root" and a "pattern" config to be specified`);
     }
 
@@ -116,28 +115,22 @@ export function testFixtureDir<T extends TestFixtureConfig>(
     for (const filename of matches) {
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
-        const fixtureConfig = getFixtureConfig<T>(dirname);
+        const fixtureConfig = getFixtureConfig(dirname);
         const relpath = path.relative(root, filename);
         const options = getTestOptions(dirname);
         const fails = config.expectedFailures?.has(relpath);
 
         test(relpath, { fails, ...options }, async ({ expect }) => {
-            const outputs = await testFn({
+            const result = await testFn({
                 src,
                 filename,
                 dirname,
                 config: fixtureConfig,
             });
 
-            if (typeof outputs !== 'object' || outputs === null) {
-                throw new TypeError(
-                    'Expected test function to returns a object with fixtures outputs'
-                );
-            }
-
-            for (const [outputName, content] of Object.entries(outputs)) {
+            for (const [outputName, f] of Object.entries(formatters)) {
                 const outputPath = path.resolve(dirname, outputName);
-
+                const content = await f(result);
                 try {
                     if (content === undefined) {
                         expect(fs.existsSync(outputPath)).toBe(false);

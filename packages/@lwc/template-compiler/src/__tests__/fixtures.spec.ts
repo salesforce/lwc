@@ -18,29 +18,21 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.html',
         },
-        async ({ src, dirname, config }) => {
+        ({ src, dirname, config }) => {
             const filename = path.basename(dirname);
-
-            config = { namespace: 'x', name: filename, ...config };
-
-            const compiled = compiler(src, filename, config);
-            const { warnings, root } = compiled;
-
-            // Replace LWC's version with X.X.X so the snapshots don't frequently change
-            // String.prototype.replaceAll only available in Node 15+
-            const code = compiled.code.replace(
-                new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
-                'X.X.X'
-            );
-
-            return {
-                'expected.js': await prettier.format(code, {
-                    parser: 'babel',
-                    trailingComma: 'es5',
-                }),
-                'ast.json': JSON.stringify({ root }, null, 4),
-                'metadata.json': JSON.stringify({ warnings }, null, 4),
-            };
+            return compiler(src, filename, { namespace: 'x', name: filename, ...config });
+        },
+        {
+            'expected.js': ({ code }) =>
+                prettier.format(
+                    code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
+                    {
+                        parser: 'babel',
+                        trailingComma: 'es5',
+                    }
+                ),
+            'ast.json': ({ root }) => JSON.stringify({ root }, null, 4),
+            'metadata.json': ({ warnings }) => JSON.stringify({ warnings }, null, 4),
         }
     );
 });

@@ -51,10 +51,11 @@ describe('fixtures', () => {
                 code = code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
             }
 
-            return {
-                'expected.js': code,
-                'error.json': error,
-            };
+            return { code, error };
+        },
+        {
+            'expected.js': ({ code }) => code,
+            'error.json': ({ error }) => error,
         }
     );
 });

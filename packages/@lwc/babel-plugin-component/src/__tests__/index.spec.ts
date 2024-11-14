@@ -74,13 +74,15 @@ describe('fixtures', () => {
             try {
                 result = transform(src, config);
             } catch (err) {
-                error = JSON.stringify(normalizeError(err), null, 4);
+                error = err;
             }
 
-            return {
-                'expected.js': result,
-                'error.json': error,
-            };
+            return { result, error };
+        },
+        {
+            'expected.js': ({ result }) => result,
+            'error.json': ({ error }) =>
+                error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
         }
     );
 });

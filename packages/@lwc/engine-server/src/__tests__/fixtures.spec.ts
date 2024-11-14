@@ -135,10 +135,11 @@ function testFixtures(options?: RollupLwcOptions) {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });
 
-            return {
-                'expected.html': result ? formatHTML(result) : '',
-                'error.txt': err ?? '',
-            };
+            return { result, err };
+        },
+        {
+            'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
+            'error.txt': ({ err }) => err ?? '',
         }
     );
 }
