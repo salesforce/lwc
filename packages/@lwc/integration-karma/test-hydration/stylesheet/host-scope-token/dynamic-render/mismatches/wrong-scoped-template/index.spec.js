@@ -25,7 +25,7 @@ export default {
             getComputedStyle(child).getPropertyValue('--from-template').trim().replace(/"/g, "'")
         ).toBe("'a'");
 
-        TestUtils.expectConsoleCalls(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Mismatch hydrating element <style>: attribute "class" has different values, expected "lwc-2fs4h5b0o15" but found "lwc-3hsmkt14797"',

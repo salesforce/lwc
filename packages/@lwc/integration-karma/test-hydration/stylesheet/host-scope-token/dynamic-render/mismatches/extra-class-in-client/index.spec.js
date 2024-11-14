@@ -18,7 +18,7 @@ export default {
         expect(child).not.toBe(snapshots.child);
         expect(h1).not.toBe(snapshots.h1);
 
-        TestUtils.expectConsoleCalls(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Mismatch hydrating element <x-child>: attribute "class" has different values, expected "foo" but found ""',
