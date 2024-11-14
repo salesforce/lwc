@@ -78,7 +78,7 @@ describe('restrictions', () => {
         it('should throw on setting outerHTML', () => {
             // Using two expect()s because one looks for errors, the other looks for logs
             expect(() => {
-                // eslint-disable-next-line jest/valid-expect
+                // eslint-disable-next-line vitest/valid-expect
                 let expected = expect(() => {
                     elm.shadowRoot.querySelector('div').outerHTML = '';
                 });

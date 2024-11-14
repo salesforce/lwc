@@ -80,7 +80,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
             ];
 
             function expectWarningForNonStandardPropertyAccess(callback) {
-                // eslint-disable-next-line jest/valid-expect
+                // eslint-disable-next-line vitest/valid-expect
                 let expected = expect(callback);
                 if (!usePropertyAccess) {
                     expected = expected.not;
