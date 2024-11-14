@@ -19,7 +19,8 @@ export default {
         expect(p.getAttribute('data-another-diff')).toBe('client-val');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <p>: attribute "title" has different values, expected "client-title" but found "ssr-title"',
                 'Mismatch hydrating element <p>: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"',
                 'Hydration completed with errors.',

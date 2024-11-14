@@ -28,7 +28,7 @@ function testAriaProperty(property, attribute, suite = describe) {
         }
 
         function expectWarningIfNonStandard(callback) {
-            // eslint-disable-next-line jest/valid-expect
+            // eslint-disable-next-line vitest/valid-expect
             let expected = expect(callback);
             if (!nonStandardAriaProperties.includes(property)) {
                 expected = expected.not;

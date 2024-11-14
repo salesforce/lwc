@@ -17,7 +17,8 @@ export default {
         expect(div).toBeDefined();
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
                 'Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.',
                 'Hydration completed with errors.',
             ],

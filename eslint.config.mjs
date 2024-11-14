@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import jest from 'eslint-plugin-jest';
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
 import _import from 'eslint-plugin-import';
 import header from 'eslint-plugin-header';
@@ -37,7 +36,6 @@ export default tseslint.config(
             '@lwc/lwc-internal': lwcInternal,
             import: _import,
             header,
-            vitest,
         },
 
         linterOptions: {
@@ -224,7 +222,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/__tests__/**', '**/__mocks__/**', 'packages/@lwc/integration-karma/**'],
+        files: ['packages/@lwc/integration-karma/**'],
 
         languageOptions: {
             globals: {
@@ -234,25 +232,26 @@ export default tseslint.config(
         },
 
         plugins: {
-            jest,
+            vitest,
         },
 
         rules: {
-            'jest/no-focused-tests': 'error',
-            'jest/valid-expect': 'error',
-            'jest/valid-expect-in-promise': 'error',
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect': 'error',
+            'vitest/valid-expect-in-promise': 'error',
+            'vitest/no-conditional-tests': 'error',
+            'vitest/no-done-callback': 'error',
         },
     },
     {
         files: ['**/__tests__/**'],
-        ignores: ['packages/@lwc/integration-karma/**'],
+        plugins: {
+            vitest,
+        },
         rules: {
             ...vitest.configs.recommended.rules,
-        },
-    },
-    {
-        files: ['packages/@lwc/integration-karma/**'],
-        rules: {
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect-in-promise': 'error',
             'vitest/no-conditional-tests': 'error',
             'vitest/no-done-callback': 'error',
         },

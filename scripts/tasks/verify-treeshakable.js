@@ -13,6 +13,9 @@ const { rollup } = require('rollup');
 async function check(input) {
     const resolved = path.resolve(input);
 
+    // Tell rollup to bundle a fake file whose content is just `import "path from CLI arg"`
+    // If the imported file is tree-shakeable (pure imports/exports, no side effects),
+    // then the bundled code will be an empty file
     const bundle = await rollup({
         input: '__root__',
         plugins: [
@@ -46,9 +49,7 @@ const input = process.argv[2];
 check(input)
     .then((res) => {
         if (res.isTreeShakable === false) {
-            console.error(
-                `Failed to fully treeshake ${input}. Remaining code after treeshaking:\n\n${res.code}`
-            );
+            console.error(`${res.code}\n❗️ Failed to fully treeshake ${input}`);
         }
 
         process.exit(res.isTreeShakable ? 0 : 1);

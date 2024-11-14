@@ -23,7 +23,7 @@ import {
     htmlPropertyToAttribute,
     isNull,
 } from '@lwc/shared';
-import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
+import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
 import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
