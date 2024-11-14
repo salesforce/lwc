@@ -18,8 +18,9 @@ export default {
         expect(target.shadowRoot.querySelector('x-client')).not.toBeNull();
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
-                '[LWC error]: Hydration mismatch: expecting element with tag "x-client" but found "x-server".',
+            error: [],
+            warn: [
+                '[LWC warn]: Hydration mismatch: expecting element with tag "x-client" but found "x-server".',
                 'Hydration completed with errors.',
             ],
         });

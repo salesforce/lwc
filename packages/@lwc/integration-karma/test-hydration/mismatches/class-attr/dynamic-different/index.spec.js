@@ -19,7 +19,8 @@ export default {
         expect(p.className).not.toBe(snapshots.classes);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <p>: attribute "class" has different values, expected "c2 c3 c4" but found "c1 c2 c3"',
                 'Hydration completed with errors.',
             ],
