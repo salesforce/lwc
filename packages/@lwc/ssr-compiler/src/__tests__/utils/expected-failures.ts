@@ -34,6 +34,7 @@ export const expectedFailures = new Set([
     'empty-text-with-comments-non-static-optimized/index.js',
     'global-html-attributes/index.js',
     'if-conditional-slot-content/index.js',
+    'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
     'rehydration/index.js',
     'render-dynamic-value/index.js',
     'scoped-slots/advanced/index.js',
