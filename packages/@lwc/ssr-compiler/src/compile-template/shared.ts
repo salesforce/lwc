@@ -9,7 +9,6 @@ import { builders as b, is } from 'estree-toolkit';
 import { StringReplace, StringTrim } from '@lwc/shared';
 import { Node as IrNode } from '@lwc/template-compiler';
 
-import { bImportDeclaration } from '../estree/builders';
 import { TransformerContext } from './types';
 import type {
     Statement as EsStatement,
@@ -17,9 +16,6 @@ import type {
     MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
 } from 'estree';
-
-export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
-export const importHtmlEscapeKey = 'import:htmlEscape';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
     let prevStmt: EsStatement | null = null;

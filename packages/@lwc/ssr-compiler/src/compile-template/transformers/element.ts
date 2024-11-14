@@ -24,14 +24,8 @@ import {
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import {
-    bImportHtmlEscape,
-    getScopedExpression,
-    importHtmlEscapeKey,
-    normalizeClassAttributeValue,
-} from '../shared';
+import { getScopedExpression, normalizeClassAttributeValue } from '../shared';
 
-import { bImportDeclaration } from '../../estree/builders';
 import type {
     BinaryExpression,
     BlockStatement as EsBlockStatement,
@@ -141,7 +135,7 @@ function yieldAttrOrPropLiveValue(
     value: IrExpression | BinaryExpression,
     cxt: TransformerContext
 ): EsStatement[] {
-    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+    cxt.import('htmlEscape');
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
     return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
@@ -207,7 +201,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
             if (result.length > 0) {
                 // actually yielded something
-                cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+                cxt.import('htmlEscape');
                 if (name === 'class') {
                     hasClassAttribute = true;
                 }
@@ -230,7 +224,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         const unsanitizedHtmlExpression =
             value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
         childContent = [bYieldSanitizedHtml(unsanitizedHtmlExpression)];
-        cxt.hoist(bImportDeclaration(['sanitizeHtmlContent']), 'import:sanitizeHtmlContent');
+        cxt.import('sanitizeHtmlContent');
     } else {
         childContent = [];
     }

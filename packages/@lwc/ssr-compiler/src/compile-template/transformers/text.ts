@@ -7,7 +7,6 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
-import { bImportHtmlEscape, importHtmlEscapeKey } from '../shared';
 import { expressionIrToEs } from '../expression';
 
 import type { Expression as EsExpression, Statement as EsStatement } from 'estree';
@@ -51,7 +50,7 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
     );
 
     const valueToYield = expressionIrToEs(node.value, cxt);
-    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+    cxt.import('htmlEscape');
 
     const tempVariable = b.identifier(cxt.getUniqueVar());
     return bYieldEscapedString(tempVariable, valueToYield, isIsolatedTextNode);

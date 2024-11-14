@@ -20,7 +20,6 @@ import { TransformerContext } from '../types';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
 import { isNullableOf } from '../../estree/validators';
-import { bImportDeclaration } from '../../estree/builders';
 import type {
     CallExpression as EsCallExpression,
     Expression as EsExpression,
@@ -87,12 +86,6 @@ const bAddContent = esTemplate`
     });
 `<EsCallExpression>;
 
-const bImportGenerateMarkup = (localName: string, importPath: string) =>
-    b.importDeclaration(
-        [b.importSpecifier(b.identifier('generateMarkup'), b.identifier(localName))],
-        b.literal(importPath)
-    );
-
 function getChildAttrsOrProps(
     attrs: (IrAttribute | IrProperty)[],
     cxt: TransformerContext
@@ -132,12 +125,8 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     // Import the custom component's generateMarkup export.
     const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
     const importPath = kebabcaseToCamelcase(node.name);
-    const componentImport = bImportGenerateMarkup(childGeneratorLocalName, importPath);
-    cxt.hoist(componentImport, childGeneratorLocalName);
-    cxt.hoist(
-        bImportDeclaration([{ getReadOnlyProxy: '__getReadOnlyProxy' }]),
-        'import:getReadOnlyProxy'
-    );
+    cxt.import({ generateMarkup: childGeneratorLocalName }, importPath);
+    cxt.import({ getReadOnlyProxy: '__getReadOnlyProxy' });
     const childTagName = node.name;
 
     // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.

@@ -22,6 +22,7 @@ export interface TransformerContext {
     templateOptions: TemplateOpts;
     prevSibling?: IrNode;
     nextSibling?: IrNode;
+    import: (imports: string | string[] | Record<string, string>, source?: string) => void;
 }
 
 export interface TemplateOpts {
