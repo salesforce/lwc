@@ -89,9 +89,9 @@ export interface DynamicImportConfig {
  */
 export interface TransformOptions {
     /** The name of the component. For example, the name in `<my-component>` is `"component"`. */
-    name?: string;
+    name: string;
     /** The namespace of the component. For example, the namespace in `<my-component>` is `"my"`. */
-    namespace?: string;
+    namespace: string;
     /** @deprecated Ignored by compiler. */
     stylesheetConfig?: StylesheetConfig;
     // TODO [#3331]: deprecate / rename this compiler option in 246
