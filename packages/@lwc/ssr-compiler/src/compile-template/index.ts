@@ -13,7 +13,6 @@ import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
-import { bImportDeclaration } from '../estree/builders';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
@@ -96,19 +95,16 @@ export default function compileTemplate(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
 
-    const { hoisted, statements } = templateIrToEsTree(root!, { preserveComments });
+    const { addImport, getImports, statements } = templateIrToEsTree(root!, { preserveComments });
+    addImport(['renderStylesheets', 'hasScopedStaticStylesheets']);
+    for (const [imports, source] of getStylesheetImports(filename)) {
+        addImport(imports, source);
+    }
 
-    const moduleBody = [
-        ...hoisted,
-        bImportDeclaration(['renderStylesheets', 'hasScopedStaticStylesheets']),
-        bExportTemplate(optimizeAdjacentYieldStmts(statements)),
-    ];
+    const moduleBody = [...getImports(), bExportTemplate(optimizeAdjacentYieldStmts(statements))];
     let program = b.program(moduleBody, 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
-
-    const stylesheetImports = getStylesheetImports(filename);
-    program.body.unshift(...stylesheetImports);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         program = transmogrify(program, compilationMode);

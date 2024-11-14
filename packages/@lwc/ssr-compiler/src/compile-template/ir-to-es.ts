@@ -86,7 +86,8 @@ export function templateIrToEsTree(node: IrNode, contextOpts: TemplateOpts) {
     const { hoisted, cxt } = createNewContext(contextOpts);
     const statements = irToEs(node, cxt);
     return {
-        hoisted: hoisted.values(),
+        addImport: cxt.import,
+        getImports: () => hoisted.values(),
         statements,
     };
 }
