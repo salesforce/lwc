@@ -19,7 +19,10 @@ import {
     isAPIFeatureEnabled,
     isFalse,
     StringSplit,
-    parseStyleText, ArrayFrom, ArraySort, StringTrim,
+    parseStyleText,
+    ArrayFrom,
+    ArraySort,
+    ArrayFilter,
 } from '@lwc/shared';
 
 import { logWarn } from '../shared/logger';
@@ -47,7 +50,6 @@ import {
     VCustomElement,
     VStatic,
     VFragment,
-    isVCustomElement,
     VElementData,
     VStaticPartData,
     VStaticPartText,
@@ -57,7 +59,7 @@ import {
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
 import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
-import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
+import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
 import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
@@ -529,7 +531,7 @@ function isMatchingElement(
     vnode: VBaseElement,
     elm: Element,
     renderer: RendererAPI,
-    shouldValidateAttr: AttrValidationPredicate = () => true,
+    shouldValidateAttr: AttrValidationPredicate = () => true
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
@@ -633,15 +635,15 @@ function validateClassAttr(
 
     // Use a Set because we don't care to validate mismatches for 1) different ordering in SSR vs CSR, or 2)
     // duplicated class names. These don't have an effect on rendered styles.
-    const elmClasses = new Set(ArrayFrom(elm.classList))
-    let vnodeClasses: Set<string>
+    const elmClasses = new Set(ArrayFrom(elm.classList));
+    let vnodeClasses: Set<string>;
 
     if (!isUndefined(className)) {
-        vnodeClasses = new Set(StringSplit.call(StringTrim.call(className), /\s+/));
+        vnodeClasses = new Set(ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean));
     } else if (!isUndefined(classMap)) {
         vnodeClasses = new Set(keys(classMap));
     } else {
-        vnodeClasses = new Set()
+        vnodeClasses = new Set();
     }
 
     // ---------- Step 2: handle the scope tokens
@@ -656,7 +658,7 @@ function validateClassAttr(
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
     if (!isNull(scopeToken)) {
-        vnodeClasses.add(scopeToken)
+        vnodeClasses.add(scopeToken);
     }
 
     // This tells us which `*-host` scope token was rendered to the element's class.
@@ -664,8 +666,8 @@ function validateClassAttr(
     // FIXME: correctly validate the host scope token class
     const elmHostScopeToken = renderer.getAttribute(elm, 'data-lwc-host-scope-token');
     if (!isNull(elmHostScopeToken)) {
-        elmClasses.delete(elmHostScopeToken)
-        vnodeClasses.delete(elmHostScopeToken)
+        elmClasses.delete(elmHostScopeToken);
+        vnodeClasses.delete(elmHostScopeToken);
     }
 
     // ---------- Step 3: check for compatibility
@@ -677,29 +679,26 @@ function validateClassAttr(
     } else {
         for (const vnodeClass of vnodeClasses) {
             if (!elmClasses.has(vnodeClass)) {
-                nodesAreCompatible = false
+                nodesAreCompatible = false;
             }
         }
         for (const elmClass of elmClasses) {
             if (!vnodeClasses.has(elmClass)) {
-                nodesAreCompatible = false
+                nodesAreCompatible = false;
             }
         }
     }
 
     if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
-        const prettyPrint = (set: Set<string>) => JSON.stringify(
-            ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' ')
-        )
+        const prettyPrint = (set: Set<string>) =>
+            JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
         logWarn(
             `Mismatch hydrating element <${getProperty(
                 elm,
                 'tagName'
-            ).toLowerCase()}>: attribute "class" has different values, expected ${
-                prettyPrint(vnodeClasses)
-            } but found ${
-                prettyPrint(elmClasses)
-            }`,
+            ).toLowerCase()}>: attribute "class" has different values, expected ${prettyPrint(
+                vnodeClasses
+            )} but found ${prettyPrint(elmClasses)}`,
             vnode.owner
         );
     }
