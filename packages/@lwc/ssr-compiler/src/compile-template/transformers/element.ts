@@ -200,8 +200,6 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             }
 
             if (result.length > 0) {
-                // actually yielded something
-                cxt.import('htmlEscape');
                 if (name === 'class') {
                     hasClassAttribute = true;
                 }

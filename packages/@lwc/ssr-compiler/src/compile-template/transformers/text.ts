@@ -21,10 +21,10 @@ import type { Transformer } from '../types';
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 const bYieldEscapedString = esTemplateWithYield`
-    const ${is.identifier} = ${is.expression};
+    const ${/* temp var */ is.identifier} = ${/* string value */ is.expression};
     switch (typeof ${0}) {
         case 'string':
-            yield (${is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
+            yield (${/* is isolated text node? */ is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
             break;
         case 'number':
         case 'boolean':
@@ -48,10 +48,9 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
         (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
             (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
     );
-
     const valueToYield = expressionIrToEs(node.value, cxt);
-    cxt.import('htmlEscape');
-
     const tempVariable = b.identifier(cxt.getUniqueVar());
+
+    cxt.import('htmlEscape');
     return bYieldEscapedString(tempVariable, valueToYield, isIsolatedTextNode);
 };
