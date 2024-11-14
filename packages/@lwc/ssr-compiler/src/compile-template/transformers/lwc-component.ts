@@ -29,7 +29,7 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
             throw new Error(\`Invalid constructor "\${String(Ctor)}" is not a LightningElement constructor.\`)
         }
-        const childProps = __cloneAndDeepFreeze(${/* child props */ is.objectExpression});
+        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
         const childAttrs = ${/* child attrs */ is.objectExpression};
         yield* Ctor[SYMBOL__GENERATE_MARKUP](null, childProps, childAttrs);
     }
@@ -46,8 +46,8 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
             'import:SYMBOL__GENERATE_MARKUP'
         );
         cxt.hoist(
-            bImportDeclaration([{ cloneAndDeepFreeze: '__cloneAndDeepFreeze' }]),
-            'import:cloneAndDeepFreeze'
+            bImportDeclaration([{ getReadOnlyProxy: '__getReadOnlyProxy' }]),
+            'import:getReadOnlyProxy'
         );
 
         return [

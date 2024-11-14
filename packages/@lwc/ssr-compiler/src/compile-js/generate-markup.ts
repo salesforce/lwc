@@ -29,7 +29,8 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName = ${/*component tag name*/ is.literal}, props, attrs, slotted, parent, scopeToken) {
+    export async function* generateMarkup(tagName, props, attrs, slotted, parent, scopeToken) {
+        tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
         props = __filterProperties(
