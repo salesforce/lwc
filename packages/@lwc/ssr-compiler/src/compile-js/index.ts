@@ -19,7 +19,7 @@ import { catalogWireAdapters } from './wire';
 import { removeDecoratorImport } from './remove-decorator-import';
 import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode, TransformOptions } from '../shared';
+import type { CompilationMode } from '../shared';
 import type {
     PropertyDefinition as DecoratatedPropertyDefinition,
     MethodDefinition as DecoratatedMethodDefinition,
@@ -153,7 +153,7 @@ const visitors: Visitors = {
 export default function compileJS(
     src: string,
     filename: string,
-    options: TransformOptions,
+    tagName: string,
     compilationMode: CompilationMode
 ) {
     let ast = parseModule(src, {
@@ -190,8 +190,7 @@ export default function compileJS(
         };
     }
 
-    // Add the tag name here, either export tag name as additional export or just attach it to the class
-    addGenerateMarkupExport(ast, state, options, filename);
+    addGenerateMarkupExport(ast, state, tagName, filename);
     assignGenerateMarkupToComponent(ast, state);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {

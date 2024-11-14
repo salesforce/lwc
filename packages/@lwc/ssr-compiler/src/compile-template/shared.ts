@@ -11,7 +11,7 @@ import {
     Attribute as IrAttribute,
     Property as IrProperty,
 } from '@lwc/template-compiler';
-import { normalizeStyleAttributeValue } from '@lwc/shared';
+import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
 
 import { bImportDeclaration } from '../estree/builders';
 import { isValidIdentifier } from '../shared';
