@@ -7,7 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { test } from 'vitest';
+import { beforeAll, describe, test } from 'vitest';
 import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
@@ -112,6 +112,8 @@ export function testFixtureDir<R>(
         absolute: true,
     });
 
+    const _formatters = Object.entries(formatters);
+
     for (const filename of matches) {
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
@@ -120,32 +122,37 @@ export function testFixtureDir<R>(
         const options = getTestOptions(dirname);
         const fails = config.expectedFailures?.has(relpath);
 
-        test(relpath, { fails, ...options }, async ({ expect }) => {
-            const result = await testFn({
-                src,
-                filename,
-                dirname,
-                config: fixtureConfig,
+        describe(relpath, { fails, ...options }, () => {
+            let result: R;
+            beforeAll(async () => {
+                result = await testFn({
+                    src,
+                    filename,
+                    dirname,
+                    config: fixtureConfig,
+                });
             });
 
-            for (const [outputName, f] of Object.entries(formatters)) {
-                const outputPath = path.resolve(dirname, outputName);
-                const content = await f(result);
-                try {
-                    if (content === undefined) {
-                        expect(fs.existsSync(outputPath)).toBe(false);
-                    } else {
-                        await expect(content).toMatchFileSnapshot(outputPath);
-                    }
-                } catch (err) {
-                    if (typeof err === 'object' && err !== null) {
-                        // Hide unhelpful noise in the stack trace
-                        // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
-                        Error.captureStackTrace(err, testFixtureDir);
-                    }
+            for (const [outputName, f] of _formatters) {
+                test.concurrent(outputName, async ({ expect }) => {
+                    const outputPath = path.resolve(dirname, outputName);
+                    const content = await f(result);
+                    try {
+                        if (content === undefined) {
+                            expect(fs.existsSync(outputPath)).toBe(false);
+                        } else {
+                            await expect(content).toMatchFileSnapshot(outputPath);
+                        }
+                    } catch (err) {
+                        if (typeof err === 'object' && err !== null) {
+                            // Hide unhelpful noise in the stack trace
+                            // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
+                            Error.captureStackTrace(err, testFixtureDir);
+                        }
 
-                    throw err;
-                }
+                        throw err;
+                    }
+                });
             }
         });
     }
