@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyNames, isNull, isString, isUndefined } from '@lwc/shared';
+import { getOwnPropertyNames, isNull, isString, isUndefined, DEFAULT_SSR_MODE } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import {
     LightningElement,
@@ -51,6 +51,11 @@ function renderAttrsPrivate(
     // If we didn't render any `class` attribute, render one for the scope token(s)
     if (!hasClassAttribute && combinedScopeToken) {
         result += ` class="${combinedScopeToken}"`;
+    }
+
+    // For the host scope token only, we encode a special attribute for hydration
+    if (hostScopeToken) {
+        result += ` data-lwc-host-scope-token="${hostScopeToken}"`;
     }
 
     result += mutationTracker.renderMutatedAttrs(instance);
@@ -138,7 +143,7 @@ export async function serverSideRenderComponent(
     tagName: string,
     Component: GenerateMarkupFnVariants | ComponentWithGenerateMarkup,
     props: Properties = {},
-    mode: 'asyncYield' | 'async' | 'sync' = 'asyncYield'
+    mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE
 ): Promise<string> {
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);

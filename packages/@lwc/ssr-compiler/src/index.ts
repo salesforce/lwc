@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { generateCustomElementTagName } from '@lwc/shared';
+import { DEFAULT_SSR_MODE, generateCustomElementTagName } from '@lwc/shared';
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
 import type { CompilationMode, TransformOptions } from './shared';
@@ -21,7 +21,7 @@ export function compileComponentForSSR(
     src: string,
     filename: string,
     options: TransformOptions,
-    mode: CompilationMode = 'asyncYield'
+    mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
     const tagName = generateCustomElementTagName(options.namespace, options.name);
     const { code } = compileJS(src, filename, tagName, mode);
@@ -32,7 +32,7 @@ export function compileTemplateForSSR(
     src: string,
     filename: string,
     options: TransformOptions,
-    mode: CompilationMode = 'asyncYield'
+    mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
     const { code } = compileTemplate(src, filename, options, mode);
     return { code, map: undefined };

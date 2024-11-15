@@ -12,6 +12,7 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
+import { DEFAULT_SSR_MODE } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
 import type { CompilationMode } from '../index';
 
@@ -38,7 +39,7 @@ vi.mock('@lwc/ssr-runtime', async () => {
     return runtime;
 });
 
-const SSR_MODE: CompilationMode = 'asyncYield';
+const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -57,19 +58,10 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code, names }) {
-            if (code === 'CIRCULAR_DEPENDENCY') {
-                return;
+        onwarn({ message, code }) {
+            if (code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
             }
-            // TODO [#4793]: fix unused imports
-            if (code === 'UNUSED_EXTERNAL_IMPORT') {
-                const unexpected = new Set(names);
-                const expected = ['connectContext', 'htmlEscape', 'track'];
-                expected.forEach((name) => unexpected.delete(name));
-                if (unexpected.size === 0) return;
-            }
-
-            throw new Error(message);
         },
     });
 

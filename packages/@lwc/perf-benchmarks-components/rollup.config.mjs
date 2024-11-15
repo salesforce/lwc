@@ -16,8 +16,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const { tmpDir, styledComponents } = generateStyledComponents();
 
-const SSR_MODE = 'asyncYield';
-
 const ENGINE_TYPE_TO_LWC_IMPORT = {
     dom: '@lwc/engine-dom',
     server: '@lwc/engine-server',
@@ -36,7 +34,6 @@ function createConfig(componentFile, engineType) {
                 rootDir,
                 experimentalComplexExpressions: true,
                 targetSSR: engineType === 'ssr',
-                ssrMode: SSR_MODE,
             }),
             replace({
                 preventAssignment: true,
