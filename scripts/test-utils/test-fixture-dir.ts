@@ -94,7 +94,7 @@ type SnapshotFile = `${string}.${'json' | 'txt' | 'html' | 'js'}`;
  *   }
  * )
  */
-export function testFixtureDir<R, T extends any[]>(
+export function testFixtureDir<R, T extends unknown[]>(
     config: {
         pattern: string;
         root: string;
