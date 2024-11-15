@@ -132,7 +132,7 @@ export function testFixtureDir<R, T extends unknown[]>(
             expectedFailures,
             ...snapshots
         }: Record<SnapshotFile, (result: R) => string | undefined | Promise<string | undefined>> & {
-            expectedFailures?: Set<string>;
+            expectedFailures?: Record<string, string[]>;
         },
         ...context: T
     ) => {
@@ -156,8 +156,8 @@ export function testFixtureDir<R, T extends unknown[]>(
                 });
 
                 for (const [outputName, f] of formatters) {
-                    const skip = expectedFailures?.has(relpath);
-                    test.concurrent(outputName, { skip }, async ({ expect }) => {
+                    const fails = !!expectedFailures?.[relpath]?.includes(outputName);
+                    test.concurrent(outputName, { fails }, async ({ expect }) => {
                         const outputPath = path.resolve(dirname, outputName);
                         const content = await f(result);
                         try {
