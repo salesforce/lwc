@@ -26,7 +26,6 @@ const visitors: Visitors = {
                     return binding?.references.length;
                 }
                 // unused
-                return false;
             });
         }
     },
