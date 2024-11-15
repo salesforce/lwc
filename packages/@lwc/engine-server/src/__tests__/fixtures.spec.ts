@@ -10,7 +10,7 @@ import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
-import type * as lwc from '../index';
+import * as lwc from '../index';
 
 interface FixtureModule {
     tagName: string;
@@ -21,18 +21,14 @@ interface FixtureModule {
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
-vi.mock('lwc', async () => {
-    const lwcEngineServer = await import('../index');
-    try {
-        lwcEngineServer.setHooks({
-            sanitizeHtmlContent(content: unknown) {
-                return content as string;
-            },
-        });
-    } catch (_err) {
-        // Ignore error if the hook is already overridden
-    }
-    return lwcEngineServer;
+lwc.setHooks({
+    sanitizeHtmlContent(content: unknown) {
+        return String(content);
+    },
+});
+
+vi.mock('lwc', () => {
+    return lwc;
 });
 
 async function compileFixture(
@@ -111,21 +107,17 @@ const testFixtures = testFixtureDir(
         // On top of this, the engine also checks if the component constructor is an instance of
         // the LightningElement. Therefor the compiled module should also be evaluated in the
         // same sandbox registry as the engine.
-        const lwcEngineServer = await import('../index');
+        // const lwcEngineServer = await import('../index');
 
         const features = module!.features ?? [];
         features.forEach((flag) => {
-            lwcEngineServer!.setFeatureFlagForTest(flag, true);
+            lwc!.setFeatureFlagForTest(flag, true);
         });
 
         let result;
         let err;
         try {
-            result = lwcEngineServer!.renderComponent(
-                module!.tagName,
-                module!.default,
-                config?.props ?? {}
-            );
+            result = lwc!.renderComponent(module!.tagName, module!.default, config?.props ?? {});
         } catch (_err: any) {
             if (_err.name === 'AssertionError') {
                 throw _err;
@@ -134,7 +126,7 @@ const testFixtures = testFixtureDir(
         }
 
         features.forEach((flag) => {
-            lwcEngineServer!.setFeatureFlagForTest(flag, false);
+            lwc!.setFeatureFlagForTest(flag, false);
         });
 
         return { result, err };

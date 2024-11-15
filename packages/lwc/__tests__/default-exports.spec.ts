@@ -4,18 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as fs from 'node:fs';
+import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { describe, beforeAll, test, expect } from 'vitest';
+import { describe, test, expect, vi } from 'vitest';
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 
-function readPackageFile(pkgName: string, ext: string) {
+async function readPackageFile(pkgName: string, ext: string) {
     const filename = path.join(PACKAGE_ROOT, pkgName + ext);
-    const contents = fs.readFileSync(filename, 'utf8');
-    return contents;
+    return await fs.readFile(filename, 'utf8');
 }
-
 /*
  * This comment needs to be updated:
  * Jest uses CommonJS, which means that packages with no explicit export statements actually export
@@ -39,13 +37,11 @@ const hasExplicitDefaultExport = (mod: object) => {
     return false;
 };
 
-beforeAll(() => {
-    // vitest jsdom does not install this legacy API by default, but @lwc/synthetic-shadow needs it
-    globalThis.HTMLDocument = globalThis.Document;
-});
+// vitest jsdom does not install this legacy API by default, but @lwc/synthetic-shadow needs it
+vi.stubGlobal('HTMLDocument', globalThis.Document);
 
-describe('default exports are not forgotten', () => {
-    const allFiles = fs.readdirSync(PACKAGE_ROOT);
+describe.concurrent('default exports are not forgotten', async () => {
+    const allFiles = await fs.readdir(PACKAGE_ROOT);
     const packages = allFiles
         .filter((f) => f.endsWith('.js') && f !== 'index.js' && f !== 'vitest.config.js')
         .map((f) => f.slice(0, -3));
@@ -66,8 +62,10 @@ describe('default exports are not forgotten', () => {
                 `^export \\{ default \\} from '@lwc/${pkg}';$`,
                 'm'
             );
-            expect(readPackageFile(pkg, '.d.ts')).toMatch(exportDefaultFromPackage);
-            expect(readPackageFile(pkg, '.js')).toMatch(exportDefaultFromPackage);
+            await Promise.all([
+                expect(readPackageFile(pkg, '.d.ts')).resolves.toMatch(exportDefaultFromPackage),
+                expect(readPackageFile(pkg, '.js')).resolves.toMatch(exportDefaultFromPackage),
+            ]);
         }
     });
 });
