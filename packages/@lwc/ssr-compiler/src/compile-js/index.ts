@@ -10,6 +10,7 @@ import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
 import { transmogrify } from '../transmogrify';
+import { optimizeImports } from '../optimize-imports';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
@@ -150,7 +151,12 @@ const visitors: Visitors = {
     },
 };
 
-export default function compileJS(src: string, filename: string, compilationMode: CompilationMode) {
+export default function compileJS(
+    src: string,
+    filename: string,
+    tagName: string,
+    compilationMode: CompilationMode
+) {
     let ast = parseModule(src, {
         module: true,
         next: true,
@@ -185,8 +191,10 @@ export default function compileJS(src: string, filename: string, compilationMode
         };
     }
 
-    addGenerateMarkupExport(ast, state, filename);
+    addGenerateMarkupExport(ast, state, tagName, filename);
     assignGenerateMarkupToComponent(ast, state);
+
+    ast = optimizeImports(ast);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

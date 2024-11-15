@@ -6,16 +6,24 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { StringReplace, StringTrim } from '@lwc/shared';
-import { Node as IrNode } from '@lwc/template-compiler';
+import {
+    Node as IrNode,
+    Attribute as IrAttribute,
+    Property as IrProperty,
+} from '@lwc/template-compiler';
+import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
 
 import { bImportDeclaration } from '../estree/builders';
+import { isValidIdentifier } from '../shared';
 import { TransformerContext } from './types';
+import { expressionIrToEs } from './expression';
 import type {
     Statement as EsStatement,
     Expression as EsExpression,
     MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
+    ObjectExpression as EsObjectExpression,
+    Property as EsProperty,
 } from 'estree';
 
 export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
@@ -94,4 +102,43 @@ export function getScopedExpression(expression: EsExpression, cxt: TransformerCo
 export function normalizeClassAttributeValue(value: string) {
     // @ts-expect-error weird indirection results in wrong overload being picked up
     return StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+}
+
+export function getChildAttrsOrProps(
+    attrs: (IrAttribute | IrProperty)[],
+    cxt: TransformerContext
+): EsObjectExpression {
+    const objectAttrsOrProps = attrs
+        .map(({ name, value, type }) => {
+            const key = isValidIdentifier(name) ? b.identifier(name) : b.literal(name);
+            if (value.type === 'Literal' && typeof value.value === 'string') {
+                let literalValue: string | boolean = value.value;
+                if (name === 'style') {
+                    literalValue = normalizeStyleAttributeValue(literalValue);
+                } else if (name === 'class') {
+                    literalValue = normalizeClassAttributeValue(literalValue);
+                    if (literalValue === '') {
+                        return; // do not render empty `class=""`
+                    }
+                } else if (name === 'spellcheck') {
+                    // `spellcheck` string values are specially handled to massage them into booleans:
+                    // https://github.com/salesforce/lwc/blob/574ffbd/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
+                    literalValue = literalValue.toLowerCase() !== 'false';
+                }
+                return b.property('init', key, b.literal(literalValue));
+            } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
+                if (name === 'class') {
+                    return; // do not render empty `class=""`
+                }
+
+                return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
+            } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
+                const propValue = expressionIrToEs(value, cxt);
+                return b.property('init', key, propValue);
+            }
+            throw new Error(`Unimplemented child attr IR node type: ${value.type}`);
+        })
+        .filter(Boolean) as EsProperty[];
+
+    return b.objectExpression(objectAttrsOrProps);
 }

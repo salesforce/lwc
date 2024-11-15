@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { DEFAULT_SSR_MODE } from '@lwc/shared';
+import { DEFAULT_SSR_MODE, generateCustomElementTagName } from '@lwc/shared';
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
 import type { CompilationMode, TransformOptions } from './shared';
@@ -20,10 +20,11 @@ export type { CompilationMode };
 export function compileComponentForSSR(
     src: string,
     filename: string,
-    _options: TransformOptions,
+    options: TransformOptions,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
-    const { code } = compileJS(src, filename, mode);
+    const tagName = generateCustomElementTagName(options.namespace, options.name);
+    const { code } = compileJS(src, filename, tagName, mode);
     return { code, map: undefined };
 }
 
