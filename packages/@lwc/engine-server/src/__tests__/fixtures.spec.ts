@@ -35,21 +35,20 @@ vi.mock('lwc', async () => {
     return lwcEngineServer;
 });
 
-async function compileFixture({
-    input,
-    dirname,
-    options,
-}: {
-    input: string;
-    dirname: string;
-    options?: RollupLwcOptions;
-}) {
-    const optionsAsString =
-        Object.entries(options ?? {})
-            .map(([key, value]) => `${key}=${value}`)
-            .join('-') || 'default';
+async function compileFixture(
+    {
+        input,
+        dirname,
+        options,
+    }: {
+        input: string;
+        dirname: string;
+        options?: RollupLwcOptions;
+    },
+    name: string
+) {
     const modulesDir = path.resolve(dirname, './modules');
-    const outputFile = path.resolve(dirname, `./dist/compiled-${optionsAsString}.js`);
+    const outputFile = path.resolve(dirname, `./dist/compiled-${name}.js`);
 
     const bundle = await rollup({
         input,
@@ -95,12 +94,15 @@ const testFixtures = testFixtureDir(
         root: path.resolve(__dirname, 'fixtures'),
         pattern: '**/index.js',
     },
-    async ({ filename, dirname, config }, options: RollupLwcOptions) => {
-        const compiledFixturePath = await compileFixture({
-            input: filename,
-            dirname,
-            options,
-        });
+    async ({ filename, dirname, config }, name: string, options: RollupLwcOptions) => {
+        const compiledFixturePath = await compileFixture(
+            {
+                input: filename,
+                dirname,
+                options,
+            },
+            name
+        );
 
         // The LWC engine holds global state like the current VM index, which has an impact on
         // the generated HTML IDs. So the engine has to be re-evaluated between tests.
@@ -135,20 +137,26 @@ const testFixtures = testFixtureDir(
         });
 
         return { result, err };
-    },
-    {
-        'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
-        'error.txt': ({ err }) => err ?? '',
     }
 );
 
-describe('fixtures', () => {
-    describe.concurrent('default', async () => {
-        await testFixtures({});
-    });
+// Test with and without the static content optimization to ensure the fixtures are the same
+const cases = [{}, { enableStaticContentOptimization: false }].map((options) => {
+    const name =
+        Object.entries(options ?? {})
+            .map(([key, value]) => `${key}=${value}`)
+            .join('-') || 'default';
 
-    // Test with and without the static content optimization to ensure the fixtures are the same
-    describe.concurrent('enableStaticContentOptimization=false', async () => {
-        await testFixtures({ enableStaticContentOptimization: false });
-    });
+    return [name, options] as const;
+});
+
+describe.each(cases)('%s', async (name, options) => {
+    await testFixtures(
+        {
+            'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
+            'error.txt': ({ err }) => err ?? '',
+        },
+        name,
+        options
+    );
 });

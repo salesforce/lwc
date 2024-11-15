@@ -22,8 +22,11 @@ const testFixtures = testFixtureDir(
         const src = await readFile(filename, 'utf8');
         const name = path.basename(dirname);
         return compiler(src, name, { namespace: 'x', name, ...config });
-    },
-    {
+    }
+);
+
+describe('fixtures', async () => {
+    await testFixtures({
         'expected.js': ({ code }) =>
             prettier.format(
                 code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
@@ -34,9 +37,5 @@ const testFixtures = testFixtureDir(
             ),
         'ast.json': ({ root }) => JSON.stringify({ root }, null, 4),
         'metadata.json': ({ warnings }) => JSON.stringify({ warnings }, null, 4),
-    }
-);
-
-describe('fixtures', async () => {
-    await testFixtures();
+    });
 });

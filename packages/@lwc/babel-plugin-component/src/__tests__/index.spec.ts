@@ -79,14 +79,13 @@ const testFixtures = testFixtureDir(
         }
 
         return { result, error };
-    },
-    {
-        'expected.js': ({ result }) => result,
-        'error.json': ({ error }) =>
-            error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
     }
 );
 
 describe('fixtures', async () => {
-    await testFixtures();
+    await testFixtures({
+        'expected.js': ({ result }) => result,
+        'error.json': ({ error }) =>
+            error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
+    });
 });

@@ -82,62 +82,46 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-// We will enable this for realsies once all the tests are passing, but for now having the env var avoids
-// running these tests in CI while still allowing for local testing.
-describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
-    testFixtureDir(
-        {
-            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
-            pattern: '**/index.js',
-            // TODO [#4815]: enable all SSR v2 tests
-            expectedFailures,
-        },
-        async ({ filename, dirname, config }) => {
-            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
-            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
+const testFixtures = testFixtureDir(
+    {
+        root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
+        pattern: '**/index.js',
+        // TODO [#4815]: enable all SSR v2 tests
+        expectedFailures,
+    },
+    async ({ filename, dirname, config }) => {
+        let compiledFixturePath;
+        try {
+            compiledFixturePath = await compileFixture({
+                input: filename,
+                dirname,
+            });
+        } catch (error) {
+            return { error };
+        }
 
-            let compiledFixturePath;
-            try {
-                compiledFixturePath = await compileFixture({
-                    input: filename,
-                    dirname,
-                });
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
+        const module = (await import(compiledFixturePath)) as FixtureModule;
 
-            const module = (await import(compiledFixturePath)) as FixtureModule;
-
-            let result;
-            try {
-                result = await serverSideRenderComponent(
-                    module!.tagName,
-                    module!.default,
+        try {
+            return {
+                result: await serverSideRenderComponent(
+                    module.tagName,
+                    module.default,
                     config?.props ?? {},
                     SSR_MODE
-                );
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
+                ),
+            };
+        } catch (error) {
+            return { error };
+        }
+    }
+);
 
-            try {
-                return {
-                    [errorFile]: '',
-                    [expectedFile]: formatHTML(result),
-                };
-            } catch (_err: any) {
-                return {
-                    [errorFile]: `Test helper could not format HTML:\n\n${result}`,
-                    [expectedFile]: '',
-                };
-            }
-        },
-        {}
-    );
+// We will enable this for realsies once all the tests are passing, but for now having the env var avoids
+// running these tests in CI while still allowing for local testing.
+describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', async () => {
+    await testFixtures({
+        'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
+        'error.txt': ({ error }) => (error ? (error as any).message : ''),
+    });
 });

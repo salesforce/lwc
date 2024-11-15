@@ -43,23 +43,21 @@ const testFixtures = testFixtureDir(
         try {
             result = transform(src, filename, config);
         } catch (err: any) {
-            error = JSON.stringify(normalizeError(err), null, 4);
+            error = err;
         }
 
         // Replace LWC's version with X.X.X so the snapshots don't frequently change
-        let code = result?.code;
-        if (code) {
-            code = code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
-        }
+        const code = result?.code;
 
         return { code, error };
-    },
-    {
-        'expected.js': ({ code }) => code,
-        'error.json': ({ error }) => error,
     }
 );
 
 describe('fixtures', async () => {
-    await testFixtures();
+    await testFixtures({
+        'expected.js': ({ code }) =>
+            code?.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
+        'error.json': ({ error }) =>
+            error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
+    });
 });

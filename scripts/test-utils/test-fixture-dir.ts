@@ -70,6 +70,8 @@ async function getFixtureConfig<T extends TestFixtureConfig>(
     return JSON.parse(contents);
 }
 
+type SnapshotFile = `${string}.${'json' | 'txt' | 'html' | 'js'}`;
+
 /**
  * Test a fixture directory against a set of snapshot files. This method generates a test for each
  * file matching the `config.pattern` glob. The `testFn` fixture is invoked for each test and is
@@ -105,8 +107,7 @@ export function testFixtureDir<R, T extends any[]>(
             config?: TestFixtureConfig;
         },
         ...context: T
-    ) => R | Promise<R>,
-    formatters: Record<string, (result: R) => string | undefined | Promise<string | undefined>>
+    ) => R | Promise<R>
 ) {
     if (typeof config !== 'object' || config === null) {
         throw new TypeError(`Expected first argument to be an object`);
@@ -117,7 +118,7 @@ export function testFixtureDir<R, T extends any[]>(
     }
 
     const { pattern, root } = config;
-    if (!pattern || !root || !formatters) {
+    if (!pattern || !root) {
         throw new TypeError(`Expected a "root" and a "pattern" config to be specified`);
     }
 
@@ -126,9 +127,14 @@ export function testFixtureDir<R, T extends any[]>(
         absolute: true,
     });
 
-    const _formatters = Object.entries(formatters);
-
-    return async (...context: T) => {
+    return async (
+        snapshots: Record<
+            SnapshotFile,
+            (result: R) => string | undefined | Promise<string | undefined>
+        >,
+        ...context: T
+    ) => {
+        const formatters = Object.entries(snapshots);
         for (const filename of matches) {
             const dirname = path.dirname(filename);
             const relpath = path.relative(root, filename);
@@ -147,7 +153,7 @@ export function testFixtureDir<R, T extends any[]>(
                     );
                 });
 
-                for (const [outputName, f] of _formatters) {
+                for (const [outputName, f] of formatters) {
                     test.concurrent(outputName, async ({ expect }) => {
                         const outputPath = path.resolve(dirname, outputName);
                         const content = await f(result);
