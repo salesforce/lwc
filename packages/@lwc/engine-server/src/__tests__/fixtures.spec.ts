@@ -142,7 +142,7 @@ const testFixtures = testFixtureDir(
     }
 );
 
-describe.concurrent('fixtures', () => {
+describe('fixtures', () => {
     describe.concurrent('default', async () => {
         await testFixtures({});
     });

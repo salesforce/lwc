@@ -7,7 +7,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { beforeAll, describe } from 'vitest';
+import { beforeAll, describe, test } from 'vitest';
 import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
@@ -134,7 +134,7 @@ export function testFixtureDir<R, T extends any[]>(
             const relpath = path.relative(root, filename);
             const options = await getTestOptions(dirname);
             const fails = config.expectedFailures?.has(relpath);
-            describe.concurrent(relpath, { fails, ...options }, (test) => {
+            describe.concurrent(relpath, { fails, ...options }, () => {
                 let result: R;
                 beforeAll(async () => {
                     result = await testFn(
@@ -153,7 +153,7 @@ export function testFixtureDir<R, T extends any[]>(
                         const content = await f(result);
                         try {
                             if (content === undefined) {
-                                expect(fs.existsSync(outputPath)).toBe(false);
+                                await expect(exists(outputPath)).resolves.toBe(false);
                             } else {
                                 await expect(content).toMatchFileSnapshot(outputPath);
                             }
