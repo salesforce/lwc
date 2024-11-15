@@ -141,7 +141,6 @@ function yieldAttrOrPropLiveValue(
     value: IrExpression | BinaryExpression,
     cxt: TransformerContext
 ): EsStatement[] {
-    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
     return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
@@ -205,12 +204,9 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
                 result = yieldAttrOrPropLiveValue(node.name, name, value, cxt);
             }
 
-            if (result.length > 0) {
-                // actually yielded something
-                cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-                if (name === 'class') {
-                    hasClassAttribute = true;
-                }
+            if (result.length > 0 && name === 'class') {
+                // actually yielded a class attribute value
+                hasClassAttribute = true;
             }
 
             return result;
@@ -234,6 +230,8 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     } else {
         childContent = [];
     }
+
+    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
 
     return [
         bYield(b.literal(`<${node.name}`)),
