@@ -7,6 +7,7 @@ export default defineConfig({
         // Don't time out if we detect a debugger attached
         testTimeout: inspector.url() ? 2147483647 : undefined,
         include: ['**/*.{test,spec}.{mjs,js,ts}'],
+        isolate: false,
         snapshotFormat: {
             printBasicPrototype: true,
             callToJSON: true,

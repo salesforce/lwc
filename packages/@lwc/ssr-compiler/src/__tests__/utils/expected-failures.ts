@@ -50,4 +50,12 @@ export const expectedFailures = {
     'superclass/mixin/index.js': ['expected.html', 'error.txt'],
     'superclass/override/index.js': ['expected.html'],
     'svgs/index.js': ['expected.html'],
+    'inner-outer-html/index.js': {
+        'expected.html': 'expected-ssr.html',
+        'error.txt': 'error-ssr.txt',
+    },
+    'lwc-dynamic/index.js': {
+        'expected.html': 'expected-ssr.html',
+        'error.txt': 'error-ssr.txt',
+    },
 };

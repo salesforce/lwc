@@ -46,11 +46,6 @@ export interface TestFixtureConfig extends StyleCompilerConfig {
     namespace?: string;
     /** Props to provide to the top-level component. */
     props?: Record<string, string | string[]>;
-    /** Output files used by ssr-compiler, when the output needs to differ fron engine-server */
-    ssrFiles?: {
-        error?: string;
-        expected?: string;
-    };
 }
 
 /** Loads the the contents of the `config.json` in the provided directory, if present. */
@@ -71,7 +66,10 @@ async function getFixtureConfig<T extends TestFixtureConfig>(
 }
 
 type SnapshotFile = `${string}.${'json' | 'txt' | 'html' | 'js'}`;
-
+type Snapshots<R> = Record<
+    SnapshotFile,
+    (result: R) => string | undefined | Promise<string | undefined>
+>;
 /**
  * Test a fixture directory against a set of snapshot files. This method generates a test for each
  * file matching the `config.pattern` glob. The `testFn` fixture is invoked for each test and is
@@ -129,10 +127,10 @@ export function testFixtureDir<R, T extends unknown[]>(
 
     return async (
         {
-            expectedFailures,
+            expectedFailures = {},
             ...snapshots
-        }: Record<SnapshotFile, (result: R) => string | undefined | Promise<string | undefined>> & {
-            expectedFailures?: Record<string, string[]>;
+        }: Snapshots<R> & {
+            expectedFailures?: Record<string, string[] | Record<string, string>>;
         },
         ...context: T
     ) => {
@@ -140,10 +138,12 @@ export function testFixtureDir<R, T extends unknown[]>(
         for (const filename of matches) {
             const dirname = path.dirname(filename);
             const relpath = path.relative(root, filename);
+            const overrides = expectedFailures[relpath] ?? [];
             const options = await getTestOptions(dirname);
 
             describe.concurrent(relpath, options, () => {
                 let result: R;
+
                 beforeAll(async () => {
                     result = await testFn(
                         {
@@ -156,9 +156,10 @@ export function testFixtureDir<R, T extends unknown[]>(
                 });
 
                 for (const [outputName, f] of formatters) {
-                    const fails = !!expectedFailures?.[relpath]?.includes(outputName);
-                    test.concurrent(outputName, { fails }, async ({ expect }) => {
-                        const outputPath = path.resolve(dirname, outputName);
+                    const fails = Array.isArray(overrides) && overrides.includes(outputName);
+                    const name = Array.isArray(overrides) ? outputName : overrides[outputName];
+                    const outputPath = path.join(dirname, name);
+                    test.concurrent(name, { fails }, async ({ expect }) => {
                         const content = await f(result);
                         try {
                             if (content === undefined) {

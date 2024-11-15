@@ -104,13 +104,14 @@ const testFixtures = testFixtureDir(
             name
         );
 
+        const module = (await import(compiledFixturePath)) as FixtureModule;
+
         // The LWC engine holds global state like the current VM index, which has an impact on
         // the generated HTML IDs. So the engine has to be re-evaluated between tests.
         // On top of this, the engine also checks if the component constructor is an instance of
         // the LightningElement. Therefor the compiled module should also be evaluated in the
         // same sandbox registry as the engine.
         const lwcEngineServer = await import('../index');
-        const module = (await import(compiledFixturePath)) as FixtureModule;
 
         const features = module!.features ?? [];
         features.forEach((flag) => {
@@ -142,12 +143,12 @@ const testFixtures = testFixtureDir(
 
 // Test with and without the static content optimization to ensure the fixtures are the same
 const cases = [{}, { enableStaticContentOptimization: false }].map((options) => {
-    const name =
-        Object.entries(options ?? {})
-            .map(([key, value]) => `${key}=${value}`)
-            .join('-') || 'default';
-
-    return [name, options] as const;
+    return [
+        Object.entries(options)
+            .map((kv) => kv.join('='))
+            .join('-') || 'default',
+        options,
+    ] as const;
 });
 
 describe.each(cases)('%s', async (name, options) => {

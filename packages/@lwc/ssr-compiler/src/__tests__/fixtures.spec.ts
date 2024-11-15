@@ -86,7 +86,6 @@ const testFixtures = testFixtureDir(
     {
         root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
         pattern: '**/index.js',
-        ignore: ['**/inner-outer-html/index.js', '**/lwc-dynamic/index.js'],
     },
     async ({ filename, dirname, config }) => {
         let compiledFixturePath;
