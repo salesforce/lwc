@@ -9,7 +9,7 @@ import * as types from '@babel/types';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import { NodePath } from '@babel/traverse';
 import { Visitor } from '@babel/core';
-import { getAPIVersionFromNumber } from '@lwc/shared';
+import { generateCustomElementTagName, getAPIVersionFromNumber } from '@lwc/shared';
 import {
     COMPONENT_NAME_KEY,
     LWC_PACKAGE_ALIAS,
@@ -48,8 +48,7 @@ function needsComponentRegistration(path: DeclarationPath) {
 
 function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
     const { namespace, name } = state.opts;
-    const kebabCasedName = name?.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    const componentName = namespace && kebabCasedName ? `${namespace}-${kebabCasedName}` : '';
+    const componentName = generateCustomElementTagName(namespace, name);
     return t.stringLiteral(componentName);
 }
 
