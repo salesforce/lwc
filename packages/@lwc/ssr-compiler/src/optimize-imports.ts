@@ -20,12 +20,12 @@ const visitors: Visitors = {
         }
         if (node.source.type === 'Literal' && node.source.value === '@lwc/ssr-runtime') {
             node.specifiers = node.specifiers.filter((specifier) => {
-                if (specifier.type === 'ImportSpecifier') {
-                    const binding = scope.getBinding(specifier.local.name);
+                // There shouldn't be any default imports anyway
+                return (
+                    specifier.type === 'ImportSpecifier' &&
                     // if there are references, then the import is used
-                    return binding?.references.length;
-                }
-                // unused
+                    scope.getBinding(specifier.local.name)?.references.length
+                );
             });
         }
     },
