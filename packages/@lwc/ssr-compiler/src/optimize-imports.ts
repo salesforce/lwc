@@ -23,7 +23,8 @@ const visitors: Visitors = {
                 (specifier) =>
                     // There shouldn't be any default imports anyway
                     specifier.type === 'ImportSpecifier' &&
-                    // If there are references, then the import is used
+                    // If there are references, then the import is used. Note that an import will _always_
+                    // have a binding (of type "module"), but it may not have references.
                     scope.getBinding(specifier.local.name)?.references.length
             );
         }
