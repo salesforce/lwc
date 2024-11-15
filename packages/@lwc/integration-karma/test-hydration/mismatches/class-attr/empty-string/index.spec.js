@@ -9,9 +9,14 @@ export default {
             classes: p.className,
         };
     },
-    test(target, snapshots) {
+    test(target, snapshots, consoleCalls) {
         const p = target.shadowRoot.querySelector('p');
         expect(p).toBe(snapshots.p);
         expect(p.className).toBe(snapshots.classes);
+
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
+            warn: [],
+        });
     },
 };
