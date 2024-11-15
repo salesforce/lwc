@@ -44,11 +44,13 @@ export interface TestFixtureConfig extends StyleCompilerConfig {
 }
 
 /** Loads the the contents of the `config.json` in the provided directory, if present. */
-function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | undefined {
+async function getFixtureConfig<T extends TestFixtureConfig>(
+    dirname: string
+): Promise<T | undefined> {
     const filepath = path.join(dirname, 'config.json');
     let contents: string;
     try {
-        contents = fs.readFileSync(filepath, 'utf8');
+        contents = await fs.promises.readFile(filepath, 'utf8');
     } catch (err) {
         if (err instanceof Error && 'code' in err && err.code === 'ENOENT') {
             return undefined;
@@ -87,7 +89,6 @@ export function testFixtureDir<R>(
         expectedFailures?: Set<string>;
     },
     testFn: (options: {
-        src: string;
         filename: string;
         dirname: string;
         config?: TestFixtureConfig;
@@ -115,21 +116,19 @@ export function testFixtureDir<R>(
     const _formatters = Object.entries(formatters);
 
     for (const filename of matches) {
-        const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
-        const fixtureConfig = getFixtureConfig(dirname);
+
         const relpath = path.relative(root, filename);
         const options = getTestOptions(dirname);
         const fails = config.expectedFailures?.has(relpath);
-
         describe(relpath, { fails, ...options }, () => {
             let result: R;
+
             beforeAll(async () => {
                 result = await testFn({
-                    src,
                     filename,
                     dirname,
-                    config: fixtureConfig,
+                    config: await getFixtureConfig(dirname),
                 });
             });
 

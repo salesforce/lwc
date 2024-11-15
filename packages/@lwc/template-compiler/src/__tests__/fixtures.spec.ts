@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'node:path';
+import { readFile } from 'node:fs/promises';
 import { describe } from 'vitest';
 import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
@@ -18,9 +19,10 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.html',
         },
-        ({ src, dirname, config }) => {
-            const filename = path.basename(dirname);
-            return compiler(src, filename, { namespace: 'x', name: filename, ...config });
+        async ({ filename, dirname, config }) => {
+            const src = await readFile(filename, 'utf8');
+            const name = path.basename(dirname);
+            return compiler(src, name, { namespace: 'x', name, ...config });
         },
         {
             'expected.js': ({ code }) =>

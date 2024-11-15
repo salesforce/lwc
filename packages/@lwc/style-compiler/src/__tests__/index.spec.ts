@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'node:path';
+import { readFile } from 'node:fs/promises';
 import { describe } from 'vitest';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 import { LWC_VERSION } from '@lwc/shared';
@@ -35,9 +36,10 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.css',
         },
-        ({ src, filename, config }) => {
+        async ({ filename, config }) => {
             let result;
             let error;
+            const src = await readFile(filename, 'utf8');
 
             try {
                 result = transform(src, filename, config);

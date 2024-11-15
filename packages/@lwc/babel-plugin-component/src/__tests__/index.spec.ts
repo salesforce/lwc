@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'node:path';
+import { readFile } from 'node:fs/promises';
 import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
@@ -67,11 +68,12 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.js',
         },
-        ({ src, config }) => {
+        async ({ filename, config }) => {
             let result;
             let error;
 
             try {
+                const src = await readFile(filename, 'utf8');
                 result = transform(src, config);
             } catch (err) {
                 error = err;
