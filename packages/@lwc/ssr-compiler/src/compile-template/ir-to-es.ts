@@ -16,6 +16,7 @@ import { If, IfBlock } from './transformers/if';
 import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';
 import { createNewContext } from './context';
+import { LwcComponent } from './transformers/lwc-component';
 
 import type {
     ChildNode as IrChildNode,
@@ -58,7 +59,7 @@ const transformers: Transformers = {
     ElseBlock: defaultTransformer,
     ScopedSlotFragment: defaultTransformer,
     Slot,
-    Lwc: defaultTransformer,
+    Lwc: LwcComponent,
 };
 
 export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext): EsStatement[] {

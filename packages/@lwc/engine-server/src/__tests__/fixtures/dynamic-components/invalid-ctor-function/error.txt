@@ -1,1 +1,1 @@
-Invalid constructor function fake() {} is not a LightningElement constructor.
+Invalid constructor: "function fake() {}" is not a LightningElement constructor.
