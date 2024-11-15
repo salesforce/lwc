@@ -19,14 +19,13 @@ const visitors: Visitors = {
             return;
         }
         if (node.source.type === 'Literal' && node.source.value === '@lwc/ssr-runtime') {
-            node.specifiers = node.specifiers.filter((specifier) => {
-                return (
+            node.specifiers = node.specifiers.filter(
+                (specifier) =>
                     // There shouldn't be any default imports anyway
                     specifier.type === 'ImportSpecifier' &&
                     // If there are references, then the import is used
                     scope.getBinding(specifier.local.name)?.references.length
-                );
-            });
+            );
         }
     },
 };
