@@ -22,7 +22,7 @@ describe.each(
 )('%s', (topLevelFnName, topLevelFn) => {
     const yieldStmtsAllowed = topLevelFnName === 'esTemplateWithYield';
     describe('failure upon parse', () => {
-        test('with yield statements', { fails: yieldStmtsAllowed }, () => {
+        test.skipIf(yieldStmtsAllowed)('with yield statements', () => {
             const createTemplate = () => topLevelFn`
                 const foo = "bar";
                 yield foo;
@@ -66,7 +66,7 @@ describe.each(
     });
 
     describe('successful replacement', () => {
-        test('with yield statements', { fails: !yieldStmtsAllowed }, () => {
+        test.runIf(yieldStmtsAllowed)('with yield statements', () => {
             const tmpl = topLevelFn`
     yield ${is.literal};
 `;
