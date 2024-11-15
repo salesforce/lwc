@@ -150,7 +150,12 @@ const visitors: Visitors = {
     },
 };
 
-export default function compileJS(src: string, filename: string, compilationMode: CompilationMode) {
+export default function compileJS(
+    src: string,
+    filename: string,
+    tagName: string,
+    compilationMode: CompilationMode
+) {
     let ast = parseModule(src, {
         module: true,
         next: true,
@@ -185,7 +190,7 @@ export default function compileJS(src: string, filename: string, compilationMode
         };
     }
 
-    addGenerateMarkupExport(ast, state, filename);
+    addGenerateMarkupExport(ast, state, tagName, filename);
     assignGenerateMarkupToComponent(ast, state);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
