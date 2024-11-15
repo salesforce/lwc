@@ -639,6 +639,7 @@ function validateClassAttr(
     let vnodeClasses: Set<string>;
 
     if (!isUndefined(className)) {
+        // ignore empty spaces entirely, filter them out using `filter(..., Boolean)`
         vnodeClasses = new Set(ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean));
     } else if (!isUndefined(classMap)) {
         vnodeClasses = new Set(keys(classMap));
