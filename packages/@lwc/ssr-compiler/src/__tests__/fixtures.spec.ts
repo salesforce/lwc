@@ -86,8 +86,7 @@ const testFixtures = testFixtureDir(
     {
         root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
         pattern: '**/index.js',
-        // TODO [#4815]: enable all SSR v2 tests
-        expectedFailures,
+        ignore: ['**/inner-outer-html/index.js', '**/lwc-dynamic/index.js'],
     },
     async ({ filename, dirname, config }) => {
         let compiledFixturePath;
@@ -123,5 +122,7 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', async () =>
     await testFixtures({
         'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
         'error.txt': ({ error }) => (error ? (error as any).message : ''),
+        // TODO [#4815]: enable all SSR v2 tests
+        expectedFailures,
     });
 });

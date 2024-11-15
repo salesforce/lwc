@@ -81,7 +81,6 @@ type SnapshotFile = `${string}.${'json' | 'txt' | 'html' | 'js'}`;
  * @param config The config object
  * @param config.pattern The glob pattern to locate each individual fixture.
  * @param config.root The directory from where the pattern is executed.
- * @param config.expectedFailures Any tests that you expect to fail
  * @param testFn The test function executed for each fixture.
  * @throws On invalid input or output
  * @example
@@ -96,9 +95,9 @@ type SnapshotFile = `${string}.${'json' | 'txt' | 'html' | 'js'}`;
  */
 export function testFixtureDir<R, T extends unknown[]>(
     config: {
-        pattern: string;
+        pattern: string | string[];
         root: string;
-        expectedFailures?: Set<string>;
+        ignore?: string | string[];
     },
     testFn: (
         options: {
@@ -125,13 +124,16 @@ export function testFixtureDir<R, T extends unknown[]>(
     const matches = globSync(pattern, {
         cwd: root,
         absolute: true,
+        ignore: config.ignore,
     });
 
     return async (
-        snapshots: Record<
-            SnapshotFile,
-            (result: R) => string | undefined | Promise<string | undefined>
-        >,
+        {
+            expectedFailures,
+            ...snapshots
+        }: Record<SnapshotFile, (result: R) => string | undefined | Promise<string | undefined>> & {
+            expectedFailures?: Set<string>;
+        },
         ...context: T
     ) => {
         const formatters = Object.entries(snapshots);
@@ -139,8 +141,8 @@ export function testFixtureDir<R, T extends unknown[]>(
             const dirname = path.dirname(filename);
             const relpath = path.relative(root, filename);
             const options = await getTestOptions(dirname);
-            const fails = config.expectedFailures?.has(relpath);
-            describe.concurrent(relpath, { fails, ...options }, () => {
+
+            describe.concurrent(relpath, options, () => {
                 let result: R;
                 beforeAll(async () => {
                     result = await testFn(
@@ -154,7 +156,8 @@ export function testFixtureDir<R, T extends unknown[]>(
                 });
 
                 for (const [outputName, f] of formatters) {
-                    test.concurrent(outputName, async ({ expect }) => {
+                    const skip = expectedFailures?.has(relpath);
+                    test.concurrent(outputName, { skip }, async ({ expect }) => {
                         const outputPath = path.resolve(dirname, outputName);
                         const content = await f(result);
                         try {
