@@ -7,10 +7,19 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { beforeAll, describe, test } from 'vitest';
+import { beforeAll, describe } from 'vitest';
 import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
+
+async function exists(filepath: string) {
+    try {
+        await fs.promises.access(filepath);
+        return true;
+    } catch {
+        return false;
+    }
+}
 
 /**
  * Facilitates the use of vitest's `test.only`/`test.skip` in fixture files.
@@ -19,14 +28,15 @@ const { globSync } = glob;
  * @throws if you have both `.only` and `.skip` in the directory
  * @example getTestOptions('/fixtures/some-test')
  */
-function getTestOptions(dirname: string) {
-    const isOnly = fs.existsSync(path.join(dirname, '.only'));
-    const isSkip = fs.existsSync(path.join(dirname, '.skip'));
-    if (isOnly && isSkip) {
+async function getTestOptions(dirname: string) {
+    const [only, skip] = await Promise.all(
+        ['.only', '.skip'].map((f) => exists(path.join(dirname, f)))
+    );
+    if (only && skip) {
         const relpath = path.relative(process.cwd(), dirname);
         throw new Error(`Cannot have both .only and .skip in ${relpath}`);
     }
-    return isOnly ? { only: true } : isSkip ? { skip: true } : {};
+    return { only, skip };
 }
 
 export interface TestFixtureConfig extends StyleCompilerConfig {
@@ -82,17 +92,20 @@ async function getFixtureConfig<T extends TestFixtureConfig>(
  *   }
  * )
  */
-export function testFixtureDir<R>(
+export function testFixtureDir<R, T extends any[]>(
     config: {
         pattern: string;
         root: string;
         expectedFailures?: Set<string>;
     },
-    testFn: (options: {
-        filename: string;
-        dirname: string;
-        config?: TestFixtureConfig;
-    }) => R | Promise<R>,
+    testFn: (
+        options: {
+            filename: string;
+            dirname: string;
+            config?: TestFixtureConfig;
+        },
+        ...context: T
+    ) => R | Promise<R>,
     formatters: Record<string, (result: R) => string | undefined | Promise<string | undefined>>
 ) {
     if (typeof config !== 'object' || config === null) {
@@ -115,44 +128,47 @@ export function testFixtureDir<R>(
 
     const _formatters = Object.entries(formatters);
 
-    for (const filename of matches) {
-        const dirname = path.dirname(filename);
-
-        const relpath = path.relative(root, filename);
-        const options = getTestOptions(dirname);
-        const fails = config.expectedFailures?.has(relpath);
-        describe(relpath, { fails, ...options }, () => {
-            let result: R;
-
-            beforeAll(async () => {
-                result = await testFn({
-                    filename,
-                    dirname,
-                    config: await getFixtureConfig(dirname),
+    return async (...context: T) => {
+        for (const filename of matches) {
+            const dirname = path.dirname(filename);
+            const relpath = path.relative(root, filename);
+            const options = await getTestOptions(dirname);
+            const fails = config.expectedFailures?.has(relpath);
+            describe.concurrent(relpath, { fails, ...options }, (test) => {
+                let result: R;
+                beforeAll(async () => {
+                    result = await testFn(
+                        {
+                            filename,
+                            dirname,
+                            config: await getFixtureConfig(dirname),
+                        },
+                        ...context
+                    );
                 });
+
+                for (const [outputName, f] of _formatters) {
+                    test.concurrent(outputName, async ({ expect }) => {
+                        const outputPath = path.resolve(dirname, outputName);
+                        const content = await f(result);
+                        try {
+                            if (content === undefined) {
+                                expect(fs.existsSync(outputPath)).toBe(false);
+                            } else {
+                                await expect(content).toMatchFileSnapshot(outputPath);
+                            }
+                        } catch (err) {
+                            if (typeof err === 'object' && err !== null) {
+                                // Hide unhelpful noise in the stack trace
+                                // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
+                                Error.captureStackTrace(err, testFixtureDir);
+                            }
+
+                            throw err;
+                        }
+                    });
+                }
             });
-
-            for (const [outputName, f] of _formatters) {
-                test.concurrent(outputName, async ({ expect }) => {
-                    const outputPath = path.resolve(dirname, outputName);
-                    const content = await f(result);
-                    try {
-                        if (content === undefined) {
-                            expect(fs.existsSync(outputPath)).toBe(false);
-                        } else {
-                            await expect(content).toMatchFileSnapshot(outputPath);
-                        }
-                    } catch (err) {
-                        if (typeof err === 'object' && err !== null) {
-                            // Hide unhelpful noise in the stack trace
-                            // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
-                            Error.captureStackTrace(err, testFixtureDir);
-                        }
-
-                        throw err;
-                    }
-                });
-            }
-        });
-    }
+        }
+    };
 }

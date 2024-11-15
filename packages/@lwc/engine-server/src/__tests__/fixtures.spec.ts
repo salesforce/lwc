@@ -90,67 +90,65 @@ async function compileFixture({
     return outputFile;
 }
 
-function testFixtures(options?: RollupLwcOptions) {
-    testFixtureDir(
-        {
-            root: path.resolve(__dirname, 'fixtures'),
-            pattern: '**/index.js',
-        },
-        async ({ filename, dirname, config }) => {
-            const compiledFixturePath = await compileFixture({
-                input: filename,
-                dirname,
-                options,
-            });
+const testFixtures = testFixtureDir(
+    {
+        root: path.resolve(__dirname, 'fixtures'),
+        pattern: '**/index.js',
+    },
+    async ({ filename, dirname, config }, options: RollupLwcOptions) => {
+        const compiledFixturePath = await compileFixture({
+            input: filename,
+            dirname,
+            options,
+        });
 
-            // The LWC engine holds global state like the current VM index, which has an impact on
-            // the generated HTML IDs. So the engine has to be re-evaluated between tests.
-            // On top of this, the engine also checks if the component constructor is an instance of
-            // the LightningElement. Therefor the compiled module should also be evaluated in the
-            // same sandbox registry as the engine.
-            const lwcEngineServer = await import('../index');
-            const module = (await import(compiledFixturePath)) as FixtureModule;
+        // The LWC engine holds global state like the current VM index, which has an impact on
+        // the generated HTML IDs. So the engine has to be re-evaluated between tests.
+        // On top of this, the engine also checks if the component constructor is an instance of
+        // the LightningElement. Therefor the compiled module should also be evaluated in the
+        // same sandbox registry as the engine.
+        const lwcEngineServer = await import('../index');
+        const module = (await import(compiledFixturePath)) as FixtureModule;
 
-            const features = module!.features ?? [];
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, true);
-            });
+        const features = module!.features ?? [];
+        features.forEach((flag) => {
+            lwcEngineServer!.setFeatureFlagForTest(flag, true);
+        });
 
-            let result;
-            let err;
-            try {
-                result = lwcEngineServer!.renderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config?.props ?? {}
-                );
-            } catch (_err: any) {
-                if (_err.name === 'AssertionError') {
-                    throw _err;
-                }
-                err = _err.message;
+        let result;
+        let err;
+        try {
+            result = lwcEngineServer!.renderComponent(
+                module!.tagName,
+                module!.default,
+                config?.props ?? {}
+            );
+        } catch (_err: any) {
+            if (_err.name === 'AssertionError') {
+                throw _err;
             }
-
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, false);
-            });
-
-            return { result, err };
-        },
-        {
-            'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
-            'error.txt': ({ err }) => err ?? '',
+            err = _err.message;
         }
-    );
-}
+
+        features.forEach((flag) => {
+            lwcEngineServer!.setFeatureFlagForTest(flag, false);
+        });
+
+        return { result, err };
+    },
+    {
+        'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
+        'error.txt': ({ err }) => err ?? '',
+    }
+);
 
 describe.concurrent('fixtures', () => {
-    describe.concurrent('default', () => {
-        testFixtures();
+    describe.concurrent('default', async () => {
+        await testFixtures({});
     });
 
     // Test with and without the static content optimization to ensure the fixtures are the same
-    describe.concurrent('enableStaticContentOptimization=false', () => {
-        testFixtures({ enableStaticContentOptimization: false });
+    describe.concurrent('enableStaticContentOptimization=false', async () => {
+        await testFixtures({ enableStaticContentOptimization: false });
     });
 });

@@ -13,28 +13,30 @@ import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 
 import compiler from '../index';
 
-describe('fixtures', () => {
-    testFixtureDir(
-        {
-            root: path.resolve(__dirname, 'fixtures'),
-            pattern: '**/actual.html',
-        },
-        async ({ filename, dirname, config }) => {
-            const src = await readFile(filename, 'utf8');
-            const name = path.basename(dirname);
-            return compiler(src, name, { namespace: 'x', name, ...config });
-        },
-        {
-            'expected.js': ({ code }) =>
-                prettier.format(
-                    code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
-                    {
-                        parser: 'babel',
-                        trailingComma: 'es5',
-                    }
-                ),
-            'ast.json': ({ root }) => JSON.stringify({ root }, null, 4),
-            'metadata.json': ({ warnings }) => JSON.stringify({ warnings }, null, 4),
-        }
-    );
+const testFixtures = testFixtureDir(
+    {
+        root: path.resolve(__dirname, 'fixtures'),
+        pattern: '**/actual.html',
+    },
+    async ({ filename, dirname, config }) => {
+        const src = await readFile(filename, 'utf8');
+        const name = path.basename(dirname);
+        return compiler(src, name, { namespace: 'x', name, ...config });
+    },
+    {
+        'expected.js': ({ code }) =>
+            prettier.format(
+                code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
+                {
+                    parser: 'babel',
+                    trailingComma: 'es5',
+                }
+            ),
+        'ast.json': ({ root }) => JSON.stringify({ root }, null, 4),
+        'metadata.json': ({ warnings }) => JSON.stringify({ warnings }, null, 4),
+    }
+);
+
+describe('fixtures', async () => {
+    await testFixtures();
 });

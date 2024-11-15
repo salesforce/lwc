@@ -62,29 +62,31 @@ function transform(source: string, opts = {}) {
     return code;
 }
 
-describe('fixtures', () => {
-    testFixtureDir(
-        {
-            root: path.resolve(__dirname, 'fixtures'),
-            pattern: '**/actual.js',
-        },
-        async ({ filename, config }) => {
-            let result;
-            let error;
+const testFixtures = testFixtureDir(
+    {
+        root: path.resolve(__dirname, 'fixtures'),
+        pattern: '**/actual.js',
+    },
+    async ({ filename, config }) => {
+        let result;
+        let error;
 
-            try {
-                const src = await readFile(filename, 'utf8');
-                result = transform(src, config);
-            } catch (err) {
-                error = err;
-            }
-
-            return { result, error };
-        },
-        {
-            'expected.js': ({ result }) => result,
-            'error.json': ({ error }) =>
-                error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
+        try {
+            const src = await readFile(filename, 'utf8');
+            result = transform(src, config);
+        } catch (err) {
+            error = err;
         }
-    );
+
+        return { result, error };
+    },
+    {
+        'expected.js': ({ result }) => result,
+        'error.json': ({ error }) =>
+            error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
+    }
+);
+
+describe('fixtures', async () => {
+    await testFixtures();
 });
