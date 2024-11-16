@@ -4,38 +4,34 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'node:path';
-import { readFile } from 'node:fs/promises';
-import { describe } from 'vitest';
+
 import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
-import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
-
+import { describe } from '@lwc/test-utils-lwc-internals';
 import compiler from '../index';
+import * as fixtures from './fixtures';
 
-const testFixtures = testFixtureDir(
-    {
-        root: path.resolve(__dirname, 'fixtures'),
-        pattern: '**/actual.html',
-    },
-    async ({ filename, dirname, config }) => {
-        const src = await readFile(filename, 'utf8');
-        const name = path.basename(dirname);
-        return compiler(src, name, { namespace: 'x', name, ...config });
-    }
-);
+const LWC_VERSION_REGEX = new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g');
 
-describe('fixtures', async () => {
-    await testFixtures({
-        'expected.js': ({ code }) =>
-            prettier.format(
-                code.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
-                {
-                    parser: 'babel',
-                    trailingComma: 'es5',
-                }
-            ),
-        'ast.json': ({ root }) => JSON.stringify({ root }, null, 4),
-        'metadata.json': ({ warnings }) => JSON.stringify({ warnings }, null, 4),
+describe.fixtures(fixtures, async ({ file, config, expect, dirname, basename }) => {
+    const { warnings, root, code } = compiler(file, basename, {
+        namespace: 'x',
+        name: basename,
+        ...config,
     });
+
+    await Promise.all([
+        expect(
+            prettier.format(code.replace(LWC_VERSION_REGEX, 'X.X.X'), {
+                parser: 'babel',
+                trailingComma: 'es5',
+            })
+        ).resolves.toMatchFileSnapshot(`./fixtures/${dirname}/expected.js`),
+        expect(JSON.stringify({ root }, null, 4)).toMatchFileSnapshot(
+            `./fixtures/${dirname}/ast.json`
+        ),
+        expect(JSON.stringify({ warnings }, null, 4)).toMatchFileSnapshot(
+            `./fixtures/${dirname}/metadata.json`
+        ),
+    ]);
 });

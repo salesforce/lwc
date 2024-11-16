@@ -5,12 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'node:path';
-import { readFile } from 'node:fs/promises';
-import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
-import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
+import { describe } from '@lwc/test-utils-lwc-internals';
 import plugin from '../index';
+import * as fixtures from './fixtures';
 
 const BASE_OPTS = {
     namespace: 'lwc',
@@ -62,30 +61,14 @@ function transform(source: string, opts = {}) {
     return code;
 }
 
-const testFixtures = testFixtureDir(
-    {
-        root: path.resolve(__dirname, 'fixtures'),
-        pattern: '**/actual.js',
-    },
-    async ({ filename, config }) => {
-        let result;
-        let error;
-
-        try {
-            const src = await readFile(filename, 'utf8');
-            result = transform(src, config);
-        } catch (err) {
-            error = err;
-        }
-
-        return { result, error };
+describe.fixtures(fixtures, async ({ file, dirname, config, expect }) => {
+    try {
+        await expect(transform(file, config)).toMatchFileSnapshot(
+            `./fixtures/${dirname}/expected.js`
+        );
+    } catch (err) {
+        await expect(JSON.stringify(normalizeError(err), null, 4)).toMatchFileSnapshot(
+            `./fixtures/${dirname}/error.json`
+        );
     }
-);
-
-describe('fixtures', async () => {
-    await testFixtures({
-        'expected.js': ({ result }) => result,
-        'error.json': ({ error }) =>
-            error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
-    });
 });

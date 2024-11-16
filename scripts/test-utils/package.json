@@ -1,5 +1,6 @@
 {
     "name": "@lwc/test-utils-lwc-internals",
     "version": "0.0.0",
-    "private": true
+    "private": true,
+    "type": "module"
 }

@@ -4,13 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'node:path';
-import { readFile } from 'node:fs/promises';
-import { describe } from 'vitest';
-import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
+import { describe } from '@lwc/test-utils-lwc-internals';
 import { LWC_VERSION } from '@lwc/shared';
-
 import { transform } from '../index';
+import * as fixtures from './fixtures';
 
 import type { CssSyntaxError } from 'postcss';
 
@@ -30,34 +27,17 @@ function normalizeError(err: Error) {
     }
 }
 
-const testFixtures = testFixtureDir(
-    {
-        root: path.resolve(__dirname, 'fixtures'),
-        pattern: '**/actual.css',
-    },
-    async ({ filename, config }) => {
-        let result;
-        let error;
-        const src = await readFile(filename, 'utf8');
-
-        try {
-            result = transform(src, filename, config);
-        } catch (err: any) {
-            error = err;
-        }
-
-        // Replace LWC's version with X.X.X so the snapshots don't frequently change
-        const code = result?.code;
-
-        return { code, error };
+describe.fixtures(fixtures, async ({ file, dirname, config, expect }) => {
+    try {
+        await expect(
+            transform(file, dirname, config).code.replace(
+                new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
+                'X.X.X'
+            )
+        ).toMatchFileSnapshot(`./fixtures/${dirname}/expected.js`);
+    } catch (err: any) {
+        await expect(JSON.stringify(normalizeError(err), null, 4)).toMatchFileSnapshot(
+            `./fixtures/${dirname}/error.json`
+        );
     }
-);
-
-describe('fixtures', async () => {
-    await testFixtures({
-        'expected.js': ({ code }) =>
-            code?.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X'),
-        'error.json': ({ error }) =>
-            error ? JSON.stringify(normalizeError(error), null, 4) : undefined,
-    });
 });

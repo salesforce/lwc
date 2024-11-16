@@ -4,5 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export * from './test-fixture-dir';
-export * from './format-html';
+export * from './test-fixture-dir.js';
+export * from './format-html.js';
+export * from './fixtures.js';

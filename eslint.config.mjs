@@ -244,7 +244,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/__tests__/**'],
+        files: ['**/__tests__/**/*.spec.{js,ts}'],
         plugins: {
             vitest,
         },
