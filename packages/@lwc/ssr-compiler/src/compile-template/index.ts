@@ -13,7 +13,6 @@ import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
-import { optimizeImports } from '../optimize-imports';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
@@ -106,8 +105,6 @@ export default function compileTemplate(
     let program = b.program(moduleBody, 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
-
-    program = optimizeImports(program);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         program = transmogrify(program, compilationMode);
