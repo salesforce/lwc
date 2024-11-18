@@ -116,6 +116,21 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
     ['htmlFor', 'for'],
 ]);
 
+// This is the non-comprehensive list of global properties that this framework
+// reflects. The native descriptors are added to LightningElement.prototype for
+// CSR. For SSR, this list is used to determine which attributes to reflect.
+export const REFLECTIVE_GLOBAL_PROPERTIES = [
+    'accessKey',
+    'dir',
+    'draggable',
+    'hidden',
+    'id',
+    'lang',
+    'spellcheck',
+    'tabIndex',
+    'title',
+];
+
 /**
  * Map associating previously transformed HTML property into HTML attribute.
  */
