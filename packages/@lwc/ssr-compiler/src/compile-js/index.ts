@@ -10,7 +10,6 @@ import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
 import { transmogrify } from '../transmogrify';
-import { optimizeImports } from '../optimize-imports';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
@@ -193,8 +192,6 @@ export default function compileJS(
 
     addGenerateMarkupExport(ast, state, tagName, filename);
     assignGenerateMarkupToComponent(ast, state);
-
-    ast = optimizeImports(ast);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

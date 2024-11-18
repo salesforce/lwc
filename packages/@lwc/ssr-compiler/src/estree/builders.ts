@@ -6,25 +6,35 @@
  */
 
 import { builders as b } from 'estree-toolkit';
-
 import type { ImportDeclaration } from 'estree';
 
-/** Creates a default import statement, e.g. `import pkg from "pkg"` */
-export const bImportDefaultDeclaration = (name: string, source: string): ImportDeclaration =>
-    b.importDeclaration([b.importDefaultSpecifier(b.identifier(name))], b.literal(source));
-
 /**
- * Creates an import statement, e.g. `import { foo, bar as $bar$ } from "pkg"`.
- * Does not support default or namespace imports (`import pkg` or `import * as pkg`).
+ * Creates an import statement, e.g. `import { foo, bar as $bar$ } from "pkg"`
  * @param imports names to be imported; values can be a string (plain import) or object (aliased)
  * @param source source location to import from; defaults to @lwc/ssr-runtime
  */
 export const bImportDeclaration = (
-    imports: (string | Record<string, string>)[],
+    imports: string | string[] | Record<string, string | undefined>,
     source = '@lwc/ssr-runtime'
 ): ImportDeclaration => {
-    const specifiers = imports
-        .flatMap((imp) => (typeof imp === 'string' ? ([[imp, imp]] as const) : Object.entries(imp)))
-        .map(([imported, local]) => b.importSpecifier(b.identifier(imported), b.identifier(local)));
+    let parsed: Array<[string, string | undefined]>;
+    if (typeof imports === 'string') {
+        parsed = [[imports, undefined]];
+    } else if (Array.isArray(imports)) {
+        parsed = imports.map((imp) => [imp, undefined]);
+    } else {
+        parsed = Object.entries(imports);
+    }
+    const specifiers = parsed.map(([imported, local]) => {
+        if (imported === 'default') {
+            return b.importDefaultSpecifier(b.identifier(local!));
+        } else if (imported === '*') {
+            return b.importNamespaceSpecifier(b.identifier(local!));
+        } else if (local) {
+            return b.importSpecifier(b.identifier(imported), b.identifier(local));
+        } else {
+            return b.importSpecifier(b.identifier(imported));
+        }
+    });
     return b.importDeclaration(specifiers, b.literal(source));
 };

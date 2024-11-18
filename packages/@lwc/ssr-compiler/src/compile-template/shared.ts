@@ -13,7 +13,6 @@ import {
 } from '@lwc/template-compiler';
 import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
 
-import { bImportDeclaration } from '../estree/builders';
 import { isValidIdentifier } from '../shared';
 import { TransformerContext } from './types';
 import { expressionIrToEs } from './expression';
@@ -25,9 +24,6 @@ import type {
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
 } from 'estree';
-
-export const bImportHtmlEscape = () => bImportDeclaration(['htmlEscape']);
-export const importHtmlEscapeKey = 'import:htmlEscape';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
     let prevStmt: EsStatement | null = null;
