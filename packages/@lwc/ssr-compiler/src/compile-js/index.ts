@@ -9,6 +9,7 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
+import { esTemplate } from '../estemplate';
 import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
@@ -17,13 +18,21 @@ import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './gene
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
-import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
+import type {
+    CallExpression as EsCallExpression,
+    Identifier as EsIdentifier,
+    Program as EsProgram,
+    Expression,
+} from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '../shared';
 import type {
     PropertyDefinition as DecoratatedPropertyDefinition,
     MethodDefinition as DecoratatedMethodDefinition,
 } from 'meriyah/dist/src/estree';
+
+const PROMISE_RESOLVE_THEN = esTemplate`Promise.resolve().then()`<EsCallExpression>();
+const PROMISE_RESOLVE = esTemplate`Promise.resolve()`<EsCallExpression>();
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -36,6 +45,19 @@ const visitors: Visitors = {
         catalogTmplImport(path, state);
         catalogAndReplaceStyleImports(path, state);
         removeDecoratorImport(path);
+    },
+    ImportExpression(path) {
+        const { parentPath } = path;
+        if (
+            is.memberExpression(parentPath) &&
+            is.identifier(parentPath.node?.property) &&
+            parentPath.node.property.name === 'then'
+        ) {
+            return path.parentPath?.parentPath?.replaceWith(PROMISE_RESOLVE_THEN);
+        }
+        if (is.awaitExpression(parentPath)) {
+            return path.replaceWith(PROMISE_RESOLVE);
+        }
     },
     ClassDeclaration(path, state) {
         if (!path.node?.superClass) {
