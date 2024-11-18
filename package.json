@@ -34,7 +34,7 @@
     },
     "devDependencies": {
         "@commitlint/cli": "^19.5.0",
-        "@eslint/js": "^9.15.0",
+        "@eslint/js": "9.14.0",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/test-utils-lwc-internals": "link:./scripts/test-utils",
         "@nx/js": "20.1.2",
@@ -54,7 +54,7 @@
         "@vitest/utils": "^2.1.2",
         "bytes": "^3.1.2",
         "es-module-lexer": "^1.5.4",
-        "eslint": "^9.15.0",
+        "eslint": "9.14.0",
         "eslint-config-flat-gitignore": "^0.3.0",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.31.0",
@@ -71,7 +71,7 @@
         "terser": "^5.36.0",
         "tslib": "^2.8.1",
         "typescript": "5.4.5",
-        "typescript-eslint": "^8.14.0",
+        "typescript-eslint": "8.13.0",
         "vitest": "^2.1.5"
     },
     "lint-staged": {
