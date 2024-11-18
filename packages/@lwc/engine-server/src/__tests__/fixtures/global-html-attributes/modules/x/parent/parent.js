@@ -21,20 +21,22 @@ export default class extends LightningElement {
     autofocus: "unsupported",
     contenteditable: "unsupported",
     enterkeyhint: "unsupported",
-    exportparts: "unsupported",
     inert: "unsupported",
     inputmode: "unsupported",
-    is: "unsupported",
-    itemid: "unsupported",
-    itemprop: "unsupported",
-    itemref: "unsupported",
-    itemscope: "unsupported",
-    itemtype: "unsupported",
     nonce: "unsupported",
-    part: "unsupported",
     popover: "unsupported",
     slot: "unsupported",
     translate: "unsupported",
     writingsuggestions: "unsupported",
+  };
+
+  noreflect = {
+    exportparts: "does-not-reflect",
+    itemid: "does-not-reflect",
+    itemprop: "does-not-reflect",
+    itemref: "does-not-reflect",
+    itemscope: "does-not-reflect",
+    itemtype: "does-not-reflect",
+    part: "does-not-reflect",
   };
 }
