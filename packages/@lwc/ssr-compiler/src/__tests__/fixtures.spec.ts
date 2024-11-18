@@ -58,10 +58,9 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
             }),
         ],
         onwarn({ message, code }) {
-            if (code === 'CIRCULAR_DEPENDENCY') {
-                return;
+            if (code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
             }
-            throw new Error(message);
         },
     });
 

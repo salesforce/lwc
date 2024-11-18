@@ -199,10 +199,9 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
                 result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
 
-            if (result.length > 0) {
-                if (name === 'class') {
-                    hasClassAttribute = true;
-                }
+            if (result.length > 0 && name === 'class') {
+                // actually yielded a class attribute value
+                hasClassAttribute = true;
             }
 
             return result;
