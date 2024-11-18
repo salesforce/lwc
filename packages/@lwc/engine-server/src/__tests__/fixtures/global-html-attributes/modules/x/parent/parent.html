@@ -1,28 +1,30 @@
 <template>
     <x-child
-        accesskey={value.accesskey}
-        aria-label={value.arialabel}
-        dir={value.dir}
-        draggable={value.draggable}
-        hidden={value.hidden}
-        id={value.id}
-        lang={value.lang}
-        role={value.role}
-        spellcheck={value.spellcheck}
-        tabindex={value.tabindex}
-        title={value.title}
+        accesskey={supported.accesskey}
+        aria-label={supported.arialabel}
+        class={supported.class}
+        dir={supported.dir}
+        draggable={supported.draggable}
+        hidden={supported.hidden}
+        id={supported.id}
+        lang={supported.lang}
+        role={supported.role}
+        spellcheck={supported.spellcheck}
+        tabindex={supported.tabindex}
+        title={supported.title}
     ></x-child>
     <x-child
-        accesskey="tata"
-        aria-label="titi"
-        dir="auto"
-        draggable="true"
-        hidden
-        id="tutu"
-        lang="jp"
-        role="scrollbar"
-        spellcheck="false"
+        accesskey="supported"
+        aria-label="supported"
+        class="supported"
+        dir="supported"
+        draggable="supported"
+        hidden="supported"
+        id="supported"
+        lang="supported"
+        role="supported"
+        spellcheck="supported"
         tabindex="0"
-        title="tete"
+        title="supported"
     ></x-child>
 </template>
