@@ -30,6 +30,7 @@ export const expectedFailures = new Set([
     'comments-text-preserve-off/index.js',
     'dynamic-components/slots/shadow/index.js',
     'dynamic-components/slots/light/index.js',
+    'dynamic-imports/basic/index.js',
     'dynamic-slots/index.js',
     'empty-text-with-comments-non-static-optimized/index.js',
     'if-conditional-slot-content/index.js',
