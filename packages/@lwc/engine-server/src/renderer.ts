@@ -10,10 +10,10 @@ import {
     isAriaAttribute,
     isBooleanAttribute,
     isFunction,
-    isGlobalHtmlAttribute,
     isNull,
     isUndefined,
     noop,
+    REFLECTIVE_GLOBAL_PROPERTIES,
     StringToLowerCase,
 } from '@lwc/shared';
 import { LifecycleCallback } from '@lwc/engine-core';
@@ -174,7 +174,7 @@ function getProperty(node: N, key: string) {
         }
 
         // Handle global html attributes and AOM.
-        if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
+        if (REFLECTIVE_GLOBAL_PROPERTIES.includes(key) || isAriaAttribute(attrName)) {
             return getAttribute(node, attrName);
         }
 
@@ -231,7 +231,7 @@ function setProperty(node: N, key: string, value: any): void {
         }
 
         // Handle global html attributes and AOM.
-        if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
+        if (REFLECTIVE_GLOBAL_PROPERTIES.includes(key) || isAriaAttribute(attrName)) {
             return setAttribute(node, attrName, value);
         }
     }
