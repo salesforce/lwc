@@ -1,3 +1,3 @@
 export function load() {
-    return Promise.resolve(); // stub
+    return Promise.resolve("stub");
 }
