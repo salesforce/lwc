@@ -21,5 +21,6 @@ export * from './static-part-tokens';
 export * from './style';
 export * from './signals';
 export * from './custom-element';
+export * from './ssr';
 
 export { assert };

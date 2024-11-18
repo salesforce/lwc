@@ -12,7 +12,6 @@ import {
     keys,
     isNull,
     isArray,
-    ArrayFilter,
     isTrue,
     isString,
     StringToLowerCase,
@@ -21,6 +20,9 @@ import {
     isFalse,
     StringSplit,
     parseStyleText,
+    ArrayFrom,
+    ArraySort,
+    ArrayFilter,
 } from '@lwc/shared';
 
 import { logWarn } from '../shared/logger';
@@ -48,7 +50,6 @@ import {
     VCustomElement,
     VStatic,
     VFragment,
-    isVCustomElement,
     VElementData,
     VStaticPartData,
     VStaticPartText,
@@ -58,7 +59,7 @@ import {
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
 import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
-import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
+import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
 import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
@@ -627,11 +628,29 @@ function validateClassAttr(
     const { owner } = vnode;
     // classMap is never available on VStaticPartData so it can default to undefined
     // casting to prevent TS error.
-    let { className, classMap } = data as VElementData;
-    const { getProperty, getClassList, getAttribute } = renderer;
+    const { className, classMap } = data as VElementData;
+    const { getProperty } = renderer;
+
+    // ---------- Step 1: get the classes from the element and the vnode
+
+    // Use a Set because we don't care to validate mismatches for 1) different ordering in SSR vs CSR, or 2)
+    // duplicated class names. These don't have an effect on rendered styles.
+    const elmClasses = new Set(ArrayFrom(elm.classList));
+    let vnodeClasses: Set<string>;
+
+    if (!isUndefined(className)) {
+        // ignore empty spaces entirely, filter them out using `filter(..., Boolean)`
+        vnodeClasses = new Set(ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean));
+    } else if (!isUndefined(classMap)) {
+        vnodeClasses = new Set(keys(classMap));
+    } else {
+        vnodeClasses = new Set();
+    }
+
+    // ---------- Step 2: handle the scope tokens
+
     // we don't care about legacy for hydration. it's a new use case
-    const scopedToken = getScopeTokenClass(owner, /* legacy */ false);
-    const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
+    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
 
     // Classnames for scoped CSS are added directly to the DOM during rendering,
     // or to the VDOM on the server in the case of SSR. As such, these classnames
@@ -639,80 +658,50 @@ function validateClassAttr(
     //
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
-    if (!isNull(scopedToken) || !isNull(stylesheetTokenHost)) {
-        if (!isUndefined(className)) {
-            // The order of the className should be scopedToken className stylesheetTokenHost
-            const classTokens = [scopedToken, className, stylesheetTokenHost];
-            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
-            className = ArrayJoin.call(classNames, ' ');
-        } else if (!isUndefined(classMap)) {
-            classMap = {
-                ...classMap,
-                ...(!isNull(scopedToken) ? { [scopedToken]: true } : {}),
-                ...(!isNull(stylesheetTokenHost) ? { [stylesheetTokenHost]: true } : {}),
-            };
-        } else {
-            // The order of the className should be scopedToken stylesheetTokenHost
-            const classTokens = [scopedToken, stylesheetTokenHost];
-            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
-            if (classNames.length) {
-                className = ArrayJoin.call(classNames, ' ');
-            }
-        }
+    if (!isNull(scopeToken)) {
+        vnodeClasses.add(scopeToken);
     }
 
+    // This tells us which `*-host` scope token was rendered to the element's class.
+    // For now we just ignore any mismatches involving this class.
+    // TODO [#4866]: correctly validate the host scope token class
+    const elmHostScopeToken = renderer.getAttribute(elm, 'data-lwc-host-scope-token');
+    if (!isNull(elmHostScopeToken)) {
+        elmClasses.delete(elmHostScopeToken);
+        vnodeClasses.delete(elmHostScopeToken);
+    }
+
+    // ---------- Step 3: check for compatibility
+
     let nodesAreCompatible = true;
-    let readableVnodeClassname;
 
-    const elmClassName = getAttribute(elm, 'class');
-
-    if (
-        !isUndefined(className) &&
-        String(className) !== elmClassName &&
-        // No mismatch if SSR `class` attribute is missing and CSR `class` is the empty string
-        !(className === '' && isNull(elmClassName))
-    ) {
-        // className is used when class is bound to an expr.
+    if (vnodeClasses.size !== elmClasses.size) {
         nodesAreCompatible = false;
-        // stringify for pretty-printing
-        readableVnodeClassname = JSON.stringify(className);
-    } else if (!isUndefined(classMap)) {
-        // classMap is used when class is set to static value.
-        const classList = getClassList(elm);
-        let computedClassName = '';
-
-        // all classes from the vnode should be in the element.classList
-        for (const name in classMap) {
-            computedClassName += ' ' + name;
-            if (!classList.contains(name)) {
+    } else {
+        for (const vnodeClass of vnodeClasses) {
+            if (!elmClasses.has(vnodeClass)) {
                 nodesAreCompatible = false;
             }
         }
-
-        // stringify for pretty-printing
-        readableVnodeClassname = JSON.stringify(computedClassName.trim());
-
-        if (classList.length > keys(classMap).length) {
-            nodesAreCompatible = false;
+        for (const elmClass of elmClasses) {
+            if (!vnodeClasses.has(elmClass)) {
+                nodesAreCompatible = false;
+            }
         }
-    } else if (isUndefined(className) && !isNull(elmClassName)) {
-        // SSR contains a className but client-side VDOM does not
-        nodesAreCompatible = false;
-        readableVnodeClassname = '""';
     }
 
-    if (!nodesAreCompatible) {
-        if (process.env.NODE_ENV !== 'production') {
-            logWarn(
-                `Mismatch hydrating element <${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected ${readableVnodeClassname} but found ${JSON.stringify(
-                    elmClassName
-                )}`,
-                vnode.owner
-            );
-        }
+    if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
+        const prettyPrint = (set: Set<string>) =>
+            JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
+        logWarn(
+            `Mismatch hydrating element <${getProperty(
+                elm,
+                'tagName'
+            ).toLowerCase()}>: attribute "class" has different values, expected ${prettyPrint(
+                vnodeClasses
+            )} but found ${prettyPrint(elmClasses)}`,
+            vnode.owner
+        );
     }
 
     return nodesAreCompatible;
