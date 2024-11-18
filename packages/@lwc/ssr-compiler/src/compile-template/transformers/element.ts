@@ -24,14 +24,8 @@ import {
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import {
-    bImportHtmlEscape,
-    getScopedExpression,
-    importHtmlEscapeKey,
-    normalizeClassAttributeValue,
-} from '../shared';
+import { getScopedExpression, normalizeClassAttributeValue } from '../shared';
 
-import { bImportDeclaration } from '../../estree/builders';
 import type {
     BinaryExpression,
     BlockStatement as EsBlockStatement,
@@ -43,7 +37,7 @@ import type { Transformer, TransformerContext } from '../types';
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
-const bConditionalLiveYield = esTemplateWithYield`
+const bYieldDynamicValue = esTemplateWithYield`
     {
         const attrName = ${/* attribute name */ is.literal};
         let attrValue = ${/* attribute value expression */ is.expression};
@@ -135,15 +129,16 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
     throw new Error(`Unknown attr/prop literal: ${type}`);
 }
 
-function yieldAttrOrPropLiveValue(
+function yieldAttrOrPropDynamicValue(
     elementName: string,
     name: string,
     value: IrExpression | BinaryExpression,
     cxt: TransformerContext
 ): EsStatement[] {
+    cxt.import('htmlEscape');
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-    return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
+    return [bYieldDynamicValue(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
 }
 
 function reorderAttributes(
@@ -201,7 +196,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             if (value.type === 'Literal') {
                 result = yieldAttrOrPropLiteralValue(name, value);
             } else {
-                result = yieldAttrOrPropLiveValue(node.name, name, value, cxt);
+                result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
 
             if (result.length > 0 && name === 'class') {
@@ -226,12 +221,10 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         const unsanitizedHtmlExpression =
             value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
         childContent = [bYieldSanitizedHtml(unsanitizedHtmlExpression)];
-        cxt.hoist(bImportDeclaration(['sanitizeHtmlContent']), 'import:sanitizeHtmlContent');
+        cxt.import('sanitizeHtmlContent');
     } else {
         childContent = [];
     }
-
-    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
 
     return [
         bYield(b.literal(`<${node.name}`)),

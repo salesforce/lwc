@@ -8,6 +8,8 @@
 import { ImportDeclaration } from 'estree';
 import { NodePath, builders as b } from 'estree-toolkit';
 
+const decorators = new Set(['api', 'wire', 'track']);
+
 export function removeDecoratorImport(path: NodePath<ImportDeclaration>) {
     if (!path.node || path.node.source.value !== '@lwc/ssr-runtime') {
         return;
@@ -18,8 +20,7 @@ export function removeDecoratorImport(path: NodePath<ImportDeclaration>) {
             !(
                 specifier.type === 'ImportSpecifier' &&
                 specifier.imported.type === 'Identifier' &&
-                // Excluding track because it also has a non-decorator signature that might be used
-                (specifier.imported.name === 'api' || specifier.imported.name === 'wire')
+                decorators.has(specifier.imported.name)
             )
     );
 
