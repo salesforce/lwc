@@ -84,11 +84,11 @@ export function irToEs<T extends IrNode>(node: T, cxt: TransformerContext): EsSt
 }
 
 export function templateIrToEsTree(node: IrNode, contextOpts: TemplateOpts) {
-    const { hoisted, cxt } = createNewContext(contextOpts);
+    const { getImports, cxt } = createNewContext(contextOpts);
     const statements = irToEs(node, cxt);
     return {
         addImport: cxt.import,
-        getImports: () => hoisted.values(),
+        getImports,
         statements,
     };
 }

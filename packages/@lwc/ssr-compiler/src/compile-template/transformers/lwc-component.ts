@@ -9,7 +9,6 @@ import { isUndefined } from '@lwc/shared';
 import { Transformer } from '../types';
 import { expressionIrToEs } from '../expression';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { bImportDeclaration } from '../../estree/builders';
 import { getChildAttrsOrProps } from '../shared';
 import type {
     LwcComponent as IrLwcComponent,
@@ -40,15 +39,11 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
 
     const lwcIs = directives.find((directive) => directive.name === 'Is');
     if (!isUndefined(lwcIs)) {
-        cxt.hoist(bImportDeclaration(['LightningElement']), 'import:LightningElement');
-        cxt.hoist(
-            bImportDeclaration(['SYMBOL__GENERATE_MARKUP']),
-            'import:SYMBOL__GENERATE_MARKUP'
-        );
-        cxt.hoist(
-            bImportDeclaration([{ getReadOnlyProxy: '__getReadOnlyProxy' }]),
-            'import:getReadOnlyProxy'
-        );
+        cxt.import({
+            getReadOnlyProxy: '__getReadOnlyProxy',
+            LightningElement: undefined,
+            SYMBOL__GENERATE_MARKUP: undefined,
+        });
 
         return [
             bDynamicComponentConstructorDeclaration(

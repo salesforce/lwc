@@ -5,14 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b } from 'estree-toolkit';
-import type {
-    ModuleDeclaration as EsModuleDeclaration,
-    Statement as EsStatement,
-    ImportSpecifier as EsImportSpecifier,
-    ImportDefaultSpecifier as EsImportDefaultSpecifier,
-    ImportNamespaceSpecifier as EsImportNamespaceSpecifier,
-} from 'estree';
+import { bImportDeclaration } from '../estree/builders';
+import type { ImportDeclaration as EsImportDeclaration } from 'estree';
 import type { TemplateOpts, TransformerContext } from './types';
 
 const identifierChars = 'abcdefghijklmnopqrstuvwxyz';
@@ -32,49 +26,43 @@ function* genIds() {
 }
 
 export function createNewContext(templateOptions: TemplateOpts): {
-    hoisted: Map<string, EsStatement | EsModuleDeclaration>;
+    getImports: () => EsImportDeclaration[];
     cxt: TransformerContext;
 } {
-    const hoisted = new Map<string, EsStatement | EsModuleDeclaration>();
-    const hoist = (stmt: EsStatement | EsModuleDeclaration, dedupeKey: string) =>
-        hoisted.set(dedupeKey, stmt);
-
+    /** Map of source to imported name to local name. */
+    const importMap = new Map<string, Map<string, string | undefined>>();
     /**
      * Hoist an import declaration to the top of the file. If source is not specified, defaults to
      * `@lwc/ssr-runtime`.
      */
     const _import = (
-        imports: string | string[] | Record<string, string>,
+        imports: string | string[] | Record<string, string | undefined>,
         source = '@lwc/ssr-runtime'
     ): void => {
         let specifiers: Array<[string, string | undefined]>;
         if (typeof imports === 'string') {
             specifiers = [[imports, undefined]];
         } else if (Array.isArray(imports)) {
-            specifiers = imports.map((imp) => [imp, undefined]);
+            specifiers = imports.map((name) => [name, undefined]);
         } else {
             specifiers = Object.entries(imports);
         }
-        // Do one import per specifier to optimize deduping; the bundler should merge them later
-        for (const [imported, local] of specifiers) {
-            let spec: EsImportSpecifier | EsImportDefaultSpecifier | EsImportNamespaceSpecifier;
-            let key: string;
-            if (imported === 'default') {
-                spec = b.importDefaultSpecifier(b.identifier(local!));
-                key = `import ${imported} from "${source}"`;
-            } else if (imported === '*') {
-                spec = b.importNamespaceSpecifier(b.identifier(local!));
-                key = `import * as ${imported} from "${source}"`;
-            } else if (local) {
-                spec = b.importSpecifier(b.identifier(imported), b.identifier(local));
-                key = `import { ${imported} as ${local} } from "${source}"`;
-            } else {
-                spec = b.importSpecifier(b.identifier(imported));
-                key = `import { ${imported} } from "${source}"`;
+
+        let specifierMap = importMap.get(source);
+        if (specifierMap) {
+            for (const [imported, local] of specifiers) {
+                specifierMap.set(imported, local);
             }
-            const decl = b.importDeclaration([spec], b.literal(source));
-            hoist(decl, key);
+        } else {
+            specifierMap = new Map(specifiers);
+            importMap.set(source, specifierMap);
         }
+    };
+
+    const getImports = (): EsImportDeclaration[] => {
+        return Array.from(importMap, ([source, specifierMap]) => {
+            return bImportDeclaration(Object.fromEntries(specifierMap), source);
+        });
     };
 
     const localVarStack: Set<string>[] = [];
@@ -101,9 +89,8 @@ export function createNewContext(templateOptions: TemplateOpts): {
     const getUniqueVar = () => uniqueVarGenerator.next().value!;
 
     return {
-        hoisted,
+        getImports,
         cxt: {
-            hoist,
             pushLocalVars,
             popLocalVars,
             isLocalVar,

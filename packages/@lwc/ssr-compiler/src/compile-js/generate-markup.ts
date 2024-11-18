@@ -9,7 +9,7 @@ import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
-import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
+import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
@@ -108,29 +108,27 @@ export function addGenerateMarkupExport(
 
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(bImportDefaultDeclaration('tmpl', defaultTmplPath));
+        program.body.unshift(bImportDeclaration({ default: 'tmpl' }, defaultTmplPath));
     }
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
     let connectWireAdapterCode: Statement[] = [];
     if (state.wireAdapters.length) {
         connectWireAdapterCode = bWireAdaptersPlumbing(state.wireAdapters);
-        program.body.unshift(bImportDeclaration([{ connectContext: '__connectContext' }]));
+        program.body.unshift(bImportDeclaration({ connectContext: '__connectContext' }));
     }
 
     program.body.unshift(
-        bImportDeclaration([
-            {
-                fallbackTmpl: '__fallbackTmpl',
-                filterProperties: '__filterProperties',
-                mutationTracker: '__mutationTracker',
-                renderAttrs: '__renderAttrs',
-                SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
-                establishContextfulRelationship: '__establishContextfulRelationship',
-            },
-        ])
+        bImportDeclaration({
+            fallbackTmpl: '__fallbackTmpl',
+            filterProperties: '__filterProperties',
+            hasScopedStaticStylesheets: undefined,
+            mutationTracker: '__mutationTracker',
+            renderAttrs: '__renderAttrs',
+            SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
+            establishContextfulRelationship: '__establishContextfulRelationship',
+        })
     );
-    program.body.unshift(bImportDeclaration(['hasScopedStaticStylesheets']));
     program.body.push(
         bGenerateMarkup(
             defaultTagName,
@@ -149,11 +147,7 @@ export function addGenerateMarkupExport(
  */
 export function assignGenerateMarkupToComponent(program: Program, state: ComponentMetaState) {
     program.body.unshift(
-        bImportDeclaration([
-            {
-                SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
-            },
-        ])
+        bImportDeclaration({ SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP' })
     );
     program.body.push(bAssignGenerateMarkupToComponentClass(b.identifier(state.lwcClassName!)));
 }
