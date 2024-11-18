@@ -28,16 +28,23 @@ function normalizeError(err: Error) {
 }
 
 describe.fixtures(fixtures, async ({ file, dirname, config, expect }) => {
+    let error: any | undefined;
+    let result: string | undefined;
+
     try {
-        await expect(
-            transform(file, dirname, config).code.replace(
-                new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
-                'X.X.X'
-            )
-        ).toMatchFileSnapshot(`./fixtures/${dirname}/expected.js`);
-    } catch (err: any) {
-        await expect(JSON.stringify(normalizeError(err), null, 4)).toMatchFileSnapshot(
+        result = transform(file, dirname, config).code.replace(
+            new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'),
+            'X.X.X'
+        );
+    } catch (err) {
+        error = err;
+    }
+
+    if (error) {
+        await expect(JSON.stringify(normalizeError(error), null, 4)).toMatchFileSnapshot(
             `./fixtures/${dirname}/error.json`
         );
+    } else {
+        await expect(result).toMatchFileSnapshot(`./fixtures/${dirname}/expected.js`);
     }
 });
