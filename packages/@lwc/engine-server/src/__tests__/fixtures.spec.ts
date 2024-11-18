@@ -52,6 +52,10 @@ async function compileFixture(
         plugins: [
             lwcRollupPlugin({
                 enableDynamicComponents: true,
+                experimentalDynamicComponent: {
+                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                    strictSpecifier: false,
+                },
                 modules: [
                     {
                         dir: modulesDir,
