@@ -9,4 +9,8 @@ export default class DynamicCtor extends LightningElement {
             this.importee = result
         })
     }
+
+    async loadCustomCtor() {
+        this.customCtor = await import('x/fake');
+    }
 }
