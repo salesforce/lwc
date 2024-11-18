@@ -13,13 +13,13 @@ import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
-    BlockStatement,
     ExportNamedDeclaration,
     Program,
     SimpleCallExpression,
     Identifier,
     MemberExpression,
     Statement,
+    ExpressionStatement,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -68,10 +68,8 @@ const bGenerateMarkup = esTemplate`
 `<ExportNamedDeclaration>;
 
 const bAssignGenerateMarkupToComponentClass = esTemplate`
-    {
-        ${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-    }
-`<BlockStatement>;
+${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+`<ExpressionStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's

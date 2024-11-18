@@ -31,6 +31,7 @@ import type {
     BlockStatement as EsBlockStatement,
     Expression as EsExpression,
     Statement as EsStatement,
+    IfStatement as EsIfStatement,
 } from 'estree';
 import type { Transformer, TransformerContext } from '../types';
 
@@ -89,13 +90,10 @@ const bStringLiteralYield = esTemplateWithYield`
 `<EsBlockStatement>;
 
 const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
-    {
-        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
-        if (shouldRenderScopeToken) {
-            yield \` class="\${stylesheetScopeToken}"\`;
-        }
+    if (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp)) {
+        yield \` class="\${stylesheetScopeToken}"\`;
     }
-`<EsBlockStatement>;
+`<EsIfStatement>;
 
 const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
