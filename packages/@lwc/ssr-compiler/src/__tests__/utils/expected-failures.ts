@@ -30,7 +30,6 @@ export const expectedFailures = {
     'comments-text-preserve-off/index.js': ['expected.html'],
     'dynamic-components/slots/shadow/index.js': ['expected.html'],
     'dynamic-components/slots/light/index.js': ['expected.html'],
-    'dynamic-imports/basic/index.js': ['expected.html', 'error.txt'],
     'dynamic-slots/index.js': ['expected.html'],
     'empty-text-with-comments-non-static-optimized/index.js': ['expected.html'],
     'if-conditional-slot-content/index.js': ['expected.html'],
