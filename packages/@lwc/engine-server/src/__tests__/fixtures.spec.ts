@@ -150,6 +150,8 @@ function testFixtures(options?: RollupLwcOptions) {
 
 describe.concurrent('fixtures', () => {
     beforeEach(() => {
+        // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
+        // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
         setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
     });
 
