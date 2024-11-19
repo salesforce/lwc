@@ -43,14 +43,16 @@ async function compileFixture(
     },
     name: string
 ) {
-    const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, `./dist/compiled-${name}.js`);
 
     const bundle = await rollup({
         input,
         external: ['lwc', 'vitest'],
+        preserveSymlinks: true,
+        treeshake: false,
         plugins: [
             lwcRollupPlugin({
+                rootDir: dirname,
                 enableDynamicComponents: true,
                 experimentalDynamicComponent: {
                     loader: path.join(__dirname, './utils/custom-loader.js'),
@@ -58,7 +60,7 @@ async function compileFixture(
                 },
                 modules: [
                     {
-                        dir: modulesDir,
+                        dir: './modules',
                     },
                 ],
                 ...options,

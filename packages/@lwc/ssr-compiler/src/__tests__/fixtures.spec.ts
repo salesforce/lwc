@@ -42,20 +42,22 @@ vi.mock(import('@lwc/ssr-runtime'), async (importActual) => {
 const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
-    const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
 
     const bundle = await rollup({
         input,
         external: ['lwc', '@lwc/ssr-runtime', 'vitest'],
+        preserveSymlinks: true,
+        treeshake: false,
         plugins: [
             lwcRollupPlugin({
+                rootDir: dirname,
                 targetSSR: true,
                 ssrMode: SSR_MODE,
                 enableDynamicComponents: true,
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
-                modules: [{ dir: modulesDir }],
+                modules: [{ dir: './modules' }],
             }),
         ],
         onwarn({ message, code }) {
