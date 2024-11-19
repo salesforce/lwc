@@ -9,7 +9,9 @@ import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isValidIdentifier } from '../shared';
 
+import type { PropertyDefinition as EsPropertyDefinitionWithDecorators } from 'meriyah/dist/src/estree';
 import type {
+    Expression,
     PropertyDefinition,
     ObjectExpression,
     Statement,
@@ -32,7 +34,7 @@ function extractWireConfig(
             const { key, value } = objProp;
 
             if (!is.identifier(key)) {
-                throw new Error(`@wire config entry key must be an identifier; found ${key.type}`);
+                throw new Error(`@wire config entry key must be an identifer; found ${key.type}`);
             }
             if (!is.literal(value) || typeof value.value !== 'string' || value.value[0] !== '$') {
                 throw new Error('@wire config entry values must be strings starting with a $');
@@ -60,46 +62,38 @@ export function catalogWireAdapters(
     state: ComponentMetaState,
     node: PropertyDefinition | MethodDefinition
 ) {
-    const { decorators } = node;
-    if (decorators.length > 1) {
-        throw new Error('todo - multiple decorators at once');
+    if (!is.identifier(node.key)) {
+        throw new Error(
+            'Unimplemented: wires that decorate non-identifiers are not currently supported.'
+        );
+    }
+    const { name } = node.key;
+
+    const { decorators } = node as EsPropertyDefinitionWithDecorators;
+    if (decorators?.length !== 1) {
+        throw new Error('Only one decorator can be applied to a single field.');
     }
 
-    // validate the parameters
-    const wireDecorator = decorators[0].expression;
-    if (!is.callExpression(wireDecorator)) {
-        throw new Error('todo - invalid usage');
+    const expression = decorators[0].expression as Expression;
+    if (!is.callExpression(expression)) {
+        throw new Error('The @wire decorator must be called.');
     }
 
-    const args = wireDecorator.arguments;
-    if (args.length === 0 || args.length > 2) {
-        throw new Error('todo - wrong number of args');
+    const { arguments: args } = expression;
+    const [adapterConstructorId, config] = args;
+    if (!is.identifier(adapterConstructorId)) {
+        throw new Error('The @wire decorator must reference a wire adapter class.');
+    }
+    if (config && !is.objectExpression(config)) {
+        throw new Error('Invalid config provided to @wire decorator; expected an object literal.');
     }
 
-    const [id, config] = args;
-    if (is.spreadElement(id) || is.spreadElement(config)) {
-        throw new Error('todo - spread in params');
-    }
-
-    // validate id
-    if (is.memberExpression(id)) {
-        if (id.computed) {
-            throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS');
-        }
-        if (!is.identifier(id.object)) {
-            throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS');
-        }
-    } else if (!is.identifier(id)) {
-        throw new Error('todo - invalid adapter name');
-    }
-
-    // FIXME: Validate that wire adapter is imported
-
-    // conditionally valid the config
+    const fieldtype =
+        node.type === 'MethodDefinition' && node.kind === 'method' ? 'method' : 'property';
 
     state.wireAdapters = [
         ...state.wireAdapters,
-        // extractWireConfig(name, adapterConstructorId.name, fieldtype, config),
+        extractWireConfig(name, adapterConstructorId.name, fieldtype, config),
     ];
 }
 
