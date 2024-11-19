@@ -1,6 +1,4 @@
 import path from 'node:path';
-// import { suite, test, type TestFunction } from 'vitest';
-
 export interface FixturesModule<T, C> {
     files: Record<string, T>;
     configs: Record<string, C>;

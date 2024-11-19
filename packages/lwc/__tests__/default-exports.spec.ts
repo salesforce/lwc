@@ -45,8 +45,8 @@ const hasExplicitDefaultExport = (mod: Module) => {
 // vitest jsdom does not install this legacy API by default, but @lwc/synthetic-shadow needs it
 vi.stubGlobal('HTMLDocument', globalThis.Document);
 
-// @ts-expect-error import.meta
 const packages = Object.entries(
+    // @ts-expect-error import.meta
     import.meta.glob<Module>(['../*.js', '!**/index.js', '!**/vitest.config.js'])
 ).map(([file, mod]) => [path.basename(file, '.js'), mod] as const);
 
