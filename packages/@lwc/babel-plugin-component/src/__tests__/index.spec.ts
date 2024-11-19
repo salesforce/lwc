@@ -7,7 +7,8 @@
 import path from 'node:path';
 import { transformSync } from '@babel/core';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
-import { describe } from '@lwc/test-utils-lwc-internals';
+import { getFixtures } from '@lwc/test-utils-lwc-internals';
+import { test } from 'vitest';
 import plugin from '../index';
 import * as fixtures from './fixtures';
 
@@ -61,14 +62,18 @@ function transform(source: string, opts = {}) {
     return code;
 }
 
-describe.fixtures(fixtures, async ({ file, dirname, config, expect }) => {
-    try {
-        await expect(transform(file, config)).toMatchFileSnapshot(
-            `./fixtures/${dirname}/expected.js`
-        );
-    } catch (err) {
-        await expect(JSON.stringify(normalizeError(err), null, 4)).toMatchFileSnapshot(
-            `./fixtures/${dirname}/error.json`
-        );
+test.for(getFixtures(fixtures))(
+    '$dirname',
+    { concurrent: true },
+    async ({ file, dirname, config }, { expect }) => {
+        try {
+            await expect(transform(file, config)).toMatchFileSnapshot(
+                `./fixtures/${dirname}/expected.js`
+            );
+        } catch (err) {
+            await expect(JSON.stringify(normalizeError(err), null, 4)).toMatchFileSnapshot(
+                `./fixtures/${dirname}/error.json`
+            );
+        }
     }
-});
+);

@@ -4,5 +4,3 @@ import type { Config } from '../../';
 export const files = import.meta.glob<string>('./**/actual.css', { query: '?raw', import: 'default', eager: true });
 // @ts-expect-error import.meta
 export const configs = import.meta.glob<Config>('./**/config.json', { import: 'default', eager: true });
-// @ts-expect-error import.meta
-export const dirname = import.meta.dirname;
