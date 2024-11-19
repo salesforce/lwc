@@ -4,23 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isPseudoElement,
-    isCombinator,
-    isPseudoClass,
-    Selector,
-    Root,
-    Node,
-    Pseudo,
-    Tag,
-    attribute,
-} from 'postcss-selector-parser';
+import { isPseudoElement, isCombinator, isPseudoClass, attribute } from 'postcss-selector-parser';
 
 import { isDirPseudoClass } from '../utils/rtl';
 import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
 import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 
 import validateSelectors from './validate';
+import type { Selector, Root, Node, Pseudo, Tag } from 'postcss-selector-parser';
 
 type ChildNode = Exclude<Node, Selector>;
 

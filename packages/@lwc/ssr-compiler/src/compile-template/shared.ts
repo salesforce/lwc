@@ -6,16 +6,16 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import {
+import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
+
+import { isValidIdentifier } from '../shared';
+import { expressionIrToEs } from './expression';
+import type { TransformerContext } from './types';
+import type {
     Node as IrNode,
     Attribute as IrAttribute,
     Property as IrProperty,
 } from '@lwc/template-compiler';
-import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
-
-import { isValidIdentifier } from '../shared';
-import { TransformerContext } from './types';
-import { expressionIrToEs } from './expression';
 import type {
     Statement as EsStatement,
     Expression as EsExpression,

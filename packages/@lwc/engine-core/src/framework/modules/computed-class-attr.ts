@@ -13,10 +13,10 @@ import {
     StringCharCodeAt,
     StringSlice,
 } from '@lwc/shared';
-import { RendererAPI } from '../renderer';
-
 import { EmptyObject, SPACE_CHAR } from '../utils';
-import { VBaseElement, VStaticPartElement } from '../vnodes';
+import type { RendererAPI } from '../renderer';
+
+import type { VBaseElement, VStaticPartElement } from '../vnodes';
 
 const classNameToClassMap = create(null);
 

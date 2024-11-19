@@ -7,11 +7,13 @@
 
 import { assert, create, isUndefined, ArrayPush, defineProperty, noop } from '@lwc/shared';
 import { associateReactiveObserverWithVM } from '../mutation-logger';
-import { LightningElement } from '../base-lightning-element';
-import { createReactiveObserver, ReactiveObserver } from '../mutation-tracker';
-import { runWithBoundaryProtection, VMState, VM, getAssociatedVM } from '../vm';
+import { createReactiveObserver } from '../mutation-tracker';
+import { runWithBoundaryProtection, VMState, getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';
 import { createContextWatcher } from './context';
+import type { VM } from '../vm';
+import type { ReactiveObserver } from '../mutation-tracker';
+import type { LightningElement } from '../base-lightning-element';
 import type {
     ConfigCallback,
     ConfigValue,

@@ -9,11 +9,12 @@ import path from 'node:path';
 import vm from 'node:vm';
 import { vi, describe, it, expect } from 'vitest';
 import { parseFragment, serialize } from 'parse5';
-import { rollup, RollupLog } from 'rollup';
+import { rollup } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import * as engineServer from '../index';
+import type { RollupLog } from 'rollup';
 
 /**
  * The goal of these tests is to serialize the HTML, and then parse it with a real

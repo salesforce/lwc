@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    createContextProviderWithRegister,
+import { createContextProviderWithRegister } from '@lwc/engine-core';
+import { addEventListener, dispatchEvent } from './index';
+import type {
     WireAdapterConstructor,
     WireContextValue,
     WireContextSubscriptionPayload,
     WireContextSubscriptionCallback,
 } from '@lwc/engine-core';
-import { addEventListener, dispatchEvent } from './index';
 
 export class WireContextSubscriptionEvent extends CustomEvent<undefined> {
     // These are initialized on the constructor via defineProperties.

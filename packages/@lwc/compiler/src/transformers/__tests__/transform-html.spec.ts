@@ -6,8 +6,8 @@
  */
 import { vi, describe, it, expect } from 'vitest';
 import { APIVersion, noop } from '@lwc/shared';
-import { TransformOptions } from '../../options';
 import { transformSync } from '../transformer';
+import type { TransformOptions } from '../../options';
 
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',

@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LWCErrorInfo } from '../shared/types';
-import { ErrorConfig } from './errors';
+import type { LWCErrorInfo } from '../shared/types';
+import type { ErrorConfig } from './errors';
 
 /**
  * Pattern modeled after @lwc/engine-core's reporting.ts system

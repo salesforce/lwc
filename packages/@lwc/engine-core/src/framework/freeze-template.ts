@@ -23,8 +23,8 @@ import {
     KEY__NATIVE_ONLY_CSS,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
-import { Template } from './template';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
+import type { Template } from './template';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 // See @lwc/engine-core/src/framework/template.ts

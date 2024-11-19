@@ -6,10 +6,10 @@
  */
 import { is } from 'estree-toolkit';
 import { isUndefined } from '@lwc/shared';
-import { Transformer } from '../types';
 import { expressionIrToEs } from '../expression';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { getChildAttrsOrProps } from '../shared';
+import type { Transformer } from '../types';
 import type {
     LwcComponent as IrLwcComponent,
     Expression as IrExpression,

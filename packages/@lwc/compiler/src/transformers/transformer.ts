@@ -10,10 +10,11 @@ import { isString } from '@lwc/shared';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 
-import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
+import { validateTransformOptions } from '../options';
 import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
+import type { NormalizedTransformOptions, TransformOptions } from '../options';
 import type { TransformResult } from './shared';
 
 /**

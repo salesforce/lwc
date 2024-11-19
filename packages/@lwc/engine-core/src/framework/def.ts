@@ -26,7 +26,7 @@ import {
     keys,
 } from '@lwc/shared';
 
-import { RenderMode, ShadowSupportMode } from '../framework/vm';
+import { RenderMode } from '../framework/vm';
 import {
     isCircularModuleDependency,
     resolveCircularModuleDependency,
@@ -36,19 +36,19 @@ import { logError, logWarn } from '../shared/logger';
 import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
 import { getComponentRegisteredTemplate } from './component';
-import { Template } from './template';
-import { LightningElement, LightningElementConstructor } from './base-lightning-element';
+import { LightningElement } from './base-lightning-element';
 import { lightningBasedDescriptors } from './base-lightning-element';
-import { PropType, getDecoratorsMeta } from './decorators/register';
+import { getDecoratorsMeta } from './decorators/register';
 import { defaultEmptyTemplate } from './secure-template';
 
-import {
-    BaseBridgeElement,
-    HTMLBridgeElementFactory,
-    HTMLElementConstructor,
-} from './base-bridge-element';
+import { BaseBridgeElement, HTMLBridgeElementFactory } from './base-bridge-element';
 import { getComponentOrSwappedComponent } from './hot-swaps';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { HTMLElementConstructor } from './base-bridge-element';
+import type { PropType } from './decorators/register';
+import type { LightningElementConstructor } from './base-lightning-element';
+import type { Template } from './template';
+import type { ShadowSupportMode } from '../framework/vm';
 
 export interface ComponentDef {
     name: string;

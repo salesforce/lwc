@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getAssociatedVMIfPresent, LightningElement } from '@lwc/engine-core';
+import { getAssociatedVMIfPresent } from '@lwc/engine-core';
 import { isUndefined, keys } from '@lwc/shared';
+import type { LightningElement } from '@lwc/engine-core';
 
 /**
  * Displays the header for a custom element.

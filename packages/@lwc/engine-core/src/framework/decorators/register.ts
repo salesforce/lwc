@@ -13,21 +13,17 @@ import {
     getOwnPropertyDescriptor,
     isFalse,
 } from '@lwc/shared';
-import { LightningElementConstructor } from '../base-lightning-element';
 
 import { assertNotProd, EmptyObject } from '../utils';
 import { logError } from '../../shared/logger';
 import { createObservedFieldPropertyDescriptor } from '../observed-fields';
-import {
-    WireAdapterConstructor,
-    storeWiredMethodMeta,
-    storeWiredFieldMeta,
-    ConfigCallback,
-} from '../wiring';
+import { storeWiredMethodMeta, storeWiredFieldMeta } from '../wiring';
 
 import { createPublicPropertyDescriptor, createPublicAccessorDescriptor } from './api';
 import { internalTrackDecorator } from './track';
 import { internalWireFieldDecorator } from './wire';
+import type { WireAdapterConstructor, ConfigCallback } from '../wiring';
+import type { LightningElementConstructor } from '../base-lightning-element';
 
 // data produced by compiler
 type WireCompilerMeta = Record<string, WireCompilerDef>;
