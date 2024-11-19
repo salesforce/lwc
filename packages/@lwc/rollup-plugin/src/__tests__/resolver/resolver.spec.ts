@@ -35,7 +35,7 @@ async function runRollup(
     };
 }
 
-describe('resolver', () => {
+describe.concurrent('resolver', () => {
     it('should be capable to resolve all the base LWC module imports', async () => {
         const { warnings } = await runRollup('lwc-modules/lwc-modules.js');
 

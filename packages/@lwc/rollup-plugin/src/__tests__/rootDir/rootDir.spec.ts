@@ -10,7 +10,7 @@ import { describe, it, expect } from 'vitest';
 import { rollup, type RollupLog } from 'rollup';
 import lwc from '../../index';
 
-describe('rootDir', () => {
+describe.concurrent('rootDir', () => {
     it('warns if an "input" array is passed and when "rootDir" is not set', async () => {
         const warnings: any = [];
 

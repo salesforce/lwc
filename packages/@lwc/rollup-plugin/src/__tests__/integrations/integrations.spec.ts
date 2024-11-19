@@ -12,7 +12,7 @@ import lwc from '../../index';
 
 describe('integration', () => {
     describe('typescript', () => {
-        it(`resolves and transform .ts files`, async () => {
+        it.concurrent(`resolves and transform .ts files`, async () => {
             const bundle = await rollup({
                 input: path.resolve(__dirname, 'fixtures/typescript/typescript.ts'),
                 plugins: [lwc()],

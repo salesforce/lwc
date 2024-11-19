@@ -28,7 +28,7 @@ function normalizeLog(log: RollupLog) {
     };
 }
 
-describe('warnings', () => {
+describe.concurrent('warnings', () => {
     it('should emit a warning for double </template> tags in older API versions', async () => {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({

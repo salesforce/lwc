@@ -4,9 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+/// <reference types="vite/client" />
+/**
+ * @vitest-environment jsdom
+ */
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
-import { describe, test, expect, vi } from 'vitest';
+import { describe, test, vi } from 'vitest';
+import type Module from 'node:module';
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 
@@ -20,7 +25,7 @@ async function readPackageFile(pkgName: string, ext: string) {
  * the default `module.exports` empty object. That export is an empty object with the prototype set
  * to an empty object with null prototype.
  */
-const hasExplicitDefaultExport = (mod: object) => {
+const hasExplicitDefaultExport = (mod: Module) => {
     // No default export = self explanatory
     if (!('default' in mod)) return false;
     // If we have more than one export, then we must have explicitly declared them
@@ -40,19 +45,14 @@ const hasExplicitDefaultExport = (mod: object) => {
 // vitest jsdom does not install this legacy API by default, but @lwc/synthetic-shadow needs it
 vi.stubGlobal('HTMLDocument', globalThis.Document);
 
-describe.concurrent('default exports are not forgotten', async () => {
-    const allFiles = await fs.readdir(PACKAGE_ROOT);
-    const packages = allFiles
-        .filter((f) => f.endsWith('.js') && f !== 'index.js' && f !== 'vitest.config.js')
-        .map((f) => f.slice(0, -3));
-    test.each(packages)('@lwc/%s', async (pkg) => {
-        const pathToEsmDistFile = path.join(
-            PACKAGE_ROOT,
-            '../../packages/@lwc',
-            pkg,
-            'dist/index.js'
-        );
-        const realModule = await import(pathToEsmDistFile);
+// @ts-expect-error import.meta
+const packages = Object.entries(
+    import.meta.glob<Module>(['../*.js', '!**/index.js', '!**/vitest.config.js'])
+).map(([file, mod]) => [path.basename(file, '.js'), mod] as const);
+
+describe('default exports are not forgotten', () => {
+    test.for(packages)('@lwc/%s', { concurrent: true }, async ([pkg, mod], { expect }) => {
+        const realModule = await mod();
         // The commend below needs to be updated:
         // When jest properly supports ESM, this will be a lot simpler
         // const aliasedModule = await import(`lwc/${pkg}`);

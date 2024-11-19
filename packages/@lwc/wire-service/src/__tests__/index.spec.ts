@@ -202,8 +202,9 @@ describe('WireEventTarget from register', () => {
     });
 
     describe('removeEventListener', () => {
-        ['connect', 'disconnect', 'config'].forEach((eventType) => {
-            it(`should remove listener from the queue for ${eventType} event`, () => {
+        it.for(['connect', 'disconnect', 'config'])(
+            'should remove listener from the queue for %s event',
+            (eventType) => {
                 const eventToAdapterMethod = {
                     connect: 'connect',
                     disconnect: 'disconnect',
@@ -229,8 +230,8 @@ describe('WireEventTarget from register', () => {
                 (wireEventTarget as any).removeEventListener(eventType, listener);
                 adapter[(eventToAdapterMethod as any)[eventType]]();
                 expect(listener).toHaveBeenCalledTimes(1);
-            });
-        });
+            }
+        );
 
         it('should throw when event type is not supported', () => {
             const adapterId = {};

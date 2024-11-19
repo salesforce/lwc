@@ -16,6 +16,7 @@ export interface FixtureContext<T, C> {
 
 export const describe = {
     fixtures<T, C>(module: FixturesModule<T, C>, fn: TestFunction<FixtureContext<T, C>>) {
+        // @ts-expect-error import.meta
         const root = path.resolve(import.meta.dirname, '../../');
         const relative = path.relative(root, module.dirname);
         const cases = Object.entries(module.files);

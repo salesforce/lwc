@@ -32,7 +32,7 @@ async function runRollup(
     };
 }
 
-describe('templateConfig', () => {
+describe.concurrent('templateConfig', () => {
     it('compile with preserveHtmlComments option', async () => {
         const { bundle } = await runRollup('test/test.js', {
             preserveHtmlComments: true,
@@ -88,7 +88,7 @@ describe('templateConfig', () => {
     });
 });
 
-describe('javaScriptConfig', () => {
+describe.concurrent('javaScriptConfig', () => {
     it('should accept experimentalDynamicComponent config flag', async () => {
         const CUSTOM_LOADER = '@salesforce/loader';
         const { bundle } = await runRollup(
@@ -109,7 +109,7 @@ describe('javaScriptConfig', () => {
     });
 });
 
-describe('lwsConfig', () => {
+describe.concurrent('lwsConfig', () => {
     it('should accept enableLightningWebSecurityTransforms config flag', async () => {
         function stripWhitespace(string: string) {
             return string.replace(/\s/g, '');

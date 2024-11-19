@@ -21,11 +21,13 @@ async function compileComponent({
     const modulesDir = path.resolve(dirname, './src');
     const outputFile = path.resolve(dirname, './dist/index.js');
 
-    for (const [name, content] of Object.entries(files)) {
-        const filename = path.join(modulesDir, name);
-        await fs.mkdir(path.dirname(filename), { recursive: true });
-        await fs.writeFile(filename, content, 'utf-8');
-    }
+    await Promise.all(
+        Object.entries(files).map(async ([name, content]) => {
+            const filename = path.join(modulesDir, name);
+            await fs.mkdir(path.dirname(filename), { recursive: true });
+            await fs.writeFile(filename, content, 'utf-8');
+        })
+    );
 
     const bundle = await rollup({
         input: path.resolve(modulesDir, input),
@@ -69,25 +71,25 @@ describe('renderComponent', () => {
     });
 
     // TODO [#4726]: remove `generateMarkup` export
-    test('can call `renderComponent()` on `generateMarkup`', async () => {
+    test.concurrent('can call `renderComponent()` on `generateMarkup`', async () => {
         const result = await renderComponent('x-component', module!.generateMarkup, {});
 
         expect(result).toContain('<h1>Hello world</h1>');
     });
 
-    test('can call `renderComponent()` on the default export', async () => {
+    test.concurrent('can call `renderComponent()` on the default export', async () => {
         const result = await renderComponent('x-component', module!.default, {});
 
         expect(result).toContain('<h1>Hello world</h1>');
     });
 
-    test('does not throw if props are not provided', async () => {
+    test.concurrent('does not throw if props are not provided', async () => {
         const result = await renderComponent('x-component', module!.default);
 
         expect(result).toContain('<h1>Hello world</h1>');
     });
 
-    test('throws if tagName is not provided', async () => {
+    test.concurrent('throws if tagName is not provided', async () => {
         await expect(() => renderComponent(undefined as any, module!.default, {})).rejects.toThrow(
             'tagName must be a string, found: undefined'
         );

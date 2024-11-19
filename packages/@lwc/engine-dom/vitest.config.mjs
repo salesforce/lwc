@@ -6,7 +6,6 @@ export default mergeConfig(
     defineProject({
         test: {
             name: 'lwc-engine-dom',
-            environment: 'jsdom',
         },
     })
 );

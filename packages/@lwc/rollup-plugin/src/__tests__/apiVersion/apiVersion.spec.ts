@@ -11,7 +11,7 @@ import { APIVersion, HIGHEST_API_VERSION, LOWEST_API_VERSION } from '@lwc/shared
 
 import lwc, { RollupLwcOptions } from '../../index';
 
-describe('API versioning', () => {
+describe.concurrent('API versioning', () => {
     async function runRollup(
         pathname: string,
         options: RollupLwcOptions

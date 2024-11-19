@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { rollup, RollupLog } from 'rollup';
 import lwc, { RollupLwcOptions } from '../../index';
 
-describe('enableStaticContentOptimization:', () => {
+describe.concurrent('enableStaticContentOptimization:', () => {
     async function runRollup(
         pathname: string,
         options: RollupLwcOptions

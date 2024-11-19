@@ -6,7 +6,6 @@ export default mergeConfig(
     defineProject({
         test: {
             name: 'lwc-wire-service',
-            environment: 'jsdom',
         },
     })
 );
