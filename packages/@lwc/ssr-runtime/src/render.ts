@@ -6,11 +6,8 @@
  */
 import { getOwnPropertyNames, isNull, isString, isUndefined, DEFAULT_SSR_MODE } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
-import {
-    LightningElement,
-    LightningElementConstructor,
-    SYMBOL__GENERATE_MARKUP,
-} from './lightning-element';
+import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
+import type { LightningElement, LightningElementConstructor } from './lightning-element';
 import type { Attributes, Properties } from './types';
 
 const escapeAttrVal = (attrValue: string) =>

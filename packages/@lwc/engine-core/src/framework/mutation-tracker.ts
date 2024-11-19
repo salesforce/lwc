@@ -5,16 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isFunction, isNull, isObject, isTrustedSignal } from '@lwc/shared';
-import { Signal } from '@lwc/signals';
-import {
-    JobFunction,
-    CallbackFunction,
-    ReactiveObserver,
-    valueMutated,
-    valueObserved,
-} from '../libs/mutation-tracker';
+import { ReactiveObserver, valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
-import { VM } from './vm';
+import type { Signal } from '@lwc/signals';
+import type { JobFunction, CallbackFunction } from '../libs/mutation-tracker';
+import type { VM } from './vm';
 
 const DUMMY_REACTIVE_OBSERVER = {
     observe(job: JobFunction) {

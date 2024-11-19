@@ -7,8 +7,9 @@
 import { ArrayJoin, ArrayMap, ArrayPush, ArraySort, isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
-import { RenderMode, ShadowMode, VM } from './vm';
+import { RenderMode, ShadowMode } from './vm';
 import { EmptyArray } from './utils';
+import type { VM } from './vm';
 import type { MutationLog } from './mutation-logger';
 
 export const enum OperationId {

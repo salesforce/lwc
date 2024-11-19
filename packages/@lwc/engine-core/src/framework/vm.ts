@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    APIVersion,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
@@ -26,7 +25,6 @@ import {
 import { addErrorComponentStack } from '../shared/error';
 import { logError, logWarnOnce } from '../shared/logger';
 
-import { HostNode, HostElement, RendererAPI } from './renderer';
 import {
     renderComponent,
     markComponentAsDirty,
@@ -36,13 +34,7 @@ import {
 } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
-import { Template } from './template';
-import { ComponentDef, getComponentInternalDef } from './def';
-import {
-    LightningElement,
-    LightningElementConstructor,
-    LightningElementShadowRoot,
-} from './base-lightning-element';
+import { getComponentInternalDef } from './def';
 import {
     logOperationStart,
     logOperationEnd,
@@ -53,20 +45,21 @@ import {
     logGlobalOperationEndWithVM,
 } from './profiler';
 import { patchChildren } from './rendering';
-import { ReactiveObserver } from './mutation-tracker';
 import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logger';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import {
-    VNodes,
-    VCustomElement,
-    VNode,
-    VNodeType,
-    VBaseElement,
-    isVFragment,
-    VStaticPartElement,
-} from './vnodes';
+import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
-import type { Stylesheet, Stylesheets } from '@lwc/shared';
+import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
+import type { ReactiveObserver } from './mutation-tracker';
+import type {
+    LightningElement,
+    LightningElementConstructor,
+    LightningElementShadowRoot,
+} from './base-lightning-element';
+import type { ComponentDef } from './def';
+import type { Template } from './template';
+import type { HostNode, HostElement, RendererAPI } from './renderer';
+import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
 
 type ShadowRootMode = 'open' | 'closed';
 

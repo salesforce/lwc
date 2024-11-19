@@ -5,10 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { basename, extname } from 'path';
-import * as types from '@babel/types';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
-import { NodePath } from '@babel/traverse';
-import { Visitor } from '@babel/core';
 import { generateCustomElementTagName, getAPIVersionFromNumber } from '@lwc/shared';
 import {
     COMPONENT_NAME_KEY,
@@ -18,7 +15,10 @@ import {
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
 } from './constants';
-import { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
+import type * as types from '@babel/types';
+import type { NodePath } from '@babel/traverse';
+import type { Visitor } from '@babel/core';
+import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
 function getBaseName(classPath: string) {
     const ext = extname(classPath);

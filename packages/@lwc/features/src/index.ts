@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { create, defineProperty, isUndefined, isBoolean } from '@lwc/shared';
-import { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
+import type { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
 // example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java

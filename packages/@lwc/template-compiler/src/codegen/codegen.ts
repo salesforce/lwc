@@ -6,7 +6,6 @@
  */
 import { walk } from 'estree-walker';
 import {
-    APIVersion,
     getAPIVersionFromNumber,
     SVG_NAMESPACE,
     STATIC_PART_TOKEN_ID,
@@ -16,21 +15,7 @@ import {
 } from '@lwc/shared';
 
 import * as t from '../shared/estree';
-import {
-    ChildNode,
-    Expression,
-    ComplexExpression,
-    Literal,
-    LWCDirectiveRenderMode,
-    Root,
-    EventListener,
-    RefDirective,
-    Text,
-    StaticElement,
-    Attribute,
-    KeyDirective,
-    StaticChildNode,
-} from '../shared/types';
+import { LWCDirectiveRenderMode } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
     PARSE_SVG_FRAGMENT_METHOD_NAME,
@@ -48,7 +33,6 @@ import {
     isStringLiteral,
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
-import State from '../state';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
@@ -64,6 +48,22 @@ import {
 } from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindAttributeExpression, bindComplexExpression } from './expression';
+import type State from '../state';
+import type {
+    ChildNode,
+    Expression,
+    ComplexExpression,
+    Literal,
+    Root,
+    EventListener,
+    RefDirective,
+    Text,
+    StaticElement,
+    Attribute,
+    KeyDirective,
+    StaticChildNode,
+} from '../shared/types';
+import type { APIVersion } from '@lwc/shared';
 import type { Node } from 'estree';
 
 // structuredClone is only available in Node 17+

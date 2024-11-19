@@ -22,26 +22,20 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import api, { RenderAPI } from './api';
-import {
-    RenderMode,
-    resetComponentRoot,
-    runWithBoundaryProtection,
-    ShadowMode,
-    SlotSet,
-    TemplateCache,
-    VM,
-} from './vm';
+import api from './api';
+import { RenderMode, resetComponentRoot, runWithBoundaryProtection, ShadowMode } from './vm';
 import { assertNotProd, EmptyObject } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
 import { createStylesheet, getStylesheetsContent, updateStylesheetToken } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
-import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { RendererAPI } from './renderer';
+import type { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
+import type { SlotSet, TemplateCache, VM } from './vm';
+import type { RenderAPI } from './api';
 import type { Stylesheets } from '@lwc/shared';
 
 export interface Template {

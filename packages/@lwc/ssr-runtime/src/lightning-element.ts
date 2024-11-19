@@ -23,9 +23,9 @@ import {
 } from '@lwc/shared';
 
 import { ClassList } from './class-list';
-import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
+import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;

@@ -34,14 +34,20 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
-import { LightningElementConstructor } from './base-lightning-element';
+import { RenderMode, ShadowMode } from './vm';
 import { markAsDynamicChildren } from './rendering';
 import {
     isVBaseElement,
     isVCustomElement,
     isVScopedSlotFragment,
     isVStatic,
+    VNodeType,
+    VStaticPartType,
+} from './vnodes';
+import { getComponentRegisteredName } from './component';
+import { createSanitizedHtmlContent } from './sanitized-html-content';
+import type { SanitizedHtmlContent } from './sanitized-html-content';
+import type {
     Key,
     MutableVNodes,
     VComment,
@@ -51,16 +57,14 @@ import {
     VFragment,
     VNode,
     VNodes,
-    VNodeType,
     VScopedSlotFragment,
     VStatic,
     VStaticPart,
     VStaticPartData,
-    VStaticPartType,
     VText,
 } from './vnodes';
-import { getComponentRegisteredName } from './component';
-import { createSanitizedHtmlContent, SanitizedHtmlContent } from './sanitized-html-content';
+import type { LightningElementConstructor } from './base-lightning-element';
+import type { SlotSet, VM } from './vm';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 

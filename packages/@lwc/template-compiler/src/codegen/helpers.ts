@@ -7,10 +7,11 @@
 import { APIFeature, IMPORTANT_FLAG, isAPIFeatureEnabled } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { toPropertyName } from '../shared/utils';
-import { ChildNode, LWCDirectiveRenderMode, Node } from '../shared/types';
+import { LWCDirectiveRenderMode } from '../shared/types';
 import { isBaseElement, isForBlock, isIf, isParentNode, isSlot } from '../shared/ast';
 import { IMPLICIT_STYLESHEET_IMPORTS, TEMPLATE_FUNCTION_NAME } from '../shared/constants';
-import CodeGen from './codegen';
+import type { ChildNode, Node } from '../shared/types';
+import type CodeGen from './codegen';
 
 export function identifierFromComponentName(name: string): t.Identifier {
     return t.identifier(`_${toPropertyName(name)}`);

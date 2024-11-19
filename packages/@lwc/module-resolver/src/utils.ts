@@ -8,7 +8,8 @@ import path from 'path';
 import fs from 'fs';
 
 import { LwcConfigError } from './errors';
-import {
+import { isObject } from './shared';
+import type {
     LwcConfig,
     ModuleRecord,
     NpmModuleRecord,
@@ -19,7 +20,6 @@ import {
     InnerResolverOptions,
     RegistryType,
 } from './types';
-import { isObject } from './shared';
 
 const PACKAGE_JSON = 'package.json';
 const LWC_CONFIG_FILE = 'lwc.config.json';

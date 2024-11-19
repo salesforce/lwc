@@ -8,8 +8,9 @@
 import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { logWarnOnce } from '../shared/logger';
-import { getAssociatedVMIfPresent, VM } from '../framework/vm';
+import { getAssociatedVMIfPresent } from '../framework/vm';
 import { BaseBridgeElement } from '../framework/base-bridge-element';
+import type { VM } from '../framework/vm';
 
 //
 // The goal of this code is to detect usages of non-standard reflected ARIA properties. These are caused by

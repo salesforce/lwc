@@ -8,10 +8,6 @@
 import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 
 import {
-    HostElement,
-    HostShadowRoot,
-    HostAttribute,
-    HostChildNode,
     HostNodeType,
     HostTypeKey,
     HostNamespaceKey,
@@ -21,6 +17,7 @@ import {
     HostValueKey,
 } from './types';
 import { validateStyleTextContents } from './utils/validate-style-text-contents';
+import type { HostElement, HostShadowRoot, HostAttribute, HostChildNode } from './types';
 
 // Note that for statically optimized content the expression serialization is done in
 // buildParseFragmentFn in @lwc/engine-core. It takes the same logic used here.

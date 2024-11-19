@@ -6,7 +6,6 @@
  */
 import {
     APIFeature,
-    APIVersion,
     ArrayEvery,
     ArraySome,
     HTML_NAMESPACE,
@@ -14,14 +13,6 @@ import {
     isArray,
     isNull,
 } from '@lwc/shared';
-import {
-    BaseElement,
-    ChildNode,
-    Root,
-    StaticElement,
-    StaticChildNode,
-    Text,
-} from '../shared/types';
 import {
     isBaseElement,
     isComment,
@@ -31,8 +22,17 @@ import {
     isText,
 } from '../shared/ast';
 import { STATIC_SAFE_DIRECTIVES } from '../shared/constants';
-import State from '../state';
 import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
+import type State from '../state';
+import type {
+    BaseElement,
+    ChildNode,
+    Root,
+    StaticElement,
+    StaticChildNode,
+    Text,
+} from '../shared/types';
+import type { APIVersion } from '@lwc/shared';
 
 // This set keeps track of static safe elements that have dynamic text in their direct children.
 const STATIC_ELEMENT_WITH_DYNAMIC_TEXT_SET = new WeakSet<StaticElement>();

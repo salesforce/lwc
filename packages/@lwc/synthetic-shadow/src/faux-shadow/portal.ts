@@ -7,14 +7,10 @@
 import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
 import { childNodesGetter, compareDocumentPosition, Node } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
-import {
-    getShadowRootResolver,
-    isSyntheticShadowHost,
-    setShadowRootResolver,
-    ShadowRootResolver,
-} from './shadow-root';
+import { getShadowRootResolver, isSyntheticShadowHost, setShadowRootResolver } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
 import { setLegacyShadowToken, getLegacyShadowToken } from './legacy-shadow-token';
+import type { ShadowRootResolver } from './shadow-root';
 
 const DomManualPrivateKey = '$$DomManualKey$$';
 

@@ -42,7 +42,28 @@ import {
     isLwcIsDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
+import * as t from '../shared/estree';
 import {
+    isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
+import CodeGen from './codegen';
+import {
+    identifierFromComponentName,
+    objectToAST,
+    shouldFlatten,
+    parseClassNames,
+    hasIdAttribute,
+    styleMapToStyleDeclsAST,
+} from './helpers';
+import { format as formatModule } from './formatters/module';
+import { bindAttributeExpression } from './expression';
+import type State from '../state';
+import type {
     Root,
     ParentNode,
     ChildNode,
@@ -60,27 +81,6 @@ import {
     ScopedSlotFragment,
     StaticElement,
 } from '../shared/types';
-import * as t from '../shared/estree';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isAttribute,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
-import State from '../state';
-import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
-import CodeGen from './codegen';
-import {
-    identifierFromComponentName,
-    objectToAST,
-    shouldFlatten,
-    parseClassNames,
-    hasIdAttribute,
-    styleMapToStyleDeclsAST,
-} from './helpers';
-import { format as formatModule } from './formatters/module';
-import { bindAttributeExpression } from './expression';
 
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;

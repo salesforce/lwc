@@ -6,8 +6,8 @@
  */
 import { isUndefined } from '@lwc/shared';
 
-import { VM } from '../framework/vm';
 import { getComponentStack } from './format';
+import type { VM } from '../framework/vm';
 
 const alreadyLoggedMessages = new Set();
 

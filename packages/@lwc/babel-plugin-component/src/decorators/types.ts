@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { NodePath } from '@babel/traverse';
-import { types } from '@babel/core';
-import { LWCErrorInfo } from '@lwc/errors';
-import * as t from '@babel/types';
+import type { NodePath } from '@babel/traverse';
+import type { types } from '@babel/core';
+import type { LWCErrorInfo } from '@lwc/errors';
+import type * as t from '@babel/types';
 
 export type ImportSpecifier = {
     name: string;

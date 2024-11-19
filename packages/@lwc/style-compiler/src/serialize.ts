@@ -4,9 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import postcss, { Result } from 'postcss';
+import postcss from 'postcss';
 import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT, KEY__NATIVE_ONLY_CSS } from '@lwc/shared';
-import { Config } from './index';
 import { isImportMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
 import {
@@ -15,6 +14,8 @@ import {
     DIR_ATTRIBUTE_SYNTHETIC_RTL,
     DIR_ATTRIBUTE_SYNTHETIC_LTR,
 } from './utils/dir-pseudoclass';
+import type { Config } from './index';
+import type { Result } from 'postcss';
 
 enum TokenType {
     text = 'text',
