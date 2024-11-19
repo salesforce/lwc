@@ -6,7 +6,7 @@
  */
 
 import path from 'node:path';
-import { vi, describe } from 'vitest';
+import { vi, describe, beforeEach, afterEach } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
@@ -148,6 +148,19 @@ function testFixtures(options?: RollupLwcOptions) {
 }
 
 describe.concurrent('fixtures', () => {
+    let originalFlags: any;
+    beforeEach(() => {
+        originalFlags = (globalThis as any).lwcRuntimeFlags;
+        (globalThis as any).lwcRuntimeFlags = {
+            ...(globalThis as any).lwcRuntimeFlags,
+            ENABLE_WIRE_SYNC_EMIT: true,
+        };
+    });
+
+    afterEach(() => {
+        (globalThis as any).lwcRuntimeFlags = originalFlags;
+    });
+
     describe.concurrent('default', () => {
         testFixtures();
     });
