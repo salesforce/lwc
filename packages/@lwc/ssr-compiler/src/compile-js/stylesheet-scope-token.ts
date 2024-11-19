@@ -9,7 +9,7 @@ import { is } from 'estree-toolkit';
 import { generateScopeTokens } from '@lwc/template-compiler';
 import { builders as b } from 'estree-toolkit/dist/builders';
 import { esTemplate } from '../estemplate';
-import type { BlockStatement, Program, VariableDeclaration } from 'estree';
+import type { ExpressionStatement, Program, VariableDeclaration } from 'estree';
 
 const bStylesheetTokenDeclaration = esTemplate`
     const stylesheetScopeToken = '${is.literal}';
@@ -23,11 +23,9 @@ const bHasScopedStylesheetsDeclaration = esTemplate`
 // We also need to keep track of whether the template has any scoped styles or not so that we can render (or not) the
 // scope token.
 const tmplAssignmentBlock = esTemplate`
-  {
-    ${/* template */ is.identifier}.hasScopedStylesheets = hasScopedStylesheets;
-    ${/* template */ 0}.stylesheetScopeToken = stylesheetScopeToken;
-  }
-`<BlockStatement>;
+${/* template */ is.identifier}.hasScopedStylesheets = hasScopedStylesheets;
+${/* template */ 0}.stylesheetScopeToken = stylesheetScopeToken;
+`<ExpressionStatement[]>;
 
 export function addScopeTokenDeclarations(
     program: Program,
@@ -42,5 +40,5 @@ export function addScopeTokenDeclarations(
         bHasScopedStylesheetsDeclaration()
     );
 
-    program.body.push(tmplAssignmentBlock(b.identifier('tmpl')));
+    program.body.push(...tmplAssignmentBlock(b.identifier('tmpl')));
 }
