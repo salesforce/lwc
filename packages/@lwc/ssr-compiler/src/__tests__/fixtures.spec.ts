@@ -25,8 +25,8 @@ interface FixtureModule {
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
-vi.mock('@lwc/ssr-runtime', async () => {
-    const runtime = await import('@lwc/ssr-runtime');
+vi.mock(import('@lwc/ssr-runtime'), async (importActual) => {
+    const runtime = await importActual();
     try {
         runtime.setHooks({
             sanitizeHtmlContent(content: unknown) {

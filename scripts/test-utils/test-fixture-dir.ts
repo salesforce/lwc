@@ -135,12 +135,26 @@ export function testFixtureDir<R, T extends unknown[]>(
         ...context: T
     ) => {
         const formatters = Object.entries(snapshots);
-        for (const filename of matches) {
-            const dirname = path.dirname(filename);
-            const relpath = path.relative(root, filename);
-            const overrides = expectedFailures[relpath] ?? [];
-            const options = await getTestOptions(dirname);
-
+        const cases = await Promise.all(
+            matches.map(async (filename) => {
+                const dirname = path.dirname(filename);
+                const relpath = path.relative(root, filename);
+                const overrides = expectedFailures[relpath] ?? [];
+                const [options, config] = await Promise.all([
+                    getTestOptions(dirname),
+                    getFixtureConfig(dirname),
+                ]);
+                return {
+                    filename,
+                    dirname,
+                    relpath,
+                    overrides,
+                    options,
+                    config,
+                };
+            })
+        );
+        for (const { filename, dirname, relpath, overrides, options, config } of cases) {
             describe.concurrent(relpath, options, () => {
                 let result: R;
 
@@ -149,7 +163,7 @@ export function testFixtureDir<R, T extends unknown[]>(
                         {
                             filename,
                             dirname,
-                            config: await getFixtureConfig(dirname),
+                            config,
                         },
                         ...context
                     );
