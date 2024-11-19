@@ -18,7 +18,7 @@
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
         "copy-fork": "./scripts/tasks/unsafe-external-contributor-ci-workaround.sh",
         "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
-        "test": "vitest --workspace vitest.workspace.mjs --no-isolate --pool=threads",
+        "test": "vitest --workspace vitest.workspace.mjs --no-isolate",
         "test:bespoke": "nx run-many --target=test",
         "test:debug": "vitest --workspace vitest.workspace.mjs --inspect-brk --no-file-parallelism",
         "test:ci": "vitest run --workspace vitest.workspace.mjs --coverage",
