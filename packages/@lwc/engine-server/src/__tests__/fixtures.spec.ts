@@ -43,11 +43,12 @@ async function compileFixture(
     },
     name: string
 ) {
-    const outputFile = path.resolve(dirname, `./dist/compiled-${name}.js`);
+    const dir = path.resolve(dirname, `./dist/${name}`);
+    const loader = path.join(__dirname, './utils/custom-loader.js');
 
     const bundle = await rollup({
         input,
-        external: ['lwc', 'vitest'],
+        external: ['lwc', 'vitest', loader],
         preserveSymlinks: true,
         treeshake: false,
         plugins: [
@@ -55,7 +56,7 @@ async function compileFixture(
                 rootDir: dirname,
                 enableDynamicComponents: true,
                 experimentalDynamicComponent: {
-                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                    loader,
                     strictSpecifier: false,
                 },
                 modules: [
@@ -83,12 +84,13 @@ async function compileFixture(
     });
 
     await bundle.write({
-        file: outputFile,
+        dir,
         format: 'esm',
         exports: 'named',
+        entryFileNames: '[name]-entry.js',
     });
 
-    return outputFile;
+    return path.resolve(dir, 'index-entry.js');
 }
 
 const testFixtures = testFixtureDir(

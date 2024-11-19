@@ -95,7 +95,6 @@ export function testFixtureDir<R, T extends unknown[]>(
     config: {
         pattern: string | string[];
         root: string;
-        ignore?: string | string[];
     },
     testFn: (
         options: {
@@ -122,7 +121,7 @@ export function testFixtureDir<R, T extends unknown[]>(
     const matches = globSync(pattern, {
         cwd: root,
         absolute: true,
-        ignore: config.ignore,
+        ignore: ['**/node_modules/**', '**/dist/**'],
     });
 
     return async (
