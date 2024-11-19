@@ -10,6 +10,7 @@ import { vi, describe, beforeEach, afterEach } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { setFeatureFlagForTest } from '../index';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -148,17 +149,12 @@ function testFixtures(options?: RollupLwcOptions) {
 }
 
 describe.concurrent('fixtures', () => {
-    let originalFlags: any;
     beforeEach(() => {
-        originalFlags = (globalThis as any).lwcRuntimeFlags;
-        (globalThis as any).lwcRuntimeFlags = {
-            ...(globalThis as any).lwcRuntimeFlags,
-            ENABLE_WIRE_SYNC_EMIT: true,
-        };
+        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
     });
 
     afterEach(() => {
-        (globalThis as any).lwcRuntimeFlags = originalFlags;
+        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
     });
 
     describe.concurrent('default', () => {
