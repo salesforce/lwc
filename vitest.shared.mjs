@@ -11,6 +11,9 @@ export default defineConfig({
             printBasicPrototype: true,
             callToJSON: true,
         },
+        chaiConfig: {
+            truncateThreshold: 1000,
+        },
         // To properly resolve `const enum`, we need to point to the TypeScript source files
         // See https://github.com/vitest-dev/vitest/discussions/3964
         // Using `src` also ensures that the test coverage is accurately reported
