@@ -6,11 +6,35 @@
  */
 
 import path from 'node:path';
-import { vi, describe } from 'vitest';
+import { rm } from 'node:fs/promises';
+import { vi, test, beforeAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
-import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { glob } from 'glob';
+import { formatHTML } from '@lwc/test-utils-lwc-internals';
 import * as lwc from '../index';
+
+vi.mock(import('@lwc/module-resolver'), async (importOriginal) => {
+    const mod = await importOriginal();
+    return {
+        ...mod,
+        resolveModule(importee, importer, ..._) {
+            const dirname = path.dirname(importer);
+            const dir = dirname.includes('/modules/')
+                ? path.resolve(dirname, '../..')
+                : path.join(dirname, 'modules');
+            return mod.resolveModule(importee, dirname, {
+                modules: [
+                    { npm: '@lwc/engine-dom' },
+                    { npm: '@lwc/synthetic-shadow' },
+                    { npm: '@lwc/wire-service' },
+                    { dir },
+                ],
+                rootDir: dirname,
+            });
+        },
+    };
+});
 
 interface FixtureModule {
     tagName: string;
@@ -18,8 +42,6 @@ interface FixtureModule {
     props?: { [key: string]: any };
     features?: any[];
 }
-
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 lwc.setHooks({
     sanitizeHtmlContent(content: unknown) {
@@ -31,26 +53,21 @@ vi.mock('lwc', () => {
     return lwc;
 });
 
-async function compileFixture(
-    {
-        input,
-        dirname,
-        options,
-    }: {
-        input: string;
-        dirname: string;
-        options?: RollupLwcOptions;
-    },
-    name: string
-) {
-    const dir = path.resolve(dirname, `./dist/${name}`);
+async function compileFixture({
+    input,
+    dir,
+    options,
+}: {
+    input: string[] | Record<string, string>;
+    dir: string;
+    options?: RollupLwcOptions;
+}) {
+    const dirname = path.resolve(__dirname, 'fixtures');
     const loader = path.join(__dirname, './utils/custom-loader.js');
 
     const bundle = await rollup({
         input,
         external: ['lwc', 'vitest', loader],
-        preserveSymlinks: true,
-        treeshake: false,
         plugins: [
             lwcRollupPlugin({
                 rootDir: dirname,
@@ -59,11 +76,6 @@ async function compileFixture(
                     loader,
                     strictSpecifier: false,
                 },
-                modules: [
-                    {
-                        dir: './modules',
-                    },
-                ],
                 ...options,
             }),
         ],
@@ -87,77 +99,60 @@ async function compileFixture(
         dir,
         format: 'esm',
         exports: 'named',
-        entryFileNames: '[name]-entry.js',
     });
-
-    return path.resolve(dir, 'index-entry.js');
 }
 
-const testFixtures = testFixtureDir(
-    {
-        root: path.resolve(__dirname, 'fixtures'),
-        pattern: '**/index.js',
-    },
-    async ({ filename, dirname, config }, name: string, options: RollupLwcOptions) => {
-        const compiledFixturePath = await compileFixture(
-            {
-                input: filename,
-                dirname,
-                options,
-            },
-            name
-        );
-
-        const module = (await import(compiledFixturePath)) as FixtureModule;
-
-        // The LWC engine holds global state like the current VM index, which has an impact on
-        // the generated HTML IDs. So the engine has to be re-evaluated between tests.
-        // On top of this, the engine also checks if the component constructor is an instance of
-        // the LightningElement. Therefor the compiled module should also be evaluated in the
-        // same sandbox registry as the engine.
-        // const lwcEngineServer = await import('../index');
-
-        const features = module!.features ?? [];
-        features.forEach((flag) => {
-            lwc!.setFeatureFlagForTest(flag, true);
-        });
-
-        let result;
-        let err;
-        try {
-            result = lwc!.renderComponent(module!.tagName, module!.default, config?.props ?? {});
-        } catch (_err: any) {
-            if (_err.name === 'AssertionError') {
-                throw _err;
-            }
-            err = _err.message;
-        }
-
-        features.forEach((flag) => {
-            lwc!.setFeatureFlagForTest(flag, false);
-        });
-
-        return { result, err };
-    }
-);
-
-// Test with and without the static content optimization to ensure the fixtures are the same
-const cases = [{}, { enableStaticContentOptimization: false }].map((options) => {
-    return [
-        Object.entries(options)
-            .map((kv) => kv.join('='))
-            .join('-') || 'default',
-        options,
-    ] as const;
+const fixtureDir = path.resolve(__dirname, `./fixtures`);
+const dir = path.resolve(fixtureDir, './dist');
+const fixtures = glob.sync('**/index.js', {
+    ignore: ['**/dist/**'],
+    cwd: fixtureDir,
 });
 
-describe.each(cases)('%s', async (name, options) => {
-    await testFixtures(
-        {
-            'expected.html': ({ result }) => (result ? formatHTML(result) : ''),
-            'error.txt': ({ err }) => err ?? '',
-        },
-        name,
-        options
+const input = Object.fromEntries(
+    fixtures.map((f) => [f.replace('.js', ''), path.resolve(fixtureDir, f)])
+);
+
+beforeAll(async () => {
+    await rm(dir, { recursive: true, force: true });
+    await compileFixture({ input, dir });
+});
+
+test.for(fixtures)('compiled %s', { concurrent: true }, async (fixture, { expect }) => {
+    const mod: FixtureModule = await import(`./fixtures/dist/${fixture}`);
+
+    const result = { error: '', expected: '' };
+
+    mod.features?.forEach((f) => {
+        lwc.setFeatureFlagForTest(f, true);
+    });
+
+    let config = { props: mod.props };
+
+    try {
+        config = await import(`./fixtures/${fixture.replace('index.js', 'config.json')}`);
+    } catch (_error) {
+        // ignore missing config
+    }
+
+    try {
+        result.expected = lwc.renderComponent(mod.tagName, mod.default, config.props);
+    } catch (_error: any) {
+        if (_error.name === 'AssertionError') {
+            throw _error;
+        } else {
+            result.error = _error.message;
+        }
+    }
+
+    mod.features?.forEach((f) => {
+        lwc.setFeatureFlagForTest(f, false);
+    });
+
+    await expect(formatHTML(result.expected)).toMatchFileSnapshot(
+        `./fixtures/${fixture.replace('index.js', 'expected.html')}`
+    );
+    await expect(result.error).toMatchFileSnapshot(
+        `./fixtures/${fixture.replace('index.js', 'error.txt')}`
     );
 });
