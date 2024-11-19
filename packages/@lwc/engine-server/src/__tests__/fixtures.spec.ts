@@ -8,9 +8,10 @@
 import path from 'node:path';
 import { vi, describe, beforeEach, afterEach } from 'vitest';
 import { rollup } from 'rollup';
-import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
+import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
+import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
 interface FixtureModule {

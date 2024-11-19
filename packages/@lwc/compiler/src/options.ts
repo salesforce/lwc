@@ -4,9 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
+import { CompilerValidationErrors, invariant } from '@lwc/errors';
 import { isUndefined, isBoolean, getAPIVersionFromNumber, DEFAULT_SSR_MODE } from '@lwc/shared';
-import { CompilationMode } from '@lwc/ssr-compiler';
+import type { InstrumentationObject } from '@lwc/errors';
+import type { CompilationMode } from '@lwc/ssr-compiler';
 import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**

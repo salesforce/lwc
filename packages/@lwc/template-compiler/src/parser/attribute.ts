@@ -13,14 +13,11 @@ import {
     SVG_NAMESPACE,
     ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
-import { Token } from 'parse5';
 
 import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
-import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
-import ParserCtx from './parser';
 import {
     EXPRESSION_SYMBOL_END,
     EXPRESSION_SYMBOL_START,
@@ -38,6 +35,9 @@ import {
     TEMPLATE_DIRECTIVES,
 } from './constants';
 import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
+import type ParserCtx from './parser';
+import type { Attribute, BaseElement, SourceLocation } from '../shared/types';
+import type { Token } from 'parse5';
 
 function isQuotedAttribute(attrVal: string) {
     return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');

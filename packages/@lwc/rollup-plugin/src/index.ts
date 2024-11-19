@@ -8,11 +8,15 @@ import fs from 'fs';
 import path from 'path';
 import { URLSearchParams } from 'url';
 
-import { Plugin, SourceMapInput, RollupLog } from 'rollup';
-import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
-import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
-import { APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
+import pluginUtils from '@rollup/pluginutils';
+import { transformSync } from '@lwc/compiler';
+import { resolveModule, RegistryType } from '@lwc/module-resolver';
+import { getAPIVersionFromNumber } from '@lwc/shared';
+import type { Plugin, SourceMapInput, RollupLog } from 'rollup';
+import type { FilterPattern } from '@rollup/pluginutils';
+import type { StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
+import type { ModuleRecord } from '@lwc/module-resolver';
+import type { APIVersion } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
 import type { CompilationMode } from '@lwc/ssr-compiler';
 

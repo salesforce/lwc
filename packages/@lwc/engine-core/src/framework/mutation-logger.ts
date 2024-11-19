@@ -19,9 +19,9 @@ import {
     getOwnPropertySymbols,
     isString,
 } from '@lwc/shared';
-import { ReactiveObserver } from '../libs/mutation-tracker';
-import { VM } from './vm';
 import { assertNotProd } from './utils';
+import type { ReactiveObserver } from '../libs/mutation-tracker';
+import type { VM } from './vm';
 
 export interface MutationLog {
     vm: VM;

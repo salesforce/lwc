@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ImportDeclaration } from 'estree';
-import { NodePath, builders as b } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
+import type { ImportDeclaration } from 'estree';
+import type { NodePath } from 'estree-toolkit';
 
 const decorators = new Set(['api', 'wire', 'track']);
 

@@ -6,9 +6,10 @@
  */
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { rollup, RollupLog } from 'rollup';
+import { rollup } from 'rollup';
 import { APIVersion } from '@lwc/shared';
 import lwc from '../../index';
+import type { RollupLog } from 'rollup';
 
 function normalizeLog(log: RollupLog) {
     return {

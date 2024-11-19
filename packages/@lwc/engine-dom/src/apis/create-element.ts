@@ -18,10 +18,10 @@ import {
     createVM,
     connectRootElement,
     disconnectRootElement,
-    LightningElement,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
 import { renderer } from '../renderer';
+import type { LightningElement } from '@lwc/engine-core';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node

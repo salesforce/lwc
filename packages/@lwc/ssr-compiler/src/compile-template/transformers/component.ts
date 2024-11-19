@@ -7,7 +7,7 @@
 
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
-import { kebabcaseToCamelcase, ScopedSlotFragment, toPropertyName } from '@lwc/template-compiler';
+import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { bAttributeValue, getChildAttrsOrProps, optimizeAdjacentYieldStmts } from '../shared';
 import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { irChildrenToEs, irToEs } from '../ir-to-es';
@@ -15,7 +15,7 @@ import { isNullableOf } from '../../estree/validators';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type { BlockStatement as EsBlockStatement } from 'estree';
-import type { Component as IrComponent } from '@lwc/template-compiler';
+import type { Component as IrComponent, ScopedSlotFragment } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`

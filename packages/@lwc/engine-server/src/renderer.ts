@@ -16,14 +16,9 @@ import {
     noop,
     StringToLowerCase,
 } from '@lwc/shared';
-import { LifecycleCallback } from '@lwc/engine-core';
 
 import {
-    HostNode,
-    HostElement,
-    HostAttribute,
     HostNodeType,
-    HostChildNode,
     HostTypeKey,
     HostNamespaceKey,
     HostParentKey,
@@ -41,6 +36,8 @@ import {
     stopTrackingMutations,
 } from './utils/mutation-tracking';
 import { registerContextConsumer } from './context';
+import type { HostNode, HostElement, HostAttribute, HostChildNode } from './types';
+import type { LifecycleCallback } from '@lwc/engine-core';
 
 function unsupportedMethod(name: string): () => never {
     return function () {

@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { BaseElement } from './shared/types';
 import { generateScopeTokens, type scopeTokens } from './scopeTokens';
+import type { BaseElement } from './shared/types';
 import type { NormalizedConfig } from './config';
 
 export default class State {

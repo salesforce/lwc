@@ -16,7 +16,6 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { Comment, Element, Literal, StaticChildNode, StaticElement, Text } from '../shared/types';
 import {
     isBooleanLiteral,
     isComment,
@@ -26,6 +25,14 @@ import {
     isText,
 } from '../shared/ast';
 import { hasDynamicText, isContiguousText, transformStaticChildren } from './static-element';
+import type {
+    Comment,
+    Element,
+    Literal,
+    StaticChildNode,
+    StaticElement,
+    Text,
+} from '../shared/types';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts

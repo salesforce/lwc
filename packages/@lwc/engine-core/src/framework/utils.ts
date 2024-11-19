@@ -15,7 +15,7 @@ import {
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
-import { LightningElementConstructor } from './base-lightning-element';
+import type { LightningElementConstructor } from './base-lightning-element';
 
 type Callback = () => void;
 

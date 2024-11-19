@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LightningElement, WireAdapterConstructor, wire } from 'lwc';
+import { LightningElement, wire } from 'lwc';
+import type { WireAdapterConstructor } from 'lwc';
 
 type TestConfig = { config: 'config' };
 type TestValue = { value: 'value' };

@@ -6,18 +6,11 @@
  */
 
 import { parseExpressionAt } from 'acorn';
-import {
-    DefaultTreeAdapterMap,
-    Parser,
-    ParserOptions,
-    Tokenizer,
-    TokenizerOptions,
-    TokenHandler,
-    ParserError,
-    Token,
-} from 'parse5';
+import { Parser, Tokenizer, Token } from 'parse5';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import {
+import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
+import { EXPRESSION_SYMBOL_START } from '../expression';
+import type {
     ChildNode,
     Document,
     DocumentFragment,
@@ -26,8 +19,13 @@ import {
     Template,
     TextNode,
 } from '@parse5/tools';
-import { TMPL_EXPR_ECMASCRIPT_EDITION } from '../constants';
-import { EXPRESSION_SYMBOL_START } from '../expression';
+import type {
+    DefaultTreeAdapterMap,
+    ParserOptions,
+    TokenizerOptions,
+    TokenHandler,
+    ParserError,
+} from 'parse5';
 import type ParserCtx from '../parser';
 import type { PreparsedExpressionMap, Preprocessor } from './types';
 

@@ -16,9 +16,9 @@ import {
     IMPLICIT_STYLESHEET_IMPORTS,
 } from '../../shared/constants';
 
-import CodeGen from '../codegen';
 import { identifierFromComponentName, generateTemplateMetadata } from '../helpers';
 import { optimizeStaticExpressions } from '../optimize';
+import type CodeGen from '../codegen';
 
 function generateComponentImports(codeGen: CodeGen): t.ImportDeclaration[] {
     return Array.from(codeGen.referencedComponents).map((name) => {

@@ -6,7 +6,7 @@
  */
 import { noop } from '@lwc/shared';
 
-import { RenderMode, ShadowMode, ShadowSupportMode } from './vm';
+import type { RenderMode, ShadowMode, ShadowSupportMode } from './vm';
 
 export const enum ReportingEventId {
     CrossRootAriaInSyntheticShadow = 'CrossRootAriaInSyntheticShadow',

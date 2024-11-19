@@ -18,13 +18,15 @@ import {
 import { logError } from '../shared/logger';
 
 import api from './api';
-import { RenderMode, ShadowMode, VM } from './vm';
-import { computeHasScopedStyles, hasStyles, Template } from './template';
+import { RenderMode, ShadowMode } from './vm';
+import { computeHasScopedStyles, hasStyles } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
-import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 import { getComponentInternalDef } from './def';
 import { assertNotProd, EmptyArray } from './utils';
+import type { VCustomElement, VNode } from './vnodes';
+import type { Template } from './template';
+import type { VM } from './vm';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 // These are only used for HMR in dev mode

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Node, Container } from 'postcss-selector-parser';
+import type { Node, Container } from 'postcss-selector-parser';
 
 export function findNode<T extends Node>(
     container: Container,

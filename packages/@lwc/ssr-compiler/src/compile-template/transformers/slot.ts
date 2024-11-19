@@ -7,13 +7,13 @@
 
 import { is, builders as b } from 'estree-toolkit';
 
-import { Slot as IrSlot } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
 import { bAttributeValue, getScopedExpression } from '../shared';
 import { isNullableOf } from '../../estree/validators';
 import { Element } from './element';
+import type { Slot as IrSlot } from '@lwc/template-compiler';
 import type {
     Statement as EsStatement,
     IfStatement as EsIfStatement,

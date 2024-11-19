@@ -5,18 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { DecoratorErrors } from '@lwc/errors';
-import { NodePath } from '@babel/traverse';
-import { types } from '@babel/core';
 import { generateError } from '../../utils';
-import { LwcBabelPluginPass } from '../../types';
 import {
     AMBIGUOUS_PROP_SET,
     DECORATOR_TYPES,
     DISALLOWED_PROP_SET,
     LWC_PACKAGE_EXPORTS,
 } from '../../constants';
-import { DecoratorMeta } from '../index';
 import { isApiDecorator } from './shared';
+import type { NodePath } from '@babel/traverse';
+import type { types } from '@babel/core';
+import type { LwcBabelPluginPass } from '../../types';
+import type { DecoratorMeta } from '../index';
 
 const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 

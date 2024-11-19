@@ -6,7 +6,7 @@
  */
 import { isNull, ArrayJoin, ArrayPush, StringToLowerCase } from '@lwc/shared';
 
-import { VM } from '../framework/vm';
+import type { VM } from '../framework/vm';
 
 export function getComponentTag(vm: VM): string {
     return `<${StringToLowerCase.call(vm.tagName)}>`;
