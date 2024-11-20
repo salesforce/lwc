@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const path = require('node:path');
-const { readFile, writeFile, stat, readdir } = require('node:fs/promises');
-const prettier = require('prettier');
-const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
+import { join, relative } from 'node:path';
+import { readFile, writeFile, stat, readdir } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { format } from 'prettier';
+import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
 
 // Generate our LICENSE files for each package, including any bundled dependencies
 // This is modeled after how Rollup does it:
@@ -23,6 +24,16 @@ async function exists(filename) {
     }
 }
 
+const licenses = JSON.parse(
+    spawnSync('pnpm', ['licenses', 'list', '--json'], { encoding: 'utf-8' }).stdout
+);
+
+if (!licenses || typeof licenses !== 'object') {
+    throw new Error('Failed to list dependencies');
+}
+
+const list = Object.values(licenses).flat();
+
 async function findLicenseText(depName) {
     // Iterate through possible names for the license file
     const names = ['LICENSE', 'LICENSE.md', 'LICENSE.txt'];
@@ -30,17 +41,17 @@ async function findLicenseText(depName) {
     // We would use require.resolve, but 1) that doesn't work if the module lacks a "main" in its `package.json`,
     // and 2) it gives us a deep `./path/to/index.js` which makes it harder to find a top-level LICENSE file. So
     // just assume that our deps are hoisted to the top-level `node_modules`.
-    const resolvedDepPath = path.join(process.cwd(), 'node_modules', depName);
+    const resolvedDepPath = list.find((dep) => dep.name === depName).paths[0];
 
     for (const name of names) {
-        const fullFilePath = path.join(resolvedDepPath, name);
+        const fullFilePath = join(resolvedDepPath, name);
         if (await exists(fullFilePath)) {
             return (await readFile(fullFilePath, 'utf-8')).trim();
         }
     }
 
     // Get the license from the package.json if we can't find it elsewhere
-    const pkgJson = JSON.parse(await readFile(path.join(resolvedDepPath, 'package.json'), 'utf-8'));
+    const pkgJson = JSON.parse(await readFile(join(resolvedDepPath, 'package.json'), 'utf-8'));
 
     const { license, version } = pkgJson;
 
@@ -60,7 +71,7 @@ async function main() {
             '\n'
         )}`.trim() + '\n';
 
-    const formattedLicense = await prettier.format(newLicense, {
+    const formattedLicense = await format(newLicense, {
         parser: 'markdown',
     });
 
@@ -81,12 +92,12 @@ async function main() {
 
     await Promise.all(
         packages.map(async (pkg) => {
-            await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
+            await writeFile(join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
         })
     );
 
     if (shouldWarnChanges) {
-        const relativeFilename = path.relative(process.cwd(), __filename);
+        const relativeFilename = relative(process.cwd(), __filename);
         throw new Error(
             'Either the LWC core license or the license of a bundled dependency has been updated.\n' +
                 `Please run \`node ${relativeFilename}\` and commit the result.`
