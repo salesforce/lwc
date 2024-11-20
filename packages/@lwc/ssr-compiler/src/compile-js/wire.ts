@@ -26,26 +26,16 @@ function extractWireConfig(
 ): WireAdapter {
     const extractedConfig =
         config?.properties?.map?.((objProp) => {
-            if (!is.property(objProp)) {
-                throw new Error('Object spread syntax is disallowed in @wire config.');
+            if (is.property(objProp)) {
+                const { key, value } = objProp;
+                if (is.literal(value) && typeof value.value === 'string') {
+                    const referencedField = value.value.slice(1);
+                    return {
+                        configKey: key.name,
+                        referencedField,
+                    };
+                }
             }
-            const { key, value } = objProp;
-
-            if (!is.identifier(key)) {
-                throw new Error(`@wire config entry key must be an identifier; found ${key.type}`);
-            }
-            if (!is.literal(value) || typeof value.value !== 'string' || value.value[0] !== '$') {
-                throw new Error('@wire config entry values must be strings starting with a $');
-            }
-            const referencedField = value.value.slice(1);
-            if (!isValidIdentifier(referencedField)) {
-                throw new Error(`@wire config referenced invalid field: ${referencedField}`);
-            }
-
-            return {
-                configKey: key.name,
-                referencedField,
-            };
         }) ?? [];
 
     return {
@@ -105,7 +95,32 @@ export function catalogWireAdapters(
         throw new Error('todo - WIRE_ADAPTER_SHOULD_BE_IMPORTED');
     }
 
-    // conditionally valid the config
+    if (config) {
+        if (!is.objectExpression(config)) {
+            throw new Error('todo - CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER');
+        }
+        for (const property of config.properties) {
+            if (!is.property(property) || !property.computed) continue;
+            const key = property.key;
+            if (is.identifier(key)) {
+                const binding = path.scope.getBinding(key.name);
+                // TODO [#3956]: Investigate allowing imported constants
+                if (binding?.kind === 'const') continue;
+                // By default, the identifier `undefined` has no binding (when it's actually undefined),
+                // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
+                if (key.name === 'undefined' && !binding) continue;
+            } else if (is.literal(key)) {
+                if (is.templateLiteral(key)) {
+                    // A template literal is not guaranteed to always result in the same value
+                    // (e.g. `${Math.random()}`), so we disallow them entirely.
+                    throw new Error('todo - COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL');
+                } else if ('regex' in key) {
+                    continue;
+                }
+            }
+        }
+        throw new Error('todo - COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL');
+    }
 
     state.wireAdapters = [
         ...state.wireAdapters,
