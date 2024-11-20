@@ -17,7 +17,6 @@ import {
     toString,
 } from '@lwc/shared';
 
-import { Properties } from './types';
 import type { LightningElement } from './lightning-element';
 
 /**
@@ -29,10 +28,9 @@ import type { LightningElement } from './lightning-element';
 export function filterProperties(
     props: Record<string, unknown>,
     publicFields: Array<string>,
-    privateFields: Array<string>,
-    proto: Properties | null
+    privateFields: Array<string>
 ): Record<string, unknown> {
-    const propsToAssign = create(proto);
+    const propsToAssign = create(null);
     const publicFieldSet = new Set(publicFields);
     const privateFieldSet = new Set(privateFields);
     keys(props).forEach((propName) => {

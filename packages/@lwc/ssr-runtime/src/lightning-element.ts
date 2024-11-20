@@ -40,7 +40,6 @@ interface PropsAvailableAtConstruction {
     tagName: string;
 }
 
-export const SYMBOL__GET_INTERNALS = Symbol('get-internals');
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 
@@ -65,11 +64,6 @@ export class LightningElement implements PropsAvailableAtConstruction {
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
 
-    /**
-     * Unstable. Do not use.
-     * @private
-     */
-    [SYMBOL__GET_INTERNALS]!: Properties;
     #attrs!: Attributes;
     #classList: ClassList | null = null;
 
@@ -79,7 +73,6 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes, parent: LightningElement) {
         this.#attrs = attrs;
-        this[SYMBOL__GET_INTERNALS] = props;
         assign(this, props);
 
         defineProperty(this, 'className', {
