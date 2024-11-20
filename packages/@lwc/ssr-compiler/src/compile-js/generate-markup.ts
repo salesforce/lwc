@@ -37,6 +37,7 @@ const bGenerateMarkup = esTemplate`
             props,
             ${/*public fields*/ is.arrayExpression},
             ${/*private fields*/ is.arrayExpression},
+            parent?.[__SYMBOL__GET_INTERNALS] ?? null
         );
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
@@ -122,6 +123,7 @@ export function addGenerateMarkupExport(
             mutationTracker: '__mutationTracker',
             renderAttrs: '__renderAttrs',
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+            SYMBOL__GET_INTERNALS: '__SYMBOL__GET_INTERNALS',
             SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
         })
     );
