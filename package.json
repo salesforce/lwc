@@ -8,12 +8,12 @@
         "url": "https://github.com/salesforce/lwc.git"
     },
     "scripts": {
-        "prepare": "husky && yarn build",
+        "prepare": "husky && pnpm build",
         "lint": "eslint .",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
-        "build:performance": "yarn build:performance:components && yarn build:performance:benchmarks",
+        "build:performance": "pnpm build:performance:components && pnpm build:performance:benchmarks",
         "build:performance:components": "nx build @lwc/perf-benchmarks-components",
         "build:performance:benchmarks": "nx build @lwc/perf-benchmarks",
         "copy-fork": "./scripts/tasks/unsafe-external-contributor-ci-workaround.sh",
