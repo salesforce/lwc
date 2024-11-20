@@ -24,7 +24,8 @@
         "noEmit": true,
 
         "paths": {
-            "@lwc/*": ["./packages/@lwc/*"]
+            "@lwc/*": ["./packages/@lwc/*"],
+            "lwc": ["./packages/lwc"]
         }
     },
 

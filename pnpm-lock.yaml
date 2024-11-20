@@ -321,9 +321,18 @@ importers:
 
     packages/@lwc/integration-tests:
         devDependencies:
+            '@lwc/engine-dom':
+                specifier: 8.9.0
+                version: 8.9.0
             '@lwc/rollup-plugin':
                 specifier: 8.9.0
                 version: 8.9.0(rollup@4.27.3)
+            '@lwc/synthetic-shadow':
+                specifier: 8.9.0
+                version: 8.9.0
+            '@lwc/wire-service':
+                specifier: 8.9.0
+                version: 8.9.0
             '@wdio/cli':
                 specifier: ^9.2.14
                 version: 9.2.14
