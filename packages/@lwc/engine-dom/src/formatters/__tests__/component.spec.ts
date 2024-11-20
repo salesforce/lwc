@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { describe, it, expect } from 'vitest';
+import { LOWEST_API_VERSION } from '@lwc/shared';
 import {
     createElement,
     LightningElement,
     registerComponent,
     registerTemplate,
     registerDecorators,
-} from '@lwc/engine-dom';
-import { LOWEST_API_VERSION } from '@lwc/shared';
+} from '../../../dist';
 
 // it needs to be imported from the window, otherwise the checks for associated vms is done against "@lwc/engine-core"
 const LightningElementFormatter = (globalThis as any)['devtoolsFormatters'].find((f: any) => {

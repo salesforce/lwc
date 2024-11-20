@@ -21,7 +21,11 @@
 
         // @rollup/plugin-typescript ignores this setting (it always emits); we can set it here to
         // facilitate type checking without running the full build
-        "noEmit": true
+        "noEmit": true,
+
+        "paths": {
+            "@lwc/*": ["./packages/@lwc/*"]
+        }
     },
 
     "exclude": []

@@ -49,7 +49,10 @@
     },
     "devDependencies": {
         "@lwc/errors": "8.9.0",
-        "@lwc/ssr-compiler": "8.9.0"
+        "@lwc/ssr-compiler": "8.9.0",
+        "@lwc/engine-dom": "8.9.0",
+        "@lwc/synthetic-shadow": "8.9.0",
+        "@lwc/wire-service": "8.9.0"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0||^3.0.0||^4.0.0"
