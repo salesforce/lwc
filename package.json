@@ -86,6 +86,11 @@
         "packages/lwc",
         "playground"
     ],
+    "pnpm": {
+        "overrides": {
+            "@lwc/perf-benchmarks-components": "workspace:*"
+        }
+    },
     "engines": {
         "node": ">=10"
     },
