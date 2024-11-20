@@ -7,7 +7,7 @@
 
 import path from 'node:path';
 import { rm } from 'node:fs/promises';
-import { vi, test, beforeAll } from 'vitest';
+import { vi, test, beforeAll, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
 import { glob } from 'glob';
@@ -53,16 +53,16 @@ vi.mock('lwc', () => {
     return lwc;
 });
 
-async function compileFixture({
-    input,
-    dir,
-    options,
-}: {
-    input: string[] | Record<string, string>;
-    dir: string;
-    options?: RollupLwcOptions;
-}) {
-    const dirname = path.resolve(__dirname, 'fixtures');
+async function compileFixture(
+    {
+        input,
+        dir,
+    }: {
+        input: string[] | Record<string, string>;
+        dir: string;
+    },
+    options: RollupLwcOptions = {}
+) {
     const loader = path.join(__dirname, './utils/custom-loader.js');
 
     const bundle = await rollup({
@@ -70,7 +70,7 @@ async function compileFixture({
         external: ['lwc', 'vitest', loader],
         plugins: [
             lwcRollupPlugin({
-                rootDir: dirname,
+                rootDir: '.',
                 enableDynamicComponents: true,
                 experimentalDynamicComponent: {
                     loader,
@@ -103,7 +103,6 @@ async function compileFixture({
 }
 
 const fixtureDir = path.resolve(__dirname, `./fixtures`);
-const dir = path.resolve(fixtureDir, './dist');
 const fixtures = glob.sync('**/index.js', {
     ignore: ['**/dist/**'],
     cwd: fixtureDir,
@@ -113,14 +112,47 @@ const input = Object.fromEntries(
     fixtures.map((f) => [f.replace('.js', ''), path.resolve(fixtureDir, f)])
 );
 
-beforeAll(async () => {
-    await rm(dir, { recursive: true, force: true });
-    await compileFixture({ input, dir });
+describe.concurrent('default', () => {
+    const dir = path.resolve(fixtureDir, './dist/default');
+    beforeAll(async () => {
+        await rm(dir, { recursive: true, force: true });
+        await compileFixture({ input, dir });
+    });
+    test.for(fixtures)('%s', { concurrent: true }, async (fixture, { expect }) => {
+        const dirname = path.dirname(fixture);
+        const mod: FixtureModule = await import(`./fixtures/dist/default/${fixture}`);
+        const result = await renderComponent(mod, dirname);
+        await Promise.all([
+            expect(formatHTML(result.expected)).toMatchFileSnapshot(
+                `./fixtures/${dirname}/expected.html`
+            ),
+            expect(result.error).toMatchFileSnapshot(`./fixtures/${dirname}/error.txt`),
+        ]);
+    });
 });
 
-test.for(fixtures)('compiled %s', { concurrent: true }, async (fixture, { expect }) => {
-    const mod: FixtureModule = await import(`./fixtures/dist/${fixture}`);
+describe.concurrent('enableStaticContentOptimization=false', () => {
+    const dir = path.resolve(fixtureDir, './dist/static-content-optimization-false');
+    beforeAll(async () => {
+        await rm(dir, { recursive: true, force: true });
+        await compileFixture({ input, dir }, { enableStaticContentOptimization: false });
+    });
+    test.for(fixtures)('%s', { concurrent: true }, async (fixture, { expect }) => {
+        const dirname = path.dirname(fixture);
+        const mod: FixtureModule = await import(
+            `./fixtures/dist/static-content-optimization-false/${fixture}`
+        );
+        const result = await renderComponent(mod, dirname);
+        await Promise.all([
+            expect(formatHTML(result.expected)).toMatchFileSnapshot(
+                `./fixtures/${dirname}/expected.html`
+            ),
+            expect(result.error).toMatchFileSnapshot(`./fixtures/${dirname}/error.txt`),
+        ]);
+    });
+});
 
+async function renderComponent(mod: FixtureModule, dirname: string) {
     const result = { error: '', expected: '' };
 
     mod.features?.forEach((f) => {
@@ -130,7 +162,7 @@ test.for(fixtures)('compiled %s', { concurrent: true }, async (fixture, { expect
     let config = { props: mod.props };
 
     try {
-        config = await import(`./fixtures/${fixture.replace('index.js', 'config.json')}`);
+        config = await import(`./fixtures/${dirname}/config.json`);
     } catch (_error) {
         // ignore missing config
     }
@@ -149,10 +181,5 @@ test.for(fixtures)('compiled %s', { concurrent: true }, async (fixture, { expect
         lwc.setFeatureFlagForTest(f, false);
     });
 
-    await expect(formatHTML(result.expected)).toMatchFileSnapshot(
-        `./fixtures/${fixture.replace('index.js', 'expected.html')}`
-    );
-    await expect(result.error).toMatchFileSnapshot(
-        `./fixtures/${fixture.replace('index.js', 'error.txt')}`
-    );
-});
+    return result;
+}
