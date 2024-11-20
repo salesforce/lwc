@@ -5,11 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { test } from 'vitest';
 import * as glob from 'glob';
-import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
 
 type TestFixtureOutput = { [filename: string]: unknown };
@@ -31,7 +30,7 @@ function getTestOptions(dirname: string) {
     return isOnly ? { only: true } : isSkip ? { skip: true } : {};
 }
 
-export interface TestFixtureConfig extends StyleCompilerConfig {
+export interface TestFixtureConfig {
     /** Component name. */
     name?: string;
     /** Component namespace. */

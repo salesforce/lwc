@@ -285,6 +285,9 @@ importers:
             '@lwc/synthetic-shadow':
                 specifier: 8.9.0
                 version: 8.9.0
+            '@lwc/wire-service':
+                specifier: 8.9.0
+                version: 8.9.0
             '@types/jasmine':
                 specifier: ^5.1.4
                 version: 5.1.4
@@ -686,6 +689,8 @@ importers:
             rollup-plugin-serve:
                 specifier: ^3.0.0
                 version: 3.0.0
+
+    scripts/test-utils: {}
 
 packages:
     '@ampproject/remapping@2.3.0':
