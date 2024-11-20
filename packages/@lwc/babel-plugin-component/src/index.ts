@@ -16,7 +16,7 @@ import dynamicImports from './dynamic-imports';
 import scopeCssImports from './scope-css-imports';
 import compilerVersionNumber from './compiler-version-number';
 import { getEngineImportSpecifiers } from './utils';
-import { BabelAPI, LwcBabelPluginPass } from './types';
+import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { PluginObj } from '@babel/core';
 
 // This is useful for consumers of this package to define their options

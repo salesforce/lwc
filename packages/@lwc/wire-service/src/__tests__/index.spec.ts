@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { vi, describe, it, expect } from 'vitest';
-import { register, WireEventTarget, ValueChangedEvent } from '../index';
+import { register, ValueChangedEvent } from '../index';
+import type { WireEventTarget } from '../index';
 
 describe('WireEventTarget from register', () => {
     describe('connected', () => {

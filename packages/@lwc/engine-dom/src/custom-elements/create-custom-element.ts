@@ -6,16 +6,14 @@
  */
 import { isUndefined, isTrue } from '@lwc/shared';
 import {
-    LifecycleCallback,
     connectRootElement,
     disconnectRootElement,
     runFormAssociatedCallback,
     runFormDisabledCallback,
     runFormResetCallback,
     runFormStateRestoreCallback,
-    FormRestoreState,
-    FormRestoreReason,
 } from '@lwc/engine-core';
+import type { LifecycleCallback, FormRestoreState, FormRestoreReason } from '@lwc/engine-core';
 
 const cachedConstructors = new Map<string, CustomElementConstructor>();
 const nativeLifecycleElementsToUpgradedByLWC = new WeakMap<HTMLElement, boolean>();

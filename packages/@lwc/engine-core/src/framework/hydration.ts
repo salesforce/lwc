@@ -27,7 +27,6 @@ import {
 
 import { logWarn } from '../shared/logger';
 
-import { RendererAPI } from './renderer';
 import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
@@ -35,15 +34,22 @@ import {
     runConnectedCallback,
     VMState,
     RenderMode,
-    VM,
     runRenderedCallback,
     resetRefVNodes,
 } from './vm';
-import {
+import { VNodeType, isVStaticPartElement } from './vnodes';
+
+import { patchProps } from './modules/props';
+import { applyEventListeners } from './modules/events';
+import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
+import { getScopeTokenClass } from './stylesheet';
+import { renderComponent } from './component';
+import { applyRefs } from './modules/refs';
+import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
+import type {
     VNodes,
     VBaseElement,
     VNode,
-    VNodeType,
     VText,
     VComment,
     VElement,
@@ -53,16 +59,9 @@ import {
     VElementData,
     VStaticPartData,
     VStaticPartText,
-    isVStaticPartElement,
 } from './vnodes';
-
-import { patchProps } from './modules/props';
-import { applyEventListeners } from './modules/events';
-import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
-import { getScopeTokenClass } from './stylesheet';
-import { renderComponent } from './component';
-import { applyRefs } from './modules/refs';
-import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
+import type { VM } from './vm';
+import type { RendererAPI } from './renderer';
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {

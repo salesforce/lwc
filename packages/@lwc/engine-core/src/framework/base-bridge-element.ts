@@ -29,7 +29,7 @@ import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor, HTMLElementPrototype } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { LightningElement } from './base-lightning-element';
+import type { LightningElement } from './base-lightning-element';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.

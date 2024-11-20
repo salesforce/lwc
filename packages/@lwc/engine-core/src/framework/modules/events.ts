@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { RendererAPI } from '../renderer';
-import { VBaseElement, VStaticPartElement } from '../vnodes';
+import type { RendererAPI } from '../renderer';
+import type { VBaseElement, VStaticPartElement } from '../vnodes';
 
 export function applyEventListeners(
     vnode: VBaseElement | VStaticPartElement,

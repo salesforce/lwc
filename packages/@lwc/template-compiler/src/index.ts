@@ -4,20 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    CompilerDiagnostic,
-    DiagnosticLevel,
-    normalizeToDiagnostic,
-    ParserDiagnostics,
-} from '@lwc/errors';
+import { DiagnosticLevel, normalizeToDiagnostic, ParserDiagnostics } from '@lwc/errors';
 
 import State from './state';
-import { normalizeConfig, Config } from './config';
+import { normalizeConfig } from './config';
 
 import parseTemplate from './parser';
 import generate from './codegen';
+import type { Config } from './config';
+import type { CompilerDiagnostic } from '@lwc/errors';
 
-import { Root, TemplateCompileResult, TemplateParseResult } from './shared/types';
+import type { Root, TemplateCompileResult, TemplateParseResult } from './shared/types';
 
 export * from './shared/types';
 export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';

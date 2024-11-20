@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { WireContextSubscriptionCallback } from '@lwc/engine-core';
+import type { WireContextSubscriptionCallback } from '@lwc/engine-core';
 
 // We use Symbols as the keys for HostElement properties to avoid conflicting
 // with public component properties defined by a component author.

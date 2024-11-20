@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { HTML_NAMESPACE } from '@lwc/shared';
-import { Token as parse5TokenInfo } from 'parse5';
-import {
+import type { Token as parse5TokenInfo } from 'parse5';
+import type {
     Literal,
     SourceLocation,
     Element,

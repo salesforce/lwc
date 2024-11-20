@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { createVM, connectRootElement, LightningElement } from '@lwc/engine-core';
+import { createVM, connectRootElement } from '@lwc/engine-core';
 import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/shared';
 
 import { renderer } from '../renderer';
@@ -12,7 +12,6 @@ import { serializeElement } from '../serializer';
 import {
     HostAttributesKey,
     HostChildrenKey,
-    HostElement,
     HostNamespaceKey,
     HostNodeType,
     HostParentKey,
@@ -20,6 +19,8 @@ import {
     HostTypeKey,
     HostContextProvidersKey,
 } from '../types';
+import type { HostElement } from '../types';
+import type { LightningElement } from '@lwc/engine-core';
 
 const FakeRootElement: HostElement = {
     [HostTypeKey]: HostNodeType.Element,

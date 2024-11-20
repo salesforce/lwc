@@ -26,7 +26,8 @@ import {
 } from './utils';
 import { NoLwcModuleFound, LwcConfigError } from './errors';
 
-import {
+import { RegistryType } from './types';
+import type {
     RegistryEntry,
     AliasModuleRecord,
     InnerResolverOptions,
@@ -34,7 +35,6 @@ import {
     DirModuleRecord,
     ModuleResolverConfig,
     NpmModuleRecord,
-    RegistryType,
 } from './types';
 
 function resolveModuleFromAlias(

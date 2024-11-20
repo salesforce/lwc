@@ -37,6 +37,14 @@ const visitors: Visitors = {
         catalogAndReplaceStyleImports(path, state);
         removeDecoratorImport(path);
     },
+    ImportExpression(path) {
+        return path.replaceWith(
+            b.callExpression(
+                b.memberExpression(b.identifier('Promise'), b.identifier('resolve')),
+                []
+            )
+        );
+    },
     ClassDeclaration(path, state) {
         const { node } = path;
         if (!node?.superClass) {
