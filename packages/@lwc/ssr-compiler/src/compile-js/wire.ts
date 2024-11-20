@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is, builders as b } from 'estree-toolkit';
+import { is, builders as b, NodePath } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isValidIdentifier } from '../shared';
 
@@ -57,10 +57,12 @@ function extractWireConfig(
 }
 
 export function catalogWireAdapters(
+    path: NodePath<PropertyDefinition | MethodDefinition>,
     state: ComponentMetaState,
-    node: PropertyDefinition | MethodDefinition
 ) {
+    const node = path.node!;
     const { decorators } = node;
+
     if (decorators.length > 1) {
         throw new Error('todo - multiple decorators at once');
     }
@@ -81,6 +83,8 @@ export function catalogWireAdapters(
         throw new Error('todo - spread in params');
     }
 
+    let wireBinding;
+
     // validate id
     if (is.memberExpression(id)) {
         if (id.computed) {
@@ -89,11 +93,17 @@ export function catalogWireAdapters(
         if (!is.identifier(id.object)) {
             throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS');
         }
+        wireBinding = id.object.name;
     } else if (!is.identifier(id)) {
         throw new Error('todo - invalid adapter name');
+    } else {
+        wireBinding = id.name;
     }
 
-    // FIXME: Validate that wire adapter is imported
+    // This is not the exact same validation done in @lwc/babel-plugin-component but it accomplishes the same thing
+    if (path.scope?.getBinding(wireBinding)?.kind !== 'module') {
+        throw new Error('todo - WIRE_ADAPTER_SHOULD_BE_IMPORTED');
+    }
 
     // conditionally valid the config
 
