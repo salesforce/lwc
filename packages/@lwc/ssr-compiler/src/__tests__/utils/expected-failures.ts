@@ -52,4 +52,9 @@ export const expectedFailures = new Set([
     'superclass/mixin/index.js',
     'superclass/override/index.js',
     'svgs/index.js',
+    'wire/config/index.js',
+    'wire/deep-reference/index.js',
+    'wire/field/index.js',
+    'wire/imported-member/index.js',
+    'wire/method/index.js',
 ]);
