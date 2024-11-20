@@ -65,11 +65,8 @@ const bGenerateMarkup = esTemplate`
         yield* tmplFn(props, attrs, slotted, ${/*component class*/ 3}, instance);
         yield \`</\${tagName}>\`;
     }
-`<ExportNamedDeclaration>;
-
-const bAssignGenerateMarkupToComponentClass = esTemplate`
-${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-`<ExpressionStatement>;
+    ${/*component class*/ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+`<[ExportNamedDeclaration, ExpressionStatement]>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -118,17 +115,18 @@ export function addGenerateMarkupExport(
 
     program.body.unshift(
         bImportDeclaration({
+            establishContextfulRelationship: '__establishContextfulRelationship',
             fallbackTmpl: '__fallbackTmpl',
             filterProperties: '__filterProperties',
             hasScopedStaticStylesheets: undefined,
             mutationTracker: '__mutationTracker',
             renderAttrs: '__renderAttrs',
+            SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
             SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
-            establishContextfulRelationship: '__establishContextfulRelationship',
         })
     );
     program.body.push(
-        bGenerateMarkup(
+        ...bGenerateMarkup(
             defaultTagName,
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
@@ -137,15 +135,4 @@ export function addGenerateMarkupExport(
             renderCall
         )
     );
-}
-
-/**
- * Attach the `generateMarkup` function to the Component class so that it can be found later
- * during `renderComponent`.
- */
-export function assignGenerateMarkupToComponent(program: Program, state: ComponentMetaState) {
-    program.body.unshift(
-        bImportDeclaration({ SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP' })
-    );
-    program.body.push(bAssignGenerateMarkupToComponentClass(b.identifier(state.lwcClassName!)));
 }

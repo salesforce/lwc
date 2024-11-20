@@ -13,7 +13,7 @@ import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
-import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './generate-markup';
+import { addGenerateMarkupExport } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
@@ -191,7 +191,6 @@ export default function compileJS(
     }
 
     addGenerateMarkupExport(ast, state, tagName, filename);
-    assignGenerateMarkupToComponent(ast, state);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);
