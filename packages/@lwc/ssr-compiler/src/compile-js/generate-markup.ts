@@ -43,10 +43,9 @@ const bGenerateMarkup = esTemplate`
             tagName: tagName.toUpperCase(),
         });
 
-        __establishContextfulRelationship(parent, instance);
         ${/*connect wire*/ is.statement}
 
-        instance[__SYMBOL__SET_INTERNALS](props, attrs);
+        instance[__SYMBOL__SET_INTERNALS](props, attrs, parent);
         instance.isConnected = true;
         if (instance.connectedCallback) {
             __mutationTracker.enable(instance);
@@ -116,7 +115,6 @@ export function addGenerateMarkupExport(
 
     program.body.unshift(
         bImportDeclaration({
-            establishContextfulRelationship: '__establishContextfulRelationship',
             fallbackTmpl: '__fallbackTmpl',
             filterProperties: '__filterProperties',
             hasScopedStaticStylesheets: undefined,
