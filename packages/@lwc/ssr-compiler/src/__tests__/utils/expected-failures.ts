@@ -51,8 +51,6 @@ export const expectedFailures = new Set([
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
     'svgs/index.js',
-    'wire/config/index.js',
-    'wire/deep-reference/index.js',
     'wire/errors/throws-when-computed-prop-is-expression/index.js',
     'wire/errors/throws-when-computed-prop-is-let-variable/index.js',
     'wire/errors/throws-when-computed-prop-is-regexp-literal/index.js',
@@ -61,7 +59,4 @@ export const expectedFailures = new Set([
     'wire/errors/throws-when-wired-method-is-combined-with-@api/index.js',
     'wire/errors/throws-when-wired-property-is-combined-with-@api/index.js',
     'wire/errors/throws-when-wired-property-is-combined-with-@track/index.js',
-    'wire/field/index.js',
-    'wire/imported-member/index.js',
-    'wire/method/index.js',
 ]);
