@@ -117,7 +117,7 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
-            catalogWireAdapters(state, node);
+            catalogWireAdapters(path, state);
         }
 
         switch (node.key.name) {
