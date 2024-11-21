@@ -695,7 +695,11 @@ importers:
                 specifier: ^3.0.0
                 version: 3.0.0
 
-    scripts/test-utils: {}
+    scripts/test-utils:
+        dependencies:
+            '@lwc/shared':
+                specifier: workspace:*
+                version: link:../../packages/@lwc/shared
 
 packages:
     '@ampproject/remapping@2.3.0':

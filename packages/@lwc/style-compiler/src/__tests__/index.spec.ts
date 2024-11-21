@@ -40,7 +40,7 @@ describe('fixtures', () => {
             let error;
 
             try {
-                result = transform(src, filename, config);
+                result = transform(src, filename, config as any);
             } catch (err: any) {
                 error = JSON.stringify(normalizeError(err), null, 4);
             }

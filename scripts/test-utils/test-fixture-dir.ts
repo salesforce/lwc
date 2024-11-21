@@ -9,7 +9,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'vitest';
 import * as glob from 'glob';
-import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
 
 type TestFixtureOutput = { [filename: string]: unknown };
@@ -31,7 +30,7 @@ function getTestOptions(dirname: string) {
     return isOnly ? { only: true } : isSkip ? { skip: true } : {};
 }
 
-export interface TestFixtureConfig extends StyleCompilerConfig {
+export interface TestFixtureConfig {
     /** Component name. */
     name?: string;
     /** Component namespace. */
@@ -82,7 +81,7 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
  *   }
  * )
  */
-export function testFixtureDir<T extends TestFixtureConfig>(
+export function testFixtureDir(
     config: {
         pattern: string;
         root: string;
@@ -92,7 +91,7 @@ export function testFixtureDir<T extends TestFixtureConfig>(
         src: string;
         filename: string;
         dirname: string;
-        config?: T;
+        config?: TestFixtureConfig;
     }) => TestFixtureOutput | Promise<TestFixtureOutput>
 ) {
     if (typeof config !== 'object' || config === null) {
@@ -116,7 +115,7 @@ export function testFixtureDir<T extends TestFixtureConfig>(
     for (const filename of matches) {
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
-        const fixtureConfig = getFixtureConfig<T>(dirname);
+        const fixtureConfig = getFixtureConfig(dirname);
         const relpath = path.relative(root, filename);
         const options = getTestOptions(dirname);
         const fails = config.expectedFailures?.has(relpath);
