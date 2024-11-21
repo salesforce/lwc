@@ -6,7 +6,7 @@
  */
 
 import { isArray } from './language';
-import { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
+import type { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
 
 export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;

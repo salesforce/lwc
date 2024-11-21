@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { types } from '@babel/core';
-import { NodePath } from '@babel/traverse';
 import { DECORATOR_TYPES, LWC_COMPONENT_PROPERTIES } from '../../constants';
-import { DecoratorMeta } from '../index';
-import { BabelTypes } from '../../types';
-import { ClassBodyItem } from '../types';
 import { isApiDecorator } from './shared';
+import type { types } from '@babel/core';
+import type { NodePath } from '@babel/traverse';
+import type { DecoratorMeta } from '../index';
+import type { BabelTypes } from '../../types';
+import type { ClassBodyItem } from '../types';
 
 const { PUBLIC_PROPS, PUBLIC_METHODS } = LWC_COMPONENT_PROPERTIES;
 

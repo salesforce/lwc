@@ -5,9 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { traverse, Visitors } from 'estree-toolkit';
+import { traverse } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
+import type { Visitors } from 'estree-toolkit';
 import type {
     Node as EsNode,
     Program as EsProgram,

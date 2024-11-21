@@ -8,9 +8,10 @@
 import path from 'node:path';
 import { vi, describe, beforeEach, afterEach } from 'vitest';
 import { rollup } from 'rollup';
-import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
+import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
+import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -150,6 +151,8 @@ function testFixtures(options?: RollupLwcOptions) {
 
 describe.concurrent('fixtures', () => {
     beforeEach(() => {
+        // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
+        // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
         setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
     });
 

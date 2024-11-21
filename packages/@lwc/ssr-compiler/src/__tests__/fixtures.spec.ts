@@ -9,11 +9,11 @@ import path from 'node:path';
 import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import { DEFAULT_SSR_MODE } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
+import type { FeatureFlagName } from '@lwc/features/dist/types';
 import type { CompilationMode } from '../index';
 
 interface FixtureModule {

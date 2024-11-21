@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { attribute, combinator, Root, isCombinator } from 'postcss-selector-parser';
+import { attribute, combinator, isCombinator } from 'postcss-selector-parser';
 import { isDirPseudoClass } from '../utils/rtl';
 import {
     DIR_ATTRIBUTE_NATIVE_LTR,
@@ -12,6 +12,7 @@ import {
     DIR_ATTRIBUTE_SYNTHETIC_LTR,
     DIR_ATTRIBUTE_SYNTHETIC_RTL,
 } from '../utils/dir-pseudoclass';
+import type { Root } from 'postcss-selector-parser';
 
 function isValidDirValue(value: string): boolean {
     return value === 'ltr' || value === 'rtl';

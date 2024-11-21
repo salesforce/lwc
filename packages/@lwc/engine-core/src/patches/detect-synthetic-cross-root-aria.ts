@@ -22,8 +22,9 @@ import {
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
-import { getAssociatedVMIfPresent, VM } from '../framework/vm';
+import { getAssociatedVMIfPresent } from '../framework/vm';
 import { logWarnOnce } from '../shared/logger';
+import type { VM } from '../framework/vm';
 
 //
 // The goal of this code is to detect invalid cross-root ARIA references in synthetic shadow DOM.

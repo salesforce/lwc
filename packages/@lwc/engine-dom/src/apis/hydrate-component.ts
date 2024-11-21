@@ -7,7 +7,6 @@
 
 import {
     createVM,
-    LightningElement,
     hydrateRoot,
     connectRootElement,
     getAssociatedVMIfPresent,
@@ -15,6 +14,7 @@ import {
 } from '@lwc/engine-core';
 import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
+import type { LightningElement } from '@lwc/engine-core';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
     if (element.shadowRoot) {

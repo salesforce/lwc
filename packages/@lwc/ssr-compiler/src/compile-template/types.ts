@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { Node as IrNode } from '@lwc/template-compiler';
+import type { Node as IrNode } from '@lwc/template-compiler';
 import type { Statement as EsStatement } from 'estree';
 
 export type Transformer<T extends IrNode = IrNode> = (

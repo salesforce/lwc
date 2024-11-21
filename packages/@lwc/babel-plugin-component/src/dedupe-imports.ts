@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { types } from '@babel/core';
-import { NodePath } from '@babel/traverse';
-import { BabelAPI, BabelTypes } from './types';
+import type { types } from '@babel/core';
+import type { NodePath } from '@babel/traverse';
+import type { BabelAPI, BabelTypes } from './types';
 
 function defaultImport(
     t: BabelTypes,

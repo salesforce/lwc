@@ -4,15 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Rule, AtRule, TransformCallback } from 'postcss';
 import postCssSelector from 'postcss-selector-parser';
-import { APIVersion } from '@lwc/shared';
 
 import validateIdSelectors from './no-id-selectors/validate';
 import transformImport from './css-import/transform';
-import transformSelectorScoping, { SelectorScopingConfig } from './selector-scoping/transform';
+import transformSelectorScoping from './selector-scoping/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
 import transformAtRules from './scope-at-rules/transform';
+import type { SelectorScopingConfig } from './selector-scoping/transform';
+import type { APIVersion } from '@lwc/shared';
+import type { Rule, AtRule, TransformCallback } from 'postcss';
 
 function shouldTransformSelector(rule: Rule) {
     // @keyframe at-rules are special, rules inside are not standard selectors and should not be

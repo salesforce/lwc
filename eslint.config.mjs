@@ -62,6 +62,7 @@ export default tseslint.config(
         rules: {
             // Rules without config, sorted alphabetically by namespace, then rule
             '@lwc/lwc-internal/no-invalid-todo': 'error',
+            '@typescript-eslint/consistent-type-imports': 'error',
             '@typescript-eslint/no-base-to-string': 'off',
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-redundant-type-constituents': 'off',

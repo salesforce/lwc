@@ -7,6 +7,8 @@
 
 import { inspect } from 'util';
 
+import { is, builders as b } from 'estree-toolkit';
+import { esTemplate } from '../estemplate';
 import { Comment } from './transformers/comment';
 import { Component } from './transformers/component';
 import { Element } from './transformers/element';
@@ -17,14 +19,17 @@ import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';
 import { createNewContext } from './context';
 import { LwcComponent } from './transformers/lwc-component';
-
 import type {
     ChildNode as IrChildNode,
     Node as IrNode,
     Root as IrRoot,
 } from '@lwc/template-compiler';
-import type { Statement as EsStatement } from 'estree';
+import type { Statement as EsStatement, ThrowStatement as EsThrowStatement } from 'estree';
 import type { TemplateOpts, Transformer, TransformerContext } from './types';
+
+const bThrowError = esTemplate`
+  throw new Error(${is.literal});
+`<EsThrowStatement>;
 
 const Root: Transformer<IrRoot> = function Root(node, cxt): EsStatement[] {
     return irChildrenToEs(node.children, cxt);
@@ -75,9 +80,13 @@ export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext)
 
 export function irToEs<T extends IrNode>(node: T, cxt: TransformerContext): EsStatement[] {
     if ('directives' in node && node.directives.some((d) => d.name === 'Dynamic')) {
-        throw new Error(
-            'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
-        );
+        return [
+            bThrowError(
+                b.literal(
+                    'The lwc:dynamic directive is not supported for SSR. Use <lwc:component> instead.'
+                )
+            ),
+        ];
     }
     const transformer = transformers[node.type] as Transformer<T>;
     return transformer(node, cxt);

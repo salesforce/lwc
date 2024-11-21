@@ -5,24 +5,22 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { createContextProviderWithRegister, getAssociatedVMIfPresent } from '@lwc/engine-core';
+import { isUndefined, isNull } from '@lwc/shared';
 import {
-    createContextProviderWithRegister,
-    getAssociatedVMIfPresent,
+    HostNodeType,
+    HostTypeKey,
+    HostParentKey,
+    HostHostKey,
+    HostContextProvidersKey,
+} from './types';
+import type { HostElement, HostParentNode } from './types';
+import type {
     LightningElement,
     WireAdapterConstructor,
     WireContextSubscriptionPayload,
     WireContextSubscriptionCallback,
 } from '@lwc/engine-core';
-import { isUndefined, isNull } from '@lwc/shared';
-import {
-    HostElement,
-    HostNodeType,
-    HostTypeKey,
-    HostParentKey,
-    HostParentNode,
-    HostHostKey,
-    HostContextProvidersKey,
-} from './types';
 
 export function createContextProvider(adapter: WireAdapterConstructor) {
     return createContextProviderWithRegister(adapter, registerContextProvider);

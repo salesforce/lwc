@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull, isString, isUndefined } from '@lwc/shared';
-import { RendererAPI } from '../renderer';
-import { VBaseElement, VStaticPartElement } from '../vnodes';
 import { logError } from '../../shared/logger';
-import { VM } from '../vm';
+import type { RendererAPI } from '../renderer';
+import type { VBaseElement, VStaticPartElement } from '../vnodes';
+import type { VM } from '../vm';
 
 // The style property is a string when defined via an expression in the template.
 export function patchStyleAttribute(

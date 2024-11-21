@@ -18,13 +18,15 @@ import {
     type Element as IrElement,
     type Literal as IrLiteral,
     type Property as IrProperty,
-    ExternalComponent as IrExternalComponent,
-    Slot as IrSlot,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
 import { getScopedExpression, normalizeClassAttributeValue } from '../shared';
+import type {
+    ExternalComponent as IrExternalComponent,
+    Slot as IrSlot,
+} from '@lwc/template-compiler';
 
 import type {
     BinaryExpression,

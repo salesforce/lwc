@@ -5,12 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import lineColumn from 'line-column';
-import { types } from '@babel/core';
-import { NodePath } from '@babel/traverse';
-import { CompilerMetrics, generateErrorMessage } from '@lwc/errors';
+import { generateErrorMessage } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
-import { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
-import { LwcBabelPluginPass } from './types';
+import type { types } from '@babel/core';
+import type { NodePath } from '@babel/traverse';
+import type { CompilerMetrics } from '@lwc/errors';
+import type { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
+import type { LwcBabelPluginPass } from './types';
 
 function isClassMethod(
     classMethod: NodePath<types.Node>,

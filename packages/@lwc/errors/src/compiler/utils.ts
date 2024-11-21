@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Location, DiagnosticLevel } from '../shared/types';
+import { DiagnosticLevel } from '../shared/types';
+import type { Location } from '../shared/types';
 
 export interface CompilerDiagnosticOrigin {
     filename?: string;
