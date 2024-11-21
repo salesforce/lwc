@@ -8,8 +8,7 @@ import { DecoratorErrors } from '@lwc/errors';
 import { LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
 import { isWireDecorator } from './shared';
-import type { types } from '@babel/core';
-import type { NodePath } from '@babel/traverse';
+import type { types, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from '../../types';
 import type { DecoratorMeta } from '../index';
 
@@ -26,9 +25,7 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    const isMemberExpression = id.isMemberExpression();
-
-    if (!id.isIdentifier() && !isMemberExpression) {
+    if (!id.isIdentifier() && !id.isMemberExpression()) {
         throw generateError(
             id,
             {
@@ -38,7 +35,7 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    if (id.isMemberExpression({ computed: true })) {
+    if (id.isMemberExpression() && id.node.computed) {
         throw generateError(
             id,
             {
@@ -49,45 +46,56 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
     }
 
     // TODO [#3444]: improve member expression computed typechecking
-    // @ts-expect-error type narrowing incorrectly reduces id to `never`
-    if (isMemberExpression && !id.get('object').isIdentifier()) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
-            },
-            state
-        );
-    }
+    if (id.isMemberExpression()) {
+        const object = id.get('object');
 
-    // TODO [#3444]: improve member expression computed typechecking
-    // Ensure wire adapter is imported (check for member expression or identifier)
-    // @ts-expect-error type narrowing incorrectly reduces id to `never`
-    const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
-    if (!path.scope.getBinding(wireBinding)) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
-                messageArgs: [id.node.name],
-            },
-            state
-        );
-    }
+        if (!object.isIdentifier()) {
+            throw generateError(
+                id,
+                {
+                    errorInfo:
+                        DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
+                },
+                state
+            );
+        }
 
-    // ensure wire adapter is a first parameter
-    if (
-        wireBinding &&
-        !path.scope.getBinding(wireBinding)!.path.isImportSpecifier() &&
-        !path.scope.getBinding(wireBinding)!.path.isImportDefaultSpecifier()
-    ) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
-            },
-            state
-        );
+        const name = object.node.name;
+
+        if (!path.scope.hasBinding(name)) {
+            throw generateError(
+                id,
+                {
+                    errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
+                    messageArgs: [name],
+                },
+                state
+            );
+        }
+    } else {
+        const binding = path.scope.getBinding(id.node.name);
+
+        if (!binding) {
+            throw generateError(
+                id,
+                {
+                    errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
+                    messageArgs: [id.node.name],
+                },
+                state
+            );
+        }
+
+        if (!binding.path.isImportSpecifier() && !binding.path.isImportDefaultSpecifier()) {
+            throw generateError(
+                id,
+                {
+                    errorInfo:
+                        DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
+                },
+                state
+            );
+        }
     }
 }
 

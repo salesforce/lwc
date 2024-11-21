@@ -6,8 +6,7 @@
  */
 import { DECORATOR_TYPES, LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { isApiDecorator } from './shared';
-import type { types } from '@babel/core';
-import type { NodePath } from '@babel/traverse';
+import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
 import type { BabelTypes } from '../../types';
 import type { ClassBodyItem } from '../types';

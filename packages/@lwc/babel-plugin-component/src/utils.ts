@@ -7,8 +7,7 @@
 import lineColumn from 'line-column';
 import { generateErrorMessage } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
-import type { types } from '@babel/core';
-import type { NodePath } from '@babel/traverse';
+import type { types, NodePath } from '@babel/core';
 import type { CompilerMetrics } from '@lwc/errors';
 import type { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
 import type { LwcBabelPluginPass } from './types';

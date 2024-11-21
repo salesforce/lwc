@@ -6,8 +6,7 @@
  */
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { isWireDecorator } from './shared';
-import type { types } from '@babel/core';
-import type { NodePath, Scope } from '@babel/traverse';
+import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
 import type { BabelTypes } from '../../types';
 import type { BindingOptions } from '../types';
@@ -213,42 +212,47 @@ const SUPPORTED_VALUE_TO_TYPE_MAP = {
     BooleanLiteral: 'boolean',
 };
 
-const scopedReferenceLookup = (scope: Scope) => (name: string) => {
-    const binding = scope.getBinding(name);
+const scopedReferenceLookup =
+    ({ scope }: NodePath) =>
+    (name: string) => {
+        const binding = scope.getBinding(name);
 
-    let type;
-    let value;
+        let type;
+        let value;
 
-    if (binding) {
-        if (binding.kind === 'module') {
-            // Resolves module import to the name of the module imported
-            // e.g. import { foo } from 'bar' gives value 'bar' for `name == 'foo'
-            const parentPathNode = binding.path.parentPath!.node as types.ImportDeclaration;
-            if (parentPathNode && parentPathNode.source) {
-                type = 'module';
-                value = parentPathNode.source.value;
-            }
-        } else if (binding.kind === 'const') {
-            // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
-            const init = (binding.path.node as BindingOptions).init;
-            if (
-                init &&
-                SUPPORTED_VALUE_TO_TYPE_MAP[init.type as keyof typeof SUPPORTED_VALUE_TO_TYPE_MAP]
-            ) {
-                type =
+        if (binding) {
+            if (binding.kind === 'module') {
+                // Resolves module import to the name of the module imported
+                // e.g. import { foo } from 'bar' gives value 'bar' for `name == 'foo'
+                const parentPathNode = binding.path.parentPath!.node as types.ImportDeclaration;
+                if (parentPathNode && parentPathNode.source) {
+                    type = 'module';
+                    value = parentPathNode.source.value;
+                }
+            } else if (binding.kind === 'const') {
+                // Resolves `const foo = 'text';` references to value 'text', where `name == 'foo'`
+                const init = (binding.path.node as BindingOptions).init;
+                if (
+                    init &&
                     SUPPORTED_VALUE_TO_TYPE_MAP[
                         init.type as keyof typeof SUPPORTED_VALUE_TO_TYPE_MAP
-                    ];
-                value = (init as types.StringLiteral | types.NumericLiteral | types.BooleanLiteral)
-                    .value;
+                    ]
+                ) {
+                    type =
+                        SUPPORTED_VALUE_TO_TYPE_MAP[
+                            init.type as keyof typeof SUPPORTED_VALUE_TO_TYPE_MAP
+                        ];
+                    value = (
+                        init as types.StringLiteral | types.NumericLiteral | types.BooleanLiteral
+                    ).value;
+                }
             }
         }
-    }
-    return {
-        type,
-        value,
+        return {
+            type,
+            value,
+        };
     };
-};
 
 type WiredValue = {
     propertyName: string;
@@ -285,7 +289,7 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
             wiredValue.params = getWiredParams(t, config);
         }
 
-        const referenceLookup = scopedReferenceLookup(path.scope);
+        const referenceLookup = scopedReferenceLookup(path);
         const isMemberExpression = id.isMemberExpression();
         const isIdentifier = id.isIdentifier();
 

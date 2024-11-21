@@ -13,8 +13,7 @@ import api from './api';
 import wire from './wire';
 import track from './track';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
-import type { Binding, NodePath } from '@babel/traverse';
-import type { Node, types, Visitor } from '@babel/core';
+import type { Node, types, Visitor, NodePath } from '@babel/core';
 import type { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
@@ -127,14 +126,6 @@ function validateImportedLwcDecoratorUsage(
         });
 }
 
-function isImportedFromLwcSource(decoratorBinding: Binding) {
-    const bindingPath = decoratorBinding.path;
-    return (
-        bindingPath.isImportSpecifier() &&
-        (bindingPath.parent as types.ImportDeclaration).source.value === 'lwc'
-    );
-}
-
 /**
  * Validate the usage of decorator by calling each validation function
  * @param decorators
@@ -143,11 +134,23 @@ function isImportedFromLwcSource(decoratorBinding: Binding) {
 function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     for (const { name, path } of decorators) {
         const binding = path.scope.getBinding(name);
-        if (binding === undefined || !isImportedFromLwcSource(binding)) {
+        if (!binding || validateBinding(binding.path)) {
             throw generateInvalidDecoratorError(path, state);
         }
     }
     DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators, state));
+}
+
+function validateBinding(path: NodePath) {
+    if (path.isImportSpecifier()) {
+        return false;
+    }
+
+    if (path.parent.type !== 'ImportDeclaration') {
+        return false;
+    }
+
+    return path.parent.source.value === 'lwc';
 }
 
 /**
