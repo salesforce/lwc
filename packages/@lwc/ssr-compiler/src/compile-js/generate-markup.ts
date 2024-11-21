@@ -20,6 +20,7 @@ import type {
     MemberExpression,
     Statement,
     ExpressionStatement,
+    IfStatement,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -52,7 +53,7 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
+        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
@@ -65,11 +66,14 @@ const bGenerateMarkup = esTemplate`
         yield* tmplFn(props, attrs, slotted, ${/*component class*/ 3}, instance);
         yield \`</\${tagName}>\`;
     }
-`<ExportNamedDeclaration>;
+    ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+`<[ExportNamedDeclaration, ExpressionStatement]>;
 
-const bAssignGenerateMarkupToComponentClass = esTemplate`
-${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-`<ExpressionStatement>;
+const bExposeTemplate = esTemplate`
+    if (${/*template*/ is.identifier}) {
+        ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ 0}
+    }
+`<IfStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -97,16 +101,22 @@ export function addGenerateMarkupExport(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
+    const tmplVar = b.identifier('tmpl');
     const renderCall = hasRenderMethod
         ? (b.callExpression(
               b.memberExpression(b.identifier('instance'), b.identifier('render')),
               []
           ) as RenderCallExpression)
-        : b.identifier('tmpl');
+        : tmplVar;
 
+    let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(bImportDeclaration({ default: 'tmpl' }, defaultTmplPath));
+        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
+        program.body.unshift(
+            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
+        );
+        exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
     }
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
@@ -123,12 +133,13 @@ export function addGenerateMarkupExport(
             hasScopedStaticStylesheets: undefined,
             mutationTracker: '__mutationTracker',
             renderAttrs: '__renderAttrs',
+            SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
             SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
             establishContextfulRelationship: '__establishContextfulRelationship',
         })
     );
     program.body.push(
-        bGenerateMarkup(
+        ...bGenerateMarkup(
             defaultTagName,
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
@@ -137,15 +148,8 @@ export function addGenerateMarkupExport(
             renderCall
         )
     );
-}
 
-/**
- * Attach the `generateMarkup` function to the Component class so that it can be found later
- * during `renderComponent`.
- */
-export function assignGenerateMarkupToComponent(program: Program, state: ComponentMetaState) {
-    program.body.unshift(
-        bImportDeclaration({ SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP' })
-    );
-    program.body.push(bAssignGenerateMarkupToComponentClass(b.identifier(state.lwcClassName!)));
+    if (exposeTemplateBlock) {
+        program.body.push(exposeTemplateBlock);
+    }
 }

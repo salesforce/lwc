@@ -97,7 +97,7 @@ const getReplacementNode = (
             validateReplacement.name ||
             '(could not determine)';
         const actualType = Array.isArray(replacementNode)
-            ? `[${replacementNode.map((n) => n.type)}.join(', ')]`
+            ? `[${replacementNode.map((n) => n && n.type)}.join(', ')]`
             : replacementNode?.type;
         throw new Error(
             `Validation failed for templated node. Expected type ${expectedType}, but received ${actualType}.`
