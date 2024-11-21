@@ -28,8 +28,6 @@ export const expectedFailures = new Set([
     'attribute-style/basic/index.js',
     'attribute-style/dynamic/index.js',
     'comments-text-preserve-off/index.js',
-    'dynamic-components/slots/shadow/index.js',
-    'dynamic-components/slots/light/index.js',
     'dynamic-slots/index.js',
     'empty-text-with-comments-non-static-optimized/index.js',
     'if-conditional-slot-content/index.js',
@@ -49,7 +47,5 @@ export const expectedFailures = new Set([
     'slot-not-at-top-level/ifTrue/shadow/index.js',
     'slot-not-at-top-level/lwcIf/light/index.js',
     'slot-not-at-top-level/lwcIf/shadow/index.js',
-    'superclass/mixin/index.js',
-    'superclass/override/index.js',
     'svgs/index.js',
 ]);
