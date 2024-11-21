@@ -5,9 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is, builders as b, NodePath } from 'estree-toolkit';
+import { is, builders as b } from 'estree-toolkit';
 import { produce } from 'immer';
 import { esTemplate } from '../estemplate';
+import type { NodePath } from 'estree-toolkit';
 
 import type {
     PropertyDefinition,
