@@ -8,7 +8,7 @@
 import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-import { isIdentOrRenderCall } from '../estree/validators';
+import { isIdentOrRenderCall, isNullableOf } from '../estree/validators';
 import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
@@ -51,7 +51,7 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
+        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
@@ -65,7 +65,12 @@ const bGenerateMarkup = esTemplate`
         yield \`</\${tagName}>\`;
     }
     ${/*component class*/ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+    ${/* conditional expose template */ isNullableOf(is.expressionStatement)}
 `<[ExportNamedDeclaration, ExpressionStatement]>;
+
+const bExposeTemplate = esTemplate`
+    ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ is.identifier}
+`<ExpressionStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -93,16 +98,22 @@ export function addGenerateMarkupExport(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
+    const tmplVar = b.identifier('tmpl');
     const renderCall = hasRenderMethod
         ? (b.callExpression(
               b.memberExpression(b.identifier('instance'), b.identifier('render')),
               []
           ) as RenderCallExpression)
-        : b.identifier('tmpl');
+        : tmplVar;
 
+    let exposeTemplateBlock: ExpressionStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(bImportDeclaration({ default: 'tmpl' }, defaultTmplPath));
+        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
+        program.body.unshift(
+            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
+        );
+        exposeTemplateBlock = bExposeTemplate(classIdentifier, tmplVar);
     }
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
@@ -130,7 +141,8 @@ export function addGenerateMarkupExport(
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
             connectWireAdapterCode,
-            renderCall
+            renderCall,
+            exposeTemplateBlock
         )
     );
 }

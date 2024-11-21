@@ -14,8 +14,9 @@ export { ClassList } from './class-list';
 export {
     LightningElement,
     LightningElementConstructor,
-    SYMBOL__SET_INTERNALS,
+    SYMBOL__DEFAULT_TEMPLATE,
     SYMBOL__GENERATE_MARKUP,
+    SYMBOL__SET_INTERNALS,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
 export { filterProperties } from './reflection';
