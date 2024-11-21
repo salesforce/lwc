@@ -42,8 +42,8 @@
         }
     },
     "devDependencies": {
-        "@lwc/features": "8.9.0",
-        "@lwc/shared": "8.9.0"
+        "@lwc/features": "workspace:*",
+        "@lwc/shared": "workspace:*"
     },
     "lwc": {
         "modules": [

@@ -1,11 +1,9 @@
 import inspector from 'node:inspector';
 import { URL } from 'node:url';
 import { defineConfig } from 'vitest/config';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import pkg from './package.json';
 
 export default defineConfig({
-    plugins: [tsconfigPaths()],
     test: {
         // Don't time out if we detect a debugger attached
         testTimeout: inspector.url() ? 2147483647 : undefined,

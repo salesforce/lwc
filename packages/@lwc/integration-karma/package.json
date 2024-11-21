@@ -17,12 +17,12 @@
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
     },
     "devDependencies": {
-        "@lwc/compiler": "8.9.0",
-        "@lwc/engine-dom": "8.9.0",
-        "@lwc/engine-server": "8.9.0",
-        "@lwc/rollup-plugin": "8.9.0",
-        "@lwc/synthetic-shadow": "8.9.0",
-        "@lwc/wire-service": "8.9.0",
+        "@lwc/compiler": "workspace:*",
+        "@lwc/engine-dom": "workspace:*",
+        "@lwc/engine-server": "workspace:*",
+        "@lwc/rollup-plugin": "workspace:*",
+        "@lwc/synthetic-shadow": "workspace:*",
+        "@lwc/wire-service": "workspace:*",
         "@types/jasmine": "^5.1.4",
         "chokidar": "^4.0.1",
         "istanbul-lib-coverage": "^3.2.2",

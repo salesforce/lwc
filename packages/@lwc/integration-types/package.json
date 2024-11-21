@@ -9,8 +9,8 @@
         "playground": "rollup -c src/playground/rollup.config.js --watch"
     },
     "dependencies": {
-        "@lwc/rollup-plugin": "8.9.0",
-        "lwc": "8.9.0"
+        "@lwc/rollup-plugin": "workspace:*",
+        "lwc": "workspace:*"
     },
     "devDependencies": {
         "@rollup/plugin-replace": "^6.0.1",

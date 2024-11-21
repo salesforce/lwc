@@ -7,7 +7,6 @@ settings:
 overrides:
     http-cache-semantics: 4.1.1
     semver: 7.6.0
-    '@lwc/perf-benchmarks-components': workspace:*
 
 importers:
     .:
@@ -153,11 +152,11 @@ importers:
                 specifier: ^7.25.8
                 version: 7.26.0
             '@lwc/errors':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../errors
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             line-column:
                 specifier: ~1.0.2
                 version: 1.0.2
@@ -193,35 +192,35 @@ importers:
                 specifier: 0.22.0
                 version: 0.22.0
             '@lwc/babel-plugin-component':
-                specifier: 8.9.0
-                version: 8.9.0(@babel/core@7.26.0)
+                specifier: workspace:*
+                version: link:../babel-plugin-component
             '@lwc/errors':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../errors
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             '@lwc/ssr-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../ssr-compiler
             '@lwc/style-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../style-compiler
             '@lwc/template-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../template-compiler
 
     packages/@lwc/engine-core:
         dependencies:
             '@lwc/features':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../features
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             '@lwc/signals':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../signals
         devDependencies:
             observable-membrane:
                 specifier: 2.0.0
@@ -230,29 +229,29 @@ importers:
     packages/@lwc/engine-dom:
         devDependencies:
             '@lwc/engine-core':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-core
             '@lwc/features':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../features
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
 
     packages/@lwc/engine-server:
         devDependencies:
             '@lwc/engine-core':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-core
             '@lwc/features':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../features
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../rollup-plugin
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             '@rollup/plugin-virtual':
                 specifier: ^3.0.2
                 version: 3.0.2(rollup@4.27.3)
@@ -265,29 +264,29 @@ importers:
     packages/@lwc/features:
         dependencies:
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
 
     packages/@lwc/integration-karma:
         devDependencies:
             '@lwc/compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../compiler
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-dom
             '@lwc/engine-server':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-server
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../rollup-plugin
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../synthetic-shadow
             '@lwc/wire-service':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../wire-service
             '@types/jasmine':
                 specifier: ^5.1.4
                 version: 5.1.4
@@ -322,17 +321,17 @@ importers:
     packages/@lwc/integration-tests:
         devDependencies:
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-dom
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../rollup-plugin
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../synthetic-shadow
             '@lwc/wire-service':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../wire-service
             '@wdio/cli':
                 specifier: ^9.2.14
                 version: 9.2.14
@@ -358,8 +357,8 @@ importers:
                 specifier: ^16.4.5
                 version: 16.4.5
             lwc:
-                specifier: 8.9.0
-                version: 8.9.0(@babel/core@7.26.0)(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../../lwc
             minimist:
                 specifier: ^1.2.8
                 version: 1.2.8
@@ -370,11 +369,11 @@ importers:
     packages/@lwc/integration-types:
         dependencies:
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../rollup-plugin
             lwc:
-                specifier: 8.9.0
-                version: 8.9.0(@babel/core@7.26.0)(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../../lwc
         devDependencies:
             '@rollup/plugin-replace':
                 specifier: ^6.0.1
@@ -405,20 +404,20 @@ importers:
     packages/@lwc/perf-benchmarks:
         dependencies:
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-dom
             '@lwc/engine-server':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-server
             '@lwc/perf-benchmarks-components':
                 specifier: workspace:*
                 version: link:../perf-benchmarks-components
             '@lwc/ssr-runtime':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../ssr-runtime
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../synthetic-shadow
         devDependencies:
             '@best/cli':
                 specifier: ^13.0.0
@@ -442,29 +441,29 @@ importers:
     packages/@lwc/perf-benchmarks-components:
         devDependencies:
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-dom
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../rollup-plugin
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../synthetic-shadow
             '@lwc/wire-service':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../wire-service
 
     packages/@lwc/rollup-plugin:
         dependencies:
             '@lwc/compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../compiler
             '@lwc/module-resolver':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../module-resolver
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             '@rollup/pluginutils':
                 specifier: ~5.1.3
                 version: 5.1.3(rollup@4.27.3)
@@ -473,40 +472,40 @@ importers:
                 version: 4.27.3
         devDependencies:
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-dom
             '@lwc/errors':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../errors
             '@lwc/ssr-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../ssr-compiler
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../synthetic-shadow
             '@lwc/wire-service':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../wire-service
 
     packages/@lwc/shared: {}
 
     packages/@lwc/signals:
         devDependencies:
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
 
     packages/@lwc/ssr-compiler:
         dependencies:
             '@lwc/errors':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../errors
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             '@lwc/template-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../template-compiler
             acorn:
                 specifier: 8.14.0
                 version: 8.14.0
@@ -530,11 +529,11 @@ importers:
     packages/@lwc/ssr-runtime:
         devDependencies:
             '@lwc/engine-core':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-core
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             observable-membrane:
                 specifier: 2.0.0
                 version: 2.0.0
@@ -542,8 +541,8 @@ importers:
     packages/@lwc/style-compiler:
         dependencies:
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             postcss:
                 specifier: ~8.4.49
                 version: 8.4.49
@@ -557,20 +556,20 @@ importers:
     packages/@lwc/synthetic-shadow:
         devDependencies:
             '@lwc/features':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../features
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
 
     packages/@lwc/template-compiler:
         dependencies:
             '@lwc/errors':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../errors
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
             acorn:
                 specifier: ~8.14.0
                 version: 8.14.0
@@ -600,95 +599,95 @@ importers:
     packages/@lwc/types:
         dependencies:
             '@lwc/engine-core':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-core
 
     packages/@lwc/wire-service:
         devDependencies:
             '@lwc/engine-core':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../engine-core
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../shared
 
     packages/lwc:
         dependencies:
             '@lwc/aria-reflection':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/aria-reflection
             '@lwc/babel-plugin-component':
-                specifier: 8.9.0
-                version: 8.9.0(@babel/core@7.26.0)
+                specifier: workspace:*
+                version: link:../@lwc/babel-plugin-component
             '@lwc/compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/compiler
             '@lwc/engine-core':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/engine-core
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/engine-dom
             '@lwc/engine-server':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/engine-server
             '@lwc/errors':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/errors
             '@lwc/features':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/features
             '@lwc/module-resolver':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/module-resolver
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../@lwc/rollup-plugin
             '@lwc/shared':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/shared
             '@lwc/ssr-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/ssr-compiler
             '@lwc/ssr-runtime':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/ssr-runtime
             '@lwc/style-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/style-compiler
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/synthetic-shadow
             '@lwc/template-compiler':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/template-compiler
             '@lwc/types':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/types
             '@lwc/wire-service':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../@lwc/wire-service
 
     playground:
         devDependencies:
             '@lwc/engine-dom':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../packages/@lwc/engine-dom
             '@lwc/rollup-plugin':
-                specifier: 8.9.0
-                version: 8.9.0(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../packages/@lwc/rollup-plugin
             '@lwc/synthetic-shadow':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../packages/@lwc/synthetic-shadow
             '@lwc/wire-service':
-                specifier: 8.9.0
-                version: 8.9.0
+                specifier: workspace:*
+                version: link:../packages/@lwc/wire-service
             '@rollup/plugin-replace':
                 specifier: ^6.0.1
                 version: 6.0.1(rollup@4.27.3)
             lwc:
-                specifier: 8.9.0
-                version: 8.9.0(@babel/core@7.26.0)(rollup@4.27.3)
+                specifier: workspace:*
+                version: link:../packages/lwc
             rollup:
                 specifier: ^4.27.2
                 version: 4.27.3
@@ -2567,124 +2566,6 @@ packages:
         resolution:
             {
                 integrity: sha512-CH4vMYMY/VJlYzb6l+Xy1nHdXogrNxHNXf1cCPSJB1kBXJgkuw7E0X/IEyfCTuFh06ciI31s4qqyEeXqxPWBTg==,
-            }
-
-    '@lwc/aria-reflection@8.9.0':
-        resolution:
-            {
-                integrity: sha512-AJVV8FScE8Gh6YidLDdo4CLlDSbWnvLPkbqztVn0SSL98EQOJNYjjFGrFBrDu4Nb9retA3+jw92mS8/bvYmLaw==,
-            }
-
-    '@lwc/babel-plugin-component@8.9.0':
-        resolution:
-            {
-                integrity: sha512-P95ipMuhDGbg+kBH5/VBohfXBbPK+IrOiYQXs43HXeyJmj5QOUkv7V5BfulgPc5p5chdTRju0xGrRwWgQDTYvQ==,
-            }
-        peerDependencies:
-            '@babel/core': ^7
-
-    '@lwc/compiler@8.9.0':
-        resolution:
-            {
-                integrity: sha512-1qXNOb9L0mLkjQlalb+ASLUWYb1eZUdflAbPBXbNXF/VVaVqhwxnrDngJGTIadZBKRz3r4lyWXLYynVoppKiNA==,
-            }
-
-    '@lwc/engine-core@8.9.0':
-        resolution:
-            {
-                integrity: sha512-PLxMIlb275tSaB11sDR7F3d3Q27ZQQdxaQl1BpnejYKobfFdq8KfnYEGX1ohG+HIT9SpWzHG9FIztyPzuZb11g==,
-            }
-
-    '@lwc/engine-dom@8.9.0':
-        resolution:
-            {
-                integrity: sha512-/49lkQOm2DXv2HbaNraU+hr0UwI6C+hm4wGrYFbwMT3w4j+ZusmvNG09B5eBHX+Ii06n8UpmEkE2Tq0tVajqqA==,
-            }
-
-    '@lwc/engine-server@8.9.0':
-        resolution:
-            {
-                integrity: sha512-GVlkVz2NvhhZqS9CvedwpIYLQ5PJwdcgaDoJBFdBDUpcj4Ae3OcGd/v9h5ca0xTQlQRwwBazqjyCNQTMAQROWQ==,
-            }
-
-    '@lwc/errors@8.9.0':
-        resolution:
-            {
-                integrity: sha512-T1oN+KqFmFCRfKamxT3BJmJ3fGAOczEazzvp0NL5kHmelLV4fFDvZ97+HVHlAbrFP+7XiBwTqc1YQtGMqUJDXQ==,
-            }
-
-    '@lwc/features@8.9.0':
-        resolution:
-            {
-                integrity: sha512-v8eyuqfjo21vziQFhVz9RXW8hyGO9fDK8BZnr9IX5PMWLAzHPrBAGmMc3cLD5L17zGmOrkKNjYUl1yi9+7BsFQ==,
-            }
-
-    '@lwc/module-resolver@8.9.0':
-        resolution:
-            {
-                integrity: sha512-CsXiSFu8zHnCEKMTHn0iPe0EJcR3IPNFCDR442rPUy4C5aB8//wHKgoOmMbqMpTQWNQDpeSsIzuXyB4aJ7Zk2Q==,
-            }
-
-    '@lwc/rollup-plugin@8.9.0':
-        resolution:
-            {
-                integrity: sha512-+1ZRT0rFagXohfzs0xnhPUXp3RXzu5oi+5fhSu+bohuHFJv63q5K2GFRHXlEHvRXfiKwCrRtMGrVUgpedlBBXg==,
-            }
-        peerDependencies:
-            rollup: ^1.2.0||^2.0.0||^3.0.0||^4.0.0
-
-    '@lwc/shared@8.9.0':
-        resolution:
-            {
-                integrity: sha512-LbwRllrrN2uMy8gdlZm5O2V0/T4Bvgw6ZWYLnuDh0/NCm7rY3WOxM5F8gYn3SGwKYd+H7y1uiooZC8yVf1gcZg==,
-            }
-
-    '@lwc/signals@8.9.0':
-        resolution:
-            {
-                integrity: sha512-f3WRMhUEoz8khx3pTVJkH5/vArO3KZkzAvCGK8W5cHi/Xofvxa4s5hPEPahsh5uHgKvtCtuFmWLM5/fmwtMhJw==,
-            }
-
-    '@lwc/ssr-compiler@8.9.0':
-        resolution:
-            {
-                integrity: sha512-4MNd/ks7iPBJcvK4kPL5ZO1jG1tdqaaAuQD+QQwzZ7nxxYSeS2lesUm/modi1l3WPSV+JYBgwKnQwoewV5vrUg==,
-            }
-
-    '@lwc/ssr-runtime@8.9.0':
-        resolution:
-            {
-                integrity: sha512-mqidxv/0s6+6EelvkNy7qXmK5gQ7bKO/ULgczgJiEjFJ5pbI72B2P9ueVF/3Pj2aVeay6hPAr7voWX4xT2t95w==,
-            }
-
-    '@lwc/style-compiler@8.9.0':
-        resolution:
-            {
-                integrity: sha512-UhM1Bie/4y60VE7FR8vawgSnBAkYMKQrrdmx4tGlg6AbeM6GiScG4Op4YNfMgT4Kl9I83yjmUV7ggVybdh/cDg==,
-            }
-
-    '@lwc/synthetic-shadow@8.9.0':
-        resolution:
-            {
-                integrity: sha512-TB1vr1Xz82dTAMFWtt6nY4u9TUj86eQYTf5tWWaLUfvmIWc3fG2GijxTcUZWkt0t/esnqiDgcF2Ovvw3OvRCGg==,
-            }
-
-    '@lwc/template-compiler@8.9.0':
-        resolution:
-            {
-                integrity: sha512-ONLD2I9Fawe9tY64jMsVWF8KmfzXMFZvaW52mOvU1roK49/6y7dJgEL42u9N1ANK3cjKScQXez6PhipMunBSWA==,
-            }
-
-    '@lwc/types@8.9.0':
-        resolution:
-            {
-                integrity: sha512-YAR8UTyAgKn5qOtBLk4SVyECJtqVbI4apaII6rl/oaH47fYRwva6+Bnl1YITt9BHeSbhiLXoomqC4KPOmxT2OA==,
-            }
-
-    '@lwc/wire-service@8.9.0':
-        resolution:
-            {
-                integrity: sha512-mEAZuFAb3mha9i4tA/MFD985aPK6E/JNsLPeYzntb51z717pIO6R1mdC8jBJJ5fL5HAvBRwcC8/a47BO934anA==,
             }
 
     '@napi-rs/wasm-runtime@0.2.4':
@@ -9242,12 +9123,6 @@ packages:
             }
         engines: { node: '>=12' }
 
-    lwc@8.9.0:
-        resolution:
-            {
-                integrity: sha512-x4dWsHsE24wAB2hqwzaFN8NZELnfyhyBHiPoZKUW+zw1GfuD3ANHjJMIThyJfJORfdw6qXMLto0SaOJ8PnXHgw==,
-            }
-
     macos-release@2.5.1:
         resolution:
             {
@@ -14632,106 +14507,6 @@ snapshots:
             '@babel/generator': 7.22.10
             match-json: 1.3.7
 
-    '@lwc/aria-reflection@8.9.0': {}
-
-    '@lwc/babel-plugin-component@8.9.0(@babel/core@7.26.0)':
-        dependencies:
-            '@babel/core': 7.26.0
-            '@babel/helper-module-imports': 7.25.9
-            '@babel/traverse': 7.25.9
-            '@babel/types': 7.26.0
-            '@lwc/errors': 8.9.0
-            '@lwc/shared': 8.9.0
-            line-column: 1.0.2
-        transitivePeerDependencies:
-            - supports-color
-
-    '@lwc/compiler@8.9.0':
-        dependencies:
-            '@babel/core': 7.26.0
-            '@babel/plugin-transform-async-generator-functions': 7.25.9(@babel/core@7.26.0)
-            '@babel/plugin-transform-async-to-generator': 7.25.9(@babel/core@7.26.0)
-            '@babel/plugin-transform-class-properties': 7.25.9(@babel/core@7.26.0)
-            '@babel/plugin-transform-object-rest-spread': 7.25.9(@babel/core@7.26.0)
-            '@locker/babel-plugin-transform-unforgeables': 0.22.0
-            '@lwc/babel-plugin-component': 8.9.0(@babel/core@7.26.0)
-            '@lwc/errors': 8.9.0
-            '@lwc/shared': 8.9.0
-            '@lwc/ssr-compiler': 8.9.0
-            '@lwc/style-compiler': 8.9.0
-            '@lwc/template-compiler': 8.9.0
-        transitivePeerDependencies:
-            - supports-color
-
-    '@lwc/engine-core@8.9.0':
-        dependencies:
-            '@lwc/features': 8.9.0
-            '@lwc/shared': 8.9.0
-            '@lwc/signals': 8.9.0
-
-    '@lwc/engine-dom@8.9.0': {}
-
-    '@lwc/engine-server@8.9.0': {}
-
-    '@lwc/errors@8.9.0': {}
-
-    '@lwc/features@8.9.0':
-        dependencies:
-            '@lwc/shared': 8.9.0
-
-    '@lwc/module-resolver@8.9.0':
-        dependencies:
-            resolve: 1.22.8
-
-    '@lwc/rollup-plugin@8.9.0(rollup@4.27.3)':
-        dependencies:
-            '@lwc/compiler': 8.9.0
-            '@lwc/module-resolver': 8.9.0
-            '@lwc/shared': 8.9.0
-            '@rollup/pluginutils': 5.1.3(rollup@4.27.3)
-            rollup: 4.27.3
-        transitivePeerDependencies:
-            - supports-color
-
-    '@lwc/shared@8.9.0': {}
-
-    '@lwc/signals@8.9.0': {}
-
-    '@lwc/ssr-compiler@8.9.0':
-        dependencies:
-            '@lwc/shared': 8.9.0
-            '@lwc/template-compiler': 8.9.0
-            acorn: 8.14.0
-            astring: 1.9.0
-            estree-toolkit: 1.7.8
-            immer: 10.1.1
-            meriyah: 5.0.0
-
-    '@lwc/ssr-runtime@8.9.0': {}
-
-    '@lwc/style-compiler@8.9.0':
-        dependencies:
-            '@lwc/shared': 8.9.0
-            postcss: 8.4.49
-            postcss-selector-parser: 7.0.0
-            postcss-value-parser: 4.2.0
-
-    '@lwc/synthetic-shadow@8.9.0': {}
-
-    '@lwc/template-compiler@8.9.0':
-        dependencies:
-            '@lwc/errors': 8.9.0
-            '@lwc/shared': 8.9.0
-            acorn: 8.14.0
-            astring: 1.9.0
-            he: 1.2.0
-
-    '@lwc/types@8.9.0':
-        dependencies:
-            '@lwc/engine-core': 8.9.0
-
-    '@lwc/wire-service@8.9.0': {}
-
     '@napi-rs/wasm-runtime@0.2.4':
         dependencies:
             '@emnapi/core': 1.3.1
@@ -19233,31 +19008,6 @@ snapshots:
             yallist: 4.0.0
 
     lru-cache@7.18.3: {}
-
-    lwc@8.9.0(@babel/core@7.26.0)(rollup@4.27.3):
-        dependencies:
-            '@lwc/aria-reflection': 8.9.0
-            '@lwc/babel-plugin-component': 8.9.0(@babel/core@7.26.0)
-            '@lwc/compiler': 8.9.0
-            '@lwc/engine-core': 8.9.0
-            '@lwc/engine-dom': 8.9.0
-            '@lwc/engine-server': 8.9.0
-            '@lwc/errors': 8.9.0
-            '@lwc/features': 8.9.0
-            '@lwc/module-resolver': 8.9.0
-            '@lwc/rollup-plugin': 8.9.0(rollup@4.27.3)
-            '@lwc/shared': 8.9.0
-            '@lwc/ssr-compiler': 8.9.0
-            '@lwc/ssr-runtime': 8.9.0
-            '@lwc/style-compiler': 8.9.0
-            '@lwc/synthetic-shadow': 8.9.0
-            '@lwc/template-compiler': 8.9.0
-            '@lwc/types': 8.9.0
-            '@lwc/wire-service': 8.9.0
-        transitivePeerDependencies:
-            - '@babel/core'
-            - rollup
-            - supports-color
 
     macos-release@2.5.1: {}
 

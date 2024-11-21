@@ -9,12 +9,12 @@
         "build": "NODE_ENV=production rollup -c"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "8.9.0",
+        "@lwc/rollup-plugin": "workspace:*",
         "@rollup/plugin-replace": "^6.0.1",
-        "lwc": "8.9.0",
-        "@lwc/engine-dom": "8.9.0",
-        "@lwc/synthetic-shadow": "8.9.0",
-        "@lwc/wire-service": "8.9.0",
+        "lwc": "workspace:*",
+        "@lwc/engine-dom": "workspace:*",
+        "@lwc/synthetic-shadow": "workspace:*",
+        "@lwc/wire-service": "workspace:*",
         "rollup": "^4.27.2",
         "rollup-plugin-livereload": "^2.0.5",
         "rollup-plugin-serve": "^3.0.0"

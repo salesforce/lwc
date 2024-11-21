@@ -44,8 +44,8 @@
         }
     },
     "devDependencies": {
-        "@lwc/shared": "8.9.0",
-        "@lwc/engine-core": "8.9.0",
+        "@lwc/shared": "workspace:*",
+        "@lwc/engine-core": "workspace:*",
         "observable-membrane": "2.0.0"
     }
 }

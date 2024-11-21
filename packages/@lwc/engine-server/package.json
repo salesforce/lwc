@@ -42,10 +42,10 @@
         }
     },
     "devDependencies": {
-        "@lwc/engine-core": "8.9.0",
-        "@lwc/rollup-plugin": "8.9.0",
-        "@lwc/shared": "8.9.0",
-        "@lwc/features": "8.9.0",
+        "@lwc/engine-core": "workspace:*",
+        "@lwc/rollup-plugin": "workspace:*",
+        "@lwc/shared": "workspace:*",
+        "@lwc/features": "workspace:*",
         "@rollup/plugin-virtual": "^3.0.2",
         "parse5": "^7.2.1"
     }

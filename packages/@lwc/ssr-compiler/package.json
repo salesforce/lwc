@@ -44,9 +44,9 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "8.9.0",
-        "@lwc/errors": "8.9.0",
-        "@lwc/template-compiler": "8.9.0",
+        "@lwc/shared": "workspace:*",
+        "@lwc/errors": "workspace:*",
+        "@lwc/template-compiler": "workspace:*",
         "acorn": "8.14.0",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.8",

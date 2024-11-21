@@ -42,17 +42,17 @@
         }
     },
     "dependencies": {
-        "@lwc/compiler": "8.9.0",
-        "@lwc/module-resolver": "8.9.0",
-        "@lwc/shared": "8.9.0",
+        "@lwc/compiler": "workspace:*",
+        "@lwc/module-resolver": "workspace:*",
+        "@lwc/shared": "workspace:*",
         "@rollup/pluginutils": "~5.1.3"
     },
     "devDependencies": {
-        "@lwc/errors": "8.9.0",
-        "@lwc/ssr-compiler": "8.9.0",
-        "@lwc/engine-dom": "8.9.0",
-        "@lwc/synthetic-shadow": "8.9.0",
-        "@lwc/wire-service": "8.9.0"
+        "@lwc/errors": "workspace:*",
+        "@lwc/ssr-compiler": "workspace:*",
+        "@lwc/engine-dom": "workspace:*",
+        "@lwc/synthetic-shadow": "workspace:*",
+        "@lwc/wire-service": "workspace:*"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0||^3.0.0||^4.0.0"

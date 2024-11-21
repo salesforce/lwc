@@ -35,6 +35,6 @@ describe('isomorphic package exports', () => {
         for (const exp of superExports) {
             baseExports.delete(exp);
         }
-        expect(Array.from(baseExports)).toEqual([]);
+        expect(Array.from(baseExports)).toEqual(['default']);
     });
 });

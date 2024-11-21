@@ -48,11 +48,11 @@
         "@babel/plugin-transform-class-properties": "7.25.9",
         "@babel/plugin-transform-object-rest-spread": "7.25.9",
         "@locker/babel-plugin-transform-unforgeables": "0.22.0",
-        "@lwc/babel-plugin-component": "8.9.0",
-        "@lwc/errors": "8.9.0",
-        "@lwc/shared": "8.9.0",
-        "@lwc/ssr-compiler": "8.9.0",
-        "@lwc/style-compiler": "8.9.0",
-        "@lwc/template-compiler": "8.9.0"
+        "@lwc/babel-plugin-component": "workspace:*",
+        "@lwc/errors": "workspace:*",
+        "@lwc/shared": "workspace:*",
+        "@lwc/ssr-compiler": "workspace:*",
+        "@lwc/style-compiler": "workspace:*",
+        "@lwc/template-compiler": "workspace:*"
     }
 }

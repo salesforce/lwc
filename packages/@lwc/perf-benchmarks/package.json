@@ -15,11 +15,11 @@
         "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "8.9.0",
-        "@lwc/engine-server": "8.9.0",
-        "@lwc/perf-benchmarks-components": "8.9.0",
-        "@lwc/ssr-runtime": "8.9.0",
-        "@lwc/synthetic-shadow": "8.9.0"
+        "@lwc/engine-dom": "workspace:*",
+        "@lwc/engine-server": "workspace:*",
+        "@lwc/perf-benchmarks-components": "workspace:*",
+        "@lwc/ssr-runtime": "workspace:*",
+        "@lwc/synthetic-shadow": "workspace:*"
     },
     "devDependencies": {
         "@best/cli": "^13.0.0",

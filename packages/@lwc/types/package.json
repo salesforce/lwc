@@ -29,6 +29,6 @@
         "*.d.ts"
     ],
     "dependencies": {
-        "@lwc/engine-core": "8.9.0"
+        "@lwc/engine-core": "workspace:*"
     }
 }
