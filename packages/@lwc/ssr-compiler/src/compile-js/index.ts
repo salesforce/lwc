@@ -46,23 +46,17 @@ const visitors: Visitors = {
         );
     },
     ClassDeclaration(path, state) {
-        if (!path.node?.superClass) {
+        const { node } = path;
+        if (!node?.superClass) {
             return;
         }
-
-        if (
-            path.node.superClass.type === 'Identifier' &&
-            // It is possible to inherit from something that inherits from
-            // LightningElement, so the detection here needs additional work.
-            path.node.superClass.name === 'LightningElement'
-        ) {
-            state.isLWC = true;
-            if (path.node.id) {
-                state.lwcClassName = path.node.id.name;
-            } else {
-                path.node.id = b.identifier('DefaultComponentName');
-                state.lwcClassName = 'DefaultComponentName';
-            }
+        // Assume everything with a superclass is an LWC component
+        state.isLWC = true;
+        if (node.id) {
+            state.lwcClassName = node.id.name;
+        } else {
+            node.id = b.identifier('DefaultComponentName');
+            state.lwcClassName = 'DefaultComponentName';
         }
     },
     PropertyDefinition(path, state) {
