@@ -7,21 +7,24 @@
 
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
-import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
-import { bAttributeValue, getChildAttrsOrProps, optimizeAdjacentYieldStmts } from '../shared';
-import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { irChildrenToEs, irToEs } from '../ir-to-es';
-import { isNullableOf } from '../../estree/validators';
-import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
+import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
+import { esTemplate, esTemplateWithYield } from '../../../estemplate';
+import { irChildrenToEs, irToEs } from '../../ir-to-es';
+import { isNullableOf } from '../../../estree/validators';
+import type {
+    ExpressionStatement as EsExpressionStatement,
+    Expression as EsExpression,
+} from 'estree';
 
-import type { BlockStatement as EsBlockStatement } from 'estree';
-import type { Component as IrComponent, ScopedSlotFragment } from '@lwc/template-compiler';
-import type { Transformer } from '../types';
+import type { Statement as EsStatement } from 'estree';
+import type {
+    Component as IrComponent,
+    LwcComponent as IrLwcComponent,
+    ScopedSlotFragment,
+} from '@lwc/template-compiler';
+import type { TransformerContext } from '../../types';
 
-const bYieldFromChildGenerator = esTemplateWithYield`
-    {
-        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
-        const childAttrs = ${/* child attrs */ is.objectExpression};
+const bGenerateSlottedContent = esTemplateWithYield`
         const slottedContent = {
             light: Object.create(null),
 
@@ -42,21 +45,9 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             }
         }
 
-        ${/* light DOM addContent statements */ is.callExpression}
-        ${/* scoped slot addContent statements */ is.callExpression}
-
-        const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
-
-        yield* ${/* generateMarkup */ is.identifier}(
-            ${/* tag name */ is.literal}, 
-            childProps, 
-            childAttrs, 
-            slottedContent,
-            instance,
-            scopeToken,
-        );
-    }
-`<EsBlockStatement>;
+        ${/* light DOM addContent statements */ is.expressionStatement}
+        ${/* scoped slot addContent statements */ is.expressionStatement}
+`<EsStatement[]>;
 
 // Note that this function name (`generateSlottedContent`) does not need to be scoped even though
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
@@ -68,16 +59,12 @@ const bAddContent = esTemplate`
         // FIXME: make validation work again  
         ${/* slot content */ false}
     });
-`<EsCallExpression>;
+`<EsExpressionStatement>;
 
-export const Component: Transformer<IrComponent> = function Component(node, cxt) {
-    // Import the custom component's generateMarkup export.
-    const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
-    const importPath = kebabcaseToCamelcase(node.name);
-    cxt.import({ generateMarkup: childGeneratorLocalName }, importPath);
-    cxt.import({ getReadOnlyProxy: '__getReadOnlyProxy' });
-    const childTagName = node.name;
-
+export function getSlottedContent(
+    node: IrLwcComponent | IrComponent,
+    cxt: TransformerContext
+): EsStatement[] {
     // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
     const slottableChildren = node.children.filter((child) => child.type !== 'ScopedSlotFragment');
     const scopedSlottableChildren = node.children.filter(
@@ -114,15 +101,5 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
         return addContentExpr;
     });
 
-    return [
-        bYieldFromChildGenerator(
-            getChildAttrsOrProps(node.properties, cxt),
-            getChildAttrsOrProps(node.attributes, cxt),
-            shadowSlotContent,
-            lightSlotContent,
-            scopedSlotContent,
-            b.identifier(childGeneratorLocalName),
-            b.literal(childTagName)
-        ),
-    ];
-};
+    return bGenerateSlottedContent(shadowSlotContent, lightSlotContent, scopedSlotContent);
+}

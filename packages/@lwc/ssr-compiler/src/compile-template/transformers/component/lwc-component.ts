@@ -6,24 +6,18 @@
  */
 import { is } from 'estree-toolkit';
 import { isUndefined } from '@lwc/shared';
-import { expressionIrToEs } from '../expression';
-import { esTemplate, esTemplateWithYield } from '../../estemplate';
-import { getChildAttrsOrProps } from '../shared';
-import type { Transformer } from '../types';
+import { expressionIrToEs } from '../../expression';
+import { esTemplateWithYield } from '../../../estemplate';
+import { getChildAttrsOrProps } from '../../shared';
+import type { Transformer } from '../../types';
 import type {
     LwcComponent as IrLwcComponent,
     Expression as IrExpression,
 } from '@lwc/template-compiler';
-import type {
-    IfStatement as EsIfStatement,
-    VariableDeclaration as EsVariableDeclaration,
-} from 'estree';
-
-const bDynamicComponentConstructorDeclaration = esTemplate`
-    const Ctor = '${/*lwcIs attribute value*/ is.expression}';
-`<EsVariableDeclaration>;
+import type { Statement as EsStatement } from 'estree';
 
 const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
+    const Ctor = '${/* lwcIs attribute value */ is.expression}';
     if (Ctor) {
         if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
             throw new Error(\`Invalid constructor: "\${String(Ctor)}" is not a LightningElement constructor.\`)
@@ -32,7 +26,7 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         const childAttrs = ${/* child attrs */ is.objectExpression};
         yield* Ctor[SYMBOL__GENERATE_MARKUP](null, childProps, childAttrs);
     }
-`<EsIfStatement>;
+`<EsStatement[]>;
 
 export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(node, cxt) {
     const { directives } = node;
@@ -45,16 +39,11 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
             SYMBOL__GENERATE_MARKUP: undefined,
         });
 
-        return [
-            bDynamicComponentConstructorDeclaration(
-                // The template compiler has validation to prevent lwcIs.value from being a literal
-                expressionIrToEs(lwcIs.value as IrExpression, cxt)
-            ),
-            bYieldFromDynamicComponentConstructorGenerator(
-                getChildAttrsOrProps(node.properties, cxt),
-                getChildAttrsOrProps(node.attributes, cxt)
-            ),
-        ];
+        return bYieldFromDynamicComponentConstructorGenerator(
+            expressionIrToEs(lwcIs.value as IrExpression, cxt),
+            getChildAttrsOrProps(node.properties, cxt),
+            getChildAttrsOrProps(node.attributes, cxt)
+        );
     } else {
         return [];
     }
