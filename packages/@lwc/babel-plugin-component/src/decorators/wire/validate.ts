@@ -25,27 +25,41 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    if (!id.isIdentifier() && !id.isMemberExpression()) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
-            },
-            state
-        );
-    }
+    if (id.isIdentifier()) {
+        const binding = path.scope.getBinding(id.node.name);
 
-    if (id.isMemberExpression() && id.node.computed) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
-            },
-            state
-        );
-    }
+        if (!binding) {
+            throw generateError(
+                id,
+                {
+                    errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
+                    messageArgs: [id.node.name],
+                },
+                state
+            );
+        }
 
-    if (id.isMemberExpression()) {
+        if (!binding.path.isImportSpecifier() && !binding.path.isImportDefaultSpecifier()) {
+            throw generateError(
+                id,
+                {
+                    errorInfo:
+                        DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
+                },
+                state
+            );
+        }
+    } else if (id.isMemberExpression()) {
+        if (id.node.computed) {
+            throw generateError(
+                id,
+                {
+                    errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
+                },
+                state
+            );
+        }
+
         const object = id.get('object');
 
         if (!object.isIdentifier()) {
@@ -72,29 +86,13 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
             );
         }
     } else {
-        const binding = path.scope.getBinding(id.node.name);
-
-        if (!binding) {
-            throw generateError(
-                id,
-                {
-                    errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
-                    messageArgs: [id.node.name],
-                },
-                state
-            );
-        }
-
-        if (!binding.path.isImportSpecifier() && !binding.path.isImportDefaultSpecifier()) {
-            throw generateError(
-                id,
-                {
-                    errorInfo:
-                        DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
-                },
-                state
-            );
-        }
+        throw generateError(
+            id,
+            {
+                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
+            },
+            state
+        );
     }
 }
 
