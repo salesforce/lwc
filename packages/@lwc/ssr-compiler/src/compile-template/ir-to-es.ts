@@ -10,7 +10,7 @@ import { inspect } from 'util';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { Comment } from './transformers/comment';
-import { Component } from './transformers/component';
+import { Component, LwcComponent } from './transformers/component';
 import { Element } from './transformers/element';
 import { ForEach } from './transformers/for-each';
 import { ForOf } from './transformers/for-of';
@@ -18,7 +18,6 @@ import { If, IfBlock } from './transformers/if';
 import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';
 import { createNewContext } from './context';
-import { LwcComponent } from './transformers/lwc-component';
 import type {
     ChildNode as IrChildNode,
     Node as IrNode,
