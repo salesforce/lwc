@@ -12,7 +12,6 @@
             "rollup/parseAst": ["../../../node_modules/rollup/dist/parseAst"]
         }
     },
-    "files": ["../../lwc/types.d.ts"],
     "include": ["src"],
     "exclude": ["src/playground/dist"]
 }

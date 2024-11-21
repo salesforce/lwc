@@ -35,6 +35,9 @@ describe('isomorphic package exports', () => {
         for (const exp of superExports) {
             baseExports.delete(exp);
         }
-        expect(Array.from(baseExports)).toEqual(['default']);
+        expect(Array.from(baseExports)).toEqual([
+            // Exports that intentionally only exist in @lwc/engine-server
+            'default', // artifact of interop support
+        ]);
     });
 });

@@ -8,12 +8,12 @@
 import path from 'node:path';
 import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
-import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
-import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import { DEFAULT_SSR_MODE } from '@lwc/shared';
+import { serverSideRenderComponent } from '../../../ssr-runtime';
+import lwcRollupPlugin from '../../../rollup-plugin';
 import { expectedFailures } from './utils/expected-failures';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
+import type { FeatureFlagName } from '../../../features/dist/types';
 import type { CompilationMode } from '../index';
 
 interface FixtureModule {
@@ -26,7 +26,7 @@ interface FixtureModule {
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 vi.mock('@lwc/ssr-runtime', async () => {
-    const runtime = await import('@lwc/ssr-runtime');
+    const runtime = await import('../../../ssr-runtime');
     try {
         runtime.setHooks({
             sanitizeHtmlContent(content: unknown) {
