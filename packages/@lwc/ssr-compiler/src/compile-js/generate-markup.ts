@@ -20,6 +20,7 @@ import type {
     MemberExpression,
     Statement,
     ExpressionStatement,
+    IfStatement,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -52,7 +53,7 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
+        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
@@ -67,6 +68,12 @@ const bGenerateMarkup = esTemplate`
     }
     ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
 `<[ExportNamedDeclaration, ExpressionStatement]>;
+
+const bExposeTemplate = esTemplate`
+    if (${/*template*/ is.identifier}) {
+        ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ 0}
+    }
+`<IfStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -94,16 +101,22 @@ export function addGenerateMarkupExport(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
+    const tmplVar = b.identifier('tmpl');
     const renderCall = hasRenderMethod
         ? (b.callExpression(
               b.memberExpression(b.identifier('instance'), b.identifier('render')),
               []
           ) as RenderCallExpression)
-        : b.identifier('tmpl');
+        : tmplVar;
 
+    let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(bImportDeclaration({ default: 'tmpl' }, defaultTmplPath));
+        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
+        program.body.unshift(
+            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
+        );
+        exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
     }
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
@@ -135,4 +148,8 @@ export function addGenerateMarkupExport(
             renderCall
         )
     );
+
+    if (exposeTemplateBlock) {
+        program.body.push(exposeTemplateBlock);
+    }
 }
