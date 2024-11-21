@@ -7,8 +7,7 @@
 import { addNamed } from '@babel/helper-module-imports';
 import { CompilerMetrics, LWCClassErrors } from '@lwc/errors';
 import { generateError, incrementMetricCounter } from './utils';
-import type { types, Visitor } from '@babel/core';
-import type { NodePath } from '@babel/traverse';
+import type { types, Visitor, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from './types';
 
 function getImportSource(path: NodePath<types.Import>): NodePath<types.Node> {

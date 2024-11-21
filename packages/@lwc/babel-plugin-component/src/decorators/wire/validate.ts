@@ -8,8 +8,7 @@ import { DecoratorErrors } from '@lwc/errors';
 import { LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
 import { isWireDecorator } from './shared';
-import type { types } from '@babel/core';
-import type { NodePath } from '@babel/traverse';
+import type { types, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from '../../types';
 import type { DecoratorMeta } from '../index';
 

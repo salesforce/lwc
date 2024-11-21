@@ -7,8 +7,7 @@
 
 // Add ?scoped=true to any imports ending with .scoped.css. This signals that the stylesheet
 // should be treated as "scoped".
-import type { Node } from '@babel/core';
-import type { NodePath } from '@babel/traverse';
+import type { Node, NodePath } from '@babel/core';
 import type { BabelAPI } from './types';
 
 export default function ({ types: t }: BabelAPI, path: NodePath): void {
