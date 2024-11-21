@@ -11,10 +11,7 @@ import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
 import { esTemplate, esTemplateWithYield } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isNullableOf } from '../../../estree/validators';
-import type {
-    ExpressionStatement as EsExpressionStatement,
-    Expression as EsExpression,
-} from 'estree';
+import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type { Statement as EsStatement } from 'estree';
 import type {
@@ -59,7 +56,7 @@ const bAddContent = esTemplate`
         // FIXME: make validation work again  
         ${/* slot content */ false}
     });
-`<EsExpressionStatement>;
+`<EsCallExpression>;
 
 export function getSlottedContent(
     node: IrLwcComponent | IrComponent,
@@ -81,9 +78,9 @@ export function getSlottedContent(
                 draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
             });
             const slotContent = irToEs(clone, cxt);
-            return bAddContent(slotName, null, slotContent);
+            return b.expressionStatement(bAddContent(slotName, null, slotContent));
         } else {
-            return bAddContent(b.literal(''), null, irToEs(child, cxt));
+            return b.expressionStatement(bAddContent(b.literal(''), null, irToEs(child, cxt)));
         }
     });
 
@@ -92,10 +89,12 @@ export function getSlottedContent(
         const boundVariable = b.identifier(boundVariableName);
         cxt.pushLocalVars([boundVariableName]);
         // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
-        const addContentExpr = bAddContent(
-            child.slotName as EsExpression,
-            boundVariable,
-            irChildrenToEs(child.children, cxt)
+        const addContentExpr = b.expressionStatement(
+            bAddContent(
+                child.slotName as EsExpression,
+                boundVariable,
+                irChildrenToEs(child.children, cxt)
+            )
         );
         cxt.popLocalVars();
         return addContentExpr;
