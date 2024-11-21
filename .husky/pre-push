@@ -1,5 +1,5 @@
 set -e
 node ./scripts/tasks/check-and-rewrite-package-json.js --test
-node ./scripts/tasks/generate-license-files.mjs --test
+node ./scripts/tasks/generate-license-files.js --test
 node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
 node ./scripts/tasks/check-imports-are-declared-dependencies.js

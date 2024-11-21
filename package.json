@@ -78,7 +78,7 @@
         "*.{js,mjs,ts}": "eslint",
         "*.{css,js,json,md,mjs,ts,yaml,yml}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
-        "{LICENSE-CORE.md,**/LICENSE.md,pnpm-lock.yaml,scripts/tasks/generate-license-files.js,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.mjs",
+        "{LICENSE-CORE.md,**/LICENSE.md,pnpm-lock.yaml,scripts/tasks/generate-license-files.js,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.js",
         "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [
