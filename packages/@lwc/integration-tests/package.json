@@ -28,6 +28,7 @@
         "@wdio/sauce-service": "^9.2.14",
         "@wdio/spec-reporter": "^9.2.14",
         "@wdio/static-server-service": "^9.2.2",
+        "tsx": "^4.19.2",
         "deepmerge": "^4.3.1",
         "dotenv": "^16.4.5",
         "lwc": "workspace:*",
