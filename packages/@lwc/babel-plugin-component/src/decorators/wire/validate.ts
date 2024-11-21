@@ -25,71 +25,65 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    if (id.isIdentifier()) {
-        const binding = path.scope.getBinding(id.node.name);
+    const isMemberExpression = id.isMemberExpression();
 
-        if (!binding) {
-            throw generateError(
-                id,
-                {
-                    errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
-                    messageArgs: [id.node.name],
-                },
-                state
-            );
-        }
-
-        if (!binding.path.isImportSpecifier() && !binding.path.isImportDefaultSpecifier()) {
-            throw generateError(
-                id,
-                {
-                    errorInfo:
-                        DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
-                },
-                state
-            );
-        }
-    } else if (id.isMemberExpression()) {
-        if (id.node.computed) {
-            throw generateError(
-                id,
-                {
-                    errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
-                },
-                state
-            );
-        }
-
-        const object = id.get('object');
-
-        if (!object.isIdentifier()) {
-            throw generateError(
-                id,
-                {
-                    errorInfo:
-                        DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
-                },
-                state
-            );
-        }
-
-        const name = object.node.name;
-
-        if (!path.scope.hasBinding(name)) {
-            throw generateError(
-                id,
-                {
-                    errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
-                    messageArgs: [name],
-                },
-                state
-            );
-        }
-    } else {
+    if (!id.isIdentifier() && !isMemberExpression) {
         throw generateError(
             id,
             {
                 errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
+            },
+            state
+        );
+    }
+
+    if (id.isMemberExpression({ computed: true })) {
+        throw generateError(
+            id,
+            {
+                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
+            },
+            state
+        );
+    }
+
+    // TODO [#3444]: improve member expression computed typechecking
+    // @ts-expect-error type narrowing incorrectly reduces id to `never`
+    if (isMemberExpression && !id.get('object').isIdentifier()) {
+        throw generateError(
+            id,
+            {
+                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
+            },
+            state
+        );
+    }
+
+    // TODO [#3444]: improve member expression computed typechecking
+    // Ensure wire adapter is imported (check for member expression or identifier)
+    // @ts-expect-error type narrowing incorrectly reduces id to `never`
+    const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
+    if (!path.scope.getBinding(wireBinding)) {
+        throw generateError(
+            id,
+            {
+                errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
+                messageArgs: [id.node.name],
+            },
+            state
+        );
+    }
+
+    // ensure wire adapter is a first parameter
+    if (
+        wireBinding &&
+        !path.scope.getBinding(wireBinding)!.path.isImportSpecifier() &&
+        !path.scope.getBinding(wireBinding)!.path.isImportDefaultSpecifier()
+    ) {
+        throw generateError(
+            id,
+            {
+                errorInfo: DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
             },
             state
         );
