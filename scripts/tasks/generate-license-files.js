@@ -6,7 +6,7 @@
  */
 // @ts-check
 const path = require('node:path');
-const fs = require('node:fs/promises');
+const { readFile, writeFile, stat, readdir } = require('node:fs/promises');
 const childProcess = require('node:child_process');
 const prettier = require('prettier');
 const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
@@ -18,7 +18,7 @@ const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
 // Async fs.existsSync
 async function exists(filename) {
     try {
-        await fs.stat(filename);
+        await stat(filename);
         return true;
     } catch (_err) {
         return false;
@@ -47,14 +47,12 @@ async function findLicenseText(depName) {
     for (const name of names) {
         const fullFilePath = path.join(resolvedDepPath, name);
         if (await exists(fullFilePath)) {
-            return (await fs.readFile(fullFilePath, 'utf-8')).trim();
+            return (await readFile(fullFilePath, 'utf-8')).trim();
         }
     }
 
     // Get the license from the package.json if we can't find it elsewhere
-    const pkgJson = JSON.parse(
-        await fs.readFile(path.join(resolvedDepPath, 'package.json'), 'utf-8')
-    );
+    const pkgJson = JSON.parse(await readFile(path.join(resolvedDepPath, 'package.json'), 'utf-8'));
 
     const { license, version } = pkgJson;
 
@@ -62,7 +60,7 @@ async function findLicenseText(depName) {
 }
 
 async function main() {
-    const coreLicense = await fs.readFile('LICENSE-CORE.md', 'utf-8');
+    const coreLicense = await readFile('LICENSE-CORE.md', 'utf-8');
 
     const bundledLicenses = await Promise.all(
         BUNDLED_DEPENDENCIES.map(async (depName) => {
@@ -81,13 +79,13 @@ async function main() {
     // Check against current top-level license for changes
     const shouldWarnChanges =
         process.argv.includes('--test') &&
-        formattedLicense !== (await fs.readFile('LICENSE.md', 'utf-8'));
+        formattedLicense !== (await readFile('LICENSE.md', 'utf-8'));
 
     // Top level license
-    await fs.writeFile('LICENSE.md', formattedLicense, 'utf-8');
+    await writeFile('LICENSE.md', formattedLicense, 'utf-8');
 
     // License file for each package as well, so that we publish it to npm
-    const atLwcPackages = (await fs.readdir('packages/@lwc'))
+    const atLwcPackages = (await readdir('packages/@lwc'))
         // skip dotfiles like .DS_Store
         .filter((_) => !_.startsWith('.'))
         .map((_) => `@lwc/${_}`);
@@ -95,11 +93,7 @@ async function main() {
 
     await Promise.all(
         packages.map(async (pkg) => {
-            await fs.writeFile(
-                path.join('packages/', pkg, 'LICENSE.md'),
-                formattedLicense,
-                'utf-8'
-            );
+            await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
         })
     );
 
