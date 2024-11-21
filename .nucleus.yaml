@@ -52,20 +52,20 @@ jobs:
 steps:
     node-conformance:
         run:
-            command: yarn run lint
+            command: pnpm lint
         after: node-build
     node-unit-tests:
         run:
-            command: yarn test
-    # this project runs yarn build after yarn install so skip explicit build step
+            command: pnpm test
+    # this project runs pnpm build after pnpm install so skip explicit build step
     node-build: &node-build
         skip: true
     node-pre-release-tests:
         params:
-            command: yarn test
+            command: pnpm test
     npm-configure:
         params:
-            registry-url: https://registry.yarnpkg.com
+            registry-url: https://registry.npmjs.org
     npm-configure-for-publish:
         params:
             registry-url: https://registry.npmjs.org

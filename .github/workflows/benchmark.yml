@@ -25,13 +25,13 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: '20.18.0'
-                  cache: 'yarn'
+                  cache: 'pnpm'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: pnpm install --frozen-lockfile
 
             - name: Build benchmarks
-              run: yarn build:performance
+              run: pnpm build:performance
 
             - name: Run benchmarks
-              run: yarn test:performance:best:ci
+              run: pnpm test:performance:best:ci

@@ -17,6 +17,8 @@
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
     },
     "devDependencies": {
+        "@lwc/aria-reflection": "workspace:*",
+        "@lwc/shared": "workspace:*",
         "@lwc/compiler": "workspace:*",
         "@lwc/engine-dom": "workspace:*",
         "@lwc/engine-server": "workspace:*",

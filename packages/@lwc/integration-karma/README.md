@@ -4,23 +4,23 @@ Karma integration test for `@lwc/compiler`, `@lwc/engine-dom`, and `@lwc/synthet
 
 ## Getting started
 
-### `yarn start`
+### `pnpm start`
 
 Starts the Karma server in `watch` mode and start Google Chrome. Note that you can open different browsers to run the tests in parallel on all the browsers. While the server in running, updating a fixture will trigger the suite to run.
 
-### `yarn hydration:start`
+### `pnpm hydration:start`
 
 Starts the Karma server in `watch` mode and start Google Chrome, to run the hydration test suite. Note that you can open different browsers to run the tests in parallel on all the browsers. While the server in running, updating a fixture will trigger the suite to run.
 
-### `yarn test`
+### `pnpm test`
 
 Run the test suite a single time on Google Chrome.
 
-### `yarn hydration:test`
+### `pnpm hydration:test`
 
 Run the hydration test suite a single time on Google Chrome.
 
-### `yarn coverage`
+### `pnpm coverage`
 
 Combine the coverage produced by the different runs into a single coverage report.
 
@@ -44,9 +44,9 @@ This set of environment variables applies to the `start` and `test` commands:
 ## Examples
 
 ```sh
-DISABLE_SYNTHETIC=1 yarn test  # Run tests without any synthetic shadow polyfills
-GREP=ShadowRoot yarn start     # Run "ShadowRoot" related tests in watch mode
-COVERAGE=1 yarn test           # Compute coverage after a single test run
+DISABLE_SYNTHETIC=1 pnpm test  # Run tests without any synthetic shadow polyfills
+GREP=ShadowRoot pnpm start     # Run "ShadowRoot" related tests in watch mode
+COVERAGE=1 pnpm test           # Compute coverage after a single test run
 ```
 
 ## Running Sauce Labs tests locally
@@ -55,7 +55,7 @@ To test Sauce Labs the same way we do in CI, run the following steps:
 
 Start the Sauce Connect (`sc`) executable and wait for it to say that it's ready. (When you sign into SauceLabs, on the "Tunnel Proxies" page, there is a command you can copy-paste.)
 
-In another console tab, start the tests using `yarn start`.
+In another console tab, start the tests using `pnpm start`.
 
 In another console tab, export the following env vars:
 
@@ -66,7 +66,7 @@ In another console tab, export the following env vars:
 Run:
 
 ```bash
-npx karma start ./scripts/karma-configs/test/sauce.js --single-run
+pnpm dlx karma start ./scripts/karma-configs/test/sauce.js --single-run
 ```
 
 This will connect to Sauce Labs, start the browser, and run the tests.

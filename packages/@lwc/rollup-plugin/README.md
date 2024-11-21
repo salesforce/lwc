@@ -5,7 +5,7 @@ Rollup plugin to compile LWC
 ## Installation
 
 ```sh
-yarn add --dev @lwc/rollup-plugin
+pnpm add --dev @lwc/rollup-plugin
 ```
 
 ## Usage

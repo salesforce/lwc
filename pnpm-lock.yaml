@@ -278,6 +278,9 @@ importers:
 
     packages/@lwc/integration-karma:
         devDependencies:
+            '@lwc/aria-reflection':
+                specifier: workspace:*
+                version: link:../aria-reflection
             '@lwc/compiler':
                 specifier: workspace:*
                 version: link:../compiler
@@ -290,6 +293,9 @@ importers:
             '@lwc/rollup-plugin':
                 specifier: workspace:*
                 version: link:../rollup-plugin
+            '@lwc/shared':
+                specifier: workspace:*
+                version: link:../shared
             '@lwc/synthetic-shadow':
                 specifier: workspace:*
                 version: link:../synthetic-shadow
