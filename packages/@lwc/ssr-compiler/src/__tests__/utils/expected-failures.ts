@@ -51,9 +51,4 @@ export const expectedFailures = new Set([
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
     'svgs/index.js',
-    'wire/config/index.js',
-    'wire/deep-reference/index.js',
-    'wire/field/index.js',
-    'wire/imported-member/index.js',
-    'wire/method/index.js',
 ]);

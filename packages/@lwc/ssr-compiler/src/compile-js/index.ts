@@ -74,7 +74,7 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
-            catalogWireAdapters(state, node);
+            catalogWireAdapters(path, state);
             state.privateFields.push(node.key.name);
         } else {
             state.privateFields.push(node.key.name);
@@ -111,7 +111,7 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
-            catalogWireAdapters(state, node);
+            catalogWireAdapters(path, state);
         }
 
         switch (node.key.name) {
