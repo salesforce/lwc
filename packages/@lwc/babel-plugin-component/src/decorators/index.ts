@@ -126,16 +126,11 @@ function validateImportedLwcDecoratorUsage(
         });
 }
 
-function isImportedFromLwcSource(path: NodePath) {
-    if (path.isImportSpecifier()) {
-        return false;
-    }
-
-    if (path.parent.type !== 'ImportDeclaration') {
-        return false;
-    }
-
-    return path.parent.source.value === 'lwc';
+function isImportedFromLwcSource(bindingPath: NodePath) {
+    return (
+        bindingPath.isImportSpecifier() &&
+        (bindingPath.parent as types.ImportDeclaration).source.value === 'lwc'
+    );
 }
 
 /**
@@ -146,7 +141,7 @@ function isImportedFromLwcSource(path: NodePath) {
 function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     for (const { name, path } of decorators) {
         const binding = path.scope.getBinding(name);
-        if (!binding || isImportedFromLwcSource(binding.path)) {
+        if (binding === undefined || !isImportedFromLwcSource(binding.path)) {
             throw generateInvalidDecoratorError(path, state);
         }
     }
