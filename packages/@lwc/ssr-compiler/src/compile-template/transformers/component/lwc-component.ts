@@ -53,6 +53,7 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
         });
 
         return bYieldFromDynamicComponentConstructorGenerator(
+            // The template compiler has validation to prevent lwcIs.value from being a literal
             expressionIrToEs(lwcIs.value as IrExpression, cxt),
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(node.attributes, cxt),
