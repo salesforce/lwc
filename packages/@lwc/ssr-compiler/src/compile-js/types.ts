@@ -6,18 +6,21 @@
  */
 
 import type { traverse } from 'estree-toolkit';
-import type { Node } from 'estree';
+import type {
+    Identifier,
+    MemberExpression,
+    MethodDefinition,
+    Node,
+    ObjectExpression,
+    PropertyDefinition,
+} from 'estree';
 
 export type Visitors = Parameters<typeof traverse<Node, ComponentMetaState>>[1];
 
 export interface WireAdapter {
-    fieldName: string;
-    adapterConstructorId: string;
-    config: Array<{
-        configKey: string;
-        referencedField: string;
-    }>;
-    fieldType: 'property' | 'method';
+    adapterId: Identifier | MemberExpression;
+    config: ObjectExpression;
+    field: MethodDefinition | PropertyDefinition;
 }
 
 export interface ComponentMetaState {
