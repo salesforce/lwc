@@ -45,7 +45,6 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    // TODO [#3444]: improve member expression computed typechecking
     if (id.isMemberExpression()) {
         const object = id.get('object');
 

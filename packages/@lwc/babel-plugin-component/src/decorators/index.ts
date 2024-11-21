@@ -126,22 +126,7 @@ function validateImportedLwcDecoratorUsage(
         });
 }
 
-/**
- * Validate the usage of decorator by calling each validation function
- * @param decorators
- * @param state
- */
-function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
-    for (const { name, path } of decorators) {
-        const binding = path.scope.getBinding(name);
-        if (!binding || validateBinding(binding.path)) {
-            throw generateInvalidDecoratorError(path, state);
-        }
-    }
-    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators, state));
-}
-
-function validateBinding(path: NodePath) {
+function isImportedFromLwcSource(path: NodePath) {
     if (path.isImportSpecifier()) {
         return false;
     }
@@ -151,6 +136,21 @@ function validateBinding(path: NodePath) {
     }
 
     return path.parent.source.value === 'lwc';
+}
+
+/**
+ * Validate the usage of decorator by calling each validation function
+ * @param decorators
+ * @param state
+ */
+function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
+    for (const { name, path } of decorators) {
+        const binding = path.scope.getBinding(name);
+        if (!binding || isImportedFromLwcSource(binding.path)) {
+            throw generateInvalidDecoratorError(path, state);
+        }
+    }
+    DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators, state));
 }
 
 /**
