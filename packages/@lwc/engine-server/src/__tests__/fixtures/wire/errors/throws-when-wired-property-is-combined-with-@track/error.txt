@@ -1,0 +1,1 @@
+LWC1095: @wire method or property cannot be used with @track
