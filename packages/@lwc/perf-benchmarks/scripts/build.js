@@ -114,8 +114,8 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash, cpuThr
                                             // `@lwc/perf-benchmarks-components` itself.
                                             'rm -fr ./packages/@lwc/perf-benchmarks-components/{src,scripts}',
                                             `cp -R ${benchmarkComponentsDir}/{src,scripts} ./packages/@lwc/perf-benchmarks-components`,
-                                            '[ -f pnpm-lock.yaml ] && pnpm install --frozen-lockfile',
-                                            '[ -f yarn.lock ] && yarn --immutable',
+                                            '[ -f yarn.lock ] || pnpm install --frozen-lockfile',
+                                            '[ -f pnpm-lock.yaml ] || yarn --immutable',
                                             // bust the Tachometer cache in case these files change locally
                                             `echo '${directoryHash}'`,
                                             'pnpm build:performance:components',
