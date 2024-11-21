@@ -8,7 +8,7 @@
 import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-import { isIdentOrRenderCall, isNullableOf } from '../estree/validators';
+import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
@@ -36,22 +36,23 @@ const bGenerateMarkup = esTemplate`
         props = __filterProperties(
             props,
             ${/*public fields*/ is.arrayExpression},
-            ${/*private fields*/ is.arrayExpression}
+            ${/*private fields*/ is.arrayExpression},
         );
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
 
+        __establishContextfulRelationship(parent, instance);
         ${/*connect wire*/ is.statement}
 
-        instance[__SYMBOL__SET_INTERNALS](props, attrs, parent);
+        instance[__SYMBOL__SET_INTERNALS](props, attrs);
         instance.isConnected = true;
         if (instance.connectedCallback) {
             __mutationTracker.enable(instance);
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
@@ -64,13 +65,8 @@ const bGenerateMarkup = esTemplate`
         yield* tmplFn(props, attrs, slotted, ${/*component class*/ 3}, instance);
         yield \`</\${tagName}>\`;
     }
-    ${/*component class*/ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-    ${/* conditional expose template */ isNullableOf(is.expressionStatement)}
+    ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
 `<[ExportNamedDeclaration, ExpressionStatement]>;
-
-const bExposeTemplate = esTemplate`
-    ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ is.identifier}
-`<ExpressionStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -98,22 +94,16 @@ export function addGenerateMarkupExport(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
-    const tmplVar = b.identifier('tmpl');
     const renderCall = hasRenderMethod
         ? (b.callExpression(
               b.memberExpression(b.identifier('instance'), b.identifier('render')),
               []
           ) as RenderCallExpression)
-        : tmplVar;
+        : b.identifier('tmpl');
 
-    let exposeTemplateBlock: ExpressionStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
-        program.body.unshift(
-            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
-        );
-        exposeTemplateBlock = bExposeTemplate(classIdentifier, tmplVar);
+        program.body.unshift(bImportDeclaration({ default: 'tmpl' }, defaultTmplPath));
     }
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
@@ -132,6 +122,7 @@ export function addGenerateMarkupExport(
             renderAttrs: '__renderAttrs',
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
             SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
+            establishContextfulRelationship: '__establishContextfulRelationship',
         })
     );
     program.body.push(
@@ -141,8 +132,7 @@ export function addGenerateMarkupExport(
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
             connectWireAdapterCode,
-            renderCall,
-            exposeTemplateBlock
+            renderCall
         )
     );
 }

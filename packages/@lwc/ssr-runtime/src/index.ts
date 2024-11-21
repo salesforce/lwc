@@ -34,4 +34,4 @@ export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
 export { getReadOnlyProxy } from './get-read-only-proxy';
-export { createContextProvider, connectContext } from './wire';
+export { createContextProvider, establishContextfulRelationship, connectContext } from './wire';

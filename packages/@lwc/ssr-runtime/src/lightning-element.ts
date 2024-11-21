@@ -25,7 +25,6 @@ import {
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
-import { establishContextfulRelationship } from './wire';
 import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
 
@@ -72,7 +71,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
         assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes, parent: LightningElement) {
+    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
         this.#attrs = attrs;
         assign(this, props);
 
@@ -86,8 +85,6 @@ export class LightningElement implements PropsAvailableAtConstruction {
                 mutationTracker.add(this, 'class');
             },
         });
-
-        establishContextfulRelationship(parent, this);
     }
 
     get classList() {
