@@ -103,11 +103,22 @@ function testFixtures(options?: RollupLwcOptions) {
             pattern: '**/index.js',
         },
         async ({ filename, dirname, config }) => {
-            const compiledFixturePath = await compileFixture({
-                input: filename,
-                dirname,
-                options,
-            });
+            let compiledFixturePath;
+
+            try {
+                compiledFixturePath = await compileFixture({
+                    input: filename,
+                    dirname,
+                    options,
+                });
+            } catch (err: any) {
+                // Filter out the stacktrace, just include the LWC error message
+                const message = err?.message?.match(/(LWC\d+[^\n]+)/)?.[1];
+                return {
+                    'expected.html': '',
+                    'error.txt': message ?? '',
+                };
+            }
 
             // The LWC engine holds global state like the current VM index, which has an impact on
             // the generated HTML IDs. So the engine has to be re-evaluated between tests.

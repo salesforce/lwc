@@ -51,4 +51,12 @@ export const expectedFailures = new Set([
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
     'svgs/index.js',
+    'wire/errors/throws-when-computed-prop-is-expression/index.js',
+    'wire/errors/throws-when-computed-prop-is-let-variable/index.js',
+    'wire/errors/throws-when-computed-prop-is-regexp-literal/index.js',
+    'wire/errors/throws-when-computed-prop-is-template-literal/index.js',
+    'wire/errors/throws-when-using-2-wired-decorators/index.js',
+    'wire/errors/throws-when-wired-method-is-combined-with-@api/index.js',
+    'wire/errors/throws-when-wired-property-is-combined-with-@api/index.js',
+    'wire/errors/throws-when-wired-property-is-combined-with-@track/index.js',
 ]);
