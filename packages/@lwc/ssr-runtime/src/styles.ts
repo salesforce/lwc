@@ -14,7 +14,7 @@ type ForgivingStylesheets =
     | Stylesheet
     | undefined
     | null
-    | Array<Stylesheets | undefined>;
+    | Array<Stylesheets | undefined | null>;
 
 // Traverse in the same order as `flattenStylesheets` but without creating unnecessary additional arrays
 function traverseStylesheets(
