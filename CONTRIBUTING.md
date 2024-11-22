@@ -17,6 +17,12 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 
 This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Pnpm` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well. Otherwise, check the `volta` field in `package.json` to see which versions to use.
 
+Also note that, as of this writing, [`pnpm` support for Volta is experimental](https://docs.volta.sh/advanced/pnpm). You should add this to your `~/.bashrc`, `~/.zshrc`, or equivalent:
+
+```shell
+export VOLTA_FEATURE_PNPM=1
+```
+
 ## Installation
 
 [Set up SSH access to Github][setup-github-ssh] if you haven't done so already.
