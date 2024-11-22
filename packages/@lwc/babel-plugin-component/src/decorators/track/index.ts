@@ -9,6 +9,7 @@ import { LWC_COMPONENT_PROPERTIES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
 import type { BabelTypes, LwcBabelPluginPass } from '../../types';
 import type { DecoratorMeta } from '../index';
+import type { types } from '@babel/core';
 
 const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
@@ -32,7 +33,7 @@ function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     });
 }
 
-function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]) {
+function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]): types.ObjectProperty[] {
     const objectProperties = [];
     const trackDecoratorMetas = decoratorMetas.filter(isTrackDecorator);
     if (trackDecoratorMetas.length) {
