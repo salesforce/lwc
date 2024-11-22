@@ -6,8 +6,7 @@
  */
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { isWireDecorator } from './shared';
-import type { types } from '@babel/core';
-import type { NodePath, Scope } from '@babel/traverse';
+import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
 import type { BabelTypes } from '../../types';
 import type { BindingOptions } from '../types';
@@ -213,7 +212,7 @@ const SUPPORTED_VALUE_TO_TYPE_MAP = {
     BooleanLiteral: 'boolean',
 };
 
-const scopedReferenceLookup = (scope: Scope) => (name: string) => {
+const scopedReferenceLookup = (scope: NodePath['scope']) => (name: string) => {
     const binding = scope.getBinding(name);
 
     let type;

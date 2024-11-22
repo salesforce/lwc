@@ -15,9 +15,7 @@ import {
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
 } from './constants';
-import type * as types from '@babel/types';
-import type { NodePath } from '@babel/traverse';
-import type { Visitor } from '@babel/core';
+import type { types, NodePath, Visitor } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
 function getBaseName(classPath: string) {

@@ -13,8 +13,7 @@ import {
     LWC_PACKAGE_EXPORTS,
 } from '../../constants';
 import { isApiDecorator } from './shared';
-import type { NodePath } from '@babel/traverse';
-import type { types } from '@babel/core';
+import type { types, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from '../../types';
 import type { DecoratorMeta } from '../index';
 

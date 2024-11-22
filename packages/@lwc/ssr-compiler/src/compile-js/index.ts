@@ -13,7 +13,7 @@ import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
-import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './generate-markup';
+import { addGenerateMarkupExport } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
@@ -46,23 +46,17 @@ const visitors: Visitors = {
         );
     },
     ClassDeclaration(path, state) {
-        if (!path.node?.superClass) {
+        const { node } = path;
+        if (!node?.superClass) {
             return;
         }
-
-        if (
-            path.node.superClass.type === 'Identifier' &&
-            // It is possible to inherit from something that inherits from
-            // LightningElement, so the detection here needs additional work.
-            path.node.superClass.name === 'LightningElement'
-        ) {
-            state.isLWC = true;
-            if (path.node.id) {
-                state.lwcClassName = path.node.id.name;
-            } else {
-                path.node.id = b.identifier('DefaultComponentName');
-                state.lwcClassName = 'DefaultComponentName';
-            }
+        // Assume everything with a superclass is an LWC component
+        state.isLWC = true;
+        if (node.id) {
+            state.lwcClassName = node.id.name;
+        } else {
+            node.id = b.identifier('DefaultComponentName');
+            state.lwcClassName = 'DefaultComponentName';
         }
     },
     PropertyDefinition(path, state) {
@@ -80,7 +74,7 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
-            catalogWireAdapters(state, node);
+            catalogWireAdapters(path, state);
             state.privateFields.push(node.key.name);
         } else {
             state.privateFields.push(node.key.name);
@@ -117,7 +111,7 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
-            catalogWireAdapters(state, node);
+            catalogWireAdapters(path, state);
         }
 
         switch (node.key.name) {
@@ -199,7 +193,6 @@ export default function compileJS(
     }
 
     addGenerateMarkupExport(ast, state, tagName, filename);
-    assignGenerateMarkupToComponent(ast, state);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-tests",
     "private": true,
-    "version": "8.9.0",
+    "version": "8.10.1",
     "scripts": {
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev pnpm build",

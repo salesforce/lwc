@@ -6,107 +6,155 @@
  */
 
 import { is, builders as b } from 'estree-toolkit';
+import { produce } from 'immer';
 import { esTemplate } from '../estemplate';
-import { isValidIdentifier } from '../shared';
+import type { NodePath } from 'estree-toolkit';
 
-import type { PropertyDefinition as EsPropertyDefinitionWithDecorators } from 'meriyah/dist/src/estree';
 import type {
-    Expression,
     PropertyDefinition,
     ObjectExpression,
-    Statement,
     MethodDefinition,
     ExpressionStatement,
+    Expression,
+    Identifier,
+    MemberExpression,
+    Property,
+    BlockStatement,
 } from 'estree';
 import type { ComponentMetaState, WireAdapter } from './types';
 
-function extractWireConfig(
-    fieldName: string,
-    adapterConstructorId: string,
-    fieldType: 'method' | 'property',
-    config?: ObjectExpression
-): WireAdapter {
-    const extractedConfig =
-        config?.properties?.map?.((objProp) => {
-            if (!is.property(objProp)) {
-                throw new Error('Object spread syntax is disallowed in @wire config.');
-            }
-            const { key, value } = objProp;
+interface NoSpreadObjectExpression extends Omit<ObjectExpression, 'properties'> {
+    properties: Property[];
+}
 
-            if (!is.identifier(key)) {
-                throw new Error(`@wire config entry key must be an identifer; found ${key.type}`);
-            }
-            if (!is.literal(value) || typeof value.value !== 'string' || value.value[0] !== '$') {
-                throw new Error('@wire config entry values must be strings starting with a $');
-            }
-            const referencedField = value.value.slice(1);
-            if (!isValidIdentifier(referencedField)) {
-                throw new Error(`@wire config referenced invalid field: ${referencedField}`);
-            }
+function bMemberExpressionChain(props: string[]): MemberExpression {
+    // Technically an incorrect assertion, but it works fine...
+    let expr: MemberExpression = b.identifier('instance') as any;
+    for (const prop of props) {
+        expr = b.memberExpression(expr, b.literal(prop), true);
+    }
+    return expr;
+}
 
-            return {
-                configKey: key.name,
-                referencedField,
-            };
-        }) ?? [];
+function getWireParams(
+    node: MethodDefinition | PropertyDefinition
+): [Expression, Expression | undefined] {
+    const { decorators } = node;
 
-    return {
-        fieldName,
-        fieldType,
-        adapterConstructorId,
-        config: extractedConfig,
-    };
+    if (decorators.length > 1) {
+        throw new Error('todo - multiple decorators at once');
+    }
+
+    // validate the parameters
+    const wireDecorator = decorators[0].expression;
+    if (!is.callExpression(wireDecorator)) {
+        throw new Error('todo - invalid usage');
+    }
+
+    const args = wireDecorator.arguments;
+    if (args.length === 0 || args.length > 2) {
+        throw new Error('todo - wrong number of args');
+    }
+
+    const [id, config] = args;
+    if (is.spreadElement(id) || is.spreadElement(config)) {
+        throw new Error('todo - spread in params');
+    }
+    return [id, config];
+}
+
+function validateWireId(
+    id: Expression,
+    path: NodePath<PropertyDefinition | MethodDefinition>
+): asserts id is Identifier | MemberExpression {
+    // name of identifier or object used in member expression (e.g. "foo" for `foo.bar`)
+    let wireAdapterVar: string;
+
+    if (is.memberExpression(id)) {
+        if (id.computed) {
+            throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS');
+        }
+        if (!is.identifier(id.object)) {
+            throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS');
+        }
+        wireAdapterVar = id.object.name;
+    } else if (!is.identifier(id)) {
+        throw new Error('todo - invalid adapter name');
+    } else {
+        wireAdapterVar = id.name;
+    }
+
+    // This is not the exact same validation done in @lwc/babel-plugin-component but it accomplishes the same thing
+    if (path.scope?.getBinding(wireAdapterVar)?.kind !== 'module') {
+        throw new Error('todo - WIRE_ADAPTER_SHOULD_BE_IMPORTED');
+    }
+}
+
+function validateWireConfig(
+    config: Expression,
+    path: NodePath<PropertyDefinition | MethodDefinition>
+): asserts config is NoSpreadObjectExpression {
+    if (!is.objectExpression(config)) {
+        throw new Error('todo - CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER');
+    }
+    for (const property of config.properties) {
+        // Only validate computed object properties because static props are all valid
+        // and we ignore {...spreads} and {methods(){}}
+        if (!is.property(property) || !property.computed) continue;
+        const key = property.key;
+        if (is.identifier(key)) {
+            const binding = path.scope?.getBinding(key.name);
+            // TODO [#3956]: Investigate allowing imported constants
+            if (binding?.kind === 'const') continue;
+            // By default, the identifier `undefined` has no binding (when it's actually undefined),
+            // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
+            if (key.name === 'undefined' && !binding) continue;
+        } else if (is.literal(key)) {
+            if (is.templateLiteral(key)) {
+                // A template literal is not guaranteed to always result in the same value
+                // (e.g. `${Math.random()}`), so we disallow them entirely.
+                throw new Error('todo - COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL');
+            } else if (!('regex' in key)) {
+                // A literal can be a regexp, template literal, or primitive; only allow primitives
+                continue;
+            }
+        }
+        throw new Error('todo - COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL');
+    }
 }
 
 export function catalogWireAdapters(
-    state: ComponentMetaState,
-    node: PropertyDefinition | MethodDefinition
+    path: NodePath<PropertyDefinition | MethodDefinition>,
+    state: ComponentMetaState
 ) {
-    if (!is.identifier(node.key)) {
-        throw new Error(
-            'Unimplemented: wires that decorate non-identifiers are not currently supported.'
-        );
+    const node = path.node!;
+    const [id, config] = getWireParams(node);
+    validateWireId(id, path);
+    let reactiveConfig: ObjectExpression;
+    if (config) {
+        validateWireConfig(config, path);
+        reactiveConfig = produce(config, (draft) => {
+            // replace '$foo' values with `instance.foo`; preserve everything else
+            for (const prop of draft.properties) {
+                const { value } = prop;
+                if (
+                    is.literal(value) &&
+                    typeof value.value === 'string' &&
+                    value.value.startsWith('$')
+                ) {
+                    prop.value = bMemberExpressionChain(value.value.slice(1).split('.'));
+                }
+            }
+        });
+    } else {
+        // FIXME: for `@wire(Adapter), does engine-server use `undefined` or `{}` for config?
+        reactiveConfig = b.objectExpression([]); // empty object
     }
-    const { name } = node.key;
-
-    const { decorators } = node as EsPropertyDefinitionWithDecorators;
-    if (decorators?.length !== 1) {
-        throw new Error('Only one decorator can be applied to a single field.');
-    }
-
-    const expression = decorators[0].expression as Expression;
-    if (!is.callExpression(expression)) {
-        throw new Error('The @wire decorator must be called.');
-    }
-
-    const { arguments: args } = expression;
-    const [adapterConstructorId, config] = args;
-    if (!is.identifier(adapterConstructorId)) {
-        throw new Error('The @wire decorator must reference a wire adapter class.');
-    }
-    if (config && !is.objectExpression(config)) {
-        throw new Error('Invalid config provided to @wire decorator; expected an object literal.');
-    }
-
-    const fieldtype =
-        node.type === 'MethodDefinition' && node.kind === 'method' ? 'method' : 'property';
 
     state.wireAdapters = [
         ...state.wireAdapters,
-        extractWireConfig(name, adapterConstructorId.name, fieldtype, config),
+        { adapterId: id, config: reactiveConfig, field: node },
     ];
-}
-
-function bWireConfigObj(adapter: WireAdapter) {
-    return b.objectExpression(
-        adapter.config.map(({ configKey, referencedField }) =>
-            b.property(
-                'init',
-                b.identifier(configKey),
-                b.memberExpression(b.identifier('instance'), b.identifier(referencedField))
-            )
-        )
-    );
 }
 
 const bSetWiredProp = esTemplate`
@@ -117,41 +165,34 @@ const bCallWiredMethod = esTemplate`
     instance.${/*wire-decorated method*/ is.identifier}(newValue)
 `<ExpressionStatement>;
 
-const bWireAdapterPlumbing = esTemplate`
-    const wireInstance = new ${/*wire adapter constructor*/ is.identifier}((newValue) => {
+const bWireAdapterPlumbing = esTemplate`{
+    const wireInstance = new ${/*wire adapter constructor*/ is.expression}((newValue) => {
         ${/*update the decorated property or call the decorated method*/ is.expressionStatement};
     });
     wireInstance.connect?.();
     if (wireInstance.update) {
-        const wireConfigObj = ${/*mapping from lwc fields to wire config keys*/ is.objectExpression};
-
+        const getLiveConfig = () => {
+            return ${/* reactive wire config */ is.objectExpression};
+        };
         // This may look a bit weird, in that the 'update' function is called twice: once with
         // an 'undefined' value and possibly again with a context-provided value. While weird,
         // this preserves the behavior of the browser-side wire implementation as well as the
         // original SSR implementation.
-        wireInstance.update(wireConfigObj, undefined);
+        wireInstance.update(getLiveConfig(), undefined);
         __connectContext(${/*wire adapter constructor*/ 0}, instance, (newContextValue) => {
-            const wireConfigObj = ${/*mapping from lwc fields to wire config keys*/ 2};
-            wireInstance.update(wireConfigObj, newContextValue);
+            wireInstance.update(getLiveConfig(), newContextValue);
         });
     }
-`<Statement[]>;
+}`<BlockStatement>;
 
-export function bWireAdaptersPlumbing(adapters: WireAdapter[]): Statement[] {
-    return adapters.map((adapter) => {
-        const { adapterConstructorId, fieldName } = adapter;
-
+export function bWireAdaptersPlumbing(adapters: WireAdapter[]): BlockStatement[] {
+    return adapters.map(({ adapterId, config, field }) => {
         const actionUponNewValue =
-            adapter.fieldType === 'method'
-                ? bCallWiredMethod(b.identifier(fieldName))
-                : bSetWiredProp(b.identifier(fieldName));
+            is.methodDefinition(field) && field.kind === 'method'
+                ? // Validation in compile-js/index.ts `visitors` ensures `key` is an identifier
+                  bCallWiredMethod(field.key as Identifier)
+                : bSetWiredProp(field.key as Identifier);
 
-        return b.blockStatement(
-            bWireAdapterPlumbing(
-                b.identifier(adapterConstructorId),
-                actionUponNewValue,
-                bWireConfigObj(adapter)
-            )
-        );
+        return bWireAdapterPlumbing(adapterId, actionUponNewValue, config);
     });
 }

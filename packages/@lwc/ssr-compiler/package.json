@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-compiler",
-    "version": "8.9.0",
+    "version": "8.10.1",
     "description": "Compile component for use during server-side rendering",
     "keywords": [
         "compiler",
