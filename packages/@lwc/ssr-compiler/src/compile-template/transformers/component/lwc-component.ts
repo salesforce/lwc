@@ -28,8 +28,9 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         ${
             /*
                 Slotted content is inserted here.
-                Note that the slotted content will be stored in a variable named `slottedContent` which
-                is used below when the dynamic component's generateMarkup function is invoked.
+                Note that the slotted content will be stored in variables named 
+                `shadowSlottedContent`/`lightSlottedContent` which are used below 
+                when the child's generateMarkup function is invoked.
             */
             is.statement
         }
@@ -40,7 +41,8 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
             null, 
             childProps,
             childAttrs,
-            slottedContent,
+            shadowSlottedContent,
+            lightSlottedContent,
             scopeToken
         );
     }

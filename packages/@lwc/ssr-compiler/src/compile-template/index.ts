@@ -20,7 +20,14 @@ import type { CompilationMode } from '../shared';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
-    export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
+    export default async function* tmpl(
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            Cmp, 
+            instance
+    ) {
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -41,10 +48,10 @@ const bExportTemplate = esTemplate`
 
         if (!isLightDom) {
             yield '</template>';
-            if (slottedContent?.shadow) {
+            if (shadowSlottedContent) {
                 // instance must be passed in; this is used to establish the contextful relationship
                 // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* slottedContent.shadow(instance);
+                yield* shadowSlottedContent(instance);
             }
         }
     }

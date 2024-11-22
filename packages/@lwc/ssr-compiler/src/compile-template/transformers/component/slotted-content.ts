@@ -22,35 +22,39 @@ import type {
 import type { TransformerContext } from '../../types';
 
 const bGenerateSlottedContent = esTemplateWithYield`
-        const slottedContent = {
-            light: Object.create(null),
-
-            // The 'instance' variable is shadowed here so that a contextful relationship
-            // is established between components rendered in slotted content & the "parent"
-            // component that contains the <slot>.
-            shadow: async function* generateSlottedContent(instance) {
+        const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
+            ? async function* generateSlottedContent(instance) {
+                // The 'instance' variable is shadowed here so that a contextful relationship
+                // is established between components rendered in slotted content & the "parent"
+                // component that contains the <slot>.
                 ${/* shadow slot content */ is.statement}
-            }
-        };
+            } 
+            // Avoid creating the object unnecessarily
+            : null;
 
-        function addContent(name, fn) {
-            let contentList = slottedContent.light[name]
+        const lightSlottedContent = ${/* hasLightSlottedContent */ is.literal} 
+            ? Object.create(null)
+            // Avoid creating the object unnecessarily
+            : null;
+        
+        function addLightContent(name, fn) {
+            let contentList = lightSlottedContent[name];
             if (contentList) {
-                contentList.push(fn)
+                contentList.push(fn);
             } else {
-                slottedContent.light[name] = [fn]
+                lightSlottedContent[name] = [fn];
             }
         }
 
-        ${/* light DOM addContent statements */ is.expressionStatement}
-        ${/* scoped slot addContent statements */ is.expressionStatement}
+        ${/* light DOM addLightContent statements */ is.expressionStatement}
+        ${/* scoped slot addLightContent statements */ is.expressionStatement}
 `<EsStatement[]>;
 
 // Note that this function name (`generateSlottedContent`) does not need to be scoped even though
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
-const bAddContent = esTemplate`
-    addContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(${
+const bAddLightContent = esTemplate`
+    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
         // FIXME: make validation work again  
@@ -78,9 +82,9 @@ export function getSlottedContent(
                 draft.attributes = draft.attributes.filter((attr) => attr.name !== 'slot');
             });
             const slotContent = irToEs(clone, cxt);
-            return b.expressionStatement(bAddContent(slotName, null, slotContent));
+            return b.expressionStatement(bAddLightContent(slotName, null, slotContent));
         } else {
-            return b.expressionStatement(bAddContent(b.literal(''), null, irToEs(child, cxt)));
+            return b.expressionStatement(bAddLightContent(b.literal(''), null, irToEs(child, cxt)));
         }
     });
 
@@ -89,16 +93,27 @@ export function getSlottedContent(
         const boundVariable = b.identifier(boundVariableName);
         cxt.pushLocalVars([boundVariableName]);
         // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
-        const addContentExpr = b.expressionStatement(
-            bAddContent(
+        const addLightContentExpr = b.expressionStatement(
+            bAddLightContent(
                 child.slotName as EsExpression,
                 boundVariable,
                 irChildrenToEs(child.children, cxt)
             )
         );
         cxt.popLocalVars();
-        return addContentExpr;
+        return addLightContentExpr;
     });
 
-    return bGenerateSlottedContent(shadowSlotContent, lightSlotContent, scopedSlotContent);
+    const hasShadowSlottedContent = b.literal(shadowSlotContent.length > 0);
+    const hasLightSlottedContent = b.literal(
+        lightSlotContent.length > 0 || scopedSlotContent.length > 0
+    );
+
+    return bGenerateSlottedContent(
+        hasShadowSlottedContent,
+        shadowSlotContent,
+        hasLightSlottedContent,
+        lightSlotContent,
+        scopedSlotContent
+    );
 }

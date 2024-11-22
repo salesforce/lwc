@@ -32,7 +32,7 @@ const bConditionalSlot = esTemplateWithYield`
             yield '<!---->';
         }
 
-        const generators = slottedContent?.light[${/* slotName */ is.expression} ?? ""];
+        const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
         if (generators) {
             for (const generator of generators) {
                 yield* generator(${/* scoped slot data */ isNullableOf(is.expression)});

@@ -30,7 +30,15 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName, props, attrs, slotted, parent, scopeToken) {
+    export async function* generateMarkup(
+            tagName, 
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            parent, 
+            scopeToken
+    ) {
         tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
@@ -63,7 +71,14 @@ const bGenerateMarkup = esTemplate`
 
         yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${/*component class*/ 3}, instance);
+        yield* tmplFn(
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            ${/*component class*/ 3}, 
+            instance
+        );
         yield \`</\${tagName}>\`;
     }
     ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
