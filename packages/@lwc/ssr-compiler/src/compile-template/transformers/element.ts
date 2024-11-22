@@ -45,8 +45,8 @@ const bYieldDynamicValue = esTemplateWithYield`
         const attrName = ${/* attribute name */ is.literal};
         let attrValue = ${/* attribute value expression */ is.expression};
         const isHtmlBooleanAttr = ${/* isHtmlBooleanAttr */ is.literal};
-
-        const shouldRenderScopeToken = attrName === 'class' &&
+        const isClassAttr = attrName === 'class';
+        const shouldRenderScopeToken = isClassAttr &&
             (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
         const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
 
@@ -62,6 +62,20 @@ const bYieldDynamicValue = esTemplateWithYield`
         if (attrName === 'tabindex') {
             const shouldNormalize = attrValue > 0 && typeof attrValue !== 'boolean';
             attrValue = shouldNormalize ? 0 : attrValue;
+        }
+        
+        if (isClassAttr && typeof attrValue === 'object') {
+            if (!Array.isArray(attrValue)) {
+                attrValue = Object.keys(attrValue).filter((key) => attrValue[key]);
+            } else {
+                attrValue = attrValue.map((item) => {
+                    if (typeof item === 'object') {
+                        return Object.keys(item).filter((key) => item[key]);
+                    } else {
+                        return item;
+                    }
+                });
+            }
         }
 
         if (attrValue !== undefined && attrValue !== null) {
