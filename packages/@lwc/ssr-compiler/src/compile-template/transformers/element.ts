@@ -63,13 +63,14 @@ const bYieldDynamicValue = esTemplateWithYield`
             const shouldNormalize = attrValue > 0 && typeof attrValue !== 'boolean';
             attrValue = shouldNormalize ? 0 : attrValue;
         }
-        
-        if (isClassAttr && typeof attrValue === 'object') {
-            attrValue = normalizeClass(attrValue);
-        }
 
         if (attrValue !== undefined && attrValue !== null) {
             yield ' ' + attrName;
+
+            if (isClassAttr && typeof attrValue === 'object') {
+                attrValue = normalizeClass(attrValue);
+            }
+
             if (attrValue !== '') {
                 yield \`="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
             }
