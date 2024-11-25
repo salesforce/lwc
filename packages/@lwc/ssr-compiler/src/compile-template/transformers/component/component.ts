@@ -22,8 +22,9 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         ${
             /*
                 Slotted content is inserted here.
-                Note that the slotted content will be stored in a variable named `slottedContent` which
-                is used below when the child's generateMarkup function is invoked.
+                Note that the slotted content will be stored in variables named 
+                `shadowSlottedContent`/`lightSlottedContent` which are used below 
+                when the child's generateMarkup function is invoked.
             */
             is.statement
         }
@@ -35,7 +36,8 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             ${/* tag name */ is.literal}, 
             childProps, 
             childAttrs, 
-            slottedContent,
+            shadowSlottedContent,
+            lightSlottedContent,
             instance,
             scopeToken,
         );
