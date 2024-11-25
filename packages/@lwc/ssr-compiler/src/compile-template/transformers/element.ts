@@ -74,9 +74,9 @@ const bYieldClassDynamicValue = esTemplateWithYield`
     {
         const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
         const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
-        const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
 
-        if (prefix || attrValue) {
+        if (attrValue) {
+            const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
             yield \` class="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
         }
     }
