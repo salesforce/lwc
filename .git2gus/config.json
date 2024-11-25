@@ -1,5 +1,6 @@
 {
     "productTag": "a1aB0000000g309IAA",
     "defaultBuild": "252",
-    "hideWorkItemUrl": true
+    "hideWorkItemUrl": true,
+    "statusWhenClosed": "CLOSED"
 }
