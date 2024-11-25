@@ -716,18 +716,7 @@ function shc(content: unknown): SanitizedHtmlContent {
     return createSanitizedHtmlContent(sanitizedString);
 }
 
-/**
- * [ncls] - Normalize class name attribute.
- *
- * Transforms the provided class property value from an object/string into a string the diffing algo
- * can operate on.
- *
- * This implementation is borrowed from Vue:
- * https://github.com/vuejs/core/blob/e790e1bdd7df7be39e14780529db86e4da47a3db/packages/shared/src/normalizeProp.ts#L63-L82
- */
-function ncls(value: unknown): string | undefined {
-    return normalizeClass(value);
-}
+const ncls = normalizeClass;
 
 const api = ObjectFreeze({
     s,
