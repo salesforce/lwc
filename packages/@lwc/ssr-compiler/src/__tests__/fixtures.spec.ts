@@ -104,31 +104,25 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
             const module = (await import(compiledFixturePath)) as FixtureModule;
 
             let result;
-            try {
-                result = await serverSideRenderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config?.props ?? {},
-                    SSR_MODE
-                );
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
+            let error;
 
             try {
-                return {
-                    [errorFile]: '',
-                    [expectedFile]: formatHTML(result),
-                };
-            } catch (_err: any) {
-                return {
-                    [errorFile]: `Test helper could not format HTML:\n\n${result}`,
-                    [expectedFile]: '',
-                };
+                result = formatHTML(
+                    await serverSideRenderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {},
+                        SSR_MODE
+                    )
+                );
+            } catch (err: any) {
+                error = err.message;
             }
+
+            return {
+                [errorFile]: error,
+                [expectedFile]: result,
+            };
         }
     );
 });

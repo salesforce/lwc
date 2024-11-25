@@ -116,7 +116,7 @@ function testFixtures(options?: RollupLwcOptions) {
                 const message = err?.message?.match(/(LWC\d+[^\n]+)/)?.[1];
                 return {
                     'expected.html': '',
-                    'error.txt': message ?? '',
+                    'error.txt': message,
                 };
             }
 
@@ -136,10 +136,12 @@ function testFixtures(options?: RollupLwcOptions) {
             let result;
             let err;
             try {
-                result = lwcEngineServer!.renderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config?.props ?? {}
+                result = formatHTML(
+                    lwcEngineServer!.renderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {}
+                    )
                 );
             } catch (_err: any) {
                 if (_err.name === 'AssertionError') {
@@ -153,8 +155,8 @@ function testFixtures(options?: RollupLwcOptions) {
             });
 
             return {
-                'expected.html': result ? formatHTML(result) : '',
-                'error.txt': err ?? '',
+                'expected.html': result,
+                'error.txt': err,
             };
         }
     );

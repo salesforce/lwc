@@ -13,13 +13,13 @@ import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
-import { addGenerateMarkupExport } from './generate-markup';
+import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
 import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode } from '../shared';
+import type { CompilationMode } from '@lwc/shared';
 import type {
     PropertyDefinition as DecoratatedPropertyDefinition,
     MethodDefinition as DecoratatedMethodDefinition,
@@ -192,7 +192,7 @@ export default function compileJS(
         };
     }
 
-    addGenerateMarkupExport(ast, state, tagName, filename);
+    addGenerateMarkupFunction(ast, state, tagName, filename);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

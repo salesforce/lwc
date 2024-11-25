@@ -13,7 +13,6 @@ import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
-    ExportNamedDeclaration,
     Program,
     SimpleCallExpression,
     Identifier,
@@ -21,6 +20,7 @@ import type {
     Statement,
     ExpressionStatement,
     IfStatement,
+    FunctionDeclaration,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -30,7 +30,15 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName, props, attrs, slotted, parent, scopeToken) {
+    async function* generateMarkup(
+            tagName, 
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            parent, 
+            scopeToken
+    ) {
         tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
@@ -63,11 +71,18 @@ const bGenerateMarkup = esTemplate`
 
         yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${/*component class*/ 3}, instance);
+        yield* tmplFn(
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            ${/*component class*/ 3}, 
+            instance
+        );
         yield \`</\${tagName}>\`;
     }
     ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-`<[ExportNamedDeclaration, ExpressionStatement]>;
+`<[FunctionDeclaration, ExpressionStatement]>;
 
 const bExposeTemplate = esTemplate`
     if (${/*template*/ is.identifier}) {
@@ -87,7 +102,7 @@ const bExposeTemplate = esTemplate`
  *  - yielding the tag name & attributes
  *  - deferring to the template function for yielding child content
  */
-export function addGenerateMarkupExport(
+export function addGenerateMarkupFunction(
     program: Program,
     state: ComponentMetaState,
     tagName: string,

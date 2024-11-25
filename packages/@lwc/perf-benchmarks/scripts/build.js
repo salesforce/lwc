@@ -147,14 +147,17 @@ async function processBenchmarkFile(benchmarkFile, directoryHash) {
     const benchmarkFileBasename = path.basename(benchmarkFile);
     const htmlFilename = path.join(targetDir, benchmarkFileBasename.replace('.js', '.html'));
 
+    // Generate a pretty name for the benchmark to display in Tachometer results
+    const splitFileName = benchmarkFile.split(path.sep);
+    const engineType = splitFileName[splitFileName.indexOf('__benchmarks__') + 1];
+    const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
+
     async function writeHtmlFile() {
         const html = createHtml(benchmarkFile);
         await writeFile(htmlFilename, html, 'utf8');
     }
 
     async function writeTachometerJsonFile() {
-        const engineType = benchmarkFile.includes('/engine-server/') ? 'server' : 'dom';
-        const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
         const cpuThrottlingRate =
             typeof BENCHMARK_CPU_THROTTLING_RATE === 'number'
                 ? BENCHMARK_CPU_THROTTLING_RATE
