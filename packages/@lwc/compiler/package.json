@@ -54,5 +54,8 @@
         "@lwc/ssr-compiler": "8.11.0",
         "@lwc/style-compiler": "8.11.0",
         "@lwc/template-compiler": "8.11.0"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

@@ -54,5 +54,8 @@
         "@types/he": "^1.2.3",
         "estree-walker": "~3.0.3",
         "parse5": "^7.2.1"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

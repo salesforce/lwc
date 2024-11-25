@@ -32,5 +32,8 @@
         "karma-coverage": "^2.2.1",
         "karma-jasmine": "^5.1.0",
         "karma-sauce-launcher-fix-firefox": "3.0.1"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

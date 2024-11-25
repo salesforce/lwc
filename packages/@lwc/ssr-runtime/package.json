@@ -47,5 +47,8 @@
         "@lwc/shared": "8.11.0",
         "@lwc/engine-core": "8.11.0",
         "observable-membrane": "2.0.0"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

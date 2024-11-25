@@ -46,6 +46,9 @@
         "@lwc/shared": "8.11.0",
         "@lwc/features": "8.11.0"
     },
+    "volta": {
+        "extends": "../../../package.json"
+    },
     "lwc": {
         "modules": [
             {

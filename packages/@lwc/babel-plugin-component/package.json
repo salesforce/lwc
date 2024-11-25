@@ -53,5 +53,8 @@
     },
     "peerDependencies": {
         "@babel/core": "^7"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

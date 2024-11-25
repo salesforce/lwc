@@ -45,5 +45,8 @@
             }
         }
     },
-    "dependencies": {}
+    "dependencies": {},
+    "volta": {
+        "extends": "../../../package.json"
+    }
 }

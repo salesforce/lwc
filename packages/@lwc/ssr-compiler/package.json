@@ -55,5 +55,8 @@
     },
     "devDependencies": {
         "@types/estree": "^1.0.6"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

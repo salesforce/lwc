@@ -110,6 +110,11 @@ for (const dir of globSync('./packages/@lwc/*')) {
         dependencies,
         devDependencies,
         peerDependencies,
+        // Use the same volta config in every subdirectory so that we always get the same node/yarn versions
+        // See: https://docs.volta.sh/advanced/workspaces
+        volta: {
+            extends: '../../../package.json',
+        },
     };
 
     const exposedModules = LWC_EXPOSED_MODULES[name];
