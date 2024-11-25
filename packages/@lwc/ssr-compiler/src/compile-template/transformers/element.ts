@@ -65,17 +65,7 @@ const bYieldDynamicValue = esTemplateWithYield`
         }
         
         if (isClassAttr && typeof attrValue === 'object') {
-            if (!Array.isArray(attrValue)) {
-                attrValue = Object.keys(attrValue).filter((key) => attrValue[key]);
-            } else {
-                attrValue = attrValue.map((item) => {
-                    if (typeof item === 'object') {
-                        return Object.keys(item).filter((key) => item[key]);
-                    } else {
-                        return item;
-                    }
-                });
-            }
+            attrValue = normalizeClass(attrValue);
         }
 
         if (attrValue !== undefined && attrValue !== null) {
@@ -152,6 +142,11 @@ function yieldAttrOrPropDynamicValue(
     cxt.import('htmlEscape');
     const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
+
+    if (name === 'class') {
+        cxt.import('normalizeClass');
+    }
+
     return [bYieldDynamicValue(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
 }
 

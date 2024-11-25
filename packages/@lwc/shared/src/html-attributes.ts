@@ -5,7 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
+import {
+    isArray,
+    isNull,
+    isObject,
+    isString,
+    isUndefined,
+    keys,
+    StringCharCodeAt,
+    StringFromCharCode,
+    StringReplace,
+    StringTrim,
+} from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -177,4 +188,36 @@ export function kebabCaseToCamelCase(attrName: string): string {
     }
 
     return result;
+}
+
+export function normalizeClass(value: unknown): string | undefined {
+    if (isUndefined(value) || isNull(value)) {
+        // Returning undefined here improves initial render cost, because the old vnode's class will be considered
+        // undefined in the `patchClassAttribute` routine, so `oldClass === newClass` will be true so we return early
+        return undefined;
+    }
+
+    let res = '';
+
+    if (isString(value)) {
+        res = value;
+    } else if (isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+            const normalized = normalizeClass(value[i]);
+            if (normalized) {
+                res += normalized + ' ';
+            }
+        }
+    } else if (isObject(value) && !isNull(value)) {
+        // Iterate own enumerable keys of the object
+        const _keys = keys(value);
+        for (let i = 0; i < _keys.length; i += 1) {
+            const key = _keys[i];
+            if ((value as Record<string, unknown>)[key]) {
+                res += key + ' ';
+            }
+        }
+    }
+
+    return StringTrim.call(res);
 }
