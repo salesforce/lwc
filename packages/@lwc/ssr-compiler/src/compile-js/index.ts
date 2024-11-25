@@ -19,7 +19,7 @@ import { catalogWireAdapters } from './wire';
 import { removeDecoratorImport } from './remove-decorator-import';
 import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode } from '../shared';
+import type { CompilationMode } from '@lwc/shared';
 import type {
     PropertyDefinition as DecoratatedPropertyDefinition,
     MethodDefinition as DecoratatedMethodDefinition,
