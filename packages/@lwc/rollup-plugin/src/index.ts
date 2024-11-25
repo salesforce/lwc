@@ -16,9 +16,8 @@ import type { Plugin, SourceMapInput, RollupLog } from 'rollup';
 import type { FilterPattern } from '@rollup/pluginutils';
 import type { StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import type { ModuleRecord } from '@lwc/module-resolver';
-import type { APIVersion } from '@lwc/shared';
+import type { APIVersion, CompilationMode } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
-import type { CompilationMode } from '@lwc/ssr-compiler';
 
 export interface RollupLwcOptions {
     /** A boolean indicating whether to compile for SSR runtime target. */
