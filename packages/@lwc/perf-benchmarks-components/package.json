@@ -6,10 +6,7 @@
         "build": "rm -fr dist && rollup -c ./rollup.config.mjs"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "workspace:*",
-        "@lwc/engine-dom": "workspace:*",
-        "@lwc/synthetic-shadow": "workspace:*",
-        "@lwc/wire-service": "workspace:*"
+        "@lwc/rollup-plugin": "workspace:*"
     },
     "nx": {
         "targets": {

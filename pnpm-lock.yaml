@@ -270,9 +270,6 @@ importers:
 
   packages/@lwc/integration-karma:
     devDependencies:
-      '@lwc/aria-reflection':
-        specifier: workspace:*
-        version: link:../aria-reflection
       '@lwc/compiler':
         specifier: workspace:*
         version: link:../compiler
@@ -285,15 +282,9 @@ importers:
       '@lwc/rollup-plugin':
         specifier: workspace:*
         version: link:../rollup-plugin
-      '@lwc/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@lwc/synthetic-shadow':
         specifier: workspace:*
         version: link:../synthetic-shadow
-      '@lwc/wire-service':
-        specifier: workspace:*
-        version: link:../wire-service
       '@types/jasmine':
         specifier: ^5.1.4
         version: 5.1.4
@@ -327,18 +318,9 @@ importers:
 
   packages/@lwc/integration-tests:
     devDependencies:
-      '@lwc/engine-dom':
-        specifier: workspace:*
-        version: link:../engine-dom
       '@lwc/rollup-plugin':
         specifier: workspace:*
         version: link:../rollup-plugin
-      '@lwc/synthetic-shadow':
-        specifier: workspace:*
-        version: link:../synthetic-shadow
-      '@lwc/wire-service':
-        specifier: workspace:*
-        version: link:../wire-service
       '@wdio/cli':
         specifier: ^9.2.14
         version: 9.3.1
@@ -369,9 +351,6 @@ importers:
       minimist:
         specifier: ^1.2.8
         version: 1.2.8
-      tsx:
-        specifier: ^4.19.2
-        version: 4.19.2
       webdriverio:
         specifier: ^9.0.7
         version: 9.3.1
@@ -450,18 +429,9 @@ importers:
 
   packages/@lwc/perf-benchmarks-components:
     devDependencies:
-      '@lwc/engine-dom':
-        specifier: workspace:*
-        version: link:../engine-dom
       '@lwc/rollup-plugin':
         specifier: workspace:*
         version: link:../rollup-plugin
-      '@lwc/synthetic-shadow':
-        specifier: workspace:*
-        version: link:../synthetic-shadow
-      '@lwc/wire-service':
-        specifier: workspace:*
-        version: link:../wire-service
 
   packages/@lwc/rollup-plugin:
     dependencies:
@@ -481,21 +451,9 @@ importers:
         specifier: '>=4.22.4'
         version: 4.27.3
     devDependencies:
-      '@lwc/engine-dom':
-        specifier: workspace:*
-        version: link:../engine-dom
       '@lwc/errors':
         specifier: workspace:*
         version: link:../errors
-      '@lwc/ssr-compiler':
-        specifier: workspace:*
-        version: link:../ssr-compiler
-      '@lwc/synthetic-shadow':
-        specifier: workspace:*
-        version: link:../synthetic-shadow
-      '@lwc/wire-service':
-        specifier: workspace:*
-        version: link:../wire-service
 
   packages/@lwc/shared: {}
 
@@ -680,18 +638,9 @@ importers:
 
   playground:
     devDependencies:
-      '@lwc/engine-dom':
-        specifier: workspace:*
-        version: link:../packages/@lwc/engine-dom
       '@lwc/rollup-plugin':
         specifier: workspace:*
         version: link:../packages/@lwc/rollup-plugin
-      '@lwc/synthetic-shadow':
-        specifier: workspace:*
-        version: link:../packages/@lwc/synthetic-shadow
-      '@lwc/wire-service':
-        specifier: workspace:*
-        version: link:../packages/@lwc/wire-service
       '@rollup/plugin-replace':
         specifier: ^6.0.1
         version: 6.0.1(rollup@4.27.3)
