@@ -47,16 +47,23 @@ const visitors: Visitors = {
     },
     ClassDeclaration(path, state) {
         const { node } = path;
-        if (!node?.superClass) {
-            return;
-        }
-        // Assume everything with a superclass is an LWC component
-        state.isLWC = true;
-        if (node.id) {
-            state.lwcClassName = node.id.name;
-        } else {
-            node.id = b.identifier('DefaultComponentName');
-            state.lwcClassName = 'DefaultComponentName';
+        if (
+            node?.superClass &&
+            // export default class extends LightningElement {}
+            (is.exportDefaultDeclaration(path.parentPath) ||
+                // class Cmp extends LightningElement {}; export default Cmp
+                path.scope
+                    ?.getBinding(node.id.name)
+                    ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
+        ) {
+            // If it's a default-exported class with a superclass, then it's an LWC component!
+            state.isLWC = true;
+            if (node.id) {
+                state.lwcClassName = node.id.name;
+            } else {
+                node.id = b.identifier('DefaultComponentName');
+                state.lwcClassName = 'DefaultComponentName';
+            }
         }
     },
     PropertyDefinition(path, state) {
