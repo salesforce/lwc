@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-// @ts-check
 const path = require('node:path');
 const { readFile, writeFile, stat, readdir } = require('node:fs/promises');
-const childProcess = require('node:child_process');
 const prettier = require('prettier');
 const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
 
@@ -25,16 +23,6 @@ async function exists(filename) {
     }
 }
 
-const licenses = JSON.parse(
-    childProcess.spawnSync('pnpm', ['licenses', 'list', '--json'], { encoding: 'utf-8' }).stdout
-);
-
-if (!licenses || typeof licenses !== 'object') {
-    throw new Error('Failed to list dependencies');
-}
-
-const list = Object.values(licenses).flat();
-
 async function findLicenseText(depName) {
     // Iterate through possible names for the license file
     const names = ['LICENSE', 'LICENSE.md', 'LICENSE.txt'];
@@ -42,7 +30,7 @@ async function findLicenseText(depName) {
     // We would use require.resolve, but 1) that doesn't work if the module lacks a "main" in its `package.json`,
     // and 2) it gives us a deep `./path/to/index.js` which makes it harder to find a top-level LICENSE file. So
     // just assume that our deps are hoisted to the top-level `node_modules`.
-    const resolvedDepPath = list.find((dep) => dep.name === depName).paths[0];
+    const resolvedDepPath = path.join(process.cwd(), 'node_modules', depName);
 
     for (const name of names) {
         const fullFilePath = path.join(resolvedDepPath, name);
