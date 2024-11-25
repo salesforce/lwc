@@ -48,7 +48,6 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     const bundle = await rollup({
         input,
         external: ['lwc', '@lwc/ssr-runtime', 'vitest'],
-        treeshake: false,
         plugins: [
             lwcRollupPlugin({
                 targetSSR: true,
