@@ -16,11 +16,18 @@ import { transmogrify } from '../transmogrify';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
-import type { CompilationMode } from '../shared';
+import type { CompilationMode } from '@lwc/shared';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
-    export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
+    export default async function* tmpl(
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            Cmp, 
+            instance
+    ) {
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -28,9 +35,10 @@ const bExportTemplate = esTemplate`
         
         const { stylesheets: staticStylesheets } = Cmp;
         if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
-            const stylesheets = [defaultStylesheets, defaultScopedStylesheets, staticStylesheets];
             yield renderStylesheets(
-                stylesheets, 
+                defaultStylesheets, 
+                defaultScopedStylesheets, 
+                staticStylesheets,
                 stylesheetScopeToken, 
                 Cmp, 
                 hasScopedStylesheets,
@@ -41,10 +49,10 @@ const bExportTemplate = esTemplate`
 
         if (!isLightDom) {
             yield '</template>';
-            if (slottedContent?.shadow) {
+            if (shadowSlottedContent) {
                 // instance must be passed in; this is used to establish the contextful relationship
                 // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* slottedContent.shadow(instance);
+                yield* shadowSlottedContent(instance);
             }
         }
     }

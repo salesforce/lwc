@@ -68,13 +68,6 @@ describe('renderComponent', () => {
         module = (await import(outputFile)) as ComponentModule;
     });
 
-    // TODO [#4726]: remove `generateMarkup` export
-    test('can call `renderComponent()` on `generateMarkup`', async () => {
-        const result = await renderComponent('x-component', module!.generateMarkup, {});
-
-        expect(result).toContain('<h1>Hello world</h1>');
-    });
-
     test('can call `renderComponent()` on the default export', async () => {
         const result = await renderComponent('x-component', module!.default, {});
 

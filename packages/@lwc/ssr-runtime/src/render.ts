@@ -82,7 +82,8 @@ export function renderAttrsNoYield(
 export function* fallbackTmpl(
     _props: unknown,
     _attrs: unknown,
-    _slotted: unknown,
+    _shadowSlottedContent: unknown,
+    _lightSlottedContent: unknown,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
@@ -95,7 +96,8 @@ export function fallbackTmplNoYield(
     emit: (segment: string) => void,
     _props: unknown,
     _attrs: unknown,
-    _slotted: unknown,
+    _shadowSlottedContent: unknown,
+    _lightSlottedContent: unknown,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
@@ -108,7 +110,8 @@ export type GenerateMarkupFn = (
     tagName: string,
     props: Properties | null,
     attrs: Attributes | null,
-    slotted: Record<number | string, AsyncGenerator<string>> | null
+    shadowSlottedContent: AsyncGenerator<string> | null,
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null
 ) => AsyncGenerator<string>;
 
 export type GenerateMarkupFnAsyncNoGen = (
@@ -116,7 +119,8 @@ export type GenerateMarkupFnAsyncNoGen = (
     tagName: string,
     props: Record<string, any> | null,
     attrs: Attributes | null,
-    slotted: Record<number | string, AsyncGenerator<string>> | null
+    shadowSlottedContent: AsyncGenerator<string> | null,
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null
 ) => Promise<void>;
 
 export type GenerateMarkupFnSyncNoGen = (
@@ -124,7 +128,8 @@ export type GenerateMarkupFnSyncNoGen = (
     tagName: string,
     props: Record<string, any> | null,
     attrs: Attributes | null,
-    slotted: Record<number | string, AsyncGenerator<string>> | null
+    shadowSlottedContent: AsyncGenerator<string> | null,
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null
 ) => void;
 
 type GenerateMarkupFnVariants =
@@ -138,7 +143,7 @@ interface ComponentWithGenerateMarkup {
 
 export async function serverSideRenderComponent(
     tagName: string,
-    Component: GenerateMarkupFnVariants | ComponentWithGenerateMarkup,
+    Component: ComponentWithGenerateMarkup,
     props: Properties = {},
     mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE
 ): Promise<string> {
@@ -146,9 +151,7 @@ export async function serverSideRenderComponent(
         throw new Error(`tagName must be a string, found: ${tagName}`);
     }
 
-    // TODO [#4726]: remove `generateMarkup` export
-    const generateMarkup =
-        SYMBOL__GENERATE_MARKUP in Component ? Component[SYMBOL__GENERATE_MARKUP] : Component;
+    const generateMarkup = Component[SYMBOL__GENERATE_MARKUP];
 
     let markup = '';
     const emit = (segment: string) => {
@@ -160,14 +163,22 @@ export async function serverSideRenderComponent(
             tagName,
             props,
             null,
+            null,
             null
         )) {
             markup += segment;
         }
     } else if (mode === 'async') {
-        await (generateMarkup as GenerateMarkupFnAsyncNoGen)(emit, tagName, props, null, null);
+        await (generateMarkup as GenerateMarkupFnAsyncNoGen)(
+            emit,
+            tagName,
+            props,
+            null,
+            null,
+            null
+        );
     } else if (mode === 'sync') {
-        (generateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null);
+        (generateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null, null);
     } else {
         throw new Error(`Invalid mode: ${mode}`);
     }
