@@ -46,10 +46,6 @@ const bYieldDynamicValue = esTemplateWithYield`
         let attrValue = ${/* attribute value expression */ is.expression};
         const isHtmlBooleanAttr = ${/* isHtmlBooleanAttr */ is.literal};
 
-        const shouldRenderScopeToken = attrName === 'class' &&
-            (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
-        const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
-
         // Global HTML boolean attributes are specially coerced into booleans
         // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/template-compiler/src/codegen/index.ts#L450-L454
         if (isHtmlBooleanAttr) {
@@ -66,9 +62,22 @@ const bYieldDynamicValue = esTemplateWithYield`
 
         if (attrValue !== undefined && attrValue !== null) {
             yield ' ' + attrName;
+
             if (attrValue !== '') {
-                yield \`="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
+                yield \`="\${htmlEscape(String(attrValue), true)}"\`;
             }
+        }
+    }
+`<EsBlockStatement>;
+
+const bYieldClassDynamicValue = esTemplateWithYield`
+    {
+        const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
+        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
+
+        if (attrValue) {
+            const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
+            yield \` class="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
         }
     }
 `<EsBlockStatement>;
@@ -136,9 +145,20 @@ function yieldAttrOrPropDynamicValue(
     cxt: TransformerContext
 ): EsStatement[] {
     cxt.import('htmlEscape');
-    const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-    return [bYieldDynamicValue(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
+    switch (name) {
+        case 'class':
+            cxt.import('normalizeClass');
+            return [bYieldClassDynamicValue(scopedExpression)];
+        default:
+            return [
+                bYieldDynamicValue(
+                    b.literal(name),
+                    scopedExpression,
+                    b.literal(isBooleanAttribute(name, elementName))
+                ),
+            ];
+    }
 }
 
 function reorderAttributes(
