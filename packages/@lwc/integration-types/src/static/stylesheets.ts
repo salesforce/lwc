@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/// <reference types="@lwc/shared" />
 import { LightningElement } from 'lwc';
 import unscoped from './stylesheet.css';
 import scoped from './stylesheet.scoped.css';
