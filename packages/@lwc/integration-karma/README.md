@@ -66,7 +66,7 @@ In another console tab, export the following env vars:
 Run:
 
 ```bash
-pnpm dlx karma start ./scripts/karma-configs/test/sauce.js --single-run
+pnpm exec karma start ./scripts/karma-configs/test/sauce.js --single-run
 ```
 
 This will connect to Sauce Labs, start the browser, and run the tests.
