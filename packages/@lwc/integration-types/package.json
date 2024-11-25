@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-types",
     "private": true,
-    "version": "8.10.1",
+    "version": "8.11.0",
     "description": "Type validation for LWC packages",
     "type": "module",
     "scripts": {

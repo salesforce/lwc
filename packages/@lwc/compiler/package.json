@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/compiler",
-    "version": "8.10.1",
+    "version": "8.11.0",
     "description": "LWC compiler",
     "keywords": [
         "lwc"
