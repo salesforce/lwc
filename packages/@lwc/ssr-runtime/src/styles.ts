@@ -4,43 +4,70 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { flattenStylesheets } from '@lwc/shared';
+import { isArray } from '@lwc/shared';
 import { validateStyleTextContents } from './validate-style-text-contents';
 import type { LightningElementConstructor } from './lightning-element';
-import type { Stylesheets } from '@lwc/shared';
+import type { Stylesheets, Stylesheet } from '@lwc/shared';
+
+type ForgivingStylesheets =
+    | Stylesheets
+    | Stylesheet
+    | undefined
+    | null
+    | Array<Stylesheets | undefined | null>;
+
+// Traverse in the same order as `flattenStylesheets` but without creating unnecessary additional arrays
+function traverseStylesheets(
+    stylesheets: ForgivingStylesheets,
+    callback: (stylesheet: Stylesheet) => void
+): void {
+    if (isArray(stylesheets)) {
+        for (let i = 0; i < stylesheets.length; i++) {
+            traverseStylesheets(stylesheets[i], callback);
+        }
+    } else if (stylesheets) {
+        callback(stylesheets);
+    }
+}
 
 export function hasScopedStaticStylesheets(Component: LightningElementConstructor): boolean {
-    const { stylesheets } = Component;
-    if (stylesheets) {
-        return flattenStylesheets(stylesheets).some((stylesheet) => stylesheet.$scoped$);
-    }
-    return false;
+    let scoped: boolean = false;
+    traverseStylesheets(Component.stylesheets, (stylesheet) => {
+        scoped ||= !!stylesheet.$scoped$;
+    });
+    return scoped;
 }
 
 export function renderStylesheets(
-    stylesheets: Array<Stylesheets | undefined>,
+    defaultStylesheets: ForgivingStylesheets,
+    defaultScopedStylesheets: ForgivingStylesheets,
+    staticStylesheets: ForgivingStylesheets,
     scopeToken: string,
     Component: LightningElementConstructor,
     hasScopedTemplateStyles: boolean
 ): string {
     const hasAnyScopedStyles = hasScopedTemplateStyles || hasScopedStaticStylesheets(Component);
+    const { renderMode } = Component;
 
     let result = '';
 
-    const truthyStylesheets = stylesheets.filter(Boolean) as Array<Stylesheets>;
-    for (const stylesheet of flattenStylesheets(truthyStylesheets)) {
-        // TODO [#2869]: `<style>`s should not have scope token classes
-        result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">`;
+    const renderStylesheet = (stylesheet: Stylesheet) => {
+        const { $scoped$: scoped } = stylesheet;
 
-        const token = stylesheet.$scoped$ ? scopeToken : undefined;
-        const useActualHostSelector = !stylesheet.$scoped$ || Component.renderMode !== 'light';
+        const token = scoped ? scopeToken : undefined;
+        const useActualHostSelector = !scoped || renderMode !== 'light';
         const useNativeDirPseudoclass = true;
 
         const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
         validateStyleTextContents(styleContents);
 
-        result += styleContents + '</style>';
-    }
+        // TODO [#2869]: `<style>`s should not have scope token classes
+        result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
+    };
+
+    traverseStylesheets(defaultStylesheets, renderStylesheet);
+    traverseStylesheets(defaultScopedStylesheets, renderStylesheet);
+    traverseStylesheets(staticStylesheets, renderStylesheet);
 
     return result;
 }

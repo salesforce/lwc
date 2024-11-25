@@ -143,7 +143,7 @@ interface ComponentWithGenerateMarkup {
 
 export async function serverSideRenderComponent(
     tagName: string,
-    Component: GenerateMarkupFnVariants | ComponentWithGenerateMarkup,
+    Component: ComponentWithGenerateMarkup,
     props: Properties = {},
     mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE
 ): Promise<string> {
@@ -151,9 +151,7 @@ export async function serverSideRenderComponent(
         throw new Error(`tagName must be a string, found: ${tagName}`);
     }
 
-    // TODO [#4726]: remove `generateMarkup` export
-    const generateMarkup =
-        SYMBOL__GENERATE_MARKUP in Component ? Component[SYMBOL__GENERATE_MARKUP] : Component;
+    const generateMarkup = Component[SYMBOL__GENERATE_MARKUP];
 
     let markup = '';
     const emit = (segment: string) => {

@@ -137,13 +137,8 @@ export function testFixtureDir<T extends TestFixtureConfig>(
 
             for (const [outputName, content] of Object.entries(outputs)) {
                 const outputPath = path.resolve(dirname, outputName);
-
                 try {
-                    if (content === undefined) {
-                        expect(fs.existsSync(outputPath)).toBe(false);
-                    } else {
-                        await expect(content).toMatchFileSnapshot(outputPath);
-                    }
+                    await expect(content ?? '').toMatchFileSnapshot(outputPath);
                 } catch (err) {
                     if (typeof err === 'object' && err !== null) {
                         // Hide unhelpful noise in the stack trace
