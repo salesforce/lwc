@@ -29,8 +29,9 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
+        const Ctor = ${/* Component */ is.identifier};
 
-        yield* ${/* generateMarkup */ is.identifier}(
+        yield* Ctor[__SYMBOL__GENERATE_MARKUP](
             ${/* tag name */ is.literal}, 
             childProps, 
             childAttrs, 
@@ -43,10 +44,13 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 
 export const Component: Transformer<IrComponent> = function Component(node, cxt) {
     // Import the custom component's generateMarkup export.
-    const childGeneratorLocalName = `generateMarkup_${toPropertyName(node.name)}`;
+    const childComponentLocalName = `ChildComponentCtor_${toPropertyName(node.name)}`;
     const importPath = kebabcaseToCamelcase(node.name);
-    cxt.import({ generateMarkup: childGeneratorLocalName }, importPath);
-    cxt.import({ getReadOnlyProxy: '__getReadOnlyProxy' });
+    cxt.import({ default: childComponentLocalName }, importPath);
+    cxt.import({
+        getReadOnlyProxy: '__getReadOnlyProxy',
+        SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+    });
     const childTagName = node.name;
 
     return [
@@ -54,7 +58,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
             getChildAttrsOrProps(node.properties, cxt),
             getChildAttrsOrProps(node.attributes, cxt),
             getSlottedContent(node, cxt),
-            b.identifier(childGeneratorLocalName),
+            b.identifier(childComponentLocalName),
             b.literal(childTagName)
         ),
     ];
