@@ -1,28 +1,68 @@
 <template>
     <x-child
-        accesskey={value.accesskey}
-        aria-label={value.arialabel}
-        dir={value.dir}
-        draggable={value.draggable}
-        hidden={value.hidden}
-        id={value.id}
-        lang={value.lang}
-        role={value.role}
-        spellcheck={value.spellcheck}
-        tabindex={value.tabindex}
-        title={value.title}
+        accesskey={supported.accesskey}
+        aria-label={supported.arialabel}
+        class={supported.class}
+        dir={supported.dir}
+        draggable={supported.draggable}
+        hidden={supported.hidden}
+        id={supported.id}
+        lang={supported.lang}
+        role={supported.role}
+        spellcheck={supported.spellcheck}
+        tabindex={supported.tabindex}
+        title={supported.title}
+
+        autocapitalize={unsupported.autocapitalize}
+        autofocus={unsupported.autofocus}
+        contenteditable={unsupported.contenteditable}
+        enterkeyhint={unsupported.enterkeyhint}
+        inert={unsupported.inert}
+        inputmode={unsupported.inputmode}
+        nonce={unsupported.nonce}
+        popover={unsupported.popover}
+        translate={unsupported.translate}
+        writingsuggestions={unsupported.writingsuggestions}
+
+        exportparts={noreflect.exportparts}
+        itemid={noreflect.itemid}
+        itemprop={noreflect.itemprop}
+        itemref={noreflect.itemref}
+        itemscope={noreflect.itemscope}
+        itemtype={noreflect.itemtype}
+        part={noreflect.part}
     ></x-child>
     <x-child
-        accesskey="tata"
-        aria-label="titi"
-        dir="auto"
-        draggable="true"
-        hidden
-        id="tutu"
-        lang="jp"
-        role="scrollbar"
-        spellcheck="false"
+        accesskey="supported"
+        aria-label="supported"
+        class="supported"
+        dir="supported"
+        draggable="supported"
+        hidden="supported"
+        id="supported"
+        lang="supported"
+        role="supported"
+        spellcheck="supported"
         tabindex="0"
-        title="tete"
+        title="supported"
+
+        autocapitalize="unsupported"
+        autofocus="unsupported"
+        contenteditable="unsupported"
+        enterkeyhint="unsupported"
+        inert="unsupported"
+        inputmode="unsupported"
+        nonce="unsupported"
+        popover="unsupported"
+        translate="unsupported"
+        writingsuggestions="unsupported"
+
+        exportparts="does-not-reflect"
+        itemid="does-not-reflect"
+        itemprop="does-not-reflect"
+        itemref="does-not-reflect"
+        itemscope="does-not-reflect"
+        itemtype="does-not-reflect"
+        part="does-not-reflect"
     ></x-child>
 </template>

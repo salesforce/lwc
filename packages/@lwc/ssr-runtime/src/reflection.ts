@@ -11,10 +11,10 @@ import {
     entries,
     htmlPropertyToAttribute,
     isAriaAttribute,
-    isGlobalHtmlAttribute,
     isNull,
     keys,
     toString,
+    REFLECTIVE_GLOBAL_PROPERTIES,
 } from '@lwc/shared';
 
 import type { LightningElement } from './lightning-element';
@@ -37,7 +37,7 @@ export function filterProperties(
         const attrName = htmlPropertyToAttribute(propName);
         if (
             publicFieldSet.has(propName) ||
-            ((isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) &&
+            ((REFLECTIVE_GLOBAL_PROPERTIES.includes(propName) || isAriaAttribute(attrName)) &&
                 !privateFieldSet.has(propName))
         ) {
             propsToAssign[propName] = props[propName];
