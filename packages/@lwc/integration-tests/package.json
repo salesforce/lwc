@@ -30,9 +30,5 @@
         "lwc": "workspace:*",
         "minimist": "^1.2.8",
         "webdriverio": "^9.0.7"
-    },
-    "volta": {
-        "node": "22.11.0",
-        "pnpm": "9.14.2"
     }
 }
