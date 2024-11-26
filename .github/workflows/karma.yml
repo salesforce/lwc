@@ -23,6 +23,7 @@ env:
     GITHUB_RUN_ID: ${{github.run_id}}
     COVERAGE: '1'
     NODE_VERSION: '20.18.0'
+    PNPM_VERSION: '9.14.2'
 
 jobs:
     run-karma-tests-group-1:
@@ -38,7 +39,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9.14.2
+                  version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -82,7 +83,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9.14.2
+                  version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -126,7 +127,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9.14.2
+                  version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -172,7 +173,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9.14.2
+                  version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -222,7 +223,7 @@ jobs:
 
             - uses: pnpm/action-setup@v4
               with:
-                  version: 9.14.2
+                  version: ${{ env.PNPM_VERSION }}
 
             - name: Setup Node
               uses: actions/setup-node@v4
