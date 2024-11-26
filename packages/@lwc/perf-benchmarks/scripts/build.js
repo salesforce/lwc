@@ -114,11 +114,14 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash, cpuThr
                                             // `@lwc/perf-benchmarks-components` itself.
                                             'rm -fr ./packages/@lwc/perf-benchmarks-components/{src,scripts}',
                                             `cp -R ${benchmarkComponentsDir}/{src,scripts} ./packages/@lwc/perf-benchmarks-components`,
+                                            // If we're running on an older LWC commit with yarn v1, avoid plug-n-play.
+                                            // Note that yarn will automatically upgrade from v1.
+                                            'yarn config set nodeLinker node-modules',
                                             // Explicitly avoiding `--immutable`/`--frozen-lockfile` here because, since
                                             // we may be running against an older LWC commit, we don't know which Yarn
-                                            // version we're using. Yarn may attempt to upgrade from an older to a newer
-                                            // version, in which case neither option would work since the lockfile is
-                                            // stale. Plus it's just not important to validate the lockfile here.
+                                            // version we're using. Yarn will attempt to upgrade from an older to a
+                                            // newer version, in which case neither option would work since the lockfile
+                                            // is stale. Plus it's just not important to validate the lockfile here.
                                             'yarn',
                                             // bust the Tachometer cache in case these files change locally
                                             `echo '${directoryHash}'`,
