@@ -31,7 +31,7 @@ const bYieldEscapedString = esTemplateWithYield`
         // Using non strict equality to align with original implementation (ex. undefined == null)
         // See: https://github.com/salesforce/lwc/blob/348130f/packages/%40lwc/engine-core/src/framework/api.ts#L548
         const massagedValue = value == null ? '' : String(value);
-        yield massagedValue === ${/* is isolated text node? */ is.literal} && '' ? '\\u200D' : htmlEscape(massagedValue);
+        yield ${/* is isolated text node? */ is.literal} && massagedValue === '' ? '\\u200D' : htmlEscape(massagedValue);
     }
 `<EsBlockStatement>;
 
