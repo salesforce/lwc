@@ -80,6 +80,10 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 9.14.2
+
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
@@ -119,6 +123,10 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 9.14.2
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -161,6 +169,10 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 9.14.2
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -207,6 +219,10 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: 9.14.2
 
             - name: Setup Node
               uses: actions/setup-node@v4
