@@ -9,7 +9,11 @@ import { builders as b, is } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 
-import type { Expression as EsExpression, Statement as EsStatement } from 'estree';
+import type {
+    Expression as EsExpression,
+    Statement as EsStatement,
+    BlockStatement as EsBlockStatement,
+} from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
     Expression as IrExpression,
@@ -21,19 +25,12 @@ import type { Transformer } from '../types';
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 const bYieldEscapedString = esTemplateWithYield`
-    const ${/* temp var */ is.identifier} = ${/* string value */ is.expression};
-    switch (typeof ${0}) {
-        case 'string':
-            yield (${/* is isolated text node? */ is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
-            break;
-        case 'number':
-        case 'boolean':
-            yield String(${0});
-            break;
-        default:
-            yield ${0} ? htmlEscape(${0}.toString()) : ${2} ? '\\u200D' : '';
+    { 
+        const value = ${/* string value */ is.expression};
+        const massagedValue = value == null ? '' : String(value);
+        yield massagedValue === '' ? '\\u200D' : htmlEscape(massagedValue);
     }
-`<EsStatement[]>;
+`<EsBlockStatement>;
 
 function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
     return node.type === 'Literal';
@@ -49,8 +46,7 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
             (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
     );
     const valueToYield = expressionIrToEs(node.value, cxt);
-    const tempVariable = b.identifier(cxt.getUniqueVar());
 
     cxt.import('htmlEscape');
-    return bYieldEscapedString(tempVariable, valueToYield, isIsolatedTextNode);
+    return [bYieldEscapedString(valueToYield, isIsolatedTextNode)];
 };
