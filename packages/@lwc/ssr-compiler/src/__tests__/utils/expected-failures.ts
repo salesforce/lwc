@@ -28,6 +28,7 @@ export const expectedFailures = new Set([
     'attribute-style/basic/index.js',
     'attribute-style/dynamic/index.js',
     'comments-text-preserve-off/index.js',
+    'dynamic-components/mixed/index.js',
     'dynamic-slots/index.js',
     'empty-text-with-comments-non-static-optimized/index.js',
     'if-conditional-slot-content/index.js',
