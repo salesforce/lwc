@@ -1,5 +1,0 @@
-packages:
-    - 'packages/@lwc/*'
-    - 'packages/lwc'
-    - 'playground'
-    - 'scripts/test-utils'
