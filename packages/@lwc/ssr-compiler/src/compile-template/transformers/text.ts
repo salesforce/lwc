@@ -19,6 +19,7 @@ import type {
     Expression as IrExpression,
     Literal as IrLiteral,
     Text as IrText,
+    Node as IrNode,
 } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
@@ -27,9 +28,10 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 const bYieldEscapedString = esTemplateWithYield`
     { 
         const value = ${/* string value */ is.expression};
-        // Using non strict equality to align with original implementation (ex. undefined == null) https://github.com/salesforce/lwc/blob/348130f1a03a6d90e350b504cd10602ed97a54fb/packages/%40lwc/engine-core/src/framework/api.ts#L548
+        // Using non strict equality to align with original implementation (ex. undefined == null)
+        // See: https://github.com/salesforce/lwc/blob/348130f/packages/%40lwc/engine-core/src/framework/api.ts#L548
         const massagedValue = value == null ? '' : String(value);
-        yield massagedValue === '' ? '\\u200D' : htmlEscape(massagedValue);
+        yield massagedValue === ${/* is isolated text node? */ is.literal} && '' ? '\\u200D' : htmlEscape(massagedValue);
     }
 `<EsBlockStatement>;
 
@@ -42,8 +44,23 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
         return [bYield(b.literal(node.value.value))];
     }
 
+    const shouldIsolate = (node?: IrNode) => {
+        switch (node?.type) {
+            case 'Text':
+                return false;
+            case 'Comment':
+                return cxt.templateOptions.preserveComments;
+            default:
+                return true;
+        }
+    };
+
+    const isIsolatedTextNode = b.literal(
+        shouldIsolate(cxt.prevSibling) && shouldIsolate(cxt.nextSibling)
+    );
+
     const valueToYield = expressionIrToEs(node.value, cxt);
 
     cxt.import('htmlEscape');
-    return [bYieldEscapedString(valueToYield)];
+    return [bYieldEscapedString(valueToYield, isIsolatedTextNode)];
 };
