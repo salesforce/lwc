@@ -24,7 +24,7 @@ describe('resolve mapped modules', () => {
         });
     });
 
-    test('mapped npm alias', () => {
+    test('mapped npm run alias', () => {
         const specifier = 'bar-common-util';
         const dirname = fixture('mapping');
 

@@ -5,13 +5,13 @@
 First, build the benchmarks:
 
 ```shell
-pnpm build:performance
+npm run build:performance
 ```
 
 Then run the benchmarks:
 
 ```shell
-pnpm test:performance
+npm run test:performance
 ```
 
 To run an individual benchmark, do:
@@ -42,12 +42,12 @@ When analyzing with the Chrome DevTools Performance tab, pay special attention t
 
 ## Testing other branches
 
-By default, the benchmark will compare the local code against the latest `master` branch from the `salesforce/lwc` repo. To test against another branch or commit, use the following environment variables when running `pnpm build:performance`:
+By default, the benchmark will compare the local code against the latest `master` branch from the `salesforce/lwc` repo. To test against another branch or commit, use the following environment variables when running `npm run build:performance`:
 
 ```shell
 BENCHMARK_REPO=https://example.com/repo.git \
   BENCHMARK_REF=branchOrTagOrCommit \
-  pnpm build:performance
+  npm run build:performance
 ```
 
 You can also use these environment variables to adjust the default benchmark settings:
@@ -79,8 +79,8 @@ be passed to `test:performance`. Otherwise, `test:performance` will use whatever
 
 This package also supports [Best](https://bestjs.dev) as a benchmark runner. To run the Best tests locally:
 
-    pnpm test:performance:best
+    npm run test:performance:best
 
 Or for CI:
 
-    pnpm test:performance:best:ci
+    npm run test:performance:best:ci

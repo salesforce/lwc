@@ -13,14 +13,14 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 ## Requirements
 
 -   [Node](https://nodejs.org/)
--   [Pnpm](https://pnpm.io/)
+-   [npm](https://npm.io/)
 
-This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Pnpm` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well. Otherwise, check the `volta` field in `package.json` to see which versions to use.
+This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `npm` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well. Otherwise, check the `volta` field in `package.json` to see which versions to use.
 
-Also note that, as of this writing, [`pnpm` support for Volta is experimental](https://docs.volta.sh/advanced/pnpm). You should add this to your `~/.bashrc`, `~/.zshrc`, or equivalent:
+Also note that, as of this writing, [`npm` support for Volta is experimental](https://docs.volta.sh/advanced/npm). You should add this to your `~/.bashrc`, `~/.zshrc`, or equivalent:
 
 ```shell
-export VOLTA_FEATURE_PNPM=1
+export VOLTA_FEATURE_npm=1
 ```
 
 ## Installation
@@ -35,10 +35,8 @@ git clone git@github.com:salesforce/lwc.git
 
 ### 2) Install Dependencies
 
-_We use [pnpm](https://pnpm.io/) because it is significantly faster than npm for our use case. See this command [cheatsheet](https://pnpm.io/pnpm-cli/)._
-
 ```bash
-pnpm install
+npm install
 ```
 
 If this fails with an error about _UNABLE_TO_GET_ISSUER_CERT_LOCALLY_, _Error: unable to get local issuer certificate_, or a registry communication issue then re-verify that step 2 was successful.
@@ -46,13 +44,13 @@ If this fails with an error about _UNABLE_TO_GET_ISSUER_CERT_LOCALLY_, _Error: u
 ## Building LWC
 
 ```bash
-pnpm build
+npm run build
 ```
 
 ## Dev / watch mode
 
 ```bash
-pnpm dev
+npm dev
 ```
 
 ## Testing
@@ -62,25 +60,25 @@ pnpm dev
 When developing LWC, utilize [vitest](https://vitest.dev/) unit testing to provide test coverage for new functionality. To run the vitest tests use the following command from the root directory:
 
 ```bash
-pnpm test
+npm run test
 ```
 
 Additionally, the testing can be started in 'watch' mode which allows for automatic test re-runs on save:
 
 ```bash
-pnpm test -- --watch
+npm run test -- --watch
 ```
 
 To execute a particular test, use the following command:
 
 ```bash
-pnpm test <path_to_test>
+npm run test <path_to_test>
 ```
 
 If you change the way the compiler outputs code, then you may see failed tests due to these changes. In those cases, you can regenerate the test snapshots like so:
 
 ```bash
-pnpm test -- -u
+npm run test -- -u
 ```
 
 If you want to debug these tests, you can do as follow:
@@ -88,7 +86,7 @@ If you want to debug these tests, you can do as follow:
 1. First, insert a new line in your test where you think it might be failing and type `debugger`. This will serve as a break point for the debugger to stop at.
 2. Open up Chrome and type in the address bar: `chrome://inspect`
 3. Click on "Open dedicated DevTools for Node"
-4. In your terminal, type the following command: `pnpm test:debug <path_to_test>`
+4. In your terminal, type the following command: `npm run test:debug <path_to_test>`
 
 Your test should now be running in the Chrome debugger which you can use to poke around and explore. Now simply hit Enter in the terminal running your Vitest process anytime you want to re-run your currently selected specs. You'll be dropped right back into the Chrome debugger.
 
@@ -106,21 +104,21 @@ When developing LWC, use integration testing to ensure functionality is correctl
 To run the Karma tests from the root:
 
 ```shell
-pnpm test:karma
+npm run test:karma
 ```
 
 To run in watch mode:
 
 ```shell
-pnpm test:karma:start
+npm run test:karma:start
 ```
 
 ### Performance testing LWC
 
 ```shell
-pnpm build
-pnpm build:performance
-pnpm test:performance
+npm run build
+npm run build:performance
+npm run test:performance
 ```
 
 This will run all performance tests comparing the current code to the latest `master` branch. See the `@lwc/perf-benchmarks` package's README for more details.
@@ -128,8 +126,8 @@ This will run all performance tests comparing the current code to the latest `ma
 ### Bundle size monitoring
 
 ```shell
-pnpm build
-pnpm bundlesize
+npm run build
+npm run bundlesize
 ```
 
 This will check that the minified bundle sizes don't exceed our thresholds. Our goal is to stay consciously aware of the bundle sizes as the repository grows over time.
@@ -212,7 +210,7 @@ _note: If no conflicts arise, these commands will ensure that your changes are a
 #### Lint your changes
 
 ```bash
-pnpm lint
+npm run lint
 ```
 
 The above command may display lint issues that are unrelated to your changes.

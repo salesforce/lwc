@@ -36,9 +36,26 @@ async function promptVersion() {
 function updatePackages(newVersion) {
     try {
         const packagesToUpdate = getPackagesToUpdate();
+        const workspacesPackageJson = new Set(
+            packagesToUpdate.map(({ packageJson }) => packageJson.name)
+        );
 
         for (const { packageJson } of packagesToUpdate) {
             packageJson.version = newVersion;
+            // Look for different types of dependencies
+            // ex: dependencies, devDependencies, peerDependencies
+            const pkgDependencyTypes = Object.keys(packageJson).filter((key) =>
+                key.match(/.*[dD]ependencies/)
+            );
+            // Update dependencies in package.json
+            for (const pkgDependencyType of pkgDependencyTypes) {
+                for (const pkgDepName of Object.keys(packageJson[pkgDependencyType])) {
+                    if (workspacesPackageJson.has(pkgDepName)) {
+                        // ex: packageJson[devDependencies][@lwc/template-compiler]
+                        packageJson[pkgDependencyType][pkgDepName] = newVersion;
+                    }
+                }
+            }
         }
 
         // Update package.json files and print updated packges

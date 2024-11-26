@@ -26,15 +26,11 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: 9.14.2
-
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: '20.18.0'
-                  cache: 'pnpm'
+                  cache: 'npm'
 
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
@@ -45,12 +41,12 @@ jobs:
               id: setup-chrome
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
 
             # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
             # See: https://github.com/google/tachometer#on-demand-dependencies
             - name: Install chromedriver
-              run: pnpm add -w chromedriver@^130
+              run: npm install --save-dev chromedriver@^130
 
             - name: Check package.json integrity
               run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
@@ -61,25 +57,25 @@ jobs:
             - name: Verify that dependencies are declared
               run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
             - name: Check formatting
-              run: pnpm prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
+              run: npm prettier --check '{packages,scripts}/**/*.{js,ts,json,md}'
             - name: Run linter
-              run: pnpm lint
+              run: npm run lint
             - name: Check the size of the LWC bundle
-              run: pnpm bundlesize
+              run: npm run bundlesize
             - name: Check types
-              run: pnpm test:types
+              run: npm run test:types
             - name: Run unit tests
-              run: pnpm test:ci
+              run: npm run test:ci
             # TODO [#4815]: enable all SSR v2 tests
             - name: Run experimental SSR fixture tests
-              run: TEST_SSR_COMPILER=1 pnpm test packages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts
+              run: TEST_SSR_COMPILER=1 npm run test packages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts
             - name: Upload unit test coverage report
               uses: actions/upload-artifact@v4
               with:
                   name: test-coverage-report
                   path: coverage/
             - name: Run benchmark smoke tests
-              run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 pnpm test:performance
+              run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 npm run test:performance
             - name: Add step summary
               # 1. Remove leading/trailing "border" lines from output
               # 2. Wrap file names in backticks

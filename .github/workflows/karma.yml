@@ -23,7 +23,6 @@ env:
     GITHUB_RUN_ID: ${{github.run_id}}
     COVERAGE: '1'
     NODE_VERSION: '20.18.0'
-    PNPM_VERSION: '9.14.2'
 
 jobs:
     run-karma-tests-group-1:
@@ -37,18 +36,8 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: ${{ env.PNPM_VERSION }}
-
-            - name: Setup Node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: 'pnpm'
-
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -57,12 +46,12 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
-            - run: pnpm sauce:ci
-            - run: DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: LEGACY_BROWSERS=1 pnpm sauce:ci
-            - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 pnpm sauce:ci
-            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 pnpm sauce:ci
-            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 pnpm sauce:ci
+            - run: npm run sauce:ci
+            - run: DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: LEGACY_BROWSERS=1 npm run sauce:ci
+            - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 npm run sauce:ci
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 npm run sauce:ci
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 npm run sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -81,18 +70,14 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: ${{ env.PNPM_VERSION }}
-
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: 'pnpm'
+                  cache: 'npm'
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -101,12 +86,12 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
-            - run: API_VERSION=58 pnpm sauce:ci
-            - run: API_VERSION=58 DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: API_VERSION=59 pnpm sauce:ci
-            - run: API_VERSION=59 DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: API_VERSION=60 pnpm sauce:ci
-            - run: API_VERSION=60 DISABLE_SYNTHETIC=1 pnpm sauce:ci
+            - run: API_VERSION=58 npm run sauce:ci
+            - run: API_VERSION=58 DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: API_VERSION=59 npm run sauce:ci
+            - run: API_VERSION=59 DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: API_VERSION=60 npm run sauce:ci
+            - run: API_VERSION=60 DISABLE_SYNTHETIC=1 npm run sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -125,18 +110,14 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: ${{ env.PNPM_VERSION }}
-
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: 'pnpm'
+                  cache: 'npm'
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -145,14 +126,14 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
-            - run: API_VERSION=61 pnpm sauce:ci
-            - run: API_VERSION=61 DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: API_VERSION=62 pnpm sauce:ci
-            - run: API_VERSION=62 DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 pnpm sauce:ci
-            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 pnpm sauce:ci
-            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 pnpm sauce:ci
+            - run: API_VERSION=61 npm run sauce:ci
+            - run: API_VERSION=61 DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: API_VERSION=62 npm run sauce:ci
+            - run: API_VERSION=62 DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 npm run sauce:ci
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 npm run sauce:ci
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 npm run sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -171,18 +152,14 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: ${{ env.PNPM_VERSION }}
-
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
-                  cache: 'pnpm'
+                  cache: 'npm'
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -191,15 +168,15 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 pnpm sauce:ci
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: NODE_ENV_FOR_TEST=production pnpm sauce:ci
-            - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 pnpm sauce:ci
-            - run: pnpm hydration:sauce:ci
-            - run: ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 pnpm hydration:sauce:ci
-            - run: NODE_ENV_FOR_TEST=production pnpm hydration:sauce:ci
-            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 pnpm hydration:sauce:ci
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 pnpm hydration:sauce:ci
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 npm run sauce:ci
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: NODE_ENV_FOR_TEST=production npm run sauce:ci
+            - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 npm run sauce:ci
+            - run: npm run hydration:sauce:ci
+            - run: ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 npm run hydration:sauce:ci
+            - run: NODE_ENV_FOR_TEST=production npm run hydration:sauce:ci
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 npm run hydration:sauce:ci
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 npm run hydration:sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -221,18 +198,8 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: ${{ env.PNPM_VERSION }}
-
-            - name: Setup Node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: 'pnpm'
-
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
               working-directory: ./
 
             - name: Download coverage results - group 1
@@ -256,7 +223,7 @@ jobs:
                   name: coverage-report-group-4
                   path: ./packages/@lwc/integration-karma/coverage
 
-            - run: pnpm coverage
+            - run: npm coverage
 
             - name: Upload combined coverage
               uses: actions/upload-artifact@v4

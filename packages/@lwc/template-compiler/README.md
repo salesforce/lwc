@@ -5,7 +5,7 @@ Compile LWC HTML template for consumption at runtime.
 ## Installation
 
 ```sh
-pnpm add --dev @lwc/template-compiler
+npm install --save-dev @lwc/template-compiler
 ```
 
 ## Usage

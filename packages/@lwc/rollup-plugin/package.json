@@ -42,13 +42,13 @@
         }
     },
     "dependencies": {
-        "@lwc/compiler": "workspace:*",
-        "@lwc/module-resolver": "workspace:*",
-        "@lwc/shared": "workspace:*",
+        "@lwc/compiler": "8.11.0",
+        "@lwc/module-resolver": "8.11.0",
+        "@lwc/shared": "8.11.0",
         "@rollup/pluginutils": "~5.1.3"
     },
     "devDependencies": {
-        "@lwc/errors": "workspace:*"
+        "@lwc/errors": "8.11.0"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0||^3.0.0||^4.0.0"

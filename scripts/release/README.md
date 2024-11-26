@@ -1,6 +1,6 @@
 # Release Scripts
 
-## `pnpm release:version`
+## `npm run release:version`
 
 This script is used to generate a release commit that updates the version of all packages in this
 monorepo. The version number should be specified through the interactive prompt.

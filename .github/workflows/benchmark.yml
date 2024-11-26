@@ -21,21 +21,17 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - uses: pnpm/action-setup@v4
-              with:
-                  version: 9.14.2
-
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
                   node-version: '20.18.0'
-                  cache: 'pnpm'
+                  cache: 'npm'
 
             - name: Install dependencies
-              run: pnpm install --frozen-lockfile
+              run: npm ci
 
             - name: Build benchmarks
-              run: pnpm build:performance
+              run: npm run build:performance
 
             - name: Run benchmarks
-              run: pnpm test:performance:best:ci
+              run: npm run test:performance:best:ci

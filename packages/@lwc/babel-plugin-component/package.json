@@ -43,8 +43,8 @@
     },
     "dependencies": {
         "@babel/helper-module-imports": "7.25.9",
-        "@lwc/errors": "workspace:*",
-        "@lwc/shared": "workspace:*",
+        "@lwc/errors": "8.11.0",
+        "@lwc/shared": "8.11.0",
         "line-column": "~1.0.2"
     },
     "devDependencies": {

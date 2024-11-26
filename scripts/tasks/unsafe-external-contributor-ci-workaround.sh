@@ -6,7 +6,7 @@
 # maintainer, and therefore have full access to all the secrets.
 # WARNING: This is not safe! Review all code changes in the PR before granting access to secrets.
 #
-# Usage: pnpm copy-fork <PR number> [remote=origin]
+# Usage: npm run copy-fork <PR number> [remote=origin]
 
 set -e
 

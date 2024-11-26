@@ -42,6 +42,6 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "workspace:*"
+        "@lwc/shared": "8.11.0"
     }
 }

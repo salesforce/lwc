@@ -10,47 +10,47 @@ End-to-end tests run in the browser across different modes with the option to ru
 Build artifacts in `prod` mode:
 
 ```
-pnpm build
+npm run build
 ```
 
 Build artifacts in `dev` mode:
 
 ```
-MODE=dev pnpm build
+MODE=dev npm run build
 ```
 
 Run integration tests locally in headless Chrome:
 
 ```
-pnpm local
+npm run local
 ```
 
 Run test suites or individual files locally in headless Chrome:
 
 ```
-pnpm local --suite SUITE_NAME
+npm run local --suite SUITE_NAME
 ```
 
 ```
-pnpm local --spec path/to/my/spec.js
+npm run local --spec path/to/my/spec.js
 ```
 
 Run integration tests across all browsers on Sauce Labs (see below for more details):
 
 ```
-pnpm sauce
+npm run sauce
 ```
 
 Run integration tests on specific browsers on Sauce Labs (see below for more details):
 
 ```
-pnpm sauce --browsers firefox
+npm run sauce --browsers firefox
 ```
 
 Starts the server (not needed for testing)
 
 ```
-pnpm start
+npm run start
 ```
 
 ## Sauce Labs Integration
@@ -70,7 +70,7 @@ To set these these variables, do one of the following:
 1. Set them while running the test script
 
 ```
-SAUCE_USERNAME=my-user SAUCE_KEY=123-456-789 pnpm run test:integration:sauce
+SAUCE_USERNAME=my-user SAUCE_KEY=123-456-789 npm run run test:integration:sauce
 ```
 
 2. Create a `.env` file in the root directory that sets the values
@@ -99,14 +99,14 @@ SAUCE_TUNNEL_ID=my-tunnel-id
 To select a single browser for a run, pass `--browsers` followed by a comma separated list of browser you wish to run. The name of the browser to specify must match the `commonName` entry of the browsers in the webdriver.io config file (wdio.sauce.conf.js).
 
 ```
-SAUCE_USERNAME=my_user SAUCE_KEY=123-456-789 pnpm sauce:prod --browsers chrome
+SAUCE_USERNAME=my_user SAUCE_KEY=123-456-789 npm run sauce:prod --browsers chrome
 ```
 
 To modify the master list of browsers Sauce Labs runs on, use their [Platform Configurator](https://wiki.saucelabs.com/display/DOCS/Platform+Configurator#/) to get the settings for the desired browser. Then, update the `capabilities` section of wdio.sauce.conf.js.
 
 ## Headless Chrome
 
-When Chrome tests are run locally via the `pnpm local` command, they will run in headless Chrome by default. To run in non-headless Chrome, set `process.env.HEADLESS_CHROME` to `false`. When run on Sauce Labs, Chrome will always be in non-headless mode.
+When Chrome tests are run locally via the `npm run local` command, they will run in headless Chrome by default. To run in non-headless Chrome, set `process.env.HEADLESS_CHROME` to `false`. When run on Sauce Labs, Chrome will always be in non-headless mode.
 
 ## Contributing
 

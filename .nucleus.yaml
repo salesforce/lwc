@@ -52,17 +52,17 @@ jobs:
 steps:
     node-conformance:
         run:
-            command: pnpm lint
+            command: npm run lint
         after: node-build
     node-unit-tests:
         run:
-            command: pnpm test
-    # this project runs pnpm build after pnpm install so skip explicit build step
+            command: npm run test
+    # this project runs npm run build after npm install so skip explicit build step
     node-build: &node-build
         skip: true
     node-pre-release-tests:
         params:
-            command: pnpm test
+            command: npm run test
     npm-configure:
         params:
             registry-url: https://registry.npmjs.org

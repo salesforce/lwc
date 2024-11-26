@@ -42,8 +42,8 @@
         }
     },
     "dependencies": {
-        "@lwc/errors": "workspace:*",
-        "@lwc/shared": "workspace:*",
+        "@lwc/errors": "8.11.0",
+        "@lwc/shared": "8.11.0",
         "acorn": "~8.14.0",
         "astring": "~1.9.0",
         "he": "~1.2.0"

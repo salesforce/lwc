@@ -42,9 +42,9 @@
         }
     },
     "dependencies": {
-        "@lwc/features": "workspace:*",
-        "@lwc/shared": "workspace:*",
-        "@lwc/signals": "workspace:*"
+        "@lwc/features": "8.11.0",
+        "@lwc/shared": "8.11.0",
+        "@lwc/signals": "8.11.0"
     },
     "devDependencies": {
         "observable-membrane": "2.0.0"

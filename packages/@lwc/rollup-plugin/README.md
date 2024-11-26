@@ -5,7 +5,7 @@ Rollup plugin to compile LWC
 ## Installation
 
 ```sh
-pnpm add --dev @lwc/rollup-plugin
+npm install --save-dev @lwc/rollup-plugin
 ```
 
 ## Usage
