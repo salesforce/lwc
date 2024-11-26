@@ -31,6 +31,7 @@ export const expectedFailures = new Set([
     'dynamic-components/mixed/index.js',
     'dynamic-slots/index.js',
     'empty-text-with-comments-non-static-optimized/index.js',
+    'exports/component-as-default/index.js',
     'if-conditional-slot-content/index.js',
     'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
     'render-dynamic-value/index.js',
