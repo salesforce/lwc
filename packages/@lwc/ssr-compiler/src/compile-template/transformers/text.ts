@@ -45,9 +45,14 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
     }
 
     const isIsolatedTextNode = b.literal(
-        (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
-            (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
+        (!cxt.prevSibling ||
+            (cxt.prevSibling.type !== 'Text' &&
+                (cxt.templateOptions.preserveComments || cxt.prevSibling.type !== 'Comment'))) &&
+            (!cxt.nextSibling ||
+                (cxt.nextSibling.type !== 'Text' &&
+                    (cxt.templateOptions.preserveComments || cxt.nextSibling.type !== 'Comment')))
     );
+
     const valueToYield = expressionIrToEs(node.value, cxt);
     const tempVariable = b.identifier(cxt.getUniqueVar());
 
