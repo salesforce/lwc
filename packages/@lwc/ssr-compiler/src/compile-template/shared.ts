@@ -132,6 +132,7 @@ export function getChildAttrsOrProps(
                 let propValue = expressionIrToEs(value, cxt);
 
                 if (name === 'class') {
+                    cxt.import('normalizeClass');
                     propValue = b.callExpression(b.identifier('normalizeClass'), [propValue]);
                 }
 
