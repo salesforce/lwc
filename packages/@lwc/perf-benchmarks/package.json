@@ -74,5 +74,8 @@
                 "dependsOn": []
             }
         }
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

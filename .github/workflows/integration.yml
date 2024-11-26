@@ -33,7 +33,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: '20.18.0'
+                  node-version: '20.18.1'
                   cache: 'yarn'
 
             # Needed for local browser integration tests
