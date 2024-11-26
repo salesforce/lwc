@@ -24,6 +24,9 @@
     "publishConfig": {
         "access": "public"
     },
+    "volta": {
+        "extends": "../../../package.json"
+    },
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -55,8 +58,5 @@
     },
     "devDependencies": {
         "@types/estree": "^1.0.6"
-    },
-    "volta": {
-        "extends": "../../../package.json"
     }
 }

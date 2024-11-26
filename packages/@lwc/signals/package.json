@@ -22,6 +22,9 @@
     "publishConfig": {
         "access": "public"
     },
+    "volta": {
+        "extends": "../../../package.json"
+    },
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -43,8 +46,5 @@
     },
     "devDependencies": {
         "@lwc/shared": "8.11.0"
-    },
-    "volta": {
-        "extends": "../../../package.json"
     }
 }
