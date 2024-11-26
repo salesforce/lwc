@@ -32,6 +32,9 @@ jobs:
                   node-version: '20.18.0'
                   cache: 'npm'
 
+            - name: Setup npm
+              run: npm install -g npm@10.9.1
+
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup chrome
