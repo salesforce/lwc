@@ -30,5 +30,8 @@
         "lwc": "8.11.0",
         "minimist": "^1.2.8",
         "webdriverio": "^9.0.7"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     }
 }

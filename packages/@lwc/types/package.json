@@ -24,6 +24,9 @@
     "publishConfig": {
         "access": "public"
     },
+    "volta": {
+        "extends": "../../../package.json"
+    },
     "types": "index.d.ts",
     "files": [
         "*.d.ts"
