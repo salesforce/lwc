@@ -15,6 +15,7 @@ import type {
     Expression as IrExpression,
     Literal as IrLiteral,
     Text as IrText,
+    Node as IrNode,
 } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
@@ -44,10 +45,21 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
         return [bYield(b.literal(node.value.value))];
     }
 
+    const shouldIsolate = (node?: IrNode) => {
+        switch (node?.type) {
+            case 'Text':
+                return false;
+            case 'Comment':
+                return cxt.templateOptions.preserveComments;
+            default:
+                return true;
+        }
+    };
+
     const isIsolatedTextNode = b.literal(
-        (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
-            (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
+        shouldIsolate(cxt.prevSibling) && shouldIsolate(cxt.nextSibling)
     );
+
     const valueToYield = expressionIrToEs(node.value, cxt);
     const tempVariable = b.identifier(cxt.getUniqueVar());
 
