@@ -8,7 +8,7 @@
         "url": "https://github.com/salesforce/lwc.git"
     },
     "scripts": {
-        "prepare": "husky && yarn build",
+        "postinstall": "husky && yarn build",
         "lint": "eslint .",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
@@ -90,15 +90,10 @@
     },
     "volta": {
         "node": "20.18.1",
-        "yarn": "1.22.22"
+        "yarn": "4.5.3"
     },
     "resolutions": {
-        "//": {
-            "http-cache-semantics": "Pinned to address security vulnerability",
-            "semver": "Pinned to address security vulnerability"
-        },
         "http-cache-semantics": "4.1.1",
         "semver": "7.6.0"
-    },
-    "dependencies": {}
+    }
 }

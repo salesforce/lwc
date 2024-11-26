@@ -46,9 +46,9 @@
     },
     "devDependencies": {
         "@lwc/engine-core": "8.11.0",
+        "@lwc/features": "8.11.0",
         "@lwc/rollup-plugin": "8.11.0",
         "@lwc/shared": "8.11.0",
-        "@lwc/features": "8.11.0",
         "@rollup/plugin-virtual": "^3.0.2",
         "parse5": "^7.2.1"
     }

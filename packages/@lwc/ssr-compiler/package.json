@@ -47,8 +47,8 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "8.11.0",
         "@lwc/errors": "8.11.0",
+        "@lwc/shared": "8.11.0",
         "@lwc/template-compiler": "8.11.0",
         "acorn": "8.14.0",
         "astring": "^1.9.0",

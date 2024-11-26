@@ -45,7 +45,7 @@ jobs:
               id: setup-chrome
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
               working-directory: ./
 
             # Pin chromedriver to the same version as Chrome above

@@ -41,7 +41,7 @@ jobs:
               id: setup-chrome
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
 
             # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
             # See: https://github.com/google/tachometer#on-demand-dependencies

@@ -23,3 +23,6 @@ packages/@lwc/integration-tests/.env
 # dev mode caches
 tsconfig.tsbuildinfo
 .rollup.cache
+
+# yarn
+.yarn

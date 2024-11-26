@@ -43,7 +43,7 @@ jobs:
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -83,7 +83,7 @@ jobs:
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -123,7 +123,7 @@ jobs:
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -165,7 +165,7 @@ jobs:
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
               working-directory: ./
 
             - uses: saucelabs/sauce-connect-action@v2
@@ -211,7 +211,7 @@ jobs:
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --immutable
               working-directory: ./
 
             - name: Download coverage results - group 1
