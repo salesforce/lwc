@@ -27,6 +27,7 @@ const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(e
 const bYieldEscapedString = esTemplateWithYield`
     { 
         const value = ${/* string value */ is.expression};
+        // Using non strict equality to align with original implementation (ex. undefined == null) https://github.com/salesforce/lwc/blob/348130f1a03a6d90e350b504cd10602ed97a54fb/packages/%40lwc/engine-core/src/framework/api.ts#L548
         const massagedValue = value == null ? '' : String(value);
         yield massagedValue === '' ? '\\u200D' : htmlEscape(massagedValue);
     }
@@ -41,12 +42,8 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
         return [bYield(b.literal(node.value.value))];
     }
 
-    const isIsolatedTextNode = b.literal(
-        (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
-            (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
-    );
     const valueToYield = expressionIrToEs(node.value, cxt);
 
     cxt.import('htmlEscape');
-    return [bYieldEscapedString(valueToYield, isIsolatedTextNode)];
+    return [bYieldEscapedString(valueToYield)];
 };
