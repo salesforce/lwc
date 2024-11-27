@@ -11,6 +11,7 @@ export * from './stubs';
 export { htmlEscape, setHooks, sanitizeHtmlContent, normalizeClass } from '@lwc/shared';
 
 export { ClassList } from './class-list';
+export {} from './isolate-text-nodes';
 export {
     LightningElement,
     LightningElementConstructor,

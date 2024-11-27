@@ -8,7 +8,7 @@
 // We should slowly drive down these test failures or at least document where we expect the failures
 // TODO [#4815]: enable all SSR v2 tests
 export const expectedFailures = new Set([
-    'adjacent-text-nodes/empty/index.js',
+    // 'adjacent-text-nodes/empty/index.js',
     'adjacent-text-nodes/with-comments/empty1/index.js',
     'adjacent-text-nodes/with-comments/empty2/index.js',
     'adjacent-text-nodes/with-comments/empty3/index.js',
