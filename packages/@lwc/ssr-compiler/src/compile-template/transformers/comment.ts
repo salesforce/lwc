@@ -7,12 +7,7 @@
 
 import { builders as b } from 'estree-toolkit';
 
-import {
-    bDeclareTextContentBuffer,
-    bYieldTextContent,
-    isFirstConcatenatedNode,
-    isLastConcatenatedNode,
-} from '../adjacent-text-nodes';
+import { bYieldTextContent, isLastConcatenatedNode } from '../adjacent-text-nodes';
 import type { Comment as IrComment } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
@@ -22,15 +17,11 @@ export const Comment: Transformer<IrComment> = function Comment(node, cxt) {
     } else {
         cxt.import('htmlEscape');
 
-        const isFirstInSeries = isFirstConcatenatedNode(cxt);
         const isLastInSeries = isLastConcatenatedNode(cxt);
 
         // If preserve comments is off, we check if we should flush text content
         // for adjacent text nodes. (If preserve comments is on, then the previous
         // text node already flushed.)
-        return [
-            ...(isFirstInSeries ? bDeclareTextContentBuffer() : []),
-            ...(isLastInSeries ? [bYieldTextContent()] : []),
-        ];
+        return [...(isLastInSeries ? [bYieldTextContent()] : [])];
     }
 };

@@ -28,6 +28,11 @@ const bExportTemplate = esTemplate`
             Cmp, 
             instance
     ) {
+        // Deliberately using let so we can mutate as many times as we want in the same scope.
+        // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
+        let textContentBuffer = '';
+        let didBufferTextContent = false;
+
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`

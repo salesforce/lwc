@@ -9,12 +9,7 @@ import { builders as b, is } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 
-import {
-    bDeclareTextContentBuffer,
-    bYieldTextContent,
-    isFirstConcatenatedNode,
-    isLastConcatenatedNode,
-} from '../adjacent-text-nodes';
+import { bYieldTextContent, isLastConcatenatedNode } from '../adjacent-text-nodes';
 import type { Statement as EsStatement } from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
@@ -41,16 +36,11 @@ function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node i
 export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
     cxt.import('htmlEscape');
 
-    const isFirstInSeries = isFirstConcatenatedNode(cxt);
     const isLastInSeries = isLastConcatenatedNode(cxt);
 
     const valueToYield = isLiteral(node.value)
         ? b.literal(node.value.value)
         : expressionIrToEs(node.value, cxt);
 
-    return [
-        ...(isFirstInSeries ? bDeclareTextContentBuffer() : []),
-        ...bBufferTextContent(valueToYield),
-        ...(isLastInSeries ? [bYieldTextContent()] : []),
-    ];
+    return [...bBufferTextContent(valueToYield), ...(isLastInSeries ? [bYieldTextContent()] : [])];
 };
