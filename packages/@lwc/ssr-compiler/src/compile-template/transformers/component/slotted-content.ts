@@ -84,6 +84,17 @@ const bAddLightContent = esTemplate`
 // Once you reach a leaf, you know what content should be rendered for a given slot name. But you
 // also need to consider all of its ancestors, which may cause the slot content to be conditionally
 // rendered (e.g. IfBlock/ElseBlock).
+// For example:
+//     <x-foo>
+//         <template lwc:if={darkTheme}>
+//             <div slot="footer"></div>
+//         </template>
+//         <template lwc:else>
+//             yolo
+//         </template>
+//     </x-foo>
+// In this example, we render the `<div>` into the `footer` slot, if `darkTheme` is true.
+// Otherwise, we will render the text node `yolo` into the default slot.
 // The goal here is to traverse through the tree and identify all unique `slot` attribute names
 // and group those into AST trees on a per-`slot` name basis, only for leafs/ancestors that are
 // relevant to slots (as mentioned above).
