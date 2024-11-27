@@ -75,15 +75,18 @@ const bAddLightContent = esTemplate`
 
 // Light DOM slots are a bit complex because of needing to handle slots _not_ at the top level
 // At the non-top level, it matters what the ancestors are. These are relevant to slots:
-// - Element/Text/Component/ExternalComponent (e.g. `<div>`, `<x-foo>`)
 // - If (`if:true`, `if:false`)
 // - IfBlock/ElseBlock/ElseifBlock (`lwc:if`, `lwc:elseif`, `lwc:else`)
 // Whereas anything else breaks the relationship between the slotted content and the containing
-// Component (e.g. another Component, an ExternalComponent, etc.), or is disallowed (e.g.
-// ForEach/ForOf).
+// Component (e.g. another Component/ExternalComponent) or is disallowed (e.g. ForEach/ForOf).
+// Then there are the leaf nodes, which _may_ have a `slot` attribute on them:
+// - Element/Text/Component/ExternalComponent (e.g. `<div>`, `<x-foo>`)
+// Once you reach a leaf, you know what content should be rendered for a given slot name. But you
+// also need to consider all of its ancestors, which may cause the slot content to be conditionally
+// rendered (e.g. IfBlock/ElseBlock).
 // The goal here is to traverse through the tree and identify all unique `slot` attribute names
-// and group those into AST trees on a per -`slot` name basis, only for ancestors that count
-// (as mentioned above).
+// and group those into AST trees on a per-`slot` name basis, only for leafs/ancestors that are
+// relevant to slots (as mentioned above).
 function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContext) {
     type SlottableAncestorIrType = IrElement | IrIf | IrIfBlock | IrElseBlock | IrElseifBlock;
     type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent;
