@@ -38,7 +38,7 @@ vi.mock('@lwc/ssr-runtime', async () => {
     return runtime;
 });
 
-const SSR_MODE: CompilationMode = 'asyncYield';
+const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
