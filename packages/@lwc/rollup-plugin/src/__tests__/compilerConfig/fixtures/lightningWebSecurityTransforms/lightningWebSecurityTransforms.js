@@ -10,7 +10,7 @@ export default class extends LightningElement {
             break;
         }
     }
-    async * baz() {
+    async *baz() {
         yield 1;
         yield 2;
     }

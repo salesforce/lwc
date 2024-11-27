@@ -2,7 +2,7 @@ import { LightningElement, wire } from 'lwc';
 
 import { adapter } from './adapter';
 
-const variable = 0x1134
+const variable = 0x1134;
 
 export default class Wire extends LightningElement {
     @wire(adapter, {
@@ -19,7 +19,7 @@ export default class Wire extends LightningElement {
         Infinity: Infinity,
         NaN: NaN,
         '': '',
-        why(){}
+        why() {},
     })
     wiredProp;
 

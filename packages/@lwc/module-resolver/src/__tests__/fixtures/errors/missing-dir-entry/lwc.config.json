@@ -1,7 +1,7 @@
 {
     "modules": [
-        { 
-            "dir" : "./modules"
+        {
+            "dir": "./modules"
         }
     ]
 }

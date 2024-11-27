@@ -1,9 +1,9 @@
-import { LightningElement } from "lwc";
+import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-  result
+    result;
 
-  connectedCallback() {
-    this.result = 'connectedCallback called'
-  }
+    connectedCallback() {
+        this.result = 'connectedCallback called';
+    }
 }

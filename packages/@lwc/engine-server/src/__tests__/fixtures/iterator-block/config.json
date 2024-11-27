@@ -1,9 +1,5 @@
 {
     "props": {
-        "list": [
-            "paris",
-            "london",
-            "tokyo"
-        ]
+        "list": ["paris", "london", "tokyo"]
     }
 }

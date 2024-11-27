@@ -1,1 +1,1 @@
-import Extension from 'x/ext-js'
+import Extension from 'x/ext-js';

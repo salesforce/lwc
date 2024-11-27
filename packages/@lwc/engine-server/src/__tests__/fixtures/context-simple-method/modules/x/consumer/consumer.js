@@ -2,10 +2,10 @@ import { LightningElement, wire } from 'lwc';
 import { WireAdapter } from '../../../wire-adapter';
 
 export default class ConsumerComponent extends LightningElement {
-  foo;
+    foo;
 
-  @wire(WireAdapter, { unused: '$definitelyUnused' })
-  calledWithWireInfo(newValue) {
-    this.foo = newValue;
-  }
+    @wire(WireAdapter, { unused: '$definitelyUnused' })
+    calledWithWireInfo(newValue) {
+        this.foo = newValue;
+    }
 }

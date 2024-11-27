@@ -1,22 +1,22 @@
 {
     "modules": [
-       {
-           "npm" : "@lwc/lwc-modules-foo",
-           "map": {
-               "common-util": "foo-common-util"
-           }
-       },
-       {
-           "npm" : "@lwc/lwc-modules-bar",
-           "map": {
-               "common-util": "bar-common-util"
-           }
-       },
-       {
-           "npm": "@lwc/multi-module-mapping",
-           "map": {
-               "non-existing": "should-be-mod"
-           }
-       }
+        {
+            "npm": "@lwc/lwc-modules-foo",
+            "map": {
+                "common-util": "foo-common-util"
+            }
+        },
+        {
+            "npm": "@lwc/lwc-modules-bar",
+            "map": {
+                "common-util": "bar-common-util"
+            }
+        },
+        {
+            "npm": "@lwc/multi-module-mapping",
+            "map": {
+                "non-existing": "should-be-mod"
+            }
+        }
     ]
 }

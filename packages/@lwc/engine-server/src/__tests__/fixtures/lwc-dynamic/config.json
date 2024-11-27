@@ -1,6 +1,6 @@
 {
-  "ssrFiles": {
-    "error": "error-ssr.txt",
-    "expected": "expected-ssr.html"
-  }
+    "ssrFiles": {
+        "error": "error-ssr.txt",
+        "expected": "expected-ssr.html"
+    }
 }

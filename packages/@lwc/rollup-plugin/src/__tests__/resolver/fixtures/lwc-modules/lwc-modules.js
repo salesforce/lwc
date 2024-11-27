@@ -1,3 +1,3 @@
-import "lwc";
-import "@lwc/synthetic-shadow";
-import "@lwc/wire-service";
+import 'lwc';
+import '@lwc/synthetic-shadow';
+import '@lwc/wire-service';
