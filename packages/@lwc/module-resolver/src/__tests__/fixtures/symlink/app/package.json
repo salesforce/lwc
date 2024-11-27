@@ -1,8 +1,12 @@
 {
     "lwc": {
         "modules": [
-            { "npm": "shared" },
-            { "npm": "linked" }
+            {
+                "npm": "shared"
+            },
+            {
+                "npm": "linked"
+            }
         ]
     }
 }

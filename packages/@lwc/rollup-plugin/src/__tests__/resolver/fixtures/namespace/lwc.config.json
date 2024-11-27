@@ -1,6 +1,6 @@
 {
     "modules": [
-        { 
+        {
             "name": "alias/bar",
             "path": "src/modules/x/foo/foo.js"
         },

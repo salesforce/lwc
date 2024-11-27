@@ -6,8 +6,8 @@ import WireAdapter from '../../../wire-adapter';
 import '../../../imports';
 
 export default class extends LightningElement {
-  // LWC compiler doesn't let us console.log decorators
-  @api api;
-  @track track = [];
-  @wire(WireAdapter) wire;
+    // LWC compiler doesn't let us console.log decorators
+    @api api;
+    @track track = [];
+    @wire(WireAdapter) wire;
 }

@@ -1,7 +1,7 @@
-export const FancyMixin = Class => {
+export const FancyMixin = (Class) => {
     return class extends Class {
         connectedCallback() {
-            this.setAttribute('data-yolo', '')
+            this.setAttribute('data-yolo', '');
         }
-    }
-}
+    };
+};

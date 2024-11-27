@@ -1,10 +1,10 @@
-import { LightningElement } from 'lwc'
-import tmpl from './tmpl.html'
+import { LightningElement } from 'lwc';
+import tmpl from './tmpl.html';
 
 export default class extends LightningElement {
-    hello = 'foobar'
+    hello = 'foobar';
 
-    render () {
-        return tmpl
+    render() {
+        return tmpl;
     }
 }

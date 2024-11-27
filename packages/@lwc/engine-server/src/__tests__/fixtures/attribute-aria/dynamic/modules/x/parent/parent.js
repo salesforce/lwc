@@ -10,10 +10,10 @@ export default class extends LightningElement {
     isNaN = NaN;
     isInfinity = Infinity;
     isNegInfinity = -Infinity;
-    isEmptyString = "";
-    isArray = ["foo", "bar"];
+    isEmptyString = '';
+    isArray = ['foo', 'bar'];
     isObject = {
-        foo: "bar",
-        baz: "quux"
+        foo: 'bar',
+        baz: 'quux',
     };
 }

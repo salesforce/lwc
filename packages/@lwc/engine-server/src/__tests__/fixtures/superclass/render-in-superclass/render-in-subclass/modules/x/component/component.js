@@ -1,10 +1,10 @@
-import FancyElement from 'x/fancyElement'
-import sub from './sub.html'
+import FancyElement from 'x/fancyElement';
+import sub from './sub.html';
 
 export default class extends FancyElement {
-    hello = 'foobar'
+    hello = 'foobar';
 
     render() {
-        return sub
+        return sub;
     }
 }

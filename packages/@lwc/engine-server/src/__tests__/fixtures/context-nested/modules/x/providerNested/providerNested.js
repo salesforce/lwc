@@ -6,9 +6,9 @@ export default class ProviderComponent extends LightningElement {
         contextualizerB(this, {
             consumerConnectedCallback(consumer) {
                 consumer.provide({
-                    value: 'nested'
+                    value: 'nested',
                 });
-            }
+            },
         });
     }
 }

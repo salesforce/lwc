@@ -1,4 +1,4 @@
 {
-  "enableStaticContentOptimization": false,
-  "disableSyntheticShadowSupport": false
+    "enableStaticContentOptimization": false,
+    "disableSyntheticShadowSupport": false
 }

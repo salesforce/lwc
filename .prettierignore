@@ -2,10 +2,6 @@ dist/
 lib/
 coverage/
 
-fixtures/
-public/
-types/
-
 .rollup.cache
 
 __benchmarks_results__/
@@ -16,3 +12,17 @@ __benchmarks_results__/
 # HTML files are used by tests and may include deliberately invalid/ugly HTML
 # e.g. <input> without self-closing tag, extra leading/trailing whitespace, etc.
 *.html
+
+# Auto-generated fixture outputs
+**/fixtures/**/expected.*
+**/fixtures/**/error.*
+packages/@lwc/template-compiler/src/__tests__/fixtures/**/ast.json
+packages/@lwc/template-compiler/src/__tests__/fixtures/**/metadata.json
+
+# Fixture inputs potentially containing deliberate errors
+packages/@lwc/style-compiler/src/__tests__/fixtures/**/actual.css
+packages/@lwc/babel-plugin-component/src/__tests__/fixtures/**/actual.js
+
+# TODO: Why do these have JS in them?
+packages/@lwc/module-resolver/src/__tests__/fixtures/no-config/modules/foo/bar/bar.css
+packages/@lwc/module-resolver/src/__tests__/fixtures/module-entries/modules/ns/cssEntry/cssEntry.css
