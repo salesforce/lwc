@@ -101,7 +101,6 @@ const bAddLightContent = esTemplate`
 function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContext) {
     type SlottableAncestorIrType = IrIf | IrIfBlock | IrElseBlock | IrElseifBlock;
     type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent;
-    type SlottableIrType = SlottableAncestorIrType | SlottableLeafIrType;
 
     const results: EsExpressionStatement[] = [];
 
