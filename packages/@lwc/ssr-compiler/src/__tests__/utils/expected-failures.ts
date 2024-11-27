@@ -8,11 +8,6 @@
 // We should slowly drive down these test failures or at least document where we expect the failures
 // TODO [#4815]: enable all SSR v2 tests
 export const expectedFailures = new Set([
-    // 'adjacent-text-nodes/empty/index.js',
-    'adjacent-text-nodes/with-comments/empty1/index.js',
-    'adjacent-text-nodes/with-comments/empty2/index.js',
-    'adjacent-text-nodes/with-comments/empty3/index.js',
-    'adjacent-text-nodes/with-comments/preserve-comments2/index.js',
     'attribute-aria/dynamic/index.js',
     'attribute-class/with-scoped-styles-only-in-child/dynamic/index.js',
     'attribute-class/with-scoped-styles/dynamic/index.js',
