@@ -156,7 +156,7 @@ export const shouldFlushTextContent = (cxt: TransformerContext) => {
     const { nextSibling } = cxt;
     if (!nextSibling) {
         // we are the last sibling
-        return true
+        return true;
     }
     switch (nextSibling.type) {
         case 'Text':

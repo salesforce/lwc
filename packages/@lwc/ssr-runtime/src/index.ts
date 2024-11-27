@@ -34,8 +34,5 @@ export {
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
-export {
-    enqueueTextContent,
-    flushTextContent
-} from './text-nodes';
+export { enqueueTextContent, flushTextContent } from './text-nodes';
 export { createContextProvider, establishContextfulRelationship, connectContext } from './wire';

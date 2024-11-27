@@ -8,7 +8,7 @@ import { htmlEscape } from '@lwc/shared';
 
 // Zero Width Joiner character. Special character used by SSR/hydration as
 // a placeholder for empty text nodes.
-const ZWJ = '\u200D'
+const ZWJ = '\u200D';
 
 let buffer = '';
 let active = false;

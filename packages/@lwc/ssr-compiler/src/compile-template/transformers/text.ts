@@ -10,10 +10,7 @@ import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 
 import { shouldFlushTextContent } from '../shared';
-import type {
-    Expression as EsExpression,
-    Statement as EsStatement,
-} from 'estree';
+import type { Statement as EsStatement } from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
     Expression as IrExpression,
@@ -22,26 +19,22 @@ import type {
 } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
-const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
-
 const bYieldTextContent = esTemplateWithYield`
     enqueueTextContent(${/* string value */ is.expression});
     if (${/* should flush */ is.literal}) {
         yield flushTextContent();
     }
-`<EsStatement>;
+`<EsStatement[]>;
 
 function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
     return node.type === 'Literal';
 }
 
 export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
-    if (isLiteral(node.value)) {
-        return [bYield(b.literal(node.value.value))];
-    }
-
-    const valueToYield = expressionIrToEs(node.value, cxt);
-
     cxt.import(['enqueueTextContent', 'flushTextContent']);
-    return [bYieldTextContent(valueToYield, b.literal(shouldFlushTextContent(cxt)))];
+
+    const valueToYield = isLiteral(node.value)
+        ? b.literal(node.value.value)
+        : expressionIrToEs(node.value, cxt);
+    return bYieldTextContent(valueToYield, b.literal(shouldFlushTextContent(cxt)));
 };

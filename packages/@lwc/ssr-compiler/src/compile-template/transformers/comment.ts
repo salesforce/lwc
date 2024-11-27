@@ -9,13 +9,13 @@ import { builders as b } from 'estree-toolkit';
 
 import { esTemplateWithYield } from '../../estemplate';
 import { shouldFlushTextContent } from '../shared';
-import type { Statement as EsStatement} from 'estree'
+import type { Statement as EsStatement } from 'estree';
 import type { Comment as IrComment } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
 const bFlushTextContent = esTemplateWithYield`
     yield flushTextContent();
-`<EsStatement>
+`<EsStatement>;
 
 export const Comment: Transformer<IrComment> = function Comment(node, cxt) {
     if (cxt.templateOptions.preserveComments) {
@@ -24,11 +24,9 @@ export const Comment: Transformer<IrComment> = function Comment(node, cxt) {
         // If preserve comments is off, we check if we should flush text content
         // for adjacent text nodes. (If preserve comments is on, then the previous
         // text node already flushed.)
-        cxt.import('flushTextContent')
-        return [
-            bFlushTextContent()
-        ];
+        cxt.import('flushTextContent');
+        return [bFlushTextContent()];
     } else {
-        return []
+        return [];
     }
 };
