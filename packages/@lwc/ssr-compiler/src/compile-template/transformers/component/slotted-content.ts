@@ -100,7 +100,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
     const addLightDomSlotContent = (slotName: EsExpression, ancestorIndices: number[]) => {
         const clone = produce(rootNodes[ancestorIndices[0]], (draft) => {
             // Create a clone of the AST with only the ancestors and no other siblings
-            let current = draft as SlottableIrType;
+            let current = draft;
             for (let i = 1; i < ancestorIndices.length; i++) {
                 const nextIndex = ancestorIndices[i];
 
