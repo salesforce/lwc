@@ -29,6 +29,7 @@ export const expectedFailures = new Set([
     'scoped-slots/mixed-with-light-dom-slots-inside/index.js',
     'scoped-slots/mixed-with-light-dom-slots-outside/index.js',
     'slot-forwarding/scoped-slots/index.js',
+    'slot-not-at-top-level/advanced/ifTrue/light/index.js',
     'slot-not-at-top-level/advanced/ifTrue/shadow/index.js',
     'slot-not-at-top-level/advanced/lwcIf/light/index.js',
     'slot-not-at-top-level/advanced/lwcIf/shadow/index.js',

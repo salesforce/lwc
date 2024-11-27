@@ -12,17 +12,17 @@ import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
 import type {
-    Node as IrNode,
     Attribute as IrAttribute,
+    Node as IrNode,
     Property as IrProperty,
 } from '@lwc/template-compiler';
 import type {
-    Statement as EsStatement,
     Expression as EsExpression,
-    MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
+    MemberExpression as EsMemberExpression,
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
+    Statement as EsStatement,
 } from 'estree';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
@@ -145,25 +145,3 @@ export function getChildAttrsOrProps(
 
     return b.objectExpression(objectAttrsOrProps);
 }
-
-/**
- * True if we should flush at the end of a series of text content nodes and/or comment nodes
- * that are adjacent to one another as siblings. (Comment nodes are ignored when preserve-comments
- * is turned off.) This allows for adjacent text node concatenation.
- * @param cxt - TransformerContext
- */
-export const shouldFlushTextContent = (cxt: TransformerContext) => {
-    const { nextSibling } = cxt;
-    if (!nextSibling) {
-        // we are the last sibling
-        return true;
-    }
-    switch (nextSibling.type) {
-        case 'Text':
-            return false;
-        case 'Comment':
-            return cxt.templateOptions.preserveComments;
-        default:
-            return true;
-    }
-};
