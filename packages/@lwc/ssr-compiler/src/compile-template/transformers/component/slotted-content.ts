@@ -107,7 +107,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                 // If i >= 1 then the current must necessarily be a SlottableAncestorIrType
                 const next = (current as SlottableAncestorIrType).children[nextIndex];
                 (current as SlottableAncestorIrType).children = [next];
-                current = next as SlottableIrType;
+                current = next;
             }
             // The leaf must necessarily be a SlottableLeafIrType
             const leaf = current as SlottableLeafIrType;
