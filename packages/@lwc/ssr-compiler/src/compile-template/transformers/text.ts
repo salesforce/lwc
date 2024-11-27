@@ -15,7 +15,7 @@ import {
     isFirstConcatenatedNode,
     isLastConcatenatedNode,
 } from '../adjacent-text-nodes';
-import type { Statement as EsStatement, BlockStatement as EsBlockStatement } from 'estree';
+import type { Statement as EsStatement } from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
     Expression as IrExpression,
@@ -25,14 +25,14 @@ import type {
 import type { Transformer } from '../types';
 
 const bBufferTextContent = esTemplateWithYield`
+    didBufferTextContent = true;
     {
-        didBufferTextContent = true;
         const value = ${/* string value */ is.expression};
         // Using non strict equality to align with original implementation (ex. undefined == null)
         // See: https://github.com/salesforce/lwc/blob/348130f/packages/%40lwc/engine-core/src/framework/api.ts#L548
         textContentBuffer += value == null ? '' : String(value);
     }
-`<EsBlockStatement>;
+`<EsStatement[]>;
 
 function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
     return node.type === 'Literal';
@@ -43,15 +43,14 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
 
     const isFirstInSeries = isFirstConcatenatedNode(cxt);
     const isLastInSeries = isLastConcatenatedNode(cxt);
-    const didBufferTextContent = b.literal(true);
 
     const valueToYield = isLiteral(node.value)
         ? b.literal(node.value.value)
         : expressionIrToEs(node.value, cxt);
 
     return [
-        ...(isFirstInSeries ? bDeclareTextContentBuffer(didBufferTextContent) : []),
-        bBufferTextContent(valueToYield),
+        ...(isFirstInSeries ? bDeclareTextContentBuffer() : []),
+        ...bBufferTextContent(valueToYield),
         ...(isLastInSeries ? [bYieldTextContent()] : []),
     ];
 };

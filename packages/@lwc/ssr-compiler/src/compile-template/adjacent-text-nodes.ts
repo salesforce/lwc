@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { is } from 'estree-toolkit';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 import type { BlockStatement as EsBlockStatement, Statement as EsStatement } from 'estree';
 import type { TransformerContext } from './types';
@@ -47,7 +46,7 @@ export const isLastConcatenatedNode = (cxt: TransformerContext) => {
 export const bDeclareTextContentBuffer = esTemplate`
     // Deliberately using var so we can re-declare as many times as we want in the same scope
     var textContentBuffer = '';
-    var didBufferTextContent = ${/* didBufferTextContent */ is.literal};
+    var didBufferTextContent = false;
 `<EsStatement[]>;
 
 export const bYieldTextContent = esTemplateWithYield`
