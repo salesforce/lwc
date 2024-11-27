@@ -176,6 +176,16 @@ async function getTestModuleCode(input) {
     return { code, watchFiles };
 }
 
+async function existsUp(dir, file) {
+    while (true) {
+        if (await exists(path.join(dir, file))) return true;
+        dir = path.join(dir, '..');
+        const basename = path.basename(dir);
+        // We should always hit __tests__, but check for system root as an escape hatch
+        if (basename === '__tests__' || basename === '') return false;
+    }
+}
+
 function createHCONFIG2JSPreprocessor(config, logger, emitter) {
     const { basePath } = config;
     const log = logger.create('preprocessor-lwc');
@@ -193,7 +203,7 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             const { code: componentDef, watchFiles: componentWatchFiles } =
                 await getCompiledModule(suiteDir);
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
-            const onlyFileExists = await exists(path.join(suiteDir, '.only'));
+            const onlyFileExists = await existsUp(suiteDir, '.only');
 
             const ssrOutput = getSsrCode(componentDef, testCode, path.join(suiteDir, 'ssr.js'));
 
