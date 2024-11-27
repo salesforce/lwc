@@ -88,7 +88,7 @@ const bAddLightContent = esTemplate`
 // and group those into AST trees on a per-`slot` name basis, only for leafs/ancestors that are
 // relevant to slots (as mentioned above).
 function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContext) {
-    type SlottableAncestorIrType = IrElement | IrIf | IrIfBlock | IrElseBlock | IrElseifBlock;
+    type SlottableAncestorIrType = IrIf | IrIfBlock | IrElseBlock | IrElseifBlock;
     type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent;
     type SlottableIrType = SlottableAncestorIrType | SlottableLeafIrType;
 
@@ -99,7 +99,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
     // and their positions in the child arrays of their own parents
     const addLightDomSlotContent = (slotName: EsExpression, ancestorIndices: number[]) => {
         const clone = produce(rootNodes[ancestorIndices[0]], (draft) => {
-            // Create a clone of the AST tree with only the ancestors and no other siblings
+            // Create a clone of the AST with only the ancestors and no other siblings
             let current = draft as SlottableIrType;
             for (let i = 1; i < ancestorIndices.length; i++) {
                 const nextIndex = ancestorIndices[i];
