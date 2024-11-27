@@ -130,7 +130,13 @@ export function getChildAttrsOrProps(
 
                 return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
             } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
-                const propValue = expressionIrToEs(value, cxt);
+                let propValue = expressionIrToEs(value, cxt);
+
+                if (name === 'class') {
+                    cxt.import('normalizeClass');
+                    propValue = b.callExpression(b.identifier('normalizeClass'), [propValue]);
+                }
+
                 return b.property('init', key, propValue);
             }
             throw new Error(`Unimplemented child attr IR node type: ${value.type}`);

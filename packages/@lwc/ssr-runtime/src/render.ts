@@ -37,9 +37,17 @@ function renderAttrsPrivate(
         } else if (!isString(attrValue)) {
             attrValue = String(attrValue);
         }
-        if (combinedScopeToken && attrName === 'class') {
-            attrValue += ' ' + combinedScopeToken;
-            hasClassAttribute = true;
+
+        if (attrName === 'class') {
+            if (attrValue === '') {
+                // If the class attribute is empty, we don't render it.
+                continue;
+            }
+
+            if (combinedScopeToken) {
+                attrValue += ' ' + combinedScopeToken;
+                hasClassAttribute = true;
+            }
         }
 
         result += attrValue === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrValue)}"`;

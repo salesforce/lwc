@@ -8,7 +8,7 @@
 // Must be first so that later exports take precedence
 export * from './stubs';
 
-export { htmlEscape, setHooks, sanitizeHtmlContent } from '@lwc/shared';
+export { htmlEscape, setHooks, sanitizeHtmlContent, normalizeClass } from '@lwc/shared';
 
 export { ClassList } from './class-list';
 export {

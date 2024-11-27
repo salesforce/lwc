@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/features",
-    "version": "8.10.1",
+    "version": "8.11.0",
     "description": "LWC Features Flags",
     "keywords": [
         "lwc"
@@ -21,6 +21,9 @@
     "license": "MIT",
     "publishConfig": {
         "access": "public"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     },
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
@@ -42,6 +45,6 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "8.10.1"
+        "@lwc/shared": "8.11.0"
     }
 }
