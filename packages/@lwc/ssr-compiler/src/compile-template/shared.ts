@@ -106,6 +106,7 @@ export function getChildAttrsOrProps(
 ): EsObjectExpression {
     const objectAttrsOrProps = attrs
         .map(({ name, value, type }) => {
+            // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
             const key = isValidES3Identifier(name) ? b.identifier(name) : b.literal(name);
             if (value.type === 'Literal' && typeof value.value === 'string') {
                 let literalValue: string | boolean = value.value;
