@@ -8,7 +8,7 @@
 import { builders as b, is } from 'estree-toolkit';
 import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
 
-import { isValidIdentifier } from '../shared';
+import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
 import type {
@@ -106,7 +106,8 @@ export function getChildAttrsOrProps(
 ): EsObjectExpression {
     const objectAttrsOrProps = attrs
         .map(({ name, value, type }) => {
-            const key = isValidIdentifier(name) ? b.identifier(name) : b.literal(name);
+            // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
+            const key = isValidES3Identifier(name) ? b.identifier(name) : b.literal(name);
             if (value.type === 'Literal' && typeof value.value === 'string') {
                 let literalValue: string | boolean = value.value;
                 if (name === 'style') {

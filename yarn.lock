@@ -1076,7 +1076,7 @@
     debug "^4.3.1"
     globals "^11.1.0"
 
-"@babel/types@^7.0.0", "@babel/types@^7.20.7", "@babel/types@^7.22.10", "@babel/types@^7.24.7", "@babel/types@^7.24.8", "@babel/types@^7.25.4", "@babel/types@^7.25.9", "@babel/types@^7.26.0", "@babel/types@^7.4.4":
+"@babel/types@7.26.0", "@babel/types@^7.0.0", "@babel/types@^7.20.7", "@babel/types@^7.22.10", "@babel/types@^7.24.7", "@babel/types@^7.24.8", "@babel/types@^7.25.4", "@babel/types@^7.25.9", "@babel/types@^7.26.0", "@babel/types@^7.4.4":
   version "7.26.0"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.26.0.tgz#deabd08d6b753bc8e0f198f8709fb575e31774ff"
   integrity sha512-Z/yiTPj+lDVnF7lWeKCIJzaIkI0vYO87dMpZ4bg4TDrFe4XXLFWL1TbXU27gBP3QccxV9mZICCrnjnYlJjXHOA==
