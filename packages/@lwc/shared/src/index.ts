@@ -8,7 +8,6 @@ import * as assert from './assert';
 
 export * from './api-version';
 export * from './aria';
-export * from './ecmascript';
 export * from './language';
 export * from './keys';
 export * from './void-elements';
