@@ -26,7 +26,7 @@ import type { Transformer } from '../types';
 
 const bBufferTextContent = esTemplateWithYield`
     {
-        renderedTextContent = true;
+        didBufferTextContent = true;
         const value = ${/* string value */ is.expression};
         // Using non strict equality to align with original implementation (ex. undefined == null)
         // See: https://github.com/salesforce/lwc/blob/348130f/packages/%40lwc/engine-core/src/framework/api.ts#L548
@@ -43,14 +43,14 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
 
     const isFirstInSeries = isFirstConcatenatedNode(cxt);
     const isLastInSeries = isLastConcatenatedNode(cxt);
-    const renderedTextContent = b.literal(true);
+    const didBufferTextContent = b.literal(true);
 
     const valueToYield = isLiteral(node.value)
         ? b.literal(node.value.value)
         : expressionIrToEs(node.value, cxt);
 
     return [
-        ...(isFirstInSeries ? bDeclareTextContentBuffer(renderedTextContent) : []),
+        ...(isFirstInSeries ? bDeclareTextContentBuffer(didBufferTextContent) : []),
         bBufferTextContent(valueToYield),
         ...(isLastInSeries ? [bYieldTextContent()] : []),
     ];

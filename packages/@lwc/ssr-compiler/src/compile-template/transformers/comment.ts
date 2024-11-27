@@ -24,13 +24,13 @@ export const Comment: Transformer<IrComment> = function Comment(node, cxt) {
 
         const isFirstInSeries = isFirstConcatenatedNode(cxt);
         const isLastInSeries = isLastConcatenatedNode(cxt);
-        const renderedTextContent = b.literal(false);
+        const didBufferTextContent = b.literal(false);
 
         // If preserve comments is off, we check if we should flush text content
         // for adjacent text nodes. (If preserve comments is on, then the previous
         // text node already flushed.)
         return [
-            ...(isFirstInSeries ? bDeclareTextContentBuffer(renderedTextContent) : []),
+            ...(isFirstInSeries ? bDeclareTextContentBuffer(didBufferTextContent) : []),
             ...(isLastInSeries ? [bYieldTextContent()] : []),
         ];
     }

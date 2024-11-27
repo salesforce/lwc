@@ -47,11 +47,11 @@ export const isLastConcatenatedNode = (cxt: TransformerContext) => {
 export const bDeclareTextContentBuffer = esTemplate`
     // Deliberately using var so we can re-declare as many times as we want in the same scope
     var textContentBuffer = '';
-    var renderedTextContent = ${/* rendered text content */ is.literal};
+    var didBufferTextContent = ${/* didBufferTextContent */ is.literal};
 `<EsStatement[]>;
 
 export const bYieldTextContent = esTemplateWithYield`
-    if (renderedTextContent) {
+    if (didBufferTextContent) {
         // We are at the end of a series of text nodes - flush to a concatenated string
         // We only render the ZWJ if there were actually any dynamic text nodes rendered
         // The ZWJ is just so hydration can compare the SSR'd dynamic text content against
