@@ -99,7 +99,7 @@ const bAddLightContent = esTemplate`
 // and group those into AST trees on a per-`slot` name basis, only for leafs/ancestors that are
 // relevant to slots (as mentioned above).
 function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContext) {
-    type SlottableAncestorIrType = IrIf | IrIfBlock | IrElseBlock | IrElseifBlock;
+    type SlottableAncestorIrType = IrIf | IrIfBlock | IrElseifBlock | IrElseBlock;
     type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent;
 
     const results: EsExpressionStatement[] = [];
