@@ -14,6 +14,16 @@ const { globSync } = glob;
 
 type TestFixtureOutput = { [filename: string]: unknown };
 
+function existsUp(dir: string, file: string): boolean {
+    while (true) {
+        if (fs.existsSync(path.join(dir, file))) return true;
+        dir = path.join(dir, '..');
+        const basename = path.basename(dir);
+        // We should always hit __tests__, but check for system root as an escape hatch
+        if (basename === '__tests__' || basename === '') return false;
+    }
+}
+
 /**
  * Facilitates the use of vitest's `test.only`/`test.skip` in fixture files.
  * @param dirname fixture directory to check for "directive" files
@@ -22,8 +32,8 @@ type TestFixtureOutput = { [filename: string]: unknown };
  * @example getTestOptions('/fixtures/some-test')
  */
 function getTestOptions(dirname: string) {
-    const isOnly = fs.existsSync(path.join(dirname, '.only'));
-    const isSkip = fs.existsSync(path.join(dirname, '.skip'));
+    const isOnly = existsUp(dirname, '.only');
+    const isSkip = existsUp(dirname, '.skip');
     if (isOnly && isSkip) {
         const relpath = path.relative(process.cwd(), dirname);
         throw new Error(`Cannot have both .only and .skip in ${relpath}`);
