@@ -9,31 +9,31 @@ import { builders as b, is } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 
-import type { Expression as EsExpression, Statement as EsStatement } from 'estree';
+import type {
+    Expression as EsExpression,
+    Statement as EsStatement,
+    BlockStatement as EsBlockStatement,
+} from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
     Expression as IrExpression,
     Literal as IrLiteral,
     Text as IrText,
+    Node as IrNode,
 } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 const bYieldEscapedString = esTemplateWithYield`
-    const ${/* temp var */ is.identifier} = ${/* string value */ is.expression};
-    switch (typeof ${0}) {
-        case 'string':
-            yield (${/* is isolated text node? */ is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
-            break;
-        case 'number':
-        case 'boolean':
-            yield String(${0});
-            break;
-        default:
-            yield ${0} ? htmlEscape(${0}.toString()) : ${2} ? '\\u200D' : '';
+    { 
+        const value = ${/* string value */ is.expression};
+        // Using non strict equality to align with original implementation (ex. undefined == null)
+        // See: https://github.com/salesforce/lwc/blob/348130f/packages/%40lwc/engine-core/src/framework/api.ts#L548
+        const massagedValue = value == null ? '' : String(value);
+        yield ${/* is isolated text node? */ is.literal} && massagedValue === '' ? '\\u200D' : htmlEscape(massagedValue);
     }
-`<EsStatement[]>;
+`<EsBlockStatement>;
 
 function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
     return node.type === 'Literal';
@@ -44,13 +44,23 @@ export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[]
         return [bYield(b.literal(node.value.value))];
     }
 
+    const shouldIsolate = (node?: IrNode) => {
+        switch (node?.type) {
+            case 'Text':
+                return false;
+            case 'Comment':
+                return cxt.templateOptions.preserveComments;
+            default:
+                return true;
+        }
+    };
+
     const isIsolatedTextNode = b.literal(
-        (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
-            (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
+        shouldIsolate(cxt.prevSibling) && shouldIsolate(cxt.nextSibling)
     );
+
     const valueToYield = expressionIrToEs(node.value, cxt);
-    const tempVariable = b.identifier(cxt.getUniqueVar());
 
     cxt.import('htmlEscape');
-    return bYieldEscapedString(tempVariable, valueToYield, isIsolatedTextNode);
+    return [bYieldEscapedString(valueToYield, isIsolatedTextNode)];
 };
