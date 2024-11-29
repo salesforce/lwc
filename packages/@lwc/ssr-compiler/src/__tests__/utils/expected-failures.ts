@@ -23,7 +23,6 @@ export const expectedFailures = new Set([
     'attribute-style/basic/index.js',
     'attribute-style/dynamic/index.js',
     'dynamic-components/mixed/index.js',
-    'dynamic-components/slots/scoped-slots/index.js',
     'dynamic-slots/index.js',
     'exports/component-as-default/index.js',
     'if-conditional-slot-content/index.js',
