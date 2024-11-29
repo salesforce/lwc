@@ -83,6 +83,7 @@ import type {
     ScopedSlotFragment,
     LwcComponent,
     Element,
+    Component,
 } from '../shared/types';
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
@@ -1282,10 +1283,14 @@ function parseScopedSlotFragment(
         );
     }
 
+    function isComponentOrLwcComponent(node: ParentNode): node is Component | LwcComponent {
+        return ast.isComponent(node) || ast.isLwcComponent(node);
+    }
+
     // <template lwc:slot-data> element should always be the direct child of a custom element
     // The only exception is, a conditional block as parent
     const parentCmp = ctx.findAncestor(
-        ast.isComponent,
+        isComponentOrLwcComponent,
         ({ current }) => current && ast.isConditionalBlock(current)
     );
 
