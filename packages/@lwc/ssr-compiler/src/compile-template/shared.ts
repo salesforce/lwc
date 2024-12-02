@@ -12,17 +12,17 @@ import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
 import type {
-    Node as IrNode,
     Attribute as IrAttribute,
+    Node as IrNode,
     Property as IrProperty,
 } from '@lwc/template-compiler';
 import type {
-    Statement as EsStatement,
     Expression as EsExpression,
-    MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
+    MemberExpression as EsMemberExpression,
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
+    Statement as EsStatement,
 } from 'estree';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
