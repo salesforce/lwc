@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'node:fs';
+import fs, { readFileSync } from 'node:fs';
 import path from 'node:path';
+import { AssertionError } from 'node:assert';
 import { test } from 'vitest';
 import * as glob from 'glob';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
@@ -145,7 +146,9 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                 );
             }
 
-            for (const [outputName, content] of Object.entries(outputs)) {
+            const outputsList = Object.entries(outputs);
+
+            for (const [outputName, content] of outputsList) {
                 const outputPath = path.resolve(dirname, outputName);
                 try {
                     await expect(content ?? '').toMatchFileSnapshot(outputPath);
@@ -154,6 +157,53 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                         // Hide unhelpful noise in the stack trace
                         // https://v8.dev/docs/stack-trace-api#stack-trace-collection-for-custom-exceptions
                         Error.captureStackTrace(err, testFixtureDir);
+                    }
+
+                    const isErrorSnapshot = outputName.startsWith('error');
+                    const isSuccessSnapshot = outputName.startsWith('expected');
+
+                    // If we change from a successful result to an error (or vice versa),
+                    // then either the snapshot or content for the failing file is empty,
+                    // and the diff printed in the error message isn't helpful. Here, we check for
+                    // that case, and then check if the other file has flipped the other way.
+                    // If it has, we throw a more helpful error message.
+                    if (isErrorSnapshot || isSuccessSnapshot) {
+                        const brokenResult = outputs[outputName];
+                        const brokenResultHasContent = Boolean(brokenResult);
+                        const brokenSnapshot = readFileSync(outputPath, 'utf8');
+                        const brokenSnapshotHasContent = Boolean(brokenSnapshot);
+                        if (brokenResultHasContent !== brokenSnapshotHasContent) {
+                            // This file flipped from content to empty, or vice versa
+                            const otherType = isErrorSnapshot ? 'expected' : 'error';
+                            const otherName = outputsList.find(([name]) =>
+                                name.startsWith(otherType)
+                            )![0];
+                            const otherResult = outputs[otherName];
+                            const otherResultHasContent = Boolean(otherResult);
+                            const otherSnapshot = readFileSync(
+                                path.resolve(dirname, otherName),
+                                'utf8'
+                            );
+                            const otherSnapshotHasContent = Boolean(otherSnapshot);
+                            if (otherResultHasContent !== otherSnapshotHasContent) {
+                                // The other file has flipped from content to empty, or vice versa
+                                const expectedContentName = brokenSnapshotHasContent
+                                    ? outputName
+                                    : otherName;
+                                const actualContentName = brokenResultHasContent
+                                    ? outputName
+                                    : otherName;
+                                const contentErr = new AssertionError({
+                                    message: `Expected content in ${expectedContentName}, but found content in ${actualContentName}.`,
+                                    expected: brokenSnapshotHasContent
+                                        ? brokenSnapshot
+                                        : otherSnapshot,
+                                    actual: brokenResultHasContent ? brokenResult : otherResult,
+                                });
+                                Error.captureStackTrace(contentErr, testFixtureDir);
+                                throw contentErr;
+                            }
+                        }
                     }
 
                     throw err;
