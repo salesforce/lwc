@@ -44,7 +44,7 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
 
 const visitors: Visitors = {
     // @ts-expect-error types for `traverse` do not support sharing a visitor between node types:
-    // https://estree-toolkit.netlify.app/traversal#sharing-a-visitor-function-between-two-node-types
+    // https://github.com/sarsamurmu/estree-toolkit/issues/20
     'FunctionDeclaration|FunctionExpression': (
         path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
         state: TransmogrificationState
