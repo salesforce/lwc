@@ -41,6 +41,14 @@ updates:
                   - '@wdio/*'
               update-types:
                   - 'major'
+          prettier:
+              patterns:
+                  - 'prettier'
+              update-types:
+                  - 'major'
+                  # Prettier can introduce formatting differences in minor versions,
+                  # which causes formatting checks to fail in CI.
+                  - 'minor'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:
