@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { esTemplateWithYield } from '../estemplate';
-import type { BlockStatement as EsBlockStatement } from 'estree';
+import type { IfStatement as EsIfStatement } from 'estree';
 import type { TransformerContext } from './types';
 import type { Node as IrNode } from '@lwc/template-compiler';
 
@@ -45,4 +45,4 @@ export const bYieldTextContent = esTemplateWithYield`
         textContentBuffer = '';
         didBufferTextContent = false;
     }
-`<EsBlockStatement>;
+`<EsIfStatement>;
