@@ -7,7 +7,6 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
-
 import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
@@ -74,9 +73,16 @@ function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
     return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
 }
 
-function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
+function getRootIdentifier(node: EsMemberExpression): EsIdentifier {
     const rootMemberExpression = getRootMemberExpression(node);
-    return is.identifier(rootMemberExpression?.object) ? rootMemberExpression.object : null;
+    if (is.identifier(rootMemberExpression?.object)) {
+        return rootMemberExpression.object;
+    }
+    // Should be impossible to hit, at least until we implement complex template expressions
+    /* v8 ignore next */
+    throw new Error(
+        `Invalid expression, must be an Identifier, found type="${rootMemberExpression.type}": \`${JSON.stringify(rootMemberExpression)}\``
+    );
 }
 
 /**
@@ -85,11 +91,23 @@ function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
  * inside a `for:each` block then the `foo` variable may refer to the scoped `foo`,
  * e.g. `<template for:each={foos} for:item="foo">`
  * @param expression
+ * @param cxt
  */
 export function getScopedExpression(expression: EsExpression, cxt: TransformerContext) {
-    const scopeReferencedId = is.memberExpression(expression)
-        ? getRootIdentifier(expression)
-        : null;
+    let scopeReferencedId: EsExpression;
+    if (is.memberExpression(expression)) {
+        // e.g. `foo.bar` -> scopeReferencedId is `foo`
+        scopeReferencedId = getRootIdentifier(expression);
+    } else if (is.identifier(expression)) {
+        // e.g. `foo` -> scopeReferencedId is `foo`
+        scopeReferencedId = expression;
+    } else {
+        // Should be impossible to hit, at least until we implement complex template expressions
+        /* v8 ignore next */
+        throw new Error(
+            `Invalid expression, must be a MemberExpression or Identifier, found type="${expression.type}": \`${JSON.stringify(expression)}\``
+        );
+    }
     return cxt.isLocalVar(scopeReferencedId?.name)
         ? expression
         : b.memberExpression(b.identifier('instance'), expression);
