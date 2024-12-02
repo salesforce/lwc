@@ -1,1 +1,0 @@
-Template compilation failure; see warnings in the console.

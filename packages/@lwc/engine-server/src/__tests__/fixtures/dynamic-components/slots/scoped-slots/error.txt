@@ -1,1 +1,0 @@
-LWC1178: <template> tag with lwc:slot-data directive must be the direct child of a custom element.
