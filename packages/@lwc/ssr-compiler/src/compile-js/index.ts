@@ -119,12 +119,12 @@ const visitors: Visitors = {
             // Note that this means that their implementations are ignored!
             if (node.kind === 'get' || node.kind === 'set') {
                 const methodAsProp = b.propertyDefinition(
-                    node.key,
+                    structuredClone(node.key),
                     null,
                     node.computed,
                     node.static
                 );
-                methodAsProp.decorators = decorators;
+                methodAsProp.decorators = structuredClone(decorators);
                 path.replaceWith(methodAsProp);
                 return;
             } else {
