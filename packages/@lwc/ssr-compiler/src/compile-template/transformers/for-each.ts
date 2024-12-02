@@ -7,7 +7,7 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplate } from '../../estemplate';
-import { irToEs } from '../ir-to-es';
+import { irChildrenToEs } from '../ir-to-es';
 import { getScopedExpression, optimizeAdjacentYieldStmts } from '../shared';
 
 import type { ForEach as IrForEach } from '@lwc/template-compiler';
@@ -25,9 +25,7 @@ export const ForEach: Transformer<IrForEach> = function ForEach(node, cxt): EsFo
     const forIndexId = node.index?.name ?? '__unused__';
 
     cxt.pushLocalVars([forItemId, forIndexId]);
-    const forEachStatements = node.children.flatMap((childNode) => {
-        return irToEs(childNode, cxt);
-    });
+    const forEachStatements = irChildrenToEs(node.children, cxt);
     cxt.popLocalVars();
 
     const expression = node.expression as EsExpression;

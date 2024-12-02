@@ -6,7 +6,7 @@
  */
 
 import { builders as b } from 'estree-toolkit';
-import { irToEs } from '../ir-to-es';
+import { irChildrenToEs } from '../ir-to-es';
 import { expressionIrToEs } from '../expression';
 import { optimizeAdjacentYieldStmts } from '../shared';
 
@@ -28,7 +28,7 @@ function bBlockStatement(
     cxt: TransformerContext,
     insertComments: boolean
 ): EsBlockStatement {
-    let statements = childNodes.flatMap((childNode) => irToEs(childNode, cxt));
+    let statements = irChildrenToEs(childNodes, cxt);
     if (insertComments) statements = [bYieldComment(), ...statements, bYieldComment()];
     return b.blockStatement(optimizeAdjacentYieldStmts(statements));
 }
