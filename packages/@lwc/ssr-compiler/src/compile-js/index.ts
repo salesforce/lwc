@@ -120,7 +120,7 @@ const visitors: Visitors = {
             if (node.kind === 'get' || node.kind === 'set') {
                 const methodAsProp = b.propertyDefinition(
                     node.key,
-                    b.identifier('undefined'),
+                    null,
                     node.computed,
                     node.static
                 );
