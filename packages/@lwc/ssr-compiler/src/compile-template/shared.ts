@@ -75,7 +75,7 @@ function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
 
 function getRootIdentifier(node: EsMemberExpression): EsIdentifier {
     const rootMemberExpression = getRootMemberExpression(node);
-    if (is.identifier(rootMemberExpression?.object)) {
+    if (is.identifier(rootMemberExpression.object)) {
         return rootMemberExpression.object;
     }
     // Should be impossible to hit, at least until we implement complex template expressions
