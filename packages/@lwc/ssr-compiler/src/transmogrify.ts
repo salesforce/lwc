@@ -42,32 +42,31 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     return false;
 };
 
-function transformFunction(
-    path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
-    state: TransmogrificationState
-): undefined {
-    const { node } = path;
-    if (!node?.async || !node?.generator) {
-        return;
-    }
-
-    // Component authors might conceivably use async generator functions in their own code. Therefore,
-    // when traversing & transforming written+generated code, we need to disambiguate generated async
-    // generator functions from those that were written by the component author.
-    if (
-        !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path) &&
-        !isWithinFn(TMPL_FN_PATTERN, path)
-    ) {
-        return;
-    }
-    node.generator = false;
-    node.async = state.mode === 'async';
-    node.params.unshift(EMIT_IDENT);
-}
-
 const visitors: Visitors = {
-    FunctionDeclaration: transformFunction,
-    FunctionExpression: transformFunction,
+    // @ts-expect-error types for `traverse` do not support sharing a visitor between node types:
+    // https://estree-toolkit.netlify.app/traversal#sharing-a-visitor-function-between-two-node-types
+    'FunctionDeclaration|FunctionExpression': (
+        path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
+        state: TransmogrificationState
+    ) => {
+        const { node } = path;
+        if (!node?.async || !node?.generator) {
+            return;
+        }
+
+        // Component authors might conceivably use async generator functions in their own code. Therefore,
+        // when traversing & transforming written+generated code, we need to disambiguate generated async
+        // generator functions from those that were written by the component author.
+        if (
+            !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path) &&
+            !isWithinFn(TMPL_FN_PATTERN, path)
+        ) {
+            return;
+        }
+        node.generator = false;
+        node.async = state.mode === 'async';
+        node.params.unshift(EMIT_IDENT);
+    },
     YieldExpression(path, state) {
         const { node } = path;
         if (!node) {
