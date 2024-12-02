@@ -17,13 +17,9 @@ import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
-import type { Identifier as EsIdentifier, Program as EsProgram, Expression } from 'estree';
+import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
-import type {
-    PropertyDefinition as DecoratatedPropertyDefinition,
-    MethodDefinition as DecoratatedMethodDefinition,
-} from 'meriyah/dist/src/estree';
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -72,8 +68,8 @@ const visitors: Visitors = {
             return;
         }
 
-        const decorators = (node as DecoratatedPropertyDefinition).decorators;
-        const decoratedExpression = decorators?.[0]?.expression as Expression;
+        const { decorators } = node;
+        const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
         } else if (
@@ -111,14 +107,29 @@ const visitors: Visitors = {
             return;
         }
 
-        const decorators = (node as DecoratatedMethodDefinition).decorators;
-        const decoratedExpression = decorators?.[0]?.expression as Expression;
+        const { decorators } = node;
+        // The real type is a subset of `Expression`, which doesn't work with the `is` validators
+        const decoratedExpression = decorators?.[0]?.expression;
         if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
-            catalogWireAdapters(path, state);
+            // Getters and setters are methods in the AST, but treated as properties by @wire
+            // Note that this means that their implementations are ignored!
+            if (node.kind === 'get' || node.kind === 'set') {
+                const methodAsProp = b.propertyDefinition(
+                    node.key,
+                    b.identifier('undefined'),
+                    node.computed,
+                    node.static
+                );
+                methodAsProp.decorators = decorators;
+                path.replaceWith(methodAsProp);
+                return;
+            } else {
+                catalogWireAdapters(path, state);
+            }
         }
 
         switch (node.key.name) {
