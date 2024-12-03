@@ -45,10 +45,10 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
 const visitors: Visitors = {
     // @ts-expect-error types for `traverse` do not support sharing a visitor between node types:
     // https://github.com/sarsamurmu/estree-toolkit/issues/20
-    'FunctionDeclaration|FunctionExpression': (
+    'FunctionDeclaration|FunctionExpression' (
         path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
         state: TransmogrificationState
-    ) => {
+    ) {
         const { node } = path;
         if (!node?.async || !node?.generator) {
             return;
