@@ -625,14 +625,16 @@ function validateAttrs(
 function checkNodeCompatibility(first: Classes, second: Classes): boolean {
     if (first.size !== second.size) {
         return false;
-    for (const f of first) {
-        if (!second.has(f)) {
-            return false;
+    } else {
+        for (const f of first) {
+            if (!second.has(f)) {
+                return false;
+            }
         }
-    }
-    for (const s of second) {
-        if (!first.has(s)) {
-            return false;
+        for (const s of second) {
+            if (!first.has(s)) {
+                return false;
+            }
         }
     }
     return true;
