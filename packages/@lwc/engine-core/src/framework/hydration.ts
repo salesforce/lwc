@@ -63,6 +63,10 @@ import type {
 import type { VM } from './vm';
 import type { RendererAPI } from './renderer';
 
+type Classes = Omit<Set<string>, 'add'>;
+
+const EMPTY_SET: Classes = new Set<string>();
+
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
     ELEMENT = 1,
@@ -618,6 +622,24 @@ function validateAttrs(
     return nodesAreCompatible;
 }
 
+function checkNodeCompatibility(first: Classes, second: Classes): boolean {
+    if (first.size !== second.size) {
+        return false;
+    } else {
+        for (const f of first) {
+            if (!second.has(f)) {
+                return false;
+            }
+        }
+        for (const s of second) {
+            if (!first.has(s)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 function validateClassAttr(
     vnode: VBaseElement | VStatic,
     elm: Element,
@@ -634,16 +656,18 @@ function validateClassAttr(
 
     // Use a Set because we don't care to validate mismatches for 1) different ordering in SSR vs CSR, or 2)
     // duplicated class names. These don't have an effect on rendered styles.
-    const elmClasses = new Set(ArrayFrom(elm.classList));
-    let vnodeClasses: Set<string>;
+    const elmClasses = elm.classList.length ? new Set(ArrayFrom(elm.classList)) : EMPTY_SET;
+    let vnodeClasses: Classes;
 
     if (!isUndefined(className)) {
         // ignore empty spaces entirely, filter them out using `filter(..., Boolean)`
-        vnodeClasses = new Set(ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean));
+        const classes = ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean);
+        vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
     } else if (!isUndefined(classMap)) {
-        vnodeClasses = new Set(keys(classMap));
+        const classes = keys(classMap);
+        vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
     } else {
-        vnodeClasses = new Set();
+        vnodeClasses = EMPTY_SET;
     }
 
     // ---------- Step 2: handle the scope tokens
@@ -658,7 +682,11 @@ function validateClassAttr(
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
     if (!isNull(scopeToken)) {
-        vnodeClasses.add(scopeToken);
+        if (vnodeClasses === EMPTY_SET) {
+            vnodeClasses = new Set([scopeToken]);
+        } else {
+            (vnodeClasses as Set<string>).add(scopeToken);
+        }
     }
 
     // This tells us which `*-host` scope token was rendered to the element's class.
@@ -672,25 +700,10 @@ function validateClassAttr(
 
     // ---------- Step 3: check for compatibility
 
-    let nodesAreCompatible = true;
-
-    if (vnodeClasses.size !== elmClasses.size) {
-        nodesAreCompatible = false;
-    } else {
-        for (const vnodeClass of vnodeClasses) {
-            if (!elmClasses.has(vnodeClass)) {
-                nodesAreCompatible = false;
-            }
-        }
-        for (const elmClass of elmClasses) {
-            if (!vnodeClasses.has(elmClass)) {
-                nodesAreCompatible = false;
-            }
-        }
-    }
+    const nodesAreCompatible = checkNodeCompatibility(vnodeClasses, elmClasses);
 
     if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
-        const prettyPrint = (set: Set<string>) =>
+        const prettyPrint = (set: Classes) =>
             JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
         logWarn(
             `Mismatch hydrating element <${getProperty(
