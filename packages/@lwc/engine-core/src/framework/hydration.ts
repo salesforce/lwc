@@ -65,6 +65,7 @@ import type { RendererAPI } from './renderer';
 
 type Classes = Omit<Set<string>, 'add'>;
 
+// Used as a perf optimization to avoid creating and discarding sets unnecessarily.
 const EMPTY_SET: Classes = new Set<string>();
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
