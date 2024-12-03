@@ -13,8 +13,8 @@
     Remove the incorrect item for the list.
 -->
 
--   😮‍💨 No, it does not introduce a breaking change.
--   💔 Yes, it does introduce a breaking change.
+- 😮‍💨 No, it does not introduce a breaking change.
+- 💔 Yes, it does introduce a breaking change.
 
 <!-- If yes, please describe the impact and migration path for existing applications. -->
 
@@ -33,8 +33,8 @@
     Remove the incorrect item from the list.
 -->
 
--   🤞 No, it does not introduce an observable change.
--   🔬 Yes, it does include an observable change.
+- 🤞 No, it does not introduce an observable change.
+- 🔬 Yes, it does include an observable change.
 
 <!-- If yes, please describe the anticipated observable changes. -->
 
