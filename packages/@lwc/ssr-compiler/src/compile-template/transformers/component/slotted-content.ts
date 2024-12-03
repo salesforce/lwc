@@ -34,10 +34,7 @@ import type { TransformerContext } from '../../types';
 
 const bGenerateSlottedContent = esTemplateWithYield`
         const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
-            ? async function* generateSlottedContent(instance) {
-                // The 'instance' variable is shadowed here so that a contextful relationship
-                // is established between components rendered in slotted content & the "parent"
-                // component that contains the <slot>.
+            ? async function* generateShadowSlottedContent() {
                 ${/* shadow slot content */ is.statement}
             } 
             // Avoid creating the object unnecessarily

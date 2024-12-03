@@ -55,9 +55,7 @@ const bExportTemplate = esTemplate`
         if (!isLightDom) {
             yield '</template>';
             if (shadowSlottedContent) {
-                // instance must be passed in; this is used to establish the contextful relationship
-                // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* shadowSlottedContent(instance);
+                yield* shadowSlottedContent();
             }
         }
     }
