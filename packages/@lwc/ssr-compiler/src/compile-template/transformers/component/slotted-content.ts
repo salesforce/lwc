@@ -140,6 +140,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     break;
                 }
                 // SlottableLeafIrType
+                case 'Slot':
                 case 'Element':
                 case 'Text':
                 case 'Component':

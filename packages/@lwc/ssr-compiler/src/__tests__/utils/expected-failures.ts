@@ -26,8 +26,6 @@ export const expectedFailures = new Set([
     'scoped-slots/mixed-with-light-dom-slots-inside/index.js',
     'scoped-slots/mixed-with-light-dom-slots-outside/index.js',
     'slot-forwarding/scoped-slots/index.js',
-    // Slot forwarding does not work in @lwc/engine-server in certain cases see #4668
-    'slot-forwarding/slots/advanced/index.js',
     'slot-forwarding/slots/mixed/index.js',
     'slot-forwarding/slots/dangling/index.js',
     'slot-forwarding/slots/light/index.js',
