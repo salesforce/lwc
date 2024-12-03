@@ -246,6 +246,13 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         childContent = [];
     }
 
+    const isForeignElement = node.namespace !== HTML_NAMESPACE;
+    const hasChildren = childContent.length > 0;
+
+    if (isForeignElement && !hasChildren) {
+        return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`/>`))];
+    }
+
     return [
         bYield(b.literal(`<${node.name}`)),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here

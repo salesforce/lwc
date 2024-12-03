@@ -1,0 +1,19 @@
+<template>
+    <!-- Empty non-void HTML namespace element -->
+    <a href="https://www.salesforce.com/"></a>
+    <!-- Non-empty non-void HTML namespace element -->
+    <label for="textInput">Some input</label>
+    <!-- Void HTML namespace element -->
+    <input id="textInput" type="text">
+    <!-- Foreign namespace elements -->
+    <svg>
+        <!-- Non-empty foreign element -->
+        <pattern>
+            <image xlink:href="https://www.salesforce.com/"></image>
+        </pattern>
+        <!-- Empty foreign element -->
+        <image xlink:title="title"></image>
+    </svg>
+    <!-- Rendered with inner-html -->
+    <svg lwc:inner-html={innerHtml}></svg>
+</template>
