@@ -25,7 +25,6 @@ export class WireAdapter {
             this._callback(this.contextValue);
         }
     }
-
 }
 
 export const contextualizer = createContextProvider(WireAdapter);

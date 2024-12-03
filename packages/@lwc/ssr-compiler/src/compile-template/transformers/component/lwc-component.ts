@@ -37,7 +37,7 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
 
-        yield* Ctor[SYMBOL__GENERATE_MARKUP](
+        yield* Ctor[__SYMBOL__GENERATE_MARKUP](
             null, 
             childProps,
             childAttrs,
@@ -56,7 +56,7 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
         cxt.import({
             getReadOnlyProxy: '__getReadOnlyProxy',
             LightningElement: undefined,
-            SYMBOL__GENERATE_MARKUP: undefined,
+            SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
         });
 
         return bYieldFromDynamicComponentConstructorGenerator(

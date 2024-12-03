@@ -7,22 +7,21 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
-
-import { isValidIdentifier } from '../shared';
+import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
 import type {
-    Node as IrNode,
     Attribute as IrAttribute,
+    Node as IrNode,
     Property as IrProperty,
 } from '@lwc/template-compiler';
 import type {
-    Statement as EsStatement,
     Expression as EsExpression,
-    MemberExpression as EsMemberExpression,
     Identifier as EsIdentifier,
+    MemberExpression as EsMemberExpression,
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
+    Statement as EsStatement,
 } from 'estree';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
@@ -74,9 +73,20 @@ function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
     return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
 }
 
-function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
+function getRootIdentifier(node: EsMemberExpression, cxt: TransformerContext): EsIdentifier | null {
     const rootMemberExpression = getRootMemberExpression(node);
-    return is.identifier(rootMemberExpression?.object) ? rootMemberExpression.object : null;
+    if (is.identifier(rootMemberExpression.object)) {
+        return rootMemberExpression.object;
+    }
+    if (cxt.templateOptions.experimentalComplexExpressions) {
+        // TODO [#3370]: Implement complex template expressions
+        return null;
+    }
+    // Should be impossible to hit, at least until we implement complex template expressions
+    /* v8 ignore next */
+    throw new Error(
+        `Invalid expression, must be an Identifier, found type="${rootMemberExpression.type}": \`${JSON.stringify(rootMemberExpression)}\``
+    );
 }
 
 /**
@@ -85,12 +95,29 @@ function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
  * inside a `for:each` block then the `foo` variable may refer to the scoped `foo`,
  * e.g. `<template for:each={foos} for:item="foo">`
  * @param expression
+ * @param cxt
  */
 export function getScopedExpression(expression: EsExpression, cxt: TransformerContext) {
-    const scopeReferencedId = is.memberExpression(expression)
-        ? getRootIdentifier(expression)
-        : null;
-    return cxt.isLocalVar(scopeReferencedId?.name)
+    let scopeReferencedId: EsExpression | null = null;
+    if (is.memberExpression(expression)) {
+        // e.g. `foo.bar` -> scopeReferencedId is `foo`
+        scopeReferencedId = getRootIdentifier(expression, cxt);
+    } else if (is.identifier(expression)) {
+        // e.g. `foo` -> scopeReferencedId is `foo`
+        scopeReferencedId = expression;
+    }
+    if (scopeReferencedId === null) {
+        if (cxt.templateOptions.experimentalComplexExpressions) {
+            // TODO [#3370]: Implement complex template expressions
+            return expression;
+        }
+        // Should be impossible to hit, at least until we implement complex template expressions
+        /* v8 ignore next */
+        throw new Error(
+            `Invalid expression, must be a MemberExpression or Identifier, found type="${expression.type}": \`${JSON.stringify(expression)}\``
+        );
+    }
+    return cxt.isLocalVar(scopeReferencedId.name)
         ? expression
         : b.memberExpression(b.identifier('instance'), expression);
 }
@@ -106,7 +133,8 @@ export function getChildAttrsOrProps(
 ): EsObjectExpression {
     const objectAttrsOrProps = attrs
         .map(({ name, value, type }) => {
-            const key = isValidIdentifier(name) ? b.identifier(name) : b.literal(name);
+            // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
+            const key = isValidES3Identifier(name) ? b.identifier(name) : b.literal(name);
             if (value.type === 'Literal' && typeof value.value === 'string') {
                 let literalValue: string | boolean = value.value;
                 if (name === 'style') {

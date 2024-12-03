@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-    clazz = 'bar'
+    clazz = 'bar';
 }

@@ -14,5 +14,5 @@ class Adapter {
 }
 
 export default {
-    Adapter
-}
+    Adapter,
+};

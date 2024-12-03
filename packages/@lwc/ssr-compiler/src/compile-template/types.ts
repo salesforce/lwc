@@ -17,7 +17,6 @@ export interface TransformerContext {
     pushLocalVars: (vars: string[]) => void;
     popLocalVars: () => void;
     isLocalVar: (varName: string | null | undefined) => boolean;
-    getUniqueVar: () => string;
     templateOptions: TemplateOpts;
     prevSibling?: IrNode;
     nextSibling?: IrNode;
@@ -29,4 +28,5 @@ export interface TransformerContext {
 
 export interface TemplateOpts {
     preserveComments: boolean;
+    experimentalComplexExpressions: boolean;
 }

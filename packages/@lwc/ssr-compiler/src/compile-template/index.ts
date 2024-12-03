@@ -28,6 +28,11 @@ const bExportTemplate = esTemplate`
             Cmp, 
             instance
     ) {
+        // Deliberately using let so we can mutate as many times as we want in the same scope.
+        // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
+        let textContentBuffer = '';
+        let didBufferTextContent = false;
+
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -50,9 +55,7 @@ const bExportTemplate = esTemplate`
         if (!isLightDom) {
             yield '</template>';
             if (shadowSlottedContent) {
-                // instance must be passed in; this is used to establish the contextful relationship
-                // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* shadowSlottedContent(instance);
+                yield* shadowSlottedContent();
             }
         }
     }
@@ -102,8 +105,12 @@ export default function compileTemplate(
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
+    const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root!, { preserveComments });
+    const { addImport, getImports, statements } = templateIrToEsTree(root!, {
+        preserveComments,
+        experimentalComplexExpressions,
+    });
     addImport(['renderStylesheets', 'hasScopedStaticStylesheets']);
     for (const [imports, source] of getStylesheetImports(filename)) {
         addImport(imports, source);

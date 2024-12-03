@@ -2,5 +2,5 @@ import { LightningElement } from 'lwc';
 
 export default class Child extends LightningElement {
     static renderMode = 'light';
-    bound = { id: 'prop' }
+    bound = { id: 'prop' };
 }

@@ -11,6 +11,7 @@ export * from './stubs';
 export { htmlEscape, setHooks, sanitizeHtmlContent, normalizeClass } from '@lwc/shared';
 
 export { ClassList } from './class-list';
+export { getReadOnlyProxy } from './get-read-only-proxy';
 export {
     LightningElement,
     LightningElementConstructor,
@@ -30,8 +31,8 @@ export {
     // renderComponent is an alias for serverSideRenderComponent
     serverSideRenderComponent as renderComponent,
 } from './render';
+export { massageTextContent } from './render-text-content';
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
-export { getReadOnlyProxy } from './get-read-only-proxy';
 export { createContextProvider, establishContextfulRelationship, connectContext } from './wire';

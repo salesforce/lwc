@@ -6,7 +6,7 @@
  */
 
 import path from 'node:path';
-import { vi, describe, beforeEach, afterEach } from 'vitest';
+import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
@@ -163,13 +163,13 @@ function testFixtures(options?: RollupLwcOptions) {
 }
 
 describe.concurrent('fixtures', () => {
-    beforeEach(() => {
+    beforeAll(() => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
         setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
     });
 
-    afterEach(() => {
+    afterAll(() => {
         setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
     });
 

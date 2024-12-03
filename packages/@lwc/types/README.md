@@ -11,11 +11,11 @@ To enable importing [templates](https://lwc.dev/guide/html_templates) or [styles
 
 ```ts
 // ./types/global.d.ts
-import '@lwc/types'
+import '@lwc/types';
 
 // my-component.ts
-import stylesheet from './my-component.css'
-import template from './my-component.html'
+import stylesheet from './my-component.css';
+import template from './my-component.html';
 ```
 
 ## Module Definitions

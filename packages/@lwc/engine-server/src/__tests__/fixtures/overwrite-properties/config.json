@@ -1,6 +1,6 @@
 {
     "props": {
-        "name": "my name", 
+        "name": "my name",
         "namespace": "my namespace",
         "type": "my type",
         "parent": "my parent",

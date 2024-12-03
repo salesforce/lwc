@@ -6,5 +6,4 @@ export default class ElementChild extends LightningElement {
 
     @api
     activatetruepath;
-
 }
