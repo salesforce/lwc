@@ -107,8 +107,12 @@ export default function compileTemplate(
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
+    const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root!, { preserveComments });
+    const { addImport, getImports, statements } = templateIrToEsTree(root!, {
+        preserveComments,
+        experimentalComplexExpressions,
+    });
     addImport(['renderStylesheets', 'hasScopedStaticStylesheets']);
     for (const [imports, source] of getStylesheetImports(filename)) {
         addImport(imports, source);
