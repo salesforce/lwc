@@ -24,7 +24,7 @@ import type { Transformer } from '../types';
 
 const bBufferTextContent = esTemplateWithYield`
     didBufferTextContent = true;
-    textContentBuffer += renderTextContent(${/* string value */ is.expression});
+    textContentBuffer += massageTextContent(${/* string value */ is.expression});
 `<EsExpressionStatement[]>;
 
 function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
@@ -32,7 +32,7 @@ function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node i
 }
 
 export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
-    cxt.import(['htmlEscape', 'renderTextContent']);
+    cxt.import(['htmlEscape', 'massageTextContent']);
 
     const isLastInSeries = isLastConcatenatedNode(cxt);
 

@@ -9,7 +9,7 @@
  * Given an object, render it for use as a text content node.
  * @param value
  */
-export function massageTextContent(value: any): string {
+export function massageTextContent(value: unknown): string {
     // Using non strict equality to align with original implementation (ex. undefined == null)
     // See: https://github.com/salesforce/lwc/blob/348130f/packages/%40lwc/engine-core/src/framework/api.ts#L548
     return value == null ? '' : String(value);
