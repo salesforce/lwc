@@ -622,7 +622,7 @@ function validateAttrs(
     return nodesAreCompatible;
 }
 
-function checkNodeCompatibility(first: Classes, second: Classes): boolean {
+function checkClassesCompatibility(first: Classes, second: Classes): boolean {
     if (first.size !== second.size) {
         return false;
     }
@@ -699,9 +699,9 @@ function validateClassAttr(
 
     // ---------- Step 3: check for compatibility
 
-    const nodesAreCompatible = checkNodeCompatibility(vnodeClasses, elmClasses);
+    const classesAreCompatible = checkClassesCompatibility(vnodeClasses, elmClasses);
 
-    if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
+    if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
         const prettyPrint = (set: Classes) =>
             JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
         logWarn(
@@ -715,7 +715,7 @@ function validateClassAttr(
         );
     }
 
-    return nodesAreCompatible;
+    return classesAreCompatible;
 }
 
 function validateStyleAttr(
