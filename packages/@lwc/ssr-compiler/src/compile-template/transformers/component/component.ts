@@ -37,7 +37,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             childProps, 
             childAttrs, 
             shadowSlottedContent,
-            lightSlottedContent,
+            lightSlottedContentChildren,
             instance,
             scopeToken,
         );

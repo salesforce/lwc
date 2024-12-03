@@ -42,7 +42,7 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
             childProps,
             childAttrs,
             shadowSlottedContent,
-            lightSlottedContent,
+            lightSlottedContentChildren,
             scopeToken
         );
     }

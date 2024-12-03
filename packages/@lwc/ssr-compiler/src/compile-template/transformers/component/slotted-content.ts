@@ -32,17 +32,17 @@ const bGenerateSlottedContent = esTemplateWithYield`
             // Avoid creating the object unnecessarily
             : null;
 
-        const lightSlottedContent = ${/* hasLightSlottedContent */ is.literal} 
+        const lightSlottedContentChildren = ${/* hasLightSlottedContent */ is.literal} 
             ? Object.create(null)
             // Avoid creating the object unnecessarily
             : null;
         
         function addLightContent(name, fn) {
-            let contentList = lightSlottedContent[name];
+            let contentList = lightSlottedContentChildren[name];
             if (contentList) {
                 contentList.push(fn);
             } else {
-                lightSlottedContent[name] = [fn];
+                lightSlottedContentChildren[name] = [fn];
             }
         }
 
