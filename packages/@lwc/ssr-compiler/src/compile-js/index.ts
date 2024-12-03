@@ -126,6 +126,9 @@ const visitors: Visitors = {
                 );
                 methodAsProp.decorators = structuredClone(decorators);
                 path.replaceWith(methodAsProp);
+                // We do not need to call `catalogWireAdapters()` because, by replacing the current
+                // node, `traverse()` will visit it again automatically, so we will just call
+                // `catalogWireAdapters()` later anyway.
                 return;
             } else {
                 catalogWireAdapters(path, state);
