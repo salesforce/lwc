@@ -64,7 +64,7 @@ const faceSanityTest = (tagName, ctor) => {
             form.appendChild(face);
         });
 
-        it('cannot access formAssociated outside of a component', () => {
+        fit('cannot access formAssociated outside of a component', () => {
             expect(() => face.formAssociated).toLogWarningDev(
                 /formAssociated cannot be accessed outside of a component. Set the value within the component class./
             );

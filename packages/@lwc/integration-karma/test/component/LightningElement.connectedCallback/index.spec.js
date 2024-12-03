@@ -4,6 +4,7 @@ import { customElementCallbackReactionErrorListener } from 'test-utils';
 import Test from 'x/test';
 import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
 import XSlottedParent from 'x/slottedParent';
+import TestChild from 'x/testChild';
 
 function testConnectSlot(name, fn) {
     it(`should invoke the connectedCallback the root element is added in the DOM via ${name}`, () => {

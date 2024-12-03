@@ -11,6 +11,7 @@ import {
     assert,
     create,
     defineProperty,
+    getPrototypeOf,
     getOwnPropertyNames,
     isArray,
     isFalse,
@@ -20,6 +21,8 @@ import {
     isTrue,
     isUndefined,
     flattenStylesheets,
+    // connectContext, 
+    // disconnectContext
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
@@ -49,6 +52,8 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import { type ContextProvidedCallback, ContextRequestEvent } from './context';
+
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
 import type {
@@ -60,6 +65,11 @@ import type { ComponentDef } from './def';
 import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
 import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
+import type { Signal } from '@lwc/signals';
+
+const connectContext = Symbol.for("connectContext");
+const disconnectContext = Symbol.for("disconnectContext");
+const symbolContextKey = Symbol.for('context');
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -216,6 +226,8 @@ export interface VM<N = HostNode, E = HostElement> {
      * API version associated with this VM
      */
     apiVersion: APIVersion;
+
+    contextfulFieldsOrProps?: string[];
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -423,7 +435,22 @@ export function createVM<HostNode, HostElement>(
         installWireAdapters(vm);
     }
 
+    // gatherContextfulFields(vm);
+
     return vm;
+}
+
+function gatherContextfulFields(vm: VM) {
+    const { component } = vm;
+    try {
+        vm.contextfulFieldsOrProps = getOwnPropertyNames(getPrototypeOf(component)).filter(
+            (propName) => (component as any)[propName]?.[connectContext]
+        );
+    } catch(e) {
+        console.error(e);
+        debugger;
+    }
+    
 }
 
 function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean {
@@ -716,6 +743,9 @@ export function runConnectedCallback(vm: VM) {
 
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }
+    // Setup context after connected callback is executed
+    gatherContextfulFields(vm)
+    // setupContext(vm);
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
     if (
@@ -737,6 +767,72 @@ export function runConnectedCallback(vm: VM) {
                 tagName: vm.tagName,
             });
         }
+    }
+}
+
+function setupContext(vm: VM) {
+    const { contextfulFieldsOrProps, component } = vm;
+
+    if (!contextfulFieldsOrProps || contextfulFieldsOrProps.length === 0) {
+        return;
+    }
+
+    let isProvidingContext = false;
+    const providedContextVarieties = new Map<unknown, Signal<unknown>>();
+    const contextRuntimeAdapter = {
+        isServerSide: false,
+        component,
+        provideContext<T extends object>(
+            contextVariety: T,
+            providedContextSignal: Signal<unknown>,
+        ): void {
+            if (!isProvidingContext) {
+                isProvidingContext = true;
+
+                // todo: fix typing
+                component.addEventListener('lightning:context-request', (event: any) => {
+                    if (
+                        event.detail.key === symbolContextKey &&
+                        providedContextVarieties.has(event.detail.contextVariety)
+                      ) {
+                        event.stopImmediatePropagation();
+                        const providedContextSignal = providedContextVarieties.get(
+                          event.detail.contextVariety,
+                        );
+                        event.detail.callback(providedContextSignal);
+                      }
+                });
+            }
+
+            let multipleContextWarningShown = false;
+
+            if (providedContextVarieties.has(contextVariety)) {
+                if (!multipleContextWarningShown) {
+                    multipleContextWarningShown = true;
+                    console.error(
+                      'Multiple contexts of the same variety were provided. Only the first context will be used.',
+                    );
+                }
+                return;
+            }
+
+            providedContextVarieties.set(contextVariety, providedContextSignal);
+        },
+        consumeContext<T extends object>(
+            contextVariety: T,
+            contextProvidedCallback: ContextProvidedCallback,
+        ): void {
+            const event = new ContextRequestEvent({
+                contextVariety,
+                callback: contextProvidedCallback,
+            });
+
+            component.dispatchEvent(event);
+        }
+    }
+
+    for (const contextfulFieldsOrProp of contextfulFieldsOrProps) {
+        (component as any)[contextfulFieldsOrProp][connectContext](contextRuntimeAdapter);
     }
 }
 
