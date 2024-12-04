@@ -35,7 +35,7 @@ const bConditionalSlot = esTemplateWithYield`
         const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
         if (generators) {
             for (const generator of generators) {
-                yield* generator(${/* scoped slot data */ isNullableOf(is.expression)});
+                yield* generator(contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
             }
         } else {
             // If we're in this else block, then the generator _must_ have yielded

@@ -67,7 +67,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
 const bAddLightContent = esTemplate`
-    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(${
+    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
         // FIXME: make validation work again  
