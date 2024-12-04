@@ -22,7 +22,6 @@ export const expectedFailures = new Set([
     'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
     'render-dynamic-value/index.js',
     'scoped-slots/advanced/index.js',
-    'scoped-slots/expression/index.js',
     'scoped-slots/mixed-with-light-dom-slots-inside/index.js',
     'scoped-slots/mixed-with-light-dom-slots-outside/index.js',
     'slot-forwarding/scoped-slots/index.js',
