@@ -15,5 +15,8 @@
         <image xlink:title="title"></image>
     </svg>
     <!-- Rendered with inner-html -->
-    <svg lwc:inner-html={innerHtml}></svg>
+    <svg>
+        <pattern lwc:inner-html={foreignNamespaceInnerHtml}></pattern>
+        <image xlink:title="title"></image>
+    </svg>
 </template>
