@@ -252,7 +252,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,
-        isForeignSelfClosingElement ? bYield(b.literal(`/>`)) : bYield(b.literal(`>`)),
+        bYield(b.literal(isForeignSelfClosingElement ? `/>` : `>`)),
         ...(isSelfClosingElement ? [] : [...childContent, bYield(b.literal(`</${node.name}>`))]),
     ].filter(Boolean);
 };
