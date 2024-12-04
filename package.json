@@ -9,7 +9,7 @@
     },
     "scripts": {
         "prepare": "husky && yarn build",
-        "lint": "eslint .",
+        "lint": "eslint . --cache",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
