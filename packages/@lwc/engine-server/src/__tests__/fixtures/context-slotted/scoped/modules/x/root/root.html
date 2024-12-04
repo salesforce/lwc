@@ -1,0 +1,8 @@
+<template lwc:render-mode="light">
+    <x-provider>
+        <template lwc:slot-data="data">
+            <x-consumer></x-consumer>
+            <span>{data.id} - {data.name}</span>
+        </template>
+    </x-provider>
+</template>

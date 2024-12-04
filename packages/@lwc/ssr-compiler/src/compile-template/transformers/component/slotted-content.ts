@@ -35,7 +35,11 @@ import type { TransformerContext } from '../../types';
 
 const bGenerateSlottedContent = esTemplateWithYield`
         const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
-            ? async function* generateShadowSlottedContent() {
+            ? async function* generateSlottedContent(contextfulParent) {
+                // The 'contextfulParent' variable is shadowed here so that a contextful relationship
+                // is established between components rendered in slotted content & the "parent"
+                // component that contains the <slot>.
+
                 ${/* shadow slot content */ is.statement}
             } 
             // Avoid creating the object unnecessarily
@@ -63,7 +67,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
 const bAddLightContent = esTemplate`
-    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(${
+    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
         // FIXME: make validation work again  
