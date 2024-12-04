@@ -32,6 +32,9 @@ const bExportTemplate = esTemplate`
         // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
         let textContentBuffer = '';
         let didBufferTextContent = false;
+
+        // Establishes a contextual relationship between two components for ContextProviders.
+        // This variable will typically get overridden (shadowed) within slotted content.
         const contextfulParent = instance;
 
         const isLightDom = Cmp.renderMode === 'light';
@@ -58,7 +61,7 @@ const bExportTemplate = esTemplate`
             if (shadowSlottedContent) {
                 // instance must be passed in; this is used to establish the contextful relationship
                 // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* shadowSlottedContent(instance);
+                yield* shadowSlottedContent(contextfulParent);
             }
         }
     }
