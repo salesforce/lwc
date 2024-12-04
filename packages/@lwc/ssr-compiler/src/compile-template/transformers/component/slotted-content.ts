@@ -29,6 +29,7 @@ import type {
     LwcComponent as IrLwcComponent,
     ScopedSlotFragment as IrScopedSlotFragment,
     Text as IrText,
+    Slot as IrSlot,
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
@@ -40,17 +41,17 @@ const bGenerateSlottedContent = esTemplateWithYield`
             // Avoid creating the object unnecessarily
             : null;
 
-        const lightSlottedContent = ${/* hasLightSlottedContent */ is.literal} 
+        const lightSlottedContentMap = ${/* hasLightSlottedContent */ is.literal} 
             ? Object.create(null)
             // Avoid creating the object unnecessarily
             : null;
         
         function addLightContent(name, fn) {
-            let contentList = lightSlottedContent[name];
+            let contentList = lightSlottedContentMap[name];
             if (contentList) {
                 contentList.push(fn);
             } else {
-                lightSlottedContent[name] = [fn];
+                lightSlottedContentMap[name] = [fn];
             }
         }
 
@@ -97,7 +98,7 @@ const bAddLightContent = esTemplate`
 // relevant to slots (as mentioned above).
 function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContext) {
     type SlottableAncestorIrType = IrIf | IrIfBlock | IrElseifBlock | IrElseBlock;
-    type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent;
+    type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent | IrSlot;
 
     const results: EsExpressionStatement[] = [];
 
@@ -140,6 +141,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     break;
                 }
                 // SlottableLeafIrType
+                case 'Slot':
                 case 'Element':
                 case 'Text':
                 case 'Component':
