@@ -37,6 +37,8 @@ export const expectedFailures = new Set([
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
     'svgs/index.js',
+    'wire/errors/throws-on-computed-key/index.js',
+    'wire/errors/throws-when-colliding-prop-then-method/index.js',
     'wire/errors/throws-when-computed-prop-is-expression/index.js',
     'wire/errors/throws-when-computed-prop-is-let-variable/index.js',
     'wire/errors/throws-when-computed-prop-is-regexp-literal/index.js',
