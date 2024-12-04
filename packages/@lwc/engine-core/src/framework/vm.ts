@@ -11,8 +11,11 @@ import {
     assert,
     create,
     defineProperty,
+    entries,
     getPrototypeOf,
+    getOwnPropertyDescriptors,
     getOwnPropertyNames,
+    keys,
     isArray,
     isFalse,
     isFunction,
@@ -226,8 +229,6 @@ export interface VM<N = HostNode, E = HostElement> {
      * API version associated with this VM
      */
     apiVersion: APIVersion;
-
-    contextfulFieldsOrProps?: string[];
 }
 
 type VMAssociable = HostNode | LightningElement;
@@ -435,22 +436,7 @@ export function createVM<HostNode, HostElement>(
         installWireAdapters(vm);
     }
 
-    // gatherContextfulFields(vm);
-
     return vm;
-}
-
-function gatherContextfulFields(vm: VM) {
-    const { component } = vm;
-    try {
-        vm.contextfulFieldsOrProps = getOwnPropertyNames(getPrototypeOf(component)).filter(
-            (propName) => (component as any)[propName]?.[connectContext]
-        );
-    } catch(e) {
-        console.error(e);
-        debugger;
-    }
-    
 }
 
 function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean {
@@ -744,8 +730,7 @@ export function runConnectedCallback(vm: VM) {
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }
     // Setup context after connected callback is executed
-    gatherContextfulFields(vm)
-    // setupContext(vm);
+    setupContext(vm);
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
     if (
@@ -771,8 +756,16 @@ export function runConnectedCallback(vm: VM) {
 }
 
 function setupContext(vm: VM) {
-    const { contextfulFieldsOrProps, component } = vm;
+    const { component } = vm;
+    let contextfulFieldsOrProps;
 
+    try {
+        const enumerableKeys = keys(getPrototypeOf(component));
+        contextfulFieldsOrProps = enumerableKeys.filter((propName) => ((component as any)[propName]?.[connectContext]));
+    } catch (e) {
+        // noop
+    }
+    
     if (!contextfulFieldsOrProps || contextfulFieldsOrProps.length === 0) {
         return;
     }
@@ -789,7 +782,6 @@ function setupContext(vm: VM) {
             if (!isProvidingContext) {
                 isProvidingContext = true;
 
-                // todo: fix typing
                 component.addEventListener('lightning:context-request', (event: any) => {
                     if (
                         event.detail.key === symbolContextKey &&

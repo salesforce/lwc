@@ -1,9 +1,7 @@
 import { LightningElement, api } from 'lwc';
-import { nameStateFactory } from 'x/state';
 
-export default class TestSymbol extends LightningElement {
+export default class Test extends LightningElement {
     @api connect;
-    random = nameStateFactory();
 
     connectedCallback() {
         this.connect(this);

@@ -4,7 +4,8 @@ import { customElementCallbackReactionErrorListener } from 'test-utils';
 import Test from 'x/test';
 import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
 import XSlottedParent from 'x/slottedParent';
-import TestChild from 'x/testChild';
+import ContextParent from 'x/contextParent';
+import ContextChild from 'x/contextChild';
 
 function testConnectSlot(name, fn) {
     it(`should invoke the connectedCallback the root element is added in the DOM via ${name}`, () => {
@@ -62,5 +63,16 @@ describe('addEventListner in `connectedCallback`', () => {
             expect(elm.eventHandled).toBe(true);
             expect(elm.shadowRoot.querySelector('p').textContent).toBe('Was clicked: true');
         });
+    });
+});
+
+describe('context', () => {
+    it('connects contextful fields when running connectedCallback', () => {
+        const elm = createElement('x-context-parent', { is: ContextParent });
+        document.body.appendChild(elm);
+        const child = elm.shadowRoot.querySelector('x-context-child');
+
+        expect(child).toBeDefined();
+        expect(child.innerText).toContain('foo');
     });
 });
