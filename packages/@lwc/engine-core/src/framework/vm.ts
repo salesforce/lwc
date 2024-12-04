@@ -11,9 +11,7 @@ import {
     assert,
     create,
     defineProperty,
-    entries,
     getPrototypeOf,
-    getOwnPropertyDescriptors,
     getOwnPropertyNames,
     keys,
     isArray,
@@ -24,8 +22,8 @@ import {
     isTrue,
     isUndefined,
     flattenStylesheets,
-    // connectContext, 
-    // disconnectContext
+    getContextKeys,
+    ContextEventName
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
@@ -69,10 +67,6 @@ import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
 import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
 import type { Signal } from '@lwc/signals';
-
-const connectContext = Symbol.for("connectContext");
-const disconnectContext = Symbol.for("disconnectContext");
-const symbolContextKey = Symbol.for('context');
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -756,6 +750,14 @@ export function runConnectedCallback(vm: VM) {
 }
 
 function setupContext(vm: VM) {
+    const contextKeys = getContextKeys();
+
+    if (!contextKeys) {
+        // noop
+        return;
+    }
+
+    const { connectContext, contextEventKey } = contextKeys;
     const { component } = vm;
     let contextfulFieldsOrProps;
 
@@ -782,9 +784,9 @@ function setupContext(vm: VM) {
             if (!isProvidingContext) {
                 isProvidingContext = true;
 
-                component.addEventListener('lightning:context-request', (event: any) => {
+                component.addEventListener(ContextEventName, (event: any) => {
                     if (
-                        event.detail.key === symbolContextKey &&
+                        event.detail.key === contextEventKey &&
                         providedContextVarieties.has(event.detail.contextVariety)
                       ) {
                         event.stopImmediatePropagation();

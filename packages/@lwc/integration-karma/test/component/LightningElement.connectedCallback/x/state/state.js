@@ -6,8 +6,7 @@
  */
 
 // src/core.ts
-// import { setTrustedSignalSet as lwcSetTrustedSignalSet } from "lwc";
-// import { connectContext, disconnectContext } from '@lwc/shared';
+import { setContextKeys } from "lwc";
 
 // node_modules/@lwc/signals/dist/index.js
 function isFalse$1(value, msg) {
@@ -42,8 +41,8 @@ var SignalBaseClass = class {
 };
 
 // src/shared.ts
-var connectContext = Symbol.for("connectContext");
-var disconnectContext = Symbol.for("disconnectContext");
+var connectContext = Symbol("connectContext");
+var disconnectContext = Symbol("disconnectContext");
 
 // src/standalone-context.ts
 var ConsumedContextSignal = class extends SignalBaseClass {
@@ -263,96 +262,19 @@ var defineState = (defineStateCallback) => {
 };
 
 // src/contextful-lwc.ts
-// import { LightningElement } from "lwc";
 
 // src/event.ts
-var symbolContextKey = Symbol.for("context");
+var contextEventKey = Symbol("context");
 var EVENT_NAME = "lightning:context-request";
 var ContextRequestEvent = class extends CustomEvent {
   constructor(detail) {
     super(EVENT_NAME, {
       bubbles: true,
       composed: true,
-      detail: { ...detail, key: symbolContextKey }
+      detail: { ...detail, key: contextEventKey }
     });
   }
 };
-
-// src/contextful-lwc.ts
-// var ContextfulLightningElement = class extends LightningElement {
-//   connectedCallback() {
-//     this.setupContextReactivity();
-//   }
-//   disconnectedCallback() {
-//     this.cleanupContext();
-//   }
-//   setupContextReactivity() {
-//     const contextfulFields = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(
-//       (propName) => this[propName]?.[connectContext]
-//     );
-//     if (contextfulFields.length === 0) {
-//       return;
-//     }
-//     const el = this;
-//     let isProvidingContext = false;
-//     const providedContextVarieties = /* @__PURE__ */ new Map();
-//     const contextRuntimeAdapter = {
-//       isServerSide: false,
-//       component: this,
-//       provideContext(contextVariety, providedContextSignal) {
-//         if (!isProvidingContext) {
-//           isProvidingContext = true;
-//           el.addEventListener("lightning:context-request", (event) => {
-//             if (event.detail.key === symbolContextKey && providedContextVarieties.has(event.detail.contextVariety)) {
-//               event.stopImmediatePropagation();
-//               const providedContextSignal2 = providedContextVarieties.get(
-//                 event.detail.contextVariety
-//               );
-//               event.detail.callback(providedContextSignal2);
-//             }
-//           });
-//         }
-//         let multipleContextWarningShown = false;
-//         if (providedContextVarieties.has(contextVariety)) {
-//           if (!multipleContextWarningShown) {
-//             multipleContextWarningShown = true;
-//             console.error(
-//               "Multiple contexts of the same variety were provided. Only the first context will be used."
-//             );
-//           }
-//           return;
-//         }
-//         providedContextVarieties.set(contextVariety, providedContextSignal);
-//       },
-//       consumeContext(contextVariety, contextProvidedCallback) {
-//         const event = new ContextRequestEvent({
-//           contextVariety,
-//           callback: contextProvidedCallback
-//         });
-//         el.dispatchEvent(event);
-//       }
-//     };
-//     for (const contextfulField of contextfulFields) {
-//       this[contextfulField][connectContext](contextRuntimeAdapter);
-//     }
-//   }
-//   cleanupContext() {
-//     const contextfulFields = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(
-//       (propName) => this[propName]?.[disconnectContext]
-//     );
-//     if (contextfulFields.length === 0) {
-//       return;
-//     }
-//     for (const contextfulField of contextfulFields) {
-//       this[contextfulField][disconnectContext](this);
-//     }
-//   }
-// };
-
-// src/core.ts
-// var trustedSignalSet = /* @__PURE__ */ new WeakSet();
-// lwcSetTrustedSignalSet(trustedSignalSet);
-// setTrustedSignalSet(trustedSignalSet);
 
 const nameStateFactory = defineState((atom, computed, update, fromContext) => (initialName = 'foo') => {
   const name = atom(initialName);
@@ -382,7 +304,12 @@ const consumeStateFactory = defineState((atom, computed, update, fromContext) =>
     };
 });  
 
-
+setContextKeys({
+    connectContext,
+    disconnectContext,
+    contextEventKey
+});
+debugger;
 export {
   defineState,
   nameStateFactory,

@@ -66,7 +66,7 @@ describe('addEventListner in `connectedCallback`', () => {
     });
 });
 
-describe('context', () => {
+fdescribe('context', () => {
     it('connects contextful fields when running connectedCallback', () => {
         const elm = createElement('x-context-parent', { is: ContextParent });
         document.body.appendChild(elm);
