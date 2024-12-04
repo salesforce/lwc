@@ -32,6 +32,7 @@ const bExportTemplate = esTemplate`
         // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
         let textContentBuffer = '';
         let didBufferTextContent = false;
+        const contextfulParent = instance;
 
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {

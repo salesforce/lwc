@@ -40,6 +40,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             lightSlottedContentMap,
             instance,
             scopeToken,
+            contextfulParent
         );
     }
 `<EsBlockStatement>;

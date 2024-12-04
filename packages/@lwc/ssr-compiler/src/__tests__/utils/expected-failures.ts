@@ -17,7 +17,7 @@ export const expectedFailures = new Set([
     'attribute-namespace/index.js',
     'attribute-style/basic/index.js',
     'attribute-style/dynamic/index.js',
-    'context-slotted/index.js',
+    // 'context-slotted/index.js',
     'exports/component-as-default/index.js',
     'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
     'render-dynamic-value/index.js',

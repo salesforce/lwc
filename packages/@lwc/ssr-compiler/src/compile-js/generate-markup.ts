@@ -37,7 +37,8 @@ const bGenerateMarkup = esTemplate`
             shadowSlottedContent,
             lightSlottedContent, 
             parent, 
-            scopeToken
+            scopeToken,
+            contextfulParent
     ) {
         tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
@@ -51,7 +52,7 @@ const bGenerateMarkup = esTemplate`
             tagName: tagName.toUpperCase(),
         });
 
-        __establishContextfulRelationship(parent, instance);
+        __establishContextfulRelationship(contextfulParent, instance);
         ${/*connect wire*/ is.statement}
 
         instance[__SYMBOL__SET_INTERNALS](props, attrs);
