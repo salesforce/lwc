@@ -28,11 +28,11 @@ const bConditionalSlot = esTemplateWithYield`
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
-        }
 
-        // scoped slot factory has its own vfragment hence its own bookend
-        if (isScopedSlot) {
-            yield '<!---->';
+            // scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot) {
+                yield '<!---->';
+            }
         }
 
         const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
@@ -48,15 +48,15 @@ const bConditionalSlot = esTemplateWithYield`
             // TODO: default/fallback slot content
             ${/* slot fallback content */ is.statement}
         }
-        
-        // scoped slot factory has its own vfragment hence its own bookend
-        if (isScopedSlot) {
-            yield '<!---->';
-        }
 
         // end bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
+
+            // scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot) {
+                yield '<!---->';
+            }
         }
     } else {
         ${/* slot element AST */ is.statement}
