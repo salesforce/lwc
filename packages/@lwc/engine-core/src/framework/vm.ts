@@ -706,6 +706,9 @@ export function runConnectedCallback(vm: VM) {
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
     }
+    // Setup context before connected callback is executed
+    setupContext(vm);
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         logOperationStart(OperationId.ConnectedCallback, vm);
@@ -723,8 +726,6 @@ export function runConnectedCallback(vm: VM) {
 
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }
-    // Setup context after connected callback is executed
-    setupContext(vm);
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
     if (
