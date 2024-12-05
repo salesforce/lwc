@@ -1,4 +1,4 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement } from 'lwc';
 import { nameStateFactory } from 'x/state';
 
 export default class ContextParent extends LightningElement {
