@@ -72,6 +72,6 @@ describe('context', () => {
         const child = elm.shadowRoot.querySelector('x-context-child');
 
         expect(child).toBeDefined();
-        expect(child.innerText).toContain('foo');
+        expect(child.shadowRoot.querySelector('p').textContent).toBe('Test Child: foo');
     });
 });
