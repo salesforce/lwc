@@ -80,7 +80,9 @@ async function compileFixture({
                 // IGNORED_SLOT_ATTRIBUTE_IN_CHILD is fine; it is used in some of these tests
                 message.includes('LWC1201') ||
                 message.includes('-h-t-m-l') ||
-                code === 'CIRCULAR_DEPENDENCY';
+                code === 'CIRCULAR_DEPENDENCY' ||
+                // template-compiler -> index -> validateElement generates UNKNOWN_HTML_TAG_IN_TEMPLATE for MathML elements
+                message.includes('LWC1123');
             if (!shouldIgnoreWarning) {
                 throw new Error(message);
             }
