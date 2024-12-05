@@ -24,8 +24,11 @@ import type { Transformer } from '../types';
 const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
+        const isSlotted = ${/* isSlotted */ is.literal};
         // start bookend HTML comment for light DOM slot vfragment
-        yield '<!---->';
+        if (!isSlotted) {
+            yield '<!---->';
+        }
 
         // scoped slot factory has its own vfragment hence its own bookend
         if (isScopedSlot) {
@@ -52,7 +55,9 @@ const bConditionalSlot = esTemplateWithYield`
         }
 
         // end bookend HTML comment for light DOM slot vfragment
-        yield '<!---->';
+        if (!isSlotted) {
+            yield '<!---->';
+        }
     } else {
         ${/* slot element AST */ is.statement}
     }
@@ -68,5 +73,6 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     const slotAst = Element(node, ctx);
     const slotChildren = irChildrenToEs(node.children, ctx);
     const isScopedSlot = b.literal(Boolean(slotBound));
-    return [bConditionalSlot(isScopedSlot, slotName, slotBound, slotChildren, slotAst)];
+    const isSlotted = b.literal(Boolean(ctx.isSlotted));
+    return [bConditionalSlot(isScopedSlot, isSlotted, slotName, slotBound, slotChildren, slotAst)];
 };
