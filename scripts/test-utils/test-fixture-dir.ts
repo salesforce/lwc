@@ -194,7 +194,7 @@ export function testFixtureDir<T extends TestFixtureConfig>(
                                     ? outputName
                                     : otherName;
                                 const contentErr = new AssertionError({
-                                    message: `Expected content in ${expectedContentName}, but found content in ${actualContentName}.`,
+                                    message: `Expected ${relpath} to have content in ${expectedContentName}, but found content in ${actualContentName}.`,
                                     expected: brokenSnapshotHasContent
                                         ? brokenSnapshot
                                         : otherSnapshot,
