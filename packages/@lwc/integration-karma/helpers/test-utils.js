@@ -709,6 +709,18 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         signalValidator.add(signal);
     }
 
+    const contextKeys = {
+        connectContext: Symbol('connectContext'),
+        disconnectContext: Symbol('disconnectContext'),
+        contextEventKey: Symbol('contextEventKey'),
+    };
+
+    lwc.setContextKeys(contextKeys);
+
+    function getContextKeys() {
+        return contextKeys;
+    }
+
     return {
         clearRegister,
         extractDataIds,
@@ -736,6 +748,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         catchUnhandledRejectionsAndErrors,
         addTrustedSignal,
         expectEquivalentDOM,
+        getContextKeys,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

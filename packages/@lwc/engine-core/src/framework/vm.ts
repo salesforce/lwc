@@ -23,7 +23,7 @@ import {
     isUndefined,
     flattenStylesheets,
     getContextKeys,
-    ContextEventName
+    ContextEventName,
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
@@ -753,22 +753,17 @@ function setupContext(vm: VM) {
     const contextKeys = getContextKeys();
 
     if (!contextKeys) {
-        // noop
         return;
     }
 
     const { connectContext, contextEventKey } = contextKeys;
     const { component } = vm;
-    let contextfulFieldsOrProps;
+    const enumerableKeys = keys(getPrototypeOf(component));
+    const contextfulFieldsOrProps = enumerableKeys.filter(
+        (propName) => (component as any)[propName]?.[connectContext]
+    );
 
-    try {
-        const enumerableKeys = keys(getPrototypeOf(component));
-        contextfulFieldsOrProps = enumerableKeys.filter((propName) => ((component as any)[propName]?.[connectContext]));
-    } catch (e) {
-        // noop
-    }
-    
-    if (!contextfulFieldsOrProps || contextfulFieldsOrProps.length === 0) {
+    if (contextfulFieldsOrProps.length === 0) {
         return;
     }
 
@@ -779,7 +774,7 @@ function setupContext(vm: VM) {
         component,
         provideContext<T extends object>(
             contextVariety: T,
-            providedContextSignal: Signal<unknown>,
+            providedContextSignal: Signal<unknown>
         ): void {
             if (!isProvidingContext) {
                 isProvidingContext = true;
@@ -788,13 +783,13 @@ function setupContext(vm: VM) {
                     if (
                         event.detail.key === contextEventKey &&
                         providedContextVarieties.has(event.detail.contextVariety)
-                      ) {
+                    ) {
                         event.stopImmediatePropagation();
                         const providedContextSignal = providedContextVarieties.get(
-                          event.detail.contextVariety,
+                            event.detail.contextVariety
                         );
                         event.detail.callback(providedContextSignal);
-                      }
+                    }
                 });
             }
 
@@ -803,8 +798,8 @@ function setupContext(vm: VM) {
             if (providedContextVarieties.has(contextVariety)) {
                 if (!multipleContextWarningShown) {
                     multipleContextWarningShown = true;
-                    console.error(
-                      'Multiple contexts of the same variety were provided. Only the first context will be used.',
+                    logError(
+                        'Multiple contexts of the same variety were provided. Only the first context will be used.'
                     );
                 }
                 return;
@@ -814,7 +809,7 @@ function setupContext(vm: VM) {
         },
         consumeContext<T extends object>(
             contextVariety: T,
-            contextProvidedCallback: ContextProvidedCallback,
+            contextProvidedCallback: ContextProvidedCallback
         ): void {
             const event = new ContextRequestEvent({
                 contextVariety,
@@ -822,8 +817,8 @@ function setupContext(vm: VM) {
             });
 
             component.dispatchEvent(event);
-        }
-    }
+        },
+    };
 
     for (const contextfulFieldsOrProp of contextfulFieldsOrProps) {
         (component as any)[contextfulFieldsOrProp][connectContext](contextRuntimeAdapter);
@@ -832,6 +827,29 @@ function setupContext(vm: VM) {
 
 function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
+}
+
+function cleanupContext(vm: VM) {
+    const contextKeys = getContextKeys();
+
+    if (!contextKeys) {
+        return;
+    }
+
+    const { disconnectContext } = contextKeys;
+    const { component } = vm;
+    const enumerableKeys = keys(getPrototypeOf(component));
+    const contextfulFieldsOrProps = enumerableKeys.filter(
+        (propName) => (component as any)[propName]?.[disconnectContext]
+    );
+
+    if (contextfulFieldsOrProps.length === 0) {
+        return;
+    }
+
+    for (const contextfulField of contextfulFieldsOrProps) {
+        (component as any)[contextfulField][disconnectContext](component);
+    }
 }
 
 function runDisconnectedCallback(vm: VM) {
@@ -857,6 +875,7 @@ function runDisconnectedCallback(vm: VM) {
 
         logOperationEnd(OperationId.DisconnectedCallback, vm);
     }
+    cleanupContext(vm);
 }
 
 function runChildNodesDisconnectedCallback(vm: VM) {
