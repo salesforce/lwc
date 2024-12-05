@@ -56,6 +56,7 @@ async function compileFixture({
     const bundle = await rollup({
         input,
         external: ['lwc', 'vitest'],
+        treeshake: false,
         plugins: [
             lwcRollupPlugin({
                 enableDynamicComponents: true,
