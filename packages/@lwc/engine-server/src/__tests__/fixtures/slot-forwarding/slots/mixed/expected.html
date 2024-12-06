@@ -1,0 +1,40 @@
+<x-mixed-container>
+  <template shadowrootmode="open">
+    <x-light-parent>
+      <x-shadow-leaf>
+        <template shadowrootmode="open">
+          <slot name="top">
+          </slot>
+          <slot name="bottom">
+          </slot>
+        </template>
+        <div slot="bottom">
+          top of light parent
+        </div>
+        <div slot="top">
+          bottom of light parent
+        </div>
+      </x-shadow-leaf>
+    </x-light-parent>
+    <x-shadow-parent>
+      <template shadowrootmode="open">
+        <x-light-leaf>
+          <!---->
+          <slot name="bottom">
+          </slot>
+          <!---->
+          <!---->
+          <slot name="top">
+          </slot>
+          <!---->
+        </x-light-leaf>
+      </template>
+      <div slot="top">
+        top of shadow parent
+      </div>
+      <div slot="bottom">
+        bottom of shadow parent
+      </div>
+    </x-shadow-parent>
+  </template>
+</x-mixed-container>

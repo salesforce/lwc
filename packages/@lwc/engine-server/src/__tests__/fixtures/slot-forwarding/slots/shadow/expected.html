@@ -1,0 +1,26 @@
+<x-shadow-container>
+  <template shadowrootmode="open">
+    <x-slot>
+      <template shadowrootmode="open">
+        <x-leaf>
+          <template shadowrootmode="open">
+            <slot name="top">
+            </slot>
+            <slot name="bottom">
+            </slot>
+          </template>
+          <slot name="top" slot="bottom">
+          </slot>
+          <slot name="bottom" slot="top">
+          </slot>
+        </x-leaf>
+      </template>
+      <h1 slot="top">
+        top content
+      </h1>
+      <h1 slot="bottom">
+        bottom content
+      </h1>
+    </x-slot>
+  </template>
+</x-shadow-container>

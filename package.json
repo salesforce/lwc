@@ -9,7 +9,7 @@
     },
     "scripts": {
         "prepare": "husky && yarn build",
-        "lint": "eslint .",
+        "lint": "eslint . --cache",
         "format": "prettier --write .",
         "bundlesize": "node scripts/bundlesize/bundlesize.mjs",
         "build": "nx run-many --target=build --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests,lwc",
@@ -74,11 +74,11 @@
         "vitest": "^2.1.8"
     },
     "lint-staged": {
-        "*.{js,mjs,ts}": "eslint",
+        "*.{js,mjs,ts}": "eslint --cache",
         "*.{css,js,json,md,mjs,ts,yaml,yml}": "prettier --write",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js",
         "{LICENSE-CORE.md,**/LICENSE.md,yarn.lock,scripts/tasks/generate-license-files.js,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.js",
-        "*.{only,skip}": "eslint --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
+        "*.{only,skip}": "eslint --cache --no-eslintrc --plugin '@lwc/eslint-plugin-lwc-internal' --rule '@lwc/lwc-internal/forbidden-filename: error'"
     },
     "workspaces": [
         "packages/@lwc/*",

@@ -1,0 +1,12 @@
+<template>
+    <ul>
+        <template iterator:it={items}>
+            <li key={it.value} data-index={it.index} data-item={it.value} data-first={it.first} data-last={it.last}>
+                {it.index} - {it.value} - {it.first} - {it.last}
+            </li>
+            <x-child key={it.value} data-index={it.index} data-item={it.value} data-first={it.first} data-last={it.last}>
+                {it.index} - {it.value} - {it.first} - {it.last}
+            </x-child>
+        </template>
+    </ul>
+</template>

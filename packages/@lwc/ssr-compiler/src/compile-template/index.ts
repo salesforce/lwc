@@ -33,6 +33,10 @@ const bExportTemplate = esTemplate`
         let textContentBuffer = '';
         let didBufferTextContent = false;
 
+        // Establishes a contextual relationship between two components for ContextProviders.
+        // This variable will typically get overridden (shadowed) within slotted content.
+        const contextfulParent = instance;
+
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -57,7 +61,7 @@ const bExportTemplate = esTemplate`
             if (shadowSlottedContent) {
                 // instance must be passed in; this is used to establish the contextful relationship
                 // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* shadowSlottedContent(instance);
+                yield* shadowSlottedContent(contextfulParent);
             }
         }
     }
@@ -107,8 +111,12 @@ export default function compileTemplate(
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
+    const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root!, { preserveComments });
+    const { addImport, getImports, statements } = templateIrToEsTree(root!, {
+        preserveComments,
+        experimentalComplexExpressions,
+    });
     addImport(['renderStylesheets', 'hasScopedStaticStylesheets']);
     for (const [imports, source] of getStylesheetImports(filename)) {
         addImport(imports, source);

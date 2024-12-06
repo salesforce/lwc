@@ -8,6 +8,7 @@ coverage/
 .project/
 .nx
 .nx-cache
+.eslintcache
 
 lib/
 __benchmarks_results__/

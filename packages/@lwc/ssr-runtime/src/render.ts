@@ -119,25 +119,40 @@ export type GenerateMarkupFn = (
     props: Properties | null,
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null
 ) => AsyncGenerator<string>;
 
 export type GenerateMarkupFnAsyncNoGen = (
     emit: (segment: string) => void,
     tagName: string,
-    props: Record<string, any> | null,
+    props: Properties | null,
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null
 ) => Promise<void>;
 
 export type GenerateMarkupFnSyncNoGen = (
     emit: (segment: string) => void,
     tagName: string,
-    props: Record<string, any> | null,
+    props: Properties | null,
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null
 ) => void;
 
 type GenerateMarkupFnVariants =
@@ -172,6 +187,9 @@ export async function serverSideRenderComponent(
             props,
             null,
             null,
+            null,
+            null,
+            null,
             null
         )) {
             markup += segment;
@@ -183,10 +201,23 @@ export async function serverSideRenderComponent(
             props,
             null,
             null,
+            null,
+            null,
+            null,
             null
         );
     } else if (mode === 'sync') {
-        (generateMarkup as GenerateMarkupFnSyncNoGen)(emit, tagName, props, null, null, null);
+        (generateMarkup as GenerateMarkupFnSyncNoGen)(
+            emit,
+            tagName,
+            props,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
+        );
     } else {
         throw new Error(`Invalid mode: ${mode}`);
     }
