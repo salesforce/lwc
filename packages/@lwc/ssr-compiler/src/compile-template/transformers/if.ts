@@ -63,7 +63,7 @@ function bIfStatement(
 
     return b.ifStatement(
         expressionIrToEs(condition, cxt),
-        bBlockStatement(children, cxt, true),
+        bBlockStatement(children, cxt, !cxt.isSlotted),
         elseBlock
     );
 }
