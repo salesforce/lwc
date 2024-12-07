@@ -227,10 +227,6 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             return result;
         });
 
-    if (isVoidElement(node.name, HTML_NAMESPACE)) {
-        return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];
-    }
-
     let childContent: EsStatement[];
     // An element can have children or lwc:inner-html, but not both
     // If it has both, the template compiler will throw an error before reaching here
@@ -246,13 +242,17 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         childContent = [];
     }
 
+    const isForeignSelfClosingElement =
+        node.namespace !== HTML_NAMESPACE && childContent.length === 0;
+    const isSelfClosingElement =
+        isVoidElement(node.name, HTML_NAMESPACE) || isForeignSelfClosingElement;
+
     return [
         bYield(b.literal(`<${node.name}`)),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,
-        bYield(b.literal(`>`)),
-        ...childContent,
-        bYield(b.literal(`</${node.name}>`)),
+        bYield(b.literal(isForeignSelfClosingElement ? `/>` : `>`)),
+        ...(isSelfClosingElement ? [] : [...childContent, bYield(b.literal(`</${node.name}>`))]),
     ].filter(Boolean);
 };
