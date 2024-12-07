@@ -11,7 +11,9 @@ import {
     assert,
     create,
     defineProperty,
+    getPrototypeOf,
     getOwnPropertyNames,
+    keys,
     isArray,
     isFalse,
     isFunction,
@@ -20,6 +22,8 @@ import {
     isTrue,
     isUndefined,
     flattenStylesheets,
+    getContextKeys,
+    ContextEventName,
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
@@ -49,6 +53,8 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import { type ContextProvidedCallback, ContextRequestEvent } from './context';
+
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
 import type {
@@ -60,6 +66,7 @@ import type { ComponentDef } from './def';
 import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
 import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
+import type { Signal } from '@lwc/signals';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -699,6 +706,9 @@ export function runConnectedCallback(vm: VM) {
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
     }
+    // Setup context before connected callback is executed
+    setupContext(vm);
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         logOperationStart(OperationId.ConnectedCallback, vm);
@@ -740,8 +750,107 @@ export function runConnectedCallback(vm: VM) {
     }
 }
 
+function setupContext(vm: VM) {
+    const contextKeys = getContextKeys();
+
+    if (!contextKeys) {
+        return;
+    }
+
+    const { connectContext, contextEventKey } = contextKeys;
+    const { component } = vm;
+    const enumerableKeys = keys(getPrototypeOf(component));
+    const contextfulFieldsOrProps = enumerableKeys.filter(
+        (propName) => (component as any)[propName]?.[connectContext]
+    );
+
+    if (contextfulFieldsOrProps.length === 0) {
+        return;
+    }
+
+    let isProvidingContext = false;
+    const providedContextVarieties = new Map<unknown, Signal<unknown>>();
+    const contextRuntimeAdapter = {
+        isServerSide: false,
+        component,
+        provideContext<T extends object>(
+            contextVariety: T,
+            providedContextSignal: Signal<unknown>
+        ): void {
+            if (!isProvidingContext) {
+                isProvidingContext = true;
+
+                component.addEventListener(ContextEventName, (event: any) => {
+                    if (
+                        event.detail.key === contextEventKey &&
+                        providedContextVarieties.has(event.detail.contextVariety)
+                    ) {
+                        event.stopImmediatePropagation();
+                        const providedContextSignal = providedContextVarieties.get(
+                            event.detail.contextVariety
+                        );
+                        event.detail.callback(providedContextSignal);
+                    }
+                });
+            }
+
+            let multipleContextWarningShown = false;
+
+            if (providedContextVarieties.has(contextVariety)) {
+                if (!multipleContextWarningShown) {
+                    multipleContextWarningShown = true;
+                    logError(
+                        'Multiple contexts of the same variety were provided. Only the first context will be used.'
+                    );
+                }
+                return;
+            }
+
+            providedContextVarieties.set(contextVariety, providedContextSignal);
+        },
+        consumeContext<T extends object>(
+            contextVariety: T,
+            contextProvidedCallback: ContextProvidedCallback
+        ): void {
+            const event = new ContextRequestEvent({
+                contextVariety,
+                callback: contextProvidedCallback,
+            });
+
+            component.dispatchEvent(event);
+        },
+    };
+
+    for (const contextfulFieldsOrProp of contextfulFieldsOrProps) {
+        (component as any)[contextfulFieldsOrProp][connectContext](contextRuntimeAdapter);
+    }
+}
+
 function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
+}
+
+function cleanupContext(vm: VM) {
+    const contextKeys = getContextKeys();
+
+    if (!contextKeys) {
+        return;
+    }
+
+    const { disconnectContext } = contextKeys;
+    const { component } = vm;
+    const enumerableKeys = keys(getPrototypeOf(component));
+    const contextfulFieldsOrProps = enumerableKeys.filter(
+        (propName) => (component as any)[propName]?.[disconnectContext]
+    );
+
+    if (contextfulFieldsOrProps.length === 0) {
+        return;
+    }
+
+    for (const contextfulField of contextfulFieldsOrProps) {
+        (component as any)[contextfulField][disconnectContext](component);
+    }
 }
 
 function runDisconnectedCallback(vm: VM) {
@@ -767,6 +876,7 @@ function runDisconnectedCallback(vm: VM) {
 
         logOperationEnd(OperationId.DisconnectedCallback, vm);
     }
+    cleanupContext(vm);
 }
 
 function runChildNodesDisconnectedCallback(vm: VM) {
