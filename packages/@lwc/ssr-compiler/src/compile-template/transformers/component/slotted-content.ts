@@ -203,7 +203,7 @@ export function getSlottedContent(
         lightSlotContent.length > 0 || scopedSlotContent.length > 0
     );
 
-    cxt.isSlotted = isNested;
+    cxt.isSlotted = isSlotted;
 
     return bGenerateSlottedContent(
         hasShadowSlottedContent,
