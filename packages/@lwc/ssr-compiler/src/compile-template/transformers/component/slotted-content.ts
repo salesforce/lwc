@@ -168,6 +168,10 @@ export function getSlottedContent(
     node: IrLwcComponent | IrComponent,
     cxt: TransformerContext
 ): EsStatement[] {
+    const { isSlotted } = cxt;
+
+    cxt.isSlotted = true;
+
     // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
     const slottableChildren = node.children.filter((child) => child.type !== 'ScopedSlotFragment');
     const scopedSlottableChildren = node.children.filter(
@@ -198,6 +202,8 @@ export function getSlottedContent(
     const hasLightSlottedContent = b.literal(
         lightSlotContent.length > 0 || scopedSlotContent.length > 0
     );
+
+    cxt.isSlotted = isSlotted;
 
     return bGenerateSlottedContent(
         hasShadowSlottedContent,
