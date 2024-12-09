@@ -36,6 +36,29 @@ it('should apply transformation for valid javascript file', async () => {
     expect(code).toContain('registerComponent');
 });
 
+it('should apply transformation for valid javascript file - private method', async () => {
+    const actual = `
+        import { api, LightningElement } from "lwc";
+        
+        export default class extends LightningElement {
+          @api label;
+        
+          counter = 0;
+        
+          #increment() {
+            this.counter++;
+          }
+          decrement() {
+            this.counter--;
+          }
+        }
+    `;
+    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+
+    expect(code).toMatch(/import \w+ from "\.\/foo.html";/);
+    expect(code).toContain('registerComponent');
+});
+
 it('should transform class fields', async () => {
     const actual = `
         export class Test {
