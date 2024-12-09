@@ -23,6 +23,11 @@ import type {
     Property as EsProperty,
     Statement as EsStatement,
 } from 'estree';
+import type {
+    ComplexExpression as IrComplexExpression,
+    Expression as IrExpression,
+    Literal as IrLiteral,
+} from '@lwc/template-compiler';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
     let prevStmt: EsStatement | null = null;
@@ -171,4 +176,12 @@ export function getChildAttrsOrProps(
         .filter(Boolean) as EsProperty[];
 
     return b.objectExpression(objectAttrsOrProps);
+}
+
+/**
+ * Determine if the provided node is of type Literal
+ * @param node
+ */
+export function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
+    return node.type === 'Literal';
 }
