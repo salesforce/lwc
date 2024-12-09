@@ -1,12 +1,12 @@
 {
     "name": "@lwc/perf-benchmarks-components",
-    "version": "8.11.0",
+    "version": "8.12.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c ./rollup.config.mjs"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "8.11.0"
+        "@lwc/rollup-plugin": "8.12.0"
     },
     "nx": {
         "targets": {
