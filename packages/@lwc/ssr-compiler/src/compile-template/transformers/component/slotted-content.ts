@@ -168,6 +168,8 @@ export function getSlottedContent(
     node: IrLwcComponent | IrComponent,
     cxt: TransformerContext
 ): EsStatement[] {
+    const isNested = cxt.isSlotted;
+
     cxt.isSlotted = true;
 
     // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
@@ -201,7 +203,7 @@ export function getSlottedContent(
         lightSlotContent.length > 0 || scopedSlotContent.length > 0
     );
 
-    cxt.isSlotted = false;
+    cxt.isSlotted = isNested;
 
     return bGenerateSlottedContent(
         hasShadowSlottedContent,
