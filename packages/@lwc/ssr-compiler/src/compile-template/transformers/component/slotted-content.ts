@@ -168,7 +168,7 @@ export function getSlottedContent(
     node: IrLwcComponent | IrComponent,
     cxt: TransformerContext
 ): EsStatement[] {
-    const isNested = cxt.isSlotted;
+    const { isSlotted } = cxt;
 
     cxt.isSlotted = true;
 
