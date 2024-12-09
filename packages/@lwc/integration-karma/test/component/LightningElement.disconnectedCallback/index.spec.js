@@ -6,6 +6,8 @@ import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
+import ContextParent from 'x/contextParent';
+import { nameStateFactory } from 'x/state';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {
@@ -187,5 +189,19 @@ describe('disconnectedCallback for components with a explicit render()', () => {
         return Promise.resolve().then(() => {
             expect(disconnectedCallbackInvoked).toBe(true);
         });
+    });
+});
+
+describe('context', () => {
+    it('removing child unsubscribes from context subscription during disconnect', async () => {
+        const elm = createElement('x-context-parent', { is: ContextParent });
+        const state = nameStateFactory();
+        elm.state = state;
+        document.body.appendChild(elm);
+
+        expect(state.subscribers.size).toBe(1);
+        elm.hideChild = true;
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        expect(state.subscribers.size).toBe(0);
     });
 });
