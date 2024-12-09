@@ -1,0 +1,12 @@
+<template>
+    <x-receiver>
+        <x-another>
+            <template lwc:if={isTrue}>
+                <div>hello</div>
+            </template>
+        </x-another>
+        <template lwc:if={isTrue}>
+            <div>world</div>
+        </template>
+    </x-receiver>
+</template>
