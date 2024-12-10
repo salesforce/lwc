@@ -6,16 +6,16 @@ export default class ProviderComponent extends LightningElement {
         contextualizerA(this, {
             consumerConnectedCallback(consumer) {
                 consumer.provide({
-                    value: 'top-level'
+                    value: 'top-level',
                 });
-            }
+            },
         });
         contextualizerB(this, {
             consumerConnectedCallback(consumer) {
                 consumer.provide({
                     value: 'outer-value',
                 });
-            }
-        })
+            },
+        });
     }
 }

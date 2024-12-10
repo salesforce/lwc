@@ -10,9 +10,7 @@ import {
     HTML_NAMESPACE,
     isBooleanAttribute,
     isVoidElement,
-    normalizeStyleAttribute,
-    StringReplace,
-    StringTrim,
+    normalizeStyleAttributeValue,
 } from '@lwc/shared';
 import {
     type Attribute as IrAttribute,
@@ -20,35 +18,33 @@ import {
     type Element as IrElement,
     type Literal as IrLiteral,
     type Property as IrProperty,
-    ExternalComponent as IrExternalComponent,
-    Slot as IrSlot,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import { bImportHtmlEscape, getScopedExpression, importHtmlEscapeKey } from '../shared';
+import { getScopedExpression, normalizeClassAttributeValue } from '../shared';
+import type {
+    ExternalComponent as IrExternalComponent,
+    Slot as IrSlot,
+} from '@lwc/template-compiler';
 
-import { bImportDeclaration } from '../../estree/builders';
 import type {
     BinaryExpression,
     BlockStatement as EsBlockStatement,
     Expression as EsExpression,
     Statement as EsStatement,
+    IfStatement as EsIfStatement,
 } from 'estree';
 import type { Transformer, TransformerContext } from '../types';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
-const bConditionalLiveYield = esTemplateWithYield`
+const bYieldDynamicValue = esTemplateWithYield`
     {
         const attrName = ${/* attribute name */ is.literal};
         let attrValue = ${/* attribute value expression */ is.expression};
         const isHtmlBooleanAttr = ${/* isHtmlBooleanAttr */ is.literal};
-
-        const shouldRenderScopeToken = attrName === 'class' &&
-            (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp));
-        const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
 
         // Global HTML boolean attributes are specially coerced into booleans
         // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/template-compiler/src/codegen/index.ts#L450-L454
@@ -66,9 +62,22 @@ const bConditionalLiveYield = esTemplateWithYield`
 
         if (attrValue !== undefined && attrValue !== null) {
             yield ' ' + attrName;
+
             if (attrValue !== '') {
-                yield \`="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
+                yield \`="\${htmlEscape(String(attrValue), true)}"\`;
             }
+        }
+    }
+`<EsBlockStatement>;
+
+const bYieldClassDynamicValue = esTemplateWithYield`
+    {
+        const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
+        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
+
+        if (attrValue) {
+            const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
+            yield \` class="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
         }
     }
 `<EsBlockStatement>;
@@ -92,13 +101,10 @@ const bStringLiteralYield = esTemplateWithYield`
 `<EsBlockStatement>;
 
 const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
-    {
-        const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
-        if (shouldRenderScopeToken) {
-            yield \` class="\${stylesheetScopeToken}"\`;
-        }
+    if (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp)) {
+        yield \` class="\${stylesheetScopeToken}"\`;
     }
-`<EsBlockStatement>;
+`<EsIfStatement>;
 
 const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
@@ -109,10 +115,12 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
     if (typeof value === 'string') {
         let yieldedValue: string;
         if (name === 'style') {
-            yieldedValue = normalizeStyleAttribute(value);
+            yieldedValue = normalizeStyleAttributeValue(value);
         } else if (name === 'class') {
-            // @ts-expect-error weird indirection results in wrong overload being picked up
-            yieldedValue = StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+            yieldedValue = normalizeClassAttributeValue(value);
+            if (yieldedValue === '') {
+                return [];
+            }
         } else if (name === 'spellcheck') {
             // `spellcheck` string values are specially handled to massage them into booleans.
             // https://github.com/salesforce/lwc/blob/fe4e95f/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
@@ -122,21 +130,35 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
         }
         return [bStringLiteralYield(b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
+        if (name === 'class') {
+            return [];
+        }
         return [bYield(b.literal(` ${name}`))];
     }
     throw new Error(`Unknown attr/prop literal: ${type}`);
 }
 
-function yieldAttrOrPropLiveValue(
+function yieldAttrOrPropDynamicValue(
     elementName: string,
     name: string,
     value: IrExpression | BinaryExpression,
     cxt: TransformerContext
 ): EsStatement[] {
-    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
-    const isHtmlBooleanAttr = isBooleanAttribute(name, elementName);
+    cxt.import('htmlEscape');
     const scopedExpression = getScopedExpression(value as EsExpression, cxt);
-    return [bConditionalLiveYield(b.literal(name), scopedExpression, b.literal(isHtmlBooleanAttr))];
+    switch (name) {
+        case 'class':
+            cxt.import('normalizeClass');
+            return [bYieldClassDynamicValue(scopedExpression)];
+        default:
+            return [
+                bYieldDynamicValue(
+                    b.literal(name),
+                    scopedExpression,
+                    b.literal(isBooleanAttribute(name, elementName))
+                ),
+            ];
+    }
 }
 
 function reorderAttributes(
@@ -185,27 +207,25 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             // so should never be SSR'd. See https://github.com/salesforce/lwc/issues/4763
             return !(node.name === 'input' && (name === 'value' || name === 'checked'));
         })
-        .flatMap((attr) => {
-            const { name, value, type } = attr;
-
-            if (type === 'Attribute') {
-                if (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l') {
-                    throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
-                } else if (name === 'class') {
-                    hasClassAttribute = true;
-                }
+        .flatMap(({ name, value, type }) => {
+            if (type === 'Attribute' && (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l')) {
+                throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
             }
 
+            let result;
             if (value.type === 'Literal') {
-                return yieldAttrOrPropLiteralValue(name, value);
+                result = yieldAttrOrPropLiteralValue(name, value);
             } else {
-                return yieldAttrOrPropLiveValue(node.name, name, value, cxt);
+                result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
-        });
 
-    if (isVoidElement(node.name, HTML_NAMESPACE)) {
-        return [bYield(b.literal(`<${node.name}`)), ...yieldAttrsAndProps, bYield(b.literal(`>`))];
-    }
+            if (result.length > 0 && name === 'class') {
+                // actually yielded a class attribute value
+                hasClassAttribute = true;
+            }
+
+            return result;
+        });
 
     let childContent: EsStatement[];
     // An element can have children or lwc:inner-html, but not both
@@ -217,18 +237,22 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
         const unsanitizedHtmlExpression =
             value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
         childContent = [bYieldSanitizedHtml(unsanitizedHtmlExpression)];
-        cxt.hoist(bImportDeclaration(['sanitizeHtmlContent']), 'import:sanitizeHtmlContent');
+        cxt.import('sanitizeHtmlContent');
     } else {
         childContent = [];
     }
+
+    const isForeignSelfClosingElement =
+        node.namespace !== HTML_NAMESPACE && childContent.length === 0;
+    const isSelfClosingElement =
+        isVoidElement(node.name, HTML_NAMESPACE) || isForeignSelfClosingElement;
 
     return [
         bYield(b.literal(`<${node.name}`)),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,
-        bYield(b.literal(`>`)),
-        ...childContent,
-        bYield(b.literal(`</${node.name}>`)),
+        bYield(b.literal(isForeignSelfClosingElement ? `/>` : `>`)),
+        ...(isSelfClosingElement ? [] : [...childContent, bYield(b.literal(`</${node.name}>`))]),
     ].filter(Boolean);
 };

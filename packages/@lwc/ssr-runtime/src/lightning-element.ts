@@ -23,9 +23,9 @@ import {
 } from '@lwc/shared';
 
 import { ClassList } from './class-list';
-import { Attributes, Properties } from './types';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
+import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;
@@ -41,6 +41,7 @@ interface PropsAvailableAtConstruction {
 
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
+export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';

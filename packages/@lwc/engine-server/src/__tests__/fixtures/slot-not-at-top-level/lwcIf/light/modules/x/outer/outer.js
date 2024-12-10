@@ -1,6 +1,6 @@
-import { LightningElement} from 'lwc';
+import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-  static renderMode = 'light'
-  isTrue = true
+    static renderMode = 'light';
+    isTrue = true;
 }

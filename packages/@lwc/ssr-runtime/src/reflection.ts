@@ -73,7 +73,10 @@ const explicitBooleanDescriptor = (
     enumerable: true,
     get(this: LightningElement): boolean {
         const value = this.getAttribute(attrName);
-        return value === null ? defaultValue : value === String(defaultValue);
+        if (value === null) return defaultValue;
+        // spellcheck=false => false, everything else => true
+        // draggable=true => true, everything else => false
+        return value.toLowerCase() === String(defaultValue) ? defaultValue : !defaultValue;
     },
     set(this: LightningElement, newValue: boolean): void {
         const currentValue = this.getAttribute(attrName);
@@ -131,6 +134,24 @@ const ariaDescriptor = (attrName: string): TypedPropertyDescriptor<string | null
     },
 });
 
+const tabIndexDescriptor = (): TypedPropertyDescriptor<number> => ({
+    configurable: true,
+    enumerable: true,
+    get(this: LightningElement): number {
+        const str = this.getAttribute('tabindex');
+        const num = Number(str);
+        return isFinite(num) ? Math.trunc(num) : -1;
+    },
+    set(this: LightningElement, newValue: number): void {
+        const currentValue = this.getAttribute('tabindex');
+        const num = Number(newValue);
+        const normalizedValue = isFinite(num) ? String(Math.trunc(num)) : '0';
+        if (normalizedValue !== currentValue) {
+            this.setAttribute('tabindex', toString(newValue));
+        }
+    },
+});
+
 export const descriptors: Record<string, PropertyDescriptor> = {
     accessKey: stringDescriptor('accesskey'),
     dir: stringDescriptor('dir'),
@@ -139,21 +160,7 @@ export const descriptors: Record<string, PropertyDescriptor> = {
     id: stringDescriptor('id'),
     lang: stringDescriptor('lang'),
     spellcheck: explicitBooleanDescriptor('spellcheck', false),
-    tabIndex: {
-        get(this: LightningElement): number {
-            const str = this.getAttribute('tabindex');
-            const num = Number(str);
-            return isFinite(num) ? Math.trunc(num) : -1;
-        },
-        set(this: LightningElement, newValue: number): void {
-            const currentValue = this.getAttribute('tabindex');
-            const num = Number(newValue);
-            const normalizedValue = isFinite(num) ? String(Math.trunc(num)) : '0';
-            if (normalizedValue !== currentValue) {
-                this.setAttribute('tabindex', toString(newValue));
-            }
-        },
-    },
+    tabIndex: tabIndexDescriptor(),
     title: stringDescriptor('title'),
 };
 

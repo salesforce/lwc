@@ -4,16 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import diff from '@vitest/utils/diff';
-import type { MatcherState } from '@vitest/expect';
+import type { ExpectationResult, MatcherState } from '@vitest/expect';
 
 export function toThrowErrorWithCode(
     this: MatcherState,
     received: any,
     code: string,
     message?: string
-) {
+): ExpectationResult {
     let error: Error | undefined;
 
     try {
@@ -31,28 +29,24 @@ export function toThrowErrorWithCode(
 
     if (error === null || typeof error !== 'object' || (error as any).code !== code) {
         return {
-            message: () =>
-                `Expected function to throw an error with code \n\n` +
-                `Expected ${this.utils.printExpected(code)}\n` +
-                `Received ${this.utils.printReceived((error as any).code)}`,
+            message: () => `Expected function to throw an error with code`,
+            expected: code,
+            actual: (error as any).code,
             pass: false,
         };
     }
 
     if (error.message !== message) {
-        const errorDiff = diff.diffStringsUnified(message!, error.message);
         return {
-            message: () =>
-                `Expected function to throw an error with message\n\n` +
-                `Difference ${errorDiff}\n` +
-                `Expected ${this.utils.printExpected(message)}\n` +
-                `Received ${this.utils.printReceived(error!.message)}`,
+            message: () => 'Expected function to throw an error with message',
+            expected: message,
+            actual: error.message,
             pass: false,
         };
     }
 
     return {
-        message: () => `Expected function not to throw an error`,
+        message: () => 'Expected function not to throw an error',
         pass: true,
     };
 }

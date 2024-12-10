@@ -20,8 +20,9 @@ export default {
         expect(p.getAttribute('style')).toBe('background-color: red; border-color: red;');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
-                '[LWC error]: Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: red; border-color: red;" but found "background-color: red; border-color: red; margin: 1px;"',
+            error: [],
+            warn: [
+                '[LWC warn]: Mismatch hydrating element <p>: attribute "style" has different values, expected "background-color: red; border-color: red;" but found "background-color: red; border-color: red; margin: 1px;"',
                 'Hydration completed with errors.',
             ],
         });

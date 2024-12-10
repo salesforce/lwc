@@ -13,15 +13,30 @@ import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
-import { bImportDeclaration } from '../estree/builders';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
-import type { CompilationMode } from '../shared';
+import type { CompilationMode } from '@lwc/shared';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
-    export default async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
+    export default async function* tmpl(
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            Cmp, 
+            instance
+    ) {
+        // Deliberately using let so we can mutate as many times as we want in the same scope.
+        // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
+        let textContentBuffer = '';
+        let didBufferTextContent = false;
+
+        // Establishes a contextual relationship between two components for ContextProviders.
+        // This variable will typically get overridden (shadowed) within slotted content.
+        const contextfulParent = instance;
+
         const isLightDom = Cmp.renderMode === 'light';
         if (!isLightDom) {
             yield \`<template shadowrootmode="open"\${Cmp.delegatesFocus ? ' shadowrootdelegatesfocus' : ''}>\`
@@ -29,9 +44,10 @@ const bExportTemplate = esTemplate`
         
         const { stylesheets: staticStylesheets } = Cmp;
         if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
-            const stylesheets = [defaultStylesheets, defaultScopedStylesheets, staticStylesheets];
             yield renderStylesheets(
-                stylesheets, 
+                defaultStylesheets, 
+                defaultScopedStylesheets, 
+                staticStylesheets,
                 stylesheetScopeToken, 
                 Cmp, 
                 hasScopedStylesheets,
@@ -42,8 +58,10 @@ const bExportTemplate = esTemplate`
 
         if (!isLightDom) {
             yield '</template>';
-            if (slottedContent?.shadow) {
-                yield* slottedContent.shadow();
+            if (shadowSlottedContent) {
+                // instance must be passed in; this is used to establish the contextful relationship
+                // between context provider (aka parent component) and context consumer (aka slotted content)
+                yield* shadowSlottedContent(contextfulParent);
             }
         }
     }
@@ -93,20 +111,21 @@ export default function compileTemplate(
     const preserveComments = !!root.directives.find(
         (directive) => directive.name === 'PreserveComments'
     )?.value?.value;
+    const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { hoisted, statements } = templateIrToEsTree(root!, { preserveComments });
+    const { addImport, getImports, statements } = templateIrToEsTree(root!, {
+        preserveComments,
+        experimentalComplexExpressions,
+    });
+    addImport(['renderStylesheets', 'hasScopedStaticStylesheets']);
+    for (const [imports, source] of getStylesheetImports(filename)) {
+        addImport(imports, source);
+    }
 
-    const moduleBody = [
-        ...hoisted,
-        bImportDeclaration(['renderStylesheets', 'hasScopedStaticStylesheets']),
-        bExportTemplate(optimizeAdjacentYieldStmts(statements)),
-    ];
+    const moduleBody = [...getImports(), bExportTemplate(optimizeAdjacentYieldStmts(statements))];
     let program = b.program(moduleBody, 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
-
-    const stylesheetImports = getStylesheetImports(filename);
-    program.body.unshift(...stylesheetImports);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         program = transmogrify(program, compilationMode);

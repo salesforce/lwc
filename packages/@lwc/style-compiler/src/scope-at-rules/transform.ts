@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Root } from 'postcss';
 import { SHADOW_ATTRIBUTE } from '../utils/selectors-scoping';
+import type { Root } from 'postcss';
 
 // Subset of prefixes for animation-related names that we expect people might be using.
 // The most important is -webkit, which is actually part of the spec now. All -webkit prefixes

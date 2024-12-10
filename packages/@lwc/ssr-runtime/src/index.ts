@@ -8,14 +8,16 @@
 // Must be first so that later exports take precedence
 export * from './stubs';
 
-export { htmlEscape, setHooks, sanitizeHtmlContent } from '@lwc/shared';
+export { htmlEscape, setHooks, sanitizeHtmlContent, normalizeClass } from '@lwc/shared';
 
 export { ClassList } from './class-list';
+export { getReadOnlyProxy } from './get-read-only-proxy';
 export {
     LightningElement,
     LightningElementConstructor,
-    SYMBOL__SET_INTERNALS,
+    SYMBOL__DEFAULT_TEMPLATE,
     SYMBOL__GENERATE_MARKUP,
+    SYMBOL__SET_INTERNALS,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
 export { filterProperties } from './reflection';
@@ -29,7 +31,8 @@ export {
     // renderComponent is an alias for serverSideRenderComponent
     serverSideRenderComponent as renderComponent,
 } from './render';
+export { massageTextContent } from './render-text-content';
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
-export { getReadOnlyProxy } from './get-read-only-proxy';
+export { createContextProvider, establishContextfulRelationship, connectContext } from './wire';

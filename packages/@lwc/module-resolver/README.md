@@ -44,27 +44,27 @@ console.log(result);
 
 **Parameters:**
 
--   `specifier` (string, required): The module specifier to resolve.
--   `importer` (string, required): The file from where the resolution starts.
--   `options` (object, optional):
-    -   `modules` (ModuleRecord[], optional, default: `[]`): Injects module records to the resolved configuration.
-    -   `rootDir` (string, optional, default: `process.cwd()`): Use only when the `modules` option is set. Modules overrides are resolved from this directory.
+- `specifier` (string, required): The module specifier to resolve.
+- `importer` (string, required): The file from where the resolution starts.
+- `options` (object, optional):
+    - `modules` (ModuleRecord[], optional, default: `[]`): Injects module records to the resolved configuration.
+    - `rootDir` (string, optional, default: `process.cwd()`): Use only when the `modules` option is set. Modules overrides are resolved from this directory.
 
 **Return value:**
 
 A `RegistryEntry` representing the resolved module with the following properties:
 
--   `entry` (string): The absolute path of the module entry point.
--   `specifier` (string): The resolved module specifier.
--   `scope` (string): The absolute path from where the module has been resolved.
+- `entry` (string): The absolute path of the module entry point.
+- `specifier` (string): The resolved module specifier.
+- `scope` (string): The absolute path from where the module has been resolved.
 
 ## Module resolution
 
 The LWC compiler uses a custom resolution algorithm to resolve LWC modules. To configure module resolution, use the `lwc.config.json` file or the `lwc` key in the `package.json` file. The `modules` key accepts an array of module records. The resolver iterates through the `modules` array and returns the first module that matches the requested module specifier. There are three types of module record:
 
--   [Alias module record](#alias-module-record): A file path where an LWC module can be resolved.
--   [Directory module record](#directory-module-record): A folder path where LWC modules can be resolved.
--   [NPM package module record](#npm-package-module-record): An NPM package that exposes one or more LWC modules.
+- [Alias module record](#alias-module-record): A file path where an LWC module can be resolved.
+- [Directory module record](#directory-module-record): A folder path where LWC modules can be resolved.
+- [NPM package module record](#npm-package-module-record): An NPM package that exposes one or more LWC modules.
 
 ```json
 // lwc.config.json
@@ -90,8 +90,8 @@ The LWC compiler uses a custom resolution algorithm to resolve LWC modules. To c
 
 An alias module record maps a module specifier to a file path. An alias module record is defined by two keys:
 
--   `name` (string, required): The LWC module specifier.
--   `path` (string, required): The file path to resolve.
+- `name` (string, required): The LWC module specifier.
+- `path` (string, required): The file path to resolve.
 
 In this example, the `ui/button` LWC module specifier is resolved from the `src/modules/ui/button/button.js` path.
 
@@ -110,7 +110,7 @@ In this example, the `ui/button` LWC module specifier is resolved from the `src/
 
 A directory module record specifies a folder path where LWC modules are resolved. A directory module record is defined by one key:
 
--   `dir` (string, required): The directory path containing the modules.
+- `dir` (string, required): The directory path containing the modules.
 
 ```json
 {
@@ -144,7 +144,7 @@ src
 
 An NPM package module record tells the resolver that a given NPM package exposes resolvable LWC modules. More details about how to expose LWC modules out of an NPM package can be found in [this section](#exposing-lwc-modules-via-npm-packages). An NPM package module record is defined by one key:
 
--   `npm` (string, required): The NPM package name exposing the LWC modules.
+- `npm` (string, required): The NPM package name exposing the LWC modules.
 
 In this example, the resolver is told to look into the `@ui/components` NPM package to look up LWC modules.
 

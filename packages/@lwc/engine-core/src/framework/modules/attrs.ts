@@ -12,11 +12,11 @@ import {
     XLINK_NAMESPACE,
     kebabCaseToCamelCase,
 } from '@lwc/shared';
-import { RendererAPI } from '../renderer';
-
 import { EmptyObject } from '../utils';
-import { VBaseElement, VStatic, VStaticPartElement } from '../vnodes';
 import { safelySetProperty } from '../sanitized-html-content';
+import type { RendererAPI } from '../renderer';
+
+import type { VBaseElement, VStatic, VStaticPartElement } from '../vnodes';
 
 const ColonCharCode = 58;
 

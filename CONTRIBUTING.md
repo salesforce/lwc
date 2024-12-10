@@ -2,18 +2,18 @@
 
 We want to encourage the developer community to contribute to Lightning Web Components. This guide has instructions to install, build, test and contribute to the framework.
 
--   [Requirements](#requirements)
--   [Installation](#installation)
--   [Building LWC](#building-lwc)
--   [Testing](#testing)
--   [Git Workflow](#git-workflow)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Building LWC](#building-lwc)
+- [Testing](#testing)
+- [Git Workflow](#git-workflow)
 
 Before you start, familiarize yourself with [Lightning Web Components](https://lwc.dev/guide/introduction).
 
 ## Requirements
 
--   [Node](https://nodejs.org/)
--   [Yarn](https://yarnpkg.com/)
+- [Node](https://nodejs.org/)
+- [Yarn](https://yarnpkg.com/)
 
 This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Yarn` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well. Otherwise, check the `volta` field in `package.json` to see which versions to use.
 
@@ -94,8 +94,8 @@ Test fixtures are file-based tests that are executed using a helper called [`tes
 
 When developing LWC, use integration testing to ensure functionality is correctly reflected in the browser. This repo has two integration test suites.
 
--   @lwc/integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
--   @lwc/integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
+- @lwc/integration-karma: Contains all integration tests that can run with javascript only. For information about usage and contribution, refer to this [documentation][integration-karma-readme].
+- @lwc/integration-tests: Contains all other integration tests that require web driver API support (e.g., focus, keyboard navigation). For information about usage and contribution, refer to this [documentation][integration-test-readme].
 
 To run the Karma tests from the root:
 
@@ -132,7 +132,7 @@ This will check that the minified bundle sizes don't exceed our thresholds. Our 
 
 LWC relies on type annotations.
 
--   Make sure your editor supports [typescript](https://www.typescriptlang.org/).
+- Make sure your editor supports [typescript](https://www.typescriptlang.org/).
 
 ### ESLint
 
@@ -297,17 +297,17 @@ If the commit reverts a previous commit, it should begin with `revert: `, follow
 
 Must be one of the following:
 
--   **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
--   **chore**: Other changes that don't modify src or test files
--   **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
--   **docs**: Documentation only changes
--   **feat**: A new feature
--   **fix**: A bug fix
--   **perf**: A code change that improves performance
--   **refactor**: A code change that neither fixes a bug nor adds a feature
--   **revert**: Reverts a previous commit
--   **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
--   **test**: Adding missing tests or correcting existing tests
+- **build**: Changes that affect the build system or external dependencies (example scopes: gulp, broccoli, npm)
+- **chore**: Other changes that don't modify src or test files
+- **ci**: Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- **docs**: Documentation only changes
+- **feat**: A new feature
+- **fix**: A bug fix
+- **perf**: A code change that improves performance
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **revert**: Reverts a previous commit
+- **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **test**: Adding missing tests or correcting existing tests
 
 #### Commit Scope
 
@@ -315,18 +315,18 @@ The scope should be the name of the npm package affected, as perceived by the pe
 
 There are currently a few exceptions to the "use package name" rule:
 
--   **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
--   **changelog**: used for updating the release notes in CHANGELOG.md
--   **lwc docs**: used for docs related changes within the lwc/docs directory of the repo
--   none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
+- **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
+- **changelog**: used for updating the release notes in CHANGELOG.md
+- **lwc docs**: used for docs related changes within the lwc/docs directory of the repo
+- none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
 
 #### Commit Subject
 
 The subject contains a succinct description of the change:
 
--   use the imperative, present tense: "change" not "changed" nor "changes"
--   don't capitalize first letter
--   no dot (.) at the end
+- use the imperative, present tense: "change" not "changed" nor "changes"
+- don't capitalize first letter
+- no dot (.) at the end
 
 #### Commit Body
 
@@ -350,17 +350,17 @@ The footer should contain any information about **Breaking Changes** and is also
 
 **Potential pitfalls:** When submitting changes to the LWC framework, there are several important considerations to keep in mind to ensure that your changes are reviewed & accepted.
 
--   The LWC framework makes strong guarantees about backwards compatibility to those that use our framework. Any changes that compromise these guarantees are unlikely to be accepted as-is.
--   If your change causes a test to fail in unit or integration tests, it is unlikely that your submission will be accepted as-is.
--   Certain parts of the codebase are particularly susceptible to breaking changes. This includes the browser runtime (`engine-core` and `engine-dom`), as well as the compiler (`compiler`, `style-compiler`, `template-compiler`).
--   Some areas of the codebase are less mature and undergoing active development. Areas related to SSR, including the server-side runtime (`engine-server`), fall under this category.
+- The LWC framework makes strong guarantees about backwards compatibility to those that use our framework. Any changes that compromise these guarantees are unlikely to be accepted as-is.
+- If your change causes a test to fail in unit or integration tests, it is unlikely that your submission will be accepted as-is.
+- Certain parts of the codebase are particularly susceptible to breaking changes. This includes the browser runtime (`engine-core` and `engine-dom`), as well as the compiler (`compiler`, `style-compiler`, `template-compiler`).
+- Some areas of the codebase are less mature and undergoing active development. Areas related to SSR, including the server-side runtime (`engine-server`), fall under this category.
 
 **Definition of done:** Especially when making large changes to the codebase, certain complementary work must be undertaken for the desired changes to be considered. When making a submission please adhere to the following:
 
--   All pre-existing unit- & integration- tests must pass.
--   If you modify a pre-existing test to accommodate your changes, a thorough reasoning must be proactively provided in the PR.
--   Test coverage should not decline – if you add code paths, add corresponding tests.
--   If your tests have the potential to negatively impact performance, provide a before & after comparison of performance using the test collateral provided in the repo.
+- All pre-existing unit- & integration- tests must pass.
+- If you modify a pre-existing test to accommodate your changes, a thorough reasoning must be proactively provided in the PR.
+- Test coverage should not decline – if you add code paths, add corresponding tests.
+- If your tests have the potential to negatively impact performance, provide a before & after comparison of performance using the test collateral provided in the repo.
 
 It's also worth noting that not all submissions will be accepted, even if all the above criteria are met. There may be constraints in the larger Salesforce ecosystem that prevent certain changes. If your submission is likely to change large parts of the codebase, please open an issue preemptively so that the design can be discussed.
 

@@ -14,7 +14,6 @@ const AMBIGUOUS_PROP_SET = new Map([
     ['bgcolor', 'bgColor'],
     ['accesskey', 'accessKey'],
     ['contenteditable', 'contentEditable'],
-    ['contextmenu', 'contextMenu'],
     ['tabindex', 'tabIndex'],
     ['maxlength', 'maxLength'],
     ['maxvalue', 'maxValue'],

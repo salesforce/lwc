@@ -34,9 +34,9 @@ This will print out the URLs you can use to test manually.
 
 When analyzing with the Chrome DevTools Performance tab, pay special attention to the following performance measures in the "Timing" section:
 
--   `benchmark-before`
--   `benchmark-run`
--   `benchmark-after`
+- `benchmark-before`
+- `benchmark-run`
+- `benchmark-after`
 
 `benchmark-run` is what's actually measured, whereas the `-before` and `-after` measures are just the setup and teardown code.
 

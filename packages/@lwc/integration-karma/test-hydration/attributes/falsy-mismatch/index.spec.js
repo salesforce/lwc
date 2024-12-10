@@ -29,8 +29,8 @@ export default {
         }
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            warn: [],
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "undefined" but found null',
                 'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "null" but found null',
                 'Hydration completed with errors.',

@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-compiler",
-    "version": "8.7.0",
+    "version": "8.12.0",
     "description": "Compile component for use during server-side rendering",
     "keywords": [
         "compiler",
@@ -23,6 +23,9 @@
     "license": "MIT",
     "publishConfig": {
         "access": "public"
+    },
+    "volta": {
+        "extends": "../../../package.json"
     },
     "main": "dist/index.cjs.js",
     "module": "dist/index.js",
@@ -44,8 +47,10 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "8.7.0",
-        "@lwc/template-compiler": "8.7.0",
+        "@babel/types": "7.26.3",
+        "@lwc/shared": "8.12.0",
+        "@lwc/errors": "8.12.0",
+        "@lwc/template-compiler": "8.12.0",
         "acorn": "8.14.0",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.8",

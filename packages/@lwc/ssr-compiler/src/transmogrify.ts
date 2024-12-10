@@ -6,8 +6,9 @@
  */
 import { traverse, builders as b, type NodePath } from 'estree-toolkit';
 import { produce } from 'immer';
-import type { Node } from 'estree';
+import type { FunctionDeclaration, FunctionExpression, Node } from 'estree';
 import type { Program as EsProgram } from 'estree';
+import type { Node as EstreeToolkitNode } from 'estree-toolkit/dist/helpers';
 
 export type TransmogrificationMode = 'sync' | 'async';
 
@@ -20,14 +21,19 @@ export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>
 const EMIT_IDENT = b.identifier('$$emit');
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
 const TMPL_FN_PATTERN = /tmpl($\d+)?/;
-const GEN_MARKUP_PATTERN = /generateMarkup($\d+)?/;
+const GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN =
+    /(?:generateMarkup|generateSlottedContent)($\d+)?/;
 
 const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     const { node } = nodePath;
     if (!node) {
         return false;
     }
-    if (node.type === 'FunctionDeclaration' && pattern.test(node.id.name)) {
+    if (
+        (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') &&
+        node.id &&
+        pattern.test(node.id.name)
+    ) {
         return true;
     }
     if (nodePath.parentPath) {
@@ -37,7 +43,12 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
 };
 
 const visitors: Visitors = {
-    FunctionDeclaration(path, state) {
+    // @ts-expect-error types for `traverse` do not support sharing a visitor between node types:
+    // https://github.com/sarsamurmu/estree-toolkit/issues/20
+    'FunctionDeclaration|FunctionExpression'(
+        path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
+        state: TransmogrificationState
+    ) {
         const { node } = path;
         if (!node?.async || !node?.generator) {
             return;
@@ -46,7 +57,10 @@ const visitors: Visitors = {
         // Component authors might conceivably use async generator functions in their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated async
         // generator functions from those that were written by the component author.
-        if (!isWithinFn(GEN_MARKUP_PATTERN, path) && !isWithinFn(TMPL_FN_PATTERN, path)) {
+        if (
+            !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path) &&
+            !isWithinFn(TMPL_FN_PATTERN, path)
+        ) {
             return;
         }
         node.generator = false;
@@ -62,7 +76,10 @@ const visitors: Visitors = {
         // Component authors might conceivably use generator functions within their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated yield
         // expressions from those that were written by the component author.
-        if (!isWithinFn(TMPL_FN_PATTERN, path) && !isWithinFn(GEN_MARKUP_PATTERN, path)) {
+        if (
+            !isWithinFn(TMPL_FN_PATTERN, path) &&
+            !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path)
+        ) {
             return;
         }
 

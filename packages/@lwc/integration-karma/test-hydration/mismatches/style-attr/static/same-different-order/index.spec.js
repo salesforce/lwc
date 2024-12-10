@@ -20,7 +20,7 @@ export default {
             expect(p).toBe(snapshots.p);
             expect(p.getAttribute('style')).toBe(snapshots.style);
 
-            expect(consoleCalls.error).toHaveSize(0);
+            expect(consoleCalls.warn).toHaveSize(0);
         } else {
             expect(p).not.toBe(snapshots.p);
             expect(p.getAttribute('style')).toBe(
@@ -28,7 +28,8 @@ export default {
             );
 
             TestUtils.expectConsoleCallsDev(consoleCalls, {
-                error: [
+                error: [],
+                warn: [
                     'Mismatch hydrating element <p>: attribute "style" has different values, expected "margin: 1px; border-color: red; background-color: red;" but found "background-color: red; border-color: red; margin: 1px;"',
                     'Hydration completed with errors.',
                 ],

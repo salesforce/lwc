@@ -1,5 +1,7 @@
 {
-    "modules": [{
-      "name": "something"
-    }]
+    "modules": [
+        {
+            "name": "something"
+        }
+    ]
 }

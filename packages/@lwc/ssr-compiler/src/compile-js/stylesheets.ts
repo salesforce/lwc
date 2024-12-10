@@ -7,7 +7,6 @@
 
 import { builders as b } from 'estree-toolkit';
 
-import { bImportDefaultDeclaration } from '../estree/builders';
 import type { NodePath } from 'estree-toolkit';
 import type { ImportDeclaration } from 'estree';
 import type { ComponentMetaState } from './types';
@@ -48,18 +47,15 @@ export function catalogAndReplaceStyleImports(
 /**
  * This adds implicit style imports to the compiled component artifact.
  */
-export function getStylesheetImports(filepath: string) {
+export function getStylesheetImports(filepath: string): Array<[Record<string, string>, string]> {
     const moduleName = /(?<moduleName>[^/]+)\.html$/.exec(filepath)?.groups?.moduleName;
     if (!moduleName) {
         throw new Error(`Could not determine module name from file path: ${filepath}`);
     }
 
     return [
-        bImportDefaultDeclaration('defaultStylesheets', `./${moduleName}.css`),
-        bImportDefaultDeclaration(
-            'defaultScopedStylesheets',
-            `./${moduleName}.scoped.css?scoped=true`
-        ),
+        [{ default: 'defaultStylesheets' }, `./${moduleName}.css`],
+        [{ default: 'defaultScopedStylesheets' }, `./${moduleName}.scoped.css?scoped=true`],
     ];
 }
 

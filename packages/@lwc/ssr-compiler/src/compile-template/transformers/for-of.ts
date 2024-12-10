@@ -7,10 +7,9 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplate } from '../../estemplate';
-import { irToEs } from '../ir-to-es';
+import { irChildrenToEs } from '../ir-to-es';
 import { optimizeAdjacentYieldStmts } from '../shared';
 
-import { bImportDeclaration } from '../../estree/builders';
 import type { ForOf as IrForOf } from '@lwc/template-compiler';
 import type {
     Expression as EsExpression,
@@ -38,9 +37,7 @@ const bForOfYieldFrom = esTemplate`
 export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfStatement[] {
     const id = node.iterator.name;
     cxt.pushLocalVars([id]);
-    const forEachStatements = node.children.flatMap((childNode) => {
-        return irToEs(childNode, cxt);
-    });
+    const forEachStatements = irChildrenToEs(node.children, cxt);
     cxt.popLocalVars();
 
     const expression = node.expression as EsExpression;
@@ -51,7 +48,7 @@ export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfS
         ? (node.expression as EsExpression)
         : b.memberExpression(b.identifier('instance'), node.expression as EsExpression);
 
-    cxt.hoist(bImportDeclaration(['toIteratorDirective']), 'import:toIteratorDirective');
+    cxt.import('toIteratorDirective');
 
     return [
         bForOfYieldFrom(b.identifier(id), iterable, optimizeAdjacentYieldStmts(forEachStatements)),

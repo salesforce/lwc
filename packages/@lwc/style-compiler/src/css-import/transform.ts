@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Root, Result } from 'postcss';
 import valueParser from 'postcss-value-parser';
 
 import { importMessage } from '../utils/message';
+import type { Root, Result } from 'postcss';
 
 export default function process(root: Root, result: Result, isScoped: boolean) {
     root.walkAtRules('import', (node) => {

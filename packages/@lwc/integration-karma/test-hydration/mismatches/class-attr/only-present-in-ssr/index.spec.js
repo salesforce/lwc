@@ -12,9 +12,10 @@ export default {
 
         const consoleCalls = consoleSpy.calls;
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [
-                '[LWC error]: Mismatch hydrating element <x-child>: attribute "class" has different values, expected "" but found "foo"\n',
-                '[LWC error]: Hydration completed with errors.\n',
+            error: [],
+            warn: [
+                '[LWC warn]: Mismatch hydrating element <x-child>: attribute "class" has different values, expected "" but found "foo"\n',
+                '[LWC warn]: Hydration completed with errors.\n',
             ],
         });
     },

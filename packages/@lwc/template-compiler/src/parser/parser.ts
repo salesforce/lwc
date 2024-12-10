@@ -5,29 +5,31 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    CompilerDiagnostic,
     CompilerError,
-    InstrumentationObject,
     generateCompilerDiagnostic,
     generateCompilerError,
-    Location,
-    LWCErrorInfo,
     normalizeToDiagnostic,
 } from '@lwc/errors';
-import { APIVersion } from '@lwc/shared';
-import { NormalizedConfig } from '../config';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
-import {
+import { LWCDirectiveRenderMode } from '../shared/types';
+import { TMPL_EXPR_ECMASCRIPT_EDITION } from './constants';
+import type {
+    CompilerDiagnostic,
+    InstrumentationObject,
+    Location,
+    LWCErrorInfo,
+} from '@lwc/errors';
+import type { APIVersion } from '@lwc/shared';
+import type { NormalizedConfig } from '../config';
+import type {
     Root,
     SourceLocation,
     ParentNode,
     BaseNode,
-    LWCDirectiveRenderMode,
     IfBlock,
     ElseifBlock,
     ElseBlock,
 } from '../shared/types';
-import { TMPL_EXPR_ECMASCRIPT_EDITION } from './constants';
 import type { ecmaVersion as EcmaVersion } from 'acorn';
 import type { PreparsedExpressionMap } from './expression-complex';
 

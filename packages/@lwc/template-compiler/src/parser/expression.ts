@@ -4,17 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Node, parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
+import { parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
-import { NormalizedConfig } from '../config';
 import * as ast from '../shared/ast';
 import * as t from '../shared/estree';
-import { Expression, Identifier, SourceLocation } from '../shared/types';
 import { validateExpressionAst } from './expression-complex';
-
-import ParserCtx from './parser';
 import { isReservedES6Keyword } from './utils/javascript';
+import type { Expression, Identifier, SourceLocation } from '../shared/types';
+
+import type ParserCtx from './parser';
+import type { NormalizedConfig } from '../config';
+import type { Node } from 'acorn';
 
 export const EXPRESSION_SYMBOL_START = '{';
 export const EXPRESSION_SYMBOL_END = '}';

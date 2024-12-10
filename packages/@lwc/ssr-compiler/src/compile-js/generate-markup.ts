@@ -6,18 +6,21 @@
  */
 
 import { parse as pathParse } from 'node:path';
-import { BlockStatement as EsBlockStatement } from 'estree';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { isIdentOrRenderCall } from '../estree/validators';
-import { bImportDeclaration, bImportDefaultDeclaration } from '../estree/builders';
+import { bImportDeclaration } from '../estree/builders';
+import { bWireAdaptersPlumbing } from './wire';
 
 import type {
-    ExportNamedDeclaration,
     Program,
     SimpleCallExpression,
     Identifier,
     MemberExpression,
+    Statement,
+    ExpressionStatement,
+    IfStatement,
+    FunctionDeclaration,
 } from 'estree';
 import type { ComponentMetaState } from './types';
 
@@ -27,7 +30,17 @@ type RenderCallExpression = SimpleCallExpression & {
 };
 
 const bGenerateMarkup = esTemplate`
-    export async function* generateMarkup(tagName, props, attrs, slotted) {
+    async function* generateMarkup(
+            tagName, 
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            parent, 
+            scopeToken,
+            contextfulParent
+    ) {
+        tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
         props = __filterProperties(
@@ -38,6 +51,10 @@ const bGenerateMarkup = esTemplate`
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
+
+        __establishContextfulRelationship(contextfulParent, instance);
+        ${/*connect wire*/ is.statement}
+
         instance[__SYMBOL__SET_INTERNALS](props, attrs);
         instance.isConnected = true;
         if (instance.connectedCallback) {
@@ -45,26 +62,34 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = ${isIdentOrRenderCall} ?? __fallbackTmpl;
+        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
-        const shouldRenderScopeToken =
+
+        const hostHasScopedStylesheets =
             tmplFn.hasScopedStylesheets ||
-            hasScopedStaticStylesheets(${/*component class*/ 2});
-        if (shouldRenderScopeToken) {
-            yield \` class="\${tmplFn.stylesheetScopeToken}-host"\`;
-        }
-        yield* __renderAttrs(instance, attrs);
+            hasScopedStaticStylesheets(${/*component class*/ 3});
+        const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
+
+        yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
-        yield* tmplFn(props, attrs, slotted, ${/*component class*/ 2}, instance);
+        yield* tmplFn(
+            props, 
+            attrs, 
+            shadowSlottedContent,
+            lightSlottedContent, 
+            ${/*component class*/ 3}, 
+            instance
+        );
         yield \`</\${tagName}>\`;
     }
-`<ExportNamedDeclaration>;
+    ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+`<[FunctionDeclaration, ExpressionStatement]>;
 
-const bAssignGenerateMarkupToComponentClass = esTemplate`
-    {
-        ${/* lwcClassName */ is.identifier}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+const bExposeTemplate = esTemplate`
+    if (${/*template*/ is.identifier}) {
+        ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ 0}
     }
-`<EsBlockStatement>;
+`<IfStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -78,59 +103,69 @@ const bAssignGenerateMarkupToComponentClass = esTemplate`
  *  - yielding the tag name & attributes
  *  - deferring to the template function for yielding child content
  */
-export function addGenerateMarkupExport(
+export function addGenerateMarkupFunction(
     program: Program,
     state: ComponentMetaState,
+    tagName: string,
     filename: string
 ) {
     const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
 
+    // The default tag name represents the component name that's passed to the transformer.
+    // This is needed to generate markup for dynamic components which are invoked through
+    // the generateMarkup function on the constructor.
+    // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
+    const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
+    const tmplVar = b.identifier('tmpl');
     const renderCall = hasRenderMethod
         ? (b.callExpression(
               b.memberExpression(b.identifier('instance'), b.identifier('render')),
               []
           ) as RenderCallExpression)
-        : b.identifier('tmpl');
+        : tmplVar;
 
+    let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        program.body.unshift(bImportDefaultDeclaration('tmpl', defaultTmplPath));
+        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
+        program.body.unshift(
+            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
+        );
+        exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
+    }
+
+    // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
+    let connectWireAdapterCode: Statement[] = [];
+    if (state.wireAdapters.length) {
+        connectWireAdapterCode = bWireAdaptersPlumbing(state.wireAdapters);
+        program.body.unshift(bImportDeclaration({ connectContext: '__connectContext' }));
     }
 
     program.body.unshift(
-        bImportDeclaration([
-            {
-                fallbackTmpl: '__fallbackTmpl',
-                filterProperties: '__filterProperties',
-                mutationTracker: '__mutationTracker',
-                renderAttrs: '__renderAttrs',
-                SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
-            },
-        ])
+        bImportDeclaration({
+            fallbackTmpl: '__fallbackTmpl',
+            filterProperties: '__filterProperties',
+            hasScopedStaticStylesheets: undefined,
+            mutationTracker: '__mutationTracker',
+            renderAttrs: '__renderAttrs',
+            SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+            SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
+            establishContextfulRelationship: '__establishContextfulRelationship',
+        })
     );
-    program.body.unshift(bImportDeclaration(['hasScopedStaticStylesheets']));
     program.body.push(
-        bGenerateMarkup(
+        ...bGenerateMarkup(
+            defaultTagName,
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
+            connectWireAdapterCode,
             renderCall
         )
     );
-}
 
-/**
- * Attach the `generateMarkup` function to the Component class so that it can be found later
- * during `renderComponent`.
- */
-export function assignGenerateMarkupToComponent(program: Program, state: ComponentMetaState) {
-    program.body.unshift(
-        bImportDeclaration([
-            {
-                SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
-            },
-        ])
-    );
-    program.body.push(bAssignGenerateMarkupToComponentClass(b.identifier(state.lwcClassName!)));
+    if (exposeTemplateBlock) {
+        program.body.push(exposeTemplateBlock);
+    }
 }

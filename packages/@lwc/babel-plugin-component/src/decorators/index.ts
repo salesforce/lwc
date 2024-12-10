@@ -4,18 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { Node, types, Visitor } from '@babel/core';
-import { Binding, NodePath } from '@babel/traverse';
 import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
 import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
 import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
-import { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
 import api from './api';
 import wire from './wire';
 import track from './track';
-import { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
+import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
+import type { Node, types, Visitor, NodePath } from '@babel/core';
+import type { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
@@ -127,8 +126,7 @@ function validateImportedLwcDecoratorUsage(
         });
 }
 
-function isImportedFromLwcSource(decoratorBinding: Binding) {
-    const bindingPath = decoratorBinding.path;
+function isImportedFromLwcSource(bindingPath: NodePath) {
     return (
         bindingPath.isImportSpecifier() &&
         (bindingPath.parent as types.ImportDeclaration).source.value === 'lwc'
@@ -143,7 +141,7 @@ function isImportedFromLwcSource(decoratorBinding: Binding) {
 function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     for (const { name, path } of decorators) {
         const binding = path.scope.getBinding(name);
-        if (binding === undefined || !isImportedFromLwcSource(binding)) {
+        if (binding === undefined || !isImportedFromLwcSource(binding.path)) {
             throw generateInvalidDecoratorError(path, state);
         }
     }

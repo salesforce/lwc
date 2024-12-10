@@ -6,21 +6,15 @@
  */
 
 import { isNull, isUndefined, assert } from '@lwc/shared';
-import {
-    VStatic,
-    VStaticPart,
-    VStaticPartElement,
-    VStaticPartText,
-    isVStaticPartElement,
-    isVStaticPartText,
-} from '../vnodes';
-import { RendererAPI } from '../renderer';
+import { isVStaticPartElement, isVStaticPartText } from '../vnodes';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
 import { patchAttributes } from './attrs';
 import { patchStyleAttribute } from './computed-style-attr';
 import { patchClassAttribute } from './computed-class-attr';
 import { patchTextVStaticPart } from './text';
+import type { RendererAPI } from '../renderer';
+import type { VStatic, VStaticPart, VStaticPartElement, VStaticPartText } from '../vnodes';
 
 /**
  * Given an array of static parts, mounts the DOM element to the part based on the staticPartId

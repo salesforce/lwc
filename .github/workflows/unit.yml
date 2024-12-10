@@ -29,7 +29,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: '20.18.0'
+                  node-version: '20.18.1'
                   cache: 'yarn'
 
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
@@ -66,6 +66,9 @@ jobs:
               run: yarn test:types
             - name: Run unit tests
               run: yarn test:ci
+            # TODO [#4815]: enable all SSR v2 tests
+            - name: Run experimental SSR fixture tests
+              run: TEST_SSR_COMPILER=1 yarn test packages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts
             - name: Upload unit test coverage report
               uses: actions/upload-artifact@v4
               with:

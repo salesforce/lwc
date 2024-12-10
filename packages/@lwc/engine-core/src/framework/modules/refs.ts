@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { RefVNodes, VM } from '../vm';
-import { VBaseElement, VStaticPartElement } from '../vnodes';
+import type { RefVNodes, VM } from '../vm';
+import type { VBaseElement, VStaticPartElement } from '../vnodes';
 
 // Set a ref (lwc:ref) on a VM, from a template API
 export function applyRefs(vnode: VBaseElement | VStaticPartElement, owner: VM) {

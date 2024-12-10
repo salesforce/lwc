@@ -22,6 +22,7 @@ export default {
         expect(p.textContent).toBe('different-content');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
             warn: [
                 'Mismatch hydrating element <div>: innerHTML values do not match for element, will recover from the difference',
             ],

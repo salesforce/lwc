@@ -25,8 +25,8 @@ export default {
         expect(child.getAttribute('class')).toBe('is-client');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            warn: [],
-            error: [
+            error: [],
+            warn: [
                 'Mismatch hydrating element <x-child>: attribute "class" has different values, expected "is-client" but found "is-server"',
                 'Hydration completed with errors.',
             ],

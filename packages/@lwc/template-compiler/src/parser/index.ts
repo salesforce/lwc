@@ -14,39 +14,16 @@ import {
 } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel, CompilerMetrics } from '@lwc/errors';
 import * as parse5Tools from '@parse5/tools';
-import { Token as parse5Token } from 'parse5';
 
 import * as t from '../shared/estree';
 import * as ast from '../shared/ast';
-import State from '../state';
 import {
-    TemplateParseResult,
-    Attribute,
-    ForEach,
-    Identifier,
-    Literal,
-    Expression,
-    ForOf,
-    Slot,
-    Text,
-    Root,
-    ParentNode,
-    BaseElement,
-    Comment,
     LWCDirectiveRenderMode,
     LWCDirectiveDomMode,
-    If,
-    IfBlock,
-    ElseBlock,
-    ElseifBlock,
-    Property,
     ElementDirectiveName,
     RootDirectiveName,
-    ScopedSlotFragment,
     TemplateDirectiveName,
     LwcTagName,
-    LwcComponent,
-    Element,
 } from '../shared/types';
 import { isCustomElementTag, isLwcElementTag } from '../shared/utils';
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
@@ -84,6 +61,32 @@ import {
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
+import type {
+    TemplateParseResult,
+    Attribute,
+    ForEach,
+    Identifier,
+    Literal,
+    Expression,
+    ForOf,
+    Slot,
+    Text,
+    Root,
+    ParentNode,
+    BaseElement,
+    Comment,
+    If,
+    IfBlock,
+    ElseBlock,
+    ElseifBlock,
+    Property,
+    ScopedSlotFragment,
+    LwcComponent,
+    Element,
+    Component,
+} from '../shared/types';
+import type State from '../state';
+import type { Token as parse5Token } from 'parse5';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -1280,10 +1283,14 @@ function parseScopedSlotFragment(
         );
     }
 
+    function isComponentOrLwcComponent(node: ParentNode): node is Component | LwcComponent {
+        return ast.isComponent(node) || ast.isLwcComponent(node);
+    }
+
     // <template lwc:slot-data> element should always be the direct child of a custom element
     // The only exception is, a conditional block as parent
     const parentCmp = ctx.findAncestor(
-        ast.isComponent,
+        isComponentOrLwcComponent,
         ({ current }) => current && ast.isConditionalBlock(current)
     );
 

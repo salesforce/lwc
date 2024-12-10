@@ -7,8 +7,8 @@
 import { DecoratorErrors } from '@lwc/errors';
 import { LWC_COMPONENT_PROPERTIES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { generateError } from '../../utils';
-import { BabelTypes, LwcBabelPluginPass } from '../../types';
-import { DecoratorMeta } from '../index';
+import type { BabelTypes, LwcBabelPluginPass } from '../../types';
+import type { DecoratorMeta } from '../index';
 
 const { TRACK_DECORATOR } = LWC_PACKAGE_EXPORTS;
 

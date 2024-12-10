@@ -8,9 +8,9 @@ import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 
-import { Template } from './template';
-import { LightningElementConstructor } from './base-lightning-element';
 import { report, ReportingEventId } from './reporting';
+import type { Template } from './template';
+import type { LightningElementConstructor } from './base-lightning-element';
 import type { Stylesheet } from '@lwc/shared';
 
 let warned = false;

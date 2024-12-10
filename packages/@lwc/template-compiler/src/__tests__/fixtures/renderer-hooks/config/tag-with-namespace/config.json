@@ -1,10 +1,12 @@
 {
     "customRendererConfig": {
         "directives": [],
-        "elements": [{
-            "tagName": "use",
-            "namespace": "http://www.w3.org/2000/svg",
-            "attributes": ["href", "xlink:href"]
-        }]
+        "elements": [
+            {
+                "tagName": "use",
+                "namespace": "http://www.w3.org/2000/svg",
+                "attributes": ["href", "xlink:href"]
+            }
+        ]
     }
 }

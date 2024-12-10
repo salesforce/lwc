@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import { describe, it, expect } from 'vitest';
 import { hasOwnProperty } from '@lwc/shared';
 import * as CompilerErrors from '../compiler/error-info';
-import { LWCErrorInfo } from '../shared/types';
+import type { LWCErrorInfo } from '../shared/types';
 
 const ERROR_CODE_RANGES = {
     compiler: {

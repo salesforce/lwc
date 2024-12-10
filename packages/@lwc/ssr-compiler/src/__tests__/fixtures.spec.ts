@@ -9,10 +9,11 @@ import path from 'node:path';
 import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
-import type { CompilationMode } from '../index';
+import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
+import { expectedFailures } from './utils/expected-failures';
+import type { FeatureFlagName } from '@lwc/features/dist/types';
 
 interface FixtureModule {
     tagName: string;
@@ -37,7 +38,7 @@ vi.mock('@lwc/ssr-runtime', async () => {
     return runtime;
 });
 
-const SSR_MODE: CompilationMode = 'asyncYield';
+const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
@@ -56,15 +57,10 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
                 modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn({ message, code, names = [] }) {
-            if (
-                code === 'CIRCULAR_DEPENDENCY' ||
-                // TODO [#4793]: fix unused imports
-                (code === 'UNUSED_EXTERNAL_IMPORT' && !names.includes('htmlEscape'))
-            ) {
-                return;
+        onwarn({ message, code }) {
+            if (code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
             }
-            throw new Error(message);
         },
     });
 
@@ -84,6 +80,8 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
+            // TODO [#4815]: enable all SSR v2 tests
+            expectedFailures,
         },
         async ({ filename, dirname, config }) => {
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';
@@ -105,31 +103,25 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
             const module = (await import(compiledFixturePath)) as FixtureModule;
 
             let result;
-            try {
-                result = await serverSideRenderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config?.props ?? {},
-                    SSR_MODE
-                );
-            } catch (err: any) {
-                return {
-                    [errorFile]: err.message,
-                    [expectedFile]: '',
-                };
-            }
+            let error;
 
             try {
-                return {
-                    [errorFile]: '',
-                    [expectedFile]: formatHTML(result),
-                };
-            } catch (_err: any) {
-                return {
-                    [errorFile]: `Test helper could not format HTML:\n\n${result}`,
-                    [expectedFile]: '',
-                };
+                result = formatHTML(
+                    await serverSideRenderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {},
+                        SSR_MODE
+                    )
+                );
+            } catch (err: any) {
+                error = err.message;
             }
+
+            return {
+                [errorFile]: error,
+                [expectedFile]: result,
+            };
         }
     );
 });

@@ -7,52 +7,30 @@
 
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
-import { bImportHtmlEscape, importHtmlEscapeKey } from '../shared';
 import { expressionIrToEs } from '../expression';
+import { isLiteral } from '../shared';
 
-import type { Expression as EsExpression, Statement as EsStatement } from 'estree';
+import { bYieldTextContent, isLastConcatenatedNode } from '../adjacent-text-nodes';
 import type {
-    ComplexExpression as IrComplexExpression,
-    Expression as IrExpression,
-    Literal as IrLiteral,
-    Text as IrText,
-} from '@lwc/template-compiler';
+    Statement as EsStatement,
+    ExpressionStatement as EsExpressionStatement,
+} from 'estree';
+import type { Text as IrText } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
-const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
-
-const bYieldEscapedString = esTemplateWithYield`
-    const ${is.identifier} = ${is.expression};
-    switch (typeof ${0}) {
-        case 'string':
-            yield (${is.literal} && ${0} === '') ? '\\u200D' : htmlEscape(${0});
-            break;
-        case 'number':
-        case 'boolean':
-            yield String(${0});
-            break;
-        default:
-            yield ${0} ? htmlEscape(${0}.toString()) : '\\u200D';
-    }
-`<EsStatement[]>;
-
-function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
-    return node.type === 'Literal';
-}
+const bBufferTextContent = esTemplateWithYield`
+    didBufferTextContent = true;
+    textContentBuffer += massageTextContent(${/* string value */ is.expression});
+`<EsExpressionStatement[]>;
 
 export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
-    if (isLiteral(node.value)) {
-        return [bYield(b.literal(node.value.value))];
-    }
+    cxt.import(['htmlEscape', 'massageTextContent']);
 
-    const isIsolatedTextNode = b.literal(
-        (!cxt.prevSibling || cxt.prevSibling.type !== 'Text') &&
-            (!cxt.nextSibling || cxt.nextSibling.type !== 'Text')
-    );
+    const isLastInSeries = isLastConcatenatedNode(cxt);
 
-    const valueToYield = expressionIrToEs(node.value, cxt);
-    cxt.hoist(bImportHtmlEscape(), importHtmlEscapeKey);
+    const valueToYield = isLiteral(node.value)
+        ? b.literal(node.value.value)
+        : expressionIrToEs(node.value, cxt);
 
-    const tempVariable = b.identifier(cxt.getUniqueVar());
-    return bYieldEscapedString(tempVariable, valueToYield, isIsolatedTextNode);
+    return [...bBufferTextContent(valueToYield), ...(isLastInSeries ? [bYieldTextContent()] : [])];
 };

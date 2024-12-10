@@ -1,1 +1,1 @@
-import Extension from 'x/ext-ts'
+import Extension from 'x/ext-ts';

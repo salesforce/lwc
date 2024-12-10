@@ -13,11 +13,13 @@ import { transmogrify } from '../transmogrify';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
-import { addGenerateMarkupExport, assignGenerateMarkupToComponent } from './generate-markup';
+import { addGenerateMarkupFunction } from './generate-markup';
+import { catalogWireAdapters } from './wire';
 
+import { removeDecoratorImport } from './remove-decorator-import';
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode } from '../shared';
+import type { CompilationMode } from '@lwc/shared';
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -29,23 +31,33 @@ const visitors: Visitors = {
         replaceLwcImport(path, state);
         catalogTmplImport(path, state);
         catalogAndReplaceStyleImports(path, state);
+        removeDecoratorImport(path);
+    },
+    ImportExpression(path) {
+        return path.replaceWith(
+            b.callExpression(
+                b.memberExpression(b.identifier('Promise'), b.identifier('resolve')),
+                []
+            )
+        );
     },
     ClassDeclaration(path, state) {
-        if (!path.node?.superClass) {
-            return;
-        }
-
+        const { node } = path;
         if (
-            path.node.superClass.type === 'Identifier' &&
-            // It is possible to inherit from something that inherits from
-            // LightningElement, so the detection here needs additional work.
-            path.node.superClass.name === 'LightningElement'
+            node?.superClass &&
+            // export default class extends LightningElement {}
+            (is.exportDefaultDeclaration(path.parentPath) ||
+                // class Cmp extends LightningElement {}; export default Cmp
+                path.scope
+                    ?.getBinding(node.id.name)
+                    ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
         ) {
+            // If it's a default-exported class with a superclass, then it's an LWC component!
             state.isLWC = true;
-            if (path.node.id) {
-                state.lwcClassName = path.node.id.name;
+            if (node.id) {
+                state.lwcClassName = node.id.name;
             } else {
-                path.node.id = b.identifier('DefaultComponentName');
+                node.id = b.identifier('DefaultComponentName');
                 state.lwcClassName = 'DefaultComponentName';
             }
         }
@@ -56,9 +68,17 @@ const visitors: Visitors = {
             return;
         }
 
-        const decorators = node.decorators;
-        if (is.identifier(decorators[0]?.expression) && decorators[0].expression.name === 'api') {
+        const { decorators } = node;
+        const decoratedExpression = decorators?.[0]?.expression;
+        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
+        } else if (
+            is.callExpression(decoratedExpression) &&
+            is.identifier(decoratedExpression.callee) &&
+            decoratedExpression.callee.name === 'wire'
+        ) {
+            catalogWireAdapters(path, state);
+            state.privateFields.push(node.key.name);
         } else {
             state.privateFields.push(node.key.name);
         }
@@ -76,13 +96,48 @@ const visitors: Visitors = {
         }
     },
     MethodDefinition(path, state) {
-        if (path.node?.key.type !== 'Identifier') {
+        const node = path.node;
+        if (!is.identifier(node?.key)) {
             return;
         }
 
-        switch (path.node.key.name) {
+        // If we mutate any class-methods that are piped through this compiler, then we'll be
+        // inadvertently mutating things like Wire adapters.
+        if (!state.isLWC) {
+            return;
+        }
+
+        const { decorators } = node;
+        // The real type is a subset of `Expression`, which doesn't work with the `is` validators
+        const decoratedExpression = decorators?.[0]?.expression;
+        if (
+            is.callExpression(decoratedExpression) &&
+            is.identifier(decoratedExpression.callee) &&
+            decoratedExpression.callee.name === 'wire'
+        ) {
+            // Getters and setters are methods in the AST, but treated as properties by @wire
+            // Note that this means that their implementations are ignored!
+            if (node.kind === 'get' || node.kind === 'set') {
+                const methodAsProp = b.propertyDefinition(
+                    structuredClone(node.key),
+                    null,
+                    node.computed,
+                    node.static
+                );
+                methodAsProp.decorators = structuredClone(decorators);
+                path.replaceWith(methodAsProp);
+                // We do not need to call `catalogWireAdapters()` because, by replacing the current
+                // node, `traverse()` will visit it again automatically, so we will just call
+                // `catalogWireAdapters()` later anyway.
+                return;
+            } else {
+                catalogWireAdapters(path, state);
+            }
+        }
+
+        switch (node.key.name) {
             case 'constructor':
-                path.node.value.params = [b.identifier('propsAvailableAtConstruction')];
+                node.value.params = [b.identifier('propsAvailableAtConstruction')];
                 break;
             case 'connectedCallback':
                 state.hasConnectedCallback = true;
@@ -118,7 +173,12 @@ const visitors: Visitors = {
     },
 };
 
-export default function compileJS(src: string, filename: string, compilationMode: CompilationMode) {
+export default function compileJS(
+    src: string,
+    filename: string,
+    tagName: string,
+    compilationMode: CompilationMode
+) {
     let ast = parseModule(src, {
         module: true,
         next: true,
@@ -139,6 +199,7 @@ export default function compileJS(src: string, filename: string, compilationMode
         staticStylesheetIds: null,
         publicFields: [],
         privateFields: [],
+        wireAdapters: [],
     };
 
     traverse(ast, visitors, state);
@@ -152,8 +213,7 @@ export default function compileJS(src: string, filename: string, compilationMode
         };
     }
 
-    addGenerateMarkupExport(ast, state, filename);
-    assignGenerateMarkupToComponent(ast, state);
+    addGenerateMarkupFunction(ast, state, tagName, filename);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

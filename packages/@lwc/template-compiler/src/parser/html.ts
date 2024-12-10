@@ -11,9 +11,9 @@ import { ParserDiagnostics } from '@lwc/errors';
 import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import { sourceLocation } from '../shared/ast';
 
-import ParserCtx from './parser';
 import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
 import { parseFragment } from './expression-complex';
+import type ParserCtx from './parser';
 
 function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
     /* istanbul ignore else */

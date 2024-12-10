@@ -6,7 +6,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { DiagnosticLevel } from '@lwc/errors';
-import compile, { Config, parse } from '../index';
+import compile, { parse } from '../index';
+import type { Config } from '../index';
 
 describe('option validation', () => {
     it('validated presence of options', () => {

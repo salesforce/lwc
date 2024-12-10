@@ -18,13 +18,15 @@ import {
 import { logError } from '../shared/logger';
 
 import api from './api';
-import { RenderMode, ShadowMode, VM } from './vm';
-import { computeHasScopedStyles, hasStyles, Template } from './template';
+import { RenderMode, ShadowMode } from './vm';
+import { computeHasScopedStyles, hasStyles } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
-import { VCustomElement, VNode } from './vnodes';
 import { checkVersionMismatch } from './check-version-mismatch';
 import { getComponentInternalDef } from './def';
 import { assertNotProd, EmptyArray } from './utils';
+import type { VCustomElement, VNode } from './vnodes';
+import type { Template } from './template';
+import type { VM } from './vm';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 // These are only used for HMR in dev mode
@@ -142,7 +144,13 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
     // Set the new styling token on the host element
     if (!isUndefined(newToken)) {
         if (hasScopedStyles) {
-            getClassList(elm).add(makeHostToken(newToken));
+            const hostScopeTokenClass = makeHostToken(newToken);
+            getClassList(elm).add(hostScopeTokenClass);
+            if (!process.env.IS_BROWSER) {
+                // This is only used in SSR to communicate to hydration that
+                // this class should be treated specially for purposes of hydration mismatches.
+                setAttribute(elm, 'data-lwc-host-scope-token', hostScopeTokenClass);
+            }
             newHasTokenInClass = true;
         }
         if (isSyntheticShadow) {

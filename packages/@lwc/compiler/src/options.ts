@@ -4,9 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
-import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
-import { CompilationMode } from '@lwc/ssr-compiler';
+import { CompilerValidationErrors, invariant } from '@lwc/errors';
+import {
+    isUndefined,
+    isBoolean,
+    getAPIVersionFromNumber,
+    DEFAULT_SSR_MODE,
+    type CompilationMode,
+} from '@lwc/shared';
+import type { InstrumentationObject } from '@lwc/errors';
 import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
@@ -33,7 +39,7 @@ const DEFAULT_OPTIONS = {
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
-    ssrMode: 'asyncYield',
+    ssrMode: DEFAULT_SSR_MODE,
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {

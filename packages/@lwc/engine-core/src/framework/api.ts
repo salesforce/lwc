@@ -22,10 +22,9 @@ import {
     isTrue,
     isUndefined,
     StringReplace,
-    StringTrim,
     toString,
-    keys as ObjectKeys,
     sanitizeHtmlContent,
+    normalizeClass,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -34,14 +33,20 @@ import { invokeEventListener } from './invoker';
 import { getVMBeingRendered, setVMBeingRendered } from './template';
 import { EmptyArray } from './utils';
 import { isComponentConstructor } from './def';
-import { RenderMode, ShadowMode, SlotSet, VM } from './vm';
-import { LightningElementConstructor } from './base-lightning-element';
+import { RenderMode, ShadowMode } from './vm';
 import { markAsDynamicChildren } from './rendering';
 import {
     isVBaseElement,
     isVCustomElement,
     isVScopedSlotFragment,
     isVStatic,
+    VNodeType,
+    VStaticPartType,
+} from './vnodes';
+import { getComponentRegisteredName } from './component';
+import { createSanitizedHtmlContent } from './sanitized-html-content';
+import type { SanitizedHtmlContent } from './sanitized-html-content';
+import type {
     Key,
     MutableVNodes,
     VComment,
@@ -51,16 +56,14 @@ import {
     VFragment,
     VNode,
     VNodes,
-    VNodeType,
     VScopedSlotFragment,
     VStatic,
     VStaticPart,
     VStaticPartData,
-    VStaticPartType,
     VText,
 } from './vnodes';
-import { getComponentRegisteredName } from './component';
-import { createSanitizedHtmlContent, SanitizedHtmlContent } from './sanitized-html-content';
+import type { LightningElementConstructor } from './base-lightning-element';
+import type { SlotSet, VM } from './vm';
 
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
@@ -667,7 +670,7 @@ function dc(
 
     if (!isComponentConstructor(Ctor)) {
         throw new Error(
-            `Invalid constructor ${toString(Ctor)} is not a LightningElement constructor.`
+            `Invalid constructor: "${toString(Ctor)}" is not a LightningElement constructor.`
         );
     }
 
@@ -713,46 +716,7 @@ function shc(content: unknown): SanitizedHtmlContent {
     return createSanitizedHtmlContent(sanitizedString);
 }
 
-/**
- * [ncls] - Normalize class name attribute.
- *
- * Transforms the provided class property value from an object/string into a string the diffing algo
- * can operate on.
- *
- * This implementation is borrowed from Vue:
- * https://github.com/vuejs/core/blob/e790e1bdd7df7be39e14780529db86e4da47a3db/packages/shared/src/normalizeProp.ts#L63-L82
- */
-function ncls(value: unknown): string | undefined {
-    if (isUndefined(value) || isNull(value)) {
-        // Returning undefined here improves initial render cost, because the old vnode's class will be considered
-        // undefined in the `patchClassAttribute` routine, so `oldClass === newClass` will be true so we return early
-        return undefined;
-    }
-
-    let res = '';
-
-    if (isString(value)) {
-        res = value;
-    } else if (isArray(value)) {
-        for (let i = 0; i < value.length; i++) {
-            const normalized = ncls(value[i]);
-            if (normalized) {
-                res += normalized + ' ';
-            }
-        }
-    } else if (isObject(value) && !isNull(value)) {
-        // Iterate own enumerable keys of the object
-        const keys = ObjectKeys(value);
-        for (let i = 0; i < keys.length; i += 1) {
-            const key = keys[i];
-            if ((value as Record<string, unknown>)[key]) {
-                res += key + ' ';
-            }
-        }
-    }
-
-    return StringTrim.call(res);
-}
+const ncls = normalizeClass;
 
 const api = ObjectFreeze({
     s,

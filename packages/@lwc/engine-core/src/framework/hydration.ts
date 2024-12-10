@@ -12,7 +12,6 @@ import {
     keys,
     isNull,
     isArray,
-    ArrayFilter,
     isTrue,
     isString,
     StringToLowerCase,
@@ -21,11 +20,13 @@ import {
     isFalse,
     StringSplit,
     parseStyleText,
+    ArrayFrom,
+    ArraySort,
+    ArrayFilter,
 } from '@lwc/shared';
 
-import { logError, logWarn } from '../shared/logger';
+import { logWarn } from '../shared/logger';
 
-import { RendererAPI } from './renderer';
 import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
@@ -33,35 +34,39 @@ import {
     runConnectedCallback,
     VMState,
     RenderMode,
-    VM,
     runRenderedCallback,
     resetRefVNodes,
 } from './vm';
-import {
+import { VNodeType, isVStaticPartElement } from './vnodes';
+
+import { patchProps } from './modules/props';
+import { applyEventListeners } from './modules/events';
+import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
+import { getScopeTokenClass } from './stylesheet';
+import { renderComponent } from './component';
+import { applyRefs } from './modules/refs';
+import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
+import type {
     VNodes,
     VBaseElement,
     VNode,
-    VNodeType,
     VText,
     VComment,
     VElement,
     VCustomElement,
     VStatic,
     VFragment,
-    isVCustomElement,
     VElementData,
     VStaticPartData,
     VStaticPartText,
-    isVStaticPartElement,
 } from './vnodes';
+import type { VM } from './vm';
+import type { RendererAPI } from './renderer';
 
-import { patchProps } from './modules/props';
-import { applyEventListeners } from './modules/events';
-import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
-import { getScopeTokenClass, getStylesheetTokenHost } from './stylesheet';
-import { renderComponent } from './component';
-import { applyRefs } from './modules/refs';
-import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
+type Classes = Omit<Set<string>, 'add'>;
+
+// Used as a perf optimization to avoid creating and discarding sets unnecessarily.
+const EMPTY_SET: Classes = new Set<string>();
 
 // These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
 const enum EnvNodeTypes {
@@ -82,7 +87,7 @@ export function hydrateRoot(vm: VM) {
     hydrateVM(vm);
 
     if (hasMismatch && process.env.NODE_ENV !== 'production') {
-        logError('Hydration completed with errors.', vm);
+        logWarn('Hydration completed with errors.', vm);
     }
 }
 
@@ -441,7 +446,7 @@ function hydrateChildren(
                 if (process.env.NODE_ENV !== 'production') {
                     if (!hasWarned) {
                         hasWarned = true;
-                        logError(
+                        logWarn(
                             `Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.`,
                             owner
                         );
@@ -473,7 +478,7 @@ function hydrateChildren(
         hasMismatch = true;
         if (process.env.NODE_ENV !== 'production') {
             if (!hasWarned) {
-                logError(
+                logWarn(
                     `Hydration mismatch: incorrect number of rendered nodes. Server rendered more nodes than the client.`,
                     owner
                 );
@@ -518,7 +523,7 @@ function hasCorrectNodeType<T extends Node>(
     const { getProperty } = renderer;
     if (getProperty(node, 'nodeType') !== nodeType) {
         if (process.env.NODE_ENV !== 'production') {
-            logError('Hydration mismatch: incorrect node type received', vnode.owner);
+            logWarn('Hydration mismatch: incorrect node type received', vnode.owner);
         }
         return false;
     }
@@ -535,7 +540,7 @@ function isMatchingElement(
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
                     elm,
                     'tagName'
@@ -601,7 +606,7 @@ function validateAttrs(
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
             if (process.env.NODE_ENV !== 'production') {
                 const { getProperty } = renderer;
-                logError(
+                logWarn(
                     `Mismatch hydrating element <${getProperty(
                         elm,
                         'tagName'
@@ -618,6 +623,23 @@ function validateAttrs(
     return nodesAreCompatible;
 }
 
+function checkClassesCompatibility(first: Classes, second: Classes): boolean {
+    if (first.size !== second.size) {
+        return false;
+    }
+    for (const f of first) {
+        if (!second.has(f)) {
+            return false;
+        }
+    }
+    for (const s of second) {
+        if (!first.has(s)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function validateClassAttr(
     vnode: VBaseElement | VStatic,
     elm: Element,
@@ -627,11 +649,31 @@ function validateClassAttr(
     const { owner } = vnode;
     // classMap is never available on VStaticPartData so it can default to undefined
     // casting to prevent TS error.
-    let { className, classMap } = data as VElementData;
-    const { getProperty, getClassList, getAttribute } = renderer;
+    const { className, classMap } = data as VElementData;
+    const { getProperty } = renderer;
+
+    // ---------- Step 1: get the classes from the element and the vnode
+
+    // Use a Set because we don't care to validate mismatches for 1) different ordering in SSR vs CSR, or 2)
+    // duplicated class names. These don't have an effect on rendered styles.
+    const elmClasses = elm.classList.length ? new Set(ArrayFrom(elm.classList)) : EMPTY_SET;
+    let vnodeClasses: Classes;
+
+    if (!isUndefined(className)) {
+        // ignore empty spaces entirely, filter them out using `filter(..., Boolean)`
+        const classes = ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean);
+        vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
+    } else if (!isUndefined(classMap)) {
+        const classes = keys(classMap);
+        vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
+    } else {
+        vnodeClasses = EMPTY_SET;
+    }
+
+    // ---------- Step 2: handle the scope tokens
+
     // we don't care about legacy for hydration. it's a new use case
-    const scopedToken = getScopeTokenClass(owner, /* legacy */ false);
-    const stylesheetTokenHost = isVCustomElement(vnode) ? getStylesheetTokenHost(vnode) : null;
+    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
 
     // Classnames for scoped CSS are added directly to the DOM during rendering,
     // or to the VDOM on the server in the case of SSR. As such, these classnames
@@ -639,83 +681,42 @@ function validateClassAttr(
     //
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
-    if (!isNull(scopedToken) || !isNull(stylesheetTokenHost)) {
-        if (!isUndefined(className)) {
-            // The order of the className should be scopedToken className stylesheetTokenHost
-            const classTokens = [scopedToken, className, stylesheetTokenHost];
-            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
-            className = ArrayJoin.call(classNames, ' ');
-        } else if (!isUndefined(classMap)) {
-            classMap = {
-                ...classMap,
-                ...(!isNull(scopedToken) ? { [scopedToken]: true } : {}),
-                ...(!isNull(stylesheetTokenHost) ? { [stylesheetTokenHost]: true } : {}),
-            };
+    if (!isNull(scopeToken)) {
+        if (vnodeClasses === EMPTY_SET) {
+            vnodeClasses = new Set([scopeToken]);
         } else {
-            // The order of the className should be scopedToken stylesheetTokenHost
-            const classTokens = [scopedToken, stylesheetTokenHost];
-            const classNames = ArrayFilter.call(classTokens, (token) => !isNull(token));
-            if (classNames.length) {
-                className = ArrayJoin.call(classNames, ' ');
-            }
+            (vnodeClasses as Set<string>).add(scopeToken);
         }
     }
 
-    let nodesAreCompatible = true;
-    let readableVnodeClassname;
-
-    const elmClassName = getAttribute(elm, 'class');
-
-    if (
-        !isUndefined(className) &&
-        String(className) !== elmClassName &&
-        // No mismatch if SSR `class` attribute is missing and CSR `class` is the empty string
-        !(className === '' && isNull(elmClassName))
-    ) {
-        // className is used when class is bound to an expr.
-        nodesAreCompatible = false;
-        // stringify for pretty-printing
-        readableVnodeClassname = JSON.stringify(className);
-    } else if (!isUndefined(classMap)) {
-        // classMap is used when class is set to static value.
-        const classList = getClassList(elm);
-        let computedClassName = '';
-
-        // all classes from the vnode should be in the element.classList
-        for (const name in classMap) {
-            computedClassName += ' ' + name;
-            if (!classList.contains(name)) {
-                nodesAreCompatible = false;
-            }
-        }
-
-        // stringify for pretty-printing
-        readableVnodeClassname = JSON.stringify(computedClassName.trim());
-
-        if (classList.length > keys(classMap).length) {
-            nodesAreCompatible = false;
-        }
-    } else if (isUndefined(className) && !isNull(elmClassName)) {
-        // SSR contains a className but client-side VDOM does not
-        nodesAreCompatible = false;
-        readableVnodeClassname = '""';
+    // This tells us which `*-host` scope token was rendered to the element's class.
+    // For now we just ignore any mismatches involving this class.
+    // TODO [#4866]: correctly validate the host scope token class
+    const elmHostScopeToken = renderer.getAttribute(elm, 'data-lwc-host-scope-token');
+    if (!isNull(elmHostScopeToken)) {
+        elmClasses.delete(elmHostScopeToken);
+        vnodeClasses.delete(elmHostScopeToken);
     }
 
-    if (!nodesAreCompatible) {
-        if (process.env.NODE_ENV !== 'production') {
-            logError(
-                `Mismatch hydrating element <${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}>: attribute "class" has different values, expected ${readableVnodeClassname} but found ${JSON.stringify(
-                    elmClassName
-                )}`,
-                vnode.owner
-            );
-        }
+    // ---------- Step 3: check for compatibility
+
+    const classesAreCompatible = checkClassesCompatibility(vnodeClasses, elmClasses);
+
+    if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
+        const prettyPrint = (set: Classes) =>
+            JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
+        logWarn(
+            `Mismatch hydrating element <${getProperty(
+                elm,
+                'tagName'
+            ).toLowerCase()}>: attribute "class" has different values, expected ${prettyPrint(
+                vnodeClasses
+            )} but found ${prettyPrint(elmClasses)}`,
+            vnode.owner
+        );
     }
 
-    return nodesAreCompatible;
+    return classesAreCompatible;
 }
 
 function validateStyleAttr(
@@ -763,7 +764,7 @@ function validateStyleAttr(
     if (!nodesAreCompatible) {
         if (process.env.NODE_ENV !== 'production') {
             const { getProperty } = renderer;
-            logError(
+            logWarn(
                 `Mismatch hydrating element <${getProperty(
                     elm,
                     'tagName'
@@ -802,7 +803,7 @@ function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, rende
     let isCompatibleElements = true;
     if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
         if (process.env.NODE_ENV !== 'production') {
-            logError(
+            logWarn(
                 `Hydration mismatch: expecting element with tag "${getProperty(
                     client,
                     'tagName'
@@ -824,7 +825,7 @@ function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, rende
             // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
                 if (process.env.NODE_ENV !== 'production') {
-                    logError(
+                    logWarn(
                         `Mismatch hydrating element <${getProperty(
                             client,
                             'tagName'

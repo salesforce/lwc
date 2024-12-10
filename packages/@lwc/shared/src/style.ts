@@ -6,7 +6,7 @@
  */
 
 import { isArray } from './language';
-import { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
+import type { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
 
 export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
 const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
@@ -62,7 +62,7 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
     return styleMap;
 }
 
-export function normalizeStyleAttribute(style: string): string {
+export function normalizeStyleAttributeValue(style: string): string {
     const styleMap = parseStyleText(style);
 
     const styles = Object.entries(styleMap).map(([key, value]) => {

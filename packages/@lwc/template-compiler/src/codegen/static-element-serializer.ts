@@ -4,14 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { HTML_NAMESPACE, htmlEscape, isVoidElement, normalizeStyleAttribute } from '@lwc/shared';
+import {
+    HTML_NAMESPACE,
+    htmlEscape,
+    isVoidElement,
+    normalizeStyleAttributeValue,
+} from '@lwc/shared';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { Comment, Element, Literal, StaticChildNode, StaticElement, Text } from '../shared/types';
 import {
     isBooleanLiteral,
     isComment,
@@ -21,6 +25,14 @@ import {
     isText,
 } from '../shared/ast';
 import { hasDynamicText, isContiguousText, transformStaticChildren } from './static-element';
+import type {
+    Comment,
+    Element,
+    Literal,
+    StaticChildNode,
+    StaticElement,
+    Text,
+} from '../shared/types';
 import type CodeGen from './codegen';
 
 // Implementation based on the parse5 serializer: https://github.com/inikulin/parse5/blob/master/packages/parse5/lib/serializer/index.ts
@@ -108,7 +120,7 @@ function serializeAttrs(element: Element, codeGen: CodeGen): string {
             }
 
             if (name === 'style' && !hasExpression) {
-                v = normalizeStyleAttribute(v);
+                v = normalizeStyleAttributeValue(v);
                 if (v === '') {
                     // Do not serialize empty style attribute (consistent with non-static optimized)
                     return;

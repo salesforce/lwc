@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/types",
-    "version": "8.7.0",
+    "version": "8.12.0",
     "keywords": [
         "lwc",
         "types",
@@ -24,11 +24,14 @@
     "publishConfig": {
         "access": "public"
     },
+    "volta": {
+        "extends": "../../../package.json"
+    },
     "types": "index.d.ts",
     "files": [
         "*.d.ts"
     ],
     "dependencies": {
-        "@lwc/engine-core": "8.7.0"
+        "@lwc/engine-core": "8.12.0"
     }
 }

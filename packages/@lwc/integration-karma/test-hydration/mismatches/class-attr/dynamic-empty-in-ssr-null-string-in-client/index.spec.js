@@ -22,9 +22,9 @@ export default {
         expect(p.className).not.toBe(snapshots.className);
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
-            warn: [],
-            error: [
-                'Mismatch hydrating element <p>: attribute "class" has different values, expected "null" but found null',
+            error: [],
+            warn: [
+                'Mismatch hydrating element <p>: attribute "class" has different values, expected "null" but found ""',
                 'Hydration completed with errors.',
             ],
         });

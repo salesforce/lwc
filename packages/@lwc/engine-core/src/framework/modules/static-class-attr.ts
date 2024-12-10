@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { RendererAPI } from '../renderer';
-import { VBaseElement } from '../vnodes';
+import type { RendererAPI } from '../renderer';
+import type { VBaseElement } from '../vnodes';
 
 // The HTML class property becomes the vnode.data.classMap object when defined as a string in the template.
 // The compiler takes care of transforming the inline classnames into an object. It's faster to set the

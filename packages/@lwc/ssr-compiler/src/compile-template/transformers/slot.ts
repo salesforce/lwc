@@ -7,13 +7,13 @@
 
 import { is, builders as b } from 'estree-toolkit';
 
-import { Slot as IrSlot } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
 import { bAttributeValue, getScopedExpression } from '../shared';
 import { isNullableOf } from '../../estree/validators';
 import { Element } from './element';
+import type { Slot as IrSlot } from '@lwc/template-compiler';
 import type {
     Statement as EsStatement,
     IfStatement as EsIfStatement,
@@ -24,18 +24,21 @@ import type { Transformer } from '../types';
 const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
+        const isSlotted = ${/* isSlotted */ is.literal};
         // start bookend HTML comment for light DOM slot vfragment
-        yield '<!---->';
-
-        // scoped slot factory has its own vfragment hence its own bookend
-        if (isScopedSlot) {
+        if (!isSlotted) {
             yield '<!---->';
+
+            // scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot) {
+                yield '<!---->';
+            }
         }
 
-        const generators = slottedContent?.light[${/* slotName */ is.expression} ?? ""];
+        const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
         if (generators) {
             for (const generator of generators) {
-                yield* generator(${/* scoped slot data */ isNullableOf(is.expression)});
+                yield* generator(contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
             }
         } else {
             // If we're in this else block, then the generator _must_ have yielded
@@ -45,14 +48,16 @@ const bConditionalSlot = esTemplateWithYield`
             // TODO: default/fallback slot content
             ${/* slot fallback content */ is.statement}
         }
-        
-        // scoped slot factory has its own vfragment hence its own bookend
-        if (isScopedSlot) {
-            yield '<!---->';
-        }
 
         // end bookend HTML comment for light DOM slot vfragment
-        yield '<!---->';
+        if (!isSlotted) {
+            yield '<!---->';
+
+            // scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot) {
+                yield '<!---->';
+            }
+        }
     } else {
         ${/* slot element AST */ is.statement}
     }
@@ -68,5 +73,6 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     const slotAst = Element(node, ctx);
     const slotChildren = irChildrenToEs(node.children, ctx);
     const isScopedSlot = b.literal(Boolean(slotBound));
-    return [bConditionalSlot(isScopedSlot, slotName, slotBound, slotChildren, slotAst)];
+    const isSlotted = b.literal(Boolean(ctx.isSlotted));
+    return [bConditionalSlot(isScopedSlot, isSlotted, slotName, slotBound, slotChildren, slotAst)];
 };

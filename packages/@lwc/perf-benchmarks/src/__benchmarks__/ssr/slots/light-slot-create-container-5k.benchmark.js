@@ -2,7 +2,6 @@ import { renderComponent } from '@lwc/ssr-runtime';
 import SlotUsage from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/slotUsageComponentLight/slotUsageComponentLight.js';
 import Store from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/store/store.js';
 
-const SSR_MODE = 'asyncYield';
 const NUMBER_OF_ROWS = 5000;
 
 benchmark(`ssr/slot/light/create/5k`, () => {
@@ -24,6 +23,6 @@ benchmark(`ssr/slot/light/create/5k`, () => {
             titleOfComponentWithSlot: 'Component that receives a slot',
             rowsOfComponentWithSlot: rowsOfComponentWithSlot,
         };
-        return renderComponent('benchmark-slot-usage-component-light', SlotUsage, props, SSR_MODE);
+        return renderComponent('benchmark-slot-usage-component-light', SlotUsage, props);
     });
 });

@@ -1,5 +1,5 @@
 {
-  "customProperties": {
-    "resolverModule": "custom-properties-resolver"
-  }
+    "customProperties": {
+        "resolverModule": "custom-properties-resolver"
+    }
 }

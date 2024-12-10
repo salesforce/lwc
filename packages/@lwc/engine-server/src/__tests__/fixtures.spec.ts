@@ -6,10 +6,12 @@
  */
 
 import path from 'node:path';
-import { vi, describe } from 'vitest';
+import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
-import lwcRollupPlugin, { RollupLwcOptions } from '@lwc/rollup-plugin';
+import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { setFeatureFlagForTest } from '../index';
+import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -57,6 +59,10 @@ async function compileFixture({
         plugins: [
             lwcRollupPlugin({
                 enableDynamicComponents: true,
+                experimentalDynamicComponent: {
+                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                    strictSpecifier: false,
+                },
                 modules: [
                     {
                         dir: modulesDir,
@@ -74,7 +80,9 @@ async function compileFixture({
                 // IGNORED_SLOT_ATTRIBUTE_IN_CHILD is fine; it is used in some of these tests
                 message.includes('LWC1201') ||
                 message.includes('-h-t-m-l') ||
-                code === 'CIRCULAR_DEPENDENCY';
+                code === 'CIRCULAR_DEPENDENCY' ||
+                // TODO [#5010]: template-compiler -> index -> validateElement generates UNKNOWN_HTML_TAG_IN_TEMPLATE for MathML elements
+                message.includes('LWC1123');
             if (!shouldIgnoreWarning) {
                 throw new Error(message);
             }
@@ -97,11 +105,22 @@ function testFixtures(options?: RollupLwcOptions) {
             pattern: '**/index.js',
         },
         async ({ filename, dirname, config }) => {
-            const compiledFixturePath = await compileFixture({
-                input: filename,
-                dirname,
-                options,
-            });
+            let compiledFixturePath;
+
+            try {
+                compiledFixturePath = await compileFixture({
+                    input: filename,
+                    dirname,
+                    options,
+                });
+            } catch (err: any) {
+                // Filter out the stacktrace, just include the LWC error message
+                const message = err?.message?.match(/(LWC\d+[^\n]+)/)?.[1];
+                return {
+                    'expected.html': '',
+                    'error.txt': message,
+                };
+            }
 
             // The LWC engine holds global state like the current VM index, which has an impact on
             // the generated HTML IDs. So the engine has to be re-evaluated between tests.
@@ -119,10 +138,12 @@ function testFixtures(options?: RollupLwcOptions) {
             let result;
             let err;
             try {
-                result = lwcEngineServer!.renderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config?.props ?? {}
+                result = formatHTML(
+                    lwcEngineServer!.renderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {}
+                    )
                 );
             } catch (_err: any) {
                 if (_err.name === 'AssertionError') {
@@ -136,14 +157,24 @@ function testFixtures(options?: RollupLwcOptions) {
             });
 
             return {
-                'expected.html': result ? formatHTML(result) : '',
-                'error.txt': err ?? '',
+                'expected.html': result,
+                'error.txt': err,
             };
         }
     );
 }
 
 describe.concurrent('fixtures', () => {
+    beforeAll(() => {
+        // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
+        // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
+        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
+    });
+
     describe.concurrent('default', () => {
         testFixtures();
     });

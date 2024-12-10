@@ -4,12 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { NodePath } from '@babel/traverse';
-import { types, Visitor } from '@babel/core';
 import { addNamed } from '@babel/helper-module-imports';
 import { CompilerMetrics, LWCClassErrors } from '@lwc/errors';
 import { generateError, incrementMetricCounter } from './utils';
-import { LwcBabelPluginPass } from './types';
+import type { types, Visitor, NodePath } from '@babel/core';
+import type { LwcBabelPluginPass } from './types';
 
 function getImportSource(path: NodePath<types.Import>): NodePath<types.Node> {
     return path.parentPath.get('arguments.0') as NodePath<types.Node>;

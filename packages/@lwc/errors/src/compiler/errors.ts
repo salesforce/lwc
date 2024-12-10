@@ -5,15 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { templateString } from '../shared/utils';
-import { LWCErrorInfo } from '../shared/types';
-import {
-    CompilerDiagnosticOrigin,
-    CompilerDiagnostic,
-    CompilerError,
-    getCodeFromError,
-    getFilename,
-    getLocation,
-} from './utils';
+import { CompilerError, getCodeFromError, getFilename, getLocation } from './utils';
+import type { LWCErrorInfo } from '../shared/types';
+import type { CompilerDiagnosticOrigin, CompilerDiagnostic } from './utils';
 
 export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
 

@@ -9,7 +9,6 @@ import { walk } from 'estree-walker';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { isBooleanAttribute } from '@lwc/shared';
 import * as t from '../shared/estree';
-import { Attribute, BaseElement, ComplexExpression, Property } from '../shared/types';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isProperty, isStringLiteral } from '../shared/ast';
 import {
@@ -19,6 +18,7 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
+import type { Attribute, BaseElement, ComplexExpression, Property } from '../shared/types';
 import type { Node } from 'estree';
 import type CodeGen from './codegen';
 

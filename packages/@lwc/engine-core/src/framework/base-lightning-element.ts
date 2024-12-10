@@ -13,7 +13,6 @@
  * shape of a component. It is also used internally to apply extra optimizations.
  */
 import {
-    AccessibleElementProperties,
     create,
     defineProperties,
     defineProperty,
@@ -33,32 +32,29 @@ import {
 
 import { logError, logWarnOnce } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { ariaReflectionPolyfillDescriptors } from '../libs/aria-reflection/aria-reflection';
+import {
+    ariaReflectionPolyfillDescriptors,
+    propToAttrReflectionPolyfillDescriptors,
+} from '../libs/reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import { getComponentAPIVersion, getWrappedComponentsListener } from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
-import {
-    associateVM,
-    getAssociatedVM,
-    RefVNodes,
-    RenderMode,
-    ShadowMode,
-    ShadowSupportMode,
-    VM,
-} from './vm';
+import { associateVM, getAssociatedVM, RenderMode, ShadowMode } from './vm';
 import { componentValueObserved } from './mutation-tracker';
 import {
     patchCustomElementWithRestrictions,
     patchShadowRootWithRestrictions,
 } from './restrictions';
-import { getVMBeingRendered, isUpdatingTemplate, Template } from './template';
-import { HTMLElementConstructor } from './base-bridge-element';
+import { getVMBeingRendered, isUpdatingTemplate } from './template';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
 import { instrumentInstance } from './runtime-instrumentation';
 import { applyShadowMigrateMode } from './shadow-migration-mode';
-import type { Stylesheets } from '@lwc/shared';
+import type { HTMLElementConstructor } from './base-bridge-element';
+import type { Template } from './template';
+import type { RefVNodes, ShadowSupportMode, VM } from './vm';
+import type { Stylesheets, AccessibleElementProperties } from '@lwc/shared';
 
 /**
  * This operation is called with a descriptor of an standard html property
@@ -817,7 +813,7 @@ if (process.env.IS_BROWSER) {
 } else {
     // On the server, we cannot use createBridgeToElementDescriptor because getAttribute/setAttribute are
     // not supported on HTMLElement. So apply the polyfill directly on top of LightningElement
-    defineProperties(LightningElement.prototype, ariaReflectionPolyfillDescriptors);
+    defineProperties(LightningElement.prototype, propToAttrReflectionPolyfillDescriptors);
 }
 
 defineProperties(LightningElement.prototype, lightningBasedDescriptors);

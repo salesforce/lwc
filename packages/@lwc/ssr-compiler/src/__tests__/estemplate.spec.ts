@@ -22,15 +22,13 @@ describe.each(
 )('%s', (topLevelFnName, topLevelFn) => {
     const yieldStmtsAllowed = topLevelFnName === 'esTemplateWithYield';
     describe('failure upon parse', () => {
-        if (!yieldStmtsAllowed) {
-            test('with yield statements', () => {
-                const createTemplate = () => topLevelFn`
-                    const foo = "bar";
-                    yield foo;
-                `;
-                expect(createTemplate).toThrow('Unexpected token');
-            });
-        }
+        test.skipIf(yieldStmtsAllowed)('with yield statements', () => {
+            const createTemplate = () => topLevelFn`
+                const foo = "bar";
+                yield foo;
+            `;
+            expect(createTemplate).toThrow('Unexpected token');
+        });
 
         test('when attempting to replace unreplaceable code constructs', () => {
             // Someone might try to create a template where 'class' or 'function'
@@ -68,26 +66,24 @@ describe.each(
     });
 
     describe('successful replacement', () => {
-        if (yieldStmtsAllowed) {
-            test('with yield statements', () => {
-                const tmpl = topLevelFn`
+        test.runIf(yieldStmtsAllowed)('with yield statements', () => {
+            const tmpl = topLevelFn`
     yield ${is.literal};
 `;
-                const replacedAst = tmpl(b.literal('foo'));
+            const replacedAst = tmpl(b.literal('foo'));
 
-                expect(replacedAst).toMatchObject({
-                    expression: {
-                        argument: {
-                            type: 'Literal',
-                            value: 'foo',
-                        },
-                        delegate: false,
-                        type: 'YieldExpression',
+            expect(replacedAst).toMatchObject({
+                expression: {
+                    argument: {
+                        type: 'Literal',
+                        value: 'foo',
                     },
-                    type: 'ExpressionStatement',
-                });
+                    delegate: false,
+                    type: 'YieldExpression',
+                },
+                type: 'ExpressionStatement',
             });
-        }
+        });
         test('with LH identifier nodes', () => {
             const tmpl = topLevelFn`
                     const ${is.identifier} = 'foobar'

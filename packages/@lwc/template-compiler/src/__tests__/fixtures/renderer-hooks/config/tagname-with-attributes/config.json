@@ -4,9 +4,7 @@
         "elements": [
             {
                 "tagName": "div",
-                "attributes": [
-                    "class"
-                ]
+                "attributes": ["class"]
             }
         ]
     }

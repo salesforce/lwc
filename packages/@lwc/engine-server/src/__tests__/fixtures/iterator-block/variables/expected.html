@@ -1,0 +1,36 @@
+<x-container>
+  <template shadowrootmode="open">
+    <ul>
+      <li data-first="true" data-index="0" data-item="one" data-last="false">
+        0 - one - true - false
+      </li>
+      <x-child data-first="true" data-index="0" data-item="one" data-last="false">
+        <template shadowrootmode="open">
+          <slot>
+          </slot>
+        </template>
+        0 - one - true - false
+      </x-child>
+      <li data-first="false" data-index="1" data-item="two" data-last="false">
+        1 - two - false - false
+      </li>
+      <x-child data-first="false" data-index="1" data-item="two" data-last="false">
+        <template shadowrootmode="open">
+          <slot>
+          </slot>
+        </template>
+        1 - two - false - false
+      </x-child>
+      <li data-first="false" data-index="2" data-item="three" data-last="true">
+        2 - three - false - true
+      </li>
+      <x-child data-first="false" data-index="2" data-item="three" data-last="true">
+        <template shadowrootmode="open">
+          <slot>
+          </slot>
+        </template>
+        2 - three - false - true
+      </x-child>
+    </ul>
+  </template>
+</x-container>

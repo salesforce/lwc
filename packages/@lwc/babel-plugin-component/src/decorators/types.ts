@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { NodePath } from '@babel/traverse';
-import { types } from '@babel/core';
-import { LWCErrorInfo } from '@lwc/errors';
-import * as t from '@babel/types';
+import type { types, NodePath } from '@babel/core';
+import type { LWCErrorInfo } from '@lwc/errors';
 
 export type ImportSpecifier = {
     name: string;
@@ -24,8 +22,8 @@ export type DecoratorErrorOptions = {
 // Copied from:
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/a767e24/types/babel__traverse/index.d.ts#L143-L148
 export type BindingOptions = {
-    id: t.LVal;
-    init?: t.Expression | undefined;
+    id: types.LVal;
+    init?: types.Expression | undefined;
     unique?: boolean | undefined;
     kind?: 'var' | 'let' | 'const' | undefined;
 };

@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import { Config as TemplateCompilerConfig } from '@lwc/template-compiler';
+import type { Config as TemplateCompilerConfig } from '@lwc/template-compiler';
 
 export type Expression = string;
 
@@ -59,6 +58,3 @@ export interface IHoistInstantiation {
 }
 
 export type TransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
-
-/* SSR compilation mode. `async` refers to async functions, `sync` to sync functions, and `asyncYield` to async generator functions. */
-export type CompilationMode = 'asyncYield' | 'async' | 'sync';
