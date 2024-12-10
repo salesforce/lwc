@@ -59,16 +59,16 @@ describe('dynamic imports', () => {
 
             const imports = parse(code!)[0];
 
-            const expectedImports = expect.arrayContaining([
+            const importsWithLoader = expect.arrayContaining([
                 expect.objectContaining({
                     n: 'myLoader',
                 }),
             ]);
 
             if (loader) {
-                expect(imports).toEqual(expectedImports);
+                expect(imports).toEqual(importsWithLoader);
             } else {
-                expect(imports).not.toEqual(expectedImports);
+                expect(imports).not.toEqual(importsWithLoader);
             }
         }
     );
