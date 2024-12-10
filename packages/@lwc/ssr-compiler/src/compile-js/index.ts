@@ -36,16 +36,16 @@ const visitors: Visitors = {
         removeDecoratorImport(path);
     },
     ImportExpression(path, state) {
-        const { dynamicImports, importManager } = state;
-        if (!dynamicImports) {
+        const { experimentalDynamicComponent, importManager } = state;
+        if (!experimentalDynamicComponent) {
             return;
         }
-        if (dynamicImports.strictSpecifier) {
+        if (experimentalDynamicComponent.strictSpecifier) {
             if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
                 throw new Error('todo - LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT');
             }
         }
-        const loader = dynamicImports.loader;
+        const loader = experimentalDynamicComponent.loader;
         if (!loader) {
             return;
         }
@@ -223,7 +223,7 @@ export default function compileJS(
         publicFields: [],
         privateFields: [],
         wireAdapters: [],
-        dynamicImports: options.dynamicImports,
+        experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),
     };
 
