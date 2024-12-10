@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import type { ImportManager } from '../imports';
+import type { ComponentTransformOptions } from '../shared';
 import type { traverse } from 'estree-toolkit';
 import type {
     Identifier,
@@ -54,4 +56,8 @@ export interface ComponentMetaState {
     privateFields: Array<string>;
     // indicates whether the LightningElement has any wired props
     wireAdapters: WireAdapter[];
+    // dynamic imports configuration
+    dynamicImports: ComponentTransformOptions['dynamicImports'];
+    // imports to add to the top of the program after parsing
+    importManager: ImportManager;
 }

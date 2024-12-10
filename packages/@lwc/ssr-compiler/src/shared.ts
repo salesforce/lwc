@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 import type { Config as TemplateCompilerConfig } from '@lwc/template-compiler';
 
 export type Expression = string;
@@ -57,4 +58,8 @@ export interface IHoistInstantiation {
     kind: 'hoistInstantiation';
 }
 
-export type TransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
+export type TemplateTransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
+export type ComponentTransformOptions = Pick<
+    LwcBabelPluginOptions,
+    'name' | 'namespace' | 'dynamicImports'
+>;

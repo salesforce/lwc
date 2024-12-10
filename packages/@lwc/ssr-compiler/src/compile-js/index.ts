@@ -10,6 +10,7 @@ import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
 import { transmogrify } from '../transmogrify';
+import { ImportManager } from '../imports';
 import { replaceLwcImport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
@@ -17,6 +18,7 @@ import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
+import type { ComponentTransformOptions } from '../shared';
 import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
@@ -33,13 +35,25 @@ const visitors: Visitors = {
         catalogAndReplaceStyleImports(path, state);
         removeDecoratorImport(path);
     },
-    ImportExpression(path) {
-        return path.replaceWith(
-            b.callExpression(
-                b.memberExpression(b.identifier('Promise'), b.identifier('resolve')),
-                []
-            )
-        );
+    ImportExpression(path, state) {
+        const { dynamicImports, importManager } = state;
+        if (!dynamicImports) {
+            return;
+        }
+        if (dynamicImports.strictSpecifier) {
+            if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
+                throw new Error('todo - LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT');
+            }
+        }
+        const loader = dynamicImports.loader;
+        if (!loader) {
+            return;
+        }
+        const source = path.node!.source!;
+        // 1. insert `import { load as __load } from '${loader}' at top of program
+        importManager.add({ load: '__load' }, loader);
+        // 2. replace this import with `__load(${source})`
+        path.replaceWith(b.callExpression(b.identifier('__load'), [structuredClone(source)]));
     },
     ClassDeclaration(path, state) {
         const { node } = path;
@@ -171,12 +185,21 @@ const visitors: Visitors = {
             path.parentPath.node.arguments = [b.identifier('propsAvailableAtConstruction')];
         }
     },
+    Program: {
+        leave(path, state) {
+            const importDeclarations = state.importManager.getImportDeclarations();
+            if (importDeclarations.length > 0) {
+                path.node?.body.unshift(...importDeclarations);
+            }
+        },
+    },
 };
 
 export default function compileJS(
     src: string,
     filename: string,
     tagName: string,
+    options: ComponentTransformOptions,
     compilationMode: CompilationMode
 ) {
     let ast = parseModule(src, {
@@ -200,6 +223,8 @@ export default function compileJS(
         publicFields: [],
         privateFields: [],
         wireAdapters: [],
+        dynamicImports: options.dynamicImports,
+        importManager: new ImportManager(),
     };
 
     traverse(ast, visitors, state);
