@@ -16,6 +16,7 @@
  */
 export function generateCustomElementTagName(namespace: string = '', name: string = '') {
     if (!namespace || !name) {
+        // TODO [#4824]: Make this an error rather than a warning
         // eslint-disable-next-line no-console
         console.warn(
             'The namespace and name should both be non-empty strings. ' +
