@@ -31,13 +31,13 @@ describe('dynamic imports', () => {
         'strictSpecifier=$strictSpecifier, loader=$loader, isStrict=$isStrict',
         ({ strictSpecifier, loader, isStrict }: CompileOptions) => {
             const source = `
-            import { LightningElement } from 'lwc';
-            export default class extends LightningElement {}
-            
-            export default async function rando () {
-                await import(${isStrict ? '"x/foo"' : 'woohoo'});
-            }
-        `;
+                import { LightningElement } from 'lwc';
+                export default class extends LightningElement {}
+                
+                export default async function rando () {
+                    await import(${isStrict ? '"x/foo"' : 'woohoo'});
+                }
+            `;
             const filename = path.resolve('component.js');
             let code;
 
