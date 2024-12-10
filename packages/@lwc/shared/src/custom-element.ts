@@ -15,6 +15,7 @@
  * @returns component tag name
  */
 export function generateCustomElementTagName(namespace: string = '', name: string = '') {
+    /* v8 ignore next */
     if (!namespace || !name) {
         // TODO [#4824]: Make this an error rather than a warning
         // eslint-disable-next-line no-console
