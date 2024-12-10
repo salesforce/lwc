@@ -1,0 +1,30 @@
+<template>
+    <!-- Empty non-void HTML namespace element -->
+    <a href="https://www.salesforce.com/"></a>
+    <!-- Non-empty non-void HTML namespace element -->
+    <label for="textInput">Some input</label>
+    <!-- Void HTML namespace element -->
+    <input id="textInput" type="text">
+    <!-- Foreign namespace elements -->
+    <svg>
+        <!-- Non-empty foreign element -->
+        <pattern>
+            <image xlink:href="https://www.salesforce.com/"></image>
+        </pattern>
+        <!-- Empty foreign element -->
+        <image xlink:title="title"></image>
+    </svg>
+    <math>
+        <!-- TODO [#5015]: Add void example -->
+        <mrow>
+            <mi>a</mi>
+            <mo>+</mo>
+            <mi>b</mi>
+        </mrow>
+    </math>
+    <!-- Rendered with inner-html -->
+    <svg>
+        <pattern lwc:inner-html={foreignNamespaceInnerHtml}></pattern>
+        <image xlink:title="title"></image>
+    </svg>
+</template>
