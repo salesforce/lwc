@@ -42,6 +42,7 @@ const visitors: Visitors = {
         }
         if (experimentalDynamicComponent.strictSpecifier) {
             if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
                 throw new Error('todo - LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT');
             }
         }
