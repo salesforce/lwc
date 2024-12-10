@@ -7,7 +7,7 @@
 
 import { builders as b } from 'estree-toolkit';
 
-import type { ImportDeclaration } from 'estree';
+import type { ImportDeclaration, ExportNamedDeclaration } from 'estree';
 import type { NodePath } from 'estree-toolkit';
 import type { ComponentMetaState } from './types';
 
@@ -34,4 +34,21 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
     }
 
     path.replaceWith(b.importDeclaration(path.node.specifiers, b.literal('@lwc/ssr-runtime')));
+}
+
+/**
+ * This handles lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
+ */
+export function replaceNamedLwcImport(path: NodePath<ExportNamedDeclaration>) {
+    if (!path.node || path.node.source?.value !== 'lwc') {
+        return;
+    }
+
+    path.replaceWith(
+        b.exportNamedDeclaration(
+            path.node.declaration,
+            path.node.specifiers,
+            b.literal('@lwc/ssr-runtime')
+        )
+    );
 }
