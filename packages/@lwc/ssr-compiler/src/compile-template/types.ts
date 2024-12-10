@@ -20,6 +20,7 @@ export interface TransformerContext {
     templateOptions: TemplateOpts;
     prevSibling?: IrNode;
     nextSibling?: IrNode;
+    isSlotted?: boolean;
     import: (
         imports: string | string[] | Record<string, string | undefined>,
         source?: string
