@@ -33,6 +33,7 @@ export default function scriptTransform(
 ): TransformResult {
     const {
         isExplicitImport,
+        // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
         enableLightningWebSecurityTransforms,
