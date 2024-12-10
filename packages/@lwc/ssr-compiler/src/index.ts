@@ -8,7 +8,7 @@
 import { DEFAULT_SSR_MODE, type CompilationMode, generateCustomElementTagName } from '@lwc/shared';
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';
-import type { TransformOptions } from './shared';
+import type { ComponentTransformOptions, TemplateTransformOptions } from './shared';
 
 export interface CompilationResult {
     code: string;
@@ -18,18 +18,18 @@ export interface CompilationResult {
 export function compileComponentForSSR(
     src: string,
     filename: string,
-    options: TransformOptions,
+    options: ComponentTransformOptions,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
     const tagName = generateCustomElementTagName(options.namespace, options.name);
-    const { code } = compileJS(src, filename, tagName, mode);
+    const { code } = compileJS(src, filename, tagName, options, mode);
     return { code, map: undefined };
 }
 
 export function compileTemplateForSSR(
     src: string,
     filename: string,
-    options: TransformOptions,
+    options: TemplateTransformOptions,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
     const { code } = compileTemplate(src, filename, options, mode);

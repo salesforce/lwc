@@ -100,9 +100,10 @@ export interface TransformOptions {
     namespace?: string;
     /** @deprecated Ignored by compiler. */
     stylesheetConfig?: StylesheetConfig;
-    // TODO [#3331]: deprecate / rename this compiler option in 246
+    // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
     /** Config applied in usage of dynamic import statements in javascript */
     experimentalDynamicComponent?: DynamicImportConfig;
+    // TODO [#3331]: deprecate and remove lwc:dynamic
     /** Flag to enable usage of dynamic component(lwc:dynamic) directive in HTML template */
     experimentalDynamicDirective?: boolean;
     /** Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
