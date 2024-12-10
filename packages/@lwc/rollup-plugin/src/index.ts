@@ -330,6 +330,17 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             const [namespace, name] =
                 specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
 
+            /* v8 ignore next */
+            if (!namespace || !name) {
+                // TODO [#4824]: Make this an error rather than a warning
+                this.warn(
+                    'The component namespace and name could not be determined from the specifier ' +
+                        JSON.stringify(specifier) +
+                        ' or filename ' +
+                        JSON.stringify(filename)
+                );
+            }
+
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
             const { code, map, warnings } = transformSync(src, filename, {
