@@ -18,7 +18,7 @@ export function generateCustomElementTagName(namespace: string = '', name: strin
     if (!namespace || !name) {
         // eslint-disable-next-line no-console
         console.warn(
-            'The namespace and name passed in to @lwc/babel-plugin-component should both be non-empty strings. ' +
+            'The namespace and name should both be non-empty strings. ' +
                 'You may get unexpected behavior at runtime. ' +
                 'Found: namespace=' +
                 JSON.stringify(namespace) +

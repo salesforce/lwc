@@ -332,12 +332,11 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
             if (!namespace || !name) {
                 this.warn(
-                    'The namespace and name could not be determined from the specifier ' +
+                    'The component namespace and name could not be determined from the specifier ' +
                         JSON.stringify(specifier) +
                         ' or filename ' +
                         JSON.stringify(filename) +
-                        '. ' +
-                        'This will throw an error in @lwc/babel-plugin-component.'
+                        '.'
                 );
             }
 
