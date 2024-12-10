@@ -31,28 +31,33 @@ import type {
     LwcComponent as IrLwcComponent,
     ScopedSlotFragment as IrScopedSlotFragment,
     Text as IrText,
+    Slot as IrSlot,
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
 const bGenerateSlottedContent = esTemplateWithYield`
         const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
-            ? async function* generateShadowSlottedContent() {
+            ? async function* generateSlottedContent(contextfulParent) {
+                // The 'contextfulParent' variable is shadowed here so that a contextful relationship
+                // is established between components rendered in slotted content & the "parent"
+                // component that contains the <slot>.
+
                 ${/* shadow slot content */ is.statement}
             } 
             // Avoid creating the object unnecessarily
             : null;
 
-        const lightSlottedContent = ${/* hasLightSlottedContent */ is.literal} 
+        const lightSlottedContentMap = ${/* hasLightSlottedContent */ is.literal} 
             ? Object.create(null)
             // Avoid creating the object unnecessarily
             : null;
         
         function addLightContent(name, fn) {
-            let contentList = lightSlottedContent[name];
+            let contentList = lightSlottedContentMap[name];
             if (contentList) {
                 contentList.push(fn);
             } else {
-                lightSlottedContent[name] = [fn];
+                lightSlottedContentMap[name] = [fn];
             }
         }
 
@@ -64,7 +69,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
 const bAddLightContent = esTemplate`
-    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(${
+    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
         // FIXME: make validation work again  
@@ -99,7 +104,7 @@ const bAddLightContent = esTemplate`
 // relevant to slots (as mentioned above).
 function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContext) {
     type SlottableAncestorIrType = IrIf | IrIfBlock | IrElseifBlock | IrElseBlock;
-    type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent;
+    type SlottableLeafIrType = IrElement | IrText | IrComponent | IrExternalComponent | IrSlot;
 
     const results: EsExpressionStatement[] = [];
 
@@ -142,6 +147,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     break;
                 }
                 // SlottableLeafIrType
+                case 'Slot':
                 case 'Element':
                 case 'Text':
                 case 'Component':
@@ -164,6 +170,10 @@ export function getSlottedContent(
     node: IrLwcComponent | IrComponent,
     cxt: TransformerContext
 ): EsStatement[] {
+    const { isSlotted } = cxt;
+
+    cxt.isSlotted = true;
+
     // Anything inside the slotted content is a normal slotted content except for `<template lwc:slot-data>` which is a scoped slot.
     const slottableChildren = node.children.filter((child) => child.type !== 'ScopedSlotFragment');
     const scopedSlottableChildren = node.children.filter(
@@ -195,6 +205,8 @@ export function getSlottedContent(
     const hasLightSlottedContent = b.literal(
         lightSlotContent.length > 0 || scopedSlotContent.length > 0
     );
+
+    cxt.isSlotted = isSlotted;
 
     return bGenerateSlottedContent(
         hasShadowSlottedContent,
