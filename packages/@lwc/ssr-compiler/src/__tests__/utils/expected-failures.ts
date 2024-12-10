@@ -21,7 +21,6 @@ export const expectedFailures = new Set([
     'render-dynamic-value/index.js',
     'scoped-slots/advanced/index.js',
     'scoped-slots/default-slot/index.js',
-    'scoped-slots/expression/index.js',
     'scoped-slots/mixed-with-light-dom-slots-inside/index.js',
     'scoped-slots/mixed-with-light-dom-slots-outside/index.js',
     'slot-forwarding/slots/mixed/index.js',

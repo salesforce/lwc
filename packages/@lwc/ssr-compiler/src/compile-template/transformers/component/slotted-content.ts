@@ -10,6 +10,8 @@ import { builders as b, is } from 'estree-toolkit';
 import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
 import { esTemplate, esTemplateWithYield } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
+import { isLiteral } from '../../shared';
+import { expressionIrToEs } from '../../expression';
 import { isNullableOf } from '../../../estree/validators';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
@@ -200,13 +202,14 @@ export function getSlottedContent(
         const boundVariableName = child.slotData.value.name;
         const boundVariable = b.identifier(boundVariableName);
         cxt.pushLocalVars([boundVariableName]);
+
+        const slotName = isLiteral(child.slotName)
+            ? b.literal(child.slotName.value)
+            : expressionIrToEs(child.slotName, cxt);
+
         // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
         const addLightContentExpr = b.expressionStatement(
-            bAddLightContent(
-                child.slotName as EsExpression,
-                boundVariable,
-                irChildrenToEs(child.children, cxt)
-            )
+            bAddLightContent(slotName, boundVariable, irChildrenToEs(child.children, cxt))
         );
         cxt.popLocalVars();
         return addLightContentExpr;
