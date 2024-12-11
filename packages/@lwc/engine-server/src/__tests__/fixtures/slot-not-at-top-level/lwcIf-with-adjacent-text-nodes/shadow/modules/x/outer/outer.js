@@ -4,6 +4,5 @@ export default class extends LightningElement {
     static renderMode = 'shadow';
 
     isTrue = true
-    isFalse = false
     empty = ''
 }
