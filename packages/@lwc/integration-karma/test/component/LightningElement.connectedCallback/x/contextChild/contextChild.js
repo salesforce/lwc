@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import { consumeStateFactory } from 'x/state';
+import { consumeStateFactory } from 'test-state';
 
 export default class TestChildSymbol extends LightningElement {
     randomChild = consumeStateFactory();

@@ -9,14 +9,12 @@ import { describe, beforeEach, expect, it, vi } from 'vitest';
 describe('context', () => {
     let setContextKeys: (config: any) => void;
     let getContextKeys: () => any;
-    let ContextEventName: string;
 
     beforeEach(async () => {
         vi.resetModules();
         const contextModule = await import('../context');
         setContextKeys = contextModule.setContextKeys;
         getContextKeys = contextModule.getContextKeys;
-        ContextEventName = contextModule.ContextEventName;
     });
 
     it('should set and get context keys', () => {
@@ -52,12 +50,7 @@ describe('context', () => {
 
         expect(() => {
             setContextKeys(mockContextKeys2);
-        }).toThrow('Context keys are already set!');
-    });
-
-    it('should export ContextEventName as a constant string', () => {
-        expect(ContextEventName).toBe('lightning:context-request');
-        expect(typeof ContextEventName).toBe('string');
+        }).toThrow('`setContextKeys` cannot be called more than once');
     });
 
     it('should return undefined when getting context keys before setting them', () => {

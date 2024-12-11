@@ -15,7 +15,7 @@ export type ContextKeys = {
 let contextKeys: ContextKeys;
 
 export function setContextKeys(config: ContextKeys) {
-    isFalse(contextKeys, 'Context keys are already set!');
+    isFalse(contextKeys, '`setContextKeys` cannot be called more than once');
 
     contextKeys = config;
 }

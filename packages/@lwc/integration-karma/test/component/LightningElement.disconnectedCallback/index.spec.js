@@ -7,7 +7,7 @@ import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
 import ContextParent from 'x/contextParent';
-import { nameStateFactory } from 'x/state';
+import { nameStateFactory } from 'test-state';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {

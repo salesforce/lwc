@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFilter,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
@@ -753,14 +754,15 @@ export function runConnectedCallback(vm: VM) {
 function setupContext(vm: VM) {
     const contextKeys = getContextKeys();
 
-    if (!contextKeys) {
+    if (isUndefined(contextKeys)) {
         return;
     }
 
     const { connectContext, contextEventKey } = contextKeys;
-    const { component } = vm;
+    const { component, renderer } = vm;
     const enumerableKeys = keys(getPrototypeOf(component));
-    const contextfulFieldsOrProps = enumerableKeys.filter(
+    const contextfulFieldsOrProps = ArrayFilter.call(
+        enumerableKeys,
         (propName) => (component as any)[propName]?.[connectContext]
     );
 
@@ -780,7 +782,7 @@ function setupContext(vm: VM) {
             if (!isProvidingContext) {
                 isProvidingContext = true;
 
-                component.addEventListener(ContextEventName, (event: any) => {
+                renderer.addEventListener(component, ContextEventName, (event: any) => {
                     if (
                         event.detail.key === contextEventKey &&
                         providedContextVarieties.has(event.detail.contextVariety)
@@ -817,7 +819,7 @@ function setupContext(vm: VM) {
                 callback: contextProvidedCallback,
             });
 
-            component.dispatchEvent(event);
+            renderer.dispatchEvent(component, event);
         },
     };
 
