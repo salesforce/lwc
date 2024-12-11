@@ -87,3 +87,39 @@ export type RegisterContextProviderFn = (
     adapterContextToken: string,
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
+
+/** Resolves a property chain to the corresponding value on the target type. */
+type ResolveReactiveValue<
+    /** The object to search for properties; initially the component. */
+    Target,
+    /** A string representing a chain of of property keys, e.g. "data.user.name". */
+    Keys extends string,
+> = Keys extends `${infer FirstKey}.${infer Rest}`
+    ? // If the string is "a.b.c", check if "a" is a prop on the target object
+      FirstKey extends keyof Target
+        ? // If "a" exists on the target, check `target["a"]` for "b.c"
+          ResolveReactiveValue<Target[FirstKey], Rest>
+        : undefined
+    : // The string has no ".", use the full string as the key (e.g. we've reached "c" in "a.b.c")
+      Keys extends keyof Target
+      ? Target[Keys]
+      : undefined;
+
+/**
+ * Detects if the `Value` type is a property chain starting with "$". If so, it resolves the
+ * properties to the corresponding value on the target type.
+ */
+type ResolveValueIfReactive<Value, Target> = Value extends string
+    ? string extends Value // `Value` is type `string`
+        ? // Workaround for not being able to enforce `as const` assertions -- we don't know if this
+          // is a true string value (e.g. `@wire(adapter, {val: 'str'})`) or if it's a reactive prop
+          // (e.g. `@wire(adapter, {val: '$number'})`), so we have to go broad to avoid type errors.
+          any
+        : Value extends `$${infer Keys}` // String literal starting with "$", e.g. `$prop`
+          ? ResolveReactiveValue<Target, Keys>
+          : Value // String literal *not* starting with "$", e.g. `"hello world"`
+    : Value; // non-string type
+
+export type ReplaceReactiveValues<Config extends ConfigValue, Component> = {
+    [K in keyof Config]: ResolveValueIfReactive<Config[K], Component>;
+};

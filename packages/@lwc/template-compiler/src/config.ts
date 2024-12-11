@@ -4,15 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    TemplateErrors,
-    invariant,
-    generateCompilerError,
-    InstrumentationObject,
-} from '@lwc/errors';
+import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
 import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
-import { CustomRendererConfig } from './shared/renderer-hooks';
 import { isCustomElementTag } from './shared/utils';
+import type { CustomRendererConfig } from './shared/renderer-hooks';
+import type { InstrumentationObject } from '@lwc/errors';
 
 export interface Config {
     /** The name of the component. For example, the name in `<my-component>` is `"component"`. */

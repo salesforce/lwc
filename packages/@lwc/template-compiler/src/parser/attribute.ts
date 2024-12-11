@@ -13,30 +13,31 @@ import {
     SVG_NAMESPACE,
     ID_REFERENCING_ATTRIBUTES_SET,
 } from '@lwc/shared';
-import { Token } from 'parse5';
 
 import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';
-import { Attribute, BaseElement, SourceLocation } from '../shared/types';
 
 import { DASHED_TAGNAME_ELEMENT_SET } from '../shared/constants';
-import ParserCtx from './parser';
 import {
     EXPRESSION_SYMBOL_END,
     EXPRESSION_SYMBOL_START,
     isExpression,
     isPotentialExpression,
 } from './expression';
+import { isComplexTemplateExpressionEnabled } from './expression-complex';
 import {
     ATTR_NAME,
     DATA_RE,
     SUPPORTED_SVG_TAGS,
     ATTRS_PROPS_TRANFORMS,
-    HTML_ATTRIBUTES_REVERSE_LOOKUP,
     HTML_TAG,
     KNOWN_HTML_AND_SVG_ELEMENTS,
     TEMPLATE_DIRECTIVES,
 } from './constants';
+import { HTML_ATTRIBUTE_ELEMENT_MAP } from './utils/html-element-attributes';
+import type ParserCtx from './parser';
+import type { Attribute, BaseElement, SourceLocation } from '../shared/types';
+import type { Token } from 'parse5';
 
 function isQuotedAttribute(attrVal: string) {
     return attrVal && attrVal.startsWith('"') && attrVal.endsWith('"');
@@ -109,7 +110,7 @@ export function normalizeAttributeValue(
     const isQuoted = isQuotedAttribute(rawAttrVal);
     const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
-        if (isQuoted) {
+        if (isQuoted && !isComplexTemplateExpressionEnabled(ctx)) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
 
@@ -215,6 +216,8 @@ export function isAttribute(element: BaseElement, attrName: string): boolean {
 
     // Handle input tag value="" and checked attributes that are only used for state initialization.
     // Because .setAttribute() won't update the value, those attributes should be considered as props.
+    // Note: this is tightly-coupled with static-element-serializer.ts which treats `<input checked="...">`
+    // and `<input value="...">` as special because of the logic below.
     if (element.name === 'input' && (attrName === 'value' || attrName === 'checked')) {
         return false;
     }
@@ -236,7 +239,7 @@ export function isValidHTMLAttribute(tagName: string, attrName: string): boolean
         return true;
     }
 
-    const validElements = HTML_ATTRIBUTES_REVERSE_LOOKUP[attrName];
+    const validElements = HTML_ATTRIBUTE_ELEMENT_MAP[attrName];
     return !!validElements && (!validElements.length || validElements.includes(tagName));
 }
 

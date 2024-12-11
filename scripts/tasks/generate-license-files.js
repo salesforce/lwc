@@ -18,7 +18,7 @@ async function exists(filename) {
     try {
         await stat(filename);
         return true;
-    } catch (err) {
+    } catch (_err) {
         return false;
     }
 }

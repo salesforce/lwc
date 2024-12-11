@@ -3,8 +3,8 @@ import Valid from 'x/valid';
 import Invalid from 'x/invalid';
 
 describe('host pseudo', () => {
-    function testComponent(Component, name) {
-        it(`supports :host() pseudo class - ${name}`, async () => {
+    function testComponent(Component, name, test = it) {
+        test(`supports :host() pseudo class - ${name}`, async () => {
             const elm = createElement('x-component', { is: Component });
             document.body.appendChild(elm);
             const div = elm.shadowRoot.querySelector('.quux');
@@ -29,9 +29,7 @@ describe('host pseudo', () => {
     }
 
     // TODO [#3225]: we should  not support selector lists in :host()
-    if (!process.env.NATIVE_SHADOW) {
-        testComponent(Invalid, 'invalid syntax');
-    }
+    testComponent(Invalid, 'invalid syntax', it.skipIf(process.env.NATIVE_SHADOW));
 
     // Here we are using the correct syntax here for :host(), so it should work in both native and synthetic shadow
     // See: https://github.com/salesforce/lwc/issues/3225

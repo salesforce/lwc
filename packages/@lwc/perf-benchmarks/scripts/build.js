@@ -11,6 +11,7 @@
 
 const path = require('node:path');
 const { readFile, writeFile } = require('node:fs/promises');
+const { readFileSync } = require('node:fs');
 const { glob } = require('glob');
 const { hashElement } = require('folder-hash');
 
@@ -38,14 +39,12 @@ BENCHMARK_CPU_THROTTLING_RATE =
 
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 const packageRootDir = path.resolve(__dirname, '..');
+const packageJson = JSON.parse(readFileSync(path.resolve(packageRootDir, 'package.json'), 'utf-8'));
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.
-const swappablePackages = [
-    '@lwc/engine-dom',
-    '@lwc/engine-server',
-    '@lwc/synthetic-shadow',
-    '@lwc/perf-benchmarks-components',
-];
+const swappablePackages = Object.keys(packageJson.dependencies).filter((_) =>
+    _.startsWith('@lwc/')
+);
 
 function createHtml(benchmarkFile) {
     return `
@@ -108,14 +107,14 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash, cpuThr
                                         ref: BENCHMARK_REF,
                                         subdir: `packages/${pkg}`,
                                         setupCommands: [
-                                            'yarn --immutable',
                                             // Replace the `@lwc/perf-benchmarks-components` from the tip-of-tree
                                             // with ours, just in case we've modified them locally.
                                             // We want to recompile whatever benchmarks we've added with the
                                             // compiler code from tip-of-tree, but we also want Tachometer to serve
                                             // `@lwc/perf-benchmarks-components` itself.
-                                            'rm -fr ./packages/@lwc/perf-benchmarks-components',
-                                            `cp -R ${benchmarkComponentsDir} ./packages/@lwc/perf-benchmarks-components`,
+                                            'rm -fr ./packages/@lwc/perf-benchmarks-components/{src,scripts}',
+                                            `cp -R ${benchmarkComponentsDir}/{src,scripts} ./packages/@lwc/perf-benchmarks-components`,
+                                            'yarn --frozen-lockfile',
                                             // bust the Tachometer cache in case these files change locally
                                             `echo '${directoryHash}'`,
                                             'yarn build:performance:components',
@@ -148,14 +147,17 @@ async function processBenchmarkFile(benchmarkFile, directoryHash) {
     const benchmarkFileBasename = path.basename(benchmarkFile);
     const htmlFilename = path.join(targetDir, benchmarkFileBasename.replace('.js', '.html'));
 
+    // Generate a pretty name for the benchmark to display in Tachometer results
+    const splitFileName = benchmarkFile.split(path.sep);
+    const engineType = splitFileName[splitFileName.indexOf('__benchmarks__') + 1];
+    const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
+
     async function writeHtmlFile() {
         const html = createHtml(benchmarkFile);
         await writeFile(htmlFilename, html, 'utf8');
     }
 
     async function writeTachometerJsonFile() {
-        const engineType = benchmarkFile.includes('/engine-server/') ? 'server' : 'dom';
-        const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
         const cpuThrottlingRate =
             typeof BENCHMARK_CPU_THROTTLING_RATE === 'number'
                 ? BENCHMARK_CPU_THROTTLING_RATE

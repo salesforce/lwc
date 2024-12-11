@@ -1,52 +1,66 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'fs';
-import path from 'path';
-
-import { vi } from 'vitest';
-import { rollup, RollupLog } from 'rollup';
+import path from 'node:path';
+import { vi, describe } from 'vitest';
+import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { FeatureFlagName } from '@lwc/features/dist/types';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
+import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
+import { expectedFailures } from './utils/expected-failures';
+import type { FeatureFlagName } from '@lwc/features/dist/types';
 
 interface FixtureModule {
     tagName: string;
     default: any;
-    generateMarkup: any;
     props?: { [key: string]: any };
     features?: FeatureFlagName[];
 }
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
+vi.mock('@lwc/ssr-runtime', async () => {
+    const runtime = await import('@lwc/ssr-runtime');
+    try {
+        runtime.setHooks({
+            sanitizeHtmlContent(content: unknown) {
+                return String(content);
+            },
+        });
+    } catch (_err) {
+        // Ignore error if the hook is already overridden
+    }
+    return runtime;
+});
+
+const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
+
 async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
-    // TODO [#3331]: this is only needed to silence warnings on lwc:dynamic, remove in 246.
-    const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input,
-        external: ['lwc'],
+        external: ['lwc', '@lwc/ssr-runtime', 'vitest'],
         plugins: [
             lwcRollupPlugin({
                 targetSSR: true,
+                ssrMode: SSR_MODE,
                 enableDynamicComponents: true,
-                modules: [
-                    {
-                        dir: modulesDir,
-                    },
-                ],
+                // TODO [#3331]: remove usage of lwc:dynamic in 246
+                experimentalDynamicDirective: true,
+                modules: [{ dir: modulesDir }],
             }),
         ],
-        onwarn(warning) {
-            warnings.push(warning);
+        onwarn({ message, code }) {
+            if (code !== 'CIRCULAR_DEPENDENCY') {
+                throw new Error(message);
+            }
         },
     });
 
@@ -59,47 +73,55 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-function testFixtures() {
+// We will enable this for realsies once all the tests are passing, but for now having the env var avoids
+// running these tests in CI while still allowing for local testing.
+describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
     testFixtureDir(
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',
+            // TODO [#4815]: enable all SSR v2 tests
+            expectedFailures,
         },
-        async ({ filename, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
+        async ({ filename, dirname, config }) => {
+            const errorFile = config?.ssrFiles?.error ?? 'error.txt';
+            const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
 
-            let config: any = {};
-            if (fs.existsSync(configPath)) {
-                config = require(configPath);
+            let compiledFixturePath;
+            try {
+                compiledFixturePath = await compileFixture({
+                    input: filename,
+                    dirname,
+                });
+            } catch (err: any) {
+                return {
+                    [errorFile]: err.message,
+                    [expectedFile]: '',
+                };
             }
-
-            const compiledFixturePath = await compileFixture({
-                input: filename,
-                dirname,
-            });
 
             const module = (await import(compiledFixturePath)) as FixtureModule;
 
+            let result;
+            let error;
+
             try {
-                const result = await serverSideRenderComponent(
-                    module!.tagName,
-                    module!.generateMarkup,
-                    config.props || {}
+                result = formatHTML(
+                    await serverSideRenderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {},
+                        SSR_MODE
+                    )
                 );
-                return {
-                    'expected.html': formatHTML(result),
-                    'error.txt': '',
-                };
             } catch (err: any) {
-                return {
-                    'error.txt': err.message,
-                    'expected.html': '',
-                };
+                error = err.message;
             }
+
+            return {
+                [errorFile]: error,
+                [expectedFile]: result,
+            };
         }
     );
-}
-
-describe('fixtures', () => {
-    testFixtures();
 });

@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { describe, test, expect } from 'vitest';
 import '../../scripts/test/types';
 import { resolveModule } from '../index';
 import { RegistryType } from '../types';

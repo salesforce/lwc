@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 14,
+            "endLine": 15,
             "endColumn": 12,
             "start": 0,
-            "end": 494,
+            "end": 549,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 14,
+                "startLine": 15,
                 "startColumn": 1,
-                "endLine": 14,
+                "endLine": 15,
                 "endColumn": 12,
-                "start": 483,
-                "end": 494
+                "start": 538,
+                "end": 549
             }
         },
         "directives": [],
@@ -34,10 +34,10 @@
                 "location": {
                     "startLine": 2,
                     "startColumn": 5,
-                    "endLine": 13,
+                    "endLine": 14,
                     "endColumn": 11,
                     "start": 15,
-                    "end": 482,
+                    "end": 537,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -47,12 +47,12 @@
                         "end": 20
                     },
                     "endTag": {
-                        "startLine": 13,
+                        "startLine": 14,
                         "startColumn": 5,
-                        "endLine": 13,
+                        "endLine": 14,
                         "endColumn": 11,
-                        "start": 476,
-                        "end": 482
+                        "start": 531,
+                        "end": 537
                     }
                 },
                 "attributes": [],
@@ -91,10 +91,10 @@
                         "location": {
                             "startLine": 3,
                             "startColumn": 9,
-                            "endLine": 12,
+                            "endLine": 13,
                             "endColumn": 20,
                             "start": 29,
-                            "end": 471
+                            "end": 526
                         },
                         "directiveLocation": {
                             "startLine": 3,
@@ -112,10 +112,10 @@
                                 "location": {
                                     "startLine": 4,
                                     "startColumn": 13,
-                                    "endLine": 11,
+                                    "endLine": 12,
                                     "endColumn": 19,
                                     "start": 85,
-                                    "end": 451,
+                                    "end": 506,
                                     "startTag": {
                                         "startLine": 4,
                                         "startColumn": 13,
@@ -125,12 +125,12 @@
                                         "end": 105
                                     },
                                     "endTag": {
-                                        "startLine": 11,
+                                        "startLine": 12,
                                         "startColumn": 13,
-                                        "endLine": 11,
+                                        "endLine": 12,
                                         "endColumn": 19,
-                                        "start": 445,
-                                        "end": 451
+                                        "start": 500,
+                                        "end": 506
                                     }
                                 },
                                 "attributes": [],
@@ -410,24 +410,75 @@
                                             "startLine": 9,
                                             "startColumn": 17,
                                             "endLine": 9,
-                                            "endColumn": 59,
+                                            "endColumn": 55,
                                             "start": 305,
-                                            "end": 347,
+                                            "end": 343,
                                             "startTag": {
                                                 "startLine": 9,
                                                 "startColumn": 17,
                                                 "endLine": 9,
-                                                "endColumn": 23,
+                                                "endColumn": 48,
                                                 "start": 305,
-                                                "end": 311
+                                                "end": 336
                                             },
                                             "endTag": {
                                                 "startLine": 9,
-                                                "startColumn": 52,
+                                                "startColumn": 48,
                                                 "endLine": 9,
+                                                "endColumn": 55,
+                                                "start": 336,
+                                                "end": 343
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "style",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "background: red;"
+                                                },
+                                                "location": {
+                                                    "startLine": 9,
+                                                    "startColumn": 23,
+                                                    "endLine": 9,
+                                                    "endColumn": 47,
+                                                    "start": 311,
+                                                    "end": 335
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "span",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 10,
+                                            "startColumn": 17,
+                                            "endLine": 10,
+                                            "endColumn": 59,
+                                            "start": 360,
+                                            "end": 402,
+                                            "startTag": {
+                                                "startLine": 10,
+                                                "startColumn": 17,
+                                                "endLine": 10,
+                                                "endColumn": 23,
+                                                "start": 360,
+                                                "end": 366
+                                            },
+                                            "endTag": {
+                                                "startLine": 10,
+                                                "startColumn": 52,
+                                                "endLine": 10,
                                                 "endColumn": 59,
-                                                "start": 340,
-                                                "end": 347
+                                                "start": 395,
+                                                "end": 402
                                             }
                                         },
                                         "attributes": [],
@@ -443,12 +494,12 @@
                                                     "value": "concatenated text "
                                                 },
                                                 "location": {
-                                                    "startLine": 9,
+                                                    "startLine": 10,
                                                     "startColumn": 23,
-                                                    "endLine": 9,
+                                                    "endLine": 10,
                                                     "endColumn": 52,
-                                                    "start": 311,
-                                                    "end": 340
+                                                    "start": 366,
+                                                    "end": 395
                                                 }
                                             },
                                             {
@@ -473,21 +524,21 @@
                                                     "computed": false,
                                                     "optional": false,
                                                     "location": {
-                                                        "startLine": 9,
+                                                        "startLine": 10,
                                                         "startColumn": 23,
-                                                        "endLine": 9,
+                                                        "endLine": 10,
                                                         "endColumn": 52,
-                                                        "start": 311,
-                                                        "end": 340
+                                                        "start": 366,
+                                                        "end": 395
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 9,
+                                                    "startLine": 10,
                                                     "startColumn": 23,
-                                                    "endLine": 9,
+                                                    "endLine": 10,
                                                     "endColumn": 52,
-                                                    "start": 311,
-                                                    "end": 340
+                                                    "start": 366,
+                                                    "end": 395
                                                 }
                                             }
                                         ]
@@ -497,27 +548,27 @@
                                         "name": "span",
                                         "namespace": "http://www.w3.org/1999/xhtml",
                                         "location": {
-                                            "startLine": 10,
+                                            "startLine": 11,
                                             "startColumn": 17,
-                                            "endLine": 10,
+                                            "endLine": 11,
                                             "endColumn": 85,
-                                            "start": 364,
-                                            "end": 432,
+                                            "start": 419,
+                                            "end": 487,
                                             "startTag": {
-                                                "startLine": 10,
+                                                "startLine": 11,
                                                 "startColumn": 17,
-                                                "endLine": 10,
+                                                "endLine": 11,
                                                 "endColumn": 67,
-                                                "start": 364,
-                                                "end": 414
+                                                "start": 419,
+                                                "end": 469
                                             },
                                             "endTag": {
-                                                "startLine": 10,
+                                                "startLine": 11,
                                                 "startColumn": 78,
-                                                "endLine": 10,
+                                                "endLine": 11,
                                                 "endColumn": 85,
-                                                "start": 425,
-                                                "end": 432
+                                                "start": 480,
+                                                "end": 487
                                             }
                                         },
                                         "attributes": [
@@ -530,21 +581,21 @@
                                                     "end": 4,
                                                     "name": "foo",
                                                     "location": {
-                                                        "startLine": 10,
+                                                        "startLine": 11,
                                                         "startColumn": 23,
-                                                        "endLine": 10,
+                                                        "endLine": 11,
                                                         "endColumn": 41,
-                                                        "start": 370,
-                                                        "end": 388
+                                                        "start": 425,
+                                                        "end": 443
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 10,
+                                                    "startLine": 11,
                                                     "startColumn": 23,
-                                                    "endLine": 10,
+                                                    "endLine": 11,
                                                     "endColumn": 41,
-                                                    "start": 370,
-                                                    "end": 388
+                                                    "start": 425,
+                                                    "end": 443
                                                 }
                                             },
                                             {
@@ -556,21 +607,21 @@
                                                     "end": 5,
                                                     "name": "baaz",
                                                     "location": {
-                                                        "startLine": 10,
+                                                        "startLine": 11,
                                                         "startColumn": 42,
-                                                        "endLine": 10,
+                                                        "endLine": 11,
                                                         "endColumn": 54,
-                                                        "start": 389,
-                                                        "end": 401
+                                                        "start": 444,
+                                                        "end": 456
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 10,
+                                                    "startLine": 11,
                                                     "startColumn": 42,
-                                                    "endLine": 10,
+                                                    "endLine": 11,
                                                     "endColumn": 54,
-                                                    "start": 389,
-                                                    "end": 401
+                                                    "start": 444,
+                                                    "end": 456
                                                 }
                                             },
                                             {
@@ -582,21 +633,21 @@
                                                     "end": 4,
                                                     "name": "bar",
                                                     "location": {
-                                                        "startLine": 10,
+                                                        "startLine": 11,
                                                         "startColumn": 55,
-                                                        "endLine": 10,
+                                                        "endLine": 11,
                                                         "endColumn": 66,
-                                                        "start": 402,
-                                                        "end": 413
+                                                        "start": 457,
+                                                        "end": 468
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 10,
+                                                    "startLine": 11,
                                                     "startColumn": 55,
-                                                    "endLine": 10,
+                                                    "endLine": 11,
                                                     "endColumn": 66,
-                                                    "start": 402,
-                                                    "end": 413
+                                                    "start": 457,
+                                                    "end": 468
                                                 }
                                             }
                                         ],
@@ -626,21 +677,21 @@
                                                     "computed": false,
                                                     "optional": false,
                                                     "location": {
-                                                        "startLine": 10,
+                                                        "startLine": 11,
                                                         "startColumn": 67,
-                                                        "endLine": 10,
+                                                        "endLine": 11,
                                                         "endColumn": 78,
-                                                        "start": 414,
-                                                        "end": 425
+                                                        "start": 469,
+                                                        "end": 480
                                                     }
                                                 },
                                                 "location": {
-                                                    "startLine": 10,
+                                                    "startLine": 11,
                                                     "startColumn": 67,
-                                                    "endLine": 10,
+                                                    "endLine": 11,
                                                     "endColumn": 78,
-                                                    "start": 414,
-                                                    "end": 425
+                                                    "start": 469,
+                                                    "end": 480
                                                 }
                                             }
                                         ]

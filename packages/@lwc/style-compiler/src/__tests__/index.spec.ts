@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'fs';
-import path from 'path';
+import path from 'node:path';
+import { describe } from 'vitest';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 import { LWC_VERSION } from '@lwc/shared';
 
-import { transform, Config } from '../index';
+import { transform } from '../index';
 
 import type { CssSyntaxError } from 'postcss';
 
@@ -35,14 +35,7 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.css',
         },
-        ({ src, filename, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
-
-            let config: Config = {};
-            if (fs.existsSync(configPath)) {
-                config = require(configPath);
-            }
-
+        ({ src, filename, config }) => {
             let result;
             let error;
 

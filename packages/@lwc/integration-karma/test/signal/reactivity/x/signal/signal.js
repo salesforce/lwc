@@ -1,10 +1,14 @@
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
+
+import { addTrustedSignal } from 'test-utils';
+
 export class Signal {
     subscribers = new Set();
 
     constructor(initialValue) {
         this._value = initialValue;
+        addTrustedSignal(this);
     }
 
     set value(newValue) {

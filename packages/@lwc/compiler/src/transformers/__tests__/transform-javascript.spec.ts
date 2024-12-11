@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { vi } from 'vitest';
+import { vi, describe, it, expect } from 'vitest';
 import { noop } from '@lwc/shared';
-import { TransformOptions } from '../../options';
 import { transform, transformSync } from '../transformer';
+import type { TransformOptions } from '../../options';
 
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
@@ -249,24 +249,22 @@ describe('sourcemaps', () => {
             export default class Foo extends LightningElement {}
         `;
 
-        [
+        it.for([
             { name: 'invalid string', sourcemap: 'invalid' },
             { name: 'object', sourcemap: {} },
             { name: 'numbers', sourcemap: 123 },
-        ].forEach(({ name, sourcemap }) => {
-            it(name, () => {
-                expect(() =>
-                    transformSync(source, 'foo.js', {
-                        ...TRANSFORMATION_OPTIONS,
-                        outputConfig: {
-                            // @ts-expect-error Property can be passed from JS environments with no type checking.
-                            sourcemap,
-                        },
-                    })
-                ).toThrow(
-                    `LWC1021: Expected a boolean value or 'inline' for outputConfig.sourcemap, received "${sourcemap}".`
-                );
-            });
+        ])('$name', ({ sourcemap }) => {
+            expect(() =>
+                transformSync(source, 'foo.js', {
+                    ...TRANSFORMATION_OPTIONS,
+                    outputConfig: {
+                        // @ts-expect-error Property can be passed from JS environments with no type checking.
+                        sourcemap,
+                    },
+                })
+            ).toThrow(
+                `LWC1021: Expected a boolean value or 'inline' for outputConfig.sourcemap, received "${sourcemap}".`
+            );
         });
     });
 });

@@ -7,26 +7,48 @@ updates:
       directory: '/' # Location of package manifests
       schedule:
           interval: 'weekly'
+      ignore:
+          # As a library, we want to avoid bumping TypeScript, so that we don't accidentally use
+          # language features from a version newer than our downstream users have installed
+          - dependency-name: typescript
       groups:
           babel:
               patterns:
                   - '@babel/*'
+              update-types:
+                  - 'major'
           best:
               patterns:
                   - 'best'
                   - '@best/*'
+              update-types:
+                  - 'major'
           nx:
               patterns:
                   - 'nx'
                   - '@nx/*'
+              update-types:
+                  - 'major'
           rollup:
               patterns:
                   - 'rollup'
                   - '@rollup/*'
+              update-types:
+                  - 'major'
           webdriverio:
               patterns:
                   - 'webdriverio'
                   - '@wdio/*'
+              update-types:
+                  - 'major'
+          prettier:
+              patterns:
+                  - 'prettier'
+              update-types:
+                  - 'major'
+                  # Prettier can introduce formatting differences in minor versions,
+                  # which causes formatting checks to fail in CI.
+                  - 'minor'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:

@@ -1,6 +1,7 @@
+import { expect } from 'vitest';
 import { LightningElement } from 'lwc';
 
-export default class GetterClassList extends LightningElement{
+export default class GetterClassList extends LightningElement {
     connectedCallback() {
         const { classList } = this;
 

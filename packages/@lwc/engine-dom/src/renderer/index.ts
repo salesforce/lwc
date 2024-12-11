@@ -71,7 +71,11 @@ function getProperty(node: Node, key: string): any {
     return (node as any)[key];
 }
 
-function setProperty(node: Node, key: string, value: any): void {
+function setProperty<K extends string>(
+    node: Node & Record<K, unknown>,
+    key: K,
+    value: unknown
+): void {
     (node as any)[key] = value;
 }
 

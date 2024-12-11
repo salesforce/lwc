@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { MockInstance, vi } from 'vitest';
+import { vi, describe, afterEach, beforeEach, expect, it, type MockInstance } from 'vitest';
 import { lwcRuntimeFlags, setFeatureFlag } from '../index';
 
 describe('setFeatureFlag', () => {

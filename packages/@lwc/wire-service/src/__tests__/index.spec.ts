@@ -4,8 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { vi } from 'vitest';
-import { register, WireEventTarget, ValueChangedEvent } from '../index';
+import { vi, describe, it, expect } from 'vitest';
+import { register, ValueChangedEvent } from '../index';
+import type { WireEventTarget } from '../index';
 
 describe('WireEventTarget from register', () => {
     describe('connected', () => {
@@ -266,7 +267,7 @@ describe('register', () => {
     it('accepts function as adapter id', () => {
         function adapterId() {}
         function adapterFactory() {}
-        register(adapterId, adapterFactory);
+        expect(() => register(adapterId, adapterFactory)).not.toThrow();
     });
 
     it('throws when adapter id is not truthy', () => {

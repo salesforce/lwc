@@ -1,10 +1,15 @@
 import _implicitStylesheets from "./escaped.css";
 import _implicitScopedStylesheets from "./escaped.scoped.css?scoped=true";
-import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<input value="{value}"${3}>`;
+import { freezeTemplate, registerTemplate } from "lwc";
+const stc0 = {
+  props: {
+    value: "{value}",
+  },
+  key: 0,
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { st: api_static_fragment } = $api;
-  return [api_static_fragment($fragment1, 1)];
+  const { h: api_element } = $api;
+  return [api_element("input", stc0)];
   /*LWC compiler vX.X.X*/
 }
 export default registerTemplate(tmpl);

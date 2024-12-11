@@ -1,7 +1,7 @@
 {
     "modules": [
-        { 
-            "name" : "aliased",
+        {
+            "name": "aliased",
             "path": "./missing.js"
         }
     ]

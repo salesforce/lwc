@@ -4,27 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    isFalse,
-    isFunction,
-    isUndefined,
-    APIVersion,
-    LOWEST_API_VERSION,
-} from '@lwc/shared';
+import { assert, isFalse, isFunction, isUndefined, LOWEST_API_VERSION } from '@lwc/shared';
 
-import {
-    createReactiveObserver,
-    ReactiveObserver,
-    unsubscribeFromSignals,
-} from './mutation-tracker';
+import { createReactiveObserver, unsubscribeFromSignals } from './mutation-tracker';
 
 import { invokeComponentRenderMethod, isInvokingRender, invokeEventListener } from './invoker';
-import { VM, scheduleRehydration } from './vm';
-import { LightningElementConstructor } from './base-lightning-element';
-import { Template, isUpdatingTemplate, getVMBeingRendered } from './template';
-import { VNodes } from './vnodes';
+import { scheduleRehydration } from './vm';
+import { isUpdatingTemplate, getVMBeingRendered } from './template';
 import { checkVersionMismatch } from './check-version-mismatch';
+import { associateReactiveObserverWithVM } from './mutation-logger';
+import type { VM } from './vm';
+import type { LightningElementConstructor } from './base-lightning-element';
+import type { Template } from './template';
+import type { VNodes } from './vnodes';
+import type { ReactiveObserver } from './mutation-tracker';
+import type { APIVersion } from '@lwc/shared';
 
 type ComponentConstructorMetadata = {
     tmpl: Template;
@@ -83,13 +77,19 @@ export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVe
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
-    return createReactiveObserver(() => {
+    const reactiveObserver = createReactiveObserver(() => {
         const { isDirty } = vm;
         if (isFalse(isDirty)) {
             markComponentAsDirty(vm);
             scheduleRehydration(vm);
         }
     });
+
+    if (process.env.NODE_ENV !== 'production') {
+        associateReactiveObserverWithVM(reactiveObserver, vm);
+    }
+
+    return reactiveObserver;
 }
 
 export function resetTemplateObserverAndUnsubscribe(vm: VM) {

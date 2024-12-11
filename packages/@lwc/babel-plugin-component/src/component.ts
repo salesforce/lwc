@@ -5,11 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { basename, extname } from 'path';
-import * as types from '@babel/types';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
-import { NodePath } from '@babel/traverse';
-import { Visitor } from '@babel/core';
-import { getAPIVersionFromNumber } from '@lwc/shared';
+import { generateCustomElementTagName, getAPIVersionFromNumber } from '@lwc/shared';
 import {
     COMPONENT_NAME_KEY,
     LWC_PACKAGE_ALIAS,
@@ -18,7 +15,8 @@ import {
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
 } from './constants';
-import { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
+import type { types, NodePath, Visitor } from '@babel/core';
+import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
 function getBaseName(classPath: string) {
     const ext = extname(classPath);
@@ -48,8 +46,7 @@ function needsComponentRegistration(path: DeclarationPath) {
 
 function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
     const { namespace, name } = state.opts;
-    const kebabCasedName = name?.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-    const componentName = namespace && kebabCasedName ? `${namespace}-${kebabCasedName}` : '';
+    const componentName = generateCustomElementTagName(namespace, name);
     return t.stringLiteral(componentName);
 }
 

@@ -1,0 +1,228 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 9,
+            "endColumn": 12,
+            "start": 0,
+            "end": 217,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 9,
+                "startColumn": 1,
+                "endLine": 9,
+                "endColumn": 12,
+                "start": 206,
+                "end": 217
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Component",
+                "name": "x-foo",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 3,
+                    "endLine": 8,
+                    "endColumn": 11,
+                    "start": 13,
+                    "end": 205,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 3,
+                        "endLine": 2,
+                        "endColumn": 10,
+                        "start": 13,
+                        "end": 20
+                    },
+                    "endTag": {
+                        "startLine": 8,
+                        "startColumn": 3,
+                        "endLine": 8,
+                        "endColumn": 11,
+                        "start": 197,
+                        "end": 205
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Slot",
+                        "name": "slot",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "slotName": "",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 5,
+                            "endLine": 7,
+                            "endColumn": 12,
+                            "start": 25,
+                            "end": 194,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 5,
+                                "endLine": 3,
+                                "endColumn": 11,
+                                "start": 25,
+                                "end": 31
+                            },
+                            "endTag": {
+                                "startLine": 7,
+                                "startColumn": 5,
+                                "endLine": 7,
+                                "endColumn": 12,
+                                "start": 187,
+                                "end": 194
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Comment",
+                                "raw": " Invalid grandparent ",
+                                "value": " Invalid grandparent ",
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 12,
+                                    "endLine": 3,
+                                    "endColumn": 40,
+                                    "start": 32,
+                                    "end": 60
+                                }
+                            },
+                            {
+                                "type": "IfBlock",
+                                "condition": {
+                                    "type": "Identifier",
+                                    "start": 1,
+                                    "end": 7,
+                                    "name": "isTrue",
+                                    "location": {
+                                        "startLine": 4,
+                                        "startColumn": 17,
+                                        "endLine": 4,
+                                        "endColumn": 32,
+                                        "start": 77,
+                                        "end": 92
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 4,
+                                    "startColumn": 7,
+                                    "endLine": 6,
+                                    "endColumn": 18,
+                                    "start": 67,
+                                    "end": 182
+                                },
+                                "directiveLocation": {
+                                    "startLine": 4,
+                                    "startColumn": 17,
+                                    "endLine": 4,
+                                    "endColumn": 32,
+                                    "start": 77,
+                                    "end": 92
+                                },
+                                "children": [
+                                    {
+                                        "type": "Comment",
+                                        "raw": " Valid parent ",
+                                        "value": " Valid parent ",
+                                        "location": {
+                                            "startLine": 4,
+                                            "startColumn": 34,
+                                            "endLine": 4,
+                                            "endColumn": 55,
+                                            "start": 94,
+                                            "end": 115
+                                        }
+                                    },
+                                    {
+                                        "type": "Element",
+                                        "name": "span",
+                                        "namespace": "http://www.w3.org/1999/xhtml",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 9,
+                                            "endLine": 5,
+                                            "endColumn": 31,
+                                            "start": 124,
+                                            "end": 146,
+                                            "startTag": {
+                                                "startLine": 5,
+                                                "startColumn": 9,
+                                                "endLine": 5,
+                                                "endColumn": 24,
+                                                "start": 124,
+                                                "end": 139
+                                            },
+                                            "endTag": {
+                                                "startLine": 5,
+                                                "startColumn": 24,
+                                                "endLine": 5,
+                                                "endColumn": 31,
+                                                "start": 139,
+                                                "end": 146
+                                            }
+                                        },
+                                        "attributes": [
+                                            {
+                                                "type": "Attribute",
+                                                "name": "slot",
+                                                "value": {
+                                                    "type": "Literal",
+                                                    "value": "foo"
+                                                },
+                                                "location": {
+                                                    "startLine": 5,
+                                                    "startColumn": 15,
+                                                    "endLine": 5,
+                                                    "endColumn": 23,
+                                                    "start": 130,
+                                                    "end": 138
+                                                }
+                                            }
+                                        ],
+                                        "properties": [],
+                                        "directives": [],
+                                        "listeners": [],
+                                        "children": []
+                                    },
+                                    {
+                                        "type": "Comment",
+                                        "raw": " Invalid! ",
+                                        "value": " Invalid! ",
+                                        "location": {
+                                            "startLine": 5,
+                                            "startColumn": 32,
+                                            "endLine": 5,
+                                            "endColumn": 49,
+                                            "start": 147,
+                                            "end": 164
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

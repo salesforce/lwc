@@ -1,0 +1,16 @@
+<x-dynamic-component>
+  <template shadowrootmode="open">
+    <x-test>
+      <template shadowrootmode="open">
+        a
+        <slot>
+          fallback
+        </slot>
+        b
+      </template>
+      <div>
+        Slot me in!
+      </div>
+    </x-test>
+  </template>
+</x-dynamic-component>

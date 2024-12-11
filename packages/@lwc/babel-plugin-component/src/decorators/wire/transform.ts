@@ -4,13 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { types } from '@babel/core';
-import { NodePath, Scope } from '@babel/traverse';
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
-import { DecoratorMeta } from '../index';
-import { BabelTypes } from '../../types';
-import { BindingOptions } from '../types';
 import { isWireDecorator } from './shared';
+import type { types, NodePath } from '@babel/core';
+import type { DecoratorMeta } from '../index';
+import type { BabelTypes } from '../../types';
+import type { BindingOptions } from '../types';
 
 const WIRE_PARAM_PREFIX = '$';
 const WIRE_CONFIG_ARG_NAME = '$cmp';
@@ -213,7 +212,7 @@ const SUPPORTED_VALUE_TO_TYPE_MAP = {
     BooleanLiteral: 'boolean',
 };
 
-const scopedReferenceLookup = (scope: Scope) => (name: string) => {
+const scopedReferenceLookup = (scope: NodePath['scope']) => (name: string) => {
     const binding = scope.getBinding(name);
 
     let type;

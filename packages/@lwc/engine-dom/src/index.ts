@@ -30,6 +30,7 @@ export {
     isComponentConstructor,
     parseFragment,
     parseSVGFragment,
+    setTrustedSignalSet,
     swapComponent,
     swapStyle,
     swapTemplate,
@@ -46,6 +47,7 @@ export type {
     WireContextValue,
     WireContextConsumer,
     WireContextProvider,
+    WireDataCallback,
     Template,
 } from '@lwc/engine-core';
 

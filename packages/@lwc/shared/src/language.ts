@@ -18,12 +18,16 @@ const {
     entries,
     /** Detached {@linkcode Object.freeze}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze MDN Reference}. */
     freeze,
+    /** Detached {@linkcode Object.fromEntries}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries MDN Reference}. */
+    fromEntries,
     /** Detached {@linkcode Object.getOwnPropertyDescriptor}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor MDN Reference}. */
     getOwnPropertyDescriptor,
     /** Detached {@linkcode Object.getOwnPropertyDescriptors}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptors MDN Reference}. */
     getOwnPropertyDescriptors,
     /** Detached {@linkcode Object.getOwnPropertyNames}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames MDN Reference}. */
     getOwnPropertyNames,
+    /** Detached {@linkcode Object.getOwnPropertySymbols}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertySymbols MDN Reference}. */
+    getOwnPropertySymbols,
     /** Detached {@linkcode Object.getPrototypeOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf MDN Reference}. */
     getPrototypeOf,
     /** Detached {@linkcode Object.hasOwnProperty}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty MDN Reference}. */
@@ -215,9 +219,11 @@ export {
     defineProperty,
     entries,
     freeze,
+    fromEntries,
     getOwnPropertyDescriptor,
     getOwnPropertyDescriptors,
     getOwnPropertyNames,
+    getOwnPropertySymbols,
     getPrototypeOf,
     hasOwnProperty,
     isFrozen,
@@ -298,7 +304,7 @@ export function isBoolean(obj: unknown): obj is boolean {
  * @returns `true` if the value is a function.
  */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function isFunction(obj: unknown): obj is Function {
     return typeof obj === 'function';
 }

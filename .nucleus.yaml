@@ -13,10 +13,8 @@ branches:
                 - MobilePlatform/lsdk-modules
                 - MobilePlatform/lwr-lightning-platform
                 - MobilePlatform/ui-fsm-components
-                - Skilling-and-Enablement/storybook-utils
                 - Skilling-and-Enablement/ui-external-enablement
                 - automation-platform/ui-externalservices-builder-components
-                - automation-platform/ui-interaction-explorer-components
                 - communities/microsite-template-marketing
                 - communities/shared-experience-components
                 - communities/ui-commerce-components
@@ -36,10 +34,7 @@ branches:
     winter25:
         pull-request:
             <<: *branch-definition
-    spring24:
-        pull-request:
-            <<: *branch-definition
-    summer24:
+    spring25:
         pull-request:
             <<: *branch-definition
 jobs:

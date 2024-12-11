@@ -8,7 +8,7 @@ export default class MethodSetAttribute extends LightningElement {
         this.setAttribute('data-string', 'test');
         this.setAttribute('data-empty-string', '');
 
-        this.setAttribute('data-override', 'original')
+        this.setAttribute('data-override', 'original');
         this.setAttribute('data-override', 'override');
     }
 }

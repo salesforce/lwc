@@ -68,24 +68,23 @@ function createPreprocessor(config, emitter, logger) {
 
         const defaultRollupPlugin = createRollupPlugin();
 
-        // Override the LWC Rollup plugin to specify an API version based on the file path
-        // This allows for individual components to have individual API versions
-        // without needing to have a separate Rollup bundle/chunk for each one
-        const rollupPluginsPerApiVersion = new Map();
-
         const customLwcRollupPlugin = {
             ...defaultRollupPlugin,
             transform(src, id) {
-                let rollupPluginToUse = defaultRollupPlugin;
-                const match = id.match(/useApiVersion(\d+)/);
-                if (match) {
-                    const apiVersion = parseInt(match[1], 10);
-                    let perApiVersionPlugin = rollupPluginsPerApiVersion.get(apiVersion);
-                    if (!perApiVersionPlugin) {
-                        perApiVersionPlugin = createRollupPlugin({ apiVersion });
-                        rollupPluginsPerApiVersion.set(apiVersion, perApiVersionPlugin);
-                    }
-                    rollupPluginToUse = perApiVersionPlugin;
+                let rollupPluginToUse;
+
+                // Override the LWC Rollup plugin to specify different options based on file name patterns.
+                // This allows us to alter the API version or other compiler props on a filename-only basis.
+                const apiVersion = id.match(/useApiVersion(\d+)/)?.[1];
+                const nativeOnly = /\.native-only\./.test(id);
+                if (apiVersion) {
+                    rollupPluginToUse = createRollupPlugin({
+                        apiVersion: parseInt(apiVersion, 10),
+                    });
+                } else if (nativeOnly) {
+                    rollupPluginToUse = createRollupPlugin({ disableSyntheticShadowSupport: true });
+                } else {
+                    rollupPluginToUse = defaultRollupPlugin;
                 }
                 return rollupPluginToUse.transform.call(this, src, id);
             },

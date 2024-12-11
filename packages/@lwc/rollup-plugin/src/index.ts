@@ -8,16 +8,22 @@ import fs from 'fs';
 import path from 'path';
 import { URLSearchParams } from 'url';
 
-import { Plugin, SourceMapInput, RollupLog } from 'rollup';
-import pluginUtils, { FilterPattern } from '@rollup/pluginutils';
-import { transformSync, StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
-import { resolveModule, ModuleRecord, RegistryType } from '@lwc/module-resolver';
-import { APIVersion, getAPIVersionFromNumber } from '@lwc/shared';
+import pluginUtils from '@rollup/pluginutils';
+import { transformSync } from '@lwc/compiler';
+import { resolveModule, RegistryType } from '@lwc/module-resolver';
+import { getAPIVersionFromNumber } from '@lwc/shared';
+import type { Plugin, SourceMapInput, RollupLog } from 'rollup';
+import type { FilterPattern } from '@rollup/pluginutils';
+import type { StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
+import type { ModuleRecord } from '@lwc/module-resolver';
+import type { APIVersion, CompilationMode } from '@lwc/shared';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 export interface RollupLwcOptions {
     /** A boolean indicating whether to compile for SSR runtime target. */
     targetSSR?: boolean;
+    /** The variety of SSR code that should be generated, one of 'sync', 'async', or 'asyncYield' */
+    ssrMode?: CompilationMode;
     /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should transform on. By default all files are targeted. */
     include?: FilterPattern;
     /** A [minimatch pattern](https://github.com/isaacs/minimatch), or array of patterns, which specifies the files in the build the plugin should not transform. By default no files are ignored. */
@@ -158,6 +164,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     let { rootDir, modules = [] } = pluginOptions;
     const {
         targetSSR,
+        ssrMode,
         stylesheetConfig,
         sourcemap = false,
         preserveHtmlComments,
@@ -345,6 +352,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                     enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
                 }),
                 targetSSR,
+                ssrMode,
             });
 
             if (warnings) {

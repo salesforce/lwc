@@ -44,7 +44,7 @@ describe('Element.innerHTML - set', () => {
 
         const div = elm.shadowRoot.querySelector('div');
 
-        // eslint-disable-next-line jest/valid-expect
+        // eslint-disable-next-line vitest/valid-expect
         let expected = expect(() => {
             div.innerHTML = '<span>Hello World!</span>';
         });

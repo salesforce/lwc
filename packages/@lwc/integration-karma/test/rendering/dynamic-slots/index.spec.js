@@ -72,21 +72,24 @@ describe('dynamic slotting', () => {
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual('BigInt');
     });
-    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        // it actually throws in this scenario as well, but in a different callstack, so we can't assert
-        it('should throw on symbol', () => {
-            expect(() => {
-                const elm = createElement('x-symbol', { is: Symbol });
-                document.body.appendChild(elm);
-            }).toThrowError(/convert.*symbol.*string.*/i); // cannot convert symbol to string (and variations of this message across browsers)
-        });
-    }
-    if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        it('should throw on empty object', () => {
-            expect(() => {
-                const elm = createElement('x-emptyobject', { is: EmptyObject });
-                document.body.appendChild(elm);
-            }).toThrowError(TypeError);
-        });
-    }
+
+    describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
+        'disabled native custom element lifecycle',
+        () => {
+            // it actually throws in this scenario as well, but in a different callstack, so we can't assert
+            it('should throw on symbol', () => {
+                expect(() => {
+                    const elm = createElement('x-symbol', { is: Symbol });
+                    document.body.appendChild(elm);
+                }).toThrowError(/convert.*symbol.*string.*/i); // cannot convert symbol to string (and variations of this message across browsers)
+            });
+
+            it('should throw on empty object', () => {
+                expect(() => {
+                    const elm = createElement('x-emptyobject', { is: EmptyObject });
+                    document.body.appendChild(elm);
+                }).toThrowError(TypeError);
+            });
+        }
+    );
 });

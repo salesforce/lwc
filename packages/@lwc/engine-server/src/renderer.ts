@@ -5,24 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
-    isNull,
-    isBooleanAttribute,
-    isGlobalHtmlAttribute,
-    isAriaAttribute,
-    htmlPropertyToAttribute,
-    noop,
-    isFunction,
     HTML_NAMESPACE,
+    htmlPropertyToAttribute,
+    isAriaAttribute,
+    isBooleanAttribute,
+    isFunction,
+    isGlobalHtmlAttribute,
+    isNull,
+    isUndefined,
+    noop,
+    StringToLowerCase,
 } from '@lwc/shared';
-import { LifecycleCallback } from '@lwc/engine-core';
 
 import {
-    HostNode,
-    HostElement,
-    HostAttribute,
     HostNodeType,
-    HostChildNode,
     HostTypeKey,
     HostNamespaceKey,
     HostParentKey,
@@ -40,6 +36,8 @@ import {
     stopTrackingMutations,
 } from './utils/mutation-tracking';
 import { registerContextConsumer } from './context';
+import type { HostNode, HostElement, HostAttribute, HostChildNode } from './types';
+import type { LifecycleCallback } from '@lwc/engine-core';
 
 function unsupportedMethod(name: string): () => never {
     return function () {
@@ -209,6 +207,19 @@ function setProperty(node: N, key: string, value: any): void {
             return;
         }
 
+        // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
+        // has historically treated them as props rather than attributes:
+        // https://github.com/salesforce/lwc/blob/b584d39/packages/%40lwc/template-compiler/src/parser/attribute.ts#L217-L221
+        // For example, an element might be rendered as `<input type=checkbox>` but `input.checked` could
+        // still return true. `value` behaves similarly. `value` and `checked` behave surprisingly
+        // because the attributes actually represent the "default" value rather than the current one:
+        // - https://jakearchibald.com/2024/attributes-vs-properties/#value-on-input-fields
+        // - https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#checked
+        // For this reason, we do not render these values in SSR - they are purely a runtime (prop) concern.
+        if (node.tagName === 'input' && (attrName === 'value' || attrName === 'checked')) {
+            return;
+        }
+
         // Handle all the boolean properties.
         if (isBooleanAttribute(attrName, node.tagName)) {
             return value === true
@@ -219,14 +230,6 @@ function setProperty(node: N, key: string, value: any): void {
         // Handle global html attributes and AOM.
         if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
             return setAttribute(node, attrName, value);
-        }
-
-        // Handle special elements live bindings. The checked property is already handled above
-        // in the boolean case.
-        if (node.tagName === 'input' && attrName === 'value') {
-            return isNull(value) || isUndefined(value)
-                ? removeAttribute(node, 'value')
-                : setAttribute(node, 'value', value);
         }
     }
 
@@ -251,16 +254,19 @@ function setText(node: N, content: string) {
 }
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
+    const normalizedName = StringToLowerCase.call(String(name));
     const attribute = element[HostAttributesKey].find(
-        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
+        (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
 }
 
-function setAttribute(element: E, name: string, value: string, namespace: string | null = null) {
-    reportMutation(element, name);
+function setAttribute(element: E, name: string, value: unknown, namespace: string | null = null) {
+    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedValue = String(value);
+    reportMutation(element, normalizedName);
     const attribute = element[HostAttributesKey].find(
-        (attr) => attr.name === name && attr[HostNamespaceKey] === namespace
+        (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
 
     if (isUndefined(namespace)) {
@@ -269,19 +275,20 @@ function setAttribute(element: E, name: string, value: string, namespace: string
 
     if (isUndefined(attribute)) {
         element[HostAttributesKey].push({
-            name,
+            name: normalizedName,
             [HostNamespaceKey]: namespace,
-            value: String(value),
+            value: normalizedValue,
         });
     } else {
-        attribute.value = value;
+        attribute.value = normalizedValue;
     }
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    reportMutation(element, name);
+    const normalizedName = StringToLowerCase.call(String(name));
+    reportMutation(element, normalizedName);
     element[HostAttributesKey] = element[HostAttributesKey].filter(
-        (attr) => attr.name !== name && attr[HostNamespaceKey] !== namespace
+        (attr) => attr.name !== normalizedName && attr[HostNamespaceKey] !== namespace
     );
 }
 
@@ -328,7 +335,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
         (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
-    const serializedProperty = `${name}: ${value}${important ? ' !important' : ''}`;
+    const serializedProperty = `${name}: ${value}${important ? ' !important' : ''};`;
 
     if (isUndefined(styleAttribute)) {
         element[HostAttributesKey].push({
@@ -337,7 +344,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
             value: serializedProperty,
         });
     } else {
-        styleAttribute.value += `; ${serializedProperty}`;
+        styleAttribute.value += ` ${serializedProperty}`;
     }
 }
 

@@ -5,10 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import path from 'node:path';
-import { rollup, RollupLog } from 'rollup';
+import { describe, it, expect } from 'vitest';
+import { rollup } from 'rollup';
 import { APIVersion, HIGHEST_API_VERSION, LOWEST_API_VERSION } from '@lwc/shared';
 
-import lwc, { RollupLwcOptions } from '../../index';
+import lwc from '../../index';
+import type { RollupLwcOptions } from '../../index';
+import type { RollupLog } from 'rollup';
 
 describe('API versioning', () => {
     async function runRollup(
@@ -19,6 +22,7 @@ describe('API versioning', () => {
         const bundle = await rollup({
             input: path.resolve(__dirname, pathname),
             plugins: [lwc(options)],
+            external: ['lwc'],
             onwarn(warning) {
                 warnings.push(warning);
             },

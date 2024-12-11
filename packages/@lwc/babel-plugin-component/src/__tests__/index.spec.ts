@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2023, salesforce.com, inc.
+ * Copyright (c) 2024, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'node:fs';
 import path from 'node:path';
+import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
@@ -67,14 +67,7 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.js',
         },
-        ({ src, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
-
-            let config = {};
-            if (fs.existsSync(configPath)) {
-                config = require(configPath);
-            }
-
+        ({ src, config }) => {
             let result;
             let error;
 

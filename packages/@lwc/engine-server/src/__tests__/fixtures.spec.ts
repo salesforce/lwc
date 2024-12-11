@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import fs from 'fs';
-import path from 'path';
-
+import path from 'node:path';
+import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { vi } from 'vitest';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { setFeatureFlagForTest } from '../index';
+import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
 interface FixtureModule {
@@ -25,34 +25,65 @@ vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
-    lwcEngineServer!.setHooks({
-        sanitizeHtmlContent(content: unknown) {
-            return content as string;
-        },
-    });
+    try {
+        lwcEngineServer.setHooks({
+            sanitizeHtmlContent(content: unknown) {
+                return content as string;
+            },
+        });
+    } catch (_err) {
+        // Ignore error if the hook is already overridden
+    }
     return lwcEngineServer;
 });
 
-async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
+async function compileFixture({
+    input,
+    dirname,
+    options,
+}: {
+    input: string;
+    dirname: string;
+    options?: RollupLwcOptions;
+}) {
+    const optionsAsString =
+        Object.entries(options ?? {})
+            .map(([key, value]) => `${key}=${value}`)
+            .join('-') || 'default';
     const modulesDir = path.resolve(dirname, './modules');
-    const outputFile = path.resolve(dirname, './dist/compiled.js');
+    const outputFile = path.resolve(dirname, `./dist/compiled-${optionsAsString}.js`);
 
     const bundle = await rollup({
         input,
-        external: ['lwc'],
+        external: ['lwc', 'vitest'],
         plugins: [
             lwcRollupPlugin({
                 enableDynamicComponents: true,
+                experimentalDynamicComponent: {
+                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                    strictSpecifier: false,
+                },
                 modules: [
                     {
                         dir: modulesDir,
                     },
                 ],
+                ...options,
             }),
         ],
         onwarn({ message, code }) {
             // TODO [#3331]: The existing lwc:dynamic fixture test will generate warnings that can be safely suppressed.
-            if (!message.includes('LWC1187') && code !== 'CIRCULAR_DEPENDENCY') {
+            const shouldIgnoreWarning =
+                message.includes('LWC1187') ||
+                // TODO [#4497]: stop warning on duplicate slots or disallow them entirely (LWC1137 is duplicate slots)
+                message.includes('LWC1137') ||
+                // IGNORED_SLOT_ATTRIBUTE_IN_CHILD is fine; it is used in some of these tests
+                message.includes('LWC1201') ||
+                message.includes('-h-t-m-l') ||
+                code === 'CIRCULAR_DEPENDENCY' ||
+                // TODO [#5010]: template-compiler -> index -> validateElement generates UNKNOWN_HTML_TAG_IN_TEMPLATE for MathML elements
+                message.includes('LWC1123');
+            if (!shouldIgnoreWarning) {
                 throw new Error(message);
             }
         },
@@ -67,24 +98,29 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
     return outputFile;
 }
 
-function testFixtures() {
+function testFixtures(options?: RollupLwcOptions) {
     testFixtureDir(
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/index.js',
         },
-        async ({ filename, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
+        async ({ filename, dirname, config }) => {
+            let compiledFixturePath;
 
-            let config: any = {};
-            if (fs.existsSync(configPath)) {
-                config = require(configPath);
+            try {
+                compiledFixturePath = await compileFixture({
+                    input: filename,
+                    dirname,
+                    options,
+                });
+            } catch (err: any) {
+                // Filter out the stacktrace, just include the LWC error message
+                const message = err?.message?.match(/(LWC\d+[^\n]+)/)?.[1];
+                return {
+                    'expected.html': '',
+                    'error.txt': message,
+                };
             }
-
-            const compiledFixturePath = await compileFixture({
-                input: filename,
-                dirname,
-            });
 
             // The LWC engine holds global state like the current VM index, which has an impact on
             // the generated HTML IDs. So the engine has to be re-evaluated between tests.
@@ -102,26 +138,49 @@ function testFixtures() {
             let result;
             let err;
             try {
-                result = lwcEngineServer!.renderComponent(
-                    module!.tagName,
-                    module!.default,
-                    config.props || {}
+                result = formatHTML(
+                    lwcEngineServer!.renderComponent(
+                        module!.tagName,
+                        module!.default,
+                        config?.props ?? {}
+                    )
                 );
             } catch (_err: any) {
+                if (_err.name === 'AssertionError') {
+                    throw _err;
+                }
                 err = _err.message;
             }
+
             features.forEach((flag) => {
                 lwcEngineServer!.setFeatureFlagForTest(flag, false);
             });
 
             return {
-                'expected.html': result ? formatHTML(result) : '',
-                'error.txt': err ?? '',
+                'expected.html': result,
+                'error.txt': err,
             };
         }
     );
 }
 
-describe('fixtures', () => {
-    testFixtures();
+describe.concurrent('fixtures', () => {
+    beforeAll(() => {
+        // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
+        // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
+        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
+    });
+
+    describe.concurrent('default', () => {
+        testFixtures();
+    });
+
+    // Test with and without the static content optimization to ensure the fixtures are the same
+    describe.concurrent('enableStaticContentOptimization=false', () => {
+        testFixtures({ enableStaticContentOptimization: false });
+    });
 });

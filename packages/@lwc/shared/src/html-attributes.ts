@@ -64,7 +64,6 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'autofocus',
     'class',
     'contenteditable',
-    'contextmenu',
     'dir',
     'draggable',
     'enterkeyhint',
@@ -98,7 +97,7 @@ export function isGlobalHtmlAttribute(attrName: string): boolean {
 }
 
 // These are HTML standard prop/attribute IDL mappings, but are not predictable based on camel/kebab-case conversion
-const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
+export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
     ['accessKey', 'accesskey'],
     ['readOnly', 'readonly'],
     ['tabIndex', 'tabindex'],
@@ -127,7 +126,8 @@ const CACHED_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map<string, string>
  * @param propName
  */
 export function htmlPropertyToAttribute(propName: string): string {
-    const ariaAttributeName = AriaPropNameToAttrNameMap[propName];
+    const ariaAttributeName =
+        AriaPropNameToAttrNameMap[propName as keyof typeof AriaPropNameToAttrNameMap];
     if (!isUndefined(ariaAttributeName)) {
         return ariaAttributeName;
     }

@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayUnshift,
     assert,
     create,
     htmlEscape,
@@ -23,30 +22,21 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import api, { RenderAPI } from './api';
-import {
-    RenderMode,
-    resetComponentRoot,
-    runWithBoundaryProtection,
-    ShadowMode,
-    SlotSet,
-    TemplateCache,
-    VM,
-} from './vm';
+import api from './api';
+import { RenderMode, resetComponentRoot, runWithBoundaryProtection, ShadowMode } from './vm';
 import { assertNotProd, EmptyObject } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
-import {
-    createStylesheet,
-    getStylesheetsContent,
-    Stylesheets,
-    updateStylesheetToken,
-} from './stylesheet';
+import { createStylesheet, getStylesheetsContent, updateStylesheetToken } from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
-import { MutableVNodes, VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
-import { RendererAPI } from './renderer';
 import { getMapFromClassName } from './modules/computed-class-attr';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
+import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { RendererAPI } from './renderer';
+import type { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
+import type { SlotSet, TemplateCache, VM } from './vm';
+import type { RenderAPI } from './api';
+import type { Stylesheets } from '@lwc/shared';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;
@@ -76,6 +66,14 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
+const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_.]+$/;
+
+// See W-16614556
+// TODO [#2826]: freeze the template object
+function isValidScopeToken(token: any) {
+    return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
+}
+
 function validateSlots(vm: VM) {
     assertNotProd(); // this method should never leak to prod
 
@@ -91,26 +89,31 @@ function validateSlots(vm: VM) {
     }
 }
 
-function validateLightDomTemplate(template: Template, vm: VM) {
-    assertNotProd(); // should never leak to prod mode
+function checkHasMatchingRenderMode(template: Template, vm: VM) {
+    // don't validate in prod environments where reporting is disabled
+    if (process.env.NODE_ENV === 'production' && !isReportingEnabled()) {
+        return;
+    }
+    // don't validate the default empty template - it is not inherently light or shadow
     if (template === defaultEmptyTemplate) {
         return;
     }
-    if (vm.renderMode === RenderMode.Light) {
-        if (template.renderMode !== 'light') {
-            logError(
-                `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${getComponentTag(
-                    vm
-                )}.`
-            );
-        }
-    } else {
-        if (!isUndefined(template.renderMode)) {
-            logError(
-                `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${getComponentTag(
-                    vm
-                )} or set it to 'lwc:render-mode="shadow"`
-            );
+    // TODO [#4663]: `renderMode` mismatch between template and component causes `console.error` but no error
+    // Note that `undefined` means shadow in this case, because shadow is the default.
+    const vmIsLight = vm.renderMode === RenderMode.Light;
+    const templateIsLight = template.renderMode === 'light';
+    if (vmIsLight !== templateIsLight) {
+        report(ReportingEventId.RenderModeMismatch, {
+            tagName: vm.tagName,
+            mode: vm.renderMode,
+        });
+        if (process.env.NODE_ENV !== 'production') {
+            const tagName = getComponentTag(vm);
+            const message = vmIsLight
+                ? `Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of ${tagName}.`
+                : `Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from ${tagName} or set it to 'lwc:render-mode="shadow"`;
+
+            logError(message);
         }
     }
 }
@@ -270,6 +273,14 @@ function buildParseFragmentFn(
                 }
             }
 
+            // See W-16614556
+            if (
+                (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
+                (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))
+            ) {
+                throw new Error('stylesheet token must be a valid string');
+            }
+
             // If legacy stylesheet tokens are required, then add them to the rendered string
             const stylesheetTokenToRender =
                 stylesheetToken + (hasLegacyToken ? ` ${legacyStylesheetToken}` : '');
@@ -347,7 +358,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
     }
     const isUpdatingTemplateInception = isUpdatingTemplate;
     const vmOfTemplateBeingUpdatedInception = vmBeingRendered;
-    let vnodes: MutableVNodes = [];
+    let vnodes: VNodes = [];
 
     runWithBoundaryProtection(
         vm,
@@ -374,9 +385,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                         );
                     }
 
-                    if (process.env.NODE_ENV !== 'production') {
-                        validateLightDomTemplate(html, vm);
-                    }
+                    checkHasMatchingRenderMode(html, vm);
 
                     // Perf opt: do not reset the shadow root during the first rendering (there is
                     // nothing to reset).
@@ -423,16 +432,16 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                vnodes = html.call(
-                    undefined,
-                    api,
-                    component,
-                    cmpSlots,
-                    context.tplCache
-                ) as MutableVNodes;
+                vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {
-                    ArrayUnshift.apply(vnodes, styleVNodes);
+                    // It's important here not to mutate the underlying `vnodes` returned from `html.call()`.
+                    // The reason for this is because, due to the static content optimization, the vnodes array
+                    // may be a static array shared across multiple component instances. E.g. this occurs in the
+                    // case of an empty `<template></template>` in a `component.html` file, due to the underlying
+                    // children being `[]` (no children). If we append the `<style>` vnode to this array, then the same
+                    // array will be reused for every component instance, i.e. whenever `tmpl()` is called.
+                    vnodes = [...styleVNodes, ...vnodes];
                 }
             });
         },

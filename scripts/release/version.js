@@ -10,7 +10,7 @@ const readline = require('node:readline');
 const { globSync } = require('glob');
 
 (async () => {
-    const newVersion = await promptVersion();
+    const newVersion = process.argv[2] || (await promptVersion());
     updatePackages(newVersion);
 })().catch(console.error);
 

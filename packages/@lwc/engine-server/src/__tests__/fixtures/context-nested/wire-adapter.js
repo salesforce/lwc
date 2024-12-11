@@ -25,7 +25,6 @@ export class WireAdapterA {
             this._callback(this.contextValue);
         }
     }
-
 }
 
 export const contextualizerA = createContextProvider(WireAdapterA);
@@ -55,7 +54,6 @@ export class WireAdapterB {
             this._callback(this.contextValue);
         }
     }
-
 }
 
 export const contextualizerB = createContextProvider(WireAdapterB);

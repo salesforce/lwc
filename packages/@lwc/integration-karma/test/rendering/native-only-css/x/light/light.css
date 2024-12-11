@@ -1,0 +1,5 @@
+@import 'x/styleLibrary';
+
+div {
+    --implicit: 'default';
+}

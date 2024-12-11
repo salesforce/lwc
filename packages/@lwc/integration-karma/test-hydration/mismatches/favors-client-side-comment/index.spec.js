@@ -19,6 +19,7 @@ export default {
         expect(comment.nodeValue).toBe('second');
 
         TestUtils.expectConsoleCallsDev(consoleCalls, {
+            error: [],
             warn: [
                 'Hydration mismatch: comment values do not match, will recover from the difference',
             ],

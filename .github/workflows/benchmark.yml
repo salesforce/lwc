@@ -19,10 +19,10 @@ jobs:
         runs-on: salesforce-Ubuntu
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: '20.9.0' # earliest node version we support (via "engines" in package.json)
                   cache: 'yarn'

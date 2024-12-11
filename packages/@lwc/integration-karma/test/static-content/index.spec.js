@@ -25,29 +25,27 @@ import TableWithExpression from 'x/tableWithExpressions';
 import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
 import TextWithPreserveComments from 'x/textWithPreserveComments';
 
-if (!process.env.NATIVE_SHADOW) {
-    describe('Mixed mode for static content', () => {
-        ['native', 'synthetic'].forEach((firstRenderMode) => {
-            it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
-                const elm = createElement('x-container', { is: Container });
-                elm.syntheticFirst = firstRenderMode === 'synthetic';
-                document.body.appendChild(elm);
+describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () => {
+    ['native', 'synthetic'].forEach((firstRenderMode) => {
+        it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
+            const elm = createElement('x-container', { is: Container });
+            elm.syntheticFirst = firstRenderMode === 'synthetic';
+            document.body.appendChild(elm);
 
-                const syntheticMode = elm.shadowRoot
-                    .querySelector('x-component')
-                    .shadowRoot.querySelector('div');
-                const nativeMode = elm.shadowRoot
-                    .querySelector('x-native')
-                    .shadowRoot.querySelector('x-component')
-                    .shadowRoot.querySelector('div');
+            const syntheticMode = elm.shadowRoot
+                .querySelector('x-component')
+                .shadowRoot.querySelector('div');
+            const nativeMode = elm.shadowRoot
+                .querySelector('x-native')
+                .shadowRoot.querySelector('x-component')
+                .shadowRoot.querySelector('div');
 
-                const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
-                expect(syntheticMode.hasAttribute(token)).toBe(true);
-                expect(nativeMode.hasAttribute(token)).toBe(false);
-            });
+            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
+            expect(syntheticMode.hasAttribute(token)).toBe(true);
+            expect(nativeMode.hasAttribute(token)).toBe(false);
         });
     });
-}
+});
 
 describe('static content when stylesheets change', () => {
     it('should reflect correct token for scoped styles', () => {
@@ -464,13 +462,24 @@ describe('static content optimization with attribute', () => {
     it('preserves static values', () => {
         const {
             staticAttr,
-            staticStyle,
-            staticClass,
             staticAttrNested,
-            staticStyleNested,
+            staticClass,
+            staticClassBoolean,
+            staticClassEmpty,
             staticClassNested,
+            staticClassSpaces,
+            staticClassTab,
+            staticClassTabs,
             staticCombined,
             staticCombinedNested,
+            staticStyle,
+            staticStyleBoolean,
+            staticStyleEmpty,
+            staticStyleInvalid,
+            staticStyleNested,
+            staticStyleSpaces,
+            staticStyleTab,
+            staticStyleTabs,
         } = nodes;
 
         // styles
@@ -479,6 +488,12 @@ describe('static content optimization with attribute', () => {
             { cmp: staticCombined, expected: 'color: red;' },
             { cmp: staticStyleNested, expected: 'color: white;' },
             { cmp: staticCombinedNested, expected: 'color: orange;' },
+            { cmp: staticStyleBoolean, expected: null },
+            { cmp: staticStyleEmpty, expected: null },
+            { cmp: staticStyleInvalid, expected: null },
+            { cmp: staticStyleSpaces, expected: null },
+            { cmp: staticStyleTab, expected: null },
+            { cmp: staticStyleTabs, expected: null },
         ].forEach(verifyStyleAttributeAppliedCorrectly);
 
         // class
@@ -487,6 +502,11 @@ describe('static content optimization with attribute', () => {
             { cmp: staticCombined, expected: 'combined class' },
             { cmp: staticClassNested, expected: 'static nested class' },
             { cmp: staticCombinedNested, expected: 'static combined nested' },
+            { cmp: staticClassBoolean, expected: null },
+            { cmp: staticClassEmpty, expected: null },
+            { cmp: staticClassSpaces, expected: null },
+            { cmp: staticClassTab, expected: null },
+            { cmp: staticClassTabs, expected: null },
         ].forEach(verifyClassAppliedCorrectly);
 
         // attributes

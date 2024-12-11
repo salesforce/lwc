@@ -30,9 +30,10 @@ const expectLogs = (regexes) => {
     }
 };
 
-if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-    // synthetic lifecycle mode
-    describe('ConnectedCallbackWhileDisconnected reporting', () => {
+// synthetic lifecycle mode
+describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
+    'ConnectedCallbackWhileDisconnected reporting',
+    () => {
         it('disconnected DOM', () => {
             const div = document.createElement('div');
             const elm = createElement('x-component', { is: Component });
@@ -62,23 +63,26 @@ if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-child' }],
             ]);
         });
-    });
 
-    // This only applies to synthetic custom element lifecycle, because that's the case
-    // where we monkey-patch the global `Element.prototype.insertBefore`.
-    it('should log a warning when insertBefore is called with fewer than 2 arguments', () => {
-        const div = document.createElement('div');
-        const span = document.createElement('span');
+        // This only applies to synthetic custom element lifecycle, because that's the case
+        // where we monkey-patch the global `Element.prototype.insertBefore`.
+        it('should log a warning when insertBefore is called with fewer than 2 arguments', () => {
+            const div = document.createElement('div');
+            const span = document.createElement('span');
 
-        expect(() => {
-            div.insertBefore(span);
-        }).toLogWarningDev(
-            /insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported./
-        );
-    });
-} else {
-    // native lifecycle mode
-    describe('Lazily setting lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE to true', () => {
+            expect(() => {
+                div.insertBefore(span);
+            }).toLogWarningDev(
+                /insertBefore should be called with 2 arguments. Calling with only 1 argument is not supported./
+            );
+        });
+    }
+);
+
+// native lifecycle mode
+describe.skipIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
+    'Lazily setting lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE to true',
+    () => {
         beforeEach(() => {
             setFeatureFlagForTest('DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE', true);
             window.timingBuffer = [];
@@ -102,5 +106,5 @@ if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-logs-when-connected' }],
             ]);
         });
-    });
-}
+    }
+);

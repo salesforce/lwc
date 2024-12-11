@@ -6,7 +6,13 @@
  */
 import * as astring from 'astring';
 
-import { isBooleanAttribute, SVG_NAMESPACE, LWC_VERSION_COMMENT, isUndefined } from '@lwc/shared';
+import {
+    isBooleanAttribute,
+    SVG_NAMESPACE,
+    LWC_VERSION_COMMENT,
+    isUndefined,
+    parseStyleText,
+} from '@lwc/shared';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import {
@@ -36,7 +42,28 @@ import {
     isLwcIsDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
+import * as t from '../shared/estree';
 import {
+    isAllowedFragOnlyUrlsXHTML,
+    isAttribute,
+    isFragmentOnlyUrl,
+    isIdReferencingAttribute,
+    isSvgUseHref,
+} from '../parser/attribute';
+import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
+import CodeGen from './codegen';
+import {
+    identifierFromComponentName,
+    objectToAST,
+    shouldFlatten,
+    parseClassNames,
+    hasIdAttribute,
+    styleMapToStyleDeclsAST,
+} from './helpers';
+import { format as formatModule } from './formatters/module';
+import { bindAttributeExpression } from './expression';
+import type State from '../state';
+import type {
     Root,
     ParentNode,
     ChildNode,
@@ -54,28 +81,6 @@ import {
     ScopedSlotFragment,
     StaticElement,
 } from '../shared/types';
-import * as t from '../shared/estree';
-import {
-    isAllowedFragOnlyUrlsXHTML,
-    isAttribute,
-    isFragmentOnlyUrl,
-    isIdReferencingAttribute,
-    isSvgUseHref,
-} from '../parser/attribute';
-import State from '../state';
-import { isCustomRendererHookRequired } from '../shared/renderer-hooks';
-import CodeGen from './codegen';
-import {
-    identifierFromComponentName,
-    objectToAST,
-    shouldFlatten,
-    parseClassNames,
-    parseStyleText,
-    hasIdAttribute,
-    styleMapToStyleDeclsAST,
-} from './helpers';
-import { format as formatModule } from './formatters/module';
-import { bindAttributeExpression } from './expression';
 
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;
@@ -140,20 +145,33 @@ function transform(codeGen: CodeGen): t.Expression {
         const childrenIterator = children[Symbol.iterator]();
         let current: IteratorResult<ChildNode>;
 
+        function isTextOrIgnoredComment(node: ChildNode): node is Text | Comment {
+            return isText(node) || (isComment(node) && !codeGen.preserveComments);
+        }
+
         while ((current = childrenIterator.next()) && !current.done) {
             let child = current.value;
 
-            if (isText(child)) {
+            // Concatenate contiguous text nodes together (while skipping ignored comments)
+            // E.g. `<div>{foo}{bar}</div>` can be concatenated into a single text node expression,
+            // and so can `<div>{foo}<!-- baz -->{bar}</div>` if comments are ignored.
+            if (isTextOrIgnoredComment(child)) {
                 const continuousText: Text[] = [];
 
                 // Consume all the contiguous text nodes.
                 do {
-                    continuousText.push(child);
+                    if (isText(child)) {
+                        continuousText.push(child);
+                    }
                     current = childrenIterator.next();
                     child = current.value;
-                } while (!current.done && isText(child));
+                } while (!current.done && isTextOrIgnoredComment(child));
 
-                res.push(transformText(continuousText));
+                // Only push an api_text call if we actually have text to render.
+                // (We might just have iterated through a sequence of ignored comments.)
+                if (continuousText.length) {
+                    res.push(transformText(continuousText));
+                }
 
                 // Early exit if a text node is the last child node.
                 if (current.done) {
@@ -165,7 +183,11 @@ function transform(codeGen: CodeGen): t.Expression {
                 res.push(transformForBlock(child));
             } else if (isIf(child)) {
                 const children = transformIf(child);
-                Array.isArray(children) ? res.push(...children) : res.push(children);
+                if (Array.isArray(children)) {
+                    res.push(...children);
+                } else {
+                    res.push(children);
+                }
             } else if (isBaseElement(child)) {
                 const slotParentName = isSlot(parent) ? parent.slotName : undefined;
                 res.push(transformElement(child, slotParentName));
@@ -661,12 +683,12 @@ function generateTemplateFunction(codeGen: CodeGen): t.FunctionDeclaration {
                   ]),
               ];
 
-    if (codeGen.memorizedIds.length) {
+    if (codeGen.memoizedIds.length) {
         body.push(
             t.variableDeclaration('const', [
                 t.variableDeclarator(
                     t.objectPattern(
-                        codeGen.memorizedIds.map((id) =>
+                        codeGen.memoizedIds.map((id) =>
                             t.assignmentProperty(id, id, { shorthand: true })
                         )
                     ),

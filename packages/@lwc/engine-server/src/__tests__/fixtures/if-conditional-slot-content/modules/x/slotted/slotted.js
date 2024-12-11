@@ -1,5 +1,3 @@
 import { LightningElement } from 'lwc';
 
-export default class Slotted extends LightningElement {
-
-}
+export default class Slotted extends LightningElement {}

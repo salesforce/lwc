@@ -6,7 +6,6 @@
  */
 import { walk } from 'estree-walker';
 import {
-    APIVersion,
     getAPIVersionFromNumber,
     SVG_NAMESPACE,
     STATIC_PART_TOKEN_ID,
@@ -16,21 +15,7 @@ import {
 } from '@lwc/shared';
 
 import * as t from '../shared/estree';
-import {
-    ChildNode,
-    Expression,
-    ComplexExpression,
-    Literal,
-    LWCDirectiveRenderMode,
-    Root,
-    EventListener,
-    RefDirective,
-    Text,
-    StaticElement,
-    Attribute,
-    KeyDirective,
-    StaticChildNode,
-} from '../shared/types';
+import { LWCDirectiveRenderMode } from '../shared/types';
 import {
     PARSE_FRAGMENT_METHOD_NAME,
     PARSE_SVG_FRAGMENT_METHOD_NAME,
@@ -48,14 +33,13 @@ import {
     isStringLiteral,
 } from '../shared/ast';
 import { isArrayExpression } from '../shared/estree';
-import State from '../state';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import { memorizeHandler, objectToAST } from './helpers';
+import { getMemberExpressionRoot, objectToAST } from './helpers';
 import {
     transformStaticChildren,
     getStaticNodes,
@@ -64,6 +48,22 @@ import {
 } from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
 import { bindAttributeExpression, bindComplexExpression } from './expression';
+import type State from '../state';
+import type {
+    ChildNode,
+    Expression,
+    ComplexExpression,
+    Literal,
+    Root,
+    EventListener,
+    RefDirective,
+    Text,
+    StaticElement,
+    Attribute,
+    KeyDirective,
+    StaticChildNode,
+} from '../shared/types';
+import type { APIVersion } from '@lwc/shared';
 import type { Node } from 'estree';
 
 // structuredClone is only available in Node 17+
@@ -184,7 +184,7 @@ export default class CodeGen {
     usedLwcApis: Set<string> = new Set();
 
     slotNames: Set<string> = new Set();
-    memorizedIds: t.Identifier[] = [];
+    memoizedIds: t.Identifier[] = [];
     referencedComponents: Set<string> = new Set();
     apiVersion: APIVersion;
 
@@ -378,13 +378,13 @@ export default class CodeGen {
         return this._renderApiCall(RENDER_APIS.tabindex, children);
     }
 
-    getMemorizationId() {
+    getMemoizationId() {
         const currentId = this.currentId++;
-        const memorizationId = t.identifier(`_m${currentId}`);
+        const memoizationId = t.identifier(`_m${currentId}`);
 
-        this.memorizedIds.push(memorizationId);
+        this.memoizedIds.push(memoizationId);
 
-        return memorizationId;
+        return memoizationId;
     }
 
     genBooleanAttributeExpr(bindExpr: t.Expression) {
@@ -392,17 +392,68 @@ export default class CodeGen {
     }
 
     genEventListeners(listeners: EventListener[]) {
-        const listenerObj = Object.fromEntries(
-            listeners.map((listener) => [listener.name, listener])
-        );
-        const listenerObjectAST = objectToAST(listenerObj, (key) => {
-            const componentHandler = this.bindExpression(listenerObj[key].handler);
-            const handler = this.genBind(componentHandler);
+        let hasLocalListeners = false;
 
-            return memorizeHandler(this, componentHandler, handler);
-        });
+        const listenerObj: Record<string, { handler: t.Expression; isLocal: boolean }> = {};
 
-        return t.property(t.identifier('on'), listenerObjectAST);
+        for (const { name, handler } of listeners) {
+            const componentHandler = this.bindExpression(handler) as t.MemberExpression;
+            const id = getMemberExpressionRoot(componentHandler);
+            const isLocal = this.isLocalIdentifier(id);
+
+            if (isLocal) {
+                hasLocalListeners = true;
+            }
+
+            listenerObj[name] = { handler: this.genBind(componentHandler), isLocal };
+        }
+
+        // Individually memoize a non-local event handler
+        // Example input: <template for:each={list} for:item="task">
+        //                  <button [...] ontouchstart={foo}>[X]</button>
+        //                </template>
+        // Output: [...] touchstart: _m2 || ($ctx._m2 = api_bind($cmp.foo))
+        const memoize = (expr: t.Expression) => {
+            const memoizedId = this.getMemoizationId();
+            return t.logicalExpression(
+                '||',
+                memoizedId,
+                t.assignmentExpression(
+                    '=',
+                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), memoizedId),
+                    expr
+                )
+            );
+        };
+
+        if (hasLocalListeners) {
+            // If there are local listeners, we need to memoize individual handlers
+            // Input: <template for:each={list} for:item="task">
+            //          <button onclick={task.delete} ontouchstart={foo}>[X]</button>
+            //        </template>
+            // Output:
+            //   on: {
+            //     click: api_bind(task.delete),
+            //     touchstart: _m2 || ($ctx._m2 = api_bind($cmp.foo))
+            //   }
+            return t.property(
+                t.identifier('on'),
+                objectToAST(listenerObj, (k) => {
+                    const { isLocal, handler } = listenerObj[k];
+                    return isLocal ? handler : memoize(handler);
+                })
+            );
+        } else {
+            // If there are no local listeners, we can memoize the entire `on` object
+            // Input: <template>
+            //          <button onclick={create}>New</button>
+            //        </template>
+            // Output: on: _m1 || ($ctx._m1 = { click: api_bind($cmp.create) })
+            return t.property(
+                t.identifier('on'),
+                memoize(objectToAST(listenerObj, (k) => listenerObj[k].handler))
+            );
+        }
     }
 
     genRef(ref: RefDirective) {

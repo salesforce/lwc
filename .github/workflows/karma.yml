@@ -34,10 +34,10 @@ jobs:
                 working-directory: ./packages/@lwc/integration-karma
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
@@ -74,10 +74,10 @@ jobs:
                 working-directory: ./packages/@lwc/integration-karma
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
@@ -114,10 +114,10 @@ jobs:
                 working-directory: ./packages/@lwc/integration-karma
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
@@ -134,12 +134,12 @@ jobs:
 
             - run: API_VERSION=61 yarn sauce:ci
             - run: API_VERSION=61 DISABLE_SYNTHETIC=1 yarn sauce:ci
+            - run: API_VERSION=62 yarn sauce:ci
+            - run: API_VERSION=62 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
             - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn sauce:ci
             - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -156,10 +156,10 @@ jobs:
                 working-directory: ./packages/@lwc/integration-karma
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
@@ -174,12 +174,15 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
 
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: NODE_ENV_FOR_TEST=production yarn sauce:ci
             - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn sauce:ci
             - run: yarn hydration:sauce:ci
             - run: ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 yarn hydration:sauce:ci
             - run: NODE_ENV_FOR_TEST=production yarn hydration:sauce:ci
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn hydration:sauce:ci
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn hydration:sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -199,10 +202,10 @@ jobs:
             - run-karma-tests-group-4
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'

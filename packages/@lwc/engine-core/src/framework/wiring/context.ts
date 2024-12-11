@@ -6,8 +6,8 @@
  */
 import { isUndefined, ArrayPush } from '@lwc/shared';
 import { guid } from '../utils';
-import { VM } from '../vm';
-import {
+import type { VM } from '../vm';
+import type {
     ContextConsumer,
     ContextProvider,
     ContextProviderOptions,

@@ -11,6 +11,7 @@ const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
 const ssr = require('@lwc/engine-server');
+const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
 const context = {
@@ -48,7 +49,7 @@ async function exists(path) {
     try {
         await fs.access(path);
         return true;
-    } catch (err) {
+    } catch (_err) {
         return false;
     }
 }
@@ -70,6 +71,7 @@ async function getCompiledModule(dirName) {
                     strict: true,
                 },
                 enableDynamicComponents: true,
+                enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
             }),
         ],
         cache,
@@ -101,17 +103,52 @@ async function getCompiledModule(dirName) {
     return { code, watchFiles };
 }
 
-function getSsrCode(moduleCode, testConfig) {
+function throwOnUnexpectedConsoleCalls(runnable) {
+    // The console is shared between the VM and the main realm. Here we ensure that known warnings
+    // are ignored and any others cause an explicit error.
+    const methods = ['error', 'warn', 'log', 'info'];
+    const originals = {};
+    for (const method of methods) {
+        originals[method] = console[method];
+        console[method] = function (error) {
+            if (
+                method === 'warn' &&
+                // This is a false positive due to RegExp.prototype.test
+                // eslint-disable-next-line vitest/no-conditional-tests
+                /Cannot set property "(inner|outer)HTML"/.test(error?.message)
+            ) {
+                return;
+            }
+
+            throw new Error(`Unexpected console.${method} call: ${error}`);
+        };
+    }
+    try {
+        runnable();
+    } finally {
+        Object.assign(console, originals);
+    }
+}
+
+/**
+ * @param {string} moduleCode
+ * @param {string} testConfig
+ * @param {string} filename
+ */
+function getSsrCode(moduleCode, testConfig, filename) {
     const script = new vm.Script(
         `
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`,
+        { filename }
     );
 
-    vm.createContext(context);
-    script.runInContext(context);
+    throwOnUnexpectedConsoleCalls(() => {
+        vm.createContext(context);
+        script.runInContext(context);
+    });
 
     return context.moduleOutput;
 }
@@ -139,6 +176,16 @@ async function getTestModuleCode(input) {
     return { code, watchFiles };
 }
 
+async function existsUp(dir, file) {
+    while (true) {
+        if (await exists(path.join(dir, file))) return true;
+        dir = path.join(dir, '..');
+        const basename = path.basename(dir);
+        // We should always hit __tests__, but check for system root as an escape hatch
+        if (basename === '__tests__' || basename === '') return false;
+    }
+}
+
 function createHCONFIG2JSPreprocessor(config, logger, emitter) {
     const { basePath } = config;
     const log = logger.create('preprocessor-lwc');
@@ -156,9 +203,9 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             const { code: componentDef, watchFiles: componentWatchFiles } =
                 await getCompiledModule(suiteDir);
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
-            const onlyFileExists = await exists(path.join(suiteDir, '.only'));
+            const onlyFileExists = await existsUp(suiteDir, '.only');
 
-            const ssrOutput = getSsrCode(componentDef, testCode);
+            const ssrOutput = getSsrCode(componentDef, testCode, path.join(suiteDir, 'ssr.js'));
 
             watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFiles));
             const newContent = format(

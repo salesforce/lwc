@@ -23,7 +23,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             globalObserver.observe(container, observerConfig);
         });
 
-        it('global observer should be called 1 time, when the host element is attached to document', (done) => {
+        it('global observer should be called 1 time, when the host element is attached to document', async () => {
             // Prepare body for new lwc element
             const host = createElement('x-parent', { is: XParent });
             const container = document.createElement('div');
@@ -34,12 +34,12 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].target).toBe(container);
                 expect(actualMutationRecords[0].addedNodes.length).toBe(1);
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('X-PARENT');
-                done();
             };
             const containerObserver = new MutationObserver(callback);
             // Attach to container node instead of document or body to not affect other tests
             containerObserver.observe(container, observerConfig);
             container.appendChild(host);
+            await waitForMutationObservedToBeInvoked();
         });
 
         it('global observer is not called when mutations occur inside shadow tree', () => {
@@ -182,25 +182,23 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             document.body.appendChild(container);
         });
 
-        if (!process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) {
-            it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', (done) => {
+        describe.skipIf(process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST)('MutationObserver', () => {
+            it('should invoke observer with correct MutationRecords when adding child nodes using innerHTML', async () => {
                 const parent = createElement('x-parent', { is: XParent });
                 container.appendChild(parent);
-                let observer;
                 const parentDiv = parent.shadowRoot.querySelector('div');
-                const callback = function (actualMutationRecords, actualObserver) {
+                const observer = new MutationObserver((actualMutationRecords, actualObserver) => {
                     expect(actualObserver).toBe(observer);
                     expect(actualMutationRecords.length).toBe(1);
                     expect(actualMutationRecords[0].target).toBe(parentDiv);
                     expect(actualMutationRecords[0].addedNodes.length).toBe(2);
                     expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('H3');
                     expect(actualMutationRecords[0].addedNodes[1].tagName).toBe('P');
-                    done();
-                };
-                observer = new MutationObserver(callback);
+                });
                 observer.observe(parent.shadowRoot, observerConfig);
                 // Mutate the shadow tree of x-parent
                 parentDiv.innerHTML = `<h3></h3><p></p>`;
+                await waitForMutationObservedToBeInvoked();
             });
 
             it('should invoke observer with correct MutationRecords when adding child nodes using appendChild', () => {
@@ -244,7 +242,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 });
             });
 
-            it('should invoke observer with correct MutationRecords when removing child nodes using innerHTML', (done) => {
+            it('should invoke observer with correct MutationRecords when removing child nodes using innerHTML', async () => {
                 const parent = createElement('x-parent', { is: XParent });
                 container.appendChild(parent);
                 const parentDiv = parent.shadowRoot.querySelector('div');
@@ -265,11 +263,11 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                     });
                     expect(removedNodes[0].tagName).toBe('H3');
                     expect(removedNodes[1].tagName).toBe('P');
-                    done();
                 };
                 observer = new MutationObserver(callback);
                 observer.observe(parent.shadowRoot, observerConfig);
                 parentDiv.innerHTML = '';
+                await waitForMutationObservedToBeInvoked();
             });
 
             it('all observers of a given node are invoked', () => {
@@ -358,7 +356,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[1].addedNodes.length).toBe(1);
                 expect(actualMutationRecords[1].addedNodes[0].tagName).toBe('OL');
             });
-        }
+        });
 
         it('should retarget MutationRecord for mutations directly under shadowRoot - added nodes', () => {
             const host = createElement('x-template-mutations', { is: XTemplateMutations });
@@ -419,8 +417,10 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             });
         });
     });
-    if (!process.env.NATIVE_SHADOW) {
-        describe('References to mutation observers are not leaked', () => {
+
+    describe.skipIf(process.env.NATIVE_SHADOW)(
+        'References to mutation observers are not leaked',
+        () => {
             let container;
             beforeEach(() => {
                 container = document.createElement('div');
@@ -475,6 +475,6 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 observer.disconnect();
                 expect(node.$$lwcNodeObservers$$.length).toBe(0);
             });
-        });
-    }
+        }
+    );
 });

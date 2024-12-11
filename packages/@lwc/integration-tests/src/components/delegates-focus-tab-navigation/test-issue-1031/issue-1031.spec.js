@@ -15,12 +15,16 @@ describe('issue #1031', () => {
     it('should skip child shadow when tabbing after dynamically updating parent tabindex from 0 to -1', async () => {
         const initialize = await browser.shadowDeep$('integration-issue-1031', '.initialize');
         await initialize.click(); // init tabindex to 0
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const firstOutside = await browser.shadowDeep$('integration-issue-1031', '.first-outside');
         await firstOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         await browser.keys(['Tab']); // host element
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Tab']); // second outside input
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'second-outside');
@@ -29,15 +33,19 @@ describe('issue #1031', () => {
     it('should skip child shadow when shift-tabbing after dynamically updating parent tabindex from 0 to -1', async () => {
         const initialize = await browser.shadowDeep$('integration-issue-1031', '.initialize');
         await initialize.click(); // init tabindex to 0
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const secondOutside = await browser.shadowDeep$(
             'integration-issue-1031',
             '.second-outside'
         );
         await secondOutside.click();
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         await browser.keys(['Shift', 'Tab', 'Shift']); // <integration-parent>
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         await browser.keys(['Shift', 'Tab', 'Shift']); // first outside input
+        await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 
         const activeElement = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeElement.getAttribute('class'), 'first-outside');

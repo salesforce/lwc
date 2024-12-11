@@ -6,7 +6,6 @@
  */
 
 import {
-    LightningElement,
     RenderMode,
     ShadowMode,
     computeShadowAndRenderMode,
@@ -18,11 +17,10 @@ import {
     runFormDisabledCallback,
     runFormResetCallback,
     runFormStateRestoreCallback,
-    FormRestoreState,
-    FormRestoreReason,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
+import type { LightningElement, FormRestoreState, FormRestoreReason } from '@lwc/engine-core';
 
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;

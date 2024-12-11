@@ -13,6 +13,7 @@ export const enum APIVersion {
     V60_248_SPRING_24 = 60,
     V61_250_SUMMER_24 = 61,
     V62_252_WINTER_25 = 62,
+    V63_254_SPRING_25 = 63,
 }
 
 // These must be updated when the enum is updated.
@@ -25,6 +26,7 @@ const allVersions = [
     APIVersion.V60_248_SPRING_24,
     APIVersion.V61_250_SUMMER_24,
     APIVersion.V62_252_WINTER_25,
+    APIVersion.V63_254_SPRING_25,
 ];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 export const LOWEST_API_VERSION = allVersions[0];
@@ -109,6 +111,10 @@ export const enum APIFeature {
      * If enabled, add support for complex class expressions in the template.
      */
     TEMPLATE_CLASS_NAME_OBJECT_BINDING,
+    /**
+     * If enabled, add support for complex template expressions.
+     */
+    ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS,
 }
 
 /**
@@ -136,5 +142,7 @@ export function isAPIFeatureEnabled(
         case APIFeature.ENABLE_THIS_DOT_STYLE:
         case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
             return apiVersion >= APIVersion.V62_252_WINTER_25;
+        case APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS:
+            return apiVersion >= APIVersion.V63_254_SPRING_25;
     }
 }

@@ -8,4 +8,5 @@ function stylesheet() {
   return ".foo" + shadowSelector + " {animation-name: fadeIn" + suffixToken + ";}@keyframes fadeIn" + suffixToken + " {0% {opacity: 0;}100% {opacity: 1;}}";
   /*LWC compiler vX.X.X*/
 }
+stylesheet.$nativeOnly$ = true;
 export default [stylesheet];

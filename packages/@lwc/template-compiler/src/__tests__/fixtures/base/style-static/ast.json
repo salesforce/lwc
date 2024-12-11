@@ -4,10 +4,10 @@
         "location": {
             "startLine": 1,
             "startColumn": 1,
-            "endLine": 4,
+            "endLine": 5,
             "endColumn": 12,
             "start": 0,
-            "end": 178,
+            "end": 257,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -17,12 +17,12 @@
                 "end": 10
             },
             "endTag": {
-                "startLine": 4,
+                "startLine": 5,
                 "startColumn": 1,
-                "endLine": 4,
+                "endLine": 5,
                 "endColumn": 12,
-                "start": 167,
-                "end": 178
+                "start": 246,
+                "end": 257
             }
         },
         "directives": [],
@@ -121,6 +121,57 @@
                             "endColumn": 62,
                             "start": 107,
                             "end": 155
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            },
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 4,
+                    "startColumn": 5,
+                    "endLine": 4,
+                    "endColumn": 79,
+                    "start": 171,
+                    "end": 245,
+                    "startTag": {
+                        "startLine": 4,
+                        "startColumn": 5,
+                        "endLine": 4,
+                        "endColumn": 69,
+                        "start": 171,
+                        "end": 235
+                    },
+                    "endTag": {
+                        "startLine": 4,
+                        "startColumn": 69,
+                        "endLine": 4,
+                        "endColumn": 79,
+                        "start": 235,
+                        "end": 245
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "style",
+                        "value": {
+                            "type": "Literal",
+                            "value": "font-size:\t12px;color:red;margin:10px 5px 10px"
+                        },
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 14,
+                            "endLine": 4,
+                            "endColumn": 68,
+                            "start": 180,
+                            "end": 234
                         }
                     }
                 ],

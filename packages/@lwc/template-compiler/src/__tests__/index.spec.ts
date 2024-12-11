@@ -4,8 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { describe, it, expect } from 'vitest';
 import { DiagnosticLevel } from '@lwc/errors';
-import compile, { Config, parse } from '../index';
+import compile, { parse } from '../index';
+import type { Config } from '../index';
 
 describe('option validation', () => {
     it('validated presence of options', () => {
@@ -62,7 +64,7 @@ describe('parse', () => {
         });
     });
 
-    describe('enableStaticContentOptimization: ', () => {
+    describe('enableStaticContentOptimization:', () => {
         const configs: { name: string; config: Config; expected: boolean }[] = [
             {
                 name: 'undefined',
@@ -73,17 +75,15 @@ describe('parse', () => {
             { name: 'true', config: { enableStaticContentOptimization: true }, expected: true },
             { name: 'unspecified', config: {}, expected: true },
         ];
-        configs.forEach(({ name, config, expected }) => {
-            it(name, () => {
-                const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
-                const { code, warnings } = compile(template, '', config);
-                expect(warnings.length).toBe(0);
-                if (expected) {
-                    expect(code).toContain('<img');
-                } else {
-                    expect(code).not.toContain('<img');
-                }
-            });
+        it.for(configs)('$name', ({ config, expected }) => {
+            const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
+            const { code, warnings } = compile(template, '', config);
+            expect(warnings.length).toBe(0);
+            if (expected) {
+                expect(code).toContain('<img');
+            } else {
+                expect(code).not.toContain('<img');
+            }
         });
     });
 });

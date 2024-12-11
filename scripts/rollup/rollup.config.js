@@ -66,6 +66,7 @@ function sharedPlugins() {
                 incremental: true,
                 outputToFilesystem: true,
             }),
+            declarationDir: 'dist', // must match `output.file` in the overall Rollup config
         }),
         replace({
             values: {

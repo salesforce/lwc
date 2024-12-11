@@ -6,9 +6,22 @@
  */
 
 import type { traverse } from 'estree-toolkit';
-import type { Node } from 'estree';
+import type {
+    Identifier,
+    MemberExpression,
+    MethodDefinition,
+    Node,
+    ObjectExpression,
+    PropertyDefinition,
+} from 'estree';
 
 export type Visitors = Parameters<typeof traverse<Node, ComponentMetaState>>[1];
+
+export interface WireAdapter {
+    adapterId: Identifier | MemberExpression;
+    config: ObjectExpression;
+    field: MethodDefinition | PropertyDefinition;
+}
 
 export interface ComponentMetaState {
     // indicates whether the LightningElement subclass is found in the JS being traversed
@@ -35,6 +48,10 @@ export interface ComponentMetaState {
     cssExplicitImports: Map<string, string> | null;
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
-    // tracks the aria-reflected attrs/props that show up in the JS code
-    reflectedPropsInPlay: Set<string>;
+    // the public (`@api`-annotated) fields of the component class
+    publicFields: Array<string>;
+    // the private fields of the component class
+    privateFields: Array<string>;
+    // indicates whether the LightningElement has any wired props
+    wireAdapters: WireAdapter[];
 }

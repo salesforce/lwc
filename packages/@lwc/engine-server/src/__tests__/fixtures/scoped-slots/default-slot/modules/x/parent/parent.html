@@ -1,0 +1,9 @@
+<template>
+    <x-child>
+        <!-- TODO [#5020]: Fix rendering of scoped slot content, so that content outside of the template renders correctly with engine-server -->
+        <span>Slotted content outside of template</span>
+        <template lwc:slot-data="data">
+            <span>Slotted content within template {data.id}</span>
+        </template>
+    </x-child>
+</template>

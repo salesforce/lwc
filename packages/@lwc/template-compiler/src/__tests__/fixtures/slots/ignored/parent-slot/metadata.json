@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1201,
+            "message": "LWC1201: The slot attribute in <span> will be ignored due to its ancestor <slot>. It must be a direct child of the containing component.",
+            "level": 2,
+            "location": {
+                "line": 4,
+                "column": 19,
+                "start": 58,
+                "length": 10
+            }
+        }
+    ]
+}

@@ -4,10 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
-import { rollup, RollupLog } from 'rollup';
+import path from 'node:path';
+import { describe, it, expect } from 'vitest';
+import { rollup } from 'rollup';
 import { APIVersion } from '@lwc/shared';
 import lwc from '../../index';
+import type { RollupLog } from 'rollup';
 
 function normalizeLog(log: RollupLog) {
     return {
@@ -37,6 +39,7 @@ describe('warnings', () => {
                     apiVersion: APIVersion.V58_244_SUMMER_23,
                 }),
             ],
+            external: ['lwc'],
             onwarn(warning) {
                 warnings.push(warning);
             },

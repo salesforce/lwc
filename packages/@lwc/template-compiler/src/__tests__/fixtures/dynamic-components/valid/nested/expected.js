@@ -23,9 +23,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
         classMap: stc0,
         props: stc1,
         key: 0,
-        on: {
-          click: _m0 || ($ctx._m0 = api_bind($cmp.handleOuterClick)),
-        },
+        on:
+          _m0 ||
+          ($ctx._m0 = {
+            click: api_bind($cmp.handleOuterClick),
+          }),
       },
       [
         api_static_fragment($fragment1, 2),
@@ -35,9 +37,11 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             classMap: stc0,
             props: stc1,
             key: 3,
-            on: {
-              click: _m1 || ($ctx._m1 = api_bind($cmp.handleOuterClick)),
-            },
+            on:
+              _m1 ||
+              ($ctx._m1 = {
+                click: api_bind($cmp.handleOuterClick),
+              }),
           },
           [api_static_fragment($fragment2, 5)]
         ),

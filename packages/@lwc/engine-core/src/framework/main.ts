@@ -37,7 +37,7 @@ export { getComponentDef, isComponentConstructor } from './def';
 export { profilerControl as __unstable__ProfilerControl } from './profiler';
 export { reportingControl as __unstable__ReportingControl } from './reporting';
 export { swapTemplate, swapComponent, swapStyle } from './hot-swaps';
-export { setHooks } from './overridable-hooks';
+export { setHooks } from '@lwc/shared';
 export { freezeTemplate } from './freeze-template';
 export { getComponentAPIVersion } from './component';
 export { shouldBeFormAssociated } from './utils';
@@ -47,14 +47,14 @@ export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
 export type { RendererAPI, LifecycleCallback } from './renderer';
-export type { Stylesheets } from './stylesheet';
 export type { Template } from './template';
 export type {
     ConfigValue as WireConfigValue,
     ContextConsumer as WireContextConsumer,
     ContextProvider as WireContextProvider,
+    ContextProviderOptions as WireContextProviderOptions,
     ContextValue as WireContextValue,
-    DataCallback,
+    DataCallback as WireDataCallback,
     WireAdapter,
     WireAdapterConstructor,
     WireAdapterSchemaValue,
@@ -72,3 +72,5 @@ export { default as wire } from './decorators/wire';
 export { readonly } from './readonly';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
+export { setTrustedSignalSet } from '@lwc/shared';
+export type { Stylesheet, Stylesheets } from '@lwc/shared';

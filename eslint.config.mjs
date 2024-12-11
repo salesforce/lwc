@@ -1,16 +1,30 @@
-// @ts-check
-import jest from 'eslint-plugin-jest';
+/*
+ * Copyright (c) 2024, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
-// @ts-expect-error CJS module; TS can't detect that it has a default export
 import _import from 'eslint-plugin-import';
 import header from 'eslint-plugin-header';
-import { fixupPluginRules } from '@eslint/compat';
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import gitignore from 'eslint-config-flat-gitignore';
+import vitest from '@vitest/eslint-plugin';
+import { PUBLIC_PACKAGES as publicPackageData } from './scripts/shared/packages.mjs';
+// convert filepath to eslint glob
+const PUBLIC_PACKAGES = publicPackageData.map(({ path }) => `${path}/**`);
+
+// Workaround for plugin schema validation failing in eslint v9
+// Ref: https://github.com/Stuk/eslint-plugin-header/issues/57#issuecomment-2378485611
+header.rules.header.meta.schema = false;
 
 export default tseslint.config(
+    // ------------- //
+    // Global config //
+    // ------------- //
+
     gitignore(),
     {
         ignores: ['**/fixtures'],
@@ -18,11 +32,9 @@ export default tseslint.config(
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     {
-        files: ['**/*.ts', '**/*.mjs', '**/*.js'],
-
         plugins: {
             '@lwc/lwc-internal': lwcInternal,
-            import: fixupPluginRules(_import),
+            import: _import,
             header,
         },
 
@@ -36,20 +48,36 @@ export default tseslint.config(
             },
 
             parserOptions: {
-                project: true,
+                projectService: {
+                    allowDefaultProject: [
+                        // I'm not sure why these files aren't picked up... :\
+                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-code.ts',
+                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-type.ts',
+                        'packages/@lwc/module-resolver/scripts/test/setup-test.ts',
+                    ],
+                },
             },
         },
 
         rules: {
-            '@typescript-eslint/no-unused-vars': [
-                'error',
-                {
-                    argsIgnorePattern: '^_',
-                },
-            ],
-
+            // Rules without config, sorted alphabetically by namespace, then rule
+            '@lwc/lwc-internal/no-invalid-todo': 'error',
+            '@typescript-eslint/consistent-type-imports': 'error',
+            '@typescript-eslint/no-base-to-string': 'off',
+            '@typescript-eslint/no-explicit-any': 'off',
+            '@typescript-eslint/no-redundant-type-constituents': 'off',
+            '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+            '@typescript-eslint/no-unsafe-argument': 'off',
+            '@typescript-eslint/no-unsafe-assignment': 'off',
+            '@typescript-eslint/no-unsafe-call': 'off',
+            '@typescript-eslint/no-unsafe-enum-comparison': 'off',
+            '@typescript-eslint/no-unsafe-member-access': 'off',
+            '@typescript-eslint/no-unsafe-return': 'off',
+            '@typescript-eslint/restrict-template-expressions': 'off',
+            '@typescript-eslint/unbound-method': 'off',
             'block-scoped-var': 'error',
             'no-alert': 'error',
+            // Deprecated, replace with rule in eslint-plugin-n when removed
             'no-buffer-constructor': 'error',
             'no-console': 'error',
             'no-eval': 'error',
@@ -59,8 +87,47 @@ export default tseslint.config(
             'no-iterator': 'error',
             'no-lone-blocks': 'error',
             'no-proto': 'error',
-            'no-new-require': 'error',
+            'no-self-compare': 'error',
+            'no-undef-init': 'error',
+            'no-useless-computed-key': 'error',
+            'no-useless-return': 'error',
+            // Deprecated, replace with rule in @stylistic/eslint-plugin-js when removed
+            'template-curly-spacing': 'error',
+            yoda: 'error',
 
+            // Rule with config, sorted alphabetically by namespace, then rule
+            '@typescript-eslint/no-unused-vars': [
+                'error',
+                {
+                    argsIgnorePattern: '^_',
+                    caughtErrorsIgnorePattern: '^_',
+                    destructuredArrayIgnorePattern: '^_',
+                },
+            ],
+            'import/order': [
+                'error',
+                {
+                    groups: [
+                        'builtin',
+                        'external',
+                        'internal',
+                        'parent',
+                        'index',
+                        'sibling',
+                        'object',
+                        'type',
+                    ],
+                },
+            ],
+            'no-restricted-imports': [
+                'error',
+                {
+                    name: '@lwc/features',
+                    importNames: ['lwcRuntimeFlags', 'runtimeFlags', 'default'],
+                    message:
+                        'Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead.',
+                },
+            ],
             'no-restricted-properties': [
                 'error',
                 {
@@ -117,12 +184,6 @@ export default tseslint.config(
                     message: 'Use the bare global lwcRuntimeFlags instead.',
                 },
             ],
-
-            'no-self-compare': 'error',
-            'no-undef-init': 'error',
-            'no-useless-computed-key': 'error',
-            'no-useless-return': 'error',
-
             'prefer-const': [
                 'error',
                 {
@@ -130,78 +191,23 @@ export default tseslint.config(
                     ignoreReadBeforeAssign: true,
                 },
             ],
-
-            'template-curly-spacing': 'error',
-            yoda: 'error',
-            '@lwc/lwc-internal/no-invalid-todo': 'error',
-
-            'import/order': [
-                'error',
-                {
-                    groups: [
-                        'builtin',
-                        'external',
-                        'internal',
-                        'parent',
-                        'index',
-                        'sibling',
-                        'object',
-                        'type',
-                    ],
-                },
-            ],
-
-            'no-restricted-imports': [
-                'error',
-                {
-                    name: '@lwc/features',
-                    importNames: ['lwcRuntimeFlags', 'runtimeFlags', 'default'],
-                    message:
-                        'Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead.',
-                },
-            ],
-
-            '@typescript-eslint/no-unsafe-enum-comparison': 'off',
-            '@typescript-eslint/unbound-method': 'off',
-            '@typescript-eslint/no-base-to-string': 'off',
-            '@typescript-eslint/restrict-template-expressions': 'off',
-            '@typescript-eslint/no-explicit-any': 'off',
-            '@typescript-eslint/no-redundant-type-constituents': 'off',
-            '@typescript-eslint/no-unsafe-member-access': 'off',
-            '@typescript-eslint/no-unsafe-call': 'off',
-            '@typescript-eslint/no-unsafe-assignment': 'off',
-            '@typescript-eslint/no-unsafe-return': 'off',
-            '@typescript-eslint/no-unsafe-argument': 'off',
-            '@typescript-eslint/no-unnecessary-type-assertion': 'off',
-        },
-    },
-    {
-        files: [
-            '**/__tests__/**',
-            'packages/@lwc/*/scripts/**',
-            'packages/@lwc/synthetic-shadow/index.js',
-        ],
-
-        languageOptions: {
-            ecmaVersion: 5,
-            sourceType: 'script',
-
-            parserOptions: {
-                project: './tsconfig.eslint.json',
-            },
         },
     },
     {
         files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
         ...tseslint.configs.disableTypeChecked,
     },
+
+    // -------------------------------- //
+    // Scripts, tests, and config files //
+    // -------------------------------- //
+    // aka things that run in node and might still use `require`
     {
         files: [
             'commitlint.config.js',
-            '**/jest.config.cjs',
-            'packages/@lwc/perf-benchmarks-components/**',
             '**/scripts/**',
-            '**/jest.config.js',
+            '**/rollup.config.js',
+            '**/rollup.config.mjs',
         ],
         languageOptions: {
             globals: {
@@ -210,21 +216,83 @@ export default tseslint.config(
         },
     },
     {
-        files: [
-            '**/scripts/**',
-            '**/jest.config.js',
-            'packages/@lwc/integration-tests/src/components/**/*.spec.js',
-        ],
+        files: ['**/scripts/**', 'packages/@lwc/integration-tests/src/components/**/*.spec.js'],
 
         rules: {
-            '@typescript-eslint/no-var-requires': 'off',
+            '@typescript-eslint/no-require-imports': 'off',
         },
     },
     {
-        files: ['packages/lwc/**'],
+        files: ['packages/@lwc/integration-karma/**'],
+
+        languageOptions: {
+            globals: {
+                ...globals.jest,
+                ...globals.es2021,
+            },
+        },
+
+        plugins: {
+            vitest,
+        },
 
         rules: {
-            'no-restricted-imports': 'off',
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect': 'error',
+            'vitest/valid-expect-in-promise': 'error',
+            'vitest/no-conditional-tests': 'error',
+            'vitest/no-done-callback': 'error',
+        },
+    },
+    {
+        files: ['**/__tests__/**'],
+        plugins: {
+            vitest,
+        },
+        rules: {
+            ...vitest.configs.recommended.rules,
+            'vitest/no-focused-tests': 'error',
+            'vitest/valid-expect-in-promise': 'error',
+            'vitest/no-conditional-tests': 'error',
+            'vitest/no-done-callback': 'error',
+        },
+    },
+    {
+        files: ['**/scripts/**'],
+        rules: {
+            'no-console': 'off',
+        },
+    },
+
+    // ---------------------- //
+    // Package-specific rules //
+    // ---------------------- //
+    {
+        // All published files must have a copyright header
+        files: PUBLIC_PACKAGES,
+        ignores: PUBLIC_PACKAGES.flatMap((pkg) => [
+            `${pkg}/vitest.config.mjs`,
+            `${pkg}/src/__tests__/**`,
+        ]),
+        rules: {
+            'header/header': [
+                'error',
+                'block',
+                [
+                    '',
+                    {
+                        pattern:
+                            '^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$',
+                        // This copyright text should match the text used in the rollup config
+                        template: ` * Copyright (c) ${new Date().getFullYear()}, Salesforce, Inc.`,
+                    },
+                    ' * All rights reserved.',
+                    ' * SPDX-License-Identifier: MIT',
+                    ' * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT',
+                    ' ',
+                ],
+                1 /* newline after header */,
+            ],
         },
     },
     {
@@ -241,26 +309,6 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/__tests__/**', '**/__mocks__/**', 'packages/@lwc/integration-karma/**'],
-
-        languageOptions: {
-            globals: {
-                ...globals.jest,
-                ...globals.es2021,
-            },
-        },
-
-        plugins: {
-            jest,
-        },
-
-        rules: {
-            'jest/no-focused-tests': 'error',
-            'jest/valid-expect': 'error',
-            'jest/valid-expect-in-promise': 'error',
-        },
-    },
-    {
         files: ['packages/@lwc/integration-tests/**'],
 
         languageOptions: {
@@ -271,12 +319,6 @@ export default tseslint.config(
                 ...globals.mocha,
                 ...globals.node,
             },
-        },
-    },
-    {
-        files: ['**/scripts/**', '**/jest.config.js'],
-        rules: {
-            'no-console': 'off',
         },
     },
     {
@@ -300,6 +342,7 @@ export default tseslint.config(
         languageOptions: {
             globals: {
                 browser: true,
+                ...globals.node,
             },
         },
     },
@@ -333,21 +376,25 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/rollup.config.js'],
-        languageOptions: {
-            globals: {
-                process: true,
-            },
+        // We normally restrict importing @lwc/features, but we need to do so in these files
+        files: ['packages/lwc/features.js', 'packages/lwc/features.d.ts'],
+        rules: {
+            'no-restricted-imports': 'off',
         },
     },
     {
-        files: ['playground/**/*.js'],
+        files: ['playground/**'],
         languageOptions: {
             globals: {
                 ...globals.browser,
             },
         },
     },
+
+    // --------------------- //
+    // Weird file extensions //
+    // --------------------- //
+
     {
         // These are empty files used to help debug test fixtures
         files: ['**/.only'],

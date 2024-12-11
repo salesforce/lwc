@@ -45,26 +45,26 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
 
 **Parameters:**
 
--   `source` (string, required) - the HTML template source to compile.
--   `filename` (string, required) - the source filename with extension.
--   `options` (object, required) - the options to used to compile the HTML template source.
+- `source` (string, required) - the HTML template source to compile.
+- `filename` (string, required) - the source filename with extension.
+- `options` (object, required) - the options to used to compile the HTML template source.
 
 **Options:**
 
--   `name` (type: `string`, optional, `undefined` by default) - name of the component, e.g. `foo` in `x/foo`.
--   `namespace` (type: `string`, optional, `undefined` by default) - namespace of the component, e.g. `x` in `x/foo`.
--   `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
--   `experimentalComplexExpressions` (boolean, optional, `false` by default) - set to `true` to enable use of (a subset of) JavaScript expressions in place of template bindings.
--   `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow the usage of `lwc:dynamic` directives in the template.
--   `enableDynamicComponents` (boolean, optional, `false` by default) - set to `true` to enable `lwc:is` directive in the template.
--   `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` to disable the default behavior of stripping HTML comments.
--   `enableStaticContentOptimization` (boolean, optional, `true` by default) - set to `false` to disable static content optimizations.
--   `enableLwcSpread` (boolean, optional, `true` by default) - Deprecated. Ignored by template-compiler. `lwc:spread` is always enabled.
--   `customRendererConfig` (CustomRendererConfig, optional) - specifies a configuration to use to match elements. Matched elements will get a custom renderer hook in the generated template.
--   `instrumentation` (InstrumentationObject, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
--   `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output.
+- `name` (type: `string`, optional, `undefined` by default) - name of the component, e.g. `foo` in `x/foo`.
+- `namespace` (type: `string`, optional, `undefined` by default) - namespace of the component, e.g. `x` in `x/foo`.
+- `experimentalComputedMemberExpression` (boolean, optional, `false` by default) - set to `true` to enable computed member expression in the template, eg: `{list[0].name}`.
+- `experimentalComplexExpressions` (boolean, optional, `false` by default) - set to `true` to enable use of (a subset of) JavaScript expressions in place of template bindings.
+- `experimentalDynamicDirective` (boolean, optional, `false` by default) - set to `true` to allow the usage of `lwc:dynamic` directives in the template.
+- `enableDynamicComponents` (boolean, optional, `false` by default) - set to `true` to enable `lwc:is` directive in the template.
+- `preserveHtmlComments` (boolean, optional, `false` by default) - set to `true` to disable the default behavior of stripping HTML comments.
+- `enableStaticContentOptimization` (boolean, optional, `true` by default) - set to `false` to disable static content optimizations.
+- `enableLwcSpread` (boolean, optional, `true` by default) - Deprecated. Ignored by template-compiler. `lwc:spread` is always enabled.
+- `customRendererConfig` (CustomRendererConfig, optional) - specifies a configuration to use to match elements. Matched elements will get a custom renderer hook in the generated template.
+- `instrumentation` (InstrumentationObject, optional) - instrumentation object to gather metrics and non-error logs for internal use. See the `@lwc/errors` package for details on the interface.
+- `disableSyntheticShadowSupport` (type: `boolean`, default: `false`) - Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output.
 
-    -   Example 1: Config to match `<use>` elements under the `svg` namespace and have `href` attribute set.
+    - Example 1: Config to match `<use>` elements under the `svg` namespace and have `href` attribute set.
 
         ```
         {
@@ -81,7 +81,7 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
         }
         ```
 
-    -   Example 2: Config to match `<script>` elements regardless of the attribute set. _Note:_ When `attributes` is not specified, attribute matching is skipped.
+    - Example 2: Config to match `<script>` elements regardless of the attribute set. _Note:_ When `attributes` is not specified, attribute matching is skipped.
         ```
         {
             customRendererConfig: {
@@ -95,14 +95,14 @@ const { code, warnings } = compile(`<template><h1>Hello World!</h1></template>`,
         }
         ```
 
--   `apiVersion` (type: `number`, optional) - API version to associate with the compiled template.
+- `apiVersion` (type: `number`, optional) - API version to associate with the compiled template.
 
 **Return:**
 The method returns an object with the following fields:
 
--   `code` (string) - the compiled template.
--   `warnings` (array) - the list of warnings produced when compiling the template. Each warning has the following fields:
-    -   message (string) - the warning message.
-    -   level (string) - the severity of the warning: `info`, `warning`, `error`.
-    -   start (number) - the start index in the source code producing the warning.
-    -   length (number) - the character length in the source code producing the warning.
+- `code` (string) - the compiled template.
+- `warnings` (array) - the list of warnings produced when compiling the template. Each warning has the following fields:
+    - message (string) - the warning message.
+    - level (string) - the severity of the warning: `info`, `warning`, `error`.
+    - start (number) - the start index in the source code producing the warning.
+    - length (number) - the character length in the source code producing the warning.

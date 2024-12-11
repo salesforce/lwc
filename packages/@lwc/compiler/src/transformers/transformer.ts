@@ -7,33 +7,15 @@
 import * as path from 'path';
 
 import { isString } from '@lwc/shared';
-import {
-    TransformerErrors,
-    generateCompilerError,
-    invariant,
-    CompilerDiagnostic,
-} from '@lwc/errors';
+import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 
-import { NormalizedTransformOptions, TransformOptions, validateTransformOptions } from '../options';
+import { validateTransformOptions } from '../options';
 import styleTransform from './style';
 import templateTransformer from './template';
 import scriptTransformer from './javascript';
-
-/** The object returned after transforming code. */
-export interface TransformResult {
-    /** The compiled source code. */
-    code: string;
-    /** The generated source map. */
-    map: unknown;
-    /** Any diagnostic warnings that may have occurred. */
-    warnings?: CompilerDiagnostic[];
-    /**
-     * String tokens used for style scoping in synthetic shadow DOM and `*.scoped.css`, as either
-     * attributes or classes.
-     */
-    cssScopeTokens?: string[];
-}
+import type { NormalizedTransformOptions, TransformOptions } from '../options';
+import type { TransformResult } from './shared';
 
 /**
  * Transform the passed source code.
@@ -66,7 +48,7 @@ export function transform(
             const res = transformSync(src, filename, options);
             resolve(res);
         } catch (error) {
-            reject(error);
+            reject(error as Error);
         }
     });
 }
@@ -111,16 +93,15 @@ function transformFile(
     filename: string,
     options: NormalizedTransformOptions
 ): TransformResult {
-    let transformer;
-
     switch (path.extname(filename)) {
         case '.html':
-            transformer = options.targetSSR ? compileTemplateForSSR : templateTransformer;
-            break;
+            if (options.targetSSR) {
+                return compileTemplateForSSR(src, filename, options, options.ssrMode);
+            }
+            return templateTransformer(src, filename, options);
 
         case '.css':
-            transformer = styleTransform;
-            break;
+            return styleTransform(src, filename, options);
 
         case '.tsx':
         case '.jsx':
@@ -128,8 +109,10 @@ function transformFile(
         case '.js':
         case '.mts':
         case '.mjs':
-            transformer = options.targetSSR ? compileComponentForSSR : scriptTransformer;
-            break;
+            if (options.targetSSR) {
+                return compileComponentForSSR(src, filename, options, options.ssrMode);
+            }
+            return scriptTransformer(src, filename, options);
 
         default:
             throw generateCompilerError(TransformerErrors.NO_AVAILABLE_TRANSFORMER, {
@@ -137,6 +120,4 @@ function transformFile(
                 origin: { filename },
             });
     }
-
-    return transformer(src, filename, options);
 }

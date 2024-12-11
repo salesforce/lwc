@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isUndefined } from '@lwc/shared';
-import { WireConfigValue, WireAdapter, DataCallback } from '@lwc/engine-core';
 import { ValueChangedEvent } from './value-changed-event';
+import type { WireConfigValue, WireAdapter, WireDataCallback } from '@lwc/engine-core';
 
 const { freeze, defineProperty, isExtensible } = Object;
 
@@ -14,7 +14,7 @@ const { freeze, defineProperty, isExtensible } = Object;
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
 const DeprecatedWiredParamsMeta = '$$DeprecatedWiredParamsMetaKey$$';
 
-interface LegacyAdapterDataCallback extends DataCallback {
+interface LegacyAdapterDataCallback extends WireDataCallback {
     [DeprecatedWiredElementHost]: any;
     [DeprecatedWiredParamsMeta]: string[];
 }

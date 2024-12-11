@@ -42,7 +42,7 @@ versions < 0.17: "lwc-engine": "0.16.8"
 versions >= 0.17: "lwc-engine": "0.17.2"
 -->
 
--   LWC: x.x.x
+- LWC: x.x.x
 
 **Possible Solution**
 

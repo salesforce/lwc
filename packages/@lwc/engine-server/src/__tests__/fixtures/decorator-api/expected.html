@@ -1,0 +1,20 @@
+<x-parent>
+  <template shadowrootmode="open">
+    <x-child>
+      <template shadowrootmode="open">
+        <div>
+          static-public: parent
+        </div>
+        <div>
+          static-private: child
+        </div>
+        <div>
+          dynamic-public: parent
+        </div>
+        <div>
+          dynamic-private: child
+        </div>
+      </template>
+    </x-child>
+  </template>
+</x-parent>

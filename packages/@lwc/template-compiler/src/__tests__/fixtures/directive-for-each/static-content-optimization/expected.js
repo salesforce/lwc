@@ -1,7 +1,7 @@
 import _implicitStylesheets from "./static-content-optimization.css";
 import _implicitScopedStylesheets from "./static-content-optimization.scoped.css?scoped=true";
 import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<div${3}><span${"a1:data-dynamic"}${3}></span><span data-static="bar"${3}></span><span${"s3"}${3}></span><span style="quux"${3}></span><span${3}>${"t6"}</span><span${"a7:data-dynamic"}${"s7"}${"c7"}${2}>${"t8"}</span></div>`;
+const $fragment1 = parseFragment`<div${3}><span${"a1:data-dynamic"}${3}></span><span data-static="bar"${3}></span><span${"s3"}${3}></span><span${3}></span><span style="background: red;"${3}></span><span${3}>${"t7"}</span><span${"a8:data-dynamic"}${"s8"}${"c8"}${2}>${"t9"}</span></div>`;
 const stc0 = {
   key: 0,
 };
@@ -38,12 +38,12 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             null
           ),
           api_static_part(
-            6,
+            7,
             null,
             "concatenated text " + api_dynamic_text(item.text)
           ),
           api_static_part(
-            7,
+            8,
             {
               style: $cmp.baaz,
               className: api_normalize_class_name($cmp.bar),
@@ -53,7 +53,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
             },
             null
           ),
-          api_static_part(8, null, api_dynamic_text(item.text)),
+          api_static_part(9, null, api_dynamic_text(item.text)),
         ]);
       })
     ),

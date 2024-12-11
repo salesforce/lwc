@@ -1,0 +1,12 @@
+<template>
+    <ul>
+        <template for:each={items} for:item="item" for:index="index">
+            <li key={item} data-index={index} data-item={item}>
+                {index} - {item}
+            </li>
+            <x-child key={item} data-index={index} data-item={item}>
+                {index} - {item}
+            </x-child>
+        </template>
+    </ul>
+</template>

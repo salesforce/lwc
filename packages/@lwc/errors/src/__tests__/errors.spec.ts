@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs from 'node:fs';
+import { describe, it, expect } from 'vitest';
 import { hasOwnProperty } from '@lwc/shared';
 import * as CompilerErrors from '../compiler/error-info';
-import { LWCErrorInfo } from '../shared/types';
+import type { LWCErrorInfo } from '../shared/types';
 
 const ERROR_CODE_RANGES = {
     compiler: {
@@ -22,10 +23,12 @@ interface CustomMatchers<R = unknown> {
     toBeInRange: (range: { min: number; max: number }, key: string) => R;
 }
 
-import 'vitest';
-
 declare module 'vitest' {
+    // TypeScript interfaces get merged; this is a false positive
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface Assertion<T = any> extends CustomMatchers<T> {}
+    // TypeScript interfaces get merged; this is a false positive
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface AsymmetricMatchersContaining extends CustomMatchers {}
 }
 

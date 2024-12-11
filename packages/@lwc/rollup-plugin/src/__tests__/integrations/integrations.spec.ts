@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
+import path from 'node:path';
+import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
 
 import lwc from '../../index';
@@ -15,6 +16,7 @@ describe('integration', () => {
             const bundle = await rollup({
                 input: path.resolve(__dirname, 'fixtures/typescript/typescript.ts'),
                 plugins: [lwc()],
+                external: ['lwc'],
             });
 
             const result = await bundle.generate({

@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'fs';
-import path from 'path';
+import path from 'node:path';
+import { describe } from 'vitest';
 import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 
-import compiler, { Config } from '../index';
+import compiler from '../index';
 
 describe('fixtures', () => {
     testFixtureDir(
@@ -18,14 +18,10 @@ describe('fixtures', () => {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.html',
         },
-        async ({ src, dirname }) => {
-            const configPath = path.resolve(dirname, 'config.json');
+        async ({ src, dirname, config }) => {
             const filename = path.basename(dirname);
 
-            let config: Config = { namespace: 'x', name: filename };
-            if (fs.existsSync(configPath)) {
-                config = { ...config, ...require(configPath) };
-            }
+            config = { namespace: 'x', name: filename, ...config };
 
             const compiled = compiler(src, filename, config);
             const { warnings, root } = compiled;

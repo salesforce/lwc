@@ -17,7 +17,7 @@ window.HydrateTest = (function (lwc, testUtils) {
         const html = '<div><template shadowrootmode="open"></template></div>';
         try {
             return !!Document.parseHTMLUnsafe(html).body.firstChild.shadowRoot;
-        } catch (err) {
+        } catch (_err) {
             return false;
         }
     }

@@ -5,15 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
-import vm from 'vm';
+import path from 'node:path';
+import vm from 'node:vm';
+import { vi, describe, it, expect } from 'vitest';
 import { parseFragment, serialize } from 'parse5';
-import { rollup, RollupLog } from 'rollup';
+import { rollup } from 'rollup';
 import replace from '@rollup/plugin-replace';
 import virtual from '@rollup/plugin-virtual';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { vi } from 'vitest';
 import * as engineServer from '../index';
+import type { RollupLog } from 'rollup';
 
 /**
  * The goal of these tests is to serialize the HTML, and then parse it with a real
@@ -92,7 +93,7 @@ describe('html serialization', () => {
         const { html, warnings } = await compileComponent('x-html-void', 'x/htmlVoid');
         const parsedHtml = parseAndReserialize(html);
         expect(parsedHtml).toEqual(
-            '<x-html-void><input type="text" value="one"><input type="text" value="two"></x-html-void>'
+            '<x-html-void><input type="text"><input type="text"></x-html-void>'
         );
         expect(warnings.length).toEqual(0);
     });
@@ -104,7 +105,7 @@ describe('html serialization', () => {
         );
         const parsedHtml = parseAndReserialize(html);
         expect(parsedHtml).toEqual(
-            '<x-html-void-adjacent-text>before<input type="text" value="one">middle<input type="text" value="two">after</x-html-void-adjacent-text>'
+            '<x-html-void-adjacent-text>before<input type="text">middle<input type="text">after</x-html-void-adjacent-text>'
         );
         expect(warnings.length).toEqual(0);
     });
@@ -125,7 +126,7 @@ describe('html serialization', () => {
         );
         const parsedHtml = parseAndReserialize(html);
         expect(parsedHtml).toEqual(
-            '<x-html-void-html-namespace><div xmlns="http://www.w3.org/1999/xhtml"><input type="text" value="one"><input type="text" value="two"></div></x-html-void-html-namespace>'
+            '<x-html-void-html-namespace><div xmlns="http://www.w3.org/1999/xhtml"><input type="text"><input type="text"></div></x-html-void-html-namespace>'
         );
         expect(warnings).toHaveLength(1);
         expect(warnings[0].message).toContain(

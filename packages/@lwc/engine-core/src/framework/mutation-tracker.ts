@@ -1,20 +1,15 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2024, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isNull, isObject } from '@lwc/shared';
-import { Signal } from '@lwc/signals';
-import {
-    JobFunction,
-    CallbackFunction,
-    ReactiveObserver,
-    valueMutated,
-    valueObserved,
-} from '../libs/mutation-tracker';
+import { isFunction, isNull, isObject, isTrustedSignal } from '@lwc/shared';
+import { ReactiveObserver, valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
-import { VM } from './vm';
+import type { Signal } from '@lwc/signals';
+import type { JobFunction, CallbackFunction } from '../libs/mutation-tracker';
+import type { VM } from './vm';
 
 const DUMMY_REACTIVE_OBSERVER = {
     observe(job: JobFunction) {
@@ -49,11 +44,12 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         'value' in target &&
         'subscribe' in target &&
         isFunction(target.subscribe) &&
+        isTrustedSignal(target) &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
     ) {
         // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
-        subscribeToSignal(component, target as Signal<any>, tro.notify.bind(tro));
+        subscribeToSignal(component, target as Signal<unknown>, tro.notify.bind(tro));
     }
 }
 

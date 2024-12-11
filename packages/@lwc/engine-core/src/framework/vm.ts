@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    APIVersion,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
@@ -20,12 +19,12 @@ import {
     isObject,
     isTrue,
     isUndefined,
+    flattenStylesheets,
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
 import { logError, logWarnOnce } from '../shared/logger';
 
-import { HostNode, HostElement, RendererAPI } from './renderer';
 import {
     renderComponent,
     markComponentAsDirty,
@@ -33,36 +32,34 @@ import {
     getComponentAPIVersion,
     resetTemplateObserverAndUnsubscribe,
 } from './component';
-import { addCallbackToNextTick, EmptyArray, EmptyObject, flattenStylesheets } from './utils';
+import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
-import { Template } from './template';
-import { ComponentDef, getComponentInternalDef } from './def';
-import {
-    LightningElement,
-    LightningElementConstructor,
-    LightningElementShadowRoot,
-} from './base-lightning-element';
+import { getComponentInternalDef } from './def';
 import {
     logOperationStart,
     logOperationEnd,
     OperationId,
     logGlobalOperationEnd,
     logGlobalOperationStart,
+    logGlobalOperationStartWithVM,
+    logGlobalOperationEndWithVM,
 } from './profiler';
 import { patchChildren } from './rendering';
-import { ReactiveObserver } from './mutation-tracker';
+import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logger';
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
-import {
-    VNodes,
-    VCustomElement,
-    VNode,
-    VNodeType,
-    VBaseElement,
-    isVFragment,
-    VStaticPartElement,
-} from './vnodes';
-import { Stylesheet, Stylesheets } from './stylesheet';
+import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
+import type { ReactiveObserver } from './mutation-tracker';
+import type {
+    LightningElement,
+    LightningElementConstructor,
+    LightningElementShadowRoot,
+} from './base-lightning-element';
+import type { ComponentDef } from './def';
+import type { Template } from './template';
+import type { HostNode, HostElement, RendererAPI } from './renderer';
+import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -251,7 +248,13 @@ export function rerenderVM(vm: VM) {
 export function connectRootElement(elm: any) {
     const vm = getAssociatedVM(elm);
 
-    logGlobalOperationStart(OperationId.GlobalHydrate, vm);
+    if (process.env.NODE_ENV !== 'production') {
+        // Flush any logs for this VM so that the initial properties from the constructor don't "count"
+        // in subsequent re-renders (lwc-rehydrate). Right now we're at the first render (lwc-hydrate).
+        flushMutationLogsForVM(vm);
+    }
+
+    logGlobalOperationStartWithVM(OperationId.GlobalHydrate, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
@@ -262,7 +265,7 @@ export function connectRootElement(elm: any) {
     runConnectedCallback(vm);
     rehydrate(vm);
 
-    logGlobalOperationEnd(OperationId.GlobalHydrate, vm);
+    logGlobalOperationEndWithVM(OperationId.GlobalHydrate, vm);
 }
 
 export function disconnectRootElement(elm: any) {
@@ -648,6 +651,11 @@ export function runRenderedCallback(vm: VM) {
 let rehydrateQueue: VM[] = [];
 
 function flushRehydrationQueue() {
+    // Gather the logs before rehydration starts so they can be reported at the end of rehydration.
+    // Note that we also clear all existing logs at this point so that subsequent re-renders start from a clean slate.
+    const mutationLogs =
+        process.env.NODE_ENV === 'production' ? undefined : getAndFlushMutationLogs();
+
     logGlobalOperationStart(OperationId.GlobalRehydrate);
 
     if (process.env.NODE_ENV !== 'production') {
@@ -671,7 +679,7 @@ function flushRehydrationQueue() {
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            logGlobalOperationEnd(OperationId.GlobalRehydrate);
+            logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -679,7 +687,7 @@ function flushRehydrationQueue() {
         }
     }
 
-    logGlobalOperationEnd(OperationId.GlobalRehydrate);
+    logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
 }
 
 export function runConnectedCallback(vm: VM) {

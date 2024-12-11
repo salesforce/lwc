@@ -11,12 +11,15 @@ export default {
             text: p.textContent,
         };
     },
-    test(target, snapshot) {
+    test(target, snapshot, consoleCalls) {
         const div = target.querySelector('div');
         const p = div.querySelector('p');
 
         expect(div).toBe(snapshot.div);
         expect(p).toBe(snapshot.p);
         expect(p.textContent).toBe(snapshot.text);
+
+        expect(consoleCalls.warn).toHaveSize(0);
+        expect(consoleCalls.error).toHaveSize(0);
     },
 };

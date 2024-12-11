@@ -7,7 +7,6 @@
 import {
     ArrayPush,
     create,
-    isArray,
     isFunction,
     keys,
     seal,
@@ -15,9 +14,8 @@ import {
     APIFeature,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
-import { Stylesheet, Stylesheets } from './stylesheet';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
-import { LightningElementConstructor } from './base-lightning-element';
+import type { LightningElementConstructor } from './base-lightning-element';
 
 type Callback = () => void;
 
@@ -67,28 +65,6 @@ export function guid(): string {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
-// Borrowed from Vue template compiler.
-// https://github.com/vuejs/vue/blob/531371b818b0e31a989a06df43789728f23dc4e8/src/platforms/web/util/style.js#L5-L16
-const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
-const PROPERTY_DELIMITER = /:(.+)/;
-
-export function parseStyleText(cssText: string): { [name: string]: string } {
-    const styleMap: { [name: string]: string } = {};
-
-    const declarations = cssText.split(DECLARATION_DELIMITER);
-    for (const declaration of declarations) {
-        if (declaration) {
-            const [prop, value] = declaration.split(PROPERTY_DELIMITER);
-
-            if (prop !== undefined && value !== undefined) {
-                styleMap[prop.trim()] = value.trim();
-            }
-        }
-    }
-
-    return styleMap;
-}
-
 // Make a shallow copy of an object but omit the given key
 export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: string) {
     const result: { [key: string]: any } = {};
@@ -98,18 +74,6 @@ export function cloneAndOmitKey(object: { [key: string]: any }, keyToOmit: strin
         }
     }
     return result;
-}
-
-export function flattenStylesheets(stylesheets: Stylesheets): Stylesheet[] {
-    const list: Stylesheet[] = [];
-    for (const stylesheet of stylesheets) {
-        if (!isArray(stylesheet)) {
-            list.push(stylesheet);
-        } else {
-            list.push(...flattenStylesheets(stylesheet));
-        }
-    }
-    return list;
 }
 
 // Throw an error if we're running in prod mode. Ensures code is truly removed from prod mode.

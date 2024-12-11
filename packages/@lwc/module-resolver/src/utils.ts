@@ -8,7 +8,8 @@ import path from 'path';
 import fs from 'fs';
 
 import { LwcConfigError } from './errors';
-import {
+import { isObject } from './shared';
+import type {
     LwcConfig,
     ModuleRecord,
     NpmModuleRecord,
@@ -19,7 +20,6 @@ import {
     InnerResolverOptions,
     RegistryType,
 } from './types';
-import { isObject } from './shared';
 
 const PACKAGE_JSON = 'package.json';
 const LWC_CONFIG_FILE = 'lwc.config.json';
@@ -195,9 +195,12 @@ export function getLwcConfig(dirname: string): LwcConfig {
     const lwcConfigPath = path.resolve(dirname, LWC_CONFIG_FILE);
 
     if (fs.existsSync(lwcConfigPath)) {
+        // Using require() to read JSON, rather than load a module
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         return require(lwcConfigPath);
     } else {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        // Using require() to read JSON, rather than load a module
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
         return require(packageJsonPath).lwc ?? {};
     }
 }

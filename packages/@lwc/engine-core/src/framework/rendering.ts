@@ -23,7 +23,6 @@ import {
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
-import { RendererAPI } from './renderer';
 import { EmptyArray, shouldBeFormAssociated } from './utils';
 import { markComponentAsDirty } from './component';
 import { getScopeTokenClass } from './stylesheet';
@@ -37,7 +36,6 @@ import {
     rerenderVM,
     runConnectedCallback,
     ShadowMode,
-    VM,
     VMState,
 } from './vm';
 import {
@@ -47,18 +45,7 @@ import {
     isVFragment,
     isVScopedSlotFragment,
     isVStatic,
-    Key,
-    MutableVNodes,
-    VBaseElement,
-    VComment,
-    VCustomElement,
-    VElement,
-    VFragment,
-    VNode,
-    VNodes,
     VNodeType,
-    VStatic,
-    VText,
 } from './vnodes';
 
 import { patchAttributes, patchSlotAssignment } from './modules/attrs';
@@ -71,6 +58,21 @@ import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
 import { mountStaticParts, patchStaticParts } from './modules/static-parts';
 import { patchTextVNode, updateTextContent } from './modules/text';
+import type {
+    Key,
+    MutableVNodes,
+    VBaseElement,
+    VComment,
+    VCustomElement,
+    VElement,
+    VFragment,
+    VNode,
+    VNodes,
+    VStatic,
+    VText,
+} from './vnodes';
+import type { VM } from './vm';
+import type { RendererAPI } from './renderer';
 
 export function patchChildren(
     c1: VNodes,

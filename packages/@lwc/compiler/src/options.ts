@@ -4,9 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { InstrumentationObject, CompilerValidationErrors, invariant } from '@lwc/errors';
-import { isUndefined, isBoolean, getAPIVersionFromNumber } from '@lwc/shared';
-import { CustomRendererConfig } from '@lwc/template-compiler';
+import { CompilerValidationErrors, invariant } from '@lwc/errors';
+import {
+    isUndefined,
+    isBoolean,
+    getAPIVersionFromNumber,
+    DEFAULT_SSR_MODE,
+    type CompilationMode,
+} from '@lwc/shared';
+import type { InstrumentationObject } from '@lwc/errors';
+import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
  * Flag indicating that a warning about still using the deprecated `enableLwcSpread`
@@ -31,7 +38,9 @@ const DEFAULT_OPTIONS = {
     experimentalComplexExpressions: false,
     disableSyntheticShadowSupport: false,
     enableLightningWebSecurityTransforms: false,
-};
+    targetSSR: false,
+    ssrMode: DEFAULT_SSR_MODE,
+} as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
     loader: '',
@@ -129,10 +138,10 @@ export interface TransformOptions {
     /** API version to associate with the compiled module. Values correspond to Salesforce platform releases. */
     apiVersion?: number;
     targetSSR?: boolean;
+    ssrMode?: CompilationMode;
 }
 
-type RequiredTransformOptions = Omit<
-    TransformOptions,
+type OptionalTransformKeys =
     | 'name'
     | 'namespace'
     | 'scopedStyles'
@@ -142,20 +151,14 @@ type RequiredTransformOptions = Omit<
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
-    | 'instrumentation'
->;
-export interface NormalizedTransformOptions extends RecursiveRequired<RequiredTransformOptions> {
-    name?: string;
-    namespace?: string;
-    scopedStyles?: boolean;
-    customRendererConfig?: CustomRendererConfig;
-    enableLwcSpread?: boolean;
-    enableLightningWebSecurityTransforms?: boolean;
-    enableDynamicComponents?: boolean;
-    experimentalDynamicDirective?: boolean;
-    experimentalDynamicComponent?: DynamicImportConfig;
-    instrumentation?: InstrumentationObject;
-}
+    | 'instrumentation';
+
+type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;
+type OptionalTransformOptions = Pick<TransformOptions, OptionalTransformKeys>;
+
+export interface NormalizedTransformOptions
+    extends RequiredTransformOptions,
+        OptionalTransformOptions {}
 
 /**
  * Validates that the options conform to the expected shape and normalizes them to a standard format
@@ -244,6 +247,5 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         outputConfig,
         experimentalDynamicComponent,
         apiVersion,
-        targetSSR: !!options.targetSSR,
     };
 }

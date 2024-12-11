@@ -324,7 +324,7 @@ describe('Node.getRootNode', () => {
             expect(processingInstruction.getRootNode(composedTrueConfig)).toBe(fragment);
         });
 
-        if (process.env.NATIVE_SHADOW) {
+        describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
             it('native shadow dom', () => {
                 const shadowHost = document.createElement('div');
                 document.body.appendChild(shadowHost);
@@ -355,6 +355,6 @@ describe('Node.getRootNode', () => {
                 expect(lwcTemplateNode.getRootNode(composedTrueConfig)).toBe(document);
                 expect(lwcTemplateNode.getRootNode()).toBe(syntheticShadowRoot);
             });
-        }
+        });
     });
 });

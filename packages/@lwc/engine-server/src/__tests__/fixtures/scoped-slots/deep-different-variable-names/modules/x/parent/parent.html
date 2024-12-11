@@ -1,0 +1,17 @@
+<template>
+    <x-child param={data1}>
+        <template lwc:slot-data="top">
+            <span>{top.id}</span>
+            <x-child param={data2}>
+                <template lwc:slot-data="middle">
+                    <span>{top.id} {middle.id}</span>
+                    <x-child param={data3}>
+                        <template lwc:slot-data="bottom">
+                            <span>{top.id} {middle.id} {bottom.id}</span>
+                        </template>
+                    </x-child>
+                </template>
+            </x-child>
+        </template>
+    </x-child>
+</template>

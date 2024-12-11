@@ -153,6 +153,6 @@ Note that `<specific-repro>.spec.js` should always be at the top level under `te
 
 ### Pro tips
 
--   `browser.keys(['Shift', 'Tab'])` keeps you in a state where the shift key is toggled so you may run into unexpected results unless you explicitly untoggle the shift key. The recommendation is to use the command `browser.keys(['Shift', 'Tab', 'Shift'])` which toggles and untoggles the shift key in a single command.
+- `browser.keys(['Shift', 'Tab'])` keeps you in a state where the shift key is toggled so you may run into unexpected results unless you explicitly untoggle the shift key. The recommendation is to use the command `browser.keys(['Shift', 'Tab', 'Shift'])` which toggles and untoggles the shift key in a single command.
 
--   On top of the [commands](https://webdriver.io/docs/api.html) already provided by WebdriverIO, this project also provides [custom command](scripts/commands) for common operation like shadow tree query selection and focus.
+- On top of the [commands](https://webdriver.io/docs/api.html) already provided by WebdriverIO, this project also provides [custom command](scripts/commands) for common operation like shadow tree query selection and focus.

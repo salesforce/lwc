@@ -5,18 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
-import { esTemplate } from '../estemplate';
+import { builders as b } from 'estree-toolkit';
 
 import type { NodePath } from 'estree-toolkit';
-import type { Program, ImportDeclaration } from 'estree';
+import type { ImportDeclaration } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const bDefaultStyleImport = esTemplate<ImportDeclaration>`
-    import defaultStylesheets from '${is.literal}';
-`;
-
-export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
+export function catalogAndReplaceStyleImports(
+    path: NodePath<ImportDeclaration>,
+    state: ComponentMetaState
+) {
     const specifier = path.node!.specifiers[0];
 
     if (
@@ -28,30 +26,37 @@ export function catalogStyleImport(path: NodePath<ImportDeclaration>, state: Com
         return;
     }
 
+    // Any file ending in `*.scoped.css` which is directly imported into a Component `*.js` file (and assumed
+    // to be used for `static stylesheets`) is assumed to be scoped, so needs to be marked as such with a query param.
+    // Outside of SSR, this is done by `@lwc/babel-plugin-component`, so we need to emulate its behavior. The goal here
+    // is for `@lwc/template-compiler` to know to add `stylesheet.$scoped$ = true` to its compiled output, which it
+    // detects using the query param.
+    if (path.node?.source.value.endsWith('.scoped.css')) {
+        path.replaceWith(
+            b.importDeclaration(
+                path.node.specifiers,
+                b.literal(path.node.source.value + '?scoped=true')
+            )
+        );
+    }
+
     state.cssExplicitImports = state.cssExplicitImports ?? new Map();
     state.cssExplicitImports.set(specifier.local.name, path.node!.source.value);
 }
 
-const componentNamePattern = /[/\\](?<componentName>[a-z_-]+)[/\\]\k<componentName>\.[tj]s$/;
-
 /**
  * This adds implicit style imports to the compiled component artifact.
  */
-export function addStylesheetImports(ast: Program, state: ComponentMetaState, filepath: string) {
-    const componentName = componentNamePattern.exec(filepath)?.groups?.componentName;
-    if (!componentName) {
-        throw new Error(`Could not determine component name from file path: ${filepath}`);
+export function getStylesheetImports(filepath: string): Array<[Record<string, string>, string]> {
+    const moduleName = /(?<moduleName>[^/]+)\.html$/.exec(filepath)?.groups?.moduleName;
+    if (!moduleName) {
+        throw new Error(`Could not determine module name from file path: ${filepath}`);
     }
 
-    if (state.cssExplicitImports || state.staticStylesheetIds) {
-        throw new Error(
-            `Unimplemented static stylesheets, but found:\n${[...state.cssExplicitImports!].join(
-                '  \n'
-            )}`
-        );
-    }
-
-    ast.body.unshift(bDefaultStyleImport(b.literal(`./${componentName}.css`)));
+    return [
+        [{ default: 'defaultStylesheets' }, `./${moduleName}.css`],
+        [{ default: 'defaultScopedStylesheets' }, `./${moduleName}.scoped.css?scoped=true`],
+    ];
 }
 
 export function catalogStaticStylesheets(ids: string[], state: ComponentMetaState) {

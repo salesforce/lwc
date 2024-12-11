@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { describe, it, expect } from 'vitest';
 import { assert } from '../index';
 
 describe('assert', () => {
@@ -14,16 +15,6 @@ describe('assert', () => {
 
         it('should not throw error for true', () => {
             expect(() => assert.invariant(true, 'foo bar')).not.toThrow();
-        });
-    });
-
-    describe('#isFalse()', () => {
-        it('should throw error that includes custom message', () => {
-            expect(() => assert.isFalse(true, 'foo bar')).toThrowError(/foo bar/);
-        });
-
-        it('should not throw error for true', () => {
-            expect(() => assert.isFalse(false, 'foo bar')).not.toThrow();
         });
     });
 

@@ -6,18 +6,15 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { describe, beforeAll, test, expect } from 'vitest';
 
 const PACKAGE_ROOT = path.join(__dirname, '..');
 
-const expectExportDefaultFromPackageInFile = (pkgName: string, ext: string) => {
+function readPackageFile(pkgName: string, ext: string) {
     const filename = path.join(PACKAGE_ROOT, pkgName + ext);
     const contents = fs.readFileSync(filename, 'utf8');
-    const exportDefaultFromPackage = new RegExp(
-        `^export \\{ default \\} from '@lwc/${pkgName}';$`,
-        'm'
-    );
-    expect(contents).toMatch(exportDefaultFromPackage);
-};
+    return contents;
+}
 
 /*
  * This comment needs to be updated:
@@ -65,8 +62,12 @@ describe('default exports are not forgotten', () => {
         // const aliasedModule = await import(`lwc/${pkg}`);
         // expect(aliasedModule.default).toBe(realModule.default);
         if (hasExplicitDefaultExport(realModule)) {
-            expectExportDefaultFromPackageInFile(pkg, '.d.ts');
-            expectExportDefaultFromPackageInFile(pkg, '.js');
+            const exportDefaultFromPackage = new RegExp(
+                `^export \\{ default \\} from '@lwc/${pkg}';$`,
+                'm'
+            );
+            expect(readPackageFile(pkg, '.d.ts')).toMatch(exportDefaultFromPackage);
+            expect(readPackageFile(pkg, '.js')).toMatch(exportDefaultFromPackage);
         }
     });
 });
