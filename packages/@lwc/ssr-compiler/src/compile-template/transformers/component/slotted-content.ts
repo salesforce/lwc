@@ -141,7 +141,10 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                 leaf.attributes = leaf.attributes.filter((attr) => attr.name !== 'slot');
             }
         });
+        const { isSlotted: originalIsSlotted } = cxt;
+        cxt.isSlotted = ancestorIndices.length > 1 || clone.type === 'Slot';
         const slotContent = irToEs(clone, cxt);
+        cxt.isSlotted = originalIsSlotted;
         results.push(b.expressionStatement(bAddLightContent(slotName, null, slotContent)));
     };
 
@@ -166,10 +169,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     // '' is the default slot name. Text nodes are always slotted into the default slot
                     const slotName =
                         node.type === 'Text' ? b.literal('') : bAttributeValue(node, 'slot');
-                    const { isSlotted: originalIsSlotted } = cxt;
-                    cxt.isSlotted = ancestorIndices.length > 0 || node.type === 'Slot';
                     addLightDomSlotContent(slotName, [...ancestorIndices, i]);
-                    cxt.isSlotted = originalIsSlotted;
                     break;
                 }
             }
