@@ -10,7 +10,7 @@ import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
 import { transmogrify } from '../transmogrify';
-import { replaceLwcImport } from './lwc-import';
+import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
@@ -23,6 +23,12 @@ import type { CompilationMode } from '@lwc/shared';
 
 const visitors: Visitors = {
     $: { scope: true },
+    ExportNamedDeclaration(path) {
+        replaceNamedLwcExport(path);
+    },
+    ExportAllDeclaration(path) {
+        replaceAllLwcExport(path);
+    },
     ImportDeclaration(path, state) {
         if (!path.node || !path.node.source.value || typeof path.node.source.value !== 'string') {
             return;
