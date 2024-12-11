@@ -328,6 +328,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
+                // Note we do not need to use path.sep here because this filename contains
+                // a '/' regardless of Windows vs Unix, since it comes from the Rollup `id`
                 specifier?.split('/') ?? path.dirname(filename).split('/').slice(-2);
 
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
