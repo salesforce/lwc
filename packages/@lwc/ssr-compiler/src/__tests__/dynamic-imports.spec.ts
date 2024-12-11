@@ -33,7 +33,6 @@ describe('dynamic imports', () => {
             const source = `
                 import { LightningElement } from 'lwc';
                 export default class extends LightningElement {}
-                
                 export default async function rando () {
                     await import(${isStrict ? '"x/foo"' : 'woohoo'});
                 }
@@ -72,4 +71,39 @@ describe('dynamic imports', () => {
             }
         }
     );
+
+    test('imports are hoisted only once', () => {
+        const source = `
+                import { LightningElement } from 'lwc';
+                export default class extends LightningElement {}
+                export default async function rando () {
+                    await import('x/foo');
+                    await import('x/bar');
+                    await import('x/baz');
+                }
+            `;
+        const filename = path.resolve('component.js');
+        const { code } = compileComponentForSSR(source, filename, {
+            experimentalDynamicComponent: {
+                loader: 'myLoader',
+                strictSpecifier: true,
+            },
+        });
+
+        const imports = parse(code!)[0];
+
+        expect(imports).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({
+                    n: 'myLoader',
+                }),
+            ])
+        );
+
+        expect(imports.filter((_) => _.n === 'myLoader')).toHaveLength(1);
+
+        expect(code).toContain(`x/foo`);
+        expect(code).toContain(`x/bar`);
+        expect(code).toContain(`x/baz`);
+    });
 });
