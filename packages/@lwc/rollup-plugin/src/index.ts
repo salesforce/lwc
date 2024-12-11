@@ -328,7 +328,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
-                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
+                specifier?.split('/') ?? path.dirname(filename).split('/').slice(-2);
 
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
