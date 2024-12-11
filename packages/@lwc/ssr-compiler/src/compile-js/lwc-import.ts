@@ -39,7 +39,7 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
 /**
  * This handles lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
  */
-export function replaceNamedLwcImport(path: NodePath<ExportNamedDeclaration>) {
+export function replaceNamedLwcExport(path: NodePath<ExportNamedDeclaration>) {
     if (!path.node || !isLwcSource(path)) {
         return;
     }
@@ -56,7 +56,7 @@ export function replaceNamedLwcImport(path: NodePath<ExportNamedDeclaration>) {
 /**
  * This handles all lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
  */
-export function replaceAllLwcImport(path: NodePath<ExportAllDeclaration>) {
+export function replaceAllLwcExport(path: NodePath<ExportAllDeclaration>) {
     if (!path.node || !isLwcSource(path)) {
         return;
     }
