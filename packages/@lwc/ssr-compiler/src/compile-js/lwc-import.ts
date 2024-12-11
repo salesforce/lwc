@@ -61,7 +61,7 @@ export function replaceAllLwcExport(path: NodePath<ExportAllDeclaration>) {
         return;
     }
 
-    path.replaceWith(b.exportAllDeclaration(b.literal('@lwc/ssr-runtime')));
+    path.replaceWith(b.exportAllDeclaration(b.literal('@lwc/ssr-runtime'), path.node.exported));
 }
 
 /**
