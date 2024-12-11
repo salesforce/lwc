@@ -1,0 +1,16 @@
+<template lwc:render-mode="light">
+    <div>Outer!</div>
+    <x-inner lwc:if={isTrue}>
+        {empty}{empty}
+        <template lwc:if={isTrue}>
+            {empty}{empty}
+            <x-deep lwc:if={isTrue}>
+                {empty}{empty}
+                <div lwc:if={isTrue}>{empty}{empty}</div>
+                {empty}{empty}
+            </x-deep>
+            {empty}{empty}
+        </template>
+        {empty}{empty}
+    </x-inner>
+</template>

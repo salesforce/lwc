@@ -27,6 +27,8 @@ export const expectedFailures = new Set([
     'slot-forwarding/slots/dangling/index.js',
     'slot-not-at-top-level/advanced/lwcIf/light/index.js',
     'slot-not-at-top-level/advanced/lwcIf/shadow/index.js',
+    'slot-not-at-top-level/lwcIf-with-adjacent-text-nodes/light/index.js',
+    'slot-not-at-top-level/lwcIf-with-adjacent-text-nodes/shadow/index.js',
     'superclass/render-in-superclass/no-template-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
