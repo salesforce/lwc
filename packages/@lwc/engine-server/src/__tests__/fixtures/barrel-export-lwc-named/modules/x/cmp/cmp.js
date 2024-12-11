@@ -9,7 +9,7 @@ import {
     unwrap,
     createElement,
     renderComponent,
-} from '../../../imports.js';
+} from '../../../barrel.js';
 
 // "Using" the imports so they don't get removed by the compiler
 console.log(
