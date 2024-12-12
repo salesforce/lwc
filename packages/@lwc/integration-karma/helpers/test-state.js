@@ -1,27 +1,20 @@
-window.TestState = (function (testUtils) {
-    /* eslint-disable */
-    /**
-     * This file is generated from repository: git+https://github.com/salesforce/lightning-labs.git
-     * module: packages/@lwc/state
-     */
-    // node_modules/@lwc/signals/dist/index.js
-    function isFalse$1(value, msg) {
-        if (value) {
-            throw new Error(`Assert Violation: ${msg}`);
-        }
-    }
-    var trustedSignals;
-    function setTrustedSignalSet(signals) {
-        isFalse$1(trustedSignals, 'Trusted Signal Set is already set!');
-        trustedSignals = signals;
-    }
-    function addTrustedSignal(signal) {
-        trustedSignals?.add(signal);
-    }
+window.TestState = (function (lwc, testUtils) {
+    const connectContext = Symbol('connectContext');
+    const disconnectContext = Symbol('disconnectContext');
+    const contextEventKey = Symbol('contextEventKey');
+
+    const contextKeys = {
+        connectContext,
+        disconnectContext,
+        contextEventKey,
+    };
+
+    lwc.setContextKeys(contextKeys);
+
     var SignalBaseClass = class {
         constructor() {
             this.subscribers = /* @__PURE__ */ new Set();
-            addTrustedSignal(this);
+            testUtils.addTrustedSignal(this);
         }
         subscribe(onUpdate) {
             this.subscribers.add(onUpdate);
@@ -33,42 +26,6 @@ window.TestState = (function (testUtils) {
             for (const subscriber of this.subscribers) {
                 subscriber();
             }
-        }
-    };
-
-    // src/shared.ts
-    var connectContext = testUtils.getContextKeys().connectContext;
-    var disconnectContext = testUtils.getContextKeys().disconnectContext;
-
-    // src/standalone-context.ts
-    var ConsumedContextSignal = class extends SignalBaseClass {
-        constructor(stateDef) {
-            super();
-            this._value = null;
-            this.unsubscribe = () => {};
-            this.desiredStateDef = stateDef;
-        }
-        get value() {
-            return this._value;
-        }
-        [connectContext](runtimeAdapter) {
-            if (!runtimeAdapter) {
-                throw new Error(
-                    'Implementation error: runtimeAdapter must be present at the time of connect.'
-                );
-            }
-            runtimeAdapter.consumeContext(this.desiredStateDef, (providedContextSignal) => {
-                this._value = providedContextSignal.value;
-                this.notify();
-                this.unsubscribe = providedContextSignal.subscribe(() => {
-                    this._value = providedContextSignal.value;
-                    this.notify();
-                });
-            });
-        }
-        [disconnectContext](_componentId) {
-            this.unsubscribe();
-            this.unsubscribe = () => {};
         }
     };
 
@@ -264,36 +221,18 @@ window.TestState = (function (testUtils) {
         return stateDefinition;
     };
 
-    // src/contextful-lwc.ts
+    const nameStateFactory = defineState((atom, computed, update) => (initialName = 'foo') => {
+        const name = atom(initialName);
 
-    // src/event.ts
-    var contextEventKey = testUtils.getContextKeys().contextEventKey;
-    var EVENT_NAME = 'lightning:context-request';
-    var ContextRequestEvent = class extends CustomEvent {
-        constructor(detail) {
-            super(EVENT_NAME, {
-                bubbles: true,
-                composed: true,
-                detail: { ...detail, key: contextEventKey },
-            });
-        }
-    };
+        const updateName = update({ name }, (_, newName) => ({
+            name: newName,
+        }));
 
-    const nameStateFactory = defineState(
-        (atom, computed, update, fromContext) =>
-            (initialName = 'foo') => {
-                const name = atom(initialName);
-
-                const updateName = update({ name }, (_, newName) => ({
-                    name: newName,
-                }));
-
-                return {
-                    name,
-                    updateName,
-                };
-            }
-    );
+        return {
+            name,
+            updateName,
+        };
+    });
 
     const consumeStateFactory = defineState(
         (atom, computed, update, fromContext) =>
@@ -319,4 +258,4 @@ window.TestState = (function (testUtils) {
         consumeStateFactory,
     };
     /* @lwc/state v0.4.2 */
-})(window.TestUtils);
+})(window.LWC, window.TestUtils);
