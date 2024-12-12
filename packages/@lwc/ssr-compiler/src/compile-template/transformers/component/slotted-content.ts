@@ -79,11 +79,10 @@ const bAddLightContent = esTemplate`
 
 function getShadowSlottedContent(slottableChildren: IrChildNode[], cxt: TransformerContext) {
     return optimizeAdjacentYieldStmts(
-        slottableChildren.flatMap((child) => {
+        irChildrenToEs(slottableChildren, cxt, (child) => {
             if (child.type === 'ExternalComponent') {
                 cxt.isSlotted = false;
             }
-            return irToEs(child, cxt);
         })
     );
 }
