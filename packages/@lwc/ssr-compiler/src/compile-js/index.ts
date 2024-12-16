@@ -49,6 +49,7 @@ const visitors: Visitors = {
         }
         const loader = experimentalDynamicComponent.loader;
         if (!loader) {
+            // if no `loader` defined, then leave dynamic `import()`s as-is
             return;
         }
         const source = path.node!.source!;
