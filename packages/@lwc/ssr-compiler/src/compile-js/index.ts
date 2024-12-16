@@ -190,6 +190,7 @@ const visitors: Visitors = {
     },
     Program: {
         leave(path, state) {
+            // After parsing the whole tree, insert needed imports
             const importDeclarations = state.importManager.getImportDeclarations();
             if (importDeclarations.length > 0) {
                 path.node?.body.unshift(...importDeclarations);
