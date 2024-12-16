@@ -100,6 +100,7 @@ describe('dynamic imports', () => {
             ])
         );
 
+        // Validate that there is exactly one import of the loader
         expect(imports.filter((_) => _.n === 'myLoader')).toHaveLength(1);
 
         expect(code).toContain(`x/foo`);
