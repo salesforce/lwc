@@ -38,6 +38,7 @@ const visitors: Visitors = {
     ImportExpression(path, state) {
         const { experimentalDynamicComponent, importManager } = state;
         if (!experimentalDynamicComponent) {
+            // if no `experimentalDynamicComponent` config, then leave dynamic `import()`s as-is
             return;
         }
         if (experimentalDynamicComponent.strictSpecifier) {
