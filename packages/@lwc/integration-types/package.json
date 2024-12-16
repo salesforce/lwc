@@ -13,8 +13,8 @@
         "lwc": "8.12.0"
     },
     "devDependencies": {
-        "@rollup/plugin-replace": "^6.0.1",
-        "@rollup/plugin-typescript": "^12.1.1",
+        "@rollup/plugin-replace": "^6.0.2",
+        "@rollup/plugin-typescript": "^12.1.2",
         "rollup": "^4.28.1",
         "rollup-plugin-livereload": "^2.0.5",
         "rollup-plugin-serve": "^3.0.0"
