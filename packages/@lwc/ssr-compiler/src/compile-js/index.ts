@@ -52,7 +52,7 @@ const visitors: Visitors = {
             return;
         }
         const source = path.node!.source!;
-        // 1. insert `import { load as __load } from '${loader}' at top of program
+        // 1. insert `import { load as __load } from '${loader}'` at top of program
         importManager.add({ load: '__load' }, loader);
         // 2. replace this import with `__load(${source})`
         path.replaceWith(b.callExpression(b.identifier('__load'), [structuredClone(source)]));
