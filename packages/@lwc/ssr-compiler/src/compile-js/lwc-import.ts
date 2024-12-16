@@ -33,7 +33,9 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
         }
     }
 
-    path.replaceWith(b.importDeclaration(path.node.specifiers, b.literal('@lwc/ssr-runtime')));
+    path.replaceWith(
+        b.importDeclaration(structuredClone(path.node.specifiers), b.literal('@lwc/ssr-runtime'))
+    );
 }
 
 /**
@@ -46,8 +48,8 @@ export function replaceNamedLwcExport(path: NodePath<ExportNamedDeclaration>) {
 
     path.replaceWith(
         b.exportNamedDeclaration(
-            path.node.declaration,
-            path.node.specifiers,
+            structuredClone(path.node.declaration),
+            structuredClone(path.node.specifiers),
             b.literal('@lwc/ssr-runtime')
         )
     );
@@ -61,7 +63,9 @@ export function replaceAllLwcExport(path: NodePath<ExportAllDeclaration>) {
         return;
     }
 
-    path.replaceWith(b.exportAllDeclaration(b.literal('@lwc/ssr-runtime'), path.node.exported));
+    path.replaceWith(
+        b.exportAllDeclaration(b.literal('@lwc/ssr-runtime'), structuredClone(path.node.exported))
+    );
 }
 
 /**
