@@ -28,8 +28,9 @@ function bYieldBookendComment() {
 function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
     const childStatements = irChildrenToEs(childNodes, cxt);
 
-    // Due to `flattenFragmentsInChildren`, we effectively have to remove bookends
-    // for all content within shadow DOM slots (not light DOM slots).
+    // Due to `flattenFragmentsInChildren`, we have to remove bookends for all _top-level_ slotted
+    // content. This applies to both light DOM and shadow DOM slots, although light DOM slots have
+    // the additional wrinkle that they themselves are VFragments with their own bookends.
     // https://github.com/salesforce/lwc/blob/a33b390/packages/%40lwc/engine-core/src/framework/rendering.ts#L718-L753
     const statements = cxt.isSlotted
         ? childStatements
