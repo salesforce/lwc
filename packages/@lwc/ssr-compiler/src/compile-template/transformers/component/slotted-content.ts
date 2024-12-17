@@ -86,6 +86,7 @@ function getShadowSlottedContent(slottableChildren: IrChildNode[], cxt: Transfor
                 cxt.isSlotted = false;
             }
 
+            // cleanup function
             return () => {
                 cxt.isSlotted = isSlotted;
             };
