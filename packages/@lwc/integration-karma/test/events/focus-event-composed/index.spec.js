@@ -1,25 +1,12 @@
-// IE11 doesn't support FocusEvent constructor
-// https://developer.mozilla.org/en-US/docs/Web/API/FocusEvent/FocusEvent#Browser_compatibility
-function isFocusEventConstructorSupported() {
-    try {
-        new FocusEvent();
-        return true;
-    } catch (_error) {
-        return false;
-    }
-}
+it('should set composed to false by default', () => {
+    const focusEvent = new FocusEvent('focus');
+    expect(focusEvent.composed).toBe(false);
+});
 
-describe.runIf(isFocusEventConstructorSupported())('FocusEvent constructor supported', () => {
-    it('should set composed to false by default', () => {
-        const focusEvent = new FocusEvent('focus');
-        expect(focusEvent.composed).toBe(false);
-    });
+it('should set composed to the value specified in the option', () => {
+    const composedEvt = new FocusEvent('focus', { composed: true });
+    expect(composedEvt.composed).toBe(true);
 
-    it('should set composed to the value specified in the option', () => {
-        const composedEvt = new FocusEvent('focus', { composed: true });
-        expect(composedEvt.composed).toBe(true);
-
-        const nonComposedEvt = new FocusEvent('focus', { composed: false });
-        expect(nonComposedEvt.composed).toBe(false);
-    });
+    const nonComposedEvt = new FocusEvent('focus', { composed: false });
+    expect(nonComposedEvt.composed).toBe(false);
 });
