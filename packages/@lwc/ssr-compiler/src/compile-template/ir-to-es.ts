@@ -14,10 +14,11 @@ import { Component, LwcComponent } from './transformers/component';
 import { Element } from './transformers/element';
 import { ForEach } from './transformers/for-each';
 import { ForOf } from './transformers/for-of';
-import { If, IfBlock } from './transformers/if';
+import { LegacyIf } from './transformers/legacyIf';
 import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';
 import { createNewContext } from './context';
+import { IfBlock } from './transformers/lwcIf';
 import type {
     ChildNode as IrChildNode,
     Node as IrNode,
@@ -53,7 +54,7 @@ const transformers: Transformers = {
     ExternalComponent: Element,
     ForEach,
     ForOf,
-    If,
+    If: LegacyIf,
     IfBlock,
     Root,
     Text,

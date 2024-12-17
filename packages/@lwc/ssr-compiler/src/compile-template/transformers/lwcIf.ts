@@ -13,38 +13,25 @@ import { optimizeAdjacentYieldStmts } from '../shared';
 import type {
     ChildNode as IrChildNode,
     ElseifBlock as IrElseifBlock,
-    If as IrIf,
     IfBlock as IrIfBlock,
 } from '@lwc/template-compiler';
 import type { BlockStatement as EsBlockStatement, IfStatement as EsIfStatement } from 'estree';
 import type { Transformer, TransformerContext } from '../types';
 
-function bYieldComment(text = '') {
-    return b.expressionStatement(b.yieldExpression(b.literal(`<!--${text}-->`)));
+// lwc:if/lwc:elseif/lwc:else use bookend comments due to VFragment vdom node using them
+// The bookends should surround the entire if/elseif/else series
+// FIXME: these should only be rendered if _something_ is rendered by a series of if/elseif/else's
+function bYieldBookendComment() {
+    return b.expressionStatement(b.yieldExpression(b.literal(`<!---->`)));
 }
 
 function bBlockStatement(
     childNodes: IrChildNode[],
     cxt: TransformerContext,
-    insertComments: boolean
 ): EsBlockStatement {
-    let statements = irChildrenToEs(childNodes, cxt);
-    if (insertComments) statements = [bYieldComment(), ...statements, bYieldComment()];
+    const statements = irChildrenToEs(childNodes, cxt);
     return b.blockStatement(optimizeAdjacentYieldStmts(statements));
 }
-
-export const If: Transformer<IrIf> = function If(node, cxt) {
-    const { modifier: trueOrFalseAsStr, condition, children } = node;
-
-    const trueOrFalse = trueOrFalseAsStr === 'true';
-    const comparison = b.binaryExpression(
-        '===',
-        b.literal(trueOrFalse),
-        expressionIrToEs(condition, cxt)
-    );
-
-    return [b.ifStatement(comparison, bBlockStatement(children, cxt, false))];
-};
 
 function bIfStatement(
     ifElseIfNode: IrIfBlock | IrElseifBlock,
@@ -55,7 +42,7 @@ function bIfStatement(
     let elseBlock = null;
     if (elseNode) {
         if (elseNode.type === 'ElseBlock') {
-            elseBlock = bBlockStatement(elseNode.children, cxt, true);
+            elseBlock = bBlockStatement(elseNode.children, cxt);
         } else {
             elseBlock = bIfStatement(elseNode, cxt);
         }
@@ -63,11 +50,15 @@ function bIfStatement(
 
     return b.ifStatement(
         expressionIrToEs(condition, cxt),
-        bBlockStatement(children, cxt, !cxt.isSlotted),
+        bBlockStatement(children, cxt),
         elseBlock
     );
 }
 
 export const IfBlock: Transformer<IrIfBlock | IrElseifBlock> = function IfBlock(node, cxt) {
-    return [bIfStatement(node, cxt)];
+    return [
+        bYieldBookendComment(),
+        bIfStatement(node, cxt),
+        bYieldBookendComment()
+    ];
 };
