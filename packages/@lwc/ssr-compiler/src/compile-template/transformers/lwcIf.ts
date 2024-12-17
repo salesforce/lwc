@@ -20,17 +20,20 @@ import type { Transformer, TransformerContext } from '../types';
 
 // lwc:if/lwc:elseif/lwc:else use bookend comments due to VFragment vdom node using them
 // The bookends should surround the entire if/elseif/else series
-// FIXME: these should only be rendered if _something_ is rendered by a series of if/elseif/else's
+// Note: these should only be rendered if _something_ is rendered by a series of if/elseif/else's
 function bYieldBookendComment() {
     return b.expressionStatement(b.yieldExpression(b.literal(`<!---->`)));
 }
 
 function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
-    const statements = [
-        bYieldBookendComment(),
-        ...irChildrenToEs(childNodes, cxt),
-        bYieldBookendComment(),
-    ];
+    const childStatements = irChildrenToEs(childNodes, cxt);
+
+    // Due to `flattenFragmentsInChildren`, we effectively have to remove bookends
+    // for all content within any slots (light or shadow).
+    // https://github.com/salesforce/lwc/blob/a33b390/packages/%40lwc/engine-core/src/framework/rendering.ts#L718-L753
+    const statements = cxt.isSlotted
+        ? childStatements
+        : [bYieldBookendComment(), ...childStatements, bYieldBookendComment()];
     return b.blockStatement(optimizeAdjacentYieldStmts(statements));
 }
 
