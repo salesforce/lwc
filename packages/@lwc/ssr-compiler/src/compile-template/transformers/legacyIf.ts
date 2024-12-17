@@ -10,9 +10,7 @@ import { irChildrenToEs } from '../ir-to-es';
 import { expressionIrToEs } from '../expression';
 import { optimizeAdjacentYieldStmts } from '../shared';
 
-import type {
-    If as IrIf,
-} from '@lwc/template-compiler';
+import type { If as IrIf } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
 export const LegacyIf: Transformer<IrIf> = function If(node, cxt) {
@@ -29,7 +27,5 @@ export const LegacyIf: Transformer<IrIf> = function If(node, cxt) {
     const childStatements = irChildrenToEs(children, cxt);
     const block = b.blockStatement(optimizeAdjacentYieldStmts(childStatements));
 
-    return [
-        b.ifStatement(comparison, block)
-    ];
+    return [b.ifStatement(comparison, block)];
 };
