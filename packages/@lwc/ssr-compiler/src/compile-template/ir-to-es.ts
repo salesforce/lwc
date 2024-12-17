@@ -69,15 +69,16 @@ const transformers: Transformers = {
 export function irChildrenToEs(
     children: IrChildNode[],
     cxt: TransformerContext,
-    cb?: (child: IrChildNode) => void
+    cb?: (child: IrChildNode) => (() => void) | void
 ): EsStatement[] {
     const result: EsStatement[] = [];
 
     for (let i = 0; i < children.length; i++) {
         cxt.prevSibling = children[i - 1];
         cxt.nextSibling = children[i + 1];
-        cb?.(children[i]);
+        const cleanUp = cb?.(children[i]);
         result.push(...irToEs(children[i], cxt));
+        cleanUp?.();
     }
 
     cxt.prevSibling = undefined;
