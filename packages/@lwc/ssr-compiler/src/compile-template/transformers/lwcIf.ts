@@ -25,11 +25,12 @@ function bYieldBookendComment() {
     return b.expressionStatement(b.yieldExpression(b.literal(`<!---->`)));
 }
 
-function bBlockStatement(
-    childNodes: IrChildNode[],
-    cxt: TransformerContext,
-): EsBlockStatement {
-    const statements = irChildrenToEs(childNodes, cxt);
+function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
+    const statements = [
+        bYieldBookendComment(),
+        ...irChildrenToEs(childNodes, cxt),
+        bYieldBookendComment(),
+    ];
     return b.blockStatement(optimizeAdjacentYieldStmts(statements));
 }
 
@@ -56,9 +57,5 @@ function bIfStatement(
 }
 
 export const IfBlock: Transformer<IrIfBlock | IrElseifBlock> = function IfBlock(node, cxt) {
-    return [
-        bYieldBookendComment(),
-        bIfStatement(node, cxt),
-        bYieldBookendComment()
-    ];
+    return [bIfStatement(node, cxt)];
 };
