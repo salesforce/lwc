@@ -29,7 +29,7 @@ function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): Es
     const childStatements = irChildrenToEs(childNodes, cxt);
 
     // Due to `flattenFragmentsInChildren`, we effectively have to remove bookends
-    // for all content within any slots (light or shadow).
+    // for all content within shadow DOM slots (not light DOM slots).
     // https://github.com/salesforce/lwc/blob/a33b390/packages/%40lwc/engine-core/src/framework/rendering.ts#L718-L753
     const statements = cxt.isSlotted
         ? childStatements
