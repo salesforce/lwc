@@ -120,7 +120,7 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
 // descriptors for these properties are added from HTMLElement.prototype to
 // LightningElement.prototype. For SSR, in order to match CSR behavior, this
 // list is used to determine which attributes to reflect.
-const REFLECTIVE_GLOBAL_PROPERTIES = [
+export const REFLECTIVE_GLOBAL_PROPERTY_SET = /*@__PURE__@*/ new Set([
     'accessKey',
     'dir',
     'draggable',
@@ -130,9 +130,7 @@ const REFLECTIVE_GLOBAL_PROPERTIES = [
     'spellcheck',
     'tabIndex',
     'title',
-];
-
-export const REFLECTIVE_GLOBAL_PROPERTY_SET = /*@__PURE__@*/ new Set(REFLECTIVE_GLOBAL_PROPERTIES);
+]);
 
 /**
  * Map associating previously transformed HTML property into HTML attribute.
