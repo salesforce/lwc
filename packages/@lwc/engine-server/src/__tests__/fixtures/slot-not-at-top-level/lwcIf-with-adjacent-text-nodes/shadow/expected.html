@@ -1,0 +1,34 @@
+<x-outer>
+  <template shadowrootmode="open">
+    <div>
+      Outer!
+    </div>
+    <!---->
+    <x-inner>
+      <template shadowrootmode="open">
+        <div>
+          Inner!
+        </div>
+        <slot>
+        </slot>
+      </template>
+      ‍‍
+      <x-deep>
+        <template shadowrootmode="open">
+          <div>
+            Deep!
+          </div>
+          <slot>
+          </slot>
+        </template>
+        ‍
+        <div>
+          ‍
+        </div>
+        ‍
+      </x-deep>
+      ‍‍
+    </x-inner>
+    <!---->
+  </template>
+</x-outer>

@@ -42,22 +42,26 @@ function getWireParams(
     const { decorators } = node;
 
     if (decorators.length > 1) {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - multiple decorators at once');
     }
 
     // validate the parameters
     const wireDecorator = decorators[0].expression;
     if (!is.callExpression(wireDecorator)) {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - invalid usage');
     }
 
     const args = wireDecorator.arguments;
     if (args.length === 0 || args.length > 2) {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - wrong number of args');
     }
 
     const [id, config] = args;
     if (is.spreadElement(id) || is.spreadElement(config)) {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - spread in params');
     }
     return [id, config];
@@ -72,13 +76,16 @@ function validateWireId(
 
     if (is.memberExpression(id)) {
         if (id.computed) {
+            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
             throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS');
         }
         if (!is.identifier(id.object)) {
+            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
             throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS');
         }
         wireAdapterVar = id.object.name;
     } else if (!is.identifier(id)) {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - invalid adapter name');
     } else {
         wireAdapterVar = id.name;
@@ -86,6 +93,7 @@ function validateWireId(
 
     // This is not the exact same validation done in @lwc/babel-plugin-component but it accomplishes the same thing
     if (path.scope?.getBinding(wireAdapterVar)?.kind !== 'module') {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - WIRE_ADAPTER_SHOULD_BE_IMPORTED');
     }
 }
@@ -95,6 +103,7 @@ function validateWireConfig(
     path: NodePath<PropertyDefinition | MethodDefinition>
 ): asserts config is NoSpreadObjectExpression {
     if (!is.objectExpression(config)) {
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER');
     }
     for (const property of config.properties) {
@@ -113,12 +122,14 @@ function validateWireConfig(
             if (is.templateLiteral(key)) {
                 // A template literal is not guaranteed to always result in the same value
                 // (e.g. `${Math.random()}`), so we disallow them entirely.
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
                 throw new Error('todo - COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL');
             } else if (!('regex' in key)) {
                 // A literal can be a regexp, template literal, or primitive; only allow primitives
                 continue;
             }
         }
+        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw new Error('todo - COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL');
     }
 }

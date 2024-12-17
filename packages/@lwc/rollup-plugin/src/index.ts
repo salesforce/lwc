@@ -38,8 +38,10 @@ export interface RollupLwcOptions {
     stylesheetConfig?: StylesheetConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
+    // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
     /** The configuration to pass to `@lwc/compiler`. */
     experimentalDynamicComponent?: DynamicImportConfig;
+    // TODO [#3331]: deprecate and remove lwc:dynamic
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalDynamicDirective?: boolean;
     /** The configuration to pass to `@lwc/template-compiler`. */
@@ -328,7 +330,20 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
-                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
+                // Note we do not need to use path.sep here because this filename contains
+                // a '/' regardless of Windows vs Unix, since it comes from the Rollup `id`
+                specifier?.split('/') ?? path.dirname(filename).split('/').slice(-2);
+
+            /* v8 ignore next */
+            if (!namespace || !name) {
+                // TODO [#4824]: Make this an error rather than a warning
+                this.warn(
+                    'The component namespace and name could not be determined from the specifier ' +
+                        JSON.stringify(specifier) +
+                        ' or filename ' +
+                        JSON.stringify(filename)
+                );
+            }
 
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
