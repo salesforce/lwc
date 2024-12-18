@@ -67,14 +67,24 @@ const transformers: Transformers = {
     Lwc: LwcComponent,
 };
 
-export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext): EsStatement[] {
-    const result = children.flatMap((child, idx) => {
-        cxt.prevSibling = children[idx - 1];
-        cxt.nextSibling = children[idx + 1];
-        return irToEs(child, cxt);
-    });
+export function irChildrenToEs(
+    children: IrChildNode[],
+    cxt: TransformerContext,
+    cb?: (child: IrChildNode) => (() => void) | void
+): EsStatement[] {
+    const result: EsStatement[] = [];
+
+    for (let i = 0; i < children.length; i++) {
+        cxt.prevSibling = children[i - 1];
+        cxt.nextSibling = children[i + 1];
+        const cleanUp = cb?.(children[i]);
+        result.push(...irToEs(children[i], cxt));
+        cleanUp?.();
+    }
+
     cxt.prevSibling = undefined;
     cxt.nextSibling = undefined;
+
     return result;
 }
 

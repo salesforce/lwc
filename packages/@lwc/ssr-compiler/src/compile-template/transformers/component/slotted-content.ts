@@ -77,6 +77,23 @@ const bAddLightContent = esTemplate`
     });
 `<EsCallExpression>;
 
+function getShadowSlottedContent(slottableChildren: IrChildNode[], cxt: TransformerContext) {
+    return optimizeAdjacentYieldStmts(
+        irChildrenToEs(slottableChildren, cxt, (child) => {
+            const { isSlotted } = cxt;
+
+            if (child.type === 'ExternalComponent' || child.type === 'Element') {
+                cxt.isSlotted = false;
+            }
+
+            // cleanup function
+            return () => {
+                cxt.isSlotted = isSlotted;
+            };
+        })
+    );
+}
+
 // Light DOM slots are a bit complex because of needing to handle slots _not_ at the top level
 // At the non-top level, it matters what the ancestors are. These are relevant to slots:
 // - If (`if:true`, `if:false`)
@@ -130,7 +147,10 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                 leaf.attributes = leaf.attributes.filter((attr) => attr.name !== 'slot');
             }
         });
+        const { isSlotted: originalIsSlotted } = cxt;
+        cxt.isSlotted = ancestorIndices.length > 1 || clone.type === 'Slot';
         const slotContent = irToEs(clone, cxt);
+        cxt.isSlotted = originalIsSlotted;
         results.push(b.expressionStatement(bAddLightContent(slotName, null, slotContent)));
     };
 
@@ -180,7 +200,7 @@ export function getSlottedContent(
         (child) => child.type === 'ScopedSlotFragment'
     ) as IrScopedSlotFragment[];
 
-    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(slottableChildren, cxt));
+    const shadowSlotContent = getShadowSlottedContent(slottableChildren, cxt);
 
     const lightSlotContent = getLightSlottedContent(slottableChildren, cxt);
 
