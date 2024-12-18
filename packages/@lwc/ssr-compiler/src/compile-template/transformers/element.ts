@@ -60,6 +60,12 @@ const bYieldDynamicValue = esTemplateWithYield`
             attrValue = shouldNormalize ? 0 : attrValue;
         }
 
+        // Backwards compatibility with historical patchStyleAttribute() behavior:
+        // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
+        if (attrName === 'style' && (typeof attrValue !== 'string' || attrValue === '')) {
+            attrValue = undefined;
+        }
+
         if (attrValue !== undefined && attrValue !== null) {
             yield ' ' + attrName;
 
