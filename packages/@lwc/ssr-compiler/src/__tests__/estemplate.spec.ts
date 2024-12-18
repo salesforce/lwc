@@ -8,6 +8,7 @@
 import { is, builders as b } from 'estree-toolkit';
 import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
+import type { ClassDeclaration, FunctionDeclaration } from 'estree';
 
 if (process.env.NODE_ENV !== 'production') {
     // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
@@ -33,7 +34,7 @@ describe.each(
         test('when attempting to replace unreplaceable code constructs', () => {
             // Someone might try to create a template where 'class' or 'function'
             // is provided as an argument to the ES template.
-            const isFunctionOrClass = (node: any) =>
+            const isFunctionOrClass = (node: any): node is FunctionDeclaration | ClassDeclaration =>
                 is.functionDeclaration(node) || is.classDeclaration(node);
             const createTemplate = () => topLevelFn`
                     ${isFunctionOrClass} classOrFunctionDecl {}
