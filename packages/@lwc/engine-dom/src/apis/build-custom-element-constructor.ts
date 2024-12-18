@@ -71,7 +71,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     const { observedAttributes } = HtmlPrototype as any;
     const { attributeChangedCallback } = HtmlPrototype.prototype as any;
 
-    return class extends HTMLElement {
+    return class CustomElementConstructor extends HTMLElement {
         constructor() {
             super();
 
@@ -121,7 +121,9 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         }
 
         attributeChangedCallback(name: string, oldValue: any, newValue: any) {
-            attributeChangedCallback.call(this, name, oldValue, newValue);
+            if (this instanceof CustomElementConstructor) {
+                attributeChangedCallback.call(this, name, oldValue, newValue);
+            }
         }
 
         formAssociatedCallback(form: HTMLFormElement | null) {

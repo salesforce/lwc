@@ -10,6 +10,7 @@ import TimingParent from 'timing/parent';
 import TimingParentLight from 'timing/parentLight';
 import ReorderingList from 'reordering/list';
 import ReorderingListLight from 'reordering/listLight';
+import AttrParent from 'attr/parent';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -420,5 +421,23 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
         expect(disconnected).toBe(true); // received synchronously
         expect(globalConnected).toBe(true);
         expect(globalDisconnected).toBe(false); // never received due to disconnection
+    });
+});
+
+describe('attributeChangedCallback', () => {
+    fit('W-17420330 - only fires for registered component', async () => {
+        const root = createElement('attr-parent', { is: AttrParent });
+        document.body.appendChild(root);
+
+        // const elm = root.shadowRoot.firstElementChild.shadowRoot.querySelector('details');
+        // expect(elm.getAttribute('open')).toBe(null);
+
+        /** `.shadowRoot.querySelector()` */
+        await Promise.resolve(setTimeout);
+        const srqs = (elm, sel) => elm.shadowRoot.querySelector(sel);
+        const direct = srqs(srqs(root, 'attr-details'), 'details');
+        expect(direct.getAttribute('open')).toBe(null);
+        const indirect = srqs(srqs(root, 'attr-indirect'), 'details');
+        expect(indirect.getAttribute('open')).toBe(null);
     });
 });
