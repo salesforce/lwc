@@ -368,6 +368,10 @@ function hydrateCustomElement(
     vnode: VCustomElement,
     renderer: RendererAPI
 ): Node | null {
+    if (elm.hasAttribute('data-lwc-skip-hydrate')) {
+        return elm;
+    }
+    
     const { validationOptOut } = vnode.ctor;
     const shouldValidateAttr = getValidationPredicate(elm, renderer, validationOptOut);
 
