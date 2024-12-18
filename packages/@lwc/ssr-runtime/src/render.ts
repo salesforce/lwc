@@ -32,6 +32,14 @@ function renderAttrsPrivate(
 
     for (const attrName of getOwnPropertyNames(attrs)) {
         let attrValue = attrs[attrName];
+
+        // Backwards compatibility with historical patchStyleAttribute() behavior:
+        // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
+        if (attrName === 'style' && (!isString(attrValue) || attrValue === '')) {
+            // If the style attribute is invalid, we don't render it.
+            continue;
+        }
+
         if (isNull(attrValue) || isUndefined(attrValue)) {
             attrValue = '';
         } else if (!isString(attrValue)) {
