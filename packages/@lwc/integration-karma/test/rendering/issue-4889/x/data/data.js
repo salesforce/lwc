@@ -127,3 +127,33 @@ export const dataStatesVariant2 = [
         },
     ],
 ];
+
+// Even more minimal repro of just the vdom diffing issue (no errors thrown)
+export const dataStatesVariant3 = [
+    [
+        {
+            id: 6,
+            renderMe: false,
+            children: [],
+        },
+        {
+            id: 13,
+            renderMe: true,
+        },
+        {
+            id: 8,
+            renderMe: false,
+            children: [],
+        },
+    ],
+    [
+        {
+            id: 11,
+            renderMe: true,
+        },
+        {
+            id: 13,
+            renderMe: true,
+        },
+    ],
+];
