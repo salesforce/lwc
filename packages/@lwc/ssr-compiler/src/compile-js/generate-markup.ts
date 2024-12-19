@@ -8,26 +8,17 @@
 import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
     Program,
-    SimpleCallExpression,
-    Identifier,
-    MemberExpression,
     Statement,
     ExpressionStatement,
     IfStatement,
     FunctionDeclaration,
 } from 'estree';
 import type { ComponentMetaState } from './types';
-
-/** Node representing `<something>.render()`. */
-type RenderCallExpression = SimpleCallExpression & {
-    callee: MemberExpression & { property: Identifier & { name: 'render' } };
-};
 
 const bGenerateMarkup = esTemplate`
     async function* generateMarkup(
@@ -62,7 +53,10 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+        // If a render() function is defined on the class or any of its superclasses, then that takes priority.
+        // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
+        // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
+        const tmplFn = instance.render?.() ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
@@ -109,7 +103,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
+    const { privateFields, publicFields, tmplExplicitImports } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -117,17 +111,11 @@ export function addGenerateMarkupFunction(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
-    const tmplVar = b.identifier('tmpl');
-    const renderCall = hasRenderMethod
-        ? (b.callExpression(
-              b.memberExpression(b.identifier('instance'), b.identifier('render')),
-              []
-          ) as RenderCallExpression)
-        : tmplVar;
 
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
+        const tmplVar = b.identifier('tmpl');
         program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
         program.body.unshift(
             bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
@@ -160,8 +148,7 @@ export function addGenerateMarkupFunction(
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
-            connectWireAdapterCode,
-            renderCall
+            connectWireAdapterCode
         )
     );
 

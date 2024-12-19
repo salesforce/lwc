@@ -173,9 +173,6 @@ const visitors: Visitors = {
             case 'connectedCallback':
                 state.hasConnectedCallback = true;
                 break;
-            case 'render':
-                state.hasRenderMethod = true;
-                break;
             case 'renderedCallback':
                 state.hadRenderedCallback = true;
                 path.remove();
@@ -253,7 +250,6 @@ export default function compileJS(
         isLWC: false,
         hasConstructor: false,
         hasConnectedCallback: false,
-        hasRenderMethod: false,
         hadRenderedCallback: false,
         hadDisconnectedCallback: false,
         hadErrorCallback: false,
