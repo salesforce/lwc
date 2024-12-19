@@ -14,8 +14,6 @@ export const expectedFailures = new Set([
     'attribute-component-global-html/index.js',
     'attribute-global-html/as-component-prop/undeclared/index.js',
     'attribute-global-html/as-component-prop/without-@api/index.js',
-    'attribute-style/basic/index.js',
-    'attribute-style/dynamic/index.js',
     'exports/component-as-default/index.js',
     'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
     'render-dynamic-value/index.js',
