@@ -12,7 +12,6 @@ import { parseModule } from 'meriyah';
 import { DecoratorErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
-import { every } from '../estree/validators';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
@@ -22,7 +21,11 @@ import { catalogWireAdapters } from './wire';
 import { removeDecoratorImport } from './remove-decorator-import';
 import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
-import type { Program as EsProgram, Decorator as EsDecorator } from 'estree';
+import type {
+    Identifier as EsIdentifier,
+    Program as EsProgram,
+    Decorator as EsDecorator,
+} from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
 
@@ -114,10 +117,10 @@ const visitors: Visitors = {
             node.static &&
             node.key.name === 'stylesheets' &&
             is.arrayExpression(node.value) &&
-            every(node.value.elements, is.identifier)
+            node.value.elements.every((el) => is.identifier(el))
         ) {
             catalogStaticStylesheets(
-                node.value.elements.map((el) => el.name),
+                node.value.elements.map((el) => (el as EsIdentifier).name),
                 state
             );
         }

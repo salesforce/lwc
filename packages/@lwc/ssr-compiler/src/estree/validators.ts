@@ -55,10 +55,3 @@ if (process.env.NODE_ENV !== 'production') {
         (val as any).__debugName = key;
     }
 }
-
-export function every<T extends Node>(
-    arr: (Node | null | undefined)[],
-    predicate: Checker<T>
-): arr is T[] {
-    return arr.every((el) => predicate(el));
-}
