@@ -30,6 +30,8 @@ export const expectedFailures = new Set([
     'superclass/render-in-superclass/no-template-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
+    'superclass/template-in-superclass/template-in-super-render-in-super-super/index.js',
+    'superclass/template-in-superclass/template-in-super-super-render-in-super/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
     'wire/errors/throws-when-computed-prop-is-expression/index.js',
