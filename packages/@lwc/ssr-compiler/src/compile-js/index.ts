@@ -99,8 +99,7 @@ const visitors: Visitors = {
 
         const { decorators } = node;
         validateDecorators(decorators);
-        const decoratedExpressions = decorators.map((d) => d.expression) ?? [];
-        const decoratedExpression = decoratedExpressions[0];
+        const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression, { name: 'api' })) {
             state.publicFields.push(node.key.name);
         } else if (
@@ -140,7 +139,7 @@ const visitors: Visitors = {
         const { decorators } = node;
         validateDecorators(decorators);
         // The real type is a subset of `Expression`, which doesn't work with the `is` validators
-        const decoratedExpression = decorators.map((d) => d.expression)[0];
+        const decoratedExpression = decorators?.[0]?.expression;
 
         if (
             is.callExpression(decoratedExpression) &&
