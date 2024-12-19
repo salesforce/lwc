@@ -43,7 +43,6 @@ function getWireParams(
     const { decorators } = node;
 
     if (decorators.length > 1) {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw generateError(DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED);
     }
 
@@ -94,7 +93,6 @@ function validateWireId(
 
     // This is not the exact same validation done in @lwc/babel-plugin-component but it accomplishes the same thing
     if (path.scope?.getBinding(wireAdapterVar)?.kind !== 'module') {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw generateError(DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL);
     }
 }
@@ -130,10 +128,8 @@ function validateWireConfig(
                 continue;
             }
         } else if (is.templateLiteral(key)) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
             throw generateError(DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL);
         }
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
         throw generateError(DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL);
     }
 }
