@@ -151,8 +151,7 @@ export function catalogWireAdapters(
                 if (
                     is.literal(value) &&
                     typeof value.value === 'string' &&
-                    value.value.startsWith('$') &&
-                    value.value.length > 1
+                    value.value.startsWith('$')
                 ) {
                     prop.value = bMemberExpressionChain(value.value.slice(1).split('.'));
                 }

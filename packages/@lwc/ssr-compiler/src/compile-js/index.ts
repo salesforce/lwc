@@ -144,7 +144,8 @@ const visitors: Visitors = {
 
         if (
             is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee, { name: 'wire' })
+            is.identifier(decoratedExpression.callee) &&
+            decoratedExpression.callee.name === 'wire'
         ) {
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
