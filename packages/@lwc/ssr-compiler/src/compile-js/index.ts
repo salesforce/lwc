@@ -9,6 +9,7 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
+import { DecoratorErrors, generateErrorMessage } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
@@ -19,7 +20,7 @@ import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
 import type { ComponentTransformOptions } from '../shared';
-import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
+import type { Identifier as EsIdentifier, Program as EsProgram, Node as EsNode } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
 
@@ -92,7 +93,9 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
-        const decoratedExpression = decorators?.[0]?.expression;
+        const decoratedExpressions = decorators?.map((d) => d.expression) ?? [];
+        validateDecorators(decoratedExpressions);
+        const decoratedExpression = decoratedExpressions[0];
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
         } else if (
@@ -132,7 +135,12 @@ const visitors: Visitors = {
 
         const { decorators } = node;
         // The real type is a subset of `Expression`, which doesn't work with the `is` validators
-        const decoratedExpression = decorators?.[0]?.expression;
+        const decoratedExpressions = decorators?.map((d) => d.expression) ?? [];
+
+        validateDecorators(decoratedExpressions);
+
+        const decoratedExpression = decoratedExpressions[0];
+
         if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
@@ -204,6 +212,37 @@ const visitors: Visitors = {
         },
     },
 };
+
+const isIdentifier = <K extends string>(name: K) =>
+    function isIdentifier(expr: EsNode | undefined | null): expr is EsIdentifier & { name: K } {
+        return is.identifier(expr) && expr.name === name;
+    };
+
+function validateDecorators(decoratedExpressions: EsNode[]) {
+    if (decoratedExpressions.length > 1) {
+        const isWireAdapter = decoratedExpressions.some((expr) =>
+            is.callExpression(expr, { callee: isIdentifier('wire') })
+        );
+
+        const isApiDecorator = decoratedExpressions.some(isIdentifier('api'));
+
+        if (isWireAdapter && isApiDecorator) {
+            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+            throw new Error(
+                generateErrorMessage(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, ['api'])
+            );
+        }
+
+        const isTrackDecorator = decoratedExpressions.some(isIdentifier('track'));
+
+        if (isWireAdapter && isTrackDecorator) {
+            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+            throw new Error(
+                generateErrorMessage(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, ['track'])
+            );
+        }
+    }
+}
 
 export default function compileJS(
     src: string,

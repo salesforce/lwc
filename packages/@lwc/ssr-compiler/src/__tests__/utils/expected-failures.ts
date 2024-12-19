@@ -34,7 +34,4 @@ export const expectedFailures = new Set([
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
-    'wire/errors/throws-when-wired-method-is-combined-with-@api/index.js',
-    'wire/errors/throws-when-wired-property-is-combined-with-@api/index.js',
-    'wire/errors/throws-when-wired-property-is-combined-with-@track/index.js',
 ]);
