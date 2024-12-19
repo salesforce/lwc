@@ -9,6 +9,7 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
+import { DecoratorErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
@@ -18,8 +19,13 @@ import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
+import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
-import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
+import type {
+    Identifier as EsIdentifier,
+    Program as EsProgram,
+    Decorator as EsDecorator,
+} from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
 
@@ -92,6 +98,7 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
+        validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
@@ -131,6 +138,7 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
+        validateUniqueDecorator(decorators);
         // The real type is a subset of `Expression`, which doesn't work with the `is` validators
         const decoratedExpression = decorators?.[0]?.expression;
         if (
@@ -164,9 +172,6 @@ const visitors: Visitors = {
                 break;
             case 'connectedCallback':
                 state.hasConnectedCallback = true;
-                break;
-            case 'render':
-                state.hasRenderMethod = true;
                 break;
             case 'renderedCallback':
                 state.hadRenderedCallback = true;
@@ -205,6 +210,30 @@ const visitors: Visitors = {
     },
 };
 
+function validateUniqueDecorator(decorators: EsDecorator[]) {
+    if (decorators.length < 2) {
+        return;
+    }
+
+    const expressions = decorators.map(({ expression }) => expression);
+
+    const hasWire = expressions.some(
+        (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
+    );
+
+    const hasApi = expressions.some((expr) => is.identifier(expr, { name: 'api' }));
+
+    if (hasWire && hasApi) {
+        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+    }
+
+    const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' }));
+
+    if ((hasWire || hasApi) && hasTrack) {
+        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+    }
+}
+
 export default function compileJS(
     src: string,
     filename: string,
@@ -221,7 +250,6 @@ export default function compileJS(
         isLWC: false,
         hasConstructor: false,
         hasConnectedCallback: false,
-        hasRenderMethod: false,
         hadRenderedCallback: false,
         hadDisconnectedCallback: false,
         hadErrorCallback: false,

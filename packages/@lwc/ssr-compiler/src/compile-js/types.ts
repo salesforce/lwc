@@ -32,8 +32,6 @@ export interface ComponentMetaState {
     hasConstructor: boolean;
     // indicates whether the subclass has a connectedCallback method
     hasConnectedCallback: boolean;
-    // indicates whether the subclass has a render method
-    hasRenderMethod: boolean;
     // indicates whether the subclass has a renderedCallback method
     hadRenderedCallback: boolean;
     // indicates whether the subclass has a disconnectedCallback method
