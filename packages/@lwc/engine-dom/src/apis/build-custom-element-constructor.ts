@@ -17,6 +17,7 @@ import {
     runFormDisabledCallback,
     runFormResetCallback,
     runFormStateRestoreCallback,
+    BaseBridgeElement,
 } from '@lwc/engine-core';
 import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
@@ -71,7 +72,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
     const { observedAttributes } = HtmlPrototype as any;
     const { attributeChangedCallback } = HtmlPrototype.prototype as any;
 
-    return class CustomElementConstructor extends HTMLElement {
+    return class extends HTMLElement {
         constructor() {
             super();
 
@@ -121,7 +122,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         }
 
         attributeChangedCallback(name: string, oldValue: any, newValue: any) {
-            if (this instanceof CustomElementConstructor) {
+            if (this instanceof BaseBridgeElement) {
                 // W-17420330
                 attributeChangedCallback.call(this, name, oldValue, newValue);
             }
