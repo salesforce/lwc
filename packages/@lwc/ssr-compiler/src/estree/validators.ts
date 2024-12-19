@@ -7,31 +7,8 @@
 
 import { is } from 'estree-toolkit';
 import { entries } from '@lwc/shared';
-import type { CallExpression, Identifier, MemberExpression } from 'estree';
 import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
-
-/** Node representing an identifier named "render". */
-type RenderIdentifier = Identifier & { name: 'render' };
-/** Node representing a member expression `<something>.render`. */
-type RenderMemberExpression = MemberExpression & { property: RenderIdentifier };
-/** Node representing a method call `<something>.render()`. */
-type RenderCall = CallExpression & { callee: RenderMemberExpression };
-
-/** Returns `true` if the node is an identifier or `<something>.render()`. */
-export const isIdentOrRenderCall = (
-    node: Node | null | undefined
-): node is Identifier | RenderCall => {
-    return (
-        is.identifier(node) ||
-        (is.callExpression(node) &&
-            is.memberExpression(node.callee) &&
-            is.identifier(node.callee.property) &&
-            node.callee.property.name === 'render')
-    );
-};
-
-isIdentOrRenderCall.__debugName = 'identifier or .render() call';
 
 /** A validator that returns `true` if the node is `null`. */
 type NullableChecker<T extends Node> = (node: Node | null | undefined) => node is T | null;

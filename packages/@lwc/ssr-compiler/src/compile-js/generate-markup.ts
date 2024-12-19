@@ -8,26 +8,17 @@
 import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type {
     Program,
-    SimpleCallExpression,
-    Identifier,
-    MemberExpression,
     Statement,
     ExpressionStatement,
     IfStatement,
     FunctionDeclaration,
 } from 'estree';
 import type { ComponentMetaState } from './types';
-
-/** Node representing `<something>.render()`. */
-type RenderCallExpression = SimpleCallExpression & {
-    callee: MemberExpression & { property: Identifier & { name: 'render' } };
-};
 
 const bGenerateMarkup = esTemplate`
     async function* generateMarkup(
@@ -62,7 +53,7 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = instance.render?.() ?? ${/* renderCall */ isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+        const tmplFn = instance.render?.() ?? ${/* tmplVar */ is.identifier} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
@@ -109,7 +100,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
+    const { privateFields, publicFields, tmplExplicitImports } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -118,12 +109,6 @@ export function addGenerateMarkupFunction(
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
     const tmplVar = b.identifier('tmpl');
-    const renderCall = hasRenderMethod
-        ? (b.callExpression(
-              b.memberExpression(b.identifier('instance'), b.identifier('render')),
-              []
-          ) as RenderCallExpression)
-        : tmplVar;
 
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
@@ -161,7 +146,7 @@ export function addGenerateMarkupFunction(
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
             connectWireAdapterCode,
-            renderCall
+            tmplVar
         )
     );
 
