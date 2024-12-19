@@ -6,6 +6,7 @@
  */
 
 import { assert, isNull, isUndefined } from '@lwc/shared';
+import { ElementAttachShadow, ElementShadowRoot } from '../language';
 
 function cloneNode(node: Node, deep: boolean): Node {
     return node.cloneNode(deep);
@@ -57,10 +58,12 @@ function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
     //   1. upon initial load with an SSR-generated DOM, while in Shadow render mode
     //   2. when a webapp author places <c-app> in their static HTML and mounts their
     //      root component with customElement.define('c-app', Ctor)
-    if (!isNull(element.shadowRoot)) {
-        return element.shadowRoot;
+    // see W-17441501
+    const shadowRoot = ElementShadowRoot(element);
+    if (!isNull(shadowRoot)) {
+        return shadowRoot;
     }
-    return element.attachShadow(options);
+    return ElementAttachShadow(element, options);
 }
 
 function setText(node: Node, content: string): void {
