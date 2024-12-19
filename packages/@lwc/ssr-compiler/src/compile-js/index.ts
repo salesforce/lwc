@@ -98,7 +98,7 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
-        validateDecorators(decorators);
+        validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
@@ -138,7 +138,7 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
-        validateDecorators(decorators);
+        validateUniqueDecorator(decorators);
         // The real type is a subset of `Expression`, which doesn't work with the `is` validators
         const decoratedExpression = decorators?.[0]?.expression;
         if (
@@ -230,7 +230,7 @@ function validateUniqueDecorator(decorators: EsDecorator[]) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
     }
 
-    const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' });
+    const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' }));
 
     if ((hasWire || hasApi) && hasTrack) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');

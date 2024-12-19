@@ -16,7 +16,6 @@ type ExtractArguments<
         ? ExtractArguments<R, Numbers, Args> // new `N`, add an argument
         : ExtractArguments<R, N | Numbers, [string, ...Args]> // `N` already accounted for
     : Args; // No `N` found, nothing more to check
-```
 
 export function generateError<const T extends LWCErrorInfo>(
     error: T,
