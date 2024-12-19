@@ -100,11 +100,12 @@ const visitors: Visitors = {
         const { decorators } = node;
         validateDecorators(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
-        if (is.identifier(decoratedExpression, { name: 'api' })) {
+        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             state.publicFields.push(node.key.name);
         } else if (
             is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee, { name: 'wire' })
+            is.identifier(decoratedExpression.callee) &&
+            decoratedExpression.callee.name === 'wire'
         ) {
             catalogWireAdapters(path, state);
             state.privateFields.push(node.key.name);
