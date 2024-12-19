@@ -101,16 +101,24 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.publicFields.push(node.key.name);
+            if (state.publicFields.has(node.key.name)) {
+                throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
+            }
+
+            if (['class', 'is', 'slot', 'style'].includes(node.key.name)) {
+                throw generateError(DecoratorErrors.PROPERTY_NAME_IS_RESERVED, node.key.name);
+            }
+
+            state.publicFields.set(node.key.name, node);
         } else if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
             catalogWireAdapters(path, state);
-            state.privateFields.push(node.key.name);
+            state.privateFields.add(node.key.name);
         } else {
-            state.privateFields.push(node.key.name);
+            state.privateFields.add(node.key.name);
         }
 
         if (
@@ -163,6 +171,26 @@ const visitors: Visitors = {
                 return;
             } else {
                 catalogWireAdapters(path, state);
+            }
+        }
+
+        if (is.identifier(decoratedExpression, { name: 'api' })) {
+            const field = state.publicFields.get(node.key.name);
+            if (!field) {
+                state.publicFields.set(node.key.name, node);
+            } else {
+                if (
+                    (is.methodDefinition(field, { kind: (k) => k === 'get' || k === 'set' }) &&
+                        node.kind === 'get') ||
+                    node.kind === 'set'
+                ) {
+                    throw generateError(
+                        DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
+                        node.key.name
+                    );
+                } else {
+                    throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
+                }
             }
         }
 
@@ -258,8 +286,8 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicFields: [],
-        privateFields: [],
+        publicFields: new Map(),
+        privateFields: new Set(),
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),
