@@ -1,5 +1,5 @@
 import Super from 'x/super';
-import Template from './template.html';
+import template from './template.html';
 
 export default class extends Super {
     name = 'world';

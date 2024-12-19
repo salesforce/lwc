@@ -1,3 +1,3 @@
-export const tagName = 'x-sub';
-export { default } from 'x/sub';
-export * from 'x/sub';
+export const tagName = 'x-component';
+export { default } from 'x/component';
+export * from 'x/component';
