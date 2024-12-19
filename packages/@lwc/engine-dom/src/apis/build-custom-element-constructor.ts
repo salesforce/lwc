@@ -122,6 +122,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
 
         attributeChangedCallback(name: string, oldValue: any, newValue: any) {
             if (this instanceof CustomElementConstructor) {
+                // W-17420330
                 attributeChangedCallback.call(this, name, oldValue, newValue);
             }
         }

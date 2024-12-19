@@ -10,7 +10,7 @@ import TimingParent from 'timing/parent';
 import TimingParentLight from 'timing/parentLight';
 import ReorderingList from 'reordering/list';
 import ReorderingListLight from 'reordering/listLight';
-import AttrParent from 'attr/parent';
+import Details from 'x/details';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -425,19 +425,14 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
 });
 
 describe('attributeChangedCallback', () => {
-    fit('W-17420330 - only fires for registered component', async () => {
-        const root = createElement('attr-parent', { is: AttrParent });
+    it('W-17420330 - only fires for registered component', async () => {
+        const root = createElement('x-details', { is: Details });
         document.body.appendChild(root);
+        await Promise.resolve();
 
-        // const elm = root.shadowRoot.firstElementChild.shadowRoot.querySelector('details');
-        // expect(elm.getAttribute('open')).toBe(null);
-
-        /** `.shadowRoot.querySelector()` */
-        await Promise.resolve(setTimeout);
-        const srqs = (elm, sel) => elm.shadowRoot.querySelector(sel);
-        const direct = srqs(srqs(root, 'attr-details'), 'details');
-        expect(direct.getAttribute('open')).toBe(null);
-        const indirect = srqs(srqs(root, 'attr-indirect'), 'details');
-        expect(indirect.getAttribute('open')).toBe(null);
+        const details = root.shadowRoot.querySelector('details');
+        const cb = Details.CustomElementConstructor.prototype.attributeChangedCallback;
+        cb.call(details, 'open', '', 'open');
+        expect(details.getAttribute('open')).toBeNull();
     });
 });
