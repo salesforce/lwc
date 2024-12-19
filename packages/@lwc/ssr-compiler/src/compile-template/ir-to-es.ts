@@ -122,8 +122,8 @@ const mergeTextNodes = (nodes: Array<IrText>, cxt: TransformerContext): EsStatem
             isLiteral(node.value) ? b.literal(node.value.value) : expressionIrToEs(node.value, cxt)
         )
         .map((expression) => bMassageTextContent(expression))
-        // @ts-expect-error FIXME later
         .reduce(
+            // @ts-expect-error FIXME later
             (accumilator: EsBinaryExpression, expression: EsCallExpression | EsBinaryExpression) =>
                 b.binaryExpression('+', accumilator, expression)
         );
