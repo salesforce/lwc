@@ -7,9 +7,16 @@
 import { generateErrorMessage, type LWCErrorInfo } from '@lwc/errors';
 
 // This type extracts the arguments in a string. Example: "Error {0} {1}" -> [string, string]
-type ExtractArguments<T extends string> = T extends `${string}{${number}}${infer R}`
-    ? [string, ...ExtractArguments<R>]
-    : [];
+type ExtractArguments<
+    T extends string,
+    Numbers extends number = never,
+    Args extends string[] = [],
+> = T extends `${string}{${infer N extends number}}${infer R}`
+    ? N extends Numbers // Is `N` in the union of seen numbers?
+        ? ExtractArguments<R, Numbers, Args> // new `N`, add an argument
+        : ExtractArguments<R, N | Numbers, [string, ...Args]> // `N` already accounted for
+    : Args; // No `N` found, nothing more to check
+```
 
 export function generateError<const T extends LWCErrorInfo>(
     error: T,
