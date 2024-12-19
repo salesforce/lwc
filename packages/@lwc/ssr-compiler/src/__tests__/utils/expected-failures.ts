@@ -28,6 +28,7 @@ export const expectedFailures = new Set([
     'slot-not-at-top-level/with-adjacent-text-nodes/if/light/index.js',
     'slot-not-at-top-level/with-adjacent-text-nodes/if-as-sibling/light/index.js',
     'superclass/render-in-superclass/no-template-in-subclass/index.js',
+    'superclass/render-in-superclass/template-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-subclass/index.js',
     'superclass/render-in-superclass/unused-default-in-superclass/index.js',
     'superclass/template-in-superclass/template-in-super-render-in-super-super/index.js',
