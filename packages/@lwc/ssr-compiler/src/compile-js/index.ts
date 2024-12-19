@@ -214,12 +214,14 @@ function validateDecorators(decorators: EsDecorator[]) {
     if (decorators.length < 2) {
         return;
     }
-    const hasWire = decorators.some(
-        ({ expression }) =>
-            is.callExpression(expression) && is.identifier(expression.callee, { name: 'wire' })
+
+    const expressions = decorators.map(({ expression }) => expression);
+
+    const hasWire = expressions.some(
+        (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
     );
 
-    const hasApi = decorators.some(({ expression }) => is.identifier(expression, { name: 'api' }));
+    const hasApi = expressions.some((expr) => is.identifier(expr, { name: 'api' }));
 
     if (hasWire && hasApi) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
