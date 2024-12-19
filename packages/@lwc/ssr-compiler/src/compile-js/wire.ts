@@ -7,8 +7,9 @@
 
 import { is, builders as b } from 'estree-toolkit';
 import { produce } from 'immer';
-import { DecoratorErrors, generateErrorMessage } from '@lwc/errors';
+import { DecoratorErrors } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
+import { generateError } from './errors';
 import type { NodePath } from 'estree-toolkit';
 import type {
     PropertyDefinition,
@@ -34,10 +35,6 @@ function bMemberExpressionChain(props: string[]): MemberExpression {
         expr = b.memberExpression(expr, b.literal(prop), true);
     }
     return expr;
-}
-
-function generateError(error: (typeof DecoratorErrors)[keyof typeof DecoratorErrors]) {
-    return new Error(generateErrorMessage(error));
 }
 
 function getWireParams(
@@ -158,7 +155,8 @@ export function catalogWireAdapters(
                 if (
                     is.literal(value) &&
                     typeof value.value === 'string' &&
-                    value.value.startsWith('$')
+                    value.value.startsWith('$') &&
+                    value.value.length > 1
                 ) {
                     prop.value = bMemberExpressionChain(value.value.slice(1).split('.'));
                 }

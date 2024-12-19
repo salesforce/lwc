@@ -218,4 +218,4 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-};
+} as const;

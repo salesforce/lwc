@@ -9,9 +9,10 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
-import { DecoratorErrors, generateErrorMessage } from '@lwc/errors';
+import { DecoratorErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
+import { every } from '../estree/validators';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
@@ -19,8 +20,9 @@ import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
+import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
-import type { Identifier as EsIdentifier, Program as EsProgram, Node as EsNode } from 'estree';
+import type { Program as EsProgram, Decorator as EsDecorator } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
 
@@ -93,15 +95,14 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
-        const decoratedExpressions = decorators?.map((d) => d.expression) ?? [];
-        validateDecorators(decoratedExpressions);
+        validateDecorators(decorators);
+        const decoratedExpressions = decorators.map((d) => d.expression) ?? [];
         const decoratedExpression = decoratedExpressions[0];
-        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
+        if (is.identifier(decoratedExpression, { name: 'api' })) {
             state.publicFields.push(node.key.name);
         } else if (
             is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
+            is.identifier(decoratedExpression.callee, { name: 'wire' })
         ) {
             catalogWireAdapters(path, state);
             state.privateFields.push(node.key.name);
@@ -113,10 +114,10 @@ const visitors: Visitors = {
             node.static &&
             node.key.name === 'stylesheets' &&
             is.arrayExpression(node.value) &&
-            node.value.elements.every((el) => is.identifier(el))
+            every(node.value.elements, is.identifier)
         ) {
             catalogStaticStylesheets(
-                node.value.elements.map((el) => (el as EsIdentifier).name),
+                node.value.elements.map((el) => el.name),
                 state
             );
         }
@@ -134,17 +135,13 @@ const visitors: Visitors = {
         }
 
         const { decorators } = node;
+        validateDecorators(decorators);
         // The real type is a subset of `Expression`, which doesn't work with the `is` validators
-        const decoratedExpressions = decorators?.map((d) => d.expression) ?? [];
-
-        validateDecorators(decoratedExpressions);
-
-        const decoratedExpression = decoratedExpressions[0];
+        const decoratedExpression = decorators.map((d) => d.expression)[0];
 
         if (
             is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
+            is.identifier(decoratedExpression.callee, { name: 'wire' })
         ) {
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
@@ -213,34 +210,27 @@ const visitors: Visitors = {
     },
 };
 
-const isIdentifier = <K extends string>(name: K) =>
-    function isIdentifier(expr: EsNode | undefined | null): expr is EsIdentifier & { name: K } {
-        return is.identifier(expr) && expr.name === name;
-    };
+function validateDecorators(decorators: EsDecorator[]) {
+    if (decorators.length < 2) {
+        return;
+    }
+    const hasWire = decorators.some(
+        ({ expression }) =>
+            is.callExpression(expression) && is.identifier(expression.callee, { name: 'wire' })
+    );
 
-function validateDecorators(decoratedExpressions: EsNode[]) {
-    if (decoratedExpressions.length > 1) {
-        const isWireAdapter = decoratedExpressions.some((expr) =>
-            is.callExpression(expr, { callee: isIdentifier('wire') })
-        );
+    const hasApi = decorators.some(({ expression }) => is.identifier(expression, { name: 'api' }));
 
-        const isApiDecorator = decoratedExpressions.some(isIdentifier('api'));
+    if (hasWire && hasApi) {
+        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+    }
 
-        if (isWireAdapter && isApiDecorator) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-            throw new Error(
-                generateErrorMessage(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, ['api'])
-            );
-        }
+    const hasTrack = decorators.some(({ expression }) =>
+        is.identifier(expression, { name: 'track' })
+    );
 
-        const isTrackDecorator = decoratedExpressions.some(isIdentifier('track'));
-
-        if (isWireAdapter && isTrackDecorator) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-            throw new Error(
-                generateErrorMessage(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, ['track'])
-            );
-        }
+    if (hasWire && hasTrack) {
+        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
     }
 }
 
