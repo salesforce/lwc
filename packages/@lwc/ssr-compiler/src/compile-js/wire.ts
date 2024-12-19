@@ -11,6 +11,7 @@ import { DecoratorErrors } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { generateError } from './errors';
 import type { NodePath } from 'estree-toolkit';
+
 import type {
     PropertyDefinition,
     ObjectExpression,

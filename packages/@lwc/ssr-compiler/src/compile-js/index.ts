@@ -141,7 +141,6 @@ const visitors: Visitors = {
         validateDecorators(decorators);
         // The real type is a subset of `Expression`, which doesn't work with the `is` validators
         const decoratedExpression = decorators?.[0]?.expression;
-
         if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
