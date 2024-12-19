@@ -31,6 +31,7 @@ export { registerTemplate } from './secure-template';
 export { registerDecorators } from './decorators/register';
 
 // Mics. internal APIs -----------------------------------------------------------------------------
+export { BaseBridgeElement } from './base-bridge-element';
 export { unwrap } from './membrane';
 export { sanitizeAttribute } from './secure-template';
 export { getComponentDef, isComponentConstructor } from './def';
