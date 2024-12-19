@@ -230,9 +230,7 @@ function validateDecorators(decorators: EsDecorator[]) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
     }
 
-    const hasTrack = decorators.some(({ expression }) =>
-        is.identifier(expression, { name: 'track' })
-    );
+    const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' });
 
     if (hasWire && hasTrack) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
