@@ -111,11 +111,11 @@ export function addGenerateMarkupFunction(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
-    const tmplVar = b.identifier('tmpl');
 
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
+        const tmplVar = b.identifier('tmpl');
         program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
         program.body.unshift(
             bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
