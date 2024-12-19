@@ -53,7 +53,10 @@ const bGenerateMarkup = esTemplate`
             instance.connectedCallback();
             __mutationTracker.disable(instance);
         }
-        const tmplFn = instance.render?.() ?? ${/* tmplVar */ is.identifier} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+        // If a render() function is defined on the class or any of its superclasses, then that takes priority.
+        // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
+        // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
+        const tmplFn = instance.render?.() ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
