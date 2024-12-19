@@ -213,7 +213,7 @@ const visitors: Visitors = {
     },
 };
 
-function validateDecorators(decorators: EsDecorator[]) {
+function validateUniqueDecorator(decorators: EsDecorator[]) {
     if (decorators.length < 2) {
         return;
     }
