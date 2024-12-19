@@ -232,7 +232,7 @@ function validateDecorators(decorators: EsDecorator[]) {
 
     const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' });
 
-    if (hasWire && hasTrack) {
+    if ((hasWire || hasApi) && hasTrack) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
     }
 }
