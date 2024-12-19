@@ -148,8 +148,7 @@ export function addGenerateMarkupFunction(
             b.arrayExpression(publicFields.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
-            connectWireAdapterCode,
-            tmplVar
+            connectWireAdapterCode
         )
     );
 
