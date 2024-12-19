@@ -18,8 +18,6 @@ export interface TransformerContext {
     popLocalVars: () => void;
     isLocalVar: (varName: string | null | undefined) => boolean;
     templateOptions: TemplateOpts;
-    prevSibling?: IrNode;
-    nextSibling?: IrNode;
     isSlotted?: boolean;
     import: (
         imports: string | string[] | Record<string, string | undefined>,
