@@ -11,9 +11,9 @@ import {
     entries,
     htmlPropertyToAttribute,
     isAriaAttribute,
-    isGlobalHtmlAttribute,
     isNull,
     keys,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
     toString,
 } from '@lwc/shared';
 
@@ -37,7 +37,7 @@ export function filterProperties(
         const attrName = htmlPropertyToAttribute(propName);
         if (
             publicFieldSet.has(propName) ||
-            ((isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) &&
+            ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
                 !privateFieldSet.has(propName))
         ) {
             propsToAssign[propName] = props[propName];
