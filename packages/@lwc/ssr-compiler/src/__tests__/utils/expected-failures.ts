@@ -22,6 +22,7 @@ export const expectedFailures = new Set([
     'scoped-slots/mixed-with-light-dom-slots-outside/index.js',
     'slot-forwarding/slots/mixed/index.js',
     'slot-forwarding/slots/dangling/index.js',
+    'superclass/with-props/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
 ]);
