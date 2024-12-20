@@ -25,19 +25,6 @@ export interface WireAdapter {
     field: MethodDefinition | PropertyDefinition;
 }
 
-export function isMethodKind<
-    T extends MethodDefinition,
-    const K extends [T['kind'], ...T['kind'][]],
->(node: T, kind: K): node is T & { kind: K[number] } {
-    return kind.includes(node.kind);
-}
-
-export function isKeyIdentifier<T extends PropertyDefinition | MethodDefinition>(
-    node: T | undefined | null
-): node is T & { key: Identifier } {
-    return node?.key.type === 'Identifier';
-}
-
 export interface ComponentMetaState {
     // indicates whether the LightningElement subclass is found in the JS being traversed
     isLWC: boolean;
@@ -62,7 +49,10 @@ export interface ComponentMetaState {
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
     // the public (`@api`-annotated) fields of the component class
-    publicFields: Map<string, (MethodDefinition & { key: Identifier }) | PropertyDefinition>;
+    publicFields: Map<
+        string,
+        (MethodDefinition & { key: Identifier }) | (PropertyDefinition & { key: Identifier })
+    >;
     // the private fields of the component class
     privateFields: Set<string>;
     // indicates whether the LightningElement has any wired props

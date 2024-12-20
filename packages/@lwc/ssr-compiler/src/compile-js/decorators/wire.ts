@@ -8,8 +8,8 @@
 import { is, builders as b } from 'estree-toolkit';
 import { produce } from 'immer';
 import { DecoratorErrors } from '@lwc/errors';
-import { esTemplate } from '../estemplate';
-import { generateError } from './errors';
+import { esTemplate } from '../../estemplate';
+import { generateError } from '../errors';
 import type { NodePath } from 'estree-toolkit';
 
 import type {
@@ -25,7 +25,7 @@ import type {
     Decorator,
     CallExpression,
 } from 'estree';
-import type { ComponentMetaState, WireAdapter } from './types';
+import type { ComponentMetaState, WireAdapter } from '../types';
 
 interface NoSpreadObjectExpression extends Omit<ObjectExpression, 'properties'> {
     properties: Property[];
@@ -211,9 +211,7 @@ export function bWireAdaptersPlumbing(adapters: WireAdapter[]): BlockStatement[]
     });
 }
 
-export function isWireDecorator(
-    decorator: Decorator | undefined
-): decorator is Decorator & {
+export function isWireDecorator(decorator: Decorator | undefined): decorator is Decorator & {
     expression: CallExpression & { callee: Identifier & { name: 'wire' } };
 } {
     return (

@@ -6,12 +6,10 @@
  */
 import type { Decorator, Identifier } from 'estree';
 
-type ApiDecorator = Decorator & {
+export function isApiDecorator(decorator: Decorator | undefined): decorator is Decorator & {
     expression: Identifier & {
         name: 'api';
     };
-};
-
-export function isApiDecorator(decorator: Decorator | undefined): decorator is ApiDecorator {
+} {
     return decorator?.expression.type === 'Identifier' && decorator.expression.name === 'api';
 }

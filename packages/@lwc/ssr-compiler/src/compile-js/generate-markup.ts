@@ -9,7 +9,7 @@ import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { bImportDeclaration } from '../estree/builders';
-import { bWireAdaptersPlumbing } from './wire';
+import { bWireAdaptersPlumbing } from './decorators/wire';
 
 import type {
     Program,

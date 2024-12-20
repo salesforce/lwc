@@ -6,10 +6,19 @@
  */
 
 import { DecoratorErrors } from '@lwc/errors';
-import { generateError } from '../errors';
-import { isMethodKind, type ComponentMetaState } from '../types';
+import { generateError } from '../../errors';
+import { type ComponentMetaState } from '../../types';
 import { DISALLOWED_PROP_SET, AMBIGUOUS_PROP_SET } from './consts';
-import type { ApiPropertyDefinition, ApiDefinition, ApiMethodDefinition } from './types';
+import type { Identifier, MethodDefinition, PropertyDefinition } from 'estree';
+
+export type ApiMethodDefinition = MethodDefinition & {
+    key: Identifier;
+};
+export type ApiPropertyDefinition = PropertyDefinition & {
+    key: Identifier;
+};
+
+export type ApiDefinition = ApiPropertyDefinition | ApiMethodDefinition;
 
 function validateName(definition: ApiDefinition) {
     if (definition.computed) {
@@ -57,20 +66,19 @@ export function validateApiProperty(node: ApiPropertyDefinition, state: Componen
 function validateUniqueMethod(node: ApiMethodDefinition, state: ComponentMetaState) {
     const field = state.publicFields.get(node.key.name);
 
-    if (field) {
-        if (
-            field.type === 'MethodDefinition' &&
-            isMethodKind(field, ['get', 'set']) &&
-            isMethodKind(node, ['get', 'set'])
-        ) {
-            throw generateError(
-                DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
-                node.key.name
-            );
-        }
-
-        throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
+    if (!field) {
+        return;
     }
+
+    if (
+        field.type === 'MethodDefinition' &&
+        (field.kind === 'get' || field.kind === 'set') &&
+        (node.kind === 'get' || node.kind === 'set')
+    ) {
+        throw generateError(DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR, node.key.name);
+    }
+
+    throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
 }
 
 export function validateApiMethod(node: ApiMethodDefinition, state: ComponentMetaState) {

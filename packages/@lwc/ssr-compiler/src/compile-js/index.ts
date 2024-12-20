@@ -9,27 +9,27 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
-import { DecoratorErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
-import { catalogWireAdapters, isWireDecorator } from './wire';
-import { validateApiProperty, validateApiMethod } from './api/validate';
-import { isApiDecorator } from './api';
-import { isTrackDecorator } from './track';
+import { catalogWireAdapters, isWireDecorator } from './decorators/wire';
+import { validateApiProperty, validateApiMethod } from './decorators/api/validate';
+import { isApiDecorator } from './decorators/api';
 
 import { removeDecoratorImport } from './remove-decorator-import';
-import { generateError } from './errors';
 
-import { type Visitors, type ComponentMetaState, isKeyIdentifier, isMethodKind } from './types';
+import { type Visitors, type ComponentMetaState } from './types';
+import { validateUniqueDecorator } from './decorators';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     Identifier as EsIdentifier,
     Program as EsProgram,
-    Decorator as EsDecorator,
+    PropertyDefinition as EsPropertyDefinition,
+    MethodDefinition as EsMethodDefinition,
+    Identifier,
 } from 'estree';
 import type { CompilationMode } from '@lwc/shared';
 
@@ -97,6 +97,7 @@ const visitors: Visitors = {
     },
     PropertyDefinition(path, state) {
         const node = path.node;
+
         if (!isKeyIdentifier(node)) {
             return;
         }
@@ -144,7 +145,7 @@ const visitors: Visitors = {
         } else if (isWireDecorator(decorators[0])) {
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (isMethodKind(node, ['get', 'set'])) {
+            if (node.kind === 'get' || node.kind === 'set') {
                 const methodAsProp = b.propertyDefinition(
                     structuredClone(node.key),
                     null,
@@ -206,30 +207,6 @@ const visitors: Visitors = {
     },
 };
 
-function validateUniqueDecorator(decorators: EsDecorator[]) {
-    if (decorators.length < 2) {
-        return;
-    }
-
-    const hasWire = decorators.some(isWireDecorator);
-    const hasApi = decorators.some(isApiDecorator);
-    const hasTrack = decorators.some(isTrackDecorator);
-
-    if (hasWire) {
-        if (hasApi) {
-            throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
-        }
-
-        if (hasTrack) {
-            throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
-        }
-    }
-
-    if (hasApi && hasTrack) {
-        throw generateError(DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
-    }
-}
-
 export default function compileJS(
     src: string,
     filename: string,
@@ -281,4 +258,10 @@ export default function compileJS(
     return {
         code: generate(ast, {}),
     };
+}
+
+function isKeyIdentifier<T extends EsPropertyDefinition | EsMethodDefinition>(
+    node: T | undefined | null
+): node is T & { key: Identifier } {
+    return node?.key.type === 'Identifier';
 }
