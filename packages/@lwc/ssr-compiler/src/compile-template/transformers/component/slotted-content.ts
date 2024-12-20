@@ -175,6 +175,15 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     // '' is the default slot name. Text nodes are always slotted into the default slot
                     const slotName =
                         node.type === 'Text' ? b.literal('') : bAttributeValue(node, 'slot');
+
+                    const metadata = getTextNodeMetadata(node, parent)
+                    if (metadata.isSkippable) {
+                        continue
+                    }
+                    if (metadata.hasGlommedNodes) {
+
+                    }
+
                     addLightDomSlotContent(slotName, [...ancestorIndices, i]);
                     break;
                 }

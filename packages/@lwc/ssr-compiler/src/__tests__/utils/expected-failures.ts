@@ -24,7 +24,6 @@ export const expectedFailures = new Set([
     'slot-forwarding/slots/dangling/index.js',
     'slot-not-at-top-level/with-adjacent-text-nodes/lwcIf-as-sibling/light/index.js',
     'slot-not-at-top-level/with-adjacent-text-nodes/lwcIf/light/index.js',
-    'slot-not-at-top-level/with-adjacent-text-nodes/if/light/index.js',
     'slot-not-at-top-level/with-adjacent-text-nodes/if-as-sibling/light/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
