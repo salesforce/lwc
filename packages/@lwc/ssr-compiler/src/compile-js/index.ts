@@ -25,9 +25,22 @@ import type {
     Identifier as EsIdentifier,
     Program as EsProgram,
     Decorator as EsDecorator,
+    MethodDefinition as EsMethodDefinition,
+    PropertyDefinition as EsPropertyDefinition,
 } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
+
+const DISALLOWED_PROP_SET = new Set(['is', 'class', 'slot', 'style']);
+
+const AMBIGUOUS_PROP_SET = new Map([
+    ['bgcolor', 'bgColor'],
+    ['accesskey', 'accessKey'],
+    ['contenteditable', 'contentEditable'],
+    ['tabindex', 'tabIndex'],
+    ['maxlength', 'maxLength'],
+    ['maxvalue', 'maxValue'],
+]);
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -104,11 +117,8 @@ const visitors: Visitors = {
             if (state.publicFields.has(node.key.name)) {
                 throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
             }
-
-            if (['class', 'is', 'slot', 'style'].includes(node.key.name)) {
-                throw generateError(DecoratorErrors.PROPERTY_NAME_IS_RESERVED, node.key.name);
-            }
-
+            validatePropertyName(node);
+            validatePropertyValue(node);
             state.publicFields.set(node.key.name, node);
         } else if (
             is.callExpression(decoratedExpression) &&
@@ -176,9 +186,8 @@ const visitors: Visitors = {
 
         if (is.identifier(decoratedExpression, { name: 'api' })) {
             const field = state.publicFields.get(node.key.name);
-            if (!field) {
-                state.publicFields.set(node.key.name, node);
-            } else {
+
+            if (field) {
                 if (
                     (is.methodDefinition(field, { kind: (k) => k === 'get' || k === 'set' }) &&
                         node.kind === 'get') ||
@@ -192,6 +201,9 @@ const visitors: Visitors = {
                     throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
                 }
             }
+
+            validatePropertyName(node);
+            state.publicFields.set(node.key.name, node);
         }
 
         switch (node.key.name) {
@@ -257,8 +269,12 @@ function validateUniqueDecorator(decorators: EsDecorator[]) {
 
     const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' }));
 
-    if ((hasWire || hasApi) && hasTrack) {
+    if (hasWire && hasTrack) {
         throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+    }
+
+    if (hasApi && hasTrack) {
+        throw generateError(DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
     }
 }
 
@@ -313,4 +329,40 @@ export default function compileJS(
     return {
         code: generate(ast, {}),
     };
+}
+
+function isBooleanPropDefaultTrue(property: EsPropertyDefinition) {
+    const propertyValue = property.value;
+    return propertyValue && propertyValue.type === 'Literal' && propertyValue.value === true;
+}
+
+function validatePropertyValue(property: EsPropertyDefinition) {
+    if (isBooleanPropDefaultTrue(property)) {
+        throw generateError(DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY);
+    }
+}
+
+function validatePropertyName(property: EsMethodDefinition | EsPropertyDefinition) {
+    if (property.computed || !('name' in property.key)) {
+        throw generateError(DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED);
+    }
+
+    const propertyName = property.key.name;
+
+    switch (true) {
+        case propertyName === 'part':
+            throw generateError(DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED, propertyName);
+        case propertyName.startsWith('on'):
+            throw generateError(DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON, propertyName);
+        case propertyName.startsWith('data') && propertyName.length > 4:
+            throw generateError(DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA, propertyName);
+        case DISALLOWED_PROP_SET.has(propertyName):
+            throw generateError(DecoratorErrors.PROPERTY_NAME_IS_RESERVED, propertyName);
+        case AMBIGUOUS_PROP_SET.has(propertyName):
+            throw generateError(
+                DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
+                propertyName,
+                AMBIGUOUS_PROP_SET.get(propertyName)!
+            );
+    }
 }
