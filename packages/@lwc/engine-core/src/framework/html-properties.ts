@@ -33,7 +33,7 @@ forEach.call(keys(AriaPropNameToAttrNameMap), (propName: string) => {
     }
 });
 
-for (const propName in REFLECTIVE_GLOBAL_PROPERTY_SET) {
+for (const propName of REFLECTIVE_GLOBAL_PROPERTY_SET) {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
     // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
     // this category, so, better to be sure.
