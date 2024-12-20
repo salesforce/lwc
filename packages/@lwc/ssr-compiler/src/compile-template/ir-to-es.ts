@@ -20,6 +20,7 @@ import { createNewContext } from './context';
 import { IfBlock } from './transformers/lwcIf';
 import { isLiteral } from './shared';
 import { expressionIrToEs } from './expression';
+import { Text } from './transformers/text';
 import type {
     ChildNode as IrChildNode,
     Comment as IrComment,
@@ -66,8 +67,7 @@ const transformers: Transformers = {
     If: LegacyIf,
     IfBlock,
     Root,
-    // Text nodes are always handled by the parent to do adjacent text concatination
-    Text: defaultTransformer,
+    Text,
     // lwc:elseif cannot exist without an lwc:if (IfBlock); this gets handled by that transformer
     ElseifBlock: defaultTransformer,
     // lwc:elseif cannot exist without an lwc:elseif (IfBlock); this gets handled by that transformer
@@ -95,24 +95,19 @@ const isConcatenatableTextNode = (
     child.type === 'Text' || (child.type === 'Comment' && !cxt.templateOptions.preserveComments);
 
 const bMassageTextContent = esTemplate`
-        // We are at the end of a series of text nodes - flush to a concatenated string
-        // We only render the ZWJ if there were actually any dynamic text nodes rendered
-        // The ZWJ is just so hydration can compare the SSR'd dynamic text content against
-        // the CSR'd text content.
-        massageTextContent(${/* string value */ is.expression});
-    `<EsCallExpression>;
+    massageTextContent(${/* string value */ is.expression});
+`<EsCallExpression>;
 
 const bYieldTextContent = esTemplateWithYield`
-        // We are at the end of a series of text nodes - flush to a concatenated string
-        // We only render the ZWJ if there were actually any dynamic text nodes rendered
-        // The ZWJ is just so hydration can compare the SSR'd dynamic text content against
-        // the CSR'd text content.
-        {
-            const text = ${/* string value */ is.expression}
-            yield text === '' ? '\u200D' : htmlEscape(text);
-        }
-        
-    `<EsBlockStatement>;
+    // We are at the end of a series of text nodes - flush to a concatenated string
+    // We only render the ZWJ if there were actually any dynamic text nodes rendered
+    // The ZWJ is just so hydration can compare the SSR'd dynamic text content against
+    // the CSR'd text content.
+    {
+        const text = ${/* string value */ is.expression};
+        yield text === '' ? '\u200D' : htmlEscape(text);
+    }
+`<EsBlockStatement>;
 
 const mergeTextNodes = (nodes: Array<IrText>, cxt: TransformerContext): EsStatement => {
     cxt.import(['htmlEscape', 'massageTextContent']);
@@ -124,8 +119,8 @@ const mergeTextNodes = (nodes: Array<IrText>, cxt: TransformerContext): EsStatem
         .map((expression) => bMassageTextContent(expression))
         .reduce(
             // @ts-expect-error FIXME later
-            (accumilator: EsBinaryExpression, expression: EsCallExpression | EsBinaryExpression) =>
-                b.binaryExpression('+', accumilator, expression)
+            (accumulator: EsBinaryExpression, expression: EsCallExpression | EsBinaryExpression) =>
+                b.binaryExpression('+', accumulator, expression)
         );
 
     return bYieldTextContent(mergedExpression);
