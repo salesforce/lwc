@@ -17,7 +17,8 @@ import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters, isWireDecorator } from './wire';
-import { isApiDecorator, validateApiProperty, validateApiMethod } from './api';
+import { validateApiProperty, validateApiMethod } from './api/validate';
+import { isApiDecorator } from './api';
 import { isTrackDecorator } from './track';
 
 import { removeDecoratorImport } from './remove-decorator-import';
