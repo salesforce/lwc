@@ -97,55 +97,17 @@ describe('component compilation errors', () => {
         });
 
         describe('disallowed props', () => {
-            test('class', () => {
+            test.for(['class', 'is', 'slot', 'style'])('%s', (prop) => {
                 expect(
                     compile(/* js */ `
                     import { LightningElement, api } from 'lwc'
 
                     export default class extends LightningElement {
-                        @api class
+                        @api ${prop}
                     }
                 `)
                 ).toThrow(
-                    `LWC1110: Invalid property name "class". "class" is a reserved attribute.`
-                );
-            });
-
-            test('is', () => {
-                expect(
-                    compile(/* js */ `
-                    import { LightningElement, api } from 'lwc'
-
-                    export default class extends LightningElement {
-                        @api is
-                    }
-                `)
-                ).toThrow(`LWC1110: Invalid property name "is". "is" is a reserved attribute.`);
-            });
-
-            test('slot', () => {
-                expect(
-                    compile(/* js */ `
-                    import { LightningElement, api } from 'lwc'
-
-                    export default class extends LightningElement {
-                        @api slot
-                    }
-                `)
-                ).toThrow(`LWC1110: Invalid property name "slot". "slot" is a reserved attribute.`);
-            });
-
-            test('style', () => {
-                expect(
-                    compile(/* js */ `
-                    import { LightningElement, api } from 'lwc'
-
-                    export default class extends LightningElement {
-                        @api style
-                    }
-                `)
-                ).toThrow(
-                    `LWC1110: Invalid property name "style". "style" is a reserved attribute.`
+                    `LWC1110: Invalid property name "${prop}". "${prop}" is a reserved attribute.`
                 );
             });
         });
