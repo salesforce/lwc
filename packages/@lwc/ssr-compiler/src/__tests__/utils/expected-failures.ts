@@ -9,8 +9,6 @@
 // TODO [#4815]: enable all SSR v2 tests
 export const expectedFailures = new Set([
     'attribute-aria/dynamic/index.js',
-    'attribute-class/with-scoped-styles-only-in-child/dynamic/index.js',
-    'attribute-class/with-scoped-styles/dynamic/index.js',
     'attribute-component-global-html/index.js',
     'attribute-global-html/as-component-prop/undeclared/index.js',
     'attribute-global-html/as-component-prop/without-@api/index.js',

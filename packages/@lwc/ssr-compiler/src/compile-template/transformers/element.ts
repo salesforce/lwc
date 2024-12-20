@@ -81,9 +81,17 @@ const bYieldClassDynamicValue = esTemplateWithYield`
         const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
         const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
 
+        // Concatenate the scope token with the class attribute value as necessary.
+        // If either is missing, render the other alone.
+        let combinedValue = shouldRenderScopeToken ? stylesheetScopeToken : '';
         if (attrValue) {
-            const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
-            yield \` class="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
+            if (combinedValue) {
+                combinedValue += ' ';
+            }
+            combinedValue += htmlEscape(String(attrValue));
+        }
+        if (combinedValue) {
+            yield \` class="\${combinedValue}"\`;
         }
     }
 `<EsBlockStatement>;
