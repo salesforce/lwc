@@ -8,10 +8,8 @@
 import { is } from 'estree-toolkit';
 import { DecoratorErrors } from '@lwc/errors';
 import { generateError } from './errors';
-import type {
-    MethodDefinition as EsMethodDefinition,
-    PropertyDefinition as EsPropertyDefinition,
-} from 'estree';
+import { isMethodKind, type ComponentMetaState } from './types';
+import type { MethodDefinition, PropertyDefinition, Identifier, Decorator } from 'estree';
 
 const DISALLOWED_PROP_SET = new Set(['is', 'class', 'slot', 'style']);
 
@@ -24,13 +22,13 @@ const AMBIGUOUS_PROP_SET = new Map([
     ['maxvalue', 'maxValue'],
 ]);
 
-export function validatePropertyValue(property: EsPropertyDefinition) {
+export function validatePropertyValue(property: PropertyDefinition) {
     if (is.literal(property.value, { value: true })) {
         throw generateError(DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY);
     }
 }
 
-export function validatePropertyName(property: EsMethodDefinition | EsPropertyDefinition) {
+export function validatePropertyName(property: MethodDefinition | PropertyDefinition) {
     if (property.computed || !('name' in property.key)) {
         throw generateError(DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED);
     }
@@ -53,4 +51,42 @@ export function validatePropertyName(property: EsMethodDefinition | EsPropertyDe
                 AMBIGUOUS_PROP_SET.get(propertyName)!
             );
     }
+}
+
+export function validateUniqueProperty(
+    node: PropertyDefinition & { key: Identifier },
+    state: ComponentMetaState
+) {
+    if (state.publicFields.has(node.key.name)) {
+        throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
+    }
+}
+
+export default function validate(
+    node: (MethodDefinition & { key: Identifier }) | (PropertyDefinition & { key: Identifier }),
+    state: ComponentMetaState
+) {
+    const field = state.publicFields.get(node.key.name);
+
+    if (field) {
+        if (
+            is.methodDefinition(field) &&
+            isMethodKind(field, ['get', 'set']) &&
+            is.methodDefinition(node) &&
+            isMethodKind(node, ['get', 'set'])
+        ) {
+            throw generateError(
+                DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
+                node.key.name
+            );
+        }
+
+        throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
+    }
+}
+
+export function isApiDecorator(
+    decorator: Decorator | undefined
+): decorator is Decorator & { expression: Identifier & { name: 'api' } } {
+    return is.identifier(decorator?.expression) && decorator.expression.name === 'api';
 }

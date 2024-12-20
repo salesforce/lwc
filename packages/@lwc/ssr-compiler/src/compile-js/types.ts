@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { type traverse } from 'estree-toolkit';
 import type { ImportManager } from '../imports';
 import type { ComponentTransformOptions } from '../shared';
-import type { traverse } from 'estree-toolkit';
 import type {
     Identifier,
     MemberExpression,
@@ -23,6 +23,19 @@ export interface WireAdapter {
     adapterId: Identifier | MemberExpression;
     config: ObjectExpression;
     field: MethodDefinition | PropertyDefinition;
+}
+
+export function isMethodKind<
+    T extends MethodDefinition,
+    const K extends [T['kind'], ...T['kind'][]],
+>(node: T, kind: K): node is T & { kind: K[number] } {
+    return kind.includes(node.kind);
+}
+
+export function isKeyIdentifier<T extends PropertyDefinition | MethodDefinition>(
+    node: T | undefined | null
+): node is T & { key: Identifier } {
+    return node?.key.type === 'Identifier';
 }
 
 export interface ComponentMetaState {
@@ -49,7 +62,7 @@ export interface ComponentMetaState {
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
     // the public (`@api`-annotated) fields of the component class
-    publicFields: Map<string, MethodDefinition | PropertyDefinition>;
+    publicFields: Map<string, (MethodDefinition & { key: Identifier }) | PropertyDefinition>;
     // the private fields of the component class
     privateFields: Set<string>;
     // indicates whether the LightningElement has any wired props

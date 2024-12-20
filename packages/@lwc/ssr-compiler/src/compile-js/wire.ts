@@ -22,6 +22,8 @@ import type {
     MemberExpression,
     Property,
     BlockStatement,
+    Decorator,
+    CallExpression,
 } from 'estree';
 import type { ComponentMetaState, WireAdapter } from './types';
 
@@ -207,4 +209,16 @@ export function bWireAdaptersPlumbing(adapters: WireAdapter[]): BlockStatement[]
 
         return bWireAdapterPlumbing(adapterId, actionUponNewValue, config);
     });
+}
+
+export function isWireDecorator(
+    decorator: Decorator | undefined
+): decorator is Decorator & {
+    expression: CallExpression & { callee: Identifier & { name: 'wire' } };
+} {
+    return (
+        is.callExpression(decorator?.expression) &&
+        is.identifier(decorator.expression.callee) &&
+        decorator.expression.callee.name === 'wire'
+    );
 }

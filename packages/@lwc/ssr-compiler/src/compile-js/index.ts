@@ -16,19 +16,25 @@ import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
-import { catalogWireAdapters } from './wire';
-import { validatePropertyName, validatePropertyValue } from './api';
+import { catalogWireAdapters, isWireDecorator } from './wire';
+import validateUniqueness, {
+    isApiDecorator,
+    validatePropertyName,
+    validatePropertyValue,
+    validateUniqueProperty,
+} from './api';
+import { isTrackDecorator } from './track';
 
 import { removeDecoratorImport } from './remove-decorator-import';
 import { generateError } from './errors';
 
+import { type Visitors, type ComponentMetaState, isKeyIdentifier, isMethodKind } from './types';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     Identifier as EsIdentifier,
     Program as EsProgram,
     Decorator as EsDecorator,
 } from 'estree';
-import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
 
 const visitors: Visitors = {
@@ -95,25 +101,18 @@ const visitors: Visitors = {
     },
     PropertyDefinition(path, state) {
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!isKeyIdentifier(node)) {
             return;
         }
 
         const { decorators } = node;
         validateUniqueDecorator(decorators);
-        const decoratedExpression = decorators?.[0]?.expression;
-        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            if (state.publicFields.has(node.key.name)) {
-                throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
-            }
+        if (isApiDecorator(decorators[0])) {
+            validateUniqueProperty(node, state);
             validatePropertyName(node);
             validatePropertyValue(node);
             state.publicFields.set(node.key.name, node);
-        } else if (
-            is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
-        ) {
+        } else if (isWireDecorator(decorators[0])) {
             catalogWireAdapters(path, state);
             state.privateFields.add(node.key.name);
         } else {
@@ -134,10 +133,9 @@ const visitors: Visitors = {
     },
     MethodDefinition(path, state) {
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!isKeyIdentifier(node)) {
             return;
         }
-
         // If we mutate any class-methods that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
         if (!state.isLWC) {
@@ -146,16 +144,10 @@ const visitors: Visitors = {
 
         const { decorators } = node;
         validateUniqueDecorator(decorators);
-        // The real type is a subset of `Expression`, which doesn't work with the `is` validators
-        const decoratedExpression = decorators?.[0]?.expression;
-        if (
-            is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
-        ) {
+        if (isWireDecorator(decorators[0])) {
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (node.kind === 'get' || node.kind === 'set') {
+            if (isMethodKind(node, ['get', 'set'])) {
                 const methodAsProp = b.propertyDefinition(
                     structuredClone(node.key),
                     null,
@@ -171,26 +163,8 @@ const visitors: Visitors = {
             } else {
                 catalogWireAdapters(path, state);
             }
-        }
-
-        if (is.identifier(decoratedExpression, { name: 'api' })) {
-            const field = state.publicFields.get(node.key.name);
-
-            if (field) {
-                if (
-                    (is.methodDefinition(field, { kind: (k) => k === 'get' || k === 'set' }) &&
-                        node.kind === 'get') ||
-                    node.kind === 'set'
-                ) {
-                    throw generateError(
-                        DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
-                        node.key.name
-                    );
-                } else {
-                    throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
-                }
-            }
-
+        } else if (isApiDecorator(decorators[0])) {
+            validateUniqueness(node, state);
             validatePropertyName(node);
             state.publicFields.set(node.key.name, node);
         }
@@ -244,22 +218,18 @@ function validateUniqueDecorator(decorators: EsDecorator[]) {
         return;
     }
 
-    const expressions = decorators.map(({ expression }) => expression);
+    const hasWire = decorators.some(isWireDecorator);
+    const hasApi = decorators.some(isApiDecorator);
+    const hasTrack = decorators.some(isTrackDecorator);
 
-    const hasWire = expressions.some(
-        (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
-    );
+    if (hasWire) {
+        if (hasApi) {
+            throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+        }
 
-    const hasApi = expressions.some((expr) => is.identifier(expr, { name: 'api' }));
-
-    if (hasWire && hasApi) {
-        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
-    }
-
-    const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' }));
-
-    if (hasWire && hasTrack) {
-        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+        if (hasTrack) {
+            throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+        }
     }
 
     if (hasApi && hasTrack) {
