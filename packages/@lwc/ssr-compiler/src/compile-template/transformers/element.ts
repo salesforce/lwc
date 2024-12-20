@@ -88,7 +88,7 @@ const bYieldClassDynamicValue = esTemplateWithYield`
             if (combinedValue) {
                 combinedValue += ' ';
             }
-            combinedValue += htmlEscape(String(attrValue));
+            combinedValue += htmlEscape(String(attrValue), true);
         }
         if (combinedValue) {
             yield \` class="\${combinedValue}"\`;
