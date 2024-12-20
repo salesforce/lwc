@@ -4,10 +4,26 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { esTemplateWithYield } from '../estemplate';
-import type { IfStatement as EsIfStatement } from 'estree';
+import { builders as b } from 'estree-toolkit/dist/builders';
+import { is } from 'estree-toolkit';
+import { esTemplate, esTemplateWithYield } from '../estemplate';
+import { isLiteral } from './shared';
+import { expressionIrToEs } from './expression';
+import type {
+    CallExpression as EsCallExpression,
+    Expression as EsExpression,
+    ExpressionStatement as EsExpressionStatement,
+} from 'estree';
 import type { TransformerContext } from './types';
-import type { Node as IrNode } from '@lwc/template-compiler';
+import type { Node as IrNode, Text as IrText } from '@lwc/template-compiler';
+
+const bMassageTextContent = esTemplate`
+    massageTextContent(${/* string value */ is.expression});
+`<EsCallExpression>;
+
+const bYieldTextContent = esTemplateWithYield`
+    yield renderTextContent(${/* text concatenation, possibly as binary expression */ is.expression});
+`<EsExpressionStatement>;
 
 /**
  * True if this is one of a series of text content nodes and/or comment node that are adjacent to one another as
@@ -34,15 +50,39 @@ export const isLastConcatenatedNode = (cxt: TransformerContext) => {
     return !isConcatenatedNode(nextSibling, cxt);
 };
 
-export const bYieldTextContent = esTemplateWithYield`
-    if (didBufferTextContent) {
-        // We are at the end of a series of text nodes - flush to a concatenated string
-        // We only render the ZWJ if there were actually any dynamic text nodes rendered
-        // The ZWJ is just so hydration can compare the SSR'd dynamic text content against
-        // the CSR'd text content.
-        yield textContentBuffer === '' ? '\u200D' : htmlEscape(textContentBuffer);
-        // Reset
-        textContentBuffer = '';
-        didBufferTextContent = false;
+export function generateConcatenatedTextNodesExpressions(
+    cxt: TransformerContext,
+    lastValue?: EsExpression
+) {
+    const values = [...cxt.bufferedTextNodeValues];
+    if (lastValue) {
+        values.push(lastValue);
     }
-`<EsIfStatement>;
+
+    if (!values.length) {
+        // Render nothing. This can occur if we hit a comment in non-preserveComments mode with no adjacent text nodes
+        return [];
+    }
+
+    cxt.import(['massageTextContent', 'renderTextContent']);
+
+    const expressions: EsExpression[] = values.map((_) => bMassageTextContent(_));
+
+    // Generate a binary expression to concatenate the text together. E.g.:
+    //     renderTextContent(
+    //         massageTextContent(a) +
+    //         massageTextContent(b) +
+    //         massageTextContent(c)
+    //     )
+    const concatenatedExpression = expressions.reduce((accumulator, expression) => {
+        return b.binaryExpression('+', accumulator, expression);
+    });
+
+    cxt.bufferedTextNodeValues.length = 0; // reset
+
+    return [bYieldTextContent(concatenatedExpression)];
+}
+
+export function generateExpressionFromTextNode(node: IrText, cxt: TransformerContext) {
+    return isLiteral(node.value) ? b.literal(node.value.value) : expressionIrToEs(node.value, cxt);
+}
