@@ -28,8 +28,10 @@ export function validatePropertyValue(property: PropertyDefinition) {
     }
 }
 
-export function validatePropertyName(property: MethodDefinition | PropertyDefinition) {
-    if (property.computed || !('name' in property.key)) {
+export function validateName(
+    property: (MethodDefinition & { key: Identifier }) | (PropertyDefinition & { key: Identifier })
+) {
+    if (property.computed) {
         throw generateError(DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED);
     }
 
@@ -62,8 +64,8 @@ export function validateUniqueProperty(
     }
 }
 
-export default function validate(
-    node: (MethodDefinition & { key: Identifier }) | (PropertyDefinition & { key: Identifier }),
+export function validateUniqueMethod(
+    node: MethodDefinition & { key: Identifier },
     state: ComponentMetaState
 ) {
     const field = state.publicFields.get(node.key.name);
@@ -83,6 +85,23 @@ export default function validate(
 
         throw generateError(DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
     }
+}
+
+export function validateApiProperty(
+    node: PropertyDefinition & { key: Identifier },
+    state: ComponentMetaState
+) {
+    validateUniqueProperty(node, state);
+    validateName(node);
+    validatePropertyValue(node);
+}
+
+export function validateApiMethod(
+    node: MethodDefinition & { key: Identifier },
+    state: ComponentMetaState
+) {
+    validateUniqueMethod(node, state);
+    validateName(node);
 }
 
 export function isApiDecorator(

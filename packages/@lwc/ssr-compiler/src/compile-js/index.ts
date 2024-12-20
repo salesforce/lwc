@@ -17,12 +17,7 @@ import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters, isWireDecorator } from './wire';
-import validateUniqueness, {
-    isApiDecorator,
-    validatePropertyName,
-    validatePropertyValue,
-    validateUniqueProperty,
-} from './api';
+import { isApiDecorator, validateApiProperty, validateApiMethod } from './api';
 import { isTrackDecorator } from './track';
 
 import { removeDecoratorImport } from './remove-decorator-import';
@@ -108,9 +103,7 @@ const visitors: Visitors = {
         const { decorators } = node;
         validateUniqueDecorator(decorators);
         if (isApiDecorator(decorators[0])) {
-            validateUniqueProperty(node, state);
-            validatePropertyName(node);
-            validatePropertyValue(node);
+            validateApiProperty(node, state);
             state.publicFields.set(node.key.name, node);
         } else if (isWireDecorator(decorators[0])) {
             catalogWireAdapters(path, state);
@@ -144,7 +137,10 @@ const visitors: Visitors = {
 
         const { decorators } = node;
         validateUniqueDecorator(decorators);
-        if (isWireDecorator(decorators[0])) {
+        if (isApiDecorator(decorators[0])) {
+            validateApiMethod(node, state);
+            state.publicFields.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
             if (isMethodKind(node, ['get', 'set'])) {
@@ -163,10 +159,6 @@ const visitors: Visitors = {
             } else {
                 catalogWireAdapters(path, state);
             }
-        } else if (isApiDecorator(decorators[0])) {
-            validateUniqueness(node, state);
-            validatePropertyName(node);
-            state.publicFields.set(node.key.name, node);
         }
 
         switch (node.key.name) {
