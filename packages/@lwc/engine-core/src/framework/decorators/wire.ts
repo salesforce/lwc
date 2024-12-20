@@ -59,7 +59,7 @@ interface WireDecorator<Value, Class> {
  * }
  */
 export default function wire<
-    ReactiveConfig extends ConfigValue = ConfigValue,
+    const ReactiveConfig extends ConfigValue = ConfigValue,
     Value = any,
     Context extends ContextValue = ContextValue,
     Class = LightningElement,
