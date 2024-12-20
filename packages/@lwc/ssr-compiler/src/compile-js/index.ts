@@ -17,30 +17,19 @@ import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters } from './wire';
+import { validatePropertyName, validatePropertyValue } from './api';
 
 import { removeDecoratorImport } from './remove-decorator-import';
 import { generateError } from './errors';
+
 import type { ComponentTransformOptions } from '../shared';
 import type {
     Identifier as EsIdentifier,
     Program as EsProgram,
     Decorator as EsDecorator,
-    MethodDefinition as EsMethodDefinition,
-    PropertyDefinition as EsPropertyDefinition,
 } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
-
-const DISALLOWED_PROP_SET = new Set(['is', 'class', 'slot', 'style']);
-
-const AMBIGUOUS_PROP_SET = new Map([
-    ['bgcolor', 'bgColor'],
-    ['accesskey', 'accessKey'],
-    ['contenteditable', 'contentEditable'],
-    ['tabindex', 'tabIndex'],
-    ['maxlength', 'maxLength'],
-    ['maxvalue', 'maxValue'],
-]);
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -329,40 +318,4 @@ export default function compileJS(
     return {
         code: generate(ast, {}),
     };
-}
-
-function isBooleanPropDefaultTrue(property: EsPropertyDefinition) {
-    const propertyValue = property.value;
-    return propertyValue && propertyValue.type === 'Literal' && propertyValue.value === true;
-}
-
-function validatePropertyValue(property: EsPropertyDefinition) {
-    if (isBooleanPropDefaultTrue(property)) {
-        throw generateError(DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY);
-    }
-}
-
-function validatePropertyName(property: EsMethodDefinition | EsPropertyDefinition) {
-    if (property.computed || !('name' in property.key)) {
-        throw generateError(DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED);
-    }
-
-    const propertyName = property.key.name;
-
-    switch (true) {
-        case propertyName === 'part':
-            throw generateError(DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED, propertyName);
-        case propertyName.startsWith('on'):
-            throw generateError(DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON, propertyName);
-        case propertyName.startsWith('data') && propertyName.length > 4:
-            throw generateError(DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA, propertyName);
-        case DISALLOWED_PROP_SET.has(propertyName):
-            throw generateError(DecoratorErrors.PROPERTY_NAME_IS_RESERVED, propertyName);
-        case AMBIGUOUS_PROP_SET.has(propertyName):
-            throw generateError(
-                DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
-                propertyName,
-                AMBIGUOUS_PROP_SET.get(propertyName)!
-            );
-    }
 }

@@ -43,7 +43,7 @@ describe('thows error', () => {
                     return "foo";
                 }`,
             ],
-        ] as [name: string, body: string][])(`%s`, ([, body]) => {
+        ])(`%s`, ([, body]) => {
             const src = /* js */ `
                 import { api, LightningElement } from "lwc";
                 export default class Test extends LightningElement {
