@@ -66,17 +66,15 @@ export function generateConcatenatedTextNodesExpressions(
 
     cxt.import(['massageTextContent', 'renderTextContent']);
 
-    const expressions: EsExpression[] = values.map((_) => bMassageTextContent(_));
-
     // Generate a binary expression to concatenate the text together. E.g.:
     //     renderTextContent(
     //         massageTextContent(a) +
     //         massageTextContent(b) +
     //         massageTextContent(c)
     //     )
-    const concatenatedExpression = expressions.reduce((accumulator, expression) => {
-        return b.binaryExpression('+', accumulator, expression);
-    });
+    const concatenatedExpression = values
+        .map((expression) => bMassageTextContent(expression) as EsExpression)
+        .reduce((accumulator, expression) => b.binaryExpression('+', accumulator, expression));
 
     cxt.bufferedTextNodeValues.length = 0; // reset
 
