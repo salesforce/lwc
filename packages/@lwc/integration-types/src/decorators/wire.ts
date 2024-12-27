@@ -15,6 +15,11 @@ type DeepConfig = { deep: { config: number } };
 declare const testConfig: TestConfig;
 declare const testValue: TestValue;
 declare const TestAdapter: WireAdapterConstructor<TestConfig, TestValue, TestContext>;
+declare const TestAdapterNoConfig: WireAdapterConstructor<never, TestValue, TestContext>;
+declare const TestAdapterWithImperative: {
+    (config: TestConfig): TestValue;
+    adapter: WireAdapterConstructor<TestConfig, TestValue, TestContext>;
+};
 declare const AnyAdapter: any;
 declare const InvalidAdapter: object;
 declare const DeepConfigAdapter: WireAdapterConstructor<DeepConfig, TestValue>;
@@ -35,11 +40,13 @@ export class PropertyDecorators extends LightningElement {
     // uses the object above, rather than a weird prop name
     'nested.prop' = false;
     number = 123;
+    anyProp: any;
+
     // --- VALID --- //
     // Valid - basic
     @wire(TestAdapter, { config: 'config' })
     basic?: TestValue;
-    @wire(TestAdapter, { config: '$config' })
+    @wire(TestAdapter, { config: '$configProp' })
     simpleReactive?: TestValue;
     @wire(TestAdapter, { config: '$nested.prop' })
     nestedReactive?: TestValue;
@@ -68,6 +75,12 @@ export class PropertyDecorators extends LightningElement {
     explicitDefaultType: TestValue = testValue;
     @wire(TestAdapter, { config: 'config' })
     implicitDefaultType = testValue;
+    @wire(TestAdapter, { config: '$anyProp' })
+    refAnyTypeProp = testValue;
+    @wire(TestAdapter, { config: '$anyProp.nested.because.any' })
+    refAnyTypeNestedProp = testValue;
+    @wire(TestAdapterNoConfig)
+    adapterRefusesConfig?: TestValue;
 
     // --- INVALID --- //
     // @ts-expect-error Invalid adapter type
@@ -102,27 +115,88 @@ export class PropertyDecorators extends LightningElement {
     // @ts-expect-error Incorrect non-reactive string literal type
     @wire(TestAdapter, { config: 'not reactive' } as const)
     nonReactiveStringLiteral?: TestValue;
+    // @ts-expect-error config limited to specific string or valid reactive prop
+    @wire(TestAdapter, { config: 'incorrect' })
+    wrongConfigButInferredAsString?: TestValue;
     // @ts-expect-error Nested props are not reactive - only top level
     @wire(DeepConfigAdapter, { deep: { config: '$number' } } as const)
     deepReactive?: TestValue;
     // @ts-expect-error Looks like a method, but it's actually a prop
     @wire(TestAdapter, { config: 'config' })
     propValueIsMethod = function (this: PropertyDecorators, _: TestValue): void {};
+    // @ts-expect-error config now allowed
+    @wire(TestAdapterNoConfig, {})
+    forcingConfigOnAdapter?: TestValue;
 
     // --- AMBIGUOUS --- //
     // Passing a config is optional because adapters don't strictly need to use it.
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapter)
     noConfig?: TestValue;
-    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
-    // the component's props, so we must accept all string props, even if they're incorrect.
-    // We could technically be strict, and enforce that all configs objects use `as const`, but very
-    // few projects currently use it (there is no need) and the error reported is not simple to
-    // understand.
-    @wire(TestAdapter, { config: 'incorrect' })
-    wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
     @wire(TestAdapter, { config: 'config' })
+    never?: never;
+}
+
+/** Validations for decorated properties/fields */
+export class PropertyDecoratorsWithImperative extends LightningElement {
+    // Helper props
+    configProp = 'config' as const;
+    nested = { prop: 'config', invalid: 123 } as const;
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
+    number = 123;
+    // --- VALID --- //
+    // Valid - basic
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    basic?: TestValue;
+    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    simpleReactive?: TestValue;
+    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    nestedReactive?: TestValue;
+    // Valid - as const
+    @wire(TestAdapterWithImperative, { config: 'config' } as const)
+    basicAsConst?: TestValue;
+    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
+    simpleReactiveAsConst?: TestValue;
+    // Valid - using `any`
+    @wire(TestAdapterWithImperative, {} as any)
+    configAsAny?: TestValue;
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    propAsAny?: any;
+    // Valid - prop assignment
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    nonNullAssertion!: TestValue;
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    explicitDefaultType: TestValue = testValue;
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    implicitDefaultType = testValue;
+
+    // --- INVALID --- //
+    // @ts-expect-error Too many wire parameters
+    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    tooManyWireParams?: TestValue;
+    // @ts-expect-error Bad config type
+    @wire(TestAdapterWithImperative, { bad: 'value' })
+    badConfig?: TestValue;
+    // @ts-expect-error Bad prop type
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    badPropType?: { bad: 'value' };
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
+    nonExistentReactiveProp?: TestValue;
+
+    // --- AMBIGUOUS --- //
+    // Passing a config is optional because adapters don't strictly need to use it.
+    // Can we be smarter about the type and require a config, but only if the adapter does?
+    @wire(TestAdapterWithImperative)
+    noConfig?: TestValue;
+    // @ts-expect-error config limited to specific string or valid reactive prop
+    @wire(TestAdapterWithImperative, { config: 'incorrect' })
+    wrongConfigButInferredAsString?: TestValue;
+    // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
+    @wire(TestAdapterWithImperative, { config: 'config' })
     never?: never;
 }
 
@@ -141,13 +215,13 @@ export class MethodDecorators extends LightningElement {
     basic(_: TestValue) {}
     @wire(TestAdapter, { config: 'config' })
     async asyncMethod(_: TestValue) {}
-    @wire(TestAdapter, { config: '$config' })
+    @wire(TestAdapter, { config: '$configProp' })
     simpleReactive(_: TestValue) {}
     @wire(TestAdapter, { config: '$nested.prop' })
     nestedReactive(_: TestValue) {}
-    @wire(TestAdapter, { config: '$config' })
+    @wire(TestAdapter, { config: '$configProp' })
     optionalParam(_?: TestValue) {}
-    @wire(TestAdapter, { config: '$config' })
+    @wire(TestAdapter, { config: '$configProp' })
     noParam() {}
     // Valid - as const
     @wire(TestAdapter, { config: 'config' } as const)
@@ -210,15 +284,84 @@ export class MethodDecorators extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapter)
     noConfig(_: TestValue): void {}
-    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
-    // the component's props, so we must accept all string props, even if they're incorrect.
-    // We could technically be strict, and enforce that all configs objects use `as const`, but very
-    // few projects currently use it (there is no need) and the error reported is not simple to
-    // understand.
+    // @ts-expect-error config limited to specific string or valid reactive prop
     @wire(TestAdapter, { config: 'incorrect' })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapter, { config: 'config' })
+    implicitDefaultType(_ = testValue) {}
+
+    // make sure imperatively calling works correctly
+    // no support for reactive props so testing is simpler
+    imperativeTest(): TestValue {
+        let output: TestValue;
+        output = TestAdapterWithImperative({ config: 'config' });
+        // @ts-expect-error no reactive props
+        output = TestAdapterWithImperative({ config: '$configProp' });
+        // @ts-expect-error extra config prop
+        output = TestAdapterWithImperative({ config: 'config', extra: 'val' });
+        // @ts-expect-error missing config prop
+        output = TestAdapterWithImperative({});
+        // @ts-expect-error missing param
+        output = TestAdapterWithImperative();
+        return output;
+    }
+}
+
+/** Validations for decorated methods */
+export class MethodDecoratorsWithImperative extends LightningElement {
+    // Helper props
+    configProp = 'config' as const;
+    nested = { prop: 'config', invalid: 123 } as const;
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
+    number = 123;
+    // --- VALID --- //
+    // Valid - basic
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    basic(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    async asyncMethod(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    simpleReactive(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    nestedReactive(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    optionalParam(_?: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    noParam() {}
+    // Valid - as const
+    @wire(TestAdapterWithImperative, { config: 'config' } as const)
+    basicAsConst(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
+    simpleReactiveAsConst(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$nested.prop' } as const)
+    nestedReactiveAsConst(_: TestValue) {}
+    // Valid - using `any`
+    @wire(TestAdapterWithImperative, {} as any)
+    configAsAny(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    paramAsAny(_: any) {}
+
+    // --- INVALID --- //
+    // @ts-expect-error Too many wire parameters
+    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    tooManyWireParams(_: TestValue) {}
+    // @ts-expect-error Too many method parameters
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    tooManyParameters(_a: TestValue, _b: TestValue) {}
+
+    // --- AMBIGUOUS --- //
+    // Passing a config is optional because adapters don't strictly need to use it.
+    // Can we be smarter about the type and require a config, but only if the adapter does?
+    @wire(TestAdapterWithImperative)
+    noConfig(_: TestValue): void {}
+    // @ts-expect-error config limited to specific string or valid reactive prop
+    @wire(TestAdapterWithImperative, { config: 'incorrect' })
+    wrongConfigButInferredAsString(_: TestValue): void {}
+    // Wire adapters shouldn't use default params, but the type system doesn't know the difference
+    @wire(TestAdapterWithImperative, { config: 'config' })
     implicitDefaultType(_ = testValue) {}
 }
 
@@ -244,7 +387,7 @@ export class GetterDecorators extends LightningElement {
         // we must return something. Since we don't have any data to return, we return `undefined`
         return undefined;
     }
-    @wire(TestAdapter, { config: '$config' })
+    @wire(TestAdapter, { config: '$configProp' })
     get simpleReactive() {
         return testValue;
     }
@@ -341,6 +484,69 @@ export class GetterDecorators extends LightningElement {
     }
 }
 
+/** Validations for decorated getters */
+export class GetterDecoratorsWithImperative extends LightningElement {
+    // Helper props
+    configProp = 'config' as const;
+    nested = { prop: 'config', invalid: 123 } as const;
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
+    number = 123;
+    // --- VALID --- //
+
+    // Valid - basic
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    get basic() {
+        return testValue;
+    }
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    get undefined() {
+        // The function implementation of a wired getter is ignored, but TypeScript enforces that
+        // we must return something. Since we don't have any data to return, we return `undefined`
+        return undefined;
+    }
+    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    get simpleReactive() {
+        return testValue;
+    }
+    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    get nestedReactive() {
+        return testValue;
+    }
+    // Valid - using `any`
+    @wire(TestAdapterWithImperative, {} as any)
+    get configAsAny() {
+        return testValue;
+    }
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    get valueAsAny() {
+        return null as any;
+    }
+
+    // --- INVALID --- //
+    // @ts-expect-error Too many wire parameters
+    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    get tooManyWireParams() {
+        return testValue;
+    }
+    // @ts-expect-error Bad config type
+    @wire(TestAdapterWithImperative, { bad: 'value' })
+    get badConfig() {
+        return testValue;
+    }
+    // @ts-expect-error Bad value type
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    get badValueType() {
+        return { bad: 'value' };
+    }
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
+    get nonExistentReactiveProp() {
+        return testValue;
+    }
+}
+
 /** Validations for decorated setters */
 export class Setter extends LightningElement {
     // Helper props
@@ -355,7 +561,7 @@ export class Setter extends LightningElement {
     // Valid - basic
     @wire(TestAdapter, { config: 'config' })
     set basic(_: TestValue) {}
-    @wire(TestAdapter, { config: '$config' })
+    @wire(TestAdapter, { config: '$configProp' })
     set simpleReactive(_: TestValue) {}
     @wire(TestAdapter, { config: '$nested.prop' })
     set nestedReactive(_: TestValue) {}
@@ -410,4 +616,92 @@ export class Setter extends LightningElement {
     // @ts-expect-error Nested props are not reactive - only top level
     @wire(DeepConfigAdapter, { deep: { config: '$number' } } as const)
     set deepReactive(_: TestValue) {}
+}
+
+/** Validations for decorated setters */
+export class SetterWithImperative extends LightningElement {
+    // Helper props
+    configProp = 'config' as const;
+    nested = { prop: 'config', invalid: 123 } as const;
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
+    number = 123;
+    // --- VALID --- //
+
+    // Valid - basic
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    set basic(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    set simpleReactive(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    set nestedReactive(_: TestValue) {}
+    // Valid - as const
+    @wire(TestAdapterWithImperative, { config: 'config' } as const)
+    set basicAsConst(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
+    set simpleReactiveAsConst(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: '$nested.prop' } as const)
+    set nestedReactiveAsConst(_: TestValue) {}
+    // Valid - using `any`
+    @wire(TestAdapterWithImperative, {} as any)
+    set configAsAny(_: TestValue) {}
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    set valueAsAny(_: any) {}
+
+    // --- INVALID --- //
+    // @ts-expect-error Too many wire parameters
+    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    set tooManyWireParams(_: TestValue) {}
+    // @ts-expect-error Bad config type
+    @wire(TestAdapterWithImperative, { bad: 'value' })
+    set badConfig(_: TestValue) {}
+    // @ts-expect-error Bad value type
+    @wire(TestAdapterWithImperative, { config: 'config' })
+    set badValueType(_: { bad: 'value' }) {}
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
+    set nonExistentReactiveProp(_: TestValue) {}
+    // @ts-expect-error Referenced reactive prop is the wrong type
+    @wire(TestAdapterWithImperative, { config: '$number' } as const)
+    set numberReactiveProp(_: TestValue) {}
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapterWithImperative, { config: '$nested.nonexistent' } as const)
+    set nonexistentNestedReactiveProp(_: TestValue) {}
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapterWithImperative, { config: '$nested.invalid' } as const)
+    set invalidNestedReactiveProp(_: TestValue) {}
+    // @ts-expect-error Incorrect non-reactive string literal type
+    @wire(TestAdapterWithImperative, { config: 'not reactive' } as const)
+    set nonReactiveStringLiteral(_: TestValue) {}
+}
+
+/** Ensure that components extending other components correctly use the hosting component's props */
+export class BaseComponent extends LightningElement {
+    // Helper props
+    configProp = 'config' as const;
+    nested = { prop: 'config', invalid: 123 } as const;
+    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
+    // uses the object above, rather than a weird prop name
+    'nested.prop' = false;
+    number = 123;
+}
+
+export class ExtensionComponent extends BaseComponent {
+    // --- VALID --- //
+    // Valid - basic
+    @wire(TestAdapter, { config: 'config' })
+    basic?: TestValue;
+    @wire(TestAdapter, { config: '$configProp' })
+    simpleReactive?: TestValue;
+    @wire(TestAdapter, { config: '$nested.prop' })
+    nestedReactive?: TestValue;
+
+    // --- INVALID --- //
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    nonExistentReactiveProp?: TestValue;
+    // @ts-expect-error Referenced reactive prop is the wrong type
+    @wire(TestAdapter, { config: '$number' } as const)
+    numberReactiveProp?: TestValue;
 }
