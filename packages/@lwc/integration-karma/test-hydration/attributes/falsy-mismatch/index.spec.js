@@ -31,8 +31,12 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "undefined" but found null',
-                'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "null" but found null',
+                `LWC warn:Hydration attribute mismatch on:<div data-foo="undefined"></div>
+- rendered on server:data-foo=null
+- expected on client:data-foo="undefined"`,
+                `LWC warn:Hydration attribute mismatch on:<div data-foo="null"></div>
+- rendered on server:data-foo=null
+- expected on client:data-foo="null"`,
                 'Hydration completed with errors.',
             ],
         });

@@ -21,8 +21,12 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Mismatch hydrating element <p>: attribute "title" has different values, expected "client-title" but found "ssr-title"',
-                'Mismatch hydrating element <p>: attribute "data-another-diff" has different values, expected "client-val" but found "ssr-val"',
+                `Hydration attribute mismatch on:<p title="client-title" data-same="same-value" data-another-diff="client-val">text</p>
+- rendered on server:title="ssr-title"
+- expected on client:title="client-title"`,
+                `Hydration attribute mismatch on:<p title="client-title" data-same="same-value" data-another-diff="client-val">text</p>
+- rendered on server:data-another-diff="ssr-val"
+- expected on client:data-another-diff="client-val"`,
                 'Hydration completed with errors.',
             ],
         });

@@ -23,7 +23,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
     function spyConsole() {
         const originalConsole = window.console;
-
+        window.originalConsole = originalConsole;
         const calls = {
             log: [],
             warn: [],
@@ -37,6 +37,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                 calls.log.push(Array.prototype.slice.call(arguments));
             },
             warn: function () {
+                //originalConsole.warn(...arguments);
                 calls.warn.push(Array.prototype.slice.call(arguments));
             },
             error: function () {
@@ -577,17 +578,29 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     expect(calls).toHaveSize(matchers.length);
                     for (let i = 0; i < matchers.length; i++) {
                         const matcher = matchers[i];
-                        const call = calls[i][0];
-                        const message = typeof call === 'string' ? call : call.message;
-                        if (typeof matcher === 'string') {
-                            expect(message).toContain(matcher);
-                        } else {
-                            expect(message).toMatch(matcher);
-                        }
+                        const args = calls[i];
+                        const argsString = args.map((arg) => stringifyArg(arg)).join('');
+                        expect(argsString).toMatch(matcher);
                     }
                 }
             }
         };
+    }
+
+    function stringifyArg(arg) {
+        if (arg instanceof Array) {
+            return arg.map((v) => stringifyArg(v));
+        } else if (arg instanceof ShadowRoot) {
+            return arg.getHTML();
+        } else if (arg instanceof Comment) {
+            return `<!--${arg.data}-->`;
+        } else if (arg instanceof Text) {
+            return arg.data;
+        } else if (arg instanceof Element) {
+            return arg.outerHTML;
+        } else {
+            return arg;
+        }
     }
 
     const expectConsoleCalls = createExpectConsoleCallsFunc(false);

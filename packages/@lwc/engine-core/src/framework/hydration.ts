@@ -25,8 +25,6 @@ import {
     ArrayFilter,
 } from '@lwc/shared';
 
-import { logWarn } from '../shared/logger';
-
 import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
 import {
@@ -45,7 +43,7 @@ import { hydrateStaticParts, traverseAndSetElements } from './modules/static-par
 import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
-import { isSanitizedHtmlContentEqual } from './sanitized-html-content';
+import { unwrapIfNecessary } from './sanitized-html-content';
 import type {
     VNodes,
     VBaseElement,
@@ -80,14 +78,90 @@ type AttrValidationPredicate = (attrName: string) => boolean;
 
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
+
+// Errors queued during hydration process. Flushed after the node has been mounted.
+let hydrationErrors: Array<HydrationError> = [];
+
+class HydrationError {
+    errorType: string;
+    serverRendered: any;
+    clientExpected: any;
+
+    constructor(errorType: string, serverRendered?: any, clientExpected?: any) {
+        this.errorType = errorType;
+        this.serverRendered = serverRendered;
+        this.clientExpected = clientExpected;
+    }
+
+    log(context?: Node | null) {
+        logHydrationMismatch(this.errorType, this.serverRendered, this.clientExpected, context);
+    }
+}
+
+class NodeHydrationError extends HydrationError {
+    constructor(serverRendered?: any) {
+        super('node', serverRendered);
+    }
+
+    log(context?: Node | null) {
+        logHydrationMismatch(this.errorType, this.serverRendered, context, context);
+    }
+}
+
+class AttributeHydrationError extends HydrationError {
+    log(context?: Node | null) {
+        logHydrationMismatch(
+            'attribute',
+            `${this.errorType}=${this.serverRendered}`,
+            `${this.errorType}=${this.clientExpected}`,
+            context
+        );
+    }
+}
+
+function logHydrationMismatch(
+    errorType: string,
+    serverRendered: any,
+    clientExpected: any,
+    context?: Node | null
+) {
+    if (process.env.NODE_ENV !== 'production') {
+        logWarn(
+            `Hydration ${errorType} mismatch on:`,
+            context,
+            `\n- rendered on server:`,
+            serverRendered,
+            `\n- expected on client:`,
+            clientExpected
+        );
+    }
+}
+
+function isTypeElement(node?: Node): node is Element {
+    if (node?.nodeType !== EnvNodeTypes.ELEMENT) {
+        queueHydrationError(new NodeHydrationError(node));
+        return false;
+    }
+    return true;
+}
+
+/*
+    logger.ts converts all args to a string, losing object referenences and has
+    legacy bloat which would have meant more pathing.
+*/
+function logWarn(...args: any) {
+    /* eslint-disable-next-line no-console */
+    console.warn('[LWC warn:', ...args);
+}
+
 export function hydrateRoot(vm: VM) {
     hasMismatch = false;
 
     runConnectedCallback(vm);
     hydrateVM(vm);
-
+    flushHydrationErrors(vm.renderRoot);
     if (hasMismatch && process.env.NODE_ENV !== 'production') {
-        logWarn('Hydration completed with errors.', vm);
+        logWarn('Hydration completed with errors.');
     }
 }
 
@@ -137,12 +211,29 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
             hydratedNode = hydrateCustomElement(node, vnode, vnode.data.renderer ?? renderer);
             break;
     }
+
+    flushHydrationErrors(hydratedNode);
     return renderer.nextSibling(hydratedNode);
+}
+
+/*
+    Log all hydration warnings using the hydrated node so that the objects match.
+    When the user hovers over the object in the console it will link to the correct node in the DOM and higlight it.
+*/
+function flushHydrationErrors(hydratedNode?: Node | null): void {
+    hydrationErrors.forEach((error) => error.log(hydratedNode));
+    hydrationErrors = [];
+}
+
+function queueHydrationError(error: HydrationError): void {
+    if (process.env.NODE_ENV !== 'production') {
+        hydrationErrors.push(error);
+    }
 }
 
 const NODE_VALUE_PROP = 'nodeValue';
 
-function textNodeContentsAreEqual(
+function validateEqualTextNodeContent(
     node: Node,
     vnode: VText | VStaticPartText,
     renderer: RendererAPI
@@ -160,6 +251,7 @@ function textNodeContentsAreEqual(
         return true;
     }
 
+    queueHydrationError(new HydrationError('text content', nodeValue, vnode.text));
     return false;
 }
 
@@ -217,25 +309,20 @@ function getValidationPredicate(
 }
 
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
-    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.TEXT, renderer)) {
+    if (node?.nodeType !== EnvNodeTypes.TEXT) {
+        hydrationErrors.push(new NodeHydrationError(node));
         return handleMismatch(node, vnode, renderer);
     }
-    return updateTextContent(node, vnode, vnode.owner, renderer);
+    return updateTextContent(node, vnode, renderer);
 }
 
 function updateTextContent(
     node: Node,
     vnode: VText | VStaticPartText,
-    owner: VM,
     renderer: RendererAPI
 ): Node | null {
     if (process.env.NODE_ENV !== 'production') {
-        if (!textNodeContentsAreEqual(node, vnode, renderer)) {
-            logWarn(
-                'Hydration mismatch: text values do not match, will recover from the difference',
-                owner
-            );
-        }
+        validateEqualTextNodeContent(node, vnode, renderer);
     }
     const { setText } = renderer;
     setText(node, vnode.text ?? null);
@@ -245,7 +332,9 @@ function updateTextContent(
 }
 
 function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Node | null {
-    if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT, renderer)) {
+    //if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT, renderer)) {
+    if (node?.nodeType !== EnvNodeTypes.COMMENT) {
+        hydrationErrors.push(new NodeHydrationError(node));
         return handleMismatch(node, vnode, renderer);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -253,10 +342,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
         const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
         if (nodeValue !== vnode.text) {
-            logWarn(
-                'Hydration mismatch: comment values do not match, will recover from the difference',
-                vnode.owner
-            );
+            queueHydrationError(new HydrationError('comment', nodeValue, vnode.text));
         }
     }
 
@@ -269,15 +355,15 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     return node;
 }
 
-function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
+function hydrateStaticElement(node: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
     if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !areCompatibleStaticNodes(vnode.fragment, elm, vnode, renderer)
+        isTypeElement(node) &&
+        isTypeElement(vnode.fragment) &&
+        areStaticNodesCompatible(vnode.fragment, node, vnode, renderer)
     ) {
-        return handleMismatch(elm, vnode, renderer);
+        return hydrateStaticElementParts(node, vnode, renderer);
     }
-
-    return hydrateStaticElementParts(elm, vnode, renderer);
+    return handleMismatch(node, vnode, renderer);
 }
 
 function hydrateStaticElementParts(elm: Element, vnode: VStatic, renderer: RendererAPI) {
@@ -310,10 +396,7 @@ function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): No
 }
 
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
-    if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer)
-    ) {
+    if (!isTypeElement(elm) || !isMatchingElement(vnode, elm, renderer)) {
         return handleMismatch(elm, vnode, renderer);
     }
 
@@ -333,22 +416,22 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
         } = vnode;
         const { getProperty } = renderer;
         if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
-            if (isSanitizedHtmlContentEqual(getProperty(elm, 'innerHTML'), props.innerHTML)) {
+            const unwrappedServerInnerHTML = unwrapIfNecessary(getProperty(elm, 'innerHTML'));
+            const unwrappedClientInnerHTML = unwrapIfNecessary(props.innerHTML);
+            if (unwrappedServerInnerHTML === unwrappedClientInnerHTML) {
                 // Do a shallow clone since VNodeData may be shared across VNodes due to hoist optimization
                 vnode.data = {
                     ...vnode.data,
                     props: cloneAndOmitKey(props, 'innerHTML'),
                 };
             } else {
-                if (process.env.NODE_ENV !== 'production') {
-                    logWarn(
-                        `Mismatch hydrating element <${getProperty(
-                            elm,
-                            'tagName'
-                        ).toLowerCase()}>: innerHTML values do not match for element, will recover from the difference`,
-                        owner
-                    );
-                }
+                queueHydrationError(
+                    new HydrationError(
+                        'innerHTML',
+                        unwrappedServerInnerHTML,
+                        unwrappedClientInnerHTML
+                    )
+                );
             }
         }
     }
@@ -380,10 +463,7 @@ function hydrateCustomElement(
     //
     // Therefore, if validationOptOut is falsey or an array of strings, we need to
     // examine some or all of the custom element's attributes.
-    if (
-        !hasCorrectNodeType<Element>(vnode, elm, EnvNodeTypes.ELEMENT, renderer) ||
-        !isMatchingElement(vnode, elm, renderer, shouldValidateAttr)
-    ) {
+    if (!isTypeElement(elm) || !isMatchingElement(vnode, elm, renderer, shouldValidateAttr)) {
         return handleMismatch(elm, vnode, renderer);
     }
 
@@ -432,8 +512,12 @@ function hydrateChildren(
     // found in this case.
     expectAddlSiblings: boolean
 ) {
-    let hasWarned = false;
+    let nodeDelta = false;
     let nextNode: Node | null = node;
+    const serverNodes =
+        process.env.NODE_ENV !== 'production'
+            ? Array.from(parentNode?.children).map((c) => c.cloneNode(true))
+            : null;
     const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
@@ -442,16 +526,7 @@ function hydrateChildren(
             if (nextNode) {
                 nextNode = hydrateNode(nextNode, childVnode, renderer);
             } else {
-                hasMismatch = true;
-                if (process.env.NODE_ENV !== 'production') {
-                    if (!hasWarned) {
-                        hasWarned = true;
-                        logWarn(
-                            `Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.`,
-                            owner
-                        );
-                    }
-                }
+                nodeDelta = true;
                 mount(childVnode, parentNode, renderer, nextNode);
                 nextNode = renderer.nextSibling(
                     childVnode.type === VNodeType.Fragment ? childVnode.trailing : childVnode.elm!
@@ -475,15 +550,7 @@ function hydrateChildren(
         (!useCommentsForBookends || !expectAddlSiblings) &&
         nextNode
     ) {
-        hasMismatch = true;
-        if (process.env.NODE_ENV !== 'production') {
-            if (!hasWarned) {
-                logWarn(
-                    `Hydration mismatch: incorrect number of rendered nodes. Server rendered more nodes than the client.`,
-                    owner
-                );
-            }
-        }
+        nodeDelta = true;
         // nextSibling is mostly harmless, and since we don't have
         // a good reference to what element to act upon, we instead
         // rely on the vm's associated renderer for navigating to the
@@ -495,6 +562,15 @@ function hydrateChildren(
             removeNode(current, parentNode, renderer);
         } while (nextNode);
     }
+
+    if (nodeDelta) {
+        hasMismatch = true;
+        // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
+        if (process.env.NODE_ENV !== 'production') {
+            const clientNodes = children.map((c) => c?.elm);
+            queueHydrationError(new HydrationError('child node', serverNodes, clientNodes));
+        }
+    }
 }
 
 function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node | null {
@@ -503,7 +579,6 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     const parentNode = getProperty(node, 'parentNode');
     mount(vnode, parentNode, renderer, node);
     removeNode(node, parentNode, renderer);
-
     return vnode.elm!;
 }
 
@@ -514,23 +589,6 @@ function patchElementPropsAndAttrsAndRefs(vnode: VBaseElement, renderer: Rendere
     applyRefs(vnode, vnode.owner);
 }
 
-function hasCorrectNodeType<T extends Node>(
-    vnode: VNode,
-    node: Node,
-    nodeType: number,
-    renderer: RendererAPI
-): node is T {
-    const { getProperty } = renderer;
-    if (getProperty(node, 'nodeType') !== nodeType) {
-        if (process.env.NODE_ENV !== 'production') {
-            logWarn('Hydration mismatch: incorrect node type received', vnode.owner);
-        }
-        return false;
-    }
-
-    return true;
-}
-
 function isMatchingElement(
     vnode: VBaseElement,
     elm: Element,
@@ -539,16 +597,7 @@ function isMatchingElement(
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
-        if (process.env.NODE_ENV !== 'production') {
-            logWarn(
-                `Hydration mismatch: expecting element with tag "${vnode.sel.toLowerCase()}" but found "${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}".`,
-                vnode.owner
-            );
-        }
-
+        queueHydrationError(new NodeHydrationError(elm));
         return false;
     }
 
@@ -604,18 +653,13 @@ function validateAttrs(
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
-            if (process.env.NODE_ENV !== 'production') {
-                const { getProperty } = renderer;
-                logWarn(
-                    `Mismatch hydrating element <${getProperty(
-                        elm,
-                        'tagName'
-                    ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${attrValue}" but found ${
-                        isNull(elmAttrValue) ? 'null' : `"${elmAttrValue}"`
-                    }`,
-                    vnode.owner
-                );
-            }
+            queueHydrationError(
+                new AttributeHydrationError(
+                    attrName,
+                    isNull(elmAttrValue) ? elmAttrValue : `"${elmAttrValue}"`,
+                    isNull(attrValue) ? attrValue : `"${attrValue}"`
+                )
+            );
             nodesAreCompatible = false;
         }
     }
@@ -650,7 +694,6 @@ function validateClassAttr(
     // classMap is never available on VStaticPartData so it can default to undefined
     // casting to prevent TS error.
     const { className, classMap } = data as VElementData;
-    const { getProperty } = renderer;
 
     // ---------- Step 1: get the classes from the element and the vnode
 
@@ -705,14 +748,8 @@ function validateClassAttr(
     if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
         const prettyPrint = (set: Classes) =>
             JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
-        logWarn(
-            `Mismatch hydrating element <${getProperty(
-                elm,
-                'tagName'
-            ).toLowerCase()}>: attribute "class" has different values, expected ${prettyPrint(
-                vnodeClasses
-            )} but found ${prettyPrint(elmClasses)}`,
-            vnode.owner
+        queueHydrationError(
+            new AttributeHydrationError('class', prettyPrint(elmClasses), prettyPrint(vnodeClasses))
         );
     }
 
@@ -762,80 +799,49 @@ function validateStyleAttr(
     }
 
     if (!nodesAreCompatible) {
-        if (process.env.NODE_ENV !== 'production') {
-            const { getProperty } = renderer;
-            logWarn(
-                `Mismatch hydrating element <${getProperty(
-                    elm,
-                    'tagName'
-                ).toLowerCase()}>: attribute "style" has different values, expected "${vnodeStyle}" but found "${elmStyle}".`,
-                vnode.owner
-            );
-        }
+        queueHydrationError(
+            new AttributeHydrationError('style', `"${elmStyle}"`, `"${vnodeStyle}"`)
+        );
     }
 
     return nodesAreCompatible;
 }
 
-function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, renderer: RendererAPI) {
+function areStaticNodesCompatible(
+    clientNode: Node,
+    serverNode: Node,
+    vnode: VStatic,
+    renderer: RendererAPI
+) {
     const { getProperty, getAttribute } = renderer;
-    if (getProperty(client, 'nodeType') === EnvNodeTypes.TEXT) {
-        if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.TEXT, renderer)) {
-            return false;
-        }
-
-        return getProperty(client, NODE_VALUE_PROP) === getProperty(ssr, NODE_VALUE_PROP);
-    }
-
-    if (getProperty(client, 'nodeType') === EnvNodeTypes.COMMENT) {
-        if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.COMMENT, renderer)) {
-            return false;
-        }
-
-        return getProperty(client, NODE_VALUE_PROP) === getProperty(ssr, NODE_VALUE_PROP);
-    }
-
-    if (!hasCorrectNodeType(vnode, ssr, EnvNodeTypes.ELEMENT, renderer)) {
-        return false;
-    }
-
-    const { owner, parts } = vnode;
+    const { parts } = vnode;
     let isCompatibleElements = true;
-    if (getProperty(client, 'tagName') !== getProperty(ssr, 'tagName')) {
-        if (process.env.NODE_ENV !== 'production') {
-            logWarn(
-                `Hydration mismatch: expecting element with tag "${getProperty(
-                    client,
-                    'tagName'
-                ).toLowerCase()}" but found "${getProperty(ssr, 'tagName').toLowerCase()}".`,
-                owner
-            );
-        }
 
+    if (getProperty(clientNode, 'tagName') !== getProperty(serverNode, 'tagName')) {
+        queueHydrationError(new NodeHydrationError(serverNode));
         return false;
     }
 
-    const clientAttrsNames: string[] = getProperty(client, 'getAttributeNames').call(client);
+    const clientAttrsNames: string[] = getProperty(clientNode, 'getAttributeNames').call(
+        clientNode
+    );
 
     clientAttrsNames.forEach((attrName) => {
-        if (getAttribute(client, attrName) !== getAttribute(ssr, attrName)) {
+        const clientAttributeValue = getAttribute(clientNode, attrName);
+        const serverAttributeValue = getAttribute(serverNode, attrName);
+        if (clientAttributeValue !== serverAttributeValue) {
             // Check if the root element attributes have expressions, if it does then we need to delegate hydration
             // validation to haveCompatibleStaticParts.
             // Note if there are no parts then it is a fully static fragment.
             // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
-                if (process.env.NODE_ENV !== 'production') {
-                    logWarn(
-                        `Mismatch hydrating element <${getProperty(
-                            client,
-                            'tagName'
-                        ).toLowerCase()}>: attribute "${attrName}" has different values, expected "${getAttribute(
-                            client,
-                            attrName
-                        )}" but found "${getAttribute(ssr, attrName)}"`,
-                        owner
-                    );
-                }
+                queueHydrationError(
+                    new AttributeHydrationError(
+                        attrName,
+                        `"${serverAttributeValue}"`,
+                        `"${clientAttributeValue}"`
+                    )
+                );
                 isCompatibleElements = false;
             }
         }
@@ -845,7 +851,7 @@ function areCompatibleStaticNodes(client: Node, ssr: Node, vnode: VStatic, rende
 }
 
 function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
-    const { parts, owner } = vnode;
+    const { parts } = vnode;
 
     if (isUndefined(parts)) {
         return true;
@@ -858,7 +864,8 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     for (const part of parts) {
         const { elm } = part;
         if (isVStaticPartElement(part)) {
-            if (!hasCorrectNodeType<Element>(vnode, elm!, EnvNodeTypes.ELEMENT, renderer)) {
+            // !hasCorrectNodeType<Element>(vnode, elm!, EnvNodeTypes.ELEMENT, renderer)
+            if (!isTypeElement(elm)) {
                 return false;
             }
             const { data } = part;
@@ -879,10 +886,11 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
             }
         } else {
             // VStaticPartText
-            if (!hasCorrectNodeType(vnode, elm!, EnvNodeTypes.TEXT, renderer)) {
+            if (elm?.nodeType !== EnvNodeTypes.TEXT) {
+                queueHydrationError(new NodeHydrationError(elm));
                 return false;
             }
-            updateTextContent(elm, part as VStaticPartText, owner, renderer);
+            updateTextContent(elm, part as VStaticPartText, renderer);
         }
     }
     return true;

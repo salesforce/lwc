@@ -28,8 +28,12 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Mismatch hydrating element <style>: attribute "class" has different values, expected "lwc-2fs4h5b0o15" but found "lwc-3hsmkt14797"',
-                'Mismatch hydrating element <h1>: attribute "class" has different values, expected "lwc-2fs4h5b0o15" but found "lwc-3hsmkt14797"',
+                `Hydration attribute mismatch on:<style class="lwc-2fs4h5b0o15" type="text/css">:host {--from-template: 'a';}</style>
+- rendered on server:class="lwc-3hsmkt14797"
+- expected on client:class="lwc-2fs4h5b0o15"`,
+                `Hydration attribute mismatch on:<h1 class="lwc-2fs4h5b0o15">a</h1>
+- rendered on server:class="lwc-3hsmkt14797"
+- expected on client:class="lwc-2fs4h5b0o15"`,
                 'Hydration completed with errors.',
             ],
         });

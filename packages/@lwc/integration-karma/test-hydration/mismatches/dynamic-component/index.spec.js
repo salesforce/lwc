@@ -20,7 +20,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                '[LWC warn]: Hydration mismatch: expecting element with tag "x-client" but found "x-server".',
+                `Hydration node mismatch on:<x-client></x-client>
+- rendered on server:<x-server></x-server>
+- expected on client:<x-client></x-client>`,
                 'Hydration completed with errors.',
             ],
         });

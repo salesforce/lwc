@@ -27,7 +27,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Mismatch hydrating element <x-child>: attribute "class" has different values, expected "is-client" but found "is-server"',
+                `Hydration attribute mismatch on:<x-child class="is-client" data-foo="bar" data-mutatis="mutandis"></x-child>
+- rendered on server:class="is-server"
+- expected on client:class="is-client"`,
                 'Hydration completed with errors.',
             ],
         });

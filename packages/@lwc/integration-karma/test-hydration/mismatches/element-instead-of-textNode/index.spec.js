@@ -22,7 +22,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                '[LWC warn]: Hydration mismatch: incorrect node type received',
+                `Hydration node mismatch on:text
+- rendered on server:<span>text</span>
+- expected on client:text`,
                 'Hydration completed with errors.',
             ],
         });

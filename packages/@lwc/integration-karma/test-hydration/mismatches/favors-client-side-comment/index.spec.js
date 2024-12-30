@@ -21,7 +21,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration mismatch: comment values do not match, will recover from the difference',
+                `Hydration comment mismatch on:<!--second-->
+- rendered on server:first
+- expected on client:second`,
             ],
         });
     },

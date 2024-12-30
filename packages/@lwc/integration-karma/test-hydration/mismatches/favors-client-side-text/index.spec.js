@@ -21,7 +21,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration mismatch: text values do not match, will recover from the difference',
+                `Hydration text content mismatch on:<p>bye!</p>
+- rendered on server:hello!
+- expected on client:bye!`,
             ],
         });
     },

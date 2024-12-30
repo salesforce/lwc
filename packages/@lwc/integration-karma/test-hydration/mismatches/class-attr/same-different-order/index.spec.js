@@ -28,7 +28,9 @@ export default {
             TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
-                    'Mismatch hydrating element <p>: attribute "class" has different values, expected "c1 c2 c3" but found "c3 c2 c1"',
+                    `Hydration attribute mismatch on:<p class="c1 c2 c3">txt</p>
+- rendered on server:class="c3 c2 c1"
+- expected on client:class="c1 c2 c3"`,
                     'Hydration completed with errors.',
                 ],
             });

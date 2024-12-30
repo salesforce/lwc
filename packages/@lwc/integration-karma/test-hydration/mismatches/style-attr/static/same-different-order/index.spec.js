@@ -30,7 +30,9 @@ export default {
             TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
-                    'Mismatch hydrating element <p>: attribute "style" has different values, expected "margin: 1px; border-color: red; background-color: red;" but found "background-color: red; border-color: red; margin: 1px;"',
+                    `Hydration attribute mismatch on:<p style="margin: 1px; border-color: red; background-color: red;">txt</p>
+- rendered on server:style="background-color: red; border-color: red; margin: 1px;"
+- expected on client:style="margin: 1px; border-color: red; background-color: red;"`,
                     'Hydration completed with errors.',
                 ],
             });

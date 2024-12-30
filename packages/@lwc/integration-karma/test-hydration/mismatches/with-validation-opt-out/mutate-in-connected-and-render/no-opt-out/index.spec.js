@@ -11,7 +11,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Mismatch hydrating element <x-child>: attribute "data-mutate-during-render" has different values, expected "false" but found "true"',
+                `Hydration attribute mismatch on:<x-child data-mutate-during-render="true" data-mutate-during-connected-callback="true"></x-child>
+- rendered on server:data-mutate-during-render="true"
+- expected on client:data-mutate-during-render="false"`,
                 'Hydration completed with errors.',
             ],
         });

@@ -20,7 +20,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Mismatch hydrating element <div>: attribute "data-foo" has different values, expected "client" but found "server"',
+                `Hydration attribute mismatch on:<div data-static="same-value" data-foo="client"></div>
+- rendered on server:data-foo="server"
+- expected on client:data-foo="client"`,
                 'Hydration completed with errors.',
             ],
         });
