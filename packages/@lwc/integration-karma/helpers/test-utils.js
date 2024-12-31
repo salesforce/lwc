@@ -23,7 +23,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
     function spyConsole() {
         const originalConsole = window.console;
-        window.originalConsole = originalConsole;
         const calls = {
             log: [],
             warn: [],
@@ -37,7 +36,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                 calls.log.push(Array.prototype.slice.call(arguments));
             },
             warn: function () {
-                //originalConsole.warn(...arguments);
                 calls.warn.push(Array.prototype.slice.call(arguments));
             },
             error: function () {
@@ -591,7 +589,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         if (arg instanceof Array) {
             return arg.map((v) => stringifyArg(v));
         } else if (arg instanceof ShadowRoot) {
-            return arg.getHTML();
+            return arg?.getHTML();
         } else if (arg instanceof Comment) {
             return `<!--${arg.data}-->`;
         } else if (arg instanceof Text) {
