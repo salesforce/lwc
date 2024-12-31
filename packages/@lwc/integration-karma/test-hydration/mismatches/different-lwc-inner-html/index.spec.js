@@ -24,9 +24,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                `Hydration innerHTML mismatch on:<div><p>different-content</p></div>
-- rendered on server:<p>test-content</p>
-- expected on client:<p>different-content</p>`,
+                'Hydration innerHTML mismatch on: DIV - rendered on server: <p>test-content</p> - expected on client: <p>different-content</p>',
             ],
         });
 

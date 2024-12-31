@@ -21,9 +21,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                `Hydration attribute mismatch on:<x-child class="bar lwc-3cnu5t9skit-host"></x-child>
-- rendered on server:class="foo"
-- expected on client:class="bar"`,
+                'Hydration attribute mismatch on: X-CHILD - rendered on server: class="foo" - expected on client: class="bar"',
                 'Hydration completed with errors.',
             ],
         });

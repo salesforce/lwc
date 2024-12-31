@@ -577,7 +577,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     for (let i = 0; i < matchers.length; i++) {
                         const matcher = matchers[i];
                         const args = calls[i];
-                        const argsString = args.map((arg) => stringifyArg(arg)).join('');
+                        const argsString = args.map((arg) => stringifyArg(arg)).join(' ');
                         expect(argsString).toMatch(matcher);
                     }
                 }
@@ -588,14 +588,12 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function stringifyArg(arg) {
         if (arg instanceof Array) {
             return arg.map((v) => stringifyArg(v));
-        } else if (arg instanceof Comment) {
-            return `<!--${arg.data}-->`;
-        } else if (arg instanceof Text) {
-            return arg.data;
-        } else if (arg instanceof Element) {
-            return arg.outerHTML;
-        } else if (arg instanceof ShadowRoot) {
-            return arg.innerHTML;
+        } else if (arg?.nodeName) {
+            // Browsers render nodes differently (class order, etc). Node.nodeName is universal and sufficient for testing.
+            return arg.nodeName;
+        } else if (typeof arg === 'string') {
+            // Avoids adding newlines in the matchers
+            return arg.replaceAll('\n', '');
         } else {
             return arg;
         }

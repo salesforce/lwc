@@ -20,9 +20,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                `Hydration attribute mismatch on:<p>text</p>
-- rendered on server:style="color: burlywood;"
-- expected on client:style=""`,
+                'Hydration attribute mismatch on: P - rendered on server: style="color: burlywood;" - expected on client: style=""',
                 'Hydration completed with errors.',
             ],
         });

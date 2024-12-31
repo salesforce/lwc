@@ -26,15 +26,9 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                `Hydration attribute mismatch on:<p data-attrs="client-attrs" class="client-class" style="background-color: blue;">text</p>
-- rendered on server:data-attrs="ssr-attrs"
-- expected on client:data-attrs="client-attrs"`,
-                `Hydration attribute mismatch on:<p data-attrs="client-attrs" class="client-class" style="background-color: blue;">text</p>
-- rendered on server:class="ssr-class"
-- expected on client:class="client-class"`,
-                `Hydration attribute mismatch on:<p data-attrs="client-attrs" class="client-class" style="background-color: blue;">text</p>
-- rendered on server:style="background-color: red;"
-- expected on client:style="background-color: blue;"`,
+                'Hydration attribute mismatch on: P - rendered on server: data-attrs="ssr-attrs" - expected on client: data-attrs="client-attrs"',
+                'Hydration attribute mismatch on: P - rendered on server: class="ssr-class" - expected on client: class="client-class"',
+                'Hydration attribute mismatch on: P - rendered on server: style="background-color: red;" - expected on client: style="background-color: blue;"',
                 'Hydration completed with errors.',
             ],
         });
