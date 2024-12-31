@@ -15,12 +15,23 @@ export default {
 
         expect(hydratedSnapshot.text).not.toBe(snapshots.text);
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [],
-            warn: [
-                'Hydration child node mismatch on: UL - rendered on server: LI,LI,LI - expected on client: LI,,LI',
-                'Hydration completed with errors.',
-            ],
-        });
+        if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
+                error: [],
+                warn: [
+                    'Hydration text content mismatch on: #text - rendered on server: blue - expected on client: green',
+                    'Hydration child node mismatch on: UL - rendered on server: LI,LI,LI - expected on client: LI,,LI',
+                    'Hydration completed with errors.',
+                ],
+            });
+        } else {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
+                error: [],
+                warn: [
+                    'Hydration child node mismatch on: UL - rendered on server: LI,LI,LI - expected on client: LI,,LI',
+                    'Hydration completed with errors.',
+                ],
+            });
+        }
     },
 };

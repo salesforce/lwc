@@ -82,54 +82,86 @@ let hasMismatch = false;
 // Errors queued during hydration process. Flushed after the node has been mounted.
 let hydrationErrors: Array<HydrationError> = [];
 
+enum HydrationErrorTypes {
+    Node = 'node',
+    Attribute = 'attribute',
+    InnerHTML = 'innerHTML',
+    Comment = 'comment',
+    TextContent = 'text content',
+    ChildNode = 'child node',
+}
+
 class HydrationError {
-    errorType: string;
+    type: HydrationErrorTypes;
     serverRendered: any;
     clientExpected: any;
 
-    constructor(errorType: string, serverRendered?: any, clientExpected?: any) {
-        this.errorType = errorType;
+    private constructor(type: HydrationErrorTypes, serverRendered?: any, clientExpected?: any) {
+        this.type = type;
         this.serverRendered = serverRendered;
         this.clientExpected = clientExpected;
     }
 
-    log(context?: Node | null) {
+    public static create(
+        type: HydrationErrorTypes,
+        serverRendered?: any,
+        clientExpected?: any
+    ): HydrationError {
+        return new HydrationError(type, serverRendered, clientExpected);
+    }
+
+    public static node(serverRendered?: any): HydrationError {
+        return new HydrationError(HydrationErrorTypes.Node, serverRendered);
+    }
+
+    public static attribute(
+        attributeName: string,
+        serverRendered?: any,
+        clientExpected?: any
+    ): HydrationError {
+        return new HydrationError(
+            HydrationErrorTypes.Attribute,
+            `${attributeName}=${serverRendered}`,
+            `${attributeName}=${clientExpected}`
+        );
+    }
+
+    log(source?: Node | null) {
         if (process.env.NODE_ENV !== 'production') {
             logWarn(
-                `Hydration ${this.errorType} mismatch on:`,
-                context,
+                `Hydration ${this.type} mismatch on:`,
+                source,
                 `\n- rendered on server:`,
                 this.serverRendered,
                 `\n- expected on client:`,
-                this.clientExpected
+                this.clientExpected || source
             );
         }
     }
 }
 
-class NodeHydrationError extends HydrationError {
-    constructor(serverRendered?: any) {
-        super('node', serverRendered);
-    }
-
-    log(context?: Node | null) {
-        this.clientExpected = context;
-        super.log(context);
-    }
-}
-
-class AttributeHydrationError extends HydrationError {
-    constructor(attribute: string, serverRendered?: any, clientExpected?: any) {
-        super('attribute', `${attribute}=${serverRendered}`, `${attribute}=${clientExpected}`);
-    }
-}
-
 function isTypeElement(node?: Node): node is Element {
-    if (node?.nodeType !== EnvNodeTypes.ELEMENT) {
-        queueHydrationError(new NodeHydrationError(node));
-        return false;
+    const isCorrectType = node?.nodeType === EnvNodeTypes.ELEMENT;
+    if (!isCorrectType) {
+        queueHydrationError(HydrationError.node(node));
     }
-    return true;
+    return isCorrectType;
+}
+
+function isTypeText(node?: Node): node is Text {
+    const isCorrectType = node?.nodeType === EnvNodeTypes.TEXT;
+    if (!isCorrectType) {
+        queueHydrationError(HydrationError.node(node));
+    }
+    return isCorrectType;
+}
+
+function isTypeComment(node?: Node): node is Comment {
+    const isCorrectType = node?.nodeType === EnvNodeTypes.COMMENT;
+    if (!isCorrectType) {
+        queueHydrationError(HydrationError.node(node));
+    }
+    return isCorrectType;
 }
 
 /*
@@ -139,6 +171,10 @@ function isTypeElement(node?: Node): node is Element {
 function logWarn(...args: any) {
     /* eslint-disable-next-line no-console */
     console.warn('[LWC warn:', ...args);
+}
+
+function prettyPrint(set: Classes) {
+    return JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
 }
 
 export function hydrateRoot(vm: VM) {
@@ -238,7 +274,9 @@ function validateEqualTextNodeContent(
         return true;
     }
 
-    queueHydrationError(new HydrationError('text content', nodeValue, vnode.text));
+    queueHydrationError(
+        HydrationError.create(HydrationErrorTypes.TextContent, nodeValue, vnode.text)
+    );
     return false;
 }
 
@@ -296,8 +334,7 @@ function getValidationPredicate(
 }
 
 function hydrateText(node: Node, vnode: VText, renderer: RendererAPI): Node | null {
-    if (node?.nodeType !== EnvNodeTypes.TEXT) {
-        hydrationErrors.push(new NodeHydrationError(node));
+    if (!isTypeText(node)) {
         return handleMismatch(node, vnode, renderer);
     }
     return updateTextContent(node, vnode, renderer);
@@ -319,9 +356,7 @@ function updateTextContent(
 }
 
 function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Node | null {
-    //if (!hasCorrectNodeType(vnode, node, EnvNodeTypes.COMMENT, renderer)) {
-    if (node?.nodeType !== EnvNodeTypes.COMMENT) {
-        hydrationErrors.push(new NodeHydrationError(node));
+    if (!isTypeComment(node)) {
         return handleMismatch(node, vnode, renderer);
     }
     if (process.env.NODE_ENV !== 'production') {
@@ -329,14 +364,16 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
         const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
         if (nodeValue !== vnode.text) {
-            queueHydrationError(new HydrationError('comment', nodeValue, vnode.text));
+            queueHydrationError(
+                HydrationError.create(HydrationErrorTypes.Comment, nodeValue, vnode.text)
+            );
         }
     }
 
     const { setProperty } = renderer;
     // We only set the `nodeValue` property here (on a comment), so we don't need
     // to sanitize the content as HTML using `safelySetProperty`
-    setProperty(node as Element, NODE_VALUE_PROP, vnode.text ?? null);
+    setProperty(node, NODE_VALUE_PROP, vnode.text ?? null);
     vnode.elm = node;
 
     return node;
@@ -413,8 +450,8 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
                 };
             } else {
                 queueHydrationError(
-                    new HydrationError(
-                        'innerHTML',
+                    HydrationError.create(
+                        HydrationErrorTypes.InnerHTML,
                         unwrappedServerInnerHTML,
                         unwrappedClientInnerHTML
                     )
@@ -555,7 +592,9 @@ function hydrateChildren(
         // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
         if (process.env.NODE_ENV !== 'production') {
             const clientNodes = children.map((c) => c?.elm);
-            queueHydrationError(new HydrationError('child node', serverNodes, clientNodes));
+            queueHydrationError(
+                HydrationError.create(HydrationErrorTypes.ChildNode, serverNodes, clientNodes)
+            );
         }
     }
 }
@@ -584,7 +623,7 @@ function isMatchingElement(
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
-        queueHydrationError(new NodeHydrationError(elm));
+        queueHydrationError(HydrationError.node(elm));
         return false;
     }
 
@@ -641,7 +680,7 @@ function validateAttrs(
         const elmAttrValue = getAttribute(elm, attrName);
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
             queueHydrationError(
-                new AttributeHydrationError(
+                HydrationError.attribute(
                     attrName,
                     isNull(elmAttrValue) ? elmAttrValue : `"${elmAttrValue}"`,
                     isNull(attrValue) ? attrValue : `"${attrValue}"`
@@ -732,11 +771,9 @@ function validateClassAttr(
 
     const classesAreCompatible = checkClassesCompatibility(vnodeClasses, elmClasses);
 
-    if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
-        const prettyPrint = (set: Classes) =>
-            JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
+    if (!classesAreCompatible) {
         queueHydrationError(
-            new AttributeHydrationError('class', prettyPrint(elmClasses), prettyPrint(vnodeClasses))
+            HydrationError.attribute('class', prettyPrint(elmClasses), prettyPrint(vnodeClasses))
         );
     }
 
@@ -786,9 +823,7 @@ function validateStyleAttr(
     }
 
     if (!nodesAreCompatible) {
-        queueHydrationError(
-            new AttributeHydrationError('style', `"${elmStyle}"`, `"${vnodeStyle}"`)
-        );
+        queueHydrationError(HydrationError.attribute('style', `"${elmStyle}"`, `"${vnodeStyle}"`));
     }
 
     return nodesAreCompatible;
@@ -805,7 +840,7 @@ function areStaticNodesCompatible(
     let isCompatibleElements = true;
 
     if (getProperty(clientNode, 'tagName') !== getProperty(serverNode, 'tagName')) {
-        queueHydrationError(new NodeHydrationError(serverNode));
+        queueHydrationError(HydrationError.node(serverNode));
         return false;
     }
 
@@ -823,7 +858,7 @@ function areStaticNodesCompatible(
             // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
                 queueHydrationError(
-                    new AttributeHydrationError(
+                    HydrationError.attribute(
                         attrName,
                         `"${serverAttributeValue}"`,
                         `"${clientAttributeValue}"`
@@ -851,7 +886,6 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     for (const part of parts) {
         const { elm } = part;
         if (isVStaticPartElement(part)) {
-            // !hasCorrectNodeType<Element>(vnode, elm!, EnvNodeTypes.ELEMENT, renderer)
             if (!isTypeElement(elm)) {
                 return false;
             }
@@ -873,8 +907,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
             }
         } else {
             // VStaticPartText
-            if (elm?.nodeType !== EnvNodeTypes.TEXT) {
-                queueHydrationError(new NodeHydrationError(elm));
+            if (!isTypeText(elm)) {
                 return false;
             }
             updateTextContent(elm, part as VStaticPartText, renderer);
