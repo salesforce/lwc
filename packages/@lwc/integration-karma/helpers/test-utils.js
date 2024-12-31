@@ -588,14 +588,14 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     function stringifyArg(arg) {
         if (arg instanceof Array) {
             return arg.map((v) => stringifyArg(v));
-        } else if (arg instanceof ShadowRoot) {
-            return arg?.getHTML();
         } else if (arg instanceof Comment) {
             return `<!--${arg.data}-->`;
         } else if (arg instanceof Text) {
             return arg.data;
         } else if (arg instanceof Element) {
             return arg.outerHTML;
+        } else if (arg instanceof ShadowRoot) {
+            return arg.innerHTML;
         } else {
             return arg;
         }

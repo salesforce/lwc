@@ -94,7 +94,16 @@ class HydrationError {
     }
 
     log(context?: Node | null) {
-        logHydrationMismatch(this.errorType, this.serverRendered, this.clientExpected, context);
+        if (process.env.NODE_ENV !== 'production') {
+            logWarn(
+                `Hydration ${this.errorType} mismatch on:`,
+                context,
+                `\n- rendered on server:`,
+                this.serverRendered,
+                `\n- expected on client:`,
+                this.clientExpected
+            );
+        }
     }
 }
 
@@ -104,36 +113,14 @@ class NodeHydrationError extends HydrationError {
     }
 
     log(context?: Node | null) {
-        logHydrationMismatch(this.errorType, this.serverRendered, context, context);
+        this.clientExpected = context;
+        super.log(context);
     }
 }
 
 class AttributeHydrationError extends HydrationError {
-    log(context?: Node | null) {
-        logHydrationMismatch(
-            'attribute',
-            `${this.errorType}=${this.serverRendered}`,
-            `${this.errorType}=${this.clientExpected}`,
-            context
-        );
-    }
-}
-
-function logHydrationMismatch(
-    errorType: string,
-    serverRendered: any,
-    clientExpected: any,
-    context?: Node | null
-) {
-    if (process.env.NODE_ENV !== 'production') {
-        logWarn(
-            `Hydration ${errorType} mismatch on:`,
-            context,
-            `\n- rendered on server:`,
-            serverRendered,
-            `\n- expected on client:`,
-            clientExpected
-        );
+    constructor(attribute: string, serverRendered?: any, clientExpected?: any) {
+        super('attribute', `${attribute}=${serverRendered}`, `${attribute}=${clientExpected}`);
     }
 }
 
