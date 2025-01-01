@@ -124,27 +124,27 @@ function flushHydrationErrors(source?: Node | null) {
 }
 
 function isTypeElement(node?: Node): node is Element {
-    const isCorrectType = node?.nodeType === EnvNodeTypes.ELEMENT;
-    if (!isCorrectType) {
+    if (node?.nodeType !== EnvNodeTypes.ELEMENT) {
         queueHydrationError('node', node);
+        return false;
     }
-    return isCorrectType;
+    return true;
 }
 
 function isTypeText(node?: Node): node is Text {
-    const isCorrectType = node?.nodeType === EnvNodeTypes.TEXT;
-    if (!isCorrectType) {
+    if (node?.nodeType !== EnvNodeTypes.TEXT) {
         queueHydrationError('node', node);
+        return false;
     }
-    return isCorrectType;
+    return true;
 }
 
-function isTypeComment(node?: Node): node is Element {
-    const isCorrectType = node?.nodeType === EnvNodeTypes.COMMENT;
-    if (!isCorrectType) {
+function isTypeComment(node?: Node): node is Comment {
+    if (node?.nodeType !== EnvNodeTypes.COMMENT) {
         queueHydrationError('node', node);
+        return false;
     }
-    return isCorrectType;
+    return true;
 }
 
 /*
@@ -335,15 +335,15 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     return node;
 }
 
-function hydrateStaticElement(node: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
+function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI): Node | null {
     if (
-        isTypeElement(node) &&
+        isTypeElement(elm) &&
         isTypeElement(vnode.fragment) &&
-        areStaticNodesCompatible(vnode.fragment, node, vnode, renderer)
+        areStaticNodesCompatible(vnode.fragment, elm, vnode, renderer)
     ) {
-        return hydrateStaticElementParts(node, vnode, renderer);
+        return hydrateStaticElementParts(elm, vnode, renderer);
     }
-    return handleMismatch(node, vnode, renderer);
+    return handleMismatch(elm, vnode, renderer);
 }
 
 function hydrateStaticElementParts(elm: Element, vnode: VStatic, renderer: RendererAPI) {
@@ -490,7 +490,7 @@ function hydrateChildren(
     // found in this case.
     expectAddlSiblings: boolean
 ) {
-    let nodeDelta = false;
+    let mismatchedChildren = false;
     let nextNode: Node | null = node;
     const serverNodes =
         process.env.NODE_ENV !== 'production'
@@ -504,7 +504,7 @@ function hydrateChildren(
             if (nextNode) {
                 nextNode = hydrateNode(nextNode, childVnode, renderer);
             } else {
-                nodeDelta = true;
+                mismatchedChildren = true;
                 mount(childVnode, parentNode, renderer, nextNode);
                 nextNode = renderer.nextSibling(
                     childVnode.type === VNodeType.Fragment ? childVnode.trailing : childVnode.elm!
@@ -528,7 +528,7 @@ function hydrateChildren(
         (!useCommentsForBookends || !expectAddlSiblings) &&
         nextNode
     ) {
-        nodeDelta = true;
+        mismatchedChildren = true;
         // nextSibling is mostly harmless, and since we don't have
         // a good reference to what element to act upon, we instead
         // rely on the vm's associated renderer for navigating to the
@@ -541,7 +541,7 @@ function hydrateChildren(
         } while (nextNode);
     }
 
-    if (nodeDelta) {
+    if (mismatchedChildren) {
         hasMismatch = true;
         // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
         if (process.env.NODE_ENV !== 'production') {
@@ -557,6 +557,7 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
     const parentNode = getProperty(node, 'parentNode');
     mount(vnode, parentNode, renderer, node);
     removeNode(node, parentNode, renderer);
+
     return vnode.elm!;
 }
 
