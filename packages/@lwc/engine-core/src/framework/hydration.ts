@@ -125,7 +125,7 @@ function flushHydrationErrors(source?: Node | null) {
 
 function isTypeElement(node?: Node): node is Element {
     const isCorrectType = node?.nodeType === EnvNodeTypes.ELEMENT;
-    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+    if (!isCorrectType) {
         queueHydrationError('node', node);
     }
     return isCorrectType;
@@ -133,7 +133,7 @@ function isTypeElement(node?: Node): node is Element {
 
 function isTypeText(node?: Node): node is Text {
     const isCorrectType = node?.nodeType === EnvNodeTypes.TEXT;
-    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+    if (!isCorrectType) {
         queueHydrationError('node', node);
     }
     return isCorrectType;
@@ -141,7 +141,7 @@ function isTypeText(node?: Node): node is Text {
 
 function isTypeComment(node?: Node): node is Element {
     const isCorrectType = node?.nodeType === EnvNodeTypes.COMMENT;
-    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+    if (!isCorrectType) {
         queueHydrationError('node', node);
     }
     return isCorrectType;
@@ -220,26 +220,22 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
 
 const NODE_VALUE_PROP = 'nodeValue';
 
-function validateEqualTextNodeContent(
+function validateTextNodeEquality(
     node: Node,
     vnode: VText | VStaticPartText,
     renderer: RendererAPI
-): boolean {
+) {
     const { getProperty } = renderer;
     const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
-    if (nodeValue === vnode.text) {
-        return true;
+    if (
+        nodeValue !== vnode.text &&
+        // Special case for empty text nodes – these are serialized differently on the server
+        // See https://github.com/salesforce/lwc/pull/2656
+        (nodeValue !== '\u200D' || vnode.text !== '')
+    ) {
+        queueHydrationError('text content', nodeValue, vnode.text);
     }
-
-    // Special case for empty text nodes – these are serialized differently on the server
-    // See https://github.com/salesforce/lwc/pull/2656
-    if (nodeValue === '\u200D' && vnode.text === '') {
-        return true;
-    }
-
-    queueHydrationError('text content', nodeValue, vnode.text);
-    return false;
 }
 
 // The validationOptOut static property can be an array of attribute names.
@@ -308,7 +304,7 @@ function updateTextContent(
     renderer: RendererAPI
 ): Node | null {
     if (process.env.NODE_ENV !== 'production') {
-        validateEqualTextNodeContent(node, vnode, renderer);
+        validateTextNodeEquality(node, vnode, renderer);
     }
     const { setText } = renderer;
     setText(node, vnode.text ?? null);
