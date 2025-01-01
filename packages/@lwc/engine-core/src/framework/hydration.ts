@@ -79,87 +79,70 @@ type AttrValidationPredicate = (attrName: string) => boolean;
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 
-// Errors queued during hydration process. Flushed after the node has been mounted.
+// Errors that occured during the hydration process
 let hydrationErrors: Array<HydrationError> = [];
 
-enum HydrationErrorTypes {
-    Node = 'node',
-    Attribute = 'attribute',
-    InnerHTML = 'innerHTML',
-    Comment = 'comment',
-    TextContent = 'text content',
-    ChildNode = 'child node',
-}
-
 class HydrationError {
-    type: HydrationErrorTypes;
+    type: string;
     serverRendered: any;
     clientExpected: any;
 
-    private constructor(type: HydrationErrorTypes, serverRendered?: any, clientExpected?: any) {
+    constructor(type: string, serverRendered?: any, clientExpected?: any) {
         this.type = type;
         this.serverRendered = serverRendered;
         this.clientExpected = clientExpected;
     }
+}
 
-    public static create(
-        type: HydrationErrorTypes,
-        serverRendered?: any,
-        clientExpected?: any
-    ): HydrationError {
-        return new HydrationError(type, serverRendered, clientExpected);
+/*
+    Hydration errors occur before the source node has been fully hydrated,
+    queue them so they can be logged later against the mounted node.
+*/
+function queueHydrationError(type: string, serverRendered?: any, clientExpected?: any) {
+    if (process.env.NODE_ENV !== 'production') {
+        hydrationErrors.push(new HydrationError(type, serverRendered, clientExpected));
     }
+}
 
-    public static node(serverRendered?: any): HydrationError {
-        return new HydrationError(HydrationErrorTypes.Node, serverRendered);
-    }
-
-    public static attribute(
-        attributeName: string,
-        serverRendered?: any,
-        clientExpected?: any
-    ): HydrationError {
-        return new HydrationError(
-            HydrationErrorTypes.Attribute,
-            `${attributeName}=${serverRendered}`,
-            `${attributeName}=${clientExpected}`
-        );
-    }
-
-    log(source?: Node | null) {
-        if (process.env.NODE_ENV !== 'production') {
+/*
+    Flushes (logs) any queued errors after the source node has been mounted.
+ */
+function flushHydrationErrors(source?: Node | null) {
+    if (process.env.NODE_ENV !== 'production') {
+        hydrationErrors.forEach((error) =>
             logWarn(
-                `Hydration ${this.type} mismatch on:`,
+                `Hydration ${error.type} mismatch on:`,
                 source,
                 `\n- rendered on server:`,
-                this.serverRendered,
+                error.serverRendered,
                 `\n- expected on client:`,
-                this.clientExpected || source
-            );
-        }
+                error.clientExpected || source
+            )
+        );
+        hydrationErrors = [];
     }
 }
 
 function isTypeElement(node?: Node): node is Element {
     const isCorrectType = node?.nodeType === EnvNodeTypes.ELEMENT;
-    if (!isCorrectType) {
-        queueHydrationError(HydrationError.node(node));
+    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+        queueHydrationError('node', node);
     }
     return isCorrectType;
 }
 
 function isTypeText(node?: Node): node is Text {
     const isCorrectType = node?.nodeType === EnvNodeTypes.TEXT;
-    if (!isCorrectType) {
-        queueHydrationError(HydrationError.node(node));
+    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+        queueHydrationError('node', node);
     }
     return isCorrectType;
 }
 
-function isTypeComment(node?: Node): node is Comment {
+function isTypeComment(node?: Node): node is Element {
     const isCorrectType = node?.nodeType === EnvNodeTypes.COMMENT;
-    if (!isCorrectType) {
-        queueHydrationError(HydrationError.node(node));
+    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+        queueHydrationError('node', node);
     }
     return isCorrectType;
 }
@@ -171,10 +154,6 @@ function isTypeComment(node?: Node): node is Comment {
 function logWarn(...args: any) {
     /* eslint-disable-next-line no-console */
     console.warn('[LWC warn:', ...args);
-}
-
-function prettyPrint(set: Classes) {
-    return JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
 }
 
 export function hydrateRoot(vm: VM) {
@@ -239,21 +218,6 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
     return renderer.nextSibling(hydratedNode);
 }
 
-/*
-    Log all hydration warnings using the hydrated node so that the objects match.
-    When the user hovers over the object in the console it will link to the correct node in the DOM and higlight it.
-*/
-function flushHydrationErrors(hydratedNode?: Node | null): void {
-    hydrationErrors.forEach((error) => error.log(hydratedNode));
-    hydrationErrors = [];
-}
-
-function queueHydrationError(error: HydrationError): void {
-    if (process.env.NODE_ENV !== 'production') {
-        hydrationErrors.push(error);
-    }
-}
-
 const NODE_VALUE_PROP = 'nodeValue';
 
 function validateEqualTextNodeContent(
@@ -274,9 +238,7 @@ function validateEqualTextNodeContent(
         return true;
     }
 
-    queueHydrationError(
-        HydrationError.create(HydrationErrorTypes.TextContent, nodeValue, vnode.text)
-    );
+    queueHydrationError('text content', nodeValue, vnode.text);
     return false;
 }
 
@@ -364,9 +326,7 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
         const nodeValue = getProperty(node, NODE_VALUE_PROP);
 
         if (nodeValue !== vnode.text) {
-            queueHydrationError(
-                HydrationError.create(HydrationErrorTypes.Comment, nodeValue, vnode.text)
-            );
+            queueHydrationError('comment', nodeValue, vnode.text);
         }
     }
 
@@ -450,11 +410,9 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
                 };
             } else {
                 queueHydrationError(
-                    HydrationError.create(
-                        HydrationErrorTypes.InnerHTML,
-                        unwrappedServerInnerHTML,
-                        unwrappedClientInnerHTML
-                    )
+                    'innerHTML',
+                    unwrappedServerInnerHTML,
+                    unwrappedClientInnerHTML
                 );
             }
         }
@@ -591,10 +549,8 @@ function hydrateChildren(
         hasMismatch = true;
         // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
         if (process.env.NODE_ENV !== 'production') {
-            const clientNodes = children.map((c) => c?.elm);
-            queueHydrationError(
-                HydrationError.create(HydrationErrorTypes.ChildNode, serverNodes, clientNodes)
-            );
+            const clientNodes = children?.map((c) => c?.elm);
+            queueHydrationError('child node', serverNodes, clientNodes);
         }
     }
 }
@@ -623,17 +579,17 @@ function isMatchingElement(
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
-        queueHydrationError(HydrationError.node(elm));
+        queueHydrationError('node', elm);
         return false;
     }
 
     const { data } = vnode;
-    const hasCompatibleAttrs = validateAttrs(vnode, elm, data, renderer, shouldValidateAttr);
+    const hasCompatibleAttrs = validateAttrs(elm, data, renderer, shouldValidateAttr);
     const hasCompatibleClass = shouldValidateAttr('class')
         ? validateClassAttr(vnode, elm, data, renderer)
         : true;
     const hasCompatibleStyle = shouldValidateAttr('style')
-        ? validateStyleAttr(vnode, elm, data, renderer)
+        ? validateStyleAttr(elm, data, renderer)
         : true;
 
     return hasCompatibleAttrs && hasCompatibleClass && hasCompatibleStyle;
@@ -660,7 +616,6 @@ function attributeValuesAreEqual(
 }
 
 function validateAttrs(
-    vnode: VBaseElement | VStatic,
     elm: Element,
     data: VElementData | VStaticPartData,
     renderer: RendererAPI,
@@ -679,12 +634,12 @@ function validateAttrs(
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
+            const serverRendered = isNull(elmAttrValue) ? elmAttrValue : `"${elmAttrValue}"`;
+            const clientExpected = isNull(attrValue) ? attrValue : `"${attrValue}"`;
             queueHydrationError(
-                HydrationError.attribute(
-                    attrName,
-                    isNull(elmAttrValue) ? elmAttrValue : `"${elmAttrValue}"`,
-                    isNull(attrValue) ? attrValue : `"${attrValue}"`
-                )
+                'attribute',
+                `${attrName}=${serverRendered}`,
+                `${attrName}=${clientExpected}`
             );
             nodesAreCompatible = false;
         }
@@ -771,9 +726,13 @@ function validateClassAttr(
 
     const classesAreCompatible = checkClassesCompatibility(vnodeClasses, elmClasses);
 
-    if (!classesAreCompatible) {
+    if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
+        const prettyPrint = (set: Classes) =>
+            JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
         queueHydrationError(
-            HydrationError.attribute('class', prettyPrint(elmClasses), prettyPrint(vnodeClasses))
+            'attribute',
+            `class=${prettyPrint(elmClasses)}`,
+            `class=${prettyPrint(vnodeClasses)}`
         );
     }
 
@@ -781,7 +740,6 @@ function validateClassAttr(
 }
 
 function validateStyleAttr(
-    vnode: VBaseElement | VStatic,
     elm: Element,
     data: VElementData | VStaticPartData,
     renderer: RendererAPI
@@ -823,7 +781,7 @@ function validateStyleAttr(
     }
 
     if (!nodesAreCompatible) {
-        queueHydrationError(HydrationError.attribute('style', `"${elmStyle}"`, `"${vnodeStyle}"`));
+        queueHydrationError('attribute', `style="${elmStyle}"`, `style="${vnodeStyle}"`);
     }
 
     return nodesAreCompatible;
@@ -840,7 +798,7 @@ function areStaticNodesCompatible(
     let isCompatibleElements = true;
 
     if (getProperty(clientNode, 'tagName') !== getProperty(serverNode, 'tagName')) {
-        queueHydrationError(HydrationError.node(serverNode));
+        queueHydrationError('node', serverNode);
         return false;
     }
 
@@ -858,11 +816,9 @@ function areStaticNodesCompatible(
             // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
                 queueHydrationError(
-                    HydrationError.attribute(
-                        attrName,
-                        `"${serverAttributeValue}"`,
-                        `"${clientAttributeValue}"`
-                    )
+                    'attribute',
+                    `${attrName}="${serverAttributeValue}"`,
+                    `${attrName}="${clientAttributeValue}"`
                 );
                 isCompatibleElements = false;
             }
@@ -890,7 +846,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
                 return false;
             }
             const { data } = part;
-            const hasMatchingAttrs = validateAttrs(vnode, elm, data, renderer, () => true);
+            const hasMatchingAttrs = validateAttrs(elm, data, renderer, () => true);
             // Explicitly skip hydration validation when static parts don't contain `style` or `className`.
             // This means the style/class attributes are either static or don't exist on the element and
             // cannot be affected by hydration.
@@ -900,7 +856,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
                 ? validateClassAttr(vnode, elm, data, renderer)
                 : true;
             const hasMatchingStyleAttr = shouldValidateAttr(data, 'style')
-                ? validateStyleAttr(vnode, elm, data, renderer)
+                ? validateStyleAttr(elm, data, renderer)
                 : true;
             if (isFalse(hasMatchingAttrs && hasMatchingClass && hasMatchingStyleAttr)) {
                 return false;
