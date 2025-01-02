@@ -4,7 +4,7 @@
 
 This document describes the overall code architecture of the open-source Lightning Web Components (LWC) framework, i.e. the repository you are looking at right now.
 
-The justification for an `ARCHITECTURE.md` file can be found in [this post](https://matklad.github.io//2021/02/06/ARCHITECTURE.md.html).
+The idea behind an `ARCHITECTURE.md` file can be found in [this post](https://matklad.github.io//2021/02/06/ARCHITECTURE.md.html).
 
 ## Overview
 
