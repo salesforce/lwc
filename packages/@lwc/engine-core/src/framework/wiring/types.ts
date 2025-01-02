@@ -88,38 +88,35 @@ export type RegisterContextProviderFn = (
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
 
-/** Resolves a property chain to the corresponding value on the target type. */
-type ResolveReactiveValue<
-    /** The object to search for properties; initially the component. */
-    Target,
-    /** A string representing a chain of of property keys, e.g. "data.user.name". */
-    Keys extends string,
-> = Keys extends `${infer FirstKey}.${infer Rest}`
-    ? // If the string is "a.b.c", check if "a" is a prop on the target object
-      FirstKey extends keyof Target
-        ? // If "a" exists on the target, check `target["a"]` for "b.c"
-          ResolveReactiveValue<Target[FirstKey], Rest>
-        : undefined
-    : // The string has no ".", use the full string as the key (e.g. we've reached "c" in "a.b.c")
-      Keys extends keyof Target
-      ? Target[Keys]
-      : undefined;
-
 /**
- * Detects if the `Value` type is a property chain starting with "$". If so, it resolves the
- * properties to the corresponding value on the target type.
+ * build a union of reactive property strings that would be compatible with the expected type
+ *
+ * exclude properties that are present on LightningElement, should help performance and avoid circular references that are inherited
+ *
+ * when looking for compatible types mark all optional properties as required so we can correctly evaluate their resolved types
  */
-type ResolveValueIfReactive<Value, Target> = Value extends string
-    ? string extends Value // `Value` is type `string`
-        ? // Workaround for not being able to enforce `as const` assertions -- we don't know if this
-          // is a true string value (e.g. `@wire(adapter, {val: 'str'})`) or if it's a reactive prop
-          // (e.g. `@wire(adapter, {val: '$number'})`), so we have to go broad to avoid type errors.
-          any
-        : Value extends `$${infer Keys}` // String literal starting with "$", e.g. `$prop`
-          ? ResolveReactiveValue<Target, Keys>
-          : Value // String literal *not* starting with "$", e.g. `"hello world"`
-    : Value; // non-string type
+type ReactivePropertyOfCompoent<Target, ExpectedType> = PrefixDollarSign<
+    PropertiesOfType<Required<Omit<Target, keyof LightningElement>>, ExpectedType>
+>;
 
-export type ReplaceReactiveValues<Config extends ConfigValue, Component> = {
-    [K in keyof Config]: ResolveValueIfReactive<Config[K], Component>;
+/** utility type */
+type PrefixDollarSign<T extends string> = `${'$'}${T}`;
+
+/** recursively find all properties on the target that are of a compatible type, returning their paths as strings */
+type PropertiesOfType<Target, ExpectedType> = {
+    [K in keyof Target]: Target[K] extends ExpectedType
+        ? `${Extract<K, string>}`
+        : Target[K] extends object // If the value is an object, recursively check its properties
+          ? PropertiesOfType<Target[K], ExpectedType> extends infer R // Check if any property in the object matches `U`
+              ? R extends never
+                  ? never // If no compatible keys are found, exclude the key
+                  : `${Extract<K, string>}.${Extract<R, string>}` // If compatible nested keys are found, include the key
+              : never
+          : never;
+}[keyof Target];
+
+/** wire decorator's config can be the literal type defined or a property from component that is compatible with the expected type */
+export type ConfigWithReactiveValues<Config extends ConfigValue, Comp> = {
+    // allow the original config value and also any valid reactive strings
+    [K in keyof Config]: Config[K] | ReactivePropertyOfCompoent<Comp, Config[K]>;
 };
