@@ -40,7 +40,7 @@ graph TD
      compiler-->|JS|babelplugincomponent;
 ```
 
-A typical LWC component is composed of `*.html`, `*.css`, and `*.js` files, so one package would handle each type of file.
+A typical LWC component is composed of `*.html`, `*.css`, and `*.js` files, so one compiler package handles each type of file. In all three cases, the output is JavaScript.
 
 The following core parsers are used for each file type:
 
