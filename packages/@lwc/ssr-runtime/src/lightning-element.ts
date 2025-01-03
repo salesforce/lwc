@@ -13,14 +13,7 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
-import {
-    assign,
-    defineProperty,
-    defineProperties,
-    hasOwnProperty,
-    StringToLowerCase,
-    toString,
-} from '@lwc/shared';
+import { assign, defineProperties, hasOwnProperty, StringToLowerCase, toString } from '@lwc/shared';
 
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
@@ -59,11 +52,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     title!: string;
 
     isConnected = false;
-    className = '';
 
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
 
+    #props!: Properties;
     #attrs!: Attributes;
     #classList: ClassList | null = null;
 
@@ -72,19 +65,19 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
+        this.#props = props;
         this.#attrs = attrs;
         assign(this, props);
+    }
 
-        defineProperty(this, 'className', {
-            get() {
-                return props.class ?? '';
-            },
-            set(newVal) {
-                props.class = newVal;
-                attrs.class = newVal;
-                mutationTracker.add(this, 'class');
-            },
-        });
+    get className() {
+        return this.#props.class ?? '';
+    }
+
+    set className(newVal: any) {
+        this.#props.class = newVal;
+        this.#attrs.class = newVal;
+        mutationTracker.add(this, 'class');
     }
 
     get classList() {

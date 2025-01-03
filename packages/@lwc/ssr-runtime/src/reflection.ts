@@ -27,22 +27,20 @@ import type { LightningElement } from './lightning-element';
  */
 export function filterProperties(
     props: Record<string, unknown>,
-    publicFields: Array<string>,
-    privateFields: Array<string>
+    publicFields: Set<string>,
+    privateFields: Set<string>
 ): Record<string, unknown> {
     const propsToAssign = create(null);
-    const publicFieldSet = new Set(publicFields);
-    const privateFieldSet = new Set(privateFields);
-    keys(props).forEach((propName) => {
+    for (const propName of keys(props)) {
         const attrName = htmlPropertyToAttribute(propName);
         if (
-            publicFieldSet.has(propName) ||
+            publicFields.has(propName) ||
             ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
-                !privateFieldSet.has(propName))
+                !privateFields.has(propName))
         ) {
             propsToAssign[propName] = props[propName];
         }
-    });
+    }
     return propsToAssign;
 }
 
