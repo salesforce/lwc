@@ -22,7 +22,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: P - rendered on server: class="c1 c3" - expected on client: class="c1 c2 c3"',
+                'Hydration attribute mismatch on: <p> - rendered on server: class="c1 c3" - expected on client: class="c1 c2 c3"',
                 'Hydration completed with errors.',
             ],
         });

@@ -31,8 +31,8 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: DIV - rendered on server: data-foo=null - expected on client: data-foo="undefined"',
-                'Hydration attribute mismatch on: DIV - rendered on server: data-foo=null - expected on client: data-foo="null"',
+                'Hydration attribute mismatch on: <div> - rendered on server: data-foo="null" - expected on client: data-foo="undefined"',
+                'Hydration attribute mismatch on: <div> - rendered on server: data-foo="null" - expected on client: data-foo="null"',
                 'Hydration completed with errors.',
             ],
         });

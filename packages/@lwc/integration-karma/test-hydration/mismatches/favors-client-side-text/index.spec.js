@@ -28,7 +28,7 @@ export default {
             TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
-                    'Hydration text content mismatch on: P - rendered on server: hello! - expected on client: bye!',
+                    'Hydration text content mismatch on: <p> - rendered on server: hello! - expected on client: bye!',
                 ],
             });
         }

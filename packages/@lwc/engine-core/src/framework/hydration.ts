@@ -23,7 +23,18 @@ import {
     ArrayFrom,
     ArraySort,
     ArrayFilter,
+    ArrayMap,
 } from '@lwc/shared';
+
+import {
+    queueHydrationError,
+    flushHydrationErrors,
+    isTypeElement,
+    isTypeText,
+    isTypeComment,
+    logHydrationError,
+    prettyPrintAttribute,
+} from './hydration-utils';
 
 import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
 import { allocateChildren, mount, removeNode } from './rendering';
@@ -66,104 +77,27 @@ type Classes = Omit<Set<string>, 'add'>;
 // Used as a perf optimization to avoid creating and discarding sets unnecessarily.
 const EMPTY_SET: Classes = new Set<string>();
 
-// These values are the ones from Node.nodeType (https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType)
-const enum EnvNodeTypes {
-    ELEMENT = 1,
-    TEXT = 3,
-    COMMENT = 8,
-}
-
 // A function that indicates whether an attribute with the given name should be validated.
 type AttrValidationPredicate = (attrName: string) => boolean;
 
 // flag indicating if the hydration recovered from the DOM mismatch
 let hasMismatch = false;
 
-// Errors that occured during the hydration process
-let hydrationErrors: Array<HydrationError> = [];
-
-class HydrationError {
-    type: string;
-    serverRendered: any;
-    clientExpected: any;
-
-    constructor(type: string, serverRendered?: any, clientExpected?: any) {
-        this.type = type;
-        this.serverRendered = serverRendered;
-        this.clientExpected = clientExpected;
-    }
-}
-
-/*
-    Hydration errors occur before the source node has been fully hydrated,
-    queue them so they can be logged later against the mounted node.
-*/
-function queueHydrationError(type: string, serverRendered?: any, clientExpected?: any) {
-    if (process.env.NODE_ENV !== 'production') {
-        hydrationErrors.push(new HydrationError(type, serverRendered, clientExpected));
-    }
-}
-
-/*
-    Flushes (logs) any queued errors after the source node has been mounted.
- */
-function flushHydrationErrors(source?: Node | null) {
-    if (process.env.NODE_ENV !== 'production') {
-        hydrationErrors.forEach((error) =>
-            logWarn(
-                `Hydration ${error.type} mismatch on:`,
-                source,
-                `\n- rendered on server:`,
-                error.serverRendered,
-                `\n- expected on client:`,
-                error.clientExpected || source
-            )
-        );
-        hydrationErrors = [];
-    }
-}
-
-function isTypeElement(node?: Node): node is Element {
-    if (node?.nodeType !== EnvNodeTypes.ELEMENT) {
-        queueHydrationError('node', node);
-        return false;
-    }
-    return true;
-}
-
-function isTypeText(node?: Node): node is Text {
-    if (node?.nodeType !== EnvNodeTypes.TEXT) {
-        queueHydrationError('node', node);
-        return false;
-    }
-    return true;
-}
-
-function isTypeComment(node?: Node): node is Comment {
-    if (node?.nodeType !== EnvNodeTypes.COMMENT) {
-        queueHydrationError('node', node);
-        return false;
-    }
-    return true;
-}
-
-/*
-    logger.ts converts all args to a string, losing object referenences and has
-    legacy bloat which would have meant more pathing.
-*/
-function logWarn(...args: any) {
-    /* eslint-disable-next-line no-console */
-    console.warn('[LWC warn:', ...args);
-}
-
 export function hydrateRoot(vm: VM) {
     hasMismatch = false;
 
     runConnectedCallback(vm);
     hydrateVM(vm);
-    flushHydrationErrors(vm.renderRoot);
-    if (hasMismatch && process.env.NODE_ENV !== 'production') {
-        logWarn('Hydration completed with errors.');
+
+    if (process.env.NODE_ENV !== 'production') {
+        /*
+            Errors are queued as they occur and then logged with the source element once it has been hydrated and mounted to the DOM. 
+            Means the element in the console matches what is on the page and the highlighting works properly when you hover over the elements in the console.
+        */
+        flushHydrationErrors(vm.renderRoot);
+        if (hasMismatch) {
+            logHydrationError('Hydration completed with errors.');
+        }
     }
 }
 
@@ -214,7 +148,14 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
             break;
     }
 
-    flushHydrationErrors(hydratedNode);
+    if (process.env.NODE_ENV !== 'production') {
+        /*
+            Errors are queued as they occur and then logged with the source element once it has been hydrated and mounted to the DOM. 
+            Means the element in the console matches what is on the page and the highlighting works properly when you hover over the elements in the console.
+        */
+        flushHydrationErrors(hydratedNode);
+    }
+
     return renderer.nextSibling(hydratedNode);
 }
 
@@ -268,7 +209,7 @@ function getValidationPredicate(
         !isTrue(optOutStaticProp) &&
         !isValidArray
     ) {
-        logWarn(
+        logHydrationError(
             '`validationOptOut` must be `true` or an array of attributes that should not be validated.'
         );
     }
@@ -404,7 +345,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
                     ...vnode.data,
                     props: cloneAndOmitKey(props, 'innerHTML'),
                 };
-            } else {
+            } else if (process.env.NODE_ENV !== 'production') {
                 queueHydrationError(
                     'innerHTML',
                     unwrappedServerInnerHTML,
@@ -492,11 +433,13 @@ function hydrateChildren(
 ) {
     let mismatchedChildren = false;
     let nextNode: Node | null = node;
+    const { renderer } = owner;
+    const { getChildNodes } = renderer;
+
     const serverNodes =
         process.env.NODE_ENV !== 'production'
-            ? Array.from(parentNode?.children).map((c) => c.cloneNode(true))
+            ? Array.from(getChildNodes(parentNode)).map((c) => c.cloneNode(true))
             : null;
-    const { renderer } = owner;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
@@ -545,7 +488,7 @@ function hydrateChildren(
         hasMismatch = true;
         // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
         if (process.env.NODE_ENV !== 'production') {
-            const clientNodes = children?.map((c) => c?.elm);
+            const clientNodes = ArrayMap.call(children, (c) => c?.elm);
             queueHydrationError('child node', serverNodes, clientNodes);
         }
     }
@@ -576,7 +519,9 @@ function isMatchingElement(
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
-        queueHydrationError('node', elm);
+        if (process.env.NODE_ENV !== 'production') {
+            queueHydrationError('node', elm);
+        }
         return false;
     }
 
@@ -631,13 +576,13 @@ function validateAttrs(
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
-            const serverRendered = isNull(elmAttrValue) ? elmAttrValue : `"${elmAttrValue}"`;
-            const clientExpected = isNull(attrValue) ? attrValue : `"${attrValue}"`;
-            queueHydrationError(
-                'attribute',
-                `${attrName}=${serverRendered}`,
-                `${attrName}=${clientExpected}`
-            );
+            if (process.env.NODE_ENV !== 'production') {
+                queueHydrationError(
+                    'attribute',
+                    prettyPrintAttribute(attrName, elmAttrValue),
+                    prettyPrintAttribute(attrName, attrValue)
+                );
+            }
             nodesAreCompatible = false;
         }
     }
@@ -777,7 +722,7 @@ function validateStyleAttr(
         vnodeStyle = ArrayJoin.call(expectedStyle, ' ');
     }
 
-    if (!nodesAreCompatible) {
+    if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
         queueHydrationError('attribute', `style="${elmStyle}"`, `style="${vnodeStyle}"`);
     }
 
@@ -795,7 +740,9 @@ function areStaticNodesCompatible(
     let isCompatibleElements = true;
 
     if (getProperty(clientNode, 'tagName') !== getProperty(serverNode, 'tagName')) {
-        queueHydrationError('node', serverNode);
+        if (process.env.NODE_ENV !== 'production') {
+            queueHydrationError('node', serverNode);
+        }
         return false;
     }
 
@@ -812,11 +759,13 @@ function areStaticNodesCompatible(
             // Note if there are no parts then it is a fully static fragment.
             // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
-                queueHydrationError(
-                    'attribute',
-                    `${attrName}="${serverAttributeValue}"`,
-                    `${attrName}="${clientAttributeValue}"`
-                );
+                if (process.env.NODE_ENV !== 'production') {
+                    queueHydrationError(
+                        'attribute',
+                        prettyPrintAttribute(attrName, serverAttributeValue),
+                        prettyPrintAttribute(attrName, clientAttributeValue)
+                    );
+                }
                 isCompatibleElements = false;
             }
         }

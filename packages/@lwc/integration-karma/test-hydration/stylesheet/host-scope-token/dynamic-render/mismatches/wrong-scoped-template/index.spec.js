@@ -28,8 +28,8 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: STYLE - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
-                'Hydration attribute mismatch on: H1 - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
+                'Hydration attribute mismatch on: <style> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
+                'Hydration attribute mismatch on: <h1> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
                 'Hydration completed with errors.',
             ],
         });

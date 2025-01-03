@@ -22,7 +22,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration node mismatch on: SPAN - rendered on server: #text - expected on client: SPAN',
+                'Hydration node mismatch on: <span> - rendered on server: #text - expected on client: <span>',
                 'Hydration completed with errors.',
             ],
         });

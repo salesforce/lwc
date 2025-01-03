@@ -18,7 +18,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration child node mismatch on: UL - rendered on server: LI,LI,LI - expected on client: LI,LI',
+                'Hydration child node mismatch on: <ul> - rendered on server: <li>,<li>,<li> - expected on client: <li>,<li>',
                 'Hydration completed with errors.',
             ],
         });

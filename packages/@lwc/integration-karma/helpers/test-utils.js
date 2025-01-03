@@ -585,11 +585,13 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         };
     }
 
+    // Browsers render nodes differently (class order, etc).
     function stringifyArg(arg) {
         if (arg instanceof Array) {
             return arg.map((v) => stringifyArg(v));
+        } else if (arg?.tagName) {
+            return `<${arg.tagName.toLowerCase()}>`;
         } else if (arg?.nodeName) {
-            // Browsers render nodes differently (class order, etc). Node.nodeName is universal and sufficient for testing.
             return arg.nodeName;
         } else if (typeof arg === 'string') {
             // Avoids adding newlines in the matchers
