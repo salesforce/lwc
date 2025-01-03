@@ -71,7 +71,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
             module: 'dist/index.js',
             types: 'dist/index.d.ts',
             // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
-            files: ['dist'],
+            files: ['dist', '!dist/**/*.d.ts.map'],
             scripts: {
                 build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
                 dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
