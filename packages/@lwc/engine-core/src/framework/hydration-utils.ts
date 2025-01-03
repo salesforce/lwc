@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, isNull, ArrayJoin, ArraySort, ArrayFrom } from '@lwc/shared';
+import { ArrayPush, ArrayJoin, ArraySort, ArrayFrom, isNull, isUndefined } from '@lwc/shared';
 
 import { assertNotProd } from './utils';
 
@@ -31,7 +31,7 @@ export type Classes = Omit<Set<string>, 'add'>;
 */
 export function prettyPrintAttribute(attribute: string, value: any): string {
     assertNotProd(); // this method should never leak to prod
-    return `${attribute}=${isNull(attribute) ? attribute : `"${value}"`}`;
+    return `${attribute}=${isNull(value) || isUndefined(value) ? value : `"${value}"`}`;
 }
 
 /*
@@ -57,14 +57,14 @@ export function queueHydrationError(type: string, serverRendered?: any, clientEx
  */
 export function flushHydrationErrors(source?: Node | null) {
     assertNotProd(); // this method should never leak to prod
-    for (let i = 0; i < hydrationErrors.length; i++) {
-        logHydrationError(
-            `Hydration ${hydrationErrors[i].type} mismatch on:`,
+    for (const hydrationError of hydrationErrors) {
+        warnHydrationError(
+            `Hydration ${hydrationError.type} mismatch on:`,
             source,
             `\n- rendered on server:`,
-            hydrationErrors[i].serverRendered,
+            hydrationError.serverRendered,
             `\n- expected on client:`,
-            hydrationErrors[i].clientExpected || source
+            hydrationError.clientExpected || source
         );
     }
     hydrationErrors = [];
@@ -98,7 +98,7 @@ export function isTypeComment(node?: Node): node is Comment {
     logger.ts converts all args to a string, losing object referenences and has
     legacy bloat which would have meant more pathing.
 */
-export function logHydrationError(...args: any) {
+export function warnHydrationError(...args: any) {
     assertNotProd(); // this method should never leak to prod
     /* eslint-disable-next-line no-console */
     console.warn('[LWC warn:', ...args);

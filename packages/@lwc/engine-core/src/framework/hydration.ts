@@ -31,7 +31,7 @@ import {
     isTypeElement,
     isTypeText,
     isTypeComment,
-    logHydrationError,
+    warnHydrationError,
     prettyPrintAttribute,
     prettyPrintClasses,
 } from './hydration-utils';
@@ -95,7 +95,7 @@ export function hydrateRoot(vm: VM) {
         */
         flushHydrationErrors(vm.renderRoot);
         if (hasMismatch) {
-            logHydrationError('Hydration completed with errors.');
+            warnHydrationError('Hydration completed with errors.');
         }
     }
 }
@@ -208,7 +208,7 @@ function getValidationPredicate(
         !isTrue(optOutStaticProp) &&
         !isValidArray
     ) {
-        logHydrationError(
+        warnHydrationError(
             '`validationOptOut` must be `true` or an array of attributes that should not be validated.'
         );
     }
@@ -433,11 +433,11 @@ function hydrateChildren(
     let mismatchedChildren = false;
     let nextNode: Node | null = node;
     const { renderer } = owner;
-    const { getChildNodes } = renderer;
+    const { getChildNodes, cloneNode } = renderer;
 
     const serverNodes =
         process.env.NODE_ENV !== 'production'
-            ? Array.from(getChildNodes(parentNode)).map((c) => c.cloneNode(true))
+            ? Array.from(getChildNodes(parentNode), (node) => cloneNode(node, true))
             : null;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
@@ -720,7 +720,11 @@ function validateStyleAttr(
     }
 
     if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
-        queueHydrationError('attribute', `style="${elmStyle}"`, `style="${vnodeStyle}"`);
+        queueHydrationError(
+            'attribute',
+            prettyPrintAttribute('style', elmStyle),
+            prettyPrintAttribute('style', vnodeStyle)
+        );
     }
 
     return nodesAreCompatible;
