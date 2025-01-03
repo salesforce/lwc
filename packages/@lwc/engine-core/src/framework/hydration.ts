@@ -280,7 +280,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
     if (
         isTypeElement(elm) &&
         isTypeElement(vnode.fragment) &&
-        areStaticNodesCompatible(vnode.fragment, elm, vnode, renderer)
+        areStaticElementsCompatible(vnode.fragment, elm, vnode, renderer)
     ) {
         return hydrateStaticElementParts(elm, vnode, renderer);
     }
@@ -729,9 +729,9 @@ function validateStyleAttr(
     return nodesAreCompatible;
 }
 
-function areStaticNodesCompatible(
-    clientNode: Node,
-    serverNode: Node,
+function areStaticElementsCompatible(
+    clientElement: Element,
+    serverElement: Element,
     vnode: VStatic,
     renderer: RendererAPI
 ) {
@@ -739,20 +739,20 @@ function areStaticNodesCompatible(
     const { parts } = vnode;
     let isCompatibleElements = true;
 
-    if (getProperty(clientNode, 'tagName') !== getProperty(serverNode, 'tagName')) {
+    if (getProperty(clientElement, 'tagName') !== getProperty(serverElement, 'tagName')) {
         if (process.env.NODE_ENV !== 'production') {
-            queueHydrationError('node', serverNode);
+            queueHydrationError('node', serverElement);
         }
         return false;
     }
 
-    const clientAttrsNames: string[] = getProperty(clientNode, 'getAttributeNames').call(
-        clientNode
+    const clientAttrsNames: string[] = getProperty(clientElement, 'getAttributeNames').call(
+        clientElement
     );
 
     clientAttrsNames.forEach((attrName) => {
-        const clientAttributeValue = getAttribute(clientNode, attrName);
-        const serverAttributeValue = getAttribute(serverNode, attrName);
+        const clientAttributeValue = getAttribute(clientElement, attrName);
+        const serverAttributeValue = getAttribute(serverElement, attrName);
         if (clientAttributeValue !== serverAttributeValue) {
             // Check if the root element attributes have expressions, if it does then we need to delegate hydration
             // validation to haveCompatibleStaticParts.
