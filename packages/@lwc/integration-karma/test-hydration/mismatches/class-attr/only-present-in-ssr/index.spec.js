@@ -14,8 +14,8 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                '[LWC warn]: Mismatch hydrating element <x-child>: attribute "class" has different values, expected "" but found "foo"\n',
-                '[LWC warn]: Hydration completed with errors.\n',
+                'Hydration attribute mismatch on: <x-child> - rendered on server: class="foo" - expected on client: class=""',
+                'Hydration completed with errors.',
             ],
         });
     },
