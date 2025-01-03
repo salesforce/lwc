@@ -168,7 +168,11 @@ const visitors: Visitors = {
 
         switch (node.key.name) {
             case 'constructor':
-                node.value.params = [b.identifier('propsAvailableAtConstruction')];
+                // add our own custom arg after any pre-existing constructor args
+                node.value.params = [
+                    ...structuredClone(node.value.params),
+                    b.identifier('propsAvailableAtConstruction'),
+                ];
                 break;
             case 'connectedCallback':
                 state.hasConnectedCallback = true;
@@ -196,7 +200,11 @@ const visitors: Visitors = {
             path.parentPath &&
             path.parentPath.node?.type === 'CallExpression'
         ) {
-            path.parentPath.node.arguments = [b.identifier('propsAvailableAtConstruction')];
+            // add our own custom arg after any pre-existing super() args
+            path.parentPath.node.arguments = [
+                ...structuredClone(path.parentPath.node.arguments),
+                b.identifier('propsAvailableAtConstruction'),
+            ];
         }
     },
     Program: {

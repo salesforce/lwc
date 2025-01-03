@@ -26,7 +26,6 @@ export const expectedFailures = new Set([
     'slot-not-at-top-level/with-adjacent-text-nodes/lwcIf/light/index.js',
     'slot-not-at-top-level/with-adjacent-text-nodes/if/light/index.js',
     'slot-not-at-top-level/with-adjacent-text-nodes/if-as-sibling/light/index.js',
-    'superclass/with-props/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
 ]);
