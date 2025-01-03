@@ -31,7 +31,7 @@ import {
     isTypeElement,
     isTypeText,
     isTypeComment,
-    warnHydrationError,
+    logHydrationWarning,
     prettyPrintAttribute,
     prettyPrintClasses,
 } from './hydration-utils';
@@ -95,7 +95,7 @@ export function hydrateRoot(vm: VM) {
         */
         flushHydrationErrors(vm.renderRoot);
         if (hasMismatch) {
-            warnHydrationError('Hydration completed with errors.');
+            logHydrationWarning('Hydration completed with errors.');
         }
     }
 }
@@ -208,7 +208,7 @@ function getValidationPredicate(
         !isTrue(optOutStaticProp) &&
         !isValidArray
     ) {
-        warnHydrationError(
+        logHydrationWarning(
             '`validationOptOut` must be `true` or an array of attributes that should not be validated.'
         );
     }

@@ -58,7 +58,7 @@ export function queueHydrationError(type: string, serverRendered?: any, clientEx
 export function flushHydrationErrors(source?: Node | null) {
     assertNotProd(); // this method should never leak to prod
     for (const hydrationError of hydrationErrors) {
-        warnHydrationError(
+        logHydrationWarning(
             `Hydration ${hydrationError.type} mismatch on:`,
             source,
             `\n- rendered on server:`,
@@ -98,7 +98,7 @@ export function isTypeComment(node?: Node): node is Comment {
     logger.ts converts all args to a string, losing object referenences and has
     legacy bloat which would have meant more pathing.
 */
-export function warnHydrationError(...args: any) {
+export function logHydrationWarning(...args: any) {
     assertNotProd(); // this method should never leak to prod
     /* eslint-disable-next-line no-console */
     console.warn('[LWC warn:', ...args);
