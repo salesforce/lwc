@@ -67,11 +67,9 @@ const bGenerateMarkup = esTemplate`
         yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
         yield* tmplFn(
-            props, 
-            attrs, 
             shadowSlottedContent,
-            lightSlottedContent, 
-            ${/*component class*/ 3}, 
+            lightSlottedContent,
+            ${/*component class*/ 3},
             instance
         );
         yield \`</\${tagName}>\`;
