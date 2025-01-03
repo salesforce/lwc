@@ -17,9 +17,20 @@ type ExtractArguments<
         : ExtractArguments<R, N | Numbers, [string, ...Args]> // `N` already accounted for
     : Args; // No `N` found, nothing more to check
 
+class CompilationError extends Error {
+    constructor(
+        message: string,
+        public code: number
+    ) {
+        super(message);
+        this.name = 'CompilationError';
+        this.code = code;
+    }
+}
+
 export function generateError<const T extends LWCErrorInfo>(
     error: T,
     ...args: ExtractArguments<T['message']>
-): Error {
-    return new Error(generateErrorMessage(error, args));
+): CompilationError {
+    return new CompilationError(generateErrorMessage(error, args), error.code);
 }

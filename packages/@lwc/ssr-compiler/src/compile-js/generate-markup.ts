@@ -145,8 +145,8 @@ export function addGenerateMarkupFunction(
     program.body.push(
         ...bGenerateMarkup(
             defaultTagName,
-            b.arrayExpression(publicFields.map(b.literal)),
-            b.arrayExpression(privateFields.map(b.literal)),
+            b.arrayExpression([...publicFields.keys()].map(b.literal)),
+            b.arrayExpression([...privateFields].map(b.literal)),
             classIdentifier,
             connectWireAdapterCode
         )
