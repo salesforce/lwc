@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, isNull } from '@lwc/shared';
+import { ArrayPush, isNull, ArrayJoin, ArraySort, ArrayFrom } from '@lwc/shared';
 
 import { assertNotProd } from './utils';
 
@@ -24,11 +24,23 @@ interface HydrationError {
     clientExpected: any;
 }
 
+export type Classes = Omit<Set<string>, 'add'>;
+
 /*
     Prints attributes as null or "value"
 */
 export function prettyPrintAttribute(attribute: string, value: any): string {
+    assertNotProd(); // this method should never leak to prod
     return `${attribute}=${isNull(attribute) ? attribute : `"${value}"`}`;
+}
+
+/*
+    Sorts and stringifies classes
+*/
+export function prettyPrintClasses(classes: Classes) {
+    assertNotProd(); // this method should never leak to prod
+    const value = JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(classes)), ' '));
+    return `class=${value}`;
 }
 
 /*

@@ -21,7 +21,6 @@ import {
     StringSplit,
     parseStyleText,
     ArrayFrom,
-    ArraySort,
     ArrayFilter,
     ArrayMap,
 } from '@lwc/shared';
@@ -34,6 +33,7 @@ import {
     isTypeComment,
     logHydrationError,
     prettyPrintAttribute,
+    prettyPrintClasses,
 } from './hydration-utils';
 
 import { cloneAndOmitKey, shouldBeFormAssociated } from './utils';
@@ -55,6 +55,7 @@ import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
 import { unwrapIfNecessary } from './sanitized-html-content';
+import type { Classes } from './hydration-utils';
 import type {
     VNodes,
     VBaseElement,
@@ -71,8 +72,6 @@ import type {
 } from './vnodes';
 import type { VM } from './vm';
 import type { RendererAPI } from './renderer';
-
-type Classes = Omit<Set<string>, 'add'>;
 
 // Used as a perf optimization to avoid creating and discarding sets unnecessarily.
 const EMPTY_SET: Classes = new Set<string>();
@@ -669,12 +668,10 @@ function validateClassAttr(
     const classesAreCompatible = checkClassesCompatibility(vnodeClasses, elmClasses);
 
     if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
-        const prettyPrint = (set: Classes) =>
-            JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(set)), ' '));
         queueHydrationError(
             'attribute',
-            `class=${prettyPrint(elmClasses)}`,
-            `class=${prettyPrint(vnodeClasses)}`
+            prettyPrintClasses(elmClasses),
+            prettyPrintClasses(vnodeClasses)
         );
     }
 
