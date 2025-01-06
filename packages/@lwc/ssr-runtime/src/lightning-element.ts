@@ -96,8 +96,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     setAttribute(attrName: string, attrValue: string): void {
         const normalizedName = StringToLowerCase.call(toString(attrName));
-        const normalizedValue = String(attrValue);
-        this.#attrs[normalizedName] = normalizedValue;
+        this.#attrs[normalizedName] = attrValue;
         mutationTracker.add(this, normalizedName);
     }
 
