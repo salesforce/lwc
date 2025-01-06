@@ -25,7 +25,7 @@
         "@best/cli": "^14.0.0",
         "@best/runner-headless": "^14.0.0",
         "@best/runner-remote": "^14.0.0",
-        "folder-hash": "4.0.4",
+        "folder-hash": "4.1.0",
         "markdown-table": "^3.0.4",
         "tachometer": "^0.7.1"
     },
