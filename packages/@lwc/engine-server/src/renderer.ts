@@ -227,8 +227,15 @@ function setProperty(node: N, propName: string, value: any): void {
                 : removeAttribute(node, attrName);
         }
 
-        // Handle global html attributes and AOM.
-        if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) {
+        if (isAriaAttribute(attrName)) {
+            // TODO [#3284]: According to the spec, IDL nullable type values
+            // (null and undefined) should remove the attribute; however, we
+            // only do so in the case of null for historical reasons.
+            return isNull(value)
+                ? removeAttribute(node, attrName)
+                : setAttribute(node, attrName, value);
+        } else if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
+            // Handle global html attributes and AOM.
             return setAttribute(node, attrName, value);
         }
     }
@@ -275,12 +282,7 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
         namespace = null;
     }
 
-    if (isAriaAttribute(normalizedName) && isNull(value)) {
-        // TODO [#3284]: According to the spec, IDL nullable type values
-        // (null and undefined) should remove the attribute; however, we
-        // only do so in the case of null for historical reasons.
-        removeAttribute(element, normalizedName);
-    } else if (isUndefined(attribute)) {
+    if (isUndefined(attribute)) {
         element[HostAttributesKey].push({
             name: normalizedName,
             [HostNamespaceKey]: namespace,

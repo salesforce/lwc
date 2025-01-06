@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    getOwnPropertyNames,
-    isNull,
-    isString,
-    isUndefined,
-    DEFAULT_SSR_MODE,
-    isAriaAttribute,
-} from '@lwc/shared';
+import { getOwnPropertyNames, isNull, isString, isUndefined, DEFAULT_SSR_MODE } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
 import type { LightningElement, LightningElementConstructor } from './lightning-element';
@@ -47,12 +40,7 @@ function renderAttrsPrivate(
             continue;
         }
 
-        // TODO [#3284]: According to the spec, IDL nullable type values
-        // (null and undefined) should remove the attribute; however, we
-        // only do so in the case of null for historical reasons.
-        if (isAriaAttribute(attrName) && (isNull(attrValue) || attrValue === 'null')) {
-            continue;
-        } else if (isNull(attrValue) || isUndefined(attrValue)) {
+        if (isNull(attrValue) || isUndefined(attrValue)) {
             attrValue = '';
         } else if (!isString(attrValue)) {
             attrValue = String(attrValue);
