@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyNames, isNull, isString, isUndefined, DEFAULT_SSR_MODE, isAriaAttribute } from '@lwc/shared';
+import {
+    getOwnPropertyNames,
+    isNull,
+    isString,
+    isUndefined,
+    DEFAULT_SSR_MODE,
+    isAriaAttribute,
+} from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
 import type { LightningElement, LightningElementConstructor } from './lightning-element';
@@ -19,7 +26,6 @@ function renderAttrsPrivate(
     hostScopeToken: string | undefined,
     scopeToken: string | undefined
 ): string {
-    debugger;
     // The scopeToken is e.g. `lwc-xyz123` which is the token our parent gives us.
     // The hostScopeToken is e.g. `lwc-abc456-host` which is the token for our own component.
     // It's possible to have both, one, the other, or neither.
@@ -33,7 +39,6 @@ function renderAttrsPrivate(
 
     for (const attrName of getOwnPropertyNames(attrs)) {
         let attrValue = attrs[attrName];
-        const normalizedAttrValue = String(attrValue);
 
         // Backwards compatibility with historical patchStyleAttribute() behavior:
         // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
@@ -41,20 +46,16 @@ function renderAttrsPrivate(
             // If the style attribute is invalid, we don't render it.
             continue;
         }
+
         // TODO [#3284]: According to the spec, IDL nullable type values
         // (null and undefined) should remove the attribute; however, we
         // only do so in the case of null for historical reasons.
-        else if (isAriaAttribute(attrName)) {
-            if (isNull(attrValue)) {
-                // If the aria attribute is null, we don't render it.
-                continue;
-            } else {
-                attrValue = normalizedAttrValue;
-            }
+        if (isAriaAttribute(attrName) && (isNull(attrValue) || attrValue === 'null')) {
+            continue;
         } else if (isNull(attrValue) || isUndefined(attrValue)) {
             attrValue = '';
         } else if (!isString(attrValue)) {
-            attrValue = normalizedAttrValue;
+            attrValue = String(attrValue);
         }
 
         if (attrName === 'class') {

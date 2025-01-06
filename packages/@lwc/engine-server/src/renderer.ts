@@ -264,7 +264,6 @@ function getAttribute(element: E, name: string, namespace: string | null = null)
 }
 
 function setAttribute(element: E, name: string, value: unknown, namespace: string | null = null) {
-    debugger;
     const normalizedName = StringToLowerCase.call(String(name));
     const normalizedValue = String(value);
     reportMutation(element, normalizedName);
@@ -275,12 +274,12 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
     if (isUndefined(namespace)) {
         namespace = null;
     }
-    
+
     if (isAriaAttribute(normalizedName) && isNull(value)) {
         // TODO [#3284]: According to the spec, IDL nullable type values
         // (null and undefined) should remove the attribute; however, we
         // only do so in the case of null for historical reasons.
-        removeAttribute(element, normalizedName)            
+        removeAttribute(element, normalizedName);
     } else if (isUndefined(attribute)) {
         element[HostAttributesKey].push({
             name: normalizedName,
