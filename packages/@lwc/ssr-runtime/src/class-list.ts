@@ -61,7 +61,7 @@ export class ClassList implements DOMTokenList {
     replace(oldClassName: string, newClassName: string) {
         let classWasReplaced = false;
         const className = this.el.className;
-        const listOfClasses = className.split(MULTI_SPACE).filter(Boolean);
+        const listOfClasses = className.split(MULTI_SPACE).filter(Boolean) as string[];
         listOfClasses.forEach((value, idx) => {
             if (value === oldClassName) {
                 classWasReplaced = true;

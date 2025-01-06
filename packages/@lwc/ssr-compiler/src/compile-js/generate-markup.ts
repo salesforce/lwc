@@ -11,16 +11,13 @@ import { esTemplate } from '../estemplate';
 import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './decorators/wire';
 
-import type {
-    Program,
-    Statement,
-    ExpressionStatement,
-    IfStatement,
-    FunctionDeclaration,
-} from 'estree';
+import type { Program, Statement, IfStatement } from 'estree';
 import type { ComponentMetaState } from './types';
 
 const bGenerateMarkup = esTemplate`
+    const publicFields = new Set(${/*public fields*/ is.arrayExpression});
+    const privateFields = new Set(${/*private fields*/ is.arrayExpression});
+
     async function* generateMarkup(
             tagName, 
             props, 
@@ -36,8 +33,8 @@ const bGenerateMarkup = esTemplate`
         props = props ?? Object.create(null);
         props = __filterProperties(
             props,
-            ${/*public fields*/ is.arrayExpression},
-            ${/*private fields*/ is.arrayExpression},
+            publicFields,
+            privateFields,
         );
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
@@ -67,17 +64,15 @@ const bGenerateMarkup = esTemplate`
         yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
         yield '>';
         yield* tmplFn(
-            props, 
-            attrs, 
             shadowSlottedContent,
-            lightSlottedContent, 
-            ${/*component class*/ 3}, 
+            lightSlottedContent,
+            ${/*component class*/ 3},
             instance
         );
         yield \`</\${tagName}>\`;
     }
     ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-`<[FunctionDeclaration, ExpressionStatement]>;
+`<[Statement]>;
 
 const bExposeTemplate = esTemplate`
     if (${/*template*/ is.identifier}) {
@@ -144,9 +139,9 @@ export function addGenerateMarkupFunction(
     );
     program.body.push(
         ...bGenerateMarkup(
-            defaultTagName,
             b.arrayExpression([...publicFields.keys()].map(b.literal)),
             b.arrayExpression([...privateFields].map(b.literal)),
+            defaultTagName,
             classIdentifier,
             connectWireAdapterCode
         )
