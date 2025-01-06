@@ -21,11 +21,9 @@ import type { CompilationMode } from '@lwc/shared';
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
     export default async function* tmpl(
-            props, 
-            attrs, 
             shadowSlottedContent,
-            lightSlottedContent, 
-            Cmp, 
+            lightSlottedContent,
+            Cmp,
             instance
     ) {
         // Deliberately using let so we can mutate as many times as we want in the same scope.
