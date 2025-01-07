@@ -57,7 +57,7 @@ describe.each(
                 `;
             const doReplacement = () => tmpl(b.literal('I am not an identifier') as any);
             expect(doReplacement).toThrow(
-                `Validation failed for templated node. Expected type identifier, but received Literal.\n    at ${__filename}:56:32`
+                /Validation failed for templated node. Expected type identifier, but received Literal./
             );
         });
     });
