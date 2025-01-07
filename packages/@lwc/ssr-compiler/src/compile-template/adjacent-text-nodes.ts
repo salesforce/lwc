@@ -17,8 +17,8 @@ import type {
 import type { TransformerContext } from './types';
 import type { Node as IrNode, Text as IrText, Comment as IrComment } from '@lwc/template-compiler';
 
-const bMassageTextContent = esTemplate`
-    massageTextContent(${/* string value */ is.expression});
+const bNormalizeTextContent = esTemplate`
+    normalizeTextContent(${/* string value */ is.expression});
 `<EsCallExpression>;
 
 const bYieldTextContent = esTemplateWithYield`
@@ -80,17 +80,18 @@ export function generateConcatenatedTextNodesExpressions(cxt: TransformerContext
         return [];
     }
 
-    cxt.import(['massageTextContent', 'renderTextContent']);
+    cxt.import(['normalizeTextContent', 'renderTextContent']);
 
     // Generate a binary expression to concatenate the text together. E.g.:
     //     renderTextContent(
-    //         massageTextContent(a) +
-    //         massageTextContent(b) +
-    //         massageTextContent(c)
+    //         normalizeTextContent(a) +
+    //         normalizeTextContent(b) +
+    //         normalizeTextContent(c)
     //     )
     const concatenatedExpression = textNodes
         .map(
-            (node) => bMassageTextContent(generateExpressionFromTextNode(node, cxt)) as EsExpression
+            (node) =>
+                bNormalizeTextContent(generateExpressionFromTextNode(node, cxt)) as EsExpression
         )
         .reduce((accumulator, expression) => b.binaryExpression('+', accumulator, expression));
 

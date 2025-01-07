@@ -30,7 +30,7 @@ export {
     // renderComponent is an alias for serverSideRenderComponent
     serverSideRenderComponent as renderComponent,
 } from './render';
-export { massageTextContent, renderTextContent } from './render-text-content';
+export { normalizeTextContent, renderTextContent } from './render-text-content';
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
