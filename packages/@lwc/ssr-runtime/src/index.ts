@@ -20,7 +20,6 @@ export {
     SYMBOL__SET_INTERNALS,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
-export { filterProperties } from './reflection';
 export {
     fallbackTmpl,
     fallbackTmplNoYield,
