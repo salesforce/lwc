@@ -98,7 +98,7 @@ const getReplacementNode = (
         );
 
         if (validateReplacement?.__stack) {
-            error.message += `\n\n${validateReplacement.__stack.split('\n').slice(1).join('\n')}`;
+            error.message += `\n${validateReplacement.__stack.split('\n')[1]}`;
             error.stack = validateReplacement.__stack;
         }
 

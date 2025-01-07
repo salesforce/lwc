@@ -37,7 +37,7 @@ export type Validator<T extends EsNode | null = EsNode | null> = {
 
 const is: {
     [K in keyof typeof _is]: (typeof _is)[K] & { __debugName?: string; __stack?: string };
-} = structuredClone(_is);
+} = { ..._is };
 
 if (process.env.NODE_ENV !== 'production') {
     for (const [key, val] of entries(is)) {
