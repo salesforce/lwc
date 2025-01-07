@@ -13,7 +13,17 @@
 // and be located before import statements.
 // /// <reference lib="dom" />
 
-import { assign, defineProperties, hasOwnProperty, StringToLowerCase, toString } from '@lwc/shared';
+import {
+    assign,
+    defineProperties,
+    hasOwnProperty,
+    htmlPropertyToAttribute,
+    isAriaAttribute,
+    keys,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
+    StringToLowerCase,
+    toString,
+} from '@lwc/shared';
 
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
@@ -64,10 +74,29 @@ export class LightningElement implements PropsAvailableAtConstruction {
         assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
+    [SYMBOL__SET_INTERNALS](
+        props: Properties,
+        attrs: Attributes,
+        publicFields: Set<string>,
+        privateFields: Set<string>
+    ) {
         this.#props = props;
         this.#attrs = attrs;
-        assign(this, props);
+
+        // Avoid setting the following types of properties that should not be set:
+        // - Properties that are not public.
+        // - Properties that are not global.
+        // - Properties that are global but are internally overridden.
+        for (const propName of keys(props)) {
+            const attrName = htmlPropertyToAttribute(propName);
+            if (
+                publicFields.has(propName) ||
+                ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
+                    !privateFields.has(propName))
+            ) {
+                (this as any)[propName] = props[propName];
+            }
+        }
     }
 
     get className() {
