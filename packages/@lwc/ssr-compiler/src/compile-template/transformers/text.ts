@@ -7,7 +7,6 @@
 
 import {
     generateConcatenatedTextNodesExpressions,
-    generateExpressionFromTextNode,
     isLastConcatenatedNode,
 } from '../adjacent-text-nodes';
 import type { Statement as EsStatement } from 'estree';
@@ -15,12 +14,11 @@ import type { Text as IrText } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
 export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
-    const valueToYield = generateExpressionFromTextNode(node, cxt);
-
-    if (!isLastConcatenatedNode(cxt)) {
-        cxt.bufferedTextNodeValues.push(valueToYield);
-        return [];
+    if (isLastConcatenatedNode(cxt)) {
+        // render all concatenated content up to us
+        return generateConcatenatedTextNodesExpressions(cxt);
     }
 
-    return generateConcatenatedTextNodesExpressions(cxt, valueToYield);
+    // our last sibling is responsible for rendering our content, not us
+    return [];
 };

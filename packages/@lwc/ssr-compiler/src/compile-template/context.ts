@@ -42,7 +42,8 @@ export function createNewContext(templateOptions: TemplateOpts): {
             isLocalVar,
             templateOptions,
             import: importManager.add.bind(importManager),
-            bufferedTextNodeValues: [],
+            siblings: undefined,
+            currentNodeIndex: undefined,
         },
     };
 }

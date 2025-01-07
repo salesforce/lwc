@@ -13,7 +13,7 @@ import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
 import { isNullableOf } from '../../../estree/validators';
-import { generateExpressionFromTextNode, isLastConcatenatedNode } from '../../adjacent-text-nodes';
+import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
@@ -157,8 +157,9 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
 
     const traverse = (nodes: IrChildNode[], ancestorIndices: number[]) => {
         for (let i = 0; i < nodes.length; i++) {
-            cxt.prevSibling = nodes[i - 1];
-            cxt.nextSibling = nodes[i + 1];
+            // must set the siblings inside the for loop due nested children
+            cxt.siblings = nodes;
+            cxt.currentNodeIndex = i;
             const node = nodes[i];
             switch (node.type) {
                 // SlottableAncestorIrType
@@ -179,10 +180,9 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     const slotName =
                         node.type === 'Text' ? b.literal('') : bAttributeValue(node, 'slot');
 
-                    // Handle concatenated adjacent text nodes, which must be specially handled since we're
-                    // doing our own traversal.
+                    // For concatenated adjacent text nodes, for any but the final text node, we
+                    // should skip them and let the final text node take care of rendering its siblings
                     if (node.type === 'Text' && !isLastConcatenatedNode(cxt)) {
-                        cxt.bufferedTextNodeValues.push(generateExpressionFromTextNode(node, cxt));
                         continue;
                     }
 
@@ -192,8 +192,8 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
             }
         }
         // reset the context
-        cxt.prevSibling = undefined;
-        cxt.nextSibling = undefined;
+        cxt.siblings = undefined;
+        cxt.currentNodeIndex = undefined;
     };
 
     traverse(rootNodes, []);

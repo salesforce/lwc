@@ -15,7 +15,7 @@ import type {
     ExpressionStatement as EsExpressionStatement,
 } from 'estree';
 import type { TransformerContext } from './types';
-import type { Node as IrNode, Text as IrText } from '@lwc/template-compiler';
+import type { Node as IrNode, Text as IrText, Comment as IrComment } from '@lwc/template-compiler';
 
 const bMassageTextContent = esTemplate`
     massageTextContent(${/* string value */ is.expression});
@@ -30,7 +30,7 @@ const bYieldTextContent = esTemplateWithYield`
  * siblings. (Comment nodes are ignored when preserve-comments is turned off.) This allows for adjacent text
  * node concatenation.
  */
-const isConcatenatedNode = (node: IrNode, cxt: TransformerContext) => {
+const isConcatenatedNode = (node: IrNode, cxt: TransformerContext): node is IrText | IrComment => {
     switch (node.type) {
         case 'Text':
             return true;
@@ -42,7 +42,10 @@ const isConcatenatedNode = (node: IrNode, cxt: TransformerContext) => {
 };
 
 export const isLastConcatenatedNode = (cxt: TransformerContext) => {
-    const { nextSibling } = cxt;
+    const siblings = cxt.siblings!;
+    const currentNodeIndex = cxt.currentNodeIndex!;
+
+    const nextSibling = siblings[currentNodeIndex + 1];
     if (!nextSibling) {
         // we are the last sibling
         return true;
@@ -50,16 +53,29 @@ export const isLastConcatenatedNode = (cxt: TransformerContext) => {
     return !isConcatenatedNode(nextSibling, cxt);
 };
 
-export function generateConcatenatedTextNodesExpressions(
-    cxt: TransformerContext,
-    lastValue?: EsExpression
-) {
-    const values = [...cxt.bufferedTextNodeValues];
-    if (lastValue) {
-        values.push(lastValue);
+function generateExpressionFromTextNode(node: IrText, cxt: TransformerContext) {
+    return isLiteral(node.value) ? b.literal(node.value.value) : expressionIrToEs(node.value, cxt);
+}
+
+export function generateConcatenatedTextNodesExpressions(cxt: TransformerContext) {
+    const siblings = cxt.siblings!;
+    const currentNodeIndex = cxt.currentNodeIndex!;
+
+    const textNodes = [];
+
+    for (let i = currentNodeIndex; i >= 0; i--) {
+        const sibling = siblings[i];
+        if (isConcatenatedNode(sibling, cxt)) {
+            if (sibling.type === 'Text') {
+                textNodes.unshift(sibling);
+            }
+        } else {
+            // if we reach the beginning of the array or a non-Text/Comment node, we are done
+            break;
+        }
     }
 
-    if (!values.length) {
+    if (!textNodes.length) {
         // Render nothing. This can occur if we hit a comment in non-preserveComments mode with no adjacent text nodes
         return [];
     }
@@ -72,15 +88,11 @@ export function generateConcatenatedTextNodesExpressions(
     //         massageTextContent(b) +
     //         massageTextContent(c)
     //     )
-    const concatenatedExpression = values
-        .map((expression) => bMassageTextContent(expression) as EsExpression)
+    const concatenatedExpression = textNodes
+        .map(
+            (node) => bMassageTextContent(generateExpressionFromTextNode(node, cxt)) as EsExpression
+        )
         .reduce((accumulator, expression) => b.binaryExpression('+', accumulator, expression));
 
-    cxt.bufferedTextNodeValues.length = 0; // reset
-
     return [bYieldTextContent(concatenatedExpression)];
-}
-
-export function generateExpressionFromTextNode(node: IrText, cxt: TransformerContext) {
-    return isLiteral(node.value) ? b.literal(node.value.value) : expressionIrToEs(node.value, cxt);
 }

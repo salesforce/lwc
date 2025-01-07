@@ -6,7 +6,7 @@
  */
 
 import type { Node as IrNode } from '@lwc/template-compiler';
-import type { Statement as EsStatement, Expression as EsExpression } from 'estree';
+import type { Statement as EsStatement } from 'estree';
 
 export type Transformer<T extends IrNode = IrNode> = (
     node: T,
@@ -18,9 +18,8 @@ export interface TransformerContext {
     popLocalVars: () => void;
     isLocalVar: (varName: string | null | undefined) => boolean;
     templateOptions: TemplateOpts;
-    prevSibling?: IrNode;
-    nextSibling?: IrNode;
-    bufferedTextNodeValues: EsExpression[];
+    siblings: IrNode[] | undefined;
+    currentNodeIndex: number | undefined;
     isSlotted?: boolean;
     import: (
         imports: string | string[] | Record<string, string | undefined>,
