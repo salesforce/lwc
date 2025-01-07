@@ -137,7 +137,7 @@ A separate category of helper packages is our polyfills:
 
 In an ideal world, neither of these packages would exist. For historical reasons and for reasons of backwards compatibility, these packages are still maintained as of this writing.
 
-Some other polyfills are not separate packages but instead part of LWC's core logic. For instance, [synthetic custom element lifecycle]([https://github.com/salesforce/lwc/issues/4252](https://github.com/salesforce/lwc-rfcs/pull/89)) is small enough to be inlined in `@lwc/engine-dom`.
+Some other polyfills are not separate packages but instead part of LWC's core logic. For instance, [synthetic custom element lifecycle](https://github.com/salesforce/lwc-rfcs/pull/89) is small enough to be inlined in `@lwc/engine-dom`.
 
 ### Private packages
 
