@@ -95,7 +95,7 @@ export type RegisterContextProviderFn = (
  *
  * when looking for compatible types mark all optional properties as required so we can correctly evaluate their resolved types
  */
-type ReactivePropertyOfCompoent<Target, ExpectedType> = PrefixDollarSign<
+type ReactivePropertyOfComponent<Target, ExpectedType> = PrefixDollarSign<
     PropertiesOfType<Required<Omit<Target, keyof LightningElement>>, ExpectedType>
 >;
 
