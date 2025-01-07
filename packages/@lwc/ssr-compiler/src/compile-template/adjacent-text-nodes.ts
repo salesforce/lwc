@@ -70,7 +70,11 @@ export function generateConcatenatedTextNodesExpressions(cxt: TransformerContext
                 textNodes.unshift(sibling);
             }
         } else {
-            // if we reach the beginning of the array or a non-Text/Comment node, we are done
+            // If we reach a non-Text/Comment node, we are done. These should not be concatenated
+            // with sibling Text nodes separated by e.g. an Element:
+            //     {a}{b}<div></div>{c}{d}
+            // In the above, {a} and {b} are concatenated, and {c} and {d} are concatenated,
+            // but the `<div>` separates the two groups.
             break;
         }
     }

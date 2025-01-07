@@ -157,7 +157,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
 
     const traverse = (nodes: IrChildNode[], ancestorIndices: number[]) => {
         for (let i = 0; i < nodes.length; i++) {
-            // must set the siblings inside the for loop due nested children
+            // must set the siblings inside the for loop due to nested children
             cxt.siblings = nodes;
             cxt.currentNodeIndex = i;
             const node = nodes[i];

@@ -75,7 +75,7 @@ export function irChildrenToEs(
     const result: EsStatement[] = [];
 
     for (let i = 0; i < children.length; i++) {
-        // must set the siblings inside the for loop due nested children
+        // must set the siblings inside the for loop due to nested children
         cxt.siblings = children;
         cxt.currentNodeIndex = i;
         const cleanUp = cb?.(children[i]);
