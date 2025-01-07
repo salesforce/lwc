@@ -100,7 +100,7 @@ type ReactivePropertyOfComponent<Target, ExpectedType> = PrefixDollarSign<
 >;
 
 /** utility type */
-type PrefixDollarSign<T extends string> = `${'$'}${T}`;
+type PrefixDollarSign<T extends string> = `$${T}`;
 
 /** recursively find all properties on the target that are of a compatible type, returning their paths as strings */
 type PropertiesOfType<Target, ExpectedType> = {
