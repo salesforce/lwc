@@ -75,15 +75,16 @@ export function irChildrenToEs(
     const result: EsStatement[] = [];
 
     for (let i = 0; i < children.length; i++) {
-        cxt.prevSibling = children[i - 1];
-        cxt.nextSibling = children[i + 1];
+        // must set the siblings inside the for loop due to nested children
+        cxt.siblings = children;
+        cxt.currentNodeIndex = i;
         const cleanUp = cb?.(children[i]);
         result.push(...irToEs(children[i], cxt));
         cleanUp?.();
     }
-
-    cxt.prevSibling = undefined;
-    cxt.nextSibling = undefined;
+    // reset the context
+    cxt.siblings = undefined;
+    cxt.currentNodeIndex = undefined;
 
     return result;
 }
