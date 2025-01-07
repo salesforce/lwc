@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is } from 'estree-toolkit';
 import { generateScopeTokens } from '@lwc/template-compiler';
-import { builders as b } from 'estree-toolkit/dist/builders';
+import { builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import type { ExpressionStatement, Program, VariableDeclaration } from 'estree';
+import { is } from '#estree/validators';
 
 const bStylesheetTokenDeclaration = esTemplate`
     const stylesheetScopeToken = '${is.literal}';

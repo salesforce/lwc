@@ -6,8 +6,9 @@
         "declarationMap": true,
         "sourceMap": true,
 
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "resolvePackageJsonImports": true,
         "esModuleInterop": true,
 
         "target": "es2021",

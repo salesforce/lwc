@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
 import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
@@ -28,6 +28,7 @@ import type {
     Expression as IrExpression,
     Literal as IrLiteral,
 } from '@lwc/template-compiler';
+import { is } from '#estree/validators';
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
     let prevStmt: EsStatement | null = null;

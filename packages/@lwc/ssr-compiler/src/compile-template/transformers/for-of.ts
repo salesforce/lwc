@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { esTemplate } from '../../estemplate';
 import { irChildrenToEs } from '../ir-to-es';
 import { optimizeAdjacentYieldStmts } from '../shared';
@@ -18,6 +18,7 @@ import type {
     MemberExpression as EsMemberExpression,
 } from 'estree';
 import type { Transformer } from '../types';
+import { is } from '#estree/validators';
 
 function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
     return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;

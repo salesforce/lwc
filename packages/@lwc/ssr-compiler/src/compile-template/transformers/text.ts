@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs } from '../expression';
 import { isLiteral } from '../shared';
@@ -17,6 +17,7 @@ import type {
 } from 'estree';
 import type { Text as IrText } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
+import { is } from '#estree/validators';
 
 const bBufferTextContent = esTemplateWithYield`
     didBufferTextContent = true;

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is, builders as b } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { produce } from 'immer';
 import { DecoratorErrors } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
@@ -24,6 +24,7 @@ import type {
     BlockStatement,
 } from 'estree';
 import type { ComponentMetaState, WireAdapter } from './types';
+import { is } from '#estree/validators';
 
 interface NoSpreadObjectExpression extends Omit<ObjectExpression, 'properties'> {
     properties: Property[];

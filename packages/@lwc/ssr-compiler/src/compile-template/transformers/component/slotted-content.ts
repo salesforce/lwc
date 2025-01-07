@@ -6,7 +6,7 @@
  */
 
 import { produce } from 'immer';
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
 import { esTemplate, esTemplateWithYield } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
@@ -34,6 +34,7 @@ import type {
     Slot as IrSlot,
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
+import { is } from '#estree/validators';
 
 const bGenerateSlottedContent = esTemplateWithYield`
         const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}

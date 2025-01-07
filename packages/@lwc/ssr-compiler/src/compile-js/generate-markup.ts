@@ -6,13 +6,14 @@
  */
 
 import { parse as pathParse } from 'node:path';
-import { is, builders as b } from 'estree-toolkit';
-import { esTemplate } from '../estemplate';
+import { builders as b } from 'estree-toolkit';
 import { bImportDeclaration } from '../estree/builders';
+import { esTemplate } from '../estemplate';
 import { bWireAdaptersPlumbing } from './wire';
 
 import type { Program, Statement, IfStatement } from 'estree';
 import type { ComponentMetaState } from './types';
+import { is } from '#estree/validators';
 
 const bGenerateMarkup = esTemplate`
     const publicFields = new Set(${/*public fields*/ is.arrayExpression});

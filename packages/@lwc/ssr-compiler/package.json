@@ -47,6 +47,9 @@
             }
         }
     },
+    "imports": {
+        "#estree/*": "./src/estree/*.js"
+    },
     "dependencies": {
         "@babel/types": "7.26.3",
         "@lwc/shared": "8.12.3",

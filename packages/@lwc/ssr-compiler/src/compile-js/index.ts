@@ -6,7 +6,7 @@
  */
 
 import { generate } from 'astring';
-import { traverse, builders as b, is } from 'estree-toolkit';
+import { traverse, builders as b } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
 import { DecoratorErrors } from '@lwc/errors';
@@ -28,6 +28,7 @@ import type {
 } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
+import { is } from '#estree/validators';
 
 const visitors: Visitors = {
     $: { scope: true },

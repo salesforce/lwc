@@ -7,7 +7,7 @@
 
 import { inspect } from 'util';
 
-import { is, builders as b } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { Comment } from './transformers/comment';
 import { Component, LwcComponent } from './transformers/component';
@@ -26,7 +26,7 @@ import type {
 } from '@lwc/template-compiler';
 import type { Statement as EsStatement, ThrowStatement as EsThrowStatement } from 'estree';
 import type { TemplateOpts, Transformer, TransformerContext } from './types';
-
+import { is } from '#estree/validators';
 const bThrowError = esTemplate`
   throw new Error(${is.literal});
 `<EsThrowStatement>;

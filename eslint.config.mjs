@@ -127,6 +127,12 @@ export default tseslint.config(
                     message:
                         'Do not directly import runtime flags from @lwc/features. Use the global lwcRuntimeFlags variable instead.',
                 },
+                {
+                    name: 'estree-toolkit',
+                    importNames: ['is'],
+                    message:
+                        'Do not import `is` from estree-toolkit directly. Import from #estree/validators instead.',
+                },
             ],
             'no-restricted-properties': [
                 'error',

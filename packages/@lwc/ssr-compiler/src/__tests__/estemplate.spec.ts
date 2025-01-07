@@ -5,15 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is, builders as b } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 import type { ClassDeclaration, FunctionDeclaration } from 'estree';
-
-if (process.env.NODE_ENV !== 'production') {
-    // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
-    (is.identifier as any).__debugName = 'identifier';
-}
+import { is } from '#estree/validators';
 
 describe.each(
     Object.entries({

@@ -47,7 +47,8 @@ for (const dir of globSync('./packages/@lwc/*')) {
         continue;
     }
 
-    const { name, description, version, dependencies, devDependencies, peerDependencies } = pkg;
+    const { name, description, version, dependencies, devDependencies, peerDependencies, imports } =
+        pkg;
     let { keywords } = pkg;
 
     // Keywords aren't really important, but keep any that already exist and add 'lwc'
@@ -112,6 +113,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
             extends: '../../../package.json',
         },
         ...buildProps,
+        imports,
         dependencies,
         devDependencies,
         peerDependencies,

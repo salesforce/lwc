@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { is } from 'estree-toolkit';
 import { isUndefined } from '@lwc/shared';
 import { expressionIrToEs } from '../../expression';
 import { esTemplateWithYield } from '../../../estemplate';
@@ -16,6 +15,7 @@ import type {
     Expression as IrExpression,
 } from '@lwc/template-compiler';
 import type { Statement as EsStatement } from 'estree';
+import { is } from '#estree/validators';
 
 const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
     const Ctor = '${/* lwcIs attribute value */ is.expression}';

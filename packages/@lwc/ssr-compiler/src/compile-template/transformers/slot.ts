@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is, builders as b } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 
 import { esTemplateWithYield } from '../../estemplate';
 
@@ -20,6 +20,7 @@ import type {
     Expression as EsExpression,
 } from 'estree';
 import type { Transformer } from '../types';
+import { is } from '#estree/validators';
 
 const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { esTemplate } from '../../estemplate';
 import { irChildrenToEs } from '../ir-to-es';
 import { getScopedExpression, optimizeAdjacentYieldStmts } from '../shared';
@@ -13,6 +13,7 @@ import { getScopedExpression, optimizeAdjacentYieldStmts } from '../shared';
 import type { ForEach as IrForEach } from '@lwc/template-compiler';
 import type { Expression as EsExpression, ForOfStatement as EsForOfStatement } from 'estree';
 import type { Transformer } from '../types';
+import { is } from '#estree/validators';
 
 const bForOfYieldFrom = esTemplate`
     for (let [${is.identifier}, ${is.identifier}] of Object.entries(${is.expression} ?? {})) {

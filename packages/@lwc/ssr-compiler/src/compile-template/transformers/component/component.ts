@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
+
 import { kebabcaseToCamelcase, toPropertyName } from '@lwc/template-compiler';
 import { getChildAttrsOrProps } from '../../shared';
 import { esTemplateWithYield } from '../../../estemplate';
@@ -14,6 +15,7 @@ import { getSlottedContent } from './slotted-content';
 import type { BlockStatement as EsBlockStatement } from 'estree';
 import type { Component as IrComponent } from '@lwc/template-compiler';
 import type { Transformer } from '../../types';
+import { is } from '#estree/validators';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {

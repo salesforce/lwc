@@ -16,14 +16,10 @@ import type {
     Statement as EsStatement,
 } from 'estree';
 import type { Checker } from 'estree-toolkit/dist/generated/is-type';
+import type { Validator } from './estree/validators';
 
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;
-
-/** A function that accepts a node and checks that it is a particular type of node. */
-type Validator<T extends EsNode | null = EsNode | null> = (
-    node: EsNode | null | undefined
-) => node is T;
 
 /**
  * A pointer to a previous value in the template literal, indicating that the value should be re-used.
@@ -93,15 +89,20 @@ const getReplacementNode = (
             : validateReplacement(replacementNode))
     ) {
         const expectedType =
-            (validateReplacement as any).__debugName ||
-            validateReplacement.name ||
-            '(could not determine)';
+            validateReplacement.__debugName || validateReplacement.name || '(could not determine)';
         const actualType = Array.isArray(replacementNode)
             ? `[${replacementNode.map((n) => n && n.type).join(', ')}]`
             : replacementNode?.type;
-        throw new Error(
+        const error = new Error(
             `Validation failed for templated node. Expected type ${expectedType}, but received ${actualType}.`
         );
+
+        if (validateReplacement?.__stack) {
+            error.message += `\n\n${validateReplacement.__stack.split('\n').slice(1).join('\n')}`;
+            error.stack = validateReplacement.__stack;
+        }
+
+        throw error;
     }
 
     return replacementNode;

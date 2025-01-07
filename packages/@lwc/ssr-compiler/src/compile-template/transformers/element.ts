@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import {
     HTML_NAMESPACE,
     isBooleanAttribute,
@@ -36,6 +36,7 @@ import type {
     IfStatement as EsIfStatement,
 } from 'estree';
 import type { Transformer, TransformerContext } from '../types';
+import { is } from '#estree/validators';
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 

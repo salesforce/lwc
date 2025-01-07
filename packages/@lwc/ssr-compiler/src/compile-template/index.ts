@@ -6,7 +6,7 @@
  */
 
 import { generate } from 'astring';
-import { is, builders as b } from 'estree-toolkit';
+import { builders as b } from 'estree-toolkit';
 import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
 import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
@@ -17,6 +17,7 @@ import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
 import type { CompilationMode } from '@lwc/shared';
+import { is } from '#estree/validators';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
