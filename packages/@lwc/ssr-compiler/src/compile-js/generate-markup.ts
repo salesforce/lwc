@@ -32,11 +32,6 @@ const bGenerateMarkup = esTemplate`
         tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
-        props = __filterProperties(
-            props,
-            publicFields,
-            privateFields,
-        );
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
@@ -44,7 +39,7 @@ const bGenerateMarkup = esTemplate`
         __establishContextfulRelationship(contextfulParent, instance);
         ${/*connect wire*/ is.statement}
 
-        instance[__SYMBOL__SET_INTERNALS](props, attrs);
+        instance[__SYMBOL__SET_INTERNALS](props, attrs, publicFields, privateFields);
         instance.isConnected = true;
         if (instance.connectedCallback) {
             __mutationTracker.enable(instance);
@@ -129,7 +124,6 @@ export function addGenerateMarkupFunction(
     program.body.unshift(
         bImportDeclaration({
             fallbackTmpl: '__fallbackTmpl',
-            filterProperties: '__filterProperties',
             hasScopedStaticStylesheets: undefined,
             mutationTracker: '__mutationTracker',
             renderAttrs: '__renderAttrs',
