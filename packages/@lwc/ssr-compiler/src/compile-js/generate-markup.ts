@@ -111,7 +111,7 @@ export function addGenerateMarkupFunction(
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        const tmplVar = b.identifier('__lwcTmpl');
+        const tmplVar = b.identifier('tmpl');
         program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
         program.body.unshift(
             bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
