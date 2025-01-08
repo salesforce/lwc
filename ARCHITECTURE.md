@@ -137,7 +137,7 @@ A separate category of helper packages is our polyfills:
 
 In an ideal world, neither of these packages would exist. For historical reasons and for reasons of backwards compatibility, these packages are still maintained as of this writing.
 
-Some other polyfills are not separate packages but instead part of LWC's core logic. For instance, [synthetic custom element lifecycle](https://github.com/salesforce/lwc/issues/4252) is small enough to be inlined in `@lwc/engine-dom`.
+Some other polyfills are not separate packages but instead part of LWC's core logic. For instance, [synthetic custom element lifecycle](https://github.com/salesforce/lwc-rfcs/pull/89) is small enough to be inlined in `@lwc/engine-dom`.
 
 ### Private packages
 
@@ -175,7 +175,7 @@ At its core, LWC is a framework heavily influenced by other popular frameworks o
 
 Like Vue, the original LWC framework design has a few core building blocks:
 
-- **Virtual DOM.** Like Vue, LWC uses Virtual DOM even in cases where a component is authored in HTML. Unlike Vue, LWC does not have a mode where you can author VDOM directly (i.e. [`render()`](https://doc.vueframework.com/guide/render-function.html)).
+- **Virtual DOM.** Like Vue, LWC uses virtual DOM even in cases where a component is authored in HTML. Unlike Vue, LWC does not have a mode where you can author VDOM directly (i.e. [`render()`](https://doc.vueframework.com/guide/render-function.html)).
 - **VDOM diffing.** Like Vue, LWC was originally authored with [`snabbdom`](https://github.com/snabbdom/snabbdom) but has since forked into its own implementation.
 - **Proxies.** Like Vue v3, LWC uses the JavaScript [`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) for reactivity.
 
@@ -208,7 +208,7 @@ Suffice it to say: if a breaking change can be contained to the internals of a g
 
 The decision to use shadow DOM, custom elements, and the other building blocks of web components was largely made 1) to integrate well with Locker/LWS, and 2) to hew more closely to web standards. As previously mentioned, this does not bring LWC much closer to Lit, but instead gives LWC its own flavor.
 
-LWC is also unique in that it offers a "light DOM" mode which works much more closely to non-web component frameworks such as Vue or Lit. In this mode, style scoping is still supported, along with `<slot>`s, but this works almost identically to Vue and Svelte's implementations of the same concepts, rather than the browser shadow DOM standard.
+LWC is also unique in that it offers a "light DOM" mode which works much more closely to non-web component frameworks such as Vue or Svelte. In this mode, style scoping is still supported, along with `<slot>`s, but this works almost identically to Vue and Svelte's implementations of the same concepts, rather than the browser shadow DOM standard.
 
 This is another point of differentiation with Lit, which has resisted implementing such "non-standard" features. In LWC's case the choice was made for pragmatism. (Some use cases prefer light DOM to shadow DOM for its ease of styling and better integration with third-party tools and extensions.) This choice is also similar to [Stencil's decision](https://stenciljs.com/docs/styling#shadow-dom-in-stencil) to make shadow DOM optional, or [Enhance](https://enhance.dev/docs/elements/html/slots) and [Astro](https://docs.astro.build/en/basics/astro-components/#slots) making `<slot>`s a purely compile-time (i.e. light DOM) concern.
 
