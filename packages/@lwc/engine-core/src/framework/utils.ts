@@ -107,9 +107,12 @@ export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {
 
 // check if a property is in an object, and if the object throws an error merely because we are
 // checking if the property exists, return false
-export function safeHasProp<T extends object, K extends PropertyKey>(obj: T, prop: K): obj is Record<K, unknown> {
+export function safeHasProp<K extends PropertyKey>(
+    obj: unknown,
+    prop: K
+): obj is Record<K, unknown> {
     try {
-        return prop in obj;
+        return prop in (obj as any);
     } catch (_err) {
         return false;
     }
