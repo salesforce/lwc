@@ -15,8 +15,9 @@ import type { Program, Statement, IfStatement } from 'estree';
 import type { ComponentMetaState } from './types';
 
 const bGenerateMarkup = esTemplate`
-    const publicFields = new Set(${/*public fields*/ is.arrayExpression});
-    const privateFields = new Set(${/*private fields*/ is.arrayExpression});
+    // These variables may mix with component-authored variables, so should be reasonably unique
+    const __lwcPublicFields__ = new Set(${/*public fields*/ is.arrayExpression});
+    const __lwcPrivateFields__ = new Set(${/*private fields*/ is.arrayExpression});
 
     async function* generateMarkup(
             tagName, 
@@ -38,7 +39,12 @@ const bGenerateMarkup = esTemplate`
         __establishContextfulRelationship(contextfulParent, instance);
         ${/*connect wire*/ is.statement}
 
-        instance[__SYMBOL__SET_INTERNALS](props, attrs, publicFields, privateFields);
+        instance[__SYMBOL__SET_INTERNALS](
+            props,
+            attrs,
+            __lwcPublicFields__,
+            __lwcPrivateFields__,
+        );
         instance.isConnected = true;
         if (instance.connectedCallback) {
             __mutationTracker.enable(instance);
@@ -105,7 +111,7 @@ export function addGenerateMarkupFunction(
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        const tmplVar = b.identifier('tmpl');
+        const tmplVar = b.identifier('__lwcTmpl');
         program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
         program.body.unshift(
             bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
