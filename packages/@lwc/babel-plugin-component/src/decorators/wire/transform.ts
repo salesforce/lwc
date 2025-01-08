@@ -13,6 +13,7 @@ import type { BindingOptions } from '../types';
 
 const WIRE_PARAM_PREFIX = '$';
 const WIRE_CONFIG_ARG_NAME = '$cmp';
+const WIRE_CONFIG_COMPUTED_ARG = '$computed';
 
 function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
     const propertyValue = configProperty.get('value');
@@ -46,7 +47,11 @@ function getWiredParams(
         });
 }
 
-function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
+function getGeneratedConfig(
+    t: BabelTypes,
+    wiredValue: WiredValue,
+    normalizedParamKeys: types.Expression[]
+) {
     let counter = 0;
     const configBlockBody = [];
     const configProps: (types.ObjectMethod | types.ObjectProperty | types.SpreadElement)[] = [];
@@ -133,12 +138,18 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
     }
 
     if (wiredValue.params) {
-        wiredValue.params.forEach((param) => {
-            const memberExprPaths = ((param as any).value.value as string).split('.');
+        wiredValue.params.forEach((param, index) => {
+            const memberExprPaths = (param.value as types.StringLiteral).value.split('.');
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
 
             configProps.push(
-                t.objectProperty(param.key, paramConfigValue.configValueExpression, param.computed)
+                t.objectProperty(
+                    // `normalizedParams` is the keys of `wiredValue.params`, but with
+                    // dynamic expression replaced with references to the `$computed` array.
+                    normalizedParamKeys[index],
+                    paramConfigValue.configValueExpression,
+                    param.computed
+                )
             );
 
             if (paramConfigValue.varDeclaration) {
@@ -151,7 +162,7 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
 
     const fnExpression = t.functionExpression(
         null,
-        [t.identifier(WIRE_CONFIG_ARG_NAME)],
+        [t.identifier(WIRE_CONFIG_ARG_NAME), t.identifier(WIRE_CONFIG_COMPUTED_ARG)],
         t.blockStatement(configBlockBody)
     );
 
@@ -168,27 +179,80 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                 );
             }
 
+            /** Array of computed params that need to be snapshotted. */
+            const computedParams: types.Expression[] = [];
+            /** Array of literals (`"key"`) or computed snapshots (`$computed[0]`). */
+            const normalizedParams: Array<
+                types.Identifier | types.Literal | types.MemberExpression
+            > = [];
             if (wiredValue.params) {
-                const dynamicParamNames = wiredValue.params.map((p) => {
-                    if (t.isIdentifier(p.key)) {
-                        return p.computed ? t.identifier(p.key.name) : t.stringLiteral(p.key.name);
-                    } else if (
-                        t.isLiteral(p.key) &&
-                        // Template literals may contain expressions, so they are not allowed
-                        !t.isTemplateLiteral(p.key) &&
-                        // RegExp are not primitives, so they are not allowed
-                        !t.isRegExpLiteral(p.key)
+                for (const p of wiredValue.params) {
+                    const { key } = p;
+                    if (
+                        // Not using `t.isLiteral` to avoid regex and template literals
+                        t.isStringLiteral(key) ||
+                        t.isBooleanLiteral(key) ||
+                        t.isBigIntLiteral(key) ||
+                        t.isNumericLiteral(key) ||
+                        t.isDecimalLiteral(key) ||
+                        t.isNullLiteral(key)
                     ) {
-                        const value = t.isNullLiteral(p.key) ? null : p.key.value;
-                        return t.stringLiteral(String(value));
+                        // Simple literals always stringify to the same thing, so we don't need to
+                        // snapshot them, even if technically they're computed
+                        normalizedParams.push(key);
+                    } else if (t.isIdentifier(key)) {
+                        if (p.computed) {
+                            normalizedParams.push(
+                                t.memberExpression(
+                                    t.identifier(WIRE_CONFIG_COMPUTED_ARG),
+                                    t.numericLiteral(computedParams.length),
+                                    true
+                                )
+                            );
+                            computedParams.push(key);
+                        } else {
+                            normalizedParams.push(key);
+                        }
+                    } else if (!t.isPrivateName(key)) {
+                        // Not a simple literal, identifier, or private name, so it must be
+                        // a computed expression (e.g. `Math.random()`)
+                        normalizedParams.push(
+                            t.memberExpression(
+                                t.identifier(WIRE_CONFIG_COMPUTED_ARG),
+                                t.numericLiteral(computedParams.length),
+                                true
+                            )
+                        );
+                        computedParams.push(key);
+                    } else {
+                        // `key` could be a PrivateName or a new type introduced in the future
+                        /* istanbul ignore next */
+                        throw new Error(`Unexpected ${key.type} node used as property key.`);
                     }
-                    // If it's not an identifier or primitive literal then it's a computed expression
-                    throw new TypeError(
-                        `Expected object property key to be an identifier or a literal, but instead saw "${p.key.type}".`
-                    );
-                });
+                }
+            }
+
+            if (computedParams.length > 0) {
+                // If we have computed params, add a .map to convert them all to strings/symbols
+                // Result: `[Math.random()].map(key => typeof key === 'symbol' ? key : String(key))`
+                const arr = t.arrayExpression(computedParams);
+                const map = t.memberExpression(arr, t.identifier('map'));
+                const mapVar = t.identifier('key');
+                const func = t.arrowFunctionExpression(
+                    [mapVar],
+                    t.conditionalExpression(
+                        t.binaryExpression(
+                            '===',
+                            t.unaryExpression('typeof', mapVar),
+                            t.stringLiteral('symbol')
+                        ),
+                        mapVar,
+                        t.callExpression(t.identifier('String'), [mapVar])
+                    )
+                );
+                const normalizedDynamicParams = t.callExpression(map, [func]);
                 wireConfig.push(
-                    t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
+                    t.objectProperty(t.identifier('computed'), normalizedDynamicParams)
                 );
             }
 
@@ -196,7 +260,7 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                 wireConfig.push(t.objectProperty(t.identifier('method'), t.numericLiteral(1)));
             }
 
-            wireConfig.push(getGeneratedConfig(t, wiredValue));
+            wireConfig.push(getGeneratedConfig(t, wiredValue, normalizedParams));
 
             return t.objectProperty(
                 t.identifier(wiredValue.propertyName),

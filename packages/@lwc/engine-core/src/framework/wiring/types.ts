@@ -40,6 +40,7 @@ export interface WireDef {
     adapter: WireAdapterConstructor;
     dynamic: string[];
     configCallback: ConfigCallback;
+    computed?: (string | symbol)[];
 }
 
 export interface WireMethodDef extends WireDef {
@@ -50,7 +51,10 @@ export interface WireFieldDef extends WireDef {
     method?: undefined;
 }
 
-export type ConfigCallback = (component: LightningElement) => ConfigValue;
+export type ConfigCallback = (
+    component: LightningElement,
+    computedKeys: (string | symbol)[] | undefined
+) => ConfigValue;
 
 export interface WireDebugInfo {
     data?: any;
