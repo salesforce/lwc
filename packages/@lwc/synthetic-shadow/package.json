@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/synthetic-shadow",
-    "version": "8.12.1",
+    "version": "8.12.3",
     "description": "Synthetic Shadow Root for LWC",
     "keywords": [
         "lwc"
@@ -29,7 +29,8 @@
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
@@ -45,8 +46,8 @@
         }
     },
     "devDependencies": {
-        "@lwc/features": "8.12.1",
-        "@lwc/shared": "8.12.1"
+        "@lwc/features": "8.12.3",
+        "@lwc/shared": "8.12.3"
     },
     "lwc": {
         "modules": [

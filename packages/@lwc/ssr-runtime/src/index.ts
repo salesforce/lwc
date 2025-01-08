@@ -20,7 +20,6 @@ export {
     SYMBOL__SET_INTERNALS,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
-export { filterProperties } from './reflection';
 export {
     fallbackTmpl,
     fallbackTmplNoYield,
@@ -31,7 +30,7 @@ export {
     // renderComponent is an alias for serverSideRenderComponent
     serverSideRenderComponent as renderComponent,
 } from './render';
-export { massageTextContent } from './render-text-content';
+export { normalizeTextContent, renderTextContent } from './render-text-content';
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';
 export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';

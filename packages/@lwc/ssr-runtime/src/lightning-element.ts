@@ -15,9 +15,12 @@
 
 import {
     assign,
-    defineProperty,
     defineProperties,
     hasOwnProperty,
+    htmlPropertyToAttribute,
+    isAriaAttribute,
+    keys,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
     StringToLowerCase,
     toString,
 } from '@lwc/shared';
@@ -59,11 +62,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     title!: string;
 
     isConnected = false;
-    className = '';
 
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
 
+    #props!: Properties;
     #attrs!: Attributes;
     #classList: ClassList | null = null;
 
@@ -71,20 +74,39 @@ export class LightningElement implements PropsAvailableAtConstruction {
         assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
+    [SYMBOL__SET_INTERNALS](
+        props: Properties,
+        attrs: Attributes,
+        publicFields: Set<string>,
+        privateFields: Set<string>
+    ) {
+        this.#props = props;
         this.#attrs = attrs;
-        assign(this, props);
 
-        defineProperty(this, 'className', {
-            get() {
-                return props.class ?? '';
-            },
-            set(newVal) {
-                props.class = newVal;
-                attrs.class = newVal;
-                mutationTracker.add(this, 'class');
-            },
-        });
+        // Avoid setting the following types of properties that should not be set:
+        // - Properties that are not public.
+        // - Properties that are not global.
+        // - Properties that are global but are internally overridden.
+        for (const propName of keys(props)) {
+            const attrName = htmlPropertyToAttribute(propName);
+            if (
+                publicFields.has(propName) ||
+                ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
+                    !privateFields.has(propName))
+            ) {
+                (this as any)[propName] = props[propName];
+            }
+        }
+    }
+
+    get className() {
+        return this.#props.class ?? '';
+    }
+
+    set className(newVal: any) {
+        this.#props.class = newVal;
+        this.#attrs.class = newVal;
+        mutationTracker.add(this, 'class');
     }
 
     get classList() {

@@ -96,8 +96,6 @@ export function renderAttrsNoYield(
 }
 
 export function* fallbackTmpl(
-    _props: unknown,
-    _attrs: unknown,
     _shadowSlottedContent: unknown,
     _lightSlottedContent: unknown,
     Cmp: LightningElementConstructor,
@@ -110,8 +108,6 @@ export function* fallbackTmpl(
 
 export function fallbackTmplNoYield(
     emit: (segment: string) => void,
-    _props: unknown,
-    _attrs: unknown,
     _shadowSlottedContent: unknown,
     _lightSlottedContent: unknown,
     Cmp: LightningElementConstructor,

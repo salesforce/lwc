@@ -3,6 +3,7 @@
         "strict": true,
 
         "declaration": true,
+        "declarationMap": true,
         "sourceMap": true,
 
         "module": "commonjs",

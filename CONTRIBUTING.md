@@ -1,5 +1,8 @@
 # Contributing to Lightning Web Components
 
+> [!TIP]
+> See [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) for our code of conduct and [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the high-level architectural design.
+
 We want to encourage the developer community to contribute to Lightning Web Components. This guide has instructions to install, build, test and contribute to the framework.
 
 - [Requirements](#requirements)

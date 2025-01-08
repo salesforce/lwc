@@ -8,7 +8,6 @@
 // We should slowly drive down these test failures or at least document where we expect the failures
 // TODO [#4815]: enable all SSR v2 tests
 export const expectedFailures = new Set([
-    'attribute-aria/dynamic/index.js',
     'attribute-global-html/as-component-prop/undeclared/index.js',
     'attribute-global-html/as-component-prop/without-@api/index.js',
     'exports/component-as-default/index.js',
@@ -20,10 +19,6 @@ export const expectedFailures = new Set([
     'scoped-slots/mixed-with-light-dom-slots-outside/index.js',
     'slot-forwarding/slots/mixed/index.js',
     'slot-forwarding/slots/dangling/index.js',
-    'slot-not-at-top-level/with-adjacent-text-nodes/lwcIf-as-sibling/light/index.js',
-    'slot-not-at-top-level/with-adjacent-text-nodes/lwcIf/light/index.js',
-    'slot-not-at-top-level/with-adjacent-text-nodes/if/light/index.js',
-    'slot-not-at-top-level/with-adjacent-text-nodes/if-as-sibling/light/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
 ]);

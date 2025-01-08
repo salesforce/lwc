@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-compiler",
-    "version": "8.12.1",
+    "version": "8.12.3",
     "description": "Compile component for use during server-side rendering",
     "keywords": [
         "compiler",
@@ -31,7 +31,8 @@
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
@@ -48,9 +49,9 @@
     },
     "dependencies": {
         "@babel/types": "7.26.3",
-        "@lwc/shared": "8.12.1",
-        "@lwc/errors": "8.12.1",
-        "@lwc/template-compiler": "8.12.1",
+        "@lwc/shared": "8.12.3",
+        "@lwc/errors": "8.12.3",
+        "@lwc/template-compiler": "8.12.3",
         "acorn": "8.14.0",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.8",
@@ -58,7 +59,7 @@
         "meriyah": "^5.0.0"
     },
     "devDependencies": {
-        "@lwc/babel-plugin-component": "8.12.1",
+        "@lwc/babel-plugin-component": "8.12.3",
         "@types/estree": "^1.0.6"
     }
 }
