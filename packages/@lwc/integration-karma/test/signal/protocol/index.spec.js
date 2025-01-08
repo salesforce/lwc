@@ -214,7 +214,7 @@ describe('signal protocol', () => {
         expect(subscribe).not.toHaveBeenCalled();
     });
 
-    fit('does not throw an error for objects that throw upon "in" checks', async () => {
+    it('does not throw an error for objects that throw upon "in" checks', async () => {
         const elm = createElement('x-throws', { is: Throws });
         document.body.appendChild(elm);
 
