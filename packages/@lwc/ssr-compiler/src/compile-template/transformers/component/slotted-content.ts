@@ -13,6 +13,7 @@ import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
 import { isNullableOf } from '../../../estree/validators';
+import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
@@ -157,6 +158,9 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
 
     const traverse = (nodes: IrChildNode[], ancestorIndices: number[]) => {
         for (let i = 0; i < nodes.length; i++) {
+            // must set the siblings inside the for loop due to nested children
+            cxt.siblings = nodes;
+            cxt.currentNodeIndex = i;
             const node = nodes[i];
             switch (node.type) {
                 // SlottableAncestorIrType
@@ -176,11 +180,21 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     // '' is the default slot name. Text nodes are always slotted into the default slot
                     const slotName =
                         node.type === 'Text' ? b.literal('') : bAttributeValue(node, 'slot');
+
+                    // For concatenated adjacent text nodes, for any but the final text node, we
+                    // should skip them and let the final text node take care of rendering its siblings
+                    if (node.type === 'Text' && !isLastConcatenatedNode(cxt)) {
+                        continue;
+                    }
+
                     addLightDomSlotContent(slotName, [...ancestorIndices, i]);
                     break;
                 }
             }
         }
+        // reset the context
+        cxt.siblings = undefined;
+        cxt.currentNodeIndex = undefined;
     };
 
     traverse(rootNodes, []);
