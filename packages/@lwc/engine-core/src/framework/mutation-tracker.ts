@@ -44,7 +44,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         !isNull(target) &&
         safeHasProp(target, 'value') &&
         safeHasProp(target, 'subscribe') &&
-        isFunction((target as any).subscribe) &&
+        isFunction(target.subscribe) &&
         isTrustedSignal(target) &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
