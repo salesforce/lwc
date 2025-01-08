@@ -104,3 +104,13 @@ export function shouldBeFormAssociated(Ctor: LightningElementConstructor) {
 
     return ctorFormAssociated && apiFeatureEnabled;
 }
+
+// check if a property is in an object, and if the object throws an error merely because we are
+// checking if the property exists, return false
+export function safeHasProp(obj: any, prop: string) {
+    try {
+        return prop in obj;
+    } catch (_err) {
+        return false;
+    }
+}
