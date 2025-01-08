@@ -6,6 +6,7 @@ import Parent from 'x/parent';
 import Child from 'x/child';
 import DuplicateSignalOnTemplate from 'x/duplicateSignalOnTemplate';
 import List from 'x/list';
+import Throws from 'x/throws';
 
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
@@ -211,6 +212,15 @@ describe('signal protocol', () => {
         await Promise.resolve();
 
         expect(subscribe).not.toHaveBeenCalled();
+    });
+
+    it('does not throw an error for objects that throw upon "in" checks', async () => {
+        const elm = createElement('x-throws', { is: Throws });
+        document.body.appendChild(elm);
+
+        await Promise.resolve();
+
+        expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
     });
 });
 
