@@ -242,6 +242,19 @@ export default tseslint.config(
             'vitest/valid-expect-in-promise': 'error',
             'vitest/no-conditional-tests': 'error',
             'vitest/no-done-callback': 'error',
+            // Note that vitest's "no focused tests" rules do not cover `fit`/`fdescribe`
+            // https://github.com/salesforce/lwc/issues/5106
+            'no-restricted-globals': [
+                'error',
+                {
+                    name: 'fdescribe',
+                    message: 'Do not commit focused tests. Use `describe` instead.',
+                },
+                {
+                    name: 'fit',
+                    message: 'Do not commit focused tests. Use `it` instead.',
+                },
+            ],
         },
     },
     {
