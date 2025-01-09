@@ -20,7 +20,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration mismatch: incorrect node type received',
+                'Hydration node mismatch on: #text - rendered on server: #comment - expected on client: #text',
                 'Hydration completed with errors.',
             ],
         });

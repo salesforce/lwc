@@ -17,7 +17,7 @@ export default {
         TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration mismatch: incorrect number of rendered nodes. Client produced more nodes than the server.',
+                'Hydration child node mismatch on: <x-child> - rendered on server: <div> - expected on client: <div>,<div>',
                 'Hydration completed with errors.',
             ],
         });
