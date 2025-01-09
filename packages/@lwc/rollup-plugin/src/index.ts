@@ -332,7 +332,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             const [namespace, name] =
                 // Note we do not need to use path.sep here because this filename contains
                 // a '/' regardless of Windows vs Unix, since it comes from the Rollup `id`
-                specifier?.split('/') ?? /(?:([^\\/]+?)[\\/])?([^\\/]+?)(?:[\\/]\2)?(?:\.scoped)?\.[^.]+$/.exec(filename)?.slice(1);
+                specifier?.split('/') ?? path.dirname(filename).split(/[\\/]/).slice(-2);
 
             /* v8 ignore next */
             if (!namespace || !name) {
