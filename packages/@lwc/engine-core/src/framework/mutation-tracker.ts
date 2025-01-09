@@ -42,12 +42,12 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
         isObject(target) &&
         !isNull(target) &&
-        (lwcRuntimeFlags.USE_TRY_CATCH_FOR_SIGNALS_CHECK
-            ? safeHasProp(target, 'value')
-            : 'value' in target) &&
-        (lwcRuntimeFlags.USE_TRY_CATCH_FOR_SIGNALS_CHECK
-            ? safeHasProp(target, 'subscribe')
-            : 'subscribe' in target) &&
+        (lwcRuntimeFlags.DISABLE_TRY_CATCH_FOR_SIGNALS_CHECK
+            ? 'value' in target
+            : safeHasProp(target, 'value')) &&
+        (lwcRuntimeFlags.DISABLE_TRY_CATCH_FOR_SIGNALS_CHECK
+            ? 'subscribe' in target
+            : safeHasProp(target, 'subscribe')) &&
         isFunction((target as any).subscribe) &&
         isTrustedSignal(target) &&
         // Only subscribe if a template is being rendered by the engine
