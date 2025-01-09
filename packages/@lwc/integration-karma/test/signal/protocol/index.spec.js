@@ -236,6 +236,7 @@ describe('signal protocol', () => {
 
             let caughtError;
 
+            // handle errors thrown both with and without native custom element lifecycle
             catchUnhandledRejectionsAndErrors((error) => {
                 caughtError = error;
             });
@@ -246,11 +247,14 @@ describe('signal protocol', () => {
 
             it('does throw an error for objects that throw upon "in" checks', async () => {
                 const elm = createElement('x-throws', { is: Throws });
-                document.body.appendChild(elm);
 
-                // wait 2 ticks for all errors to be caught
-                await new Promise(setTimeout);
-                await new Promise(setTimeout);
+                try {
+                    document.body.appendChild(elm);
+                } catch (err) {
+                    caughtError = err;
+                }
+
+                await Promise.resolve();
 
                 // still renders
                 expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
