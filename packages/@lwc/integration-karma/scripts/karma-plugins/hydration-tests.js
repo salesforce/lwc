@@ -112,10 +112,10 @@ function throwOnUnexpectedConsoleCalls(runnable) {
         originals[method] = console[method];
         console[method] = function (error) {
             if (
-                method === 'warn' &&
+                (method === 'warn' || method === 'error') &&
                 // This is a false positive due to RegExp.prototype.test
                 // eslint-disable-next-line vitest/no-conditional-tests
-                /Cannot set property "(inner|outer)HTML"/.test(error?.message)
+                /Cannot set property "(inner|outer)HTML|Unexpected attempt to set|is not publicly accessible/.test(error?.message ?? error)
             ) {
                 return;
             }
