@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import Reactive from 'x/reactive';
 import NonReactive from 'x/nonReactive';
 import Container from 'x/container';
@@ -214,13 +215,54 @@ describe('signal protocol', () => {
         expect(subscribe).not.toHaveBeenCalled();
     });
 
-    it('does not throw an error for objects that throw upon "in" checks', async () => {
-        const elm = createElement('x-throws', { is: Throws });
-        document.body.appendChild(elm);
+    describe('try/catch for the signals check', () => {
+        it('does not throw an error for objects that throw upon "in" checks', async () => {
+            const elm = createElement('x-throws', { is: Throws });
+            document.body.appendChild(elm);
 
-        await Promise.resolve();
+            await Promise.resolve();
 
-        expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+            expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+        });
+
+        describe('flag on', () => {
+            beforeAll(() => {
+                setFeatureFlagForTest('DISABLE_TRY_CATCH_FOR_SIGNALS_CHECK', true);
+            });
+
+            afterAll(() => {
+                setFeatureFlagForTest('DISABLE_TRY_CATCH_FOR_SIGNALS_CHECK', false);
+            });
+
+            let caughtError;
+
+            // handle errors thrown both with and without native custom element lifecycle
+            catchUnhandledRejectionsAndErrors((error) => {
+                caughtError = error;
+            });
+
+            afterEach(() => {
+                caughtError = undefined;
+            });
+
+            it('does throw an error for objects that throw upon "in" checks', async () => {
+                const elm = createElement('x-throws', { is: Throws });
+
+                try {
+                    document.body.appendChild(elm);
+                } catch (err) {
+                    caughtError = err;
+                }
+
+                await Promise.resolve();
+
+                // still renders
+                expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+
+                // throws error
+                expect(caughtError).not.toBeUndefined();
+            });
+        });
     });
 });
 
