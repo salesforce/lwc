@@ -216,26 +216,24 @@ describe('signal protocol', () => {
     });
 
     describe('try/catch for the signals check', () => {
+        it('does not throw an error for objects that throw upon "in" checks', async () => {
+            const elm = createElement('x-throws', { is: Throws });
+            document.body.appendChild(elm);
+
+            await Promise.resolve();
+
+            expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+        });
+
         describe('flag on', () => {
             beforeAll(() => {
-                setFeatureFlagForTest('USE_TRY_CATCH_FOR_SIGNALS_CHECK', true);
+                setFeatureFlagForTest('DISABLE_TRY_CATCH_FOR_SIGNALS_CHECK', true);
             });
 
             afterAll(() => {
-                setFeatureFlagForTest('USE_TRY_CATCH_FOR_SIGNALS_CHECK', false);
+                setFeatureFlagForTest('DISABLE_TRY_CATCH_FOR_SIGNALS_CHECK', false);
             });
 
-            it('does not throw an error for objects that throw upon "in" checks', async () => {
-                const elm = createElement('x-throws', { is: Throws });
-                document.body.appendChild(elm);
-
-                await Promise.resolve();
-
-                expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
-            });
-        });
-
-        describe('flag off', () => {
             let caughtError;
 
             catchUnhandledRejectionsAndErrors((error) => {
