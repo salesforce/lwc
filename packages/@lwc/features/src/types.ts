@@ -75,6 +75,11 @@ export interface FeatureFlagMap {
      * native shadow mode.
      */
     DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
+
+    /**
+     * Use a try/catch when sniffing for whether an object is a signal or not
+     */
+    USE_TRY_CATCH_FOR_SIGNALS_CHECK: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

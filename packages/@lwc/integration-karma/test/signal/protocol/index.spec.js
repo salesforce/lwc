@@ -1,4 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
+import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import Reactive from 'x/reactive';
 import NonReactive from 'x/nonReactive';
 import Container from 'x/container';
@@ -214,13 +215,52 @@ describe('signal protocol', () => {
         expect(subscribe).not.toHaveBeenCalled();
     });
 
-    it('does not throw an error for objects that throw upon "in" checks', async () => {
-        const elm = createElement('x-throws', { is: Throws });
-        document.body.appendChild(elm);
+    describe('try/catch for the signals check', () => {
+        describe('flag on', () => {
+            beforeAll(() => {
+                setFeatureFlagForTest('USE_TRY_CATCH_FOR_SIGNALS_CHECK', true);
+            });
 
-        await Promise.resolve();
+            afterAll(() => {
+                setFeatureFlagForTest('USE_TRY_CATCH_FOR_SIGNALS_CHECK', false);
+            });
 
-        expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+            it('does not throw an error for objects that throw upon "in" checks', async () => {
+                const elm = createElement('x-throws', { is: Throws });
+                document.body.appendChild(elm);
+
+                await Promise.resolve();
+
+                expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+            });
+        });
+
+        describe('flag off', () => {
+            let caughtError;
+
+            catchUnhandledRejectionsAndErrors((error) => {
+                caughtError = error;
+            });
+
+            afterEach(() => {
+                caughtError = undefined;
+            });
+
+            it('does throw an error for objects that throw upon "in" checks', async () => {
+                const elm = createElement('x-throws', { is: Throws });
+                document.body.appendChild(elm);
+
+                // wait 2 ticks for all errors to be caught
+                await new Promise(setTimeout);
+                await new Promise(setTimeout);
+
+                // still renders
+                expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
+
+                // throws error
+                expect(caughtError).not.toBeUndefined();
+            });
+        });
     });
 });
 

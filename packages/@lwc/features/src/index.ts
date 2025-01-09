@@ -20,6 +20,7 @@ const features: FeatureFlagMap = {
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
     ENABLE_EXPERIMENTAL_SIGNALS: null,
     DISABLE_SYNTHETIC_SHADOW: null,
+    USE_TRY_CATCH_FOR_SIGNALS_CHECK: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
