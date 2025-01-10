@@ -109,7 +109,6 @@ describe.runIf(process.env.TEST_SSR_COMPILER).concurrent('fixtures', () => {
             let result;
             let error;
 
-            debugger
             try {
                 result = formatHTML(
                     await serverSideRenderComponent(

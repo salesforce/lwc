@@ -59,8 +59,9 @@ const bGenerateMarkup = esTemplate`
             tmplFn.hasScopedStylesheets ||
             hasScopedStaticStylesheets(${/*component class*/ 3});
         const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
+        const possiblyUpdatedAttrs = instance[__SYMBOL__GET_ATTRIBUTES]();
 
-        yield* __renderAttrs(instance, instance[__SYMBOL__GET_ATTRIBUTES], hostScopeToken, scopeToken);
+        yield* __renderAttrs(instance, possiblyUpdatedAttrs, hostScopeToken, scopeToken);
         yield '>';
         yield* tmplFn(
             shadowSlottedContent,
