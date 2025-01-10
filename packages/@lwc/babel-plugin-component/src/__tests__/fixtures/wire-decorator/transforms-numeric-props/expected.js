@@ -11,7 +11,7 @@ _registerDecorators(Test, {
     wiredProp: {
       adapter: getFoo,
       dynamic: ["123"],
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {
           1.2_3e2: $cmp.prop
         };

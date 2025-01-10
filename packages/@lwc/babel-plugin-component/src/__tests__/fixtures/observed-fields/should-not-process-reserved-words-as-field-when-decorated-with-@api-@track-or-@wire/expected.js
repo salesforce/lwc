@@ -19,7 +19,7 @@ _registerDecorators(Test, {
   wire: {
     function: {
       adapter: createElement,
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {};
       }
     }

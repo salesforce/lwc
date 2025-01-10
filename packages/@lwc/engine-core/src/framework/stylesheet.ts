@@ -245,6 +245,7 @@ function evaluateStylesheetsContent(
                 // synthetic shadow it wouldn't be scoped properly and so should be ignored.
                 cssContent = '/* ignored native-only CSS */';
             } else {
+                debugger;
                 cssContent = stylesheet(scopeToken, useActualHostSelector, useNativeDirPseudoclass);
             }
 

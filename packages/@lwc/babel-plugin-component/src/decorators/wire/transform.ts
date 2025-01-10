@@ -232,6 +232,30 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                 }
             }
 
+            if (wiredValue.params) {
+                const dynamicParamNames = wiredValue.params.map((p) => {
+                    if (t.isIdentifier(p.key)) {
+                        return p.computed ? t.identifier(p.key.name) : t.stringLiteral(p.key.name);
+                    } else if (
+                        t.isLiteral(p.key) &&
+                        // Template literals may contain expressions, so they are not allowed
+                        !t.isTemplateLiteral(p.key) &&
+                        // RegExp are not primitives, so they are not allowed
+                        !t.isRegExpLiteral(p.key)
+                    ) {
+                        const value = t.isNullLiteral(p.key) ? null : p.key.value;
+                        return t.stringLiteral(String(value));
+                    }
+                    // If it's not an identifier or primitive literal then it's a computed expression
+                    throw new TypeError(
+                        `Expected object property key to be an identifier or a literal, but instead saw "${p.key.type}".`
+                    );
+                });
+                wireConfig.push(
+                    t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
+                );
+            }
+
             if (computedParams.length > 0) {
                 // If we have computed params, add a .map to convert them all to strings/symbols
                 // Result: `[Math.random()].map(key => typeof key === 'symbol' ? key : String(key))`
@@ -250,10 +274,8 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                         t.callExpression(t.identifier('String'), [mapVar])
                     )
                 );
-                const normalizedDynamicParams = t.callExpression(map, [func]);
-                wireConfig.push(
-                    t.objectProperty(t.identifier('computed'), normalizedDynamicParams)
-                );
+                const withMapCall = t.callExpression(map, [func]);
+                wireConfig.push(t.objectProperty(t.identifier('computed'), withMapCall));
             }
 
             if (wiredValue.isClassMethod) {

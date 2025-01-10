@@ -9,8 +9,7 @@ _registerDecorators(Test, {
   wire: {
     recordData: {
       adapter: getRecord,
-      dynamic: [],
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {
           id: 1
         };

@@ -25,7 +25,7 @@ const Test = _registerDecorators(class extends LightningElement {
   wire: {
     wiredProp: {
       adapter: createElement,
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {};
       }
     }

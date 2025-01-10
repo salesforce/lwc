@@ -10,7 +10,7 @@ _registerDecorators(Test, {
     wiredProp: {
       adapter: getFoo,
       dynamic: ["key1", "key2"],
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         let v1 = $cmp["prop1"];
         let v2 = $cmp.p1;
         return {

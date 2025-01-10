@@ -204,6 +204,7 @@ export const DecoratorErrors = {
         url: '',
     },
 
+    // TODO: Remove
     COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL: {
         code: 1199,
         message:
@@ -212,6 +213,7 @@ export const DecoratorErrors = {
         url: '',
     },
 
+    // TODO: Remove
     COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL: {
         code: 1200,
         message: 'Computed property in @wire config must be a constant or primitive literal.',

@@ -12,22 +12,24 @@ _registerDecorators(Test, {
     wiredIdentifier: {
       adapter: getFoo,
       dynamic: [symbol],
-      config: function ($cmp) {
+      computed: [symbol].map(key => typeof key === "symbol" ? key : String(key)),
+      config: function ($cmp, $computed) {
         return {
-          [symbol]: $cmp.prop
+          [$computed[0]]: $cmp.prop
         };
       }
     },
     wiredPrimitives: {
       adapter: getBar,
       dynamic: ["computedStringLiteral", "123", "321", "null", undefined],
-      config: function ($cmp) {
+      computed: [undefined].map(key => typeof key === "symbol" ? key : String(key)),
+      config: function ($cmp, $computed) {
         return {
           ['computedStringLiteral']: $cmp.prop,
           [123n]: $cmp.prop,
           [321]: $cmp.prop,
           [null]: $cmp.prop,
-          [undefined]: $cmp.prop
+          [$computed[0]]: $cmp.prop
         };
       }
     }

@@ -26,7 +26,7 @@ _registerDecorators(Test, {
   wire: {
     wiredProp: {
       adapter: createElement,
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {};
       }
     }

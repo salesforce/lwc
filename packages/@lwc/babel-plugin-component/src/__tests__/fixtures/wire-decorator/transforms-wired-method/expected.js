@@ -11,7 +11,7 @@ _registerDecorators(Test, {
       adapter: getFoo,
       dynamic: ["key1"],
       method: 1,
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {
           key2: ["fixed"],
           key1: $cmp.prop1

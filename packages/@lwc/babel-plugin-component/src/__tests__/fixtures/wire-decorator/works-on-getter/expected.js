@@ -14,7 +14,7 @@ _registerDecorators(Test, {
   wire: {
     wiredProp: {
       adapter: Foo,
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {};
       }
     }

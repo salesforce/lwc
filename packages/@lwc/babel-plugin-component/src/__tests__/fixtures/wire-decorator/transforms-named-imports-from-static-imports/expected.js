@@ -11,7 +11,7 @@ _registerDecorators(Test, {
     wiredProp: {
       adapter: getFoo,
       dynamic: [],
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {
           key1: importedValue
         };

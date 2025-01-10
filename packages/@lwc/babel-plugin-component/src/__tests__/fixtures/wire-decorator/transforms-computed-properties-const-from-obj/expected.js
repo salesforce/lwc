@@ -25,12 +25,13 @@ _registerDecorators(Test, {
     wiredIdentifier: {
       adapter: getFoo,
       dynamic: [foo, bar, baz, quux],
-      config: function ($cmp) {
+      computed: [foo, bar, baz, quux].map(key => typeof key === "symbol" ? key : String(key)),
+      config: function ($cmp, $computed) {
         return {
-          [foo]: $cmp.foo,
-          [bar]: $cmp.bar,
-          [baz]: $cmp.baz,
-          [quux]: $cmp.quux
+          [$computed[0]]: $cmp.foo,
+          [$computed[1]]: $cmp.bar,
+          [$computed[2]]: $cmp.baz,
+          [$computed[3]]: $cmp.quux
         };
       }
     }

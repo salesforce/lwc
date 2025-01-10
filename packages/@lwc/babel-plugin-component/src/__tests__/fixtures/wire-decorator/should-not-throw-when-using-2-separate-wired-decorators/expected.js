@@ -11,7 +11,7 @@ _registerDecorators(Test, {
     wired1: {
       adapter: getFoo,
       dynamic: ["key1"],
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {
           key2: ["fixed"],
           key1: $cmp.prop1
@@ -21,7 +21,7 @@ _registerDecorators(Test, {
     wired2: {
       adapter: getFoo,
       dynamic: ["key1"],
-      config: function ($cmp) {
+      config: function ($cmp, $computed) {
         return {
           key2: ["array"],
           key1: $cmp.prop1
