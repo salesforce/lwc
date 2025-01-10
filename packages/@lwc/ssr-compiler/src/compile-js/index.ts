@@ -225,20 +225,20 @@ function validateUniqueDecorator(decorators: EsDecorator[]) {
 
     const expressions = decorators.map(({ expression }) => expression);
 
-    const hasWire = expressions.some(
+    const wire = expressions.find(
         (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
     );
 
-    const hasApi = expressions.some((expr) => is.identifier(expr, { name: 'api' }));
+    const api = expressions.find((expr) => is.identifier(expr, { name: 'api' }));
 
-    if (hasWire && hasApi) {
-        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+    if (wire && api) {
+        throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
     }
 
-    const hasTrack = expressions.some((expr) => is.identifier(expr, { name: 'track' }));
+    const track = expressions.find((expr) => is.identifier(expr, { name: 'track' }));
 
-    if ((hasWire || hasApi) && hasTrack) {
-        throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+    if (wire && track) {
+        throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
     }
 }
 
@@ -252,6 +252,9 @@ export default function compileJS(
     let ast = parseModule(src, {
         module: true,
         next: true,
+        loc: true,
+        source: filename,
+        ranges: true,
     }) as EsProgram;
 
     const state: ComponentMetaState = {
