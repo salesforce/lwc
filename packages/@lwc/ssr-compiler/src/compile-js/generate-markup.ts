@@ -30,8 +30,6 @@ const bGenerateMarkup = esTemplate`
             contextfulParent
     ) {
         tagName = tagName ?? ${/*component tag name*/ is.literal};
-        attrs = attrs ?? Object.create(null);
-        props = props ?? Object.create(null);
         const instance = new ${/* Component class */ is.identifier}({
             tagName: tagName.toUpperCase(),
         });
@@ -62,7 +60,7 @@ const bGenerateMarkup = esTemplate`
             hasScopedStaticStylesheets(${/*component class*/ 3});
         const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
 
-        yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
+        yield* __renderAttrs(instance, instance[__SYMBOL__GET_ATTRIBUTES], hostScopeToken, scopeToken);
         yield '>';
         yield* tmplFn(
             shadowSlottedContent,
@@ -134,6 +132,7 @@ export function addGenerateMarkupFunction(
             renderAttrs: '__renderAttrs',
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
             SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
+            SYMBOL__GET_ATTRIBUTES: '__SYMBOL__GET_ATTRIBUTES',
             establishContextfulRelationship: '__establishContextfulRelationship',
         })
     );

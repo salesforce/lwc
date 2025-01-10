@@ -18,6 +18,7 @@ export {
     SYMBOL__DEFAULT_TEMPLATE,
     SYMBOL__GENERATE_MARKUP,
     SYMBOL__SET_INTERNALS,
+    SYMBOL__GET_ATTRIBUTES,
 } from './lightning-element';
 export { mutationTracker } from './mutation-tracker';
 export {

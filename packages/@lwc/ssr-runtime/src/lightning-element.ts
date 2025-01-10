@@ -14,11 +14,11 @@
 // /// <reference lib="dom" />
 
 import {
-    assign,
+    assign, create,
     defineProperties,
     hasOwnProperty,
     htmlPropertyToAttribute,
-    isAriaAttribute,
+    isAriaAttribute, isNull,
     keys,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
     StringToLowerCase,
@@ -28,6 +28,7 @@ import {
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
+import { getReadOnlyProxy } from './get-read-only-proxy';
 import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
 
@@ -45,6 +46,7 @@ interface PropsAvailableAtConstruction {
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
+export const SYMBOL__GET_ATTRIBUTES = Symbol('get-attributes')
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
@@ -66,8 +68,8 @@ export class LightningElement implements PropsAvailableAtConstruction {
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
 
-    #props!: Properties;
-    #attrs!: Attributes;
+    #props: Properties | null = null;
+    #attrs: Attributes | null = null;
     #classList: ClassList | null = null;
 
     constructor(propsAvailableAtConstruction: PropsAvailableAtConstruction & Properties) {
@@ -75,8 +77,8 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     [SYMBOL__SET_INTERNALS](
-        props: Properties,
-        attrs: Attributes,
+        props: Properties | null,
+        attrs: Attributes | null,
         publicFields: Set<string>,
         privateFields: Set<string>
     ) {
@@ -87,25 +89,43 @@ export class LightningElement implements PropsAvailableAtConstruction {
         // - Properties that are not public.
         // - Properties that are not global.
         // - Properties that are global but are internally overridden.
-        for (const propName of keys(props)) {
-            const attrName = htmlPropertyToAttribute(propName);
-            if (
-                publicFields.has(propName) ||
-                ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
-                    !privateFields.has(propName))
-            ) {
-                (this as any)[propName] = props[propName];
+        if (!isNull(props)) {
+            for (const propName of keys(props)) {
+                const attrName = htmlPropertyToAttribute(propName);
+                if (
+                    publicFields.has(propName) ||
+                    ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
+                        !privateFields.has(propName))
+                ) {
+                    // For props passed from parents to children, they are intended to be read-only
+                    // to avoid a child mutating its parent's state
+                    (this as any)[propName] = getReadOnlyProxy(props[propName]);
+                }
             }
         }
     }
 
+    [SYMBOL__GET_ATTRIBUTES]() {
+        // This is only used internally by the framework, so no need to clone the object
+        return this.#attrs
+    }
+
     get className() {
-        return this.#props.class ?? '';
+        if (isNull(this.#props)) {
+            this.#props = create(null)
+        }
+        return this.#props!.class ?? '';
     }
 
     set className(newVal: any) {
-        this.#props.class = newVal;
-        this.#attrs.class = newVal;
+        if (isNull(this.#props)) {
+            this.#props = create(null)
+        }
+        if (isNull(this.#attrs)) {
+            this.#attrs = create(null)
+        }
+        this.#props!.class = newVal;
+        this.#attrs!.class = newVal;
         mutationTracker.add(this, 'class');
     }
 
@@ -117,15 +137,18 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     setAttribute(attrName: string, attrValue: string): void {
+        if (isNull(this.#attrs)) {
+            this.#attrs = create(null)
+        }
         const normalizedName = StringToLowerCase.call(toString(attrName));
         const normalizedValue = String(attrValue);
-        this.#attrs[normalizedName] = normalizedValue;
+        this.#attrs![normalizedName] = normalizedValue;
         mutationTracker.add(this, normalizedName);
     }
 
     getAttribute(attrName: string): string | null {
         const normalizedName = StringToLowerCase.call(toString(attrName));
-        if (hasOwnProperty.call(this.#attrs, normalizedName)) {
+        if (!isNull(this.#attrs) && hasOwnProperty.call(this.#attrs, normalizedName)) {
             return this.#attrs[normalizedName];
         }
         return null;
@@ -138,7 +161,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     removeAttribute(attrName: string): void {
         const normalizedName = StringToLowerCase.call(toString(attrName));
-        delete this.#attrs[normalizedName];
+        if (!isNull(this.#attrs)) {
+            delete this.#attrs[normalizedName];
+        }
         // Track mutations for removal of non-existing attributes
         mutationTracker.add(this, normalizedName);
     }

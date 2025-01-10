@@ -22,6 +22,7 @@ import type {
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
     Statement as EsStatement,
+    Literal as EsLiteral
 } from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
@@ -135,7 +136,7 @@ export function normalizeClassAttributeValue(value: string) {
 export function getChildAttrsOrProps(
     attrs: (IrAttribute | IrProperty)[],
     cxt: TransformerContext
-): EsObjectExpression {
+): EsObjectExpression | EsLiteral {
     const objectAttrsOrProps = attrs
         .map(({ name, value, type }) => {
             // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
@@ -174,6 +175,11 @@ export function getChildAttrsOrProps(
             throw new Error(`Unimplemented child attr IR node type: ${value.type}`);
         })
         .filter(Boolean) as EsProperty[];
+
+    if (!objectAttrsOrProps.length) {
+        // don't bother creating an empty object for empty props/attrs
+        return b.literal(null)
+    }
 
     return b.objectExpression(objectAttrsOrProps);
 }

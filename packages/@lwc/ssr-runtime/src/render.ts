@@ -19,7 +19,7 @@ import type { Attributes, Properties } from './types';
 
 function renderAttrsPrivate(
     instance: LightningElement,
-    attrs: Attributes,
+    attrs: Attributes | null,
     hostScopeToken: string | undefined,
     scopeToken: string | undefined
 ): string {
@@ -34,36 +34,38 @@ function renderAttrsPrivate(
     let result = '';
     let hasClassAttribute = false;
 
-    for (const attrName of getOwnPropertyNames(attrs)) {
-        let attrValue = attrs[attrName];
+    if (!isNull(attrs)) {
+        for (const attrName of getOwnPropertyNames(attrs)) {
+            let attrValue = attrs[attrName];
 
-        // Backwards compatibility with historical patchStyleAttribute() behavior:
-        // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
-        if (attrName === 'style' && (!isString(attrValue) || attrValue === '')) {
-            // If the style attribute is invalid, we don't render it.
-            continue;
-        }
-
-        if (isNull(attrValue) || isUndefined(attrValue)) {
-            attrValue = '';
-        } else if (!isString(attrValue)) {
-            attrValue = String(attrValue);
-        }
-
-        if (attrName === 'class') {
-            if (attrValue === '') {
-                // If the class attribute is empty, we don't render it.
+            // Backwards compatibility with historical patchStyleAttribute() behavior:
+            // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
+            if (attrName === 'style' && (!isString(attrValue) || attrValue === '')) {
+                // If the style attribute is invalid, we don't render it.
                 continue;
             }
 
-            if (combinedScopeToken) {
-                attrValue += ' ' + combinedScopeToken;
-                hasClassAttribute = true;
+            if (isNull(attrValue) || isUndefined(attrValue)) {
+                attrValue = '';
+            } else if (!isString(attrValue)) {
+                attrValue = String(attrValue);
             }
-        }
 
-        result +=
-            attrValue === '' ? ` ${attrName}` : ` ${attrName}="${htmlEscape(attrValue, true)}"`;
+            if (attrName === 'class') {
+                if (attrValue === '') {
+                    // If the class attribute is empty, we don't render it.
+                    continue;
+                }
+
+                if (combinedScopeToken) {
+                    attrValue += ' ' + combinedScopeToken;
+                    hasClassAttribute = true;
+                }
+            }
+
+            result +=
+                attrValue === '' ? ` ${attrName}` : ` ${attrName}="${htmlEscape(attrValue, true)}"`;
+        }
     }
 
     // If we didn't render any `class` attribute, render one for the scope token(s)
@@ -83,7 +85,7 @@ function renderAttrsPrivate(
 
 export function* renderAttrs(
     instance: LightningElement,
-    attrs: Attributes,
+    attrs: Attributes | null,
     hostScopeToken: string | undefined,
     scopeToken: string | undefined
 ) {
@@ -93,7 +95,7 @@ export function* renderAttrs(
 export function renderAttrsNoYield(
     emit: (segment: string) => void,
     instance: LightningElement,
-    attrs: Attributes,
+    attrs: Attributes | null,
     hostScopeToken: string | undefined,
     scopeToken: string | undefined
 ) {

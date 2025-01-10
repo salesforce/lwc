@@ -17,8 +17,8 @@ import type { Transformer } from '../../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
-        const childAttrs = ${/* child attrs */ is.objectExpression};
+        const childProps = ${/* child props */ is.expression};
+        const childAttrs = ${/* child attrs */ is.expression};
         ${
             /*
                 Slotted content is inserted here.
@@ -34,8 +34,8 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 
         yield* Ctor[__SYMBOL__GENERATE_MARKUP](
             ${/* tag name */ is.literal}, 
-            childProps, 
-            childAttrs, 
+            childProps,
+            childAttrs,
             shadowSlottedContent,
             lightSlottedContentMap,
             instance,
@@ -51,7 +51,6 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const importPath = kebabcaseToCamelcase(node.name);
     cxt.import({ default: childComponentLocalName }, importPath);
     cxt.import({
-        getReadOnlyProxy: '__getReadOnlyProxy',
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
     });
     const childTagName = node.name;
