@@ -225,6 +225,9 @@ export default function compileJS(
     let ast = parseModule(src, {
         module: true,
         next: true,
+        loc: true,
+        source: filename,
+        ranges: true,
     }) as EsProgram;
 
     const state: ComponentMetaState = {

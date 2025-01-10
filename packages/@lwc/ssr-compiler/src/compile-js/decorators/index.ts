@@ -16,21 +16,45 @@ export function validateUniqueDecorator(decorators: EsDecorator[]) {
         return;
     }
 
-    const hasWire = decorators.some(isWireDecorator);
-    const hasApi = decorators.some(isApiDecorator);
-    const hasTrack = decorators.some(isTrackDecorator);
+    const wire = decorators.find(isWireDecorator);
+    const api = decorators.find(isApiDecorator);
+    const track = decorators.find(isTrackDecorator);
 
-    if (hasWire) {
-        if (hasApi) {
-            throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+    if (wire) {
+        if (api) {
+            throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
         }
 
-        if (hasTrack) {
-            throw generateError(DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+        if (track) {
+            throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
         }
     }
 
-    if (hasApi && hasTrack) {
-        throw generateError(DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
+    if (api && track) {
+        throw generateError(api, DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
     }
 }
+
+// function validateUniqueDecorator(decorators: EsDecorator[]) {
+//     if (decorators.length < 2) {
+//         return;
+//     }
+
+//     const expressions = decorators.map(({ expression }) => expression);
+
+//     const wire = expressions.find(
+//         (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
+//     );
+
+//     const api = expressions.find((expr) => is.identifier(expr, { name: 'api' }));
+
+//     if (wire && api) {
+//         throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+//     }
+
+//     const track = expressions.find((expr) => is.identifier(expr, { name: 'track' }));
+
+//     if (wire && track) {
+//         throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+//     }
+// }

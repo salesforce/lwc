@@ -46,7 +46,7 @@ function getWireParams(
     const { decorators } = node;
 
     if (decorators.length > 1) {
-        throw generateError(DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED);
+        throw generateError(node, DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED);
     }
 
     // validate the parameters
@@ -96,7 +96,10 @@ function validateWireId(
 
     // This is not the exact same validation done in @lwc/babel-plugin-component but it accomplishes the same thing
     if (path.scope?.getBinding(wireAdapterVar)?.kind !== 'module') {
-        throw generateError(DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL);
+        throw generateError(
+            path.node!,
+            DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL
+        );
     }
 }
 
@@ -131,9 +134,15 @@ function validateWireConfig(
                 continue;
             }
         } else if (is.templateLiteral(key)) {
-            throw generateError(DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL);
+            throw generateError(
+                path.node!,
+                DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL
+            );
         }
-        throw generateError(DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL);
+        throw generateError(
+            path.node!,
+            DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL
+        );
     }
 }
 

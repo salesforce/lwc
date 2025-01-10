@@ -23,7 +23,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
     // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
     function spyConsole() {
         const originalConsole = window.console;
-
         const calls = {
             log: [],
             warn: [],
@@ -577,17 +576,29 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
                     expect(calls).toHaveSize(matchers.length);
                     for (let i = 0; i < matchers.length; i++) {
                         const matcher = matchers[i];
-                        const call = calls[i][0];
-                        const message = typeof call === 'string' ? call : call.message;
-                        if (typeof matcher === 'string') {
-                            expect(message).toContain(matcher);
-                        } else {
-                            expect(message).toMatch(matcher);
-                        }
+                        const args = calls[i];
+                        const argsString = args.map((arg) => stringifyArg(arg)).join(' ');
+                        expect(argsString).toMatch(matcher);
                     }
                 }
             }
         };
+    }
+
+    // Browsers render nodes differently (class order, etc).
+    function stringifyArg(arg) {
+        if (arg instanceof Array) {
+            return arg.map((v) => stringifyArg(v));
+        } else if (arg?.tagName) {
+            return `<${arg.tagName.toLowerCase()}>`;
+        } else if (arg?.nodeName) {
+            return arg.nodeName;
+        } else if (typeof arg === 'string') {
+            // Avoids adding newlines in the matchers
+            return arg.replaceAll('\n', '');
+        } else {
+            return arg;
+        }
     }
 
     const expectConsoleCalls = createExpectConsoleCallsFunc(false);

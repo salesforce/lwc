@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { generateErrorMessage, type LWCErrorInfo } from '@lwc/errors';
+import { type LWCErrorInfo, generateCompilerError } from '@lwc/errors';
+import type { BaseNodeWithoutComments } from 'estree';
 
 // This type extracts the arguments in a string. Example: "Error {0} {1}" -> [string, string]
 type ExtractArguments<
@@ -17,20 +18,24 @@ type ExtractArguments<
         : ExtractArguments<R, N | Numbers, [string, ...Args]> // `N` already accounted for
     : Args; // No `N` found, nothing more to check
 
-class CompilationError extends Error {
-    constructor(
-        message: string,
-        public code: number
-    ) {
-        super(message);
-        this.name = 'CompilationError';
-        this.code = code;
-    }
-}
-
 export function generateError<const T extends LWCErrorInfo>(
+    node: BaseNodeWithoutComments,
     error: T,
-    ...args: ExtractArguments<T['message']>
-): CompilationError {
-    return new CompilationError(generateErrorMessage(error, args), error.code);
+    ...messageArgs: ExtractArguments<T['message']>
+) {
+    return generateCompilerError(error, {
+        messageArgs,
+        origin: node.loc
+            ? {
+                  filename: node.loc.source || undefined,
+                  location: {
+                      line: node.loc.start.line,
+                      column: node.loc.start.column,
+                      ...(node.range
+                          ? { start: node.range[0], length: node.range[1] - node.range[0] }
+                          : {}),
+                  },
+              }
+            : undefined,
+    });
 }
