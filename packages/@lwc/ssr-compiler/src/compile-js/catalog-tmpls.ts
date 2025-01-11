@@ -5,15 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import type { NodePath } from 'estree-toolkit';
-import type { ImportDeclaration } from 'estree';
+import type { NodePath, types as t } from 'estree-toolkit';
 import type { ComponentMetaState } from './types';
 
 /**
  * While traversing the component JS, this takes note of any .html files that are
  * explicitly imported.
  */
-export function catalogTmplImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
+export function catalogTmplImport(path: NodePath<t.ImportDeclaration>, state: ComponentMetaState) {
     if (!path.node) {
         return;
     }

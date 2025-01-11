@@ -5,25 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { traverse } from 'estree-toolkit';
+import { traverse, type NodePath, type Visitors, type types as t } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
-import type { Visitors } from 'estree-toolkit';
-import type {
-    Node as EsNode,
-    Program as EsProgram,
-    FunctionDeclaration as EsFunctionDeclaration,
-    Statement as EsStatement,
-} from 'estree';
-import type { Checker } from 'estree-toolkit/dist/generated/is-type';
+import type { Validator } from './estree/validators';
 
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;
-
-/** A function that accepts a node and checks that it is a particular type of node. */
-type Validator<T extends EsNode | null = EsNode | null> = (
-    node: EsNode | null | undefined
-) => node is T;
 
 /**
  * A pointer to a previous value in the template literal, indicating that the value should be re-used.
@@ -32,7 +20,7 @@ type Validator<T extends EsNode | null = EsNode | null> = (
 type ValidatorReference = number;
 
 /** A validator, validation opt-out, or reference to previously-used validator. */
-type ValidatorPlaceholder<T extends EsNode | null> =
+type ValidatorPlaceholder<T extends t.Node | null> =
     | Validator<T>
     | ValidatorReference
     | typeof NO_VALIDATION;
@@ -42,14 +30,14 @@ type ValidatedType<T> =
     T extends Validator<infer V>
         ? // estree's `Checker<T>` satisfies our `Validator<T>`, but has an extra overload that
           // messes with the inferred type `V`, so we must check `Checker` explicitly
-          T extends Checker<infer C>
+          T extends (node: any) => node is NodePath<infer C>
             ? // estree validator
               C | C[]
             : // custom validator
               V | Array<NonNullable<V>> // avoid invalid `Array<V | null>`
         : T extends typeof NO_VALIDATION
           ? // no validation = broadest type possible
-            EsNode | EsNode[] | null
+            t.Node | t.Node[] | null
           : // not a validator!
             never;
 
@@ -69,13 +57,13 @@ const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PL
 
 interface TraversalState {
     placeholderToValidator: Map<number, Validator>;
-    replacementNodes: Array<EsNode | EsNode[] | null>;
+    replacementNodes: Array<t.Node | t.Node[] | null>;
 }
 
 const getReplacementNode = (
     state: TraversalState,
     placeholderId: string
-): EsNode | EsNode[] | null => {
+): t.Node | t.Node[] | null => {
     const key = Number(placeholderId.slice(PLACEHOLDER_PREFIX.length));
     const nodeCount = state.replacementNodes.length;
     if (key >= nodeCount) {
@@ -135,18 +123,18 @@ const visitors: Visitors<TraversalState> = {
             path.node.value.startsWith(PLACEHOLDER_PREFIX)
         ) {
             // A literal can only be replaced with a single node
-            const replacementNode = getReplacementNode(state, path.node.value) as EsNode;
+            const replacementNode = getReplacementNode(state, path.node.value) as t.Node;
 
             path.replaceWith(replacementNode);
         }
     },
 };
 
-function esTemplateImpl<Validators extends ValidatorPlaceholder<EsNode | null>[]>(
+function esTemplateImpl<Validators extends ValidatorPlaceholder<t.Node | null>[]>(
     javascriptSegments: TemplateStringsArray,
     validators: Validators,
     wrap?: (code: string) => string,
-    unwrap?: (node: any) => EsStatement | EsStatement[]
+    unwrap?: (node: any) => t.Statement | t.Statement[]
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
     let placeholderCount = 0;
     let parsableCode = javascriptSegments[0];
@@ -185,9 +173,9 @@ function esTemplateImpl<Validators extends ValidatorPlaceholder<EsNode | null>[]
         allowSuperOutsideMethod: true,
         allowImportExportEverywhere: true,
         locations: false,
-    }) as EsNode as EsProgram;
+    }) as t.Node as t.Program;
 
-    let originalAst: EsNode | EsNode[];
+    let originalAst: t.Node | t.Node[];
 
     const finalCharacter = javascriptSegments.at(-1)?.trimEnd()?.at(-1);
     if (originalAstProgram.body.length === 1) {
@@ -224,11 +212,11 @@ function esTemplateImpl<Validators extends ValidatorPlaceholder<EsNode | null>[]
  * template literal. Kinda weird, but it's necessary to infer the types of the template values.
  * (If it were at the start, we'd need to explicitly provide _all_ type params. Tedious!)
  * @example
- * const bSum = esTemplate`(${is.identifier}, ${is.identifier}) => ${0} + ${1}`<EsArrowFunctionExpression>
+ * const bSum = esTemplate`(${is.identifier}, ${is.identifier}) => ${0} + ${1}`<t.ArrowFunctionExpression>
  * const sumFuncNode = bSum(b.identifier('a'), b.identifier('b'))
  * // `sumFuncNode` is an AST node representing `(a, b) => a + b`
  */
-export function esTemplate<Validators extends ValidatorPlaceholder<EsNode | null>[]>(
+export function esTemplate<Validators extends ValidatorPlaceholder<t.Node | null>[]>(
     javascriptSegments: TemplateStringsArray,
     ...Validators: Validators
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
@@ -236,12 +224,12 @@ export function esTemplate<Validators extends ValidatorPlaceholder<EsNode | null
 }
 
 /** Similar to {@linkcode esTemplate}, but supports `yield` expressions. */
-export function esTemplateWithYield<Validators extends ValidatorPlaceholder<EsNode | null>[]>(
+export function esTemplateWithYield<Validators extends ValidatorPlaceholder<t.Node | null>[]>(
     javascriptSegments: TemplateStringsArray,
     ...validators: Validators
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
     const wrap = (code: string) => `function* placeholder() {${code}}`;
-    const unwrap = (node: EsFunctionDeclaration) =>
+    const unwrap = (node: t.FunctionDeclaration) =>
         node.body.body.length === 1 ? node.body.body[0] : node.body.body;
 
     return esTemplateImpl(javascriptSegments, validators, wrap, unwrap) as <RetType>(

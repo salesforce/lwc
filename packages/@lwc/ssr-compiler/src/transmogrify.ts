@@ -4,19 +4,23 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { traverse, builders as b, type NodePath } from 'estree-toolkit';
+import {
+    traverse,
+    builders as b,
+    type types as t,
+    type NodePath,
+    type NodePathT,
+    type Visitors,
+} from 'estree-toolkit';
 import { produce } from 'immer';
-import type { FunctionDeclaration, FunctionExpression, Node } from 'estree';
-import type { Program as EsProgram } from 'estree';
-import type { Node as EstreeToolkitNode } from 'estree-toolkit/dist/helpers';
+
+type Split<S> = S extends `${infer L}|${infer R}` ? L | Split<R> : S;
 
 export type TransmogrificationMode = 'sync' | 'async';
 
 interface TransmogrificationState {
     mode: TransmogrificationMode;
 }
-
-export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>>[1];
 
 const EMIT_IDENT = b.identifier('$$emit');
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
@@ -42,13 +46,8 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     return false;
 };
 
-const visitors: Visitors = {
-    // @ts-expect-error types for `traverse` do not support sharing a visitor between node types:
-    // https://github.com/sarsamurmu/estree-toolkit/issues/20
-    'FunctionDeclaration|FunctionExpression'(
-        path: NodePath<FunctionDeclaration | FunctionExpression, EstreeToolkitNode>,
-        state: TransmogrificationState
-    ) {
+const visitors = {
+    'FunctionDeclaration|FunctionExpression'(path, state) {
         const { node } = path;
         if (!node?.async || !node?.generator) {
             return;
@@ -138,6 +137,11 @@ const visitors: Visitors = {
             node.imported.name = 'renderAttrsNoYield';
         }
     },
+} satisfies Visitors<TransmogrificationState> & {
+    [K in 'FunctionDeclaration|FunctionExpression']: (
+        path: NodePathT<Split<K>>,
+        state: TransmogrificationState
+    ) => void;
 };
 
 /**
@@ -181,9 +185,9 @@ const visitors: Visitors = {
  * into either of the other varieties and, for that reason, is the variety that is "authored" by the SSR compiler.
  */
 export function transmogrify(
-    compiledComponentAst: EsProgram,
+    compiledComponentAst: t.Program,
     mode: TransmogrificationMode = 'sync'
-): EsProgram {
+): t.Program {
     const state: TransmogrificationState = {
         mode,
     };

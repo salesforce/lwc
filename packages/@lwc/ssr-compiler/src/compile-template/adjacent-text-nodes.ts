@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { builders as b } from 'estree-toolkit/dist/builders';
-import { is } from 'estree-toolkit';
+import { builders as b, is } from 'estree-toolkit';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
 import { isLiteral } from './shared';
 import { expressionIrToEs } from './expression';

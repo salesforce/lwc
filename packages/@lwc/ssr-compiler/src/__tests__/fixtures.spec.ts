@@ -13,13 +13,10 @@ import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
 
 interface FixtureModule {
     tagName: string;
     default: any;
-    props?: { [key: string]: any };
-    features?: FeatureFlagName[];
 }
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });

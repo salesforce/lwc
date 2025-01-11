@@ -7,15 +7,21 @@
 
 import { is } from 'estree-toolkit';
 import { entries } from '@lwc/shared';
-import type { Checker } from 'estree-toolkit/dist/generated/is-type';
-import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
+import type { NodePath, types as t } from 'estree-toolkit'; // estree's `Node` is not compatible?
+
+/** Unwraps a node or a node path to its inner node type. */
+type AsNode<T> = T extends t.Node ? T : T extends NodePath<infer U> ? U : never;
+
+/** A function that accepts a node and checks that it is a particular type of node. */
+export type Validator<T extends t.Node | null = t.Node | null> = (
+    node: t.Node | null | undefined
+) => node is T;
 
 /** A validator that returns `true` if the node is `null`. */
-type NullableChecker<T extends Node> = (node: Node | null | undefined) => node is T | null;
 
 /** Extends a validator to return `true` if the node is `null`. */
-export function isNullableOf<T extends Node>(validator: Checker<T>): NullableChecker<T> {
-    const nullableValidator = (node: Node | null | undefined): node is T | null => {
+export function isNullableOf<T>(validator: Validator<AsNode<T>>): Validator<AsNode<T> | null> {
+    const nullableValidator = (node: t.Node | null | undefined): node is AsNode<T> | null => {
         return node === null || validator(node);
     };
     if (process.env.NODE_ENV !== 'production') {
