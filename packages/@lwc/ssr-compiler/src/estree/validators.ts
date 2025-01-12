@@ -5,23 +5,22 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is } from 'estree-toolkit';
+import { is, type types as es, type NodePath } from 'estree-toolkit';
 import { entries } from '@lwc/shared';
-import type { NodePath, types as t } from 'estree-toolkit'; // estree's `Node` is not compatible?
 
 /** Unwraps a node or a node path to its inner node type. */
-type AsNode<T> = T extends t.Node ? T : T extends NodePath<infer U> ? U : never;
+export type NodeType<T> = T extends es.Node ? T : T extends NodePath<infer U> ? U : never;
 
 /** A function that accepts a node and checks that it is a particular type of node. */
-export type Validator<T extends t.Node | null = t.Node | null> = (
-    node: t.Node | null | undefined
+export type Validator<T extends es.Node | null = es.Node | null> = (
+    node: es.Node | null | undefined
 ) => node is T;
 
 /** A validator that returns `true` if the node is `null`. */
 
 /** Extends a validator to return `true` if the node is `null`. */
-export function isNullableOf<T>(validator: Validator<AsNode<T>>): Validator<AsNode<T> | null> {
-    const nullableValidator = (node: t.Node | null | undefined): node is AsNode<T> | null => {
+export function isNullableOf<T>(validator: Validator<NodeType<T>>): Validator<NodeType<T> | null> {
+    const nullableValidator = (node: es.Node | null | undefined): node is NodeType<T> | null => {
         return node === null || validator(node);
     };
     if (process.env.NODE_ENV !== 'production') {

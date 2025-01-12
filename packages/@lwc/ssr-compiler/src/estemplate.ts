@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { traverse, type NodePath, type Visitors, type types as t } from 'estree-toolkit';
+import { traverse, type Visitors, type types as t } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
-import type { Validator } from './estree/validators';
+import type { NodeType, Validator } from './estree/validators';
 
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;
@@ -27,19 +27,17 @@ type ValidatorPlaceholder<T extends t.Node | null> =
 
 /** Extracts the type being validated from the validator function. */
 type ValidatedType<T> =
-    T extends Validator<infer V>
+    T extends Validator<NodeType<infer V>>
         ? // estree's `Checker<T>` satisfies our `Validator<T>`, but has an extra overload that
           // messes with the inferred type `V`, so we must check `Checker` explicitly
-          T extends (node: any) => node is NodePath<infer C>
-            ? // estree validator
-              C | C[]
-            : // custom validator
-              V | Array<NonNullable<V>> // avoid invalid `Array<V | null>`
-        : T extends typeof NO_VALIDATION
-          ? // no validation = broadest type possible
-            t.Node | t.Node[] | null
-          : // not a validator!
-            never;
+          NodeType<V> | NodeType<V>[]
+        : T extends Validator<NodeType<infer V> | null>
+          ? NodeType<V> | null
+          : T extends typeof NO_VALIDATION
+            ? // no validation = broadest type possible
+              t.Node | t.Node[] | null
+            : // not a validator!
+              never;
 
 /**
  * Converts the validators and refs used in the template to the list of parameters required by the
