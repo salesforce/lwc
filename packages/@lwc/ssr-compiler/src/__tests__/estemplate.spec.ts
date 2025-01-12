@@ -8,12 +8,7 @@
 import { is, builders as b, type types as t } from 'estree-toolkit';
 import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
-import { isNullableOf } from '../estree/validators';
-
-if (process.env.NODE_ENV !== 'production') {
-    // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
-    (is.identifier as any).__debugName = 'identifier';
-}
+import { nullable } from '../estree/validators';
 
 describe.each(
     Object.entries({
@@ -191,7 +186,7 @@ describe.each(
 
     test('with nullable nodes', () => {
         const tmpl = topLevelFn`
-            const ${isNullableOf(is.identifier)} = 'foobar'
+            const ${nullable(is.identifier)} = 'foobar'
         ` satisfies (node: t.Identifier | null) => unknown;
         const replacedAst = tmpl(b.identifier('heyImNewHere'));
         expect(replacedAst).toMatchObject({

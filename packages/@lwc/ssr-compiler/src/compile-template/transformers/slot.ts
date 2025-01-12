@@ -11,7 +11,7 @@ import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
 import { bAttributeValue, getScopedExpression } from '../shared';
-import { isNullableOf } from '../../estree/validators';
+import { nullable } from '../../estree/validators';
 import { Element } from './element';
 import type { Slot as IrSlot } from '@lwc/template-compiler';
 import type {
@@ -38,7 +38,7 @@ const bConditionalSlot = esTemplateWithYield`
         const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
         if (generators) {
             for (const generator of generators) {
-                yield* generator(contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
+                yield* generator(contextfulParent, ${/* scoped slot data */ nullable(is.expression)});
             }
         } else {
             // If we're in this else block, then the generator _must_ have yielded

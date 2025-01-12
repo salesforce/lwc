@@ -12,7 +12,7 @@ import { esTemplate, esTemplateWithYield } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
-import { isNullableOf } from '../../../estree/validators';
+import { nullable } from '../../../estree/validators';
 import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
@@ -71,7 +71,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
 // than a function _declaration_, so it isn't available to be referenced anywhere.
 const bAddLightContent = esTemplate`
     addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
-        /* scoped slot data variable */ isNullableOf(is.identifier)
+        /* scoped slot data variable */ nullable(is.identifier)
     }) {
         // FIXME: make validation work again  
         ${/* slot content */ false}

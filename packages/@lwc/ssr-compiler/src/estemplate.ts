@@ -8,7 +8,7 @@
 import { traverse, type Visitors, type types as t } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
-import type { NodeType, Validator } from './estree/validators';
+import { getValidatorName, type NodeType, type Validator } from './estree/validators';
 
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;
@@ -78,10 +78,7 @@ const getReplacementNode = (
             ? replacementNode.every(validateReplacement)
             : validateReplacement(replacementNode))
     ) {
-        const expectedType =
-            (validateReplacement as any).__debugName ||
-            validateReplacement.name ||
-            '(could not determine)';
+        const expectedType = getValidatorName(validateReplacement);
         const actualType = Array.isArray(replacementNode)
             ? `[${replacementNode.map((n) => n && n.type).join(', ')}]`
             : replacementNode?.type;
