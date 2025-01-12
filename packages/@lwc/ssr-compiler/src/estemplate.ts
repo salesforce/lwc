@@ -41,7 +41,7 @@ type ValidatedType<T> =
  * created template function. Removes back references to previous slots from the list.
  */
 type ToReplacementParameters<Arr extends unknown[]> = Arr extends [infer Head, ...infer Rest]
-    ? Head extends number
+    ? Head extends ValidatorReference
         ? // `Head` is a back reference, drop it from the parameter list
           ToReplacementParameters<Rest>
         : // `Head` is a validator, extract the type that it validates
