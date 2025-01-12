@@ -214,9 +214,9 @@ function esTemplateImpl<Validators extends ValidatorPlaceholder<any>[]>(
  */
 export function esTemplate<Validators extends ValidatorPlaceholder<any>[]>(
     javascriptSegments: TemplateStringsArray,
-    ...Validators: Validators
+    ...validators: Validators
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
-    return esTemplateImpl(javascriptSegments, Validators);
+    return esTemplateImpl(javascriptSegments, validators);
 }
 
 /** Similar to {@linkcode esTemplate}, but supports `yield` expressions. */
