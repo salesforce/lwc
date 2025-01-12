@@ -8,7 +8,7 @@
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
-import { esTemplate, esTemplateWithYield } from '../../../estemplate';
+import { esTemplateWithYield, esTemplate } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
