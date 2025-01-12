@@ -46,7 +46,7 @@ const bConditionalSlot = esTemplateWithYield`
             // without the generator yielding at least a text node / element.
             // FIXME: how does this work with comments and lwc:preserve-comments?
             // TODO: default/fallback slot content
-            ${/* slot fallback content */ is.statement}
+            ${/* slot fallback content */ [is.statement]}
         }
 
         // end bookend HTML comment for light DOM slot vfragment
@@ -59,7 +59,7 @@ const bConditionalSlot = esTemplateWithYield`
             }
         }
     } else {
-        ${/* slot element AST */ is.statement}
+        ${/* slot element AST */ [is.statement]}
     }
 `<EsIfStatement>;
 

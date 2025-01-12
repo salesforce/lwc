@@ -37,7 +37,7 @@ const bGenerateMarkup = esTemplate`
         });
 
         __establishContextfulRelationship(contextfulParent, instance);
-        ${/*connect wire*/ is.statement}
+        ${/*connect wire*/ [is.statement]}
 
         instance[__SYMBOL__SET_INTERNALS](
             props,

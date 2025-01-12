@@ -43,7 +43,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
                 // is established between components rendered in slotted content & the "parent"
                 // component that contains the <slot>.
 
-                ${/* shadow slot content */ is.statement}
+                ${/* shadow slot content */ [is.statement]}
             } 
             // Avoid creating the object unnecessarily
             : null;
@@ -62,8 +62,8 @@ const bGenerateSlottedContent = esTemplateWithYield`
             }
         }
 
-        ${/* light DOM addLightContent statements */ is.expressionStatement}
-        ${/* scoped slot addLightContent statements */ is.expressionStatement}
+        ${/* light DOM addLightContent statements */ [is.expressionStatement]}
+        ${/* scoped slot addLightContent statements */ [is.expressionStatement]}
 `<EsStatement[]>;
 
 // Note that this function name (`generateSlottedContent`) does not need to be scoped even though
@@ -73,8 +73,7 @@ const bAddLightContent = esTemplate`
     addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ nullable(is.identifier)
     }) {
-        // FIXME: make validation work again  
-        ${/* slot content */ false}
+        ${/* slot content */ [is.statement]}
     });
 `<EsCallExpression>;
 

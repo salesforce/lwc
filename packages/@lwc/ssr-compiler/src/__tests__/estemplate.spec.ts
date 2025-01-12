@@ -187,7 +187,7 @@ describe.each(
     test('with nullable nodes', () => {
         const tmpl = topLevelFn`
             const ${nullable(is.identifier)} = 'foobar'
-        ` satisfies (node: t.Identifier | null) => unknown;
+        `;
         const replacedAst = tmpl(b.identifier('heyImNewHere'));
         expect(replacedAst).toMatchObject({
             declarations: [

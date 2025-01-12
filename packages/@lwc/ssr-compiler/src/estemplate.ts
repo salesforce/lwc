@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { traverse, type Visitors, type types as t } from 'estree-toolkit';
+import { traverse, type Visitors, type types as es } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
 import { getValidatorName, type NodeType, type Validator } from './estree/validators';
@@ -20,24 +20,21 @@ const NO_VALIDATION = false;
 type ValidatorReference = number;
 
 /** A validator, validation opt-out, or reference to previously-used validator. */
-type ValidatorPlaceholder<T extends t.Node | null> =
+type ValidatorPlaceholder<T> =
     | Validator<T>
+    | [Validator<T>]
     | ValidatorReference
     | typeof NO_VALIDATION;
 
 /** Extracts the type being validated from the validator function. */
 type ValidatedType<T> =
-    T extends Validator<NodeType<infer V>>
-        ? // estree's `Checker<T>` satisfies our `Validator<T>`, but has an extra overload that
-          // messes with the inferred type `V`, so we must check `Checker` explicitly
-          NodeType<V> | NodeType<V>[]
-        : T extends Validator<NodeType<infer V> | null>
-          ? NodeType<V> | null
-          : T extends typeof NO_VALIDATION
-            ? // no validation = broadest type possible
-              t.Node | t.Node[] | null
-            : // not a validator!
-              never;
+    T extends Validator<infer U>
+        ? NodeType<U>
+        : T extends [Validator<infer U>]
+          ? NodeType<U>[]
+          : T extends ValidatorReference
+            ? never
+            : never;
 
 /**
  * Converts the validators and refs used in the template to the list of parameters required by the
@@ -54,14 +51,14 @@ type ToReplacementParameters<Arr extends unknown[]> = Arr extends [infer Head, .
 const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PLACEHOLDER__`;
 
 interface TraversalState {
-    placeholderToValidator: Map<number, Validator>;
-    replacementNodes: Array<t.Node | t.Node[] | null>;
+    placeholderToValidator: Map<number, Validator<any>>;
+    replacementNodes: Array<es.Node | es.Node[] | null>;
 }
 
 const getReplacementNode = (
     state: TraversalState,
     placeholderId: string
-): t.Node | t.Node[] | null => {
+): es.Node | es.Node[] | null => {
     const key = Number(placeholderId.slice(PLACEHOLDER_PREFIX.length));
     const nodeCount = state.replacementNodes.length;
     if (key >= nodeCount) {
@@ -118,30 +115,34 @@ const visitors: Visitors<TraversalState> = {
             path.node.value.startsWith(PLACEHOLDER_PREFIX)
         ) {
             // A literal can only be replaced with a single node
-            const replacementNode = getReplacementNode(state, path.node.value) as t.Node;
+            const replacementNode = getReplacementNode(state, path.node.value) as es.Node;
 
             path.replaceWith(replacementNode);
         }
     },
 };
 
-function esTemplateImpl<Validators extends ValidatorPlaceholder<t.Node | null>[]>(
+function esTemplateImpl<Validators extends ValidatorPlaceholder<any>[]>(
     javascriptSegments: TemplateStringsArray,
     validators: Validators,
     wrap?: (code: string) => string,
-    unwrap?: (node: any) => t.Statement | t.Statement[]
+    unwrap?: (node: any) => es.Statement | es.Statement[]
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
     let placeholderCount = 0;
     let parsableCode = javascriptSegments[0];
-    const placeholderToValidator = new Map<number, Validator>();
+    const placeholderToValidator = new Map<number, Validator<any>>();
 
     for (let i = 1; i < javascriptSegments.length; i += 1) {
         const segment = javascriptSegments[i];
         const validator = validators[i - 1]; // always one less value than strings in template literals
-        if (typeof validator === 'function' || validator === NO_VALIDATION) {
+
+        if (typeof validator !== 'number') {
             // Template slot will be filled by a *new* argument passed to the generated function
             if (validator !== NO_VALIDATION) {
-                placeholderToValidator.set(placeholderCount, validator);
+                placeholderToValidator.set(
+                    placeholderCount,
+                    Array.isArray(validator) ? validator[0] : validator
+                );
             }
             parsableCode += `${PLACEHOLDER_PREFIX}${placeholderCount}`;
             placeholderCount += 1;
@@ -168,9 +169,9 @@ function esTemplateImpl<Validators extends ValidatorPlaceholder<t.Node | null>[]
         allowSuperOutsideMethod: true,
         allowImportExportEverywhere: true,
         locations: false,
-    }) as t.Node as t.Program;
+    }) as es.Node as es.Program;
 
-    let originalAst: t.Node | t.Node[];
+    let originalAst: es.Node | es.Node[];
 
     const finalCharacter = javascriptSegments.at(-1)?.trimEnd()?.at(-1);
     if (originalAstProgram.body.length === 1) {
@@ -211,7 +212,7 @@ function esTemplateImpl<Validators extends ValidatorPlaceholder<t.Node | null>[]
  * const sumFuncNode = bSum(b.identifier('a'), b.identifier('b'))
  * // `sumFuncNode` is an AST node representing `(a, b) => a + b`
  */
-export function esTemplate<Validators extends ValidatorPlaceholder<t.Node | null>[]>(
+export function esTemplate<Validators extends ValidatorPlaceholder<any>[]>(
     javascriptSegments: TemplateStringsArray,
     ...Validators: Validators
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
@@ -219,12 +220,12 @@ export function esTemplate<Validators extends ValidatorPlaceholder<t.Node | null
 }
 
 /** Similar to {@linkcode esTemplate}, but supports `yield` expressions. */
-export function esTemplateWithYield<Validators extends ValidatorPlaceholder<t.Node | null>[]>(
+export function esTemplateWithYield<Validators extends ValidatorPlaceholder<any>[]>(
     javascriptSegments: TemplateStringsArray,
     ...validators: Validators
 ): <RetType>(...replacementNodes: ToReplacementParameters<Validators>) => RetType {
     const wrap = (code: string) => `function* placeholder() {${code}}`;
-    const unwrap = (node: t.FunctionDeclaration) =>
+    const unwrap = (node: es.FunctionDeclaration) =>
         node.body.body.length === 1 ? node.body.body[0] : node.body.body;
 
     return esTemplateImpl(javascriptSegments, validators, wrap, unwrap) as <RetType>(
