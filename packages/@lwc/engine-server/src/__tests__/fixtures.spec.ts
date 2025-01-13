@@ -164,7 +164,7 @@ function testFixtures(options?: RollupLwcOptions) {
     );
 }
 
-describe.concurrent('fixtures', () => {
+describe('fixtures', () => {
     beforeAll(() => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
@@ -175,12 +175,28 @@ describe.concurrent('fixtures', () => {
         setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
     });
 
-    describe.concurrent('default', () => {
+    describe('default', () => {
         testFixtures();
     });
 
     // Test with and without the static content optimization to ensure the fixtures are the same
-    describe.concurrent('enableStaticContentOptimization=false', () => {
+    describe('enableStaticContentOptimization=false', () => {
         testFixtures({ enableStaticContentOptimization: false });
+    });
+
+    // // Test with and without prod mode to ensure they are the same
+    describe('NODE_ENV=production', () => {
+        let original: string | undefined;
+
+        beforeAll(() => {
+            original = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
+        });
+
+        afterAll(() => {
+            process.env.NODE_ENV = original;
+        });
+
+        testFixtures();
     });
 });
