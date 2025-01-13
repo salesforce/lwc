@@ -65,7 +65,15 @@ export default function wire<
     Class = LightningElement,
 >(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    adapter: WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>,
+    adapter:
+        | WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>
+        | {
+              adapter: WireAdapterConstructor<
+                  ReplaceReactiveValues<ReactiveConfig, Class>,
+                  Value,
+                  Context
+              >;
+          },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     config?: ReactiveConfig
 ): WireDecorator<Value, Class> {
