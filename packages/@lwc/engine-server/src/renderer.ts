@@ -241,10 +241,8 @@ function setProperty(node: N, propName: string, value: any): void {
                 const num = Number(value);
                 value = isFinite(num) ? String(Math.trunc(num)) : '0';
             } else if (attrName === 'draggable' || attrName === 'spellcheck') {
-                // spellcheck=false => false, everything else => true
-                // draggable=true => true, everything else => false
-                const defaultValue = attrName === 'spellcheck';
-                value = value.toLowerCase() === String(defaultValue) ? defaultValue : !defaultValue;
+                // draggable and spellcheck are coerced to a boolean
+                value =  String(Boolean(value))
             }
             return setAttribute(node, attrName, value);
         }
