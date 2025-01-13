@@ -53,12 +53,18 @@ const bGenerateSlottedContent = esTemplateWithYield`
             // Avoid creating the object unnecessarily
             : null;
         
-        function addLightContent(name, fn) {
-            let contentList = lightSlottedContentMap[name];
+        // The containing slot treats scoped slotted content differently.
+        const scopedSlottedContentMap = ${/* hasScopedSlottedContent */ is.literal} 
+            ? Object.create(null)
+            // Avoid creating the object unnecessarily
+            : null;
+
+        function addSlottedContent(name, fn, contentMap) {
+            let contentList = contentMap[name];
             if (contentList) {
                 contentList.push(fn);
             } else {
-                lightSlottedContentMap[name] = [fn];
+                contentMap[name] = [fn];
             }
         }
 
@@ -69,13 +75,13 @@ const bGenerateSlottedContent = esTemplateWithYield`
 // Note that this function name (`generateSlottedContent`) does not need to be scoped even though
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
-const bAddLightContent = esTemplate`
-    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
+const bAddSlottedContent = esTemplate`
+    addSlottedContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }) {
         // FIXME: make validation work again  
         ${/* slot content */ false}
-    });
+    }, ${/* content map */ is.identifier});
 `<EsCallExpression>;
 
 function getShadowSlottedContent(slottableChildren: IrChildNode[], cxt: TransformerContext) {
@@ -152,7 +158,16 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
         cxt.isSlotted = ancestorIndices.length > 1 || clone.type === 'Slot';
         const slotContent = irToEs(clone, cxt);
         cxt.isSlotted = originalIsSlotted;
-        results.push(b.expressionStatement(bAddLightContent(slotName, null, slotContent)));
+        results.push(
+            b.expressionStatement(
+                bAddSlottedContent(
+                    slotName,
+                    null,
+                    slotContent,
+                    b.identifier('lightSlottedContentMap')
+                )
+            )
+        );
     };
 
     const traverse = (nodes: IrChildNode[], ancestorIndices: number[]) => {
@@ -229,23 +244,27 @@ export function getSlottedContent(
 
         // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
         const addLightContentExpr = b.expressionStatement(
-            bAddLightContent(slotName, boundVariable, irChildrenToEs(child.children, cxt))
+            bAddSlottedContent(
+                slotName,
+                boundVariable,
+                irChildrenToEs(child.children, cxt),
+                b.identifier('scopedSlottedContentMap')
+            )
         );
         cxt.popLocalVars();
         return addLightContentExpr;
     });
 
     const hasShadowSlottedContent = b.literal(shadowSlotContent.length > 0);
-    const hasLightSlottedContent = b.literal(
-        lightSlotContent.length > 0 || scopedSlotContent.length > 0
-    );
-
+    const hasLightSlottedContent = b.literal(lightSlotContent.length > 0);
+    const hasScopedSlottedContent = b.literal(scopedSlotContent.length > 0);
     cxt.isSlotted = isSlotted;
 
     return bGenerateSlottedContent(
         hasShadowSlottedContent,
         shadowSlotContent,
         hasLightSlottedContent,
+        hasScopedSlottedContent,
         lightSlotContent,
         scopedSlotContent
     );

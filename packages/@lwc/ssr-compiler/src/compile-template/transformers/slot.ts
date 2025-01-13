@@ -25,22 +25,33 @@ const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
         const isSlotted = ${/* isSlotted */ is.literal};
+        const slotName = ${/* slotName */ is.expression};
+        const lightGenerators = lightSlottedContent?.[slotName ?? ""];
+        const scopedGenerators = scopedSlottedContent?.[slotName ?? ""];
+        const mismatchedSlots = (isScopedSlot && lightGenerators) || (!isScopedSlot && scopedGenerators);
+        const generators = isScopedSlot ? scopedGenerators : lightGenerators;
+
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
 
-            // scoped slot factory has its own vfragment hence its own bookend
-            if (isScopedSlot) {
+            // If there is slot data, scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot && generators) {
                 yield '<!---->';
             }
         }
 
-        const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
         if (generators) {
-            for (const generator of generators) {
-                yield* generator(contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
+            for (let i = 0; i < generators.length; i++) {
+                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
+                // Bookends after all but last scoped slot data
+                if (isScopedSlot && i < generators.length - 1) {
+                    yield '<!---->';
+                    yield '<!---->';
+                }
             }
-        } else {
+        // If there were mismatched slots, do not fallback to the default
+        } else if (!mismatchedSlots) {
             // If we're in this else block, then the generator _must_ have yielded
             // something. It's impossible for a slottedContent["foo"] to exist
             // without the generator yielding at least a text node / element.
@@ -53,8 +64,8 @@ const bConditionalSlot = esTemplateWithYield`
         if (!isSlotted) {
             yield '<!---->';
 
-            // scoped slot factory has its own vfragment hence its own bookend
-            if (isScopedSlot) {
+            // If there is slot data, scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot && generators) {
                 yield '<!---->';
             }
         }
