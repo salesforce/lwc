@@ -1,0 +1,9 @@
+<template>
+    <x-child>
+        <span slot="foo">a</span>
+        <template lwc:slot-data="data1">
+            <span>default {data1.id} - {foo}</span>
+        </template>
+        <span slot="foo">b</span>
+    </x-child>
+</template>

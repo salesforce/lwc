@@ -1,0 +1,13 @@
+<template>
+    <x-child>
+        <template lwc:slot-data="data1">
+            <span>1 default {data1.id} - {foo}</span>
+        </template>
+        <span>2 default {data1} - {foo}</span>
+        <span slot="slot1">3 slot1 {data1} - {foo}</span>
+        <span slot="slot2">4 slot2 {data1} - {foo}</span>
+        <template lwc:slot-data="data1">
+            <span>5 default {data1.id} - {foo}</span>
+        </template>
+    </x-child>
+</template>
