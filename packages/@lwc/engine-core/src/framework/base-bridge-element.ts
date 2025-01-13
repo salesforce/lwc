@@ -22,9 +22,8 @@ import {
     keys,
     htmlPropertyToAttribute,
     isNull,
-    REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';
-import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
+import { ariaReflectionPolyfillDescriptors, propToAttrReflectionPolyfillDescriptors } from '../libs/reflection';
 import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';
 import { getReadOnlyProxy } from './membrane';
@@ -168,8 +167,7 @@ export function HTMLBridgeElementFactory(
                     .filter(
                         (propName) =>
                             !(propName in HTMLElementPrototype) &&
-                            !(propName in ariaReflectionPolyfillDescriptors) &&
-                            !REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)
+                            !(propName in propToAttrReflectionPolyfillDescriptors)
                     )
             );
 

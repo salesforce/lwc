@@ -114,9 +114,32 @@ const tabIndexDescriptor = (): TypedPropertyDescriptor<number> => ({
     },
 });
 
+/**
+ * Descriptor for IDL attribute reflections that expect certain enums (e.g "rtl" or "ltr" for "dir") and return ""
+ * otherwise
+ */
+const enumDescriptor = (attrName: string, enums: Set<string>): TypedPropertyDescriptor<string | null> => ({
+    configurable: true,
+    enumerable: true,
+    get(this: LightningElement): string | null {
+        const value = this.getAttribute(attrName);
+        if (!isNull(value) && enums.has(value.toLowerCase())) {
+            return value.toLowerCase()
+        }
+        return ''
+    },
+    set(this: LightningElement, newValue: string | null): void {
+        const currentValue = this.getAttribute(attrName);
+        const normalizedValue = String(newValue);
+        if (normalizedValue !== currentValue) {
+            this.setAttribute(attrName, normalizedValue);
+        }
+    },
+});
+
 const descriptors: Record<string, PropertyDescriptor> = {
     accessKey: stringDescriptor('accesskey'),
-    dir: stringDescriptor('dir'),
+    dir: enumDescriptor('dir', new Set(['auto', 'ltr', 'rtl'])),
     draggable: explicitBooleanDescriptor('draggable', true),
     hidden: booleanAttributeDescriptor('hidden'),
     id: stringDescriptor('id'),

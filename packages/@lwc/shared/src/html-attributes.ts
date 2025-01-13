@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
+import { isUndefined, keys, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -120,6 +120,7 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
 // descriptors for these properties are added from HTMLElement.prototype to
 // LightningElement.prototype. For SSR, in order to match CSR behavior, this
 // list is used to determine which attributes to reflect.
+// Note that this list corresponds to `propToAttrReflectionPolyfillDescriptors` in `engine-core`.
 export const REFLECTIVE_GLOBAL_PROPERTY_SET = /*@__PURE__@*/ new Set([
     'accessKey',
     'dir',
