@@ -19,7 +19,7 @@ function isSanitizedHtmlContent(object: any): object is SanitizedHtmlContent {
     return isObject(object) && !isNull(object) && sanitizedHtmlContentSymbol in object;
 }
 
-function unwrapIfNecessary(object: any) {
+export function unwrapIfNecessary(object: any) {
     return isSanitizedHtmlContent(object) ? object[sanitizedHtmlContentSymbol] : object;
 }
 
@@ -70,14 +70,4 @@ export function safelySetProperty(
     } else {
         setProperty(elm, key, value);
     }
-}
-
-/**
- * Given two objects (likely either a string or a SanitizedHtmlContent object), return true if their
- * string values are equivalent.
- * @param first
- * @param second
- */
-export function isSanitizedHtmlContentEqual(first: any, second: any) {
-    return unwrapIfNecessary(first) === unwrapIfNecessary(second);
 }
