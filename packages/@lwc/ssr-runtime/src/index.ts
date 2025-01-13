@@ -11,7 +11,6 @@ export * from './stubs';
 export { htmlEscape, setHooks, sanitizeHtmlContent, normalizeClass } from '@lwc/shared';
 
 export { ClassList } from './class-list';
-export { getReadOnlyProxy } from './get-read-only-proxy';
 export {
     LightningElement,
     LightningElementConstructor,
