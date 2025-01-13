@@ -222,9 +222,7 @@ function setProperty(node: N, propName: string, value: any): void {
 
         // Handle all the boolean properties.
         if (isBooleanAttribute(attrName, node.tagName)) {
-            return value === true
-                ? setAttribute(node, attrName, '')
-                : removeAttribute(node, attrName);
+            return value ? setAttribute(node, attrName, '') : removeAttribute(node, attrName);
         }
 
         if (isAriaAttribute(attrName)) {
@@ -234,8 +232,20 @@ function setProperty(node: N, propName: string, value: any): void {
             return isNull(value)
                 ? removeAttribute(node, attrName)
                 : setAttribute(node, attrName, value);
-        } else if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
-            // Handle global html attributes and AOM.
+        }
+
+        if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
+            // Handle global html attributes
+            if (attrName === 'tabindex') {
+                // tabindex is coerced to a number
+                const num = Number(value);
+                value = isFinite(num) ? String(Math.trunc(num)) : '0';
+            } else if (attrName === 'draggable' || attrName === 'spellcheck') {
+                // spellcheck=false => false, everything else => true
+                // draggable=true => true, everything else => false
+                const defaultValue = attrName === 'spellcheck';
+                value = value.toLowerCase() === String(defaultValue) ? defaultValue : !defaultValue;
+            }
             return setAttribute(node, attrName, value);
         }
     }
