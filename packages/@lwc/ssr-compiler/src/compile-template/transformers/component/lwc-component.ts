@@ -29,20 +29,21 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
             /*
                 Slotted content is inserted here.
                 Note that the slotted content will be stored in variables named 
-                `shadowSlottedContent`/`lightSlottedContentMap` which are used below 
+                `shadowSlottedContent`/`lightSlottedContentMap / scopedSlottedContentMap` which are used below 
                 when the child's generateMarkup function is invoked.
             */
             is.statement
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
-
+        
         yield* Ctor[__SYMBOL__GENERATE_MARKUP](
             null, 
             childProps,
             childAttrs,
             shadowSlottedContent,
             lightSlottedContentMap,
+            scopedSlottedContentMap,
             instance,
             scopeToken,
             contextfulParent
@@ -60,7 +61,6 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
             LightningElement: undefined,
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
         });
-
         return bYieldFromDynamicComponentConstructorGenerator(
             // The template compiler has validation to prevent lwcIs.value from being a literal
             expressionIrToEs(lwcIs.value as IrExpression, cxt),

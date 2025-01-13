@@ -103,6 +103,7 @@ export function renderAttrsNoYield(
 export function* fallbackTmpl(
     _shadowSlottedContent: unknown,
     _lightSlottedContent: unknown,
+    _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
@@ -115,6 +116,7 @@ export function fallbackTmplNoYield(
     emit: (segment: string) => void,
     _shadowSlottedContent: unknown,
     _lightSlottedContent: unknown,
+    _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
@@ -129,6 +131,7 @@ export type GenerateMarkupFn = (
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
     lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
     // Not always null when invoked internally, but should always be
     // null when invoked by ssr-runtime
     parent: LightningElement | null,
@@ -143,6 +146,7 @@ export type GenerateMarkupFnAsyncNoGen = (
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
     lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
     // Not always null when invoked internally, but should always be
     // null when invoked by ssr-runtime
     parent: LightningElement | null,
@@ -157,6 +161,7 @@ export type GenerateMarkupFnSyncNoGen = (
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
     lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
     // Not always null when invoked internally, but should always be
     // null when invoked by ssr-runtime
     parent: LightningElement | null,
@@ -199,6 +204,7 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
+            null,
             null
         )) {
             markup += segment;
@@ -213,6 +219,7 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
+            null,
             null
         );
     } else if (mode === 'sync') {
@@ -220,6 +227,7 @@ export async function serverSideRenderComponent(
             emit,
             tagName,
             props,
+            null,
             null,
             null,
             null,
