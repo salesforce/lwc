@@ -25,6 +25,7 @@ const bGenerateMarkup = esTemplate`
             attrs, 
             shadowSlottedContent,
             lightSlottedContent, 
+            scopedSlottedContent,
             parent, 
             scopeToken,
             contextfulParent
@@ -67,6 +68,7 @@ const bGenerateMarkup = esTemplate`
         yield* tmplFn(
             shadowSlottedContent,
             lightSlottedContent,
+            scopedSlottedContent,
             ${/*component class*/ 3},
             instance
         );

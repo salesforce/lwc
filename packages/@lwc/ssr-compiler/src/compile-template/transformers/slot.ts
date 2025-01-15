@@ -25,22 +25,38 @@ const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
         const isSlotted = ${/* isSlotted */ is.literal};
+        const slotName = ${/* slotName */ is.expression};
+        const lightGenerators = lightSlottedContent?.[slotName ?? ""];
+        const scopedGenerators = scopedSlottedContent?.[slotName ?? ""];
+        const mismatchedSlots = isScopedSlot ? lightGenerators : scopedGenerators;
+        const generators = isScopedSlot ? scopedGenerators : lightGenerators;
+
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
 
-            // scoped slot factory has its own vfragment hence its own bookend
-            if (isScopedSlot) {
+            // If there is slot data, scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot && generators) {
                 yield '<!---->';
             }
         }
 
-        const generators = lightSlottedContent?.[${/* slotName */ is.expression} ?? ""];
         if (generators) {
-            for (const generator of generators) {
-                yield* generator(contextfulParent, ${/* scoped slot data */ nullable(is.expression)});
+            for (let i = 0; i < generators.length; i++) {
+                yield* generators[i](contextfulParent, ${/* scoped slot data */ nullable(is.expression)});
+                // Scoped slotted data is separated by bookends. Final bookends are added outside of the loop below.
+                if (isScopedSlot && i < generators.length - 1) {
+                    yield '<!---->';
+                    yield '<!---->';
+                }
             }
-        } else {
+        /* 
+            If there were mismatched slots, do not fallback to the default. This is required for parity with
+            engine-core which resets children to an empty array when there are children (mismatched or not). 
+            Because the child nodes are reset, the default slotted content is not rendered in the mismatched slot case. 
+            See https://github.com/salesforce/lwc/blob/master/packages/%40lwc/engine-core/src/framework/api.ts#L238
+        */
+        } else if (!mismatchedSlots) {
             // If we're in this else block, then the generator _must_ have yielded
             // something. It's impossible for a slottedContent["foo"] to exist
             // without the generator yielding at least a text node / element.
@@ -53,8 +69,8 @@ const bConditionalSlot = esTemplateWithYield`
         if (!isSlotted) {
             yield '<!---->';
 
-            // scoped slot factory has its own vfragment hence its own bookend
-            if (isScopedSlot) {
+            // If there is slot data, scoped slot factory has its own vfragment hence its own bookend
+            if (isScopedSlot && generators) {
                 yield '<!---->';
             }
         }
