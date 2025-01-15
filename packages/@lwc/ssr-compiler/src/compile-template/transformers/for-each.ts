@@ -16,7 +16,7 @@ import type { Transformer } from '../types';
 
 const bForOfYieldFrom = esTemplate`
     for (let [${is.identifier}, ${is.identifier}] of Object.entries(${is.expression} ?? {})) {
-        ${is.statement};
+        ${[is.statement]};
     }
 `<EsForOfStatement>;
 

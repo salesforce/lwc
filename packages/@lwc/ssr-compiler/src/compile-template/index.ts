@@ -53,7 +53,7 @@ const bExportTemplate = esTemplate`
             );
         }
 
-        ${is.statement};
+        ${[is.statement]};
 
         if (!isLightDom) {
             yield '</template>';

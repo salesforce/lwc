@@ -7,7 +7,7 @@
 
 import { is } from 'estree-toolkit';
 import { generateScopeTokens } from '@lwc/template-compiler';
-import { builders as b } from 'estree-toolkit/dist/builders';
+import { builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import type { ExpressionStatement, Program, VariableDeclaration } from 'estree';
 

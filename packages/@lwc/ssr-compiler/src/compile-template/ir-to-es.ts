@@ -7,7 +7,7 @@
 
 import { inspect } from 'util';
 
-import { is, builders as b } from 'estree-toolkit';
+import { is, builders as b, type types as t } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { Comment } from './transformers/comment';
 import { Component, LwcComponent } from './transformers/component';
@@ -24,14 +24,13 @@ import type {
     Node as IrNode,
     Root as IrRoot,
 } from '@lwc/template-compiler';
-import type { Statement as EsStatement, ThrowStatement as EsThrowStatement } from 'estree';
 import type { TemplateOpts, Transformer, TransformerContext } from './types';
 
 const bThrowError = esTemplate`
   throw new Error(${is.literal});
-`<EsThrowStatement>;
+`<t.ThrowStatement>;
 
-const Root: Transformer<IrRoot> = function Root(node, cxt): EsStatement[] {
+const Root: Transformer<IrRoot> = function Root(node, cxt): t.Statement[] {
     return irChildrenToEs(node.children, cxt);
 };
 
@@ -71,8 +70,8 @@ export function irChildrenToEs(
     children: IrChildNode[],
     cxt: TransformerContext,
     cb?: (child: IrChildNode) => (() => void) | void
-): EsStatement[] {
-    const result: EsStatement[] = [];
+): t.Statement[] {
+    const result: t.Statement[] = [];
 
     for (let i = 0; i < children.length; i++) {
         // must set the siblings inside the for loop due to nested children
@@ -89,7 +88,7 @@ export function irChildrenToEs(
     return result;
 }
 
-export function irToEs<T extends IrNode>(node: T, cxt: TransformerContext): EsStatement[] {
+export function irToEs<T extends IrNode>(node: T, cxt: TransformerContext): t.Statement[] {
     if ('directives' in node && node.directives.some((d) => d.name === 'Dynamic')) {
         return [
             bThrowError(

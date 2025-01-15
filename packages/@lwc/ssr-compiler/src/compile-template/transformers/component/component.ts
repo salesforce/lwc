@@ -26,7 +26,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 `shadowSlottedContent`/`lightSlottedContentMap / scopedSlottedContentMap` which are used below 
                 when the child's generateMarkup function is invoked.
             */
-            is.statement
+            [is.statement]
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;

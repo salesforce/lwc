@@ -11,7 +11,7 @@ import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
 import { bAttributeValue, getScopedExpression } from '../shared';
-import { isNullableOf } from '../../estree/validators';
+import { nullable } from '../../estree/validators';
 import { Element } from './element';
 import type { Slot as IrSlot } from '@lwc/template-compiler';
 import type {
@@ -43,7 +43,7 @@ const bConditionalSlot = esTemplateWithYield`
 
         if (generators) {
             for (let i = 0; i < generators.length; i++) {
-                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
+                yield* generators[i](contextfulParent, ${/* scoped slot data */ nullable(is.expression)});
                 // Scoped slotted data is separated by bookends. Final bookends are added outside of the loop below.
                 if (isScopedSlot && i < generators.length - 1) {
                     yield '<!---->';
@@ -62,7 +62,7 @@ const bConditionalSlot = esTemplateWithYield`
             // without the generator yielding at least a text node / element.
             // FIXME: how does this work with comments and lwc:preserve-comments?
             // TODO: default/fallback slot content
-            ${/* slot fallback content */ is.statement}
+            ${/* slot fallback content */ [is.statement]}
         }
 
         // end bookend HTML comment for light DOM slot vfragment
@@ -75,7 +75,7 @@ const bConditionalSlot = esTemplateWithYield`
             }
         }
     } else {
-        ${/* slot element AST */ is.statement}
+        ${/* slot element AST */ [is.statement]}
     }
 `<EsIfStatement>;
 

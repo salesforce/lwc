@@ -5,10 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b } from 'estree-toolkit';
-
-import type { ImportDeclaration, ExportNamedDeclaration, ExportAllDeclaration } from 'estree';
-import type { NodePath } from 'estree-toolkit';
+import { builders as b, type NodePath, type types as t } from 'estree-toolkit';
 import type { ComponentMetaState } from './types';
 
 /**
@@ -17,7 +14,7 @@ import type { ComponentMetaState } from './types';
  *  1. it replaces "lwc" with "@lwc/ssr-runtime" in an import specifier
  *  2. it makes note of the local var name associated with the `LightningElement` import
  */
-export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
+export function replaceLwcImport(path: NodePath<t.ImportDeclaration>, state: ComponentMetaState) {
     if (!path.node || !isLwcSource(path)) {
         return;
     }
@@ -41,7 +38,7 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
 /**
  * This handles lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
  */
-export function replaceNamedLwcExport(path: NodePath<ExportNamedDeclaration>) {
+export function replaceNamedLwcExport(path: NodePath<t.ExportNamedDeclaration>) {
     if (!path.node || !isLwcSource(path)) {
         return;
     }
@@ -58,7 +55,7 @@ export function replaceNamedLwcExport(path: NodePath<ExportNamedDeclaration>) {
 /**
  * This handles all lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
  */
-export function replaceAllLwcExport(path: NodePath<ExportAllDeclaration>) {
+export function replaceAllLwcExport(path: NodePath<t.ExportAllDeclaration>) {
     if (!path.node || !isLwcSource(path)) {
         return;
     }
@@ -72,7 +69,7 @@ export function replaceAllLwcExport(path: NodePath<ExportAllDeclaration>) {
  * Utility to determine if a node source is 'lwc'
  */
 function isLwcSource(
-    path: NodePath<ExportAllDeclaration | ExportNamedDeclaration | ImportDeclaration>
+    path: NodePath<t.ExportAllDeclaration | t.ExportNamedDeclaration | t.ImportDeclaration>
 ): boolean {
     return path.node?.source?.value === 'lwc';
 }

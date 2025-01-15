@@ -8,11 +8,11 @@
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
 import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
-import { esTemplate, esTemplateWithYield } from '../../../estemplate';
+import { esTemplateWithYield, esTemplate } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
-import { isNullableOf } from '../../../estree/validators';
+import { nullable } from '../../../estree/validators';
 import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
@@ -43,7 +43,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
                 // is established between components rendered in slotted content & the "parent"
                 // component that contains the <slot>.
 
-                ${/* shadow slot content */ is.statement}
+                ${/* shadow slot content */ [is.statement]}
             } 
             // Avoid creating the object unnecessarily
             : null;
@@ -68,8 +68,8 @@ const bGenerateSlottedContent = esTemplateWithYield`
             }
         }
 
-        ${/* light DOM addLightContent statements */ is.expressionStatement}
-        ${/* scoped slot addLightContent statements */ is.expressionStatement}
+        ${/* light DOM addLightContent statements */ [is.expressionStatement]}
+        ${/* scoped slot addLightContent statements */ [is.expressionStatement]}
 `<EsStatement[]>;
 
 // Note that this function name (`generateSlottedContent`) does not need to be scoped even though
@@ -77,10 +77,10 @@ const bGenerateSlottedContent = esTemplateWithYield`
 // than a function _declaration_, so it isn't available to be referenced anywhere.
 const bAddSlottedContent = esTemplate`
     addSlottedContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
-        /* scoped slot data variable */ isNullableOf(is.identifier)
+        /* scoped slot data variable */ nullable(is.identifier)
     }) {
         // FIXME: make validation work again  
-        ${/* slot content */ false}
+        ${/* slot content */ [is.statement]}
     }, ${/* content map */ is.identifier});
 `<EsCallExpression>;
 
