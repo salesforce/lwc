@@ -14,12 +14,13 @@ export default {
         const hydratedSnapshot = this.snapshot(target);
 
         expect(hydratedSnapshot.text).not.toBe(snapshots.text);
+
         if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
             TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
-                    'Hydration mismatch: text values do not match, will recover from the difference',
-                    'Server rendered more nodes than the client.',
+                    'Hydration text content mismatch on: #text - rendered on server: blue - expected on client: green',
+                    'Hydration child node mismatch on: <ul> - rendered on server: <li>,<li>,<li> - expected on client: <li>,,<li>',
                     'Hydration completed with errors.',
                 ],
             });
@@ -27,7 +28,7 @@ export default {
             TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
-                    'Server rendered more nodes than the client.',
+                    'Hydration child node mismatch on: <ul> - rendered on server: <li>,<li>,<li> - expected on client: <li>,,<li>',
                     'Hydration completed with errors.',
                 ],
             });

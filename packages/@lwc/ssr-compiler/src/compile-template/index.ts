@@ -23,6 +23,7 @@ const bExportTemplate = esTemplate`
     export default async function* tmpl(
             shadowSlottedContent,
             lightSlottedContent,
+            scopedSlottedContent,
             Cmp,
             instance
     ) {

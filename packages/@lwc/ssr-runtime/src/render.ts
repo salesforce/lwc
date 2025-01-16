@@ -4,14 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyNames, isNull, isString, isUndefined, DEFAULT_SSR_MODE } from '@lwc/shared';
+import {
+    getOwnPropertyNames,
+    isNull,
+    isString,
+    isUndefined,
+    DEFAULT_SSR_MODE,
+    htmlEscape,
+} from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
 import type { LightningElement, LightningElementConstructor } from './lightning-element';
 import type { Attributes, Properties } from './types';
-
-const escapeAttrVal = (attrValue: string) =>
-    attrValue.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
 
 function renderAttrsPrivate(
     instance: LightningElement,
@@ -58,7 +62,8 @@ function renderAttrsPrivate(
             }
         }
 
-        result += attrValue === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrValue)}"`;
+        result +=
+            attrValue === '' ? ` ${attrName}` : ` ${attrName}="${htmlEscape(attrValue, true)}"`;
     }
 
     // If we didn't render any `class` attribute, render one for the scope token(s)
@@ -98,6 +103,7 @@ export function renderAttrsNoYield(
 export function* fallbackTmpl(
     _shadowSlottedContent: unknown,
     _lightSlottedContent: unknown,
+    _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
@@ -110,6 +116,7 @@ export function fallbackTmplNoYield(
     emit: (segment: string) => void,
     _shadowSlottedContent: unknown,
     _lightSlottedContent: unknown,
+    _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
@@ -124,6 +131,7 @@ export type GenerateMarkupFn = (
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
     lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
     // Not always null when invoked internally, but should always be
     // null when invoked by ssr-runtime
     parent: LightningElement | null,
@@ -138,6 +146,7 @@ export type GenerateMarkupFnAsyncNoGen = (
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
     lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
     // Not always null when invoked internally, but should always be
     // null when invoked by ssr-runtime
     parent: LightningElement | null,
@@ -152,6 +161,7 @@ export type GenerateMarkupFnSyncNoGen = (
     attrs: Attributes | null,
     shadowSlottedContent: AsyncGenerator<string> | null,
     lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
     // Not always null when invoked internally, but should always be
     // null when invoked by ssr-runtime
     parent: LightningElement | null,
@@ -194,6 +204,7 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
+            null,
             null
         )) {
             markup += segment;
@@ -208,6 +219,7 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
+            null,
             null
         );
     } else if (mode === 'sync') {
@@ -215,6 +227,7 @@ export async function serverSideRenderComponent(
             emit,
             tagName,
             props,
+            null,
             null,
             null,
             null,
