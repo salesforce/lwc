@@ -1,4 +1,4 @@
-import { createElement, LightningElement } from 'lwc';
+import { createElement, LightningElement, setFeatureFlagForTest } from 'lwc';
 import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import Test from 'x/test';
@@ -97,6 +97,12 @@ describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
 });
 
 describe('locker integration', () => {
+    beforeEach(() => {
+        setFeatureFlagForTest('ENABLE_LEGACY_LOCKER_SUPPORT', true);
+    });
+    afterEach(() => {
+        setFeatureFlagForTest('ENABLE_LEGACY_LOCKER_SUPPORT', false);
+    });
     it('should support component class that extend a mirror of the LightningElement', () => {
         function SecureBaseClass() {
             if (this instanceof SecureBaseClass) {
