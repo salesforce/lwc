@@ -8,7 +8,7 @@
 import { traverse, type Visitors } from 'estree-toolkit';
 import { parse } from 'acorn';
 import { produce } from 'immer';
-import { getValidatorName, type Validated, type Validator } from './estree/validators';
+import { getValidatorName, type NodeType, type Validator } from './estree/validators';
 import type * as es from 'estree';
 
 /**
@@ -17,9 +17,19 @@ import type * as es from 'estree';
  */
 type Ref = number;
 
+/** Extracts the type being validated from the validator function. */
+export type Validated<T> =
+    T extends Validator<infer N>
+        ? NodeType<N>
+        : T extends [Validator<infer N>]
+          ? NodeType<N>[]
+          : never;
+
 /** A validator, validation opt-out, or reference to previously-used validator. */
 
-type Placeholders = (Validator<any> | [Validator<any>] | Ref)[];
+type Placeholders =
+    | []
+    | [Validator<any> | [Validator<any>], ...(Validator<any> | [Validator<any>] | Ref)[]];
 
 /**
  * Converts the validators and refs used in the template to the list of parameters required by the
@@ -30,10 +40,12 @@ type ToReplacementParameters<Arr> =
     Arr extends [Ref, ...infer Rest]
         ? ToReplacementParameters<Rest>
         : // `Arr` starts with a single validator -- add it to the list and recurse on the rest
-          Arr extends [infer Head extends Validator<any> | [Validator<any>], ...infer Rest]
+          Arr extends [infer Head, ...infer Rest]
           ? [Validated<Head>, ...ToReplacementParameters<Rest>]
           : // `Arr` is empty -- return an empty array
-            [];
+            Arr extends []
+            ? []
+            : never;
 
 const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PLACEHOLDER__`;
 
@@ -109,49 +121,22 @@ const visitors = {
     },
 } satisfies Visitors<TraversalState>;
 
-type EsTemplate<Placeholder extends Placeholders> = <RetType>(
-    ...replacementNodes: ToReplacementParameters<Placeholder>
+type EsTemplate<Placeholders> = <RetType>(
+    ...replacementNodes: ToReplacementParameters<Placeholders>
 ) => RetType;
 
 const esTemplateImpl =
-    <N>(wrap?: (code: string) => string, unwrap?: (node: N) => es.Statement | es.Statement[]) =>
-    <Placeholder extends Placeholders>(
+    <N>(wrap = (code: string) => code, unwrap?: (node: N) => es.Statement | es.Statement[]) =>
+    <P extends Placeholders>(
         template: TemplateStringsArray,
-        ...substitutions: Placeholder
-    ): EsTemplate<Placeholder> => {
-        let placeholderCount = 0;
-        let parsableCode = template[0];
-        const placeholderToValidator = new Map<number, Validator>();
-        // String.raw
-        for (let i = 1; i < template.length; i += 1) {
-            const segment = template[i];
-            const validator = substitutions[i - 1]; // always one less value than strings in template literals
+        ...substitutions: P
+    ): EsTemplate<P> => {
+        const { parsableCode, placeholderToValidator } = generateParsableTemplate(
+            template,
+            substitutions
+        );
 
-            if (typeof validator !== 'number') {
-                // Template slot will be filled by a *new* argument passed to the generated function
-                placeholderToValidator.set(
-                    placeholderCount,
-                    Array.isArray(validator) ? validator[0] : validator
-                );
-                parsableCode += `${PLACEHOLDER_PREFIX}${placeholderCount}`;
-                placeholderCount += 1;
-            } else {
-                // Template slot uses a *previously defined* argument passed to the generated function
-                if (validator >= placeholderCount) {
-                    throw new Error(
-                        `Reference to argument ${validator} at index ${i} cannot be used. Only ${placeholderCount - 1} arguments have been defined.`
-                    );
-                }
-                parsableCode += `${PLACEHOLDER_PREFIX}${validator}`;
-            }
-            parsableCode += segment;
-        }
-
-        if (wrap) {
-            parsableCode = wrap(parsableCode);
-        }
-
-        const originalAstProgram = parse(parsableCode, {
+        const originalAstProgram = parse(wrap(parsableCode), {
             ecmaVersion: 2022,
             allowAwaitOutsideFunction: true,
             allowReturnOutsideFunction: true,
@@ -167,15 +152,7 @@ const esTemplateImpl =
 
         // Turns Acorn AST objects into POJOs, for use with Immer.
 
-        return <R>(...replacementNodes: ToReplacementParameters<Placeholders>) => {
-            const result = produce(originalAst, (astDraft) =>
-                traverse(astDraft, visitors, {
-                    placeholderToValidator,
-                    replacementNodes,
-                })
-            );
-            return (unwrap ? unwrap(result) : result) as R;
-        };
+        return createTemplate<P, N>(originalAst, placeholderToValidator, unwrap);
     };
 
 /**
@@ -199,6 +176,56 @@ export const esTemplateWithYield = esTemplateImpl(
     (node: es.FunctionDeclaration) =>
         node.body.body.length === 1 ? node.body.body[0] : node.body.body
 );
+function generateParsableTemplate<P extends Placeholders>(
+    template: TemplateStringsArray,
+    substitutions: P
+) {
+    let placeholderCount = 0;
+    let parsableCode = template[0];
+    const placeholderToValidator = new Map<Ref, Validator<any>>();
+    // String.raw
+    for (let i = 1; i < template.length; i += 1) {
+        const segment = template[i];
+        const validator = substitutions[i - 1]; // always one less value than strings in template literals
+
+        if (typeof validator !== 'number') {
+            // Template slot will be filled by a *new* argument passed to the generated function
+            placeholderToValidator.set(
+                placeholderCount,
+                Array.isArray(validator) ? validator[0] : validator
+            );
+            parsableCode += `${PLACEHOLDER_PREFIX}${placeholderCount}`;
+            placeholderCount += 1;
+        } else {
+            // Template slot uses a *previously defined* argument passed to the generated function
+            if (validator >= placeholderCount) {
+                throw new Error(
+                    `Reference to argument ${validator} at index ${i} cannot be used. Only ${placeholderCount - 1} arguments have been defined.`
+                );
+            }
+            parsableCode += `${PLACEHOLDER_PREFIX}${validator}`;
+        }
+        parsableCode += segment;
+    }
+
+    return { parsableCode, placeholderToValidator };
+}
+
+function createTemplate<P, N>(
+    originalAst: N,
+    placeholderToValidator: Map<number, Validator<any>>,
+    unwrap: ((node: N) => es.Statement | es.Statement[]) | undefined
+): EsTemplate<P> {
+    return <R>(...replacementNodes: ToReplacementParameters<Placeholders>) => {
+        const result = produce(originalAst, (astDraft) =>
+            traverse(astDraft, visitors, {
+                placeholderToValidator,
+                replacementNodes,
+            })
+        );
+        return (unwrap ? unwrap(result) : result) as R;
+    };
+}
 
 function extractAstNode(originalAstProgram: es.Program, finalCharacter: string | undefined) {
     if (originalAstProgram.body.length === 1) {

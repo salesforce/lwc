@@ -9,44 +9,42 @@ import { is, type types as es, type NodePath } from 'estree-toolkit';
 import { entries } from '@lwc/shared';
 
 /** Unwraps a node or a node path to its inner node type. */
-type UnwrapNode<T> = T extends null
-    ? null
-    : T extends es.Node
-      ? T
-      : T extends NodePath<infer U>
-        ? U
+export type NodeType<T> = T extends es.Node
+    ? T
+    : T extends NodePath<infer N>
+      ? N
+      : T extends null
+        ? null
         : never;
 
 /** A function that accepts a node and checks that it is a particular type of node. */
-export type Validator<T = any> = (node: es.Node | null | undefined) => node is UnwrapNode<T>;
-
-/** Extracts the type being validated from the validator function. */
-export type Validated<T> =
-    T extends Validator<infer N>
-        ? UnwrapNode<N>
-        : T extends [Validator<infer N>]
-          ? UnwrapNode<N>[]
-          : never;
-
-/** Extends a validator to return `true` if the node is `null`. */
-export function nullable<T>(validator: Validator<NonNullable<T>>) {
-    const nullableValidator = (node: es.Node | null | undefined): node is UnwrapNode<T | null> => {
-        return node === null || validator(node);
-    };
-    if (process.env.NODE_ENV !== 'production') {
-        validatorMap.set(nullableValidator, `nullable(${getValidatorName(validator)})`);
-    }
-    return nullableValidator;
+export interface Validator<T> {
+    (node: es.Node | null | undefined): node is NodeType<T>;
 }
 
-const validatorMap: WeakMap<Validator, string> = new WeakMap();
+/** Extends a validator to return `true` if the node is `null`. */
+export const nullable = <T>(validator: Validator<NonNullable<T>>) => {
+    return registerValidator(
+        (node) => node === null || validator(node),
+        `nullable(${getValidatorName(validator)})`
+    );
+};
+
+const validatorMap: WeakMap<Validator<any>, string> = new WeakMap();
+
+const registerValidator = <V extends Validator<any>>(validator: V, name: string) => {
+    if (process.env.NODE_ENV !== 'production') {
+        validatorMap.set(validator, name);
+    }
+    return validator;
+};
+
+export function getValidatorName(validator: Validator<any>): string {
+    return validatorMap.get(validator) || 'unknown validator';
+}
 
 if (process.env.NODE_ENV !== 'production') {
     for (const [key, val] of entries(is)) {
-        validatorMap.set(val, key);
+        registerValidator(val, key);
     }
-}
-
-export function getValidatorName(validator: Validator): string {
-    return validatorMap.get(validator) || 'unknown validator';
 }

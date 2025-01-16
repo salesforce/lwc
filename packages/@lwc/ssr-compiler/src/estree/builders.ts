@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, type types as t } from 'estree-toolkit';
+import { builders as b, type types as es } from 'estree-toolkit';
 
 /**
  * Creates an import statement, e.g. `import { foo, bar as $bar$ } from "pkg"`
@@ -15,7 +15,7 @@ import { builders as b, type types as t } from 'estree-toolkit';
 export const bImportDeclaration = (
     imports: string | string[] | Record<string, string | undefined>,
     source = '@lwc/ssr-runtime'
-): t.ImportDeclaration => {
+): es.ImportDeclaration => {
     let parsed: Array<[string, string | undefined]>;
     if (typeof imports === 'string') {
         parsed = [[imports, undefined]];
