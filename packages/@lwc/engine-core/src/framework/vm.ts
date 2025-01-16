@@ -250,11 +250,11 @@ export function connectRootElement(elm: any) {
 
     if (process.env.NODE_ENV !== 'production') {
         // Flush any logs for this VM so that the initial properties from the constructor don't "count"
-        // in subsequent re-renders (lwc-rehydrate). Right now we're at the first render (lwc-hydrate).
+        // in subsequent re-renders (lwc-rerender). Right now we're at the first render (lwc-hydrate).
         flushMutationLogsForVM(vm);
     }
 
-    logGlobalOperationStartWithVM(OperationId.GlobalHydrate, vm);
+    logGlobalOperationStartWithVM(OperationId.GlobalRender, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
@@ -265,7 +265,7 @@ export function connectRootElement(elm: any) {
     runConnectedCallback(vm);
     rehydrate(vm);
 
-    logGlobalOperationEndWithVM(OperationId.GlobalHydrate, vm);
+    logGlobalOperationEndWithVM(OperationId.GlobalRender, vm);
 }
 
 export function disconnectRootElement(elm: any) {
@@ -656,7 +656,7 @@ function flushRehydrationQueue() {
     const mutationLogs =
         process.env.NODE_ENV === 'production' ? undefined : getAndFlushMutationLogs();
 
-    logGlobalOperationStart(OperationId.GlobalRehydrate);
+    logGlobalOperationStart(OperationId.GlobalRerender);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -679,7 +679,7 @@ function flushRehydrationQueue() {
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
+            logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -687,7 +687,7 @@ function flushRehydrationQueue() {
         }
     }
 
-    logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
+    logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
 }
 
 export function runConnectedCallback(vm: VM) {
@@ -701,6 +701,7 @@ export function runConnectedCallback(vm: VM) {
     }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
+        console.log('connectedCallback start', performance.now());
         logOperationStart(OperationId.ConnectedCallback, vm);
 
         if (!process.env.IS_BROWSER) {
@@ -714,6 +715,7 @@ export function runConnectedCallback(vm: VM) {
             vm.renderer.stopTrackingMutations(vm.elm);
         }
 
+        console.log('connectedCallback end', performance.now());
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or

@@ -15,7 +15,7 @@ beforeEach(() => {
     // See: https://github.com/salesforce/lwc/issues/4600
     spyOn(performance, 'measure').and.callFake((...args) => {
         const entry = perfMeasure(...args);
-        if (['lwc-hydrate', 'lwc-rehydrate'].includes(entry.name)) {
+        if (['lwc-hydrate', 'lwc-rerender'].includes(entry.name)) {
             entries.push(entry);
         }
         return entry;
@@ -28,7 +28,7 @@ afterEach(() => {
 
 function rehydrationEntry(tagName, propString) {
     return obj({
-        name: 'lwc-rehydrate',
+        name: 'lwc-rerender',
         detail: obj({
             devtools: obj({
                 properties: arr([
@@ -181,7 +181,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr([
                     obj({
-                        name: 'lwc-rehydrate',
+                        name: 'lwc-rerender',
                         detail: obj({
                             devtools: obj({
                                 properties: arr([
@@ -274,7 +274,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr([
                     obj({
-                        name: 'lwc-rehydrate',
+                        name: 'lwc-rerender',
                         detail: obj({
                             devtools: obj({
                                 properties: arr([

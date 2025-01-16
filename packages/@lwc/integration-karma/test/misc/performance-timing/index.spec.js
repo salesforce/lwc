@@ -98,7 +98,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
 
             testRehydration([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                 },
             ]);
 
@@ -110,7 +110,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
 
             testNestedRehydration([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                 },
             ]);
 
@@ -152,7 +152,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
 
             testRehydration([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                     children: [
                         {
                             label: /<x-child> - render/,
@@ -237,7 +237,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
 
             testNestedRehydration([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                     children: [
                         {
                             label: /<x-parent> - render/,
