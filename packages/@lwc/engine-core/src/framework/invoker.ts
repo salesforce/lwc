@@ -11,9 +11,10 @@ import { addErrorComponentStack } from '../shared/error';
 import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered } from './template';
 import { runWithBoundaryProtection } from './vm';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
+import { LightningElement } from './base-lightning-element';
 import type { Template } from './template';
 import type { VM } from './vm';
-import type { LightningElement, LightningElementConstructor } from './base-lightning-element';
+import type { LightningElementConstructor } from './base-lightning-element';
 import type { VNodes } from './vnodes';
 
 export let isInvokingRender: boolean = false;
@@ -59,7 +60,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // invoked by accessing the component on the vm.
         const isInvalidConstructor = lwcRuntimeFlags.ENABLE_LEGACY_LOCKER_SUPPORT
             ? vmBeingConstructed.component !== result
-            : !(result instanceof Ctor);
+            : !(result instanceof LightningElement);
 
         if (isInvalidConstructor) {
             throw new TypeError(

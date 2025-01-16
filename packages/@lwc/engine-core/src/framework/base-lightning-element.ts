@@ -244,9 +244,7 @@ export const LightningElement: LightningElementConstructor = function (
 
     setPrototypeOf(elm, bridge.prototype);
 
-    if (lwcRuntimeFlags.ENABLE_LEGACY_LOCKER_SUPPORT) {
-        vm.component = this;
-    }
+    vm.component = this;
 
     // Locker hooks assignment. When the LWC engine run with Locker, Locker intercepts all the new
     // component creation and passes hooks to instrument all the component interactions with the
@@ -259,9 +257,7 @@ export const LightningElement: LightningElementConstructor = function (
         vm.getHook = getHook;
     }
 
-    if (lwcRuntimeFlags.ENABLE_LEGACY_LOCKER_SUPPORT) {
-        markLockerLiveObject(this);
-    }
+    markLockerLiveObject(this);
 
     // Linking elm, shadow root and component with the VM.
     associateVM(this, vm);
