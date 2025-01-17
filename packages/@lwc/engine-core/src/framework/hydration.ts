@@ -92,7 +92,7 @@ let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
     hasMismatch = false;
 
-    logGlobalOperationStartWithVM(OperationId.GlobalRender, vm);
+    logGlobalOperationStartWithVM(OperationId.GlobalSsrHydrate, vm);
 
     runConnectedCallback(vm);
     hydrateVM(vm);
@@ -107,7 +107,7 @@ export function hydrateRoot(vm: VM) {
             logHydrationWarning('Hydration completed with errors.');
         }
     }
-    logGlobalOperationEndWithVM(OperationId.GlobalRender, vm);
+    logGlobalOperationEndWithVM(OperationId.GlobalSsrHydrate, vm);
 }
 
 function hydrateVM(vm: VM) {

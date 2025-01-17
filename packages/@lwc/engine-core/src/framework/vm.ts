@@ -701,7 +701,6 @@ export function runConnectedCallback(vm: VM) {
     }
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
-        console.log('connectedCallback start', performance.now());
         logOperationStart(OperationId.ConnectedCallback, vm);
 
         if (!process.env.IS_BROWSER) {
@@ -715,7 +714,6 @@ export function runConnectedCallback(vm: VM) {
             vm.renderer.stopTrackingMutations(vm.elm);
         }
 
-        console.log('connectedCallback end', performance.now());
         logOperationEnd(OperationId.ConnectedCallback, vm);
     }
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
