@@ -46,6 +46,10 @@ export default tseslint.config(
             globals: {
                 ...globals.es2021,
             },
+
+            parserOptions: {
+                projectService: true,
+            },
         },
 
         rules: {
