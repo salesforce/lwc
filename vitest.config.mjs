@@ -29,17 +29,24 @@ export default defineConfig({
                 '**/packages/@lwc/perf-benchmarks-components/**',
                 '**/packages/@lwc/perf-benchmarks/**',
                 '**/playground/**',
-                // These are not production-ready yet
-                '**/packages/@lwc/ssr-compiler/**',
-                '**/packages/@lwc/ssr-runtime/**',
                 // This just re-exports other packages
                 '**/packages/lwc/**',
             ],
             thresholds: {
-                branches: 95,
-                functions: 95,
-                lines: 95,
-                statements: 95,
+                // SSR compiler/runtime is relatively newer, so has lower thresholds for now
+                '**/packages/@lwc/ssr-*/**': {
+                    branches: 90,
+                    functions: 60,
+                    lines: 85,
+                    statements: 85,
+                },
+
+                '!**/packages/@lwc/ssr-*/**': {
+                    branches: 95,
+                    functions: 95,
+                    lines: 95,
+                    statements: 95,
+                },
             },
             reporter: [
                 'clover',
