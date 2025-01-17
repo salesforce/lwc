@@ -146,13 +146,21 @@ const esTemplateImpl =
         }) as es.Program;
 
         const finalCharacter = template.at(-1)?.trimEnd()?.at(-1);
+
+        // Turns Acorn AST objects into POJOs, for use with Immer.
         const originalAst: N = JSON.parse(
             JSON.stringify(extractAstNode(originalAstProgram, finalCharacter))
         );
 
-        // Turns Acorn AST objects into POJOs, for use with Immer.
-
-        return createTemplate<P, N>(originalAst, placeholderToValidator, unwrap);
+        return <R>(...replacementNodes: ToReplacementParameters<Placeholders>) => {
+            const result = produce(originalAst, (astDraft) =>
+                traverse(astDraft, visitors, {
+                    placeholderToValidator,
+                    replacementNodes,
+                })
+            );
+            return (unwrap ? unwrap(result) : result) as R;
+        };
     };
 
 /**
@@ -209,22 +217,6 @@ function generateParsableTemplate<P extends Placeholders>(
     }
 
     return { parsableCode, placeholderToValidator };
-}
-
-function createTemplate<P, N>(
-    originalAst: N,
-    placeholderToValidator: Map<number, Validator<any>>,
-    unwrap: ((node: N) => es.Statement | es.Statement[]) | undefined
-): EsTemplate<P> {
-    return <R>(...replacementNodes: ToReplacementParameters<Placeholders>) => {
-        const result = produce(originalAst, (astDraft) =>
-            traverse(astDraft, visitors, {
-                placeholderToValidator,
-                replacementNodes,
-            })
-        );
-        return (unwrap ? unwrap(result) : result) as R;
-    };
 }
 
 function extractAstNode(originalAstProgram: es.Program, finalCharacter: string | undefined) {
