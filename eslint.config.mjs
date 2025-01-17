@@ -46,17 +46,6 @@ export default tseslint.config(
             globals: {
                 ...globals.es2021,
             },
-
-            parserOptions: {
-                projectService: {
-                    allowDefaultProject: [
-                        // I'm not sure why these files aren't picked up... :\
-                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-code.ts',
-                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-type.ts',
-                        'packages/@lwc/module-resolver/scripts/test/setup-test.ts',
-                    ],
-                },
-            },
         },
 
         rules: {
