@@ -15,7 +15,7 @@ beforeEach(() => {
     // See: https://github.com/salesforce/lwc/issues/4600
     spyOn(performance, 'measure').and.callFake((...args) => {
         const entry = perfMeasure(...args);
-        if (['lwc-hydrate', 'lwc-rehydrate'].includes(entry.name)) {
+        if (['lwc-render', 'lwc-rerender'].includes(entry.name)) {
             entries.push(entry);
         }
         return entry;
@@ -26,9 +26,9 @@ afterEach(() => {
     entries = [];
 });
 
-function rehydrationEntry(tagName, propString) {
+function rerenderEntry(tagName, propString) {
     return obj({
-        name: 'lwc-rehydrate',
+        name: 'lwc-rerender',
         detail: obj({
             devtools: obj({
                 properties: arr([
@@ -40,8 +40,8 @@ function rehydrationEntry(tagName, propString) {
     });
 }
 
-function expectRehydrationEntry(tagName, propString) {
-    expect(entries).toEqual(arr([rehydrationEntry(tagName, propString)]));
+function expectRerenderEntry(tagName, propString) {
+    expect(entries).toEqual(arr([rerenderEntry(tagName, propString)]));
 }
 
 it.runIf(process.env.NODE_ENV === 'production')('No perf measures in prod mode', async () => {
@@ -65,7 +65,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             document.body.appendChild(elm);
 
             await new Promise(requestAnimationFrame);
-            expect(entries).toEqual(arr([obj({ name: 'lwc-hydrate' })]));
+            expect(entries).toEqual(arr([obj({ name: 'lwc-render' })]));
             entries = []; // reset
         });
 
@@ -73,62 +73,62 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.firstName = 'Ferdinand';
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'firstName');
+            expectRerenderEntry('x-child', 'firstName');
         });
 
         it('Logs subsequent mutations on the same component', async () => {
             elm.firstName = 'Ferdinand';
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'firstName');
+            expectRerenderEntry('x-child', 'firstName');
             entries = []; // reset
 
             elm.lastName = 'Magellan';
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'lastName');
+            expectRerenderEntry('x-child', 'lastName');
             entries = []; // reset
 
             elm.firstName = 'Vasco';
             elm.lastName = 'da Gama';
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'firstName, lastName');
+            expectRerenderEntry('x-child', 'firstName, lastName');
         });
 
         it('Logs deep mutation on an object', async () => {
             elm.setPreviousName('first', 'Vancouver');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'previousName.first');
+            expectRerenderEntry('x-child', 'previousName.first');
         });
 
         it('Logs deep mutation on an object - characters requiring bracket member notation', async () => {
             elm.setPreviousNameFullName('George Vancouver');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'previousName["full name"]');
+            expectRerenderEntry('x-child', 'previousName["full name"]');
         });
 
         it('Logs doubly-deep mutation on an object', async () => {
             elm.setPreviousNameSuffix('short', 'Jr.');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'previousName.suffix.short');
+            expectRerenderEntry('x-child', 'previousName.suffix.short');
         });
 
         it('Logs deep mutation on an array', async () => {
             elm.addAlias('Magellan');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'aliases.length');
+            expectRerenderEntry('x-child', 'aliases.length');
         });
 
         it('Logs deep mutation on an object within an array', async () => {
             elm.setFavoriteIceCreamFlavor('vanilla');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'favoriteFlavors[0].flavor');
+            expectRerenderEntry('x-child', 'favoriteFlavors[0].flavor');
         });
 
         it('Logs multiple mutations on the same component', async () => {
@@ -137,7 +137,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.setFavoriteIceCreamFlavor('vanilla');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry(
+            expectRerenderEntry(
                 'x-child',
                 'favoriteFlavors[0].flavor, firstName, previousName.suffix.short'
             );
@@ -152,9 +152,9 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr([
                     obj({
-                        name: 'lwc-hydrate',
+                        name: 'lwc-render',
                     }),
-                    rehydrationEntry('x-child', 'firstName'),
+                    rerenderEntry('x-child', 'firstName'),
                 ])
             );
         });
@@ -167,7 +167,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr([
                     obj({
-                        name: 'lwc-hydrate',
+                        name: 'lwc-render',
                     }),
                 ])
             );
@@ -181,7 +181,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr([
                     obj({
-                        name: 'lwc-rehydrate',
+                        name: 'lwc-rerender',
                         detail: obj({
                             devtools: obj({
                                 properties: arr([
@@ -205,28 +205,28 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.setWackyAccessorDeepValue('yolo');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'wackyAccessors.foo.bar');
+            expectRerenderEntry('x-child', 'wackyAccessors.foo.bar');
         });
 
         it('Logs for deep symbol prop mutation', async () => {
             elm.setWackyAccessorSymbol('haha');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(yolo)]');
+            expectRerenderEntry('x-child', 'wackyAccessors[Symbol(yolo)]');
         });
 
         it('Logs for doubly deep symbol prop mutation', async () => {
             elm.setWackyAccessorDoublyDeepSymbol('wahoo');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'wackyAccessors[Symbol(whoa)].baz');
+            expectRerenderEntry('x-child', 'wackyAccessors[Symbol(whoa)].baz');
         });
 
         it('Logs for mutation on deeply-recursive object', async () => {
             elm.setOnRecursiveObject('woohoo');
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'recursiveObject.foo');
+            expectRerenderEntry('x-child', 'recursiveObject.foo');
         });
     });
 
@@ -243,10 +243,10 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             await new Promise(requestAnimationFrame);
             expect(entries).toEqual(
                 arr(
-                    // synthetic lifecycle considers this one hydration event rather than two
+                    // synthetic lifecycle considers this one lwc-render event rather than two
                     lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                        ? [obj({ name: 'lwc-hydrate' })]
-                        : [obj({ name: 'lwc-hydrate' }), obj({ name: 'lwc-hydrate' })]
+                        ? [obj({ name: 'lwc-render' })]
+                        : [obj({ name: 'lwc-render' }), obj({ name: 'lwc-render' })]
                 )
             );
             entries = []; // reset
@@ -256,14 +256,14 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             elm.firstName = 'Ferdinand';
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-parent', 'firstName');
+            expectRerenderEntry('x-parent', 'firstName');
         });
 
         it('Logs a mutation on the child only', async () => {
             child.lastName = 'Magellan';
 
             await new Promise(requestAnimationFrame);
-            expectRehydrationEntry('x-child', 'lastName');
+            expectRerenderEntry('x-child', 'lastName');
         });
 
         it('Logs a mutation on both parent and child', async () => {
@@ -274,7 +274,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr([
                     obj({
-                        name: 'lwc-rehydrate',
+                        name: 'lwc-rerender',
                         detail: obj({
                             devtools: obj({
                                 properties: arr([

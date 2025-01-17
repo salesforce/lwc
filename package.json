@@ -24,6 +24,7 @@
         "test:ci": "vitest run --workspace vitest.workspace.mjs --coverage",
         "test:karma": "nx test @lwc/integration-karma",
         "test:karma:start": "nx start @lwc/integration-karma",
+        "test:hydration:start": "nx hydration:start @lwc/integration-karma",
         "test:integration": "nx sauce @lwc/integration-tests",
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
