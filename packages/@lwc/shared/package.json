@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/shared",
-    "version": "8.12.4",
+    "version": "8.12.5",
     "description": "Utilities and methods that are shared across packages",
     "keywords": [
         "lwc"
