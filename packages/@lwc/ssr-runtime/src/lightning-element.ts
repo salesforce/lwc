@@ -28,6 +28,7 @@ import {
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
+import { getReadOnlyProxy } from './get-read-only-proxy';
 import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
 
@@ -94,7 +95,9 @@ export class LightningElement implements PropsAvailableAtConstruction {
                 ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
                     !privateFields.has(propName))
             ) {
-                (this as any)[propName] = props[propName];
+                // For props passed from parents to children, they are intended to be read-only
+                // to avoid a child mutating its parent's state
+                (this as any)[propName] = getReadOnlyProxy(props[propName]);
             }
         }
     }

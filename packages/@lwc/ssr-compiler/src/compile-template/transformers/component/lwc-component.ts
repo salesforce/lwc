@@ -23,7 +23,7 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
             throw new Error(\`Invalid constructor: "\${String(Ctor)}" is not a LightningElement constructor.\`)
         }
-        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
+        const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
         ${
             /*
@@ -57,7 +57,6 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
     const lwcIs = directives.find((directive) => directive.name === 'Is');
     if (!isUndefined(lwcIs)) {
         cxt.import({
-            getReadOnlyProxy: '__getReadOnlyProxy',
             LightningElement: undefined,
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
         });
