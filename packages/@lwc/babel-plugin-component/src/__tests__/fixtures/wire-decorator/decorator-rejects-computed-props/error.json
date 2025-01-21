@@ -1,0 +1,10 @@
+{
+    "message": "LWC1131: @wire identifier cannot contain computed properties",
+    "loc": {
+        "line": 4,
+        "column": 8,
+        "start": 130,
+        "length": 10
+    },
+    "filename": "test.js"
+}
