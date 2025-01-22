@@ -9,10 +9,10 @@ import { APIVersion, noop } from '@lwc/shared';
 import { transformSync } from '../transformer';
 import type { TransformOptions } from '../../options';
 
-const TRANSFORMATION_OPTIONS: TransformOptions = {
+const TRANSFORMATION_OPTIONS = {
     namespace: 'x',
     name: 'foo',
-};
+} satisfies TransformOptions;
 
 describe('transformSync', () => {
     it('should throw when processing an invalid HTML file', () => {
@@ -74,7 +74,10 @@ describe('transformSync', () => {
         ];
         it.for(configs)('$name', ({ config, expected }) => {
             const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
-            const { code, warnings } = transformSync(template, 'foo.html', config);
+            const { code, warnings } = transformSync(template, 'foo.html', {
+                ...TRANSFORMATION_OPTIONS,
+                ...config,
+            });
             expect(warnings!.length).toBe(0);
             if (expected) {
                 expect(code).toContain('<img');
