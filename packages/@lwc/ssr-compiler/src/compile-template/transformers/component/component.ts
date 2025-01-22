@@ -17,7 +17,7 @@ import type { Transformer } from '../../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
+        const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
         ${
             /*
@@ -52,7 +52,6 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const importPath = kebabcaseToCamelcase(node.name);
     cxt.import({ default: childComponentLocalName }, importPath);
     cxt.import({
-        getReadOnlyProxy: '__getReadOnlyProxy',
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
     });
     const childTagName = node.name;

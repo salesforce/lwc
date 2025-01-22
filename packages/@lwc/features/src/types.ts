@@ -75,6 +75,12 @@ export interface FeatureFlagMap {
      * native shadow mode.
      */
     DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
+
+    /**
+     * If true, then lightning legacy locker is supported, otherwise lightning legacy locker will not function
+     * properly.
+     */
+    ENABLE_LEGACY_LOCKER_SUPPORT: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
