@@ -14,7 +14,7 @@ import {
     toString,
 } from '@lwc/shared/language';
 
-import * as assert from '@Lwc/shared/assert';
+import * as assert from '@lwc/shared/assert';
 
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';

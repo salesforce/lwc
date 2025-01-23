@@ -6,7 +6,7 @@
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
 import { hasOwnProperty } from '@lwc/shared/language';
-import { getAPIVersionFromNumber } from '@Lwc/shared/api-version';
+import { getAPIVersionFromNumber } from '@lwc/shared/api-version';
 import { isCustomElementTag } from './shared/utils';
 import type { CustomRendererConfig } from './shared/renderer-hooks';
 import type { InstrumentationObject } from '@lwc/errors';
