@@ -205,6 +205,9 @@ function generateInputConfig() {
  */
 function createOutputConfig(format) {
     if (pkg.name === '@lwc/shared') {
+        const ext = format === 'es' ? 'js' : `${format}.js`;
+
+        
         return {
             dir: 'dist',
             sourcemap: true,
@@ -214,7 +217,7 @@ function createOutputConfig(format) {
             exports: 'named',
             esModule: true,
             preserveModules: true,
-            entryFileNames: '[name].[format].js',
+            entryFileNames: `[name].${ext}`,
         };
     }
 

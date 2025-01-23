@@ -34,7 +34,7 @@
             "types": "./dist/*.d.ts",
             "node": "./dist/*.cjs.js",
             "development": "./src/*.ts",
-            "import": "./dist/*.es.js",
+            "import": "./dist/*.js",
             "require": "./dist/*.cjs.js"
         }
     },
