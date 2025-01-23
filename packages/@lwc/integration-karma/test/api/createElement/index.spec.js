@@ -98,10 +98,10 @@ describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
 
 describe('locker integration', () => {
     beforeEach(() => {
-        setFeatureFlagForTest('ENABLE_LEGACY_LOCKER_SUPPORT', true);
+        setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
     });
     afterEach(() => {
-        setFeatureFlagForTest('ENABLE_LEGACY_LOCKER_SUPPORT', false);
+        setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
     });
     it('should support component class that extend a mirror of the LightningElement', () => {
         function SecureBaseClass() {
