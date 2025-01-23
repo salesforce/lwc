@@ -5,28 +5,37 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+// @ts-check
 /* eslint-env node */
 
-const { readFileSync } = require('node:fs');
-const path = require('node:path');
-const MagicString = require('magic-string');
-const { rollup } = require('rollup');
-const replace = require('@rollup/plugin-replace');
-const typescript = require('@rollup/plugin-typescript');
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
+import { readFileSync } from 'node:fs';
+import { resolve, join, relative, extname } from 'node:path';
+import { globSync } from 'glob';
+import MagicString from 'magic-string';
+import { rollup } from 'rollup';
+import replace from '@rollup/plugin-replace';
+import typescript from '@rollup/plugin-typescript';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
 
 // The assumption is that the build script for each sub-package runs in that sub-package's directory
 const packageRoot = process.cwd();
-const packageJson = JSON.parse(readFileSync(path.resolve(packageRoot, './package.json'), 'utf-8'));
-const { name: packageName, version, dependencies, peerDependencies } = packageJson;
+
+/**
+ * @type {import('nx/src/utils/package-json.js').PackageJson}
+ */
+const pkg = JSON.parse(readFileSync(resolve(packageRoot, './package.json'), 'utf-8'));
 // This copyright text should match the text in the header/header eslint rule
 let banner = `/**\n * Copyright (c) ${new Date().getFullYear()} Salesforce, Inc.\n */`;
-let footer = `/** version: ${version} */`;
+let footer = `/** version: ${pkg.version} */`;
 const { ROLLUP_WATCH: watchMode } = process.env;
+
+/**
+ * @type {import('rollup').ModuleFormat[]}
+ */
 const formats = ['es', 'cjs'];
 
-if (packageName === '@lwc/synthetic-shadow') {
+if (pkg.name === '@lwc/synthetic-shadow') {
     // Here we wrap all of synthetic shadow in a check for lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE and
     // lwcRuntimeFlags.DISABLE_SYNTHETIC_SHADOW, so that synthetic shadow is not loaded if either flag is set.
     // Note that lwcRuntimeFlags must be referenced as a pure global, or else string replacement in ESBuild
@@ -43,6 +52,9 @@ if (packageName === '@lwc/synthetic-shadow') {
     footer += '\n}';
 }
 
+/**
+ * @type {import('rollup').WarningHandlerWithDefault} warning
+ */
 const onwarn = ({ code, message }) => {
     if (!process.env.ROLLUP_WATCH && code !== 'CIRCULAR_DEPENDENCY') {
         throw new Error(message);
@@ -50,16 +62,19 @@ const onwarn = ({ code, message }) => {
 };
 
 // These plugins are used both by the main Rollup build as well as our sub-Rollup build (injectInlineRenderer).
+/**
+ * @returns {import('rollup').Plugin[]}
+ */
 function sharedPlugins() {
-    const engineBrowserConfig = ['@lwc/engine-server', '@lwc/engine-dom'].includes(packageName) && {
+    const engineBrowserConfig = ['@lwc/engine-server', '@lwc/engine-dom'].includes(pkg.name) && {
         // This is only used inside @lwc/engine-dom and @lwc/engine-server
         // Elsewhere, it _not_ be replaced, so that it can be replaced later (e.g. in @lwc/engine-core)
-        'process.env.IS_BROWSER': packageName === '@lwc/engine-dom' ? 'true' : 'false',
+        'process.env.IS_BROWSER': pkg.name === '@lwc/engine-dom' ? 'true' : 'false',
     };
 
     return [
         typescript({
-            tsconfig: path.join(packageRoot, 'tsconfig.json'),
+            tsconfig: join(packageRoot, 'tsconfig.json'),
             exclude: ['**/__tests__/**'],
             noEmitOnError: !watchMode, // in watch mode, do not exit with an error if typechecking fails
             ...(watchMode && {
@@ -71,7 +86,7 @@ function sharedPlugins() {
         replace({
             values: {
                 ...engineBrowserConfig,
-                'process.env.LWC_VERSION': JSON.stringify(version),
+                'process.env.LWC_VERSION': JSON.stringify(pkg.version),
             },
             preventAssignment: true,
         }),
@@ -83,6 +98,9 @@ function sharedPlugins() {
 // The reasons for this are due to how Locker does sandboxing.
 // So we run Rollup inside of a Rollup plugin to accomplish this. This resolves all dependencies and
 // builds them as an IIFE, which can then be injected into the source as process.env.RENDERER.
+/**
+ * @returns {import('rollup').Plugin}
+ */
 function injectInlineRenderer() {
     const rendererReplacementString = 'process.env.RENDERER';
 
@@ -92,8 +110,8 @@ function injectInlineRenderer() {
         async transform(source) {
             if (source.includes(rendererReplacementString)) {
                 const bundle = await rollup({
-                    input: path.resolve(
-                        __dirname,
+                    input: resolve(
+                        import.meta.dirname,
                         '../../packages/@lwc/engine-dom/src/renderer/index.ts'
                     ),
 
@@ -136,18 +154,13 @@ function injectInlineRenderer() {
     };
 }
 
-module.exports = {
-    input: path.resolve(packageRoot, './src/index.ts'),
+/**
+ * @type {import('rollup').RollupOptions}
+ */
+export default {
+    input: generateInputConfig(),
 
-    output: formats.map((format) => ({
-        file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
-        sourcemap: true,
-        format,
-        banner,
-        footer,
-        exports: 'named',
-        esModule: true,
-    })),
+    output: formats.map(createOutputConfig),
 
     plugins: [
         nodeResolve({
@@ -164,5 +177,59 @@ module.exports = {
 
     onwarn,
 
-    external: [...Object.keys(dependencies || {}), ...Object.keys(peerDependencies || {})],
+    external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
 };
+
+/**
+ * @returns {import('rollup').InputOption}
+ */
+function generateInputConfig() {
+    if (pkg.name === '@lwc/shared') {
+        return Object.fromEntries(
+            globSync('src/*.ts', { root: packageRoot }).map(file => [
+                // This remove `src/` as well as the file extension from each
+                // file, so e.g. src/nested/foo.js becomes nested/foo
+                relative(
+                    `${packageRoot}/src`,
+                    file.slice(0, file.length - extname(file).length)
+                ),
+                // This expands the relative paths to absolute paths, so e.g.
+                // src/nested/foo becomes /project/src/nested/foo.js
+                resolve(packageRoot, file)
+            ])
+        );
+    }
+    return resolve(packageRoot, './src/index.ts');
+}
+
+/**
+ * @param {import('rollup').ModuleFormat} format
+ * @returns {import('rollup').OutputOptions}
+ */
+function createOutputConfig(format) {
+
+    if (pkg.name === '@lwc/shared') {
+        return {
+            dir: 'dist',
+            sourcemap: true,
+            format,
+            banner,
+            footer,
+            exports: 'named',
+            esModule: true,
+            preserveModules: true,
+            entryFileNames: '[name].[format].js',
+        }
+    }
+
+    return {
+        file: format === 'es' ? pkg.module : pkg.main,
+        sourcemap: true,
+        format,
+        banner,
+        footer,
+        exports: 'named',
+        esModule: true,
+    };
+}
+

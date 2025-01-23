@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared/api-version';
 import type ParserCtx from '../parser';
 
 export * from './types';

@@ -4,15 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayPush,
-    create,
-    isFunction,
-    keys,
-    seal,
-    isAPIFeatureEnabled,
-    APIFeature,
-} from '@lwc/shared';
+import { ArrayPush, create, isFunction, keys, seal } from '@lwc/shared/language';
+import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared/api-version';
 import { logWarnOnce } from '../shared/logger';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import type { LightningElementConstructor } from './base-lightning-element';

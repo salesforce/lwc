@@ -4,16 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayMap,
-    ArrayPush,
-    isArray,
-    isNull,
-    isTrue,
-    isUndefined,
-    KEY__NATIVE_ONLY_CSS,
-    KEY__SCOPED_CSS,
-} from '@lwc/shared';
+import { ArrayMap, ArrayPush, isArray, isNull, isTrue, isUndefined } from '@lwc/shared/language';
+import { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from '@lwc/shared/keys';
 
 import { logError } from '../shared/logger';
 
@@ -27,7 +19,7 @@ import { assertNotProd, EmptyArray } from './utils';
 import type { VCustomElement, VNode } from './vnodes';
 import type { Template } from './template';
 import type { VM } from './vm';
-import type { Stylesheet, Stylesheets } from '@lwc/shared';
+import type { Stylesheet, Stylesheets } from '@lwc/shared/style';
 
 // These are only used for HMR in dev mode
 // The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode

@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    assert,
     defineProperties,
     ArrayFilter,
     ArrayIndexOf,
@@ -16,7 +15,8 @@ import {
     isNull,
     isTrue,
     isUndefined,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 import {
     getAttribute,
     setAttribute,

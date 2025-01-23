@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, isNull, isUndefined } from '@lwc/shared';
+import { defineProperty, isNull, isUndefined } from '@lwc/shared/language';
 
 import { parentNodeGetter } from '../env/node';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';

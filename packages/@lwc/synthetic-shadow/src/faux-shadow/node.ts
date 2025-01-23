@@ -12,7 +12,7 @@ import {
     isNull,
     isTrue,
     isUndefined,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
 import { Node } from '../env/node';
 import {

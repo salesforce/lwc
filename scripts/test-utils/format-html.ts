@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared/language';
 
 /**
  * Naive HTML fragment formatter.

@@ -12,7 +12,7 @@ import {
     defineProperty,
     getOwnPropertyDescriptor,
     isFalse,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
 import { assertNotProd, EmptyObject } from '../utils';
 import { logError } from '../../shared/logger';

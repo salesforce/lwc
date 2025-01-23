@@ -5,20 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    assert,
     create,
-    htmlEscape,
     isArray,
     isNull,
     isString,
     isTrue,
     isUndefined,
-    KEY__SCOPED_CSS,
     keys,
     StringCharAt,
-    STATIC_PART_TOKEN_ID,
     toString,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
+import { htmlEscape } from '@lwc/shared/html-escape';
+import { STATIC_PART_TOKEN_ID } from '@lwc/shared/static-part-tokens';
+import { KEY__SCOPED_CSS } from '@lwc/shared/keys';
 
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
@@ -36,7 +36,7 @@ import type { RendererAPI } from './renderer';
 import type { VNodes, VStaticPart, VStaticPartElement, VStaticPartText } from './vnodes';
 import type { SlotSet, TemplateCache, VM } from './vm';
 import type { RenderAPI } from './api';
-import type { Stylesheets } from '@lwc/shared';
+import type { Stylesheets } from '@lwc/shared/style';
 
 export interface Template {
     (api: RenderAPI, cmp: object, slotSet: SlotSet, cache: TemplateCache): VNodes;

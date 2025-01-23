@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
+import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared/language';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node

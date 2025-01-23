@@ -29,7 +29,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { hasOwnProperty } from '@lwc/shared';
+import { hasOwnProperty } from '@lwc/shared/language';
 
 // This mapping is based on https://github.com/wooorm/html-element-attributes/blob/270d8ce/index.js
 // TODO [#3019]: use the package directly instead of vendor'ing it

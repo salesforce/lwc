@@ -8,19 +8,19 @@ import {
     ArrayPop,
     ArrayPush,
     ArraySome,
-    assert,
+    
     create,
     isArray,
     isFalse,
     isNull,
     isTrue,
     isUndefined,
-    KEY__SHADOW_RESOLVER,
-    KEY__SHADOW_STATIC,
     keys,
-    SVG_NAMESPACE,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 
+import { KEY__SHADOW_RESOLVER, KEY__SHADOW_STATIC } from '@lwc/shared/keys';
+import { SVG_NAMESPACE } from '@lwc/shared/namespaces';
 import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { EmptyArray, shouldBeFormAssociated } from './utils';

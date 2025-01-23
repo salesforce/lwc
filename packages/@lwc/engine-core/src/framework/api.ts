@@ -5,13 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    APIFeature,
     ArrayPush,
-    assert,
     create as ObjectCreate,
     forEach,
     freeze as ObjectFreeze,
-    isAPIFeatureEnabled,
     isArray,
     isFalse,
     isFunction,
@@ -23,10 +20,12 @@ import {
     isUndefined,
     StringReplace,
     toString,
-    sanitizeHtmlContent,
-    normalizeClass,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
+import * as assert from '@lwc/shared/assert';
+import { sanitizeHtmlContent } from '@lwc/shared/overridable-hooks';
+import { normalizeClass } from '@lwc/shared/normalize-class';
+import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared/api-version';
 import { logError } from '../shared/logger';
 
 import { invokeEventListener } from './invoker';

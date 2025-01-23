@@ -7,7 +7,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
 import { describe, it, expect } from 'vitest';
-import { hasOwnProperty } from '@lwc/shared';
+import { hasOwnProperty } from '@lwc/shared/language';
 import * as CompilerErrors from '../compiler/error-info';
 import type { LWCErrorInfo } from '../shared/types';
 

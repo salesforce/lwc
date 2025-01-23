@@ -8,7 +8,7 @@ import * as parse5 from 'parse5';
 import * as he from 'he';
 
 import { ParserDiagnostics } from '@lwc/errors';
-import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared/api-version';
 import { sourceLocation } from '../shared/ast';
 
 import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
@@ -36,7 +36,7 @@ function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
     }
 }
 
-export function parseHTML(ctx: ParserCtx, source: string) {
+export function parseHTML(ctx: ParserCtx, source: string): parse5.DefaultTreeAdapterTypes.DocumentFragment {
     const onParseError = (err: parse5.ParserError) => {
         const { code, ...location } = err;
 

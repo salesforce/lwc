@@ -6,8 +6,10 @@
         "declarationMap": true,
         "sourceMap": true,
 
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "module": "Preserve",
+        "moduleResolution": "bundler",
+        "moduleDetection": "force",
+        "resolvePackageJsonExports": true,
         "esModuleInterop": true,
 
         "target": "es2021",

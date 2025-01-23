@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isNull, isUndefined, flattenStylesheets } from '@lwc/shared';
+import { isFalse, isNull, isUndefined } from '@lwc/shared/language';
+import { flattenStylesheets, type Stylesheet, type Stylesheets } from '@lwc/shared/style';
 import { scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { markComponentAsDirty } from './component';
@@ -16,7 +17,6 @@ import { WeakMultiMap } from './weak-multimap';
 import type { Template } from './template';
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { VM } from './vm';
-import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 let swappedTemplateMap: WeakMap<Template, Template> = /*@__PURE__@*/ new WeakMap();
 let swappedComponentMap: WeakMap<LightningElementConstructor, LightningElementConstructor> =

@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, toString } from '@lwc/shared';
+import { toString } from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 import { trackTargetForMutationLogging } from '../mutation-logger';
 import { componentValueObserved } from '../mutation-tracker';
 import { isInvokingRender } from '../invoker';

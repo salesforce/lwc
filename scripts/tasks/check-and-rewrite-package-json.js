@@ -47,7 +47,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
         continue;
     }
 
-    const { name, description, version, dependencies, devDependencies, peerDependencies } = pkg;
+    const { name, description, version, dependencies, devDependencies, peerDependencies, exports } = pkg;
     let { keywords } = pkg;
 
     // Keywords aren't really important, but keep any that already exist and add 'lwc'
@@ -72,6 +72,7 @@ for (const dir of globSync('./packages/@lwc/*')) {
             types: 'dist/index.d.ts',
             // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
             files: ['dist/**/*.js', 'dist/**/*.d.ts'],
+            ...(exports && { exports }),
             scripts: {
                 build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
                 dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',

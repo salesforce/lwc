@@ -6,7 +6,8 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
+import { StringReplace, StringTrim } from '@lwc/shared/language';
+import { normalizeStyleAttributeValue } from '@lwc/shared/style';
 import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';

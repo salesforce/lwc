@@ -6,10 +6,11 @@
  */
 import {
     HTML_NAMESPACE,
-    htmlEscape,
-    isVoidElement,
-    normalizeStyleAttributeValue,
-} from '@lwc/shared';
+    
+} from '@lwc/shared/namespaces';
+import { normalizeStyleAttributeValue } from '@lwc/shared/style';
+import { htmlEscape } from '@lwc/shared/html-escape';
+import { isVoidElement } from '@lwc/shared/void-elements';
 import {
     isAllowedFragOnlyUrlsXHTML,
     isFragmentOnlyUrl,

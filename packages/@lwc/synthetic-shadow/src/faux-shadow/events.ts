@@ -16,7 +16,7 @@ import {
     isFunction,
     isUndefined,
     toString,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';

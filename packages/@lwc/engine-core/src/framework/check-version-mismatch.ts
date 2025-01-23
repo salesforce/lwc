@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
+import { isNull } from '@lwc/shared/language';
+import { LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared/meta'
 
 import { logError } from '../shared/logger';
 
 import { report, ReportingEventId } from './reporting';
 import type { Template } from './template';
 import type { LightningElementConstructor } from './base-lightning-element';
-import type { Stylesheet } from '@lwc/shared';
+import type { Stylesheet } from '@lwc/shared/style';
 
 let warned = false;
 

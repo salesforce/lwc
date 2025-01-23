@@ -19,12 +19,11 @@ import {
     defineProperties,
     freeze,
     getPrototypeOf,
-    htmlPropertyToAttribute,
     isFunction,
     isNull,
     isUndefined,
     keys,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
 import { RenderMode } from '../framework/vm';
 import {
@@ -49,6 +48,7 @@ import type { PropType } from './decorators/register';
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { Template } from './template';
 import type { ShadowSupportMode } from '../framework/vm';
+import { htmlPropertyToAttribute } from '@lwc/shared/html-attributes';
 
 export interface ComponentDef {
     name: string;

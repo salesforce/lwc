@@ -9,11 +9,12 @@ import {
     ArrayIndexOf,
     ArrayReverse,
     ArraySlice,
-    assert,
     isNull,
     isUndefined,
     toString,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+
+import * as assert from '@Lwc/shared/assert';
 
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';

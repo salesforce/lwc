@@ -4,18 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isFunction, isNull, isUndefined, noop, StringToLowerCase } from '@lwc/shared/language';
+
+import { HTML_NAMESPACE } from '@lwc/shared/namespaces';
+
 import {
-    HTML_NAMESPACE,
     htmlPropertyToAttribute,
-    isAriaAttribute,
     isBooleanAttribute,
-    isFunction,
-    isNull,
-    isUndefined,
-    noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
-    StringToLowerCase,
-} from '@lwc/shared';
+} from '@lwc/shared/html-attributes';
+import { isAriaAttribute } from '@lwc/shared/aria';
 
 import {
     HostNodeType,

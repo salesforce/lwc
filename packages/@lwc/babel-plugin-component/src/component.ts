@@ -6,7 +6,8 @@
  */
 import { basename, extname } from 'path';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
-import { generateCustomElementTagName, getAPIVersionFromNumber } from '@lwc/shared';
+import { getAPIVersionFromNumber } from '@lwc/shared/api-version';
+import { generateCustomElementTagName } from '@lwc/shared/custom-element';
 import {
     COMPONENT_NAME_KEY,
     LWC_PACKAGE_ALIAS,

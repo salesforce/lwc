@@ -19,13 +19,12 @@ import {
     getOwnPropertyDescriptor,
     isArray,
     isUndefined,
-    KEY__SCOPED_CSS,
-    KEY__NATIVE_ONLY_CSS,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from '@lwc/shared/keys';
 import { logWarnOnce } from '../shared/logger';
 import { onReportingEnabled, report, ReportingEventId } from './reporting';
 import type { Template } from './template';
-import type { Stylesheet, Stylesheets } from '@lwc/shared';
+import type { Stylesheet, Stylesheets } from '@lwc/shared/style';
 
 // See @lwc/engine-core/src/framework/template.ts
 const TEMPLATE_PROPS = [

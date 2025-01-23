@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    assert,
     assign,
     isFunction,
     isNull,
@@ -13,7 +12,8 @@ import {
     isUndefined,
     toString,
     StringToLowerCase,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 import {
     createVM,
     connectRootElement,

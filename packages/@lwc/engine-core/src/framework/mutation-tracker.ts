@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isNull, isObject, isTrustedSignal } from '@lwc/shared';
+import { isFunction, isNull, isObject } from '@lwc/shared/language';
+import { isTrustedSignal } from '@lwc/shared/signals';
+
 import { ReactiveObserver, valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
 import { safeHasProp } from './utils';

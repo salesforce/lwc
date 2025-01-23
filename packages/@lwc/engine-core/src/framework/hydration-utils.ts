@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, ArrayJoin, ArraySort, ArrayFrom, isNull, isUndefined } from '@lwc/shared';
+import { ArrayPush, ArrayJoin, ArraySort, ArrayFrom, isNull, isUndefined } from '@lwc/shared/language';
 
 import { assertNotProd } from './utils';
 

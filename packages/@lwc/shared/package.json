@@ -32,6 +32,17 @@
         "dist/**/*.js",
         "dist/**/*.d.ts"
     ],
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs.js"
+        },
+        "./*": {
+            "types": "./dist/*.d.ts",
+            "import": "./dist/*.es.js",
+            "require": "./dist/*.cjs.js"
+        }
+    },
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
         "dev": "rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen"

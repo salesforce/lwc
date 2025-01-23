@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert } from '@lwc/shared';
+import * as assert from '@lwc/shared/assert';
 import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';

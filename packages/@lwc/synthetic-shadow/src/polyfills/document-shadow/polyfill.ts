@@ -12,7 +12,7 @@ import {
     getOwnPropertyDescriptor,
     isNull,
     isUndefined,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 import {
     DocumentPrototypeActiveElement,
     getElementById as documentGetElementById,

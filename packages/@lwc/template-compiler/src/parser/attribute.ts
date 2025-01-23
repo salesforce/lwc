@@ -5,14 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { ParserDiagnostics } from '@lwc/errors';
-import {
-    isAriaAttribute,
-    isBooleanAttribute,
-    isGlobalHtmlAttribute,
-    HTML_NAMESPACE,
-    SVG_NAMESPACE,
-    ID_REFERENCING_ATTRIBUTES_SET,
-} from '@lwc/shared';
+import { isBooleanAttribute, isGlobalHtmlAttribute } from '@lwc/shared/html-attributes';
+import { isAriaAttribute, ID_REFERENCING_ATTRIBUTES_SET } from '@lwc/shared/aria';
+import { HTML_NAMESPACE, SVG_NAMESPACE } from '@lwc/shared/namespaces';
 
 import { isComponent, isExternalComponent, isLwcComponent } from '../shared/ast';
 import { toPropertyName } from '../shared/utils';

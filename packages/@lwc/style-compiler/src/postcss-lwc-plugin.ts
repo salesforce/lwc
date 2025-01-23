@@ -12,7 +12,7 @@ import transformSelectorScoping from './selector-scoping/transform';
 import transformDirPseudoClass from './dir-pseudo-class/transform';
 import transformAtRules from './scope-at-rules/transform';
 import type { SelectorScopingConfig } from './selector-scoping/transform';
-import type { APIVersion } from '@lwc/shared';
+import type { APIVersion } from '@lwc/shared/api-version';
 import type { Rule, AtRule, TransformCallback } from 'postcss';
 
 function shouldTransformSelector(rule: Rule) {

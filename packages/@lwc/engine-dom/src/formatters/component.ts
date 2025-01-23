@@ -6,7 +6,7 @@
  */
 
 import { getAssociatedVMIfPresent } from '@lwc/engine-core';
-import { isUndefined, keys } from '@lwc/shared';
+import { isUndefined, keys } from '@lwc/shared/language';
 import type { LightningElement } from '@lwc/engine-core';
 
 /**

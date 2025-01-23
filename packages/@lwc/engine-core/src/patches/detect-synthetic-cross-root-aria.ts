@@ -7,20 +7,22 @@
 import {
     assign,
     isTrue,
-    KEY__NATIVE_GET_ELEMENT_BY_ID,
-    KEY__NATIVE_QUERY_SELECTOR_ALL,
     isNull,
     isUndefined,
     getOwnPropertyDescriptor,
     defineProperty,
-    ID_REFERENCING_ATTRIBUTES_SET,
     isString,
     isFunction,
     StringSplit,
     ArrayFilter,
     hasOwnProperty,
+} from '@lwc/shared/language';
+import {
+    KEY__NATIVE_GET_ELEMENT_BY_ID,
+    KEY__NATIVE_QUERY_SELECTOR_ALL,
     KEY__SHADOW_TOKEN,
-} from '@lwc/shared';
+} from '@lwc/shared/keys';
+import { ID_REFERENCING_ATTRIBUTES_SET } from '@lwc/shared/aria';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { getAssociatedVMIfPresent } from '../framework/vm';
 import { logWarnOnce } from '../shared/logger';

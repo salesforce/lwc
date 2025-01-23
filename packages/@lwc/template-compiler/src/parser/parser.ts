@@ -19,7 +19,7 @@ import type {
     Location,
     LWCErrorInfo,
 } from '@lwc/errors';
-import type { APIVersion } from '@lwc/shared';
+import type { APIVersion } from '@lwc/shared/api-version';
 import type { NormalizedConfig } from '../config';
 import type {
     Root,

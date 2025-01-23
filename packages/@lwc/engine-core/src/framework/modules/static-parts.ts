@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isNull, isUndefined, assert } from '@lwc/shared';
+import { isNull, isUndefined } from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 import { isVStaticPartElement, isVStaticPartText } from '../vnodes';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';

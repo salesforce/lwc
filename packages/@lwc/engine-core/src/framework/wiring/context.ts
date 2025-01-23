@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayPush } from '@lwc/shared';
+import { isUndefined, ArrayPush } from '@lwc/shared/language';
 import { guid } from '../utils';
 import type { VM } from '../vm';
 import type {

@@ -8,7 +8,6 @@ import {
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
-    assert,
     create,
     defineProperty,
     getOwnPropertyNames,
@@ -19,8 +18,9 @@ import {
     isObject,
     isTrue,
     isUndefined,
-    flattenStylesheets,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
+import { flattenStylesheets } from '@lwc/shared/style';
 
 import { addErrorComponentStack } from '../shared/error';
 import { logError, logWarnOnce } from '../shared/logger';
@@ -59,7 +59,8 @@ import type {
 import type { ComponentDef } from './def';
 import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
-import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
+import type { Stylesheet, Stylesheets } from '@lwc/shared/style';
+import type { APIVersion } from '@lwc/shared/api-version';
 
 type ShadowRootMode = 'open' | 'closed';
 

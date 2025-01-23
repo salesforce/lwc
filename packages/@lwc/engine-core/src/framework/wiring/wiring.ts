@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, create, isUndefined, ArrayPush, defineProperty, noop } from '@lwc/shared';
+import { create, isUndefined, ArrayPush, defineProperty, noop } from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 import { associateReactiveObserverWithVM } from '../mutation-logger';
 import { createReactiveObserver } from '../mutation-tracker';
 import { runWithBoundaryProtection, VMState, getAssociatedVM } from '../vm';

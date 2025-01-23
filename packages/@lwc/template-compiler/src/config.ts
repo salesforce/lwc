@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { TemplateErrors, invariant, generateCompilerError } from '@lwc/errors';
-import { getAPIVersionFromNumber, hasOwnProperty } from '@lwc/shared';
+import { hasOwnProperty } from '@lwc/shared/language';
+import { getAPIVersionFromNumber } from '@Lwc/shared/api-version';
 import { isCustomElementTag } from './shared/utils';
 import type { CustomRendererConfig } from './shared/renderer-hooks';
 import type { InstrumentationObject } from '@lwc/errors';

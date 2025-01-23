@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    AriaPropNameToAttrNameMap,
     isNull,
     isUndefined,
     create,
     getPropertyDescriptor,
     entries,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import { AriaPropNameToAttrNameMap} from '@lwc/shared/aria';
 import { HTMLElementPrototype } from '../../framework/html-element';
 
 // Apply ARIA string reflection behavior to a prototype.

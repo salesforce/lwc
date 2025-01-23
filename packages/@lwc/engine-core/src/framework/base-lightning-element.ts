@@ -18,18 +18,17 @@ import {
     defineProperty,
     entries,
     freeze,
-    isAPIFeatureEnabled,
     isFunction,
     isNull,
     isObject,
     isUndefined,
-    KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
-    APIFeature,
-    assert,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
+import { KEY__SYNTHETIC_MODE } from '@lwc/shared/keys';
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared/api-version';
+import * as assert from '@lwc/shared/assert';
 import { logError, logWarnOnce } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import {
@@ -54,7 +53,8 @@ import { applyShadowMigrateMode } from './shadow-migration-mode';
 import type { HTMLElementConstructor } from './base-bridge-element';
 import type { Template } from './template';
 import type { RefVNodes, ShadowSupportMode, VM } from './vm';
-import type { Stylesheets, AccessibleElementProperties } from '@lwc/shared';
+import type { Stylesheets } from '@lwc/shared/style';
+import type { AccessibleElementProperties } from '@lwc/shared/aria';
 
 /**
  * This operation is called with a descriptor of an standard html property

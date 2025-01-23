@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
+import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared/language';
 
 const eventTargetGetter: (this: Event) => EventTarget = getOwnPropertyDescriptor(
     Event.prototype,

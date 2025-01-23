@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { entries, isNull, toString, AriaAttrNameToPropNameMap } from '@lwc/shared';
+import { entries, isNull, toString } from '@lwc/shared/language';
+import { AriaAttrNameToPropNameMap } from '@lwc/shared/aria';
 import type { LightningElement } from '../../framework/base-lightning-element';
 
 /**

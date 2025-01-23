@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    AriaAttrNameToPropNameMap,
     ArrayFrom,
     fromEntries,
-    SPECIAL_PROPERTY_ATTRIBUTE_MAPPING,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import { AriaAttrNameToPropNameMap } from '@lwc/shared/aria';
+import { SPECIAL_PROPERTY_ATTRIBUTE_MAPPING } from '@lwc/shared/html-attributes';
 import { ElementDirectiveName } from '../shared/types';
 import { HTML_ELEMENTS } from './utils/html-elements';
 import { SVG_ELEMENTS } from './utils/svg-elements';

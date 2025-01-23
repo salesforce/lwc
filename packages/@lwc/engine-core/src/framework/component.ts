@@ -4,7 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isUndefined, LOWEST_API_VERSION } from '@lwc/shared';
+import { isFalse, isFunction, isUndefined } from '@lwc/shared/language';
+import { LOWEST_API_VERSION } from '@lwc/shared/api-version';
+import * as assert from '@lwc/shared/assert';
 
 import { createReactiveObserver, unsubscribeFromSignals } from './mutation-tracker';
 
@@ -18,7 +20,7 @@ import type { LightningElementConstructor } from './base-lightning-element';
 import type { Template } from './template';
 import type { VNodes } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
-import type { APIVersion } from '@lwc/shared';
+import type { APIVersion } from '@lwc/shared/api-version';
 
 type ComponentConstructorMetadata = {
     tmpl: Template;

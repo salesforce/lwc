@@ -12,14 +12,17 @@ import {
     isNull,
     isTrue,
     isUndefined,
+    setPrototypeOf,
+    getPrototypeOf,
+    isObject,
+} from '@lwc/shared/language';
+
+import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
-    setPrototypeOf,
-    getPrototypeOf,
-    isObject,
-} from '@lwc/shared';
+} from '@lwc/shared/keys';
 
 import { innerHTMLSetter } from '../env/element';
 import { dispatchEvent } from '../env/event-target';

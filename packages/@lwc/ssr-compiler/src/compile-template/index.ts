@@ -16,7 +16,7 @@ import { transmogrify } from '../transmogrify';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
 import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
-import type { CompilationMode } from '@lwc/shared';
+import type { CompilationMode } from '@lwc/shared/ssr';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`

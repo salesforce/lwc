@@ -7,7 +7,7 @@
 
 import { walk } from 'estree-walker';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
-import { isBooleanAttribute } from '@lwc/shared';
+import { isBooleanAttribute } from '@lwc/shared/html-attributes';
 import * as t from '../shared/estree';
 import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isProperty, isStringLiteral } from '../shared/ast';

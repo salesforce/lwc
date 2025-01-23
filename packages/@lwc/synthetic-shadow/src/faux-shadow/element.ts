@@ -14,8 +14,9 @@ import {
     hasOwnProperty,
     isNull,
     isUndefined,
-    KEY__SYNTHETIC_MODE,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+
+import { KEY__SYNTHETIC_MODE } from '@lwc/shared/keys';
 
 import {
     attachShadow as originalAttachShadow,

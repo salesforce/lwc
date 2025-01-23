@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared/language';
 import { getAssociatedVMIfPresent } from './vm';
 import type { LightningElement } from './base-lightning-element';
 

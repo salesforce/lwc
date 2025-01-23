@@ -10,8 +10,8 @@ import {
     hasOwnProperty,
     isFalse,
     isUndefined,
-    KEY__SHADOW_RESOLVER,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import { KEY__SHADOW_RESOLVER } from '@lwc/shared/keys';
 import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import postcss from 'postcss';
-import { getAPIVersionFromNumber } from '@lwc/shared';
+import { getAPIVersionFromNumber } from '@lwc/shared/api-version';
 
 import serialize from './serialize';
 import postcssLwc from './postcss-lwc-plugin';

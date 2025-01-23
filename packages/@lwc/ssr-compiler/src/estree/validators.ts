@@ -6,7 +6,7 @@
  */
 
 import { is } from 'estree-toolkit';
-import { entries } from '@lwc/shared';
+import { entries } from '@lwc/shared/language';
 import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
 

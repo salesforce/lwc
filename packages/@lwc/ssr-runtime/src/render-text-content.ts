@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { htmlEscape } from '@lwc/shared';
+import { htmlEscape } from '@lwc/shared/html-escape';
 
 /**
  * Given an object, render it for use as a text content node. Not that this applies to individual text nodes,

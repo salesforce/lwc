@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { describe, it, expect } from 'vitest';
-import { HIGHEST_API_VERSION } from '@lwc/shared';
+import { HIGHEST_API_VERSION } from '@lwc/shared/language';
 import { normalizeConfig } from '../config';
 
 describe('customRendererConfig normalization', () => {

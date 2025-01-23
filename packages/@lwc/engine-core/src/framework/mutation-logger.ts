@@ -18,7 +18,7 @@ import {
     getOwnPropertyNames,
     getOwnPropertySymbols,
     isString,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 import { assertNotProd } from './utils';
 import type { ReactiveObserver } from '../libs/mutation-tracker';
 import type { VM } from './vm';

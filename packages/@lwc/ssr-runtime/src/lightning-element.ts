@@ -17,20 +17,22 @@ import {
     assign,
     defineProperties,
     hasOwnProperty,
-    htmlPropertyToAttribute,
-    isAriaAttribute,
     keys,
-    REFLECTIVE_GLOBAL_PROPERTY_SET,
     StringToLowerCase,
     toString,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import {
+    htmlPropertyToAttribute,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
+} from '@lwc/shared/html-attributes';
 
+import { isAriaAttribute } from '@lwc/shared/aria';
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
 import { getReadOnlyProxy } from './get-read-only-proxy';
 import type { Attributes, Properties } from './types';
-import type { Stylesheets } from '@lwc/shared';
+import type { Stylesheets } from '@lwc/shared/style';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;

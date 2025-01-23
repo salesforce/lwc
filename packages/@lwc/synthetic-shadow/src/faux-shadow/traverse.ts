@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
+import { ArrayReduce, ArrayPush, isNull, isUndefined, ArrayFilter } from '@lwc/shared/language';
 
 import { arrayFromCollection } from '../shared/utils';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';

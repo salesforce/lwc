@@ -12,7 +12,7 @@ import {
     isUndefined,
     StringCharCodeAt,
     StringSlice,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import type { RendererAPI } from '../renderer';
 

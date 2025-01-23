@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { vi, describe, it, expect } from 'vitest';
-import { noop } from '@lwc/shared';
+import { noop } from '@lwc/shared/language';
 import { transform, transformSync } from '../transformer';
 import type { TransformOptions } from '../../options';
 

@@ -7,13 +7,13 @@
 import {
     defineProperty,
     isUndefined,
-    KEY__SHADOW_TOKEN,
+    isNull,
+} from '@lwc/shared/language';
+import { KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
     KEY__SHADOW_STATIC,
     KEY__SHADOW_STATIC_PRIVATE,
-    KEY__SHADOW_RESOLVER,
-    isNull,
-} from '@lwc/shared';
+    KEY__SHADOW_RESOLVER, } from '@lwc/shared/keys';
 import { setAttribute, removeAttribute } from '../env/element';
 import { firstChildGetter, nextSiblingGetter } from '../env/node';
 

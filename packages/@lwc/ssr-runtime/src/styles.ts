@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isArray } from '@lwc/shared';
+import { isArray } from '@lwc/shared/language';
 import { validateStyleTextContents } from './validate-style-text-contents';
 import type { LightningElementConstructor } from './lightning-element';
-import type { Stylesheets, Stylesheet } from '@lwc/shared';
+import type { Stylesheets, Stylesheet } from '@lwc/shared/style';
 
 type ForgivingStylesheets =
     | Stylesheets

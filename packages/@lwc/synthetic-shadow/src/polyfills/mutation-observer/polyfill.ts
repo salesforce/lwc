@@ -14,7 +14,7 @@ import {
     forEach,
     isNull,
     isUndefined,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 import { isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 

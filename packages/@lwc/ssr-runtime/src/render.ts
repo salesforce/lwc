@@ -9,9 +9,10 @@ import {
     isNull,
     isString,
     isUndefined,
-    DEFAULT_SSR_MODE,
-    htmlEscape,
-} from '@lwc/shared';
+    
+} from '@lwc/shared/language';
+import {DEFAULT_SSR_MODE} from '@lwc/shared/ssr';
+import { htmlEscape } from '@lwc/shared/html-escape';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
 import type { LightningElement, LightningElementConstructor } from './lightning-element';

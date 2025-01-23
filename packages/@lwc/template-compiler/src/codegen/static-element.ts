@@ -5,14 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    APIFeature,
     ArrayEvery,
     ArraySome,
-    HTML_NAMESPACE,
-    isAPIFeatureEnabled,
     isArray,
     isNull,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared/api-version';
+import { HTML_NAMESPACE } from '@lwc/shared/namespaces';
 import {
     isBaseElement,
     isComment,
@@ -32,7 +31,7 @@ import type {
     StaticChildNode,
     Text,
 } from '../shared/types';
-import type { APIVersion } from '@lwc/shared';
+import type { APIVersion} from '@lwc/shared/api-version';
 
 // This set keeps track of static safe elements that have dynamic text in their direct children.
 const STATIC_ELEMENT_WITH_DYNAMIC_TEXT_SET = new WeakSet<StaticElement>();

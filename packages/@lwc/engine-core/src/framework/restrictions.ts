@@ -13,7 +13,7 @@ import {
     getPrototypeOf,
     isUndefined,
     setPrototypeOf,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
 import { logError, logWarn } from '../shared/logger';
 

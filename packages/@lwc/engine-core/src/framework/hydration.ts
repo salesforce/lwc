@@ -8,23 +8,23 @@ import {
     isUndefined,
     ArrayJoin,
     arrayEvery,
-    assert,
     keys,
     isNull,
     isArray,
     isTrue,
     isString,
     StringToLowerCase,
-    APIFeature,
-    isAPIFeatureEnabled,
     isFalse,
     StringSplit,
-    parseStyleText,
     ArrayFrom,
     ArrayFilter,
     ArrayMap,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
+import { parseStyleText } from '@lwc/shared/style';
+import * as assert from '@lwc/shared/assert';
+
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared/api-version';
 import {
     queueHydrationError,
     flushHydrationErrors,

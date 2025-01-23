@@ -11,12 +11,12 @@ import { URLSearchParams } from 'url';
 import pluginUtils from '@rollup/pluginutils';
 import { transformSync } from '@lwc/compiler';
 import { resolveModule, RegistryType } from '@lwc/module-resolver';
-import { getAPIVersionFromNumber } from '@lwc/shared';
+import { getAPIVersionFromNumber, type APIVersion } from '@lwc/shared/api-version';
 import type { Plugin, SourceMapInput, RollupLog } from 'rollup';
 import type { FilterPattern } from '@rollup/pluginutils';
 import type { StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import type { ModuleRecord } from '@lwc/module-resolver';
-import type { APIVersion, CompilationMode } from '@lwc/shared';
+import type { CompilationMode } from '@lwc/shared/ssr';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 export interface RollupLwcOptions {

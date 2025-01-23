@@ -7,7 +7,8 @@
 import path from 'node:path';
 import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
-import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
+import { HIGHEST_API_VERSION } from '@lwc/shared/api-version';
+import { LWC_VERSION } from '@lwc/shared/meta';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 import plugin from '../index';
 

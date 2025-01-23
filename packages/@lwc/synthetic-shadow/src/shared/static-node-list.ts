@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
+import { ArrayMap, create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared/language';
 
 const Items = new WeakMap<any, Node[]>();
 

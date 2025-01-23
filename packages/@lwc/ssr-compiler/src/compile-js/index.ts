@@ -27,7 +27,7 @@ import type {
     Decorator as EsDecorator,
 } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode } from '@lwc/shared';
+import type { CompilationMode } from '@lwc/shared/ssr';
 
 const visitors: Visitors = {
     $: { scope: true },

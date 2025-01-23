@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export const enum STATIC_PART_TOKEN_ID {
+export enum STATIC_PART_TOKEN_ID {
     ATTRIBUTE = 'a',
     CLASS = 'c',
     STYLE = 's',

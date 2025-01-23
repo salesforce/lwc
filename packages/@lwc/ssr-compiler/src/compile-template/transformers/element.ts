@@ -6,12 +6,10 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import {
-    HTML_NAMESPACE,
-    isBooleanAttribute,
-    isVoidElement,
-    normalizeStyleAttributeValue,
-} from '@lwc/shared';
+import { HTML_NAMESPACE } from '@lwc/shared/namespaces';
+import { isBooleanAttribute } from '@lwc/shared/html-attributes';
+import { isVoidElement } from '@lwc/shared/void-elements';
+import { normalizeStyleAttributeValue } from '@lwc/shared/style';
 import {
     type Attribute as IrAttribute,
     type Expression as IrExpression,

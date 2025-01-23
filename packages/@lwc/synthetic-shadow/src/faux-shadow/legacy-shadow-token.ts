@@ -5,12 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 // TODO [#3733]: remove this entire file when we can remove legacy scope tokens
-import {
-    defineProperty,
-    isUndefined,
-    KEY__LEGACY_SHADOW_TOKEN,
-    KEY__LEGACY_SHADOW_TOKEN_PRIVATE,
-} from '@lwc/shared';
+import { defineProperty, isUndefined } from '@lwc/shared/language';
+import { KEY__LEGACY_SHADOW_TOKEN, KEY__LEGACY_SHADOW_TOKEN_PRIVATE } from '@lwc/shared/keys';
 import { setAttribute, removeAttribute } from '../env/element';
 
 export function getLegacyShadowToken(node: Node): string | undefined {

@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { addTrustedSignal } from '@lwc/shared';
-export { setTrustedSignalSet } from '@lwc/shared';
+import { addTrustedSignal } from '@lwc/shared/signals';
+export { setTrustedSignalSet } from '@lwc/shared/signals';
 
 export type OnUpdate = () => void;
 export type Unsubscribe = () => void;

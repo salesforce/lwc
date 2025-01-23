@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, getOwnPropertyDescriptor, isNull } from '@lwc/shared';
+import { defineProperty, getOwnPropertyDescriptor, isNull } from '@lwc/shared/language';
 
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { retarget } from '../3rdparty/polymer/retarget';

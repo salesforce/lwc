@@ -6,7 +6,7 @@
  */
 import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
-import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
+import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared/api-version';
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
 import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
 import api from './api';

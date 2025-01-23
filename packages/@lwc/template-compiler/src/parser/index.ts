@@ -4,14 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    HTML_NAMESPACE,
-    SVG_NAMESPACE,
-    MATHML_NAMESPACE,
-    isVoidElement,
-    isUndefined,
-    isNull,
-} from '@lwc/shared';
+import { isUndefined, isNull } from '@lwc/shared/language';
+import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE } from '@lwc/shared/namespaces';
+import { isVoidElement } from '@lwc/shared/void-elements';
 import { ParserDiagnostics, DiagnosticLevel, CompilerMetrics } from '@lwc/errors';
 import * as parse5Tools from '@parse5/tools';
 

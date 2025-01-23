@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
+import { isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared/language';
+import * as assert from '@lwc/shared/assert';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
 import { isSyntheticShadowHost } from '../faux-shadow/shadow-root';

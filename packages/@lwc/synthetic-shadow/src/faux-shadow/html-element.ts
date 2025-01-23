@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared';
+import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared/language';
 
 import {
     hasAttribute,

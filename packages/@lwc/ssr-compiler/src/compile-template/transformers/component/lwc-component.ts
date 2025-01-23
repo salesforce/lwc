@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { is } from 'estree-toolkit';
-import { isUndefined } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared/language';
 import { expressionIrToEs } from '../../expression';
 import { esTemplateWithYield } from '../../../estemplate';
 import { getChildAttrsOrProps } from '../../shared';

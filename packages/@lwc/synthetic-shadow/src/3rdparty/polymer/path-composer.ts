@@ -15,7 +15,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { isNull } from '@lwc/shared';
+import { isNull } from '@lwc/shared/language';
 import { getOwnerDocument } from '../../shared/utils';
 import { Node } from '../../env/node';
 import { isSyntheticOrNativeShadowRoot } from '../../shared/utils';

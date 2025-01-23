@@ -12,7 +12,7 @@ import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spr
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
-import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
+import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared/api-version';
 
 import type { NormalizedTransformOptions } from '../options';
 import type { TransformResult } from './shared';

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assign, create, defineProperties } from '@lwc/shared';
+import { assign, create, defineProperties } from '@lwc/shared/language';
 
 // Note that ClipboardEvent is undefined in Jest/jsdom
 // See: https://github.com/jsdom/jsdom/issues/1568

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { StringCharAt } from '@lwc/shared';
+import { StringCharAt } from '@lwc/shared/language';
 import { DASHED_TAGNAME_ELEMENT_SET } from './constants';
 
 export function toPropertyName(attr: string) {

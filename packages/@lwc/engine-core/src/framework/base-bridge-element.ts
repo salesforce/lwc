@@ -8,21 +8,9 @@
  * This module is responsible for creating the base bridge class BaseBridgeElement
  * that represents the HTMLElement extension used for any LWC inserted in the DOM.
  */
-import {
-    ArraySlice,
-    ArrayIndexOf,
-    create,
-    defineProperties,
-    defineProperty,
-    freeze,
-    getOwnPropertyNames,
-    getOwnPropertyDescriptors,
-    isUndefined,
-    seal,
-    keys,
-    htmlPropertyToAttribute,
-    isNull,
-} from '@lwc/shared';
+
+import { ArrayIndexOf, ArraySlice, create, defineProperties, defineProperty, freeze, getOwnPropertyDescriptors, getOwnPropertyNames, isNull, isUndefined, keys, seal } from '@lwc/shared/language';
+import { htmlPropertyToAttribute } from '@lwc/shared/html-attributes';
 import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
 import { logWarn } from '../shared/logger';
 import { getAssociatedVM } from './vm';

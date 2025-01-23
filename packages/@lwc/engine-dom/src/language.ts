@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getOwnPropertyDescriptors } from '@lwc/shared';
+import { getOwnPropertyDescriptors } from '@lwc/shared/language';
 
 // Like @lwc/shared, but for DOM APIs
 

@@ -6,12 +6,11 @@
  */
 import { CompilerValidationErrors, invariant } from '@lwc/errors';
 import {
-    isUndefined,
-    isBoolean,
-    getAPIVersionFromNumber,
     DEFAULT_SSR_MODE,
     type CompilationMode,
-} from '@lwc/shared';
+} from '@lwc/shared/ssr';
+import { isBoolean, isUndefined } from '@lwc/shared/language';
+import { getAPIVersionFromNumber } from '@lwc/shared/api-version';
 import type { InstrumentationObject } from '@lwc/errors';
 import type { CustomRendererConfig } from '@lwc/template-compiler';
 

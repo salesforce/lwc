@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ArrayPush } from '@lwc/shared';
+import { ArrayPush } from '@lwc/shared/language';
 import { LightningElementFormatter } from './component';
 
 function init() {

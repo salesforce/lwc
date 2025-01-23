@@ -6,14 +6,12 @@
  */
 import { walk } from 'estree-walker';
 import {
-    getAPIVersionFromNumber,
-    SVG_NAMESPACE,
-    STATIC_PART_TOKEN_ID,
     isUndefined,
-    APIFeature,
-    isAPIFeatureEnabled,
-} from '@lwc/shared';
+} from '@lwc/shared/language';
 
+import { getAPIVersionFromNumber, isAPIFeatureEnabled, APIFeature } from '@lwc/shared/api-version';
+import { SVG_NAMESPACE } from '@lwc/shared/namespaces';
+import { STATIC_PART_TOKEN_ID } from '@lwc/shared/static-part-tokens';
 import * as t from '../shared/estree';
 import { LWCDirectiveRenderMode } from '../shared/types';
 import {
@@ -63,7 +61,7 @@ import type {
     KeyDirective,
     StaticChildNode,
 } from '../shared/types';
-import type { APIVersion } from '@lwc/shared';
+import type { APIVersion } from '@lwc/shared/api-version';
 import type { Node } from 'estree';
 
 // structuredClone is only available in Node 17+

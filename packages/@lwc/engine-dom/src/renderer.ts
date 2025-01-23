@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assign, hasOwnProperty, KEY__SHADOW_TOKEN, noop } from '@lwc/shared';
+import { assign, hasOwnProperty, noop } from '@lwc/shared/language';
+import { KEY__SHADOW_TOKEN } from '@lwc/shared/keys';
 import { insertStylesheet } from './styles';
 import {
     createCustomElement,

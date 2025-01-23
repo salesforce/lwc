@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import postcss from 'postcss';
-import { KEY__SCOPED_CSS, LWC_VERSION_COMMENT, KEY__NATIVE_ONLY_CSS } from '@lwc/shared';
+import { KEY__SCOPED_CSS, KEY__NATIVE_ONLY_CSS } from '@lwc/shared/keys';
+import { LWC_VERSION_COMMENT } from '@lwc/shared/meta';
 import { isImportMessage } from './utils/message';
 import { HOST_ATTRIBUTE, SHADOW_ATTRIBUTE } from './utils/selectors-scoping';
 import {
