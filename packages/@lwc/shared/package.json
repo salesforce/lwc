@@ -25,20 +25,15 @@
     "volta": {
         "extends": "../../../package.json"
     },
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.js",
-    "types": "dist/index.d.ts",
     "files": [
         "dist/**/*.js",
         "dist/**/*.d.ts"
     ],
     "exports": {
-        ".": {
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs.js"
-        },
         "./*": {
             "types": "./dist/*.d.ts",
+            "node": "./dist/*.cjs.js",
+            "development": "./src/*.ts",
             "import": "./dist/*.es.js",
             "require": "./dist/*.cjs.js"
         }

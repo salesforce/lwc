@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { LWC_VERSION } = require('@lwc/shared');
+const { LWC_VERSION } = require('@lwc/shared/meta');
 const {
     FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
     ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,

@@ -7,7 +7,7 @@
 
 'use strict';
 
-const { HIGHEST_API_VERSION } = require('@lwc/shared');
+const { HIGHEST_API_VERSION } = require('@lwc/shared/api-version');
 
 // Helpful error. Remove after a few months.
 if (process.env.NATIVE_SHADOW) {

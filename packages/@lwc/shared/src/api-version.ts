@@ -7,7 +7,7 @@
 
 import { isNumber } from './language';
 
-export const enum APIVersion {
+export enum APIVersion {
     V58_244_SUMMER_23 = 58,
     V59_246_WINTER_24 = 59,
     V60_248_SPRING_24 = 60,
@@ -59,7 +59,7 @@ export function getAPIVersionFromNumber(version: number | undefined): APIVersion
     return HIGHEST_API_VERSION;
 }
 
-export const enum APIFeature {
+export enum APIFeature {
     /**
      * Lowercase all scope tokens, enable the SVG static optimization
      */

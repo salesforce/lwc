@@ -7,7 +7,7 @@
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
-import { APIVersion } from '@lwc/shared/language';
+import { APIVersion } from '@lwc/shared/api-version';
 import lwc from '../../index';
 import type { RollupLog } from 'rollup';
 

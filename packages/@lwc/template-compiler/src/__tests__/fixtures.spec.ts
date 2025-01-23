@@ -6,7 +6,7 @@
  */
 import path from 'node:path';
 import { describe } from 'vitest';
-import { LWC_VERSION } from '@lwc/shared/language';
+import { LWC_VERSION } from '@lwc/shared/meta';
 import prettier from 'prettier';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 

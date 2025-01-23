@@ -48,9 +48,9 @@
         "@swc/helpers": "~0.5.15",
         "@types/babel__core": "^7.20.5",
         "@types/node": "^22.10.7",
-        "@vitest/coverage-v8": "^3.0.3",
+        "@vitest/coverage-v8": "^3.0.4",
         "@vitest/eslint-plugin": "^1.1.25",
-        "@vitest/ui": "^3.0.3",
+        "@vitest/ui": "^3.0.4",
         "bytes": "^3.1.2",
         "es-module-lexer": "^1.6.0",
         "eslint": "9.18.0",
@@ -71,7 +71,7 @@
         "tslib": "^2.8.1",
         "typescript": "5.4.5",
         "typescript-eslint": "8.20.0",
-        "vitest": "^3.0.3"
+        "vitest": "^3.0.4"
     },
     "lint-staged": {
         "*.{js,mjs,ts}": "eslint --cache",

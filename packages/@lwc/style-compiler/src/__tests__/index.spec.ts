@@ -7,7 +7,7 @@
 import path from 'node:path';
 import { describe } from 'vitest';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
-import { LWC_VERSION } from '@lwc/shared/language';
+import { LWC_VERSION } from '@lwc/shared/meta';
 
 import { transform } from '../index';
 

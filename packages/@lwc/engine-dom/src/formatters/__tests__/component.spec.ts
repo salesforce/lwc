@@ -12,7 +12,7 @@ import {
     registerTemplate,
     registerDecorators,
 } from '@lwc/engine-dom';
-import { LOWEST_API_VERSION } from '@lwc/shared/language';
+import { LOWEST_API_VERSION } from '@lwc/shared/api-version';
 
 // it needs to be imported from the window, otherwise the checks for associated vms is done against "@lwc/engine-core"
 const LightningElementFormatter = (globalThis as any)['devtoolsFormatters'].find((f: any) => {
