@@ -25,6 +25,9 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         }
         const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
+        if (danglingSlotName) {
+            childAttrs.slot = danglingSlotName;
+        }
         ${
             /*
                 Slotted content is inserted here.

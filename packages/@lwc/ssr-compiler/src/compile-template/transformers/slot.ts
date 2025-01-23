@@ -30,6 +30,8 @@ const bConditionalSlot = esTemplateWithYield`
         const scopedGenerators = scopedSlottedContent?.[slotName ?? ""];
         const mismatchedSlots = isScopedSlot ? lightGenerators : scopedGenerators;
         const generators = isScopedSlot ? scopedGenerators : lightGenerators;
+        debugger;
+        danglingSlotName = ${/* danglingSlotName */ is.expression} || danglingSlotName;
 
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
@@ -43,7 +45,7 @@ const bConditionalSlot = esTemplateWithYield`
 
         if (generators) {
             for (let i = 0; i < generators.length; i++) {
-                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
+                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)}, danglingSlotName);
                 // Scoped slotted data is separated by bookends. Final bookends are added outside of the loop below.
                 if (isScopedSlot && i < generators.length - 1) {
                     yield '<!---->';
@@ -90,5 +92,7 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     const slotChildren = irChildrenToEs(node.children, ctx);
     const isScopedSlot = b.literal(Boolean(slotBound));
     const isSlotted = b.literal(Boolean(ctx.isSlotted));
-    return [bConditionalSlot(isScopedSlot, isSlotted, slotName, slotBound, slotChildren, slotAst)];
+    const danglingSlotName = bAttributeValue(node, 'slot');
+    debugger;
+    return [bConditionalSlot(isScopedSlot, isSlotted, slotName, danglingSlotName, slotBound, slotChildren, slotAst)];
 };

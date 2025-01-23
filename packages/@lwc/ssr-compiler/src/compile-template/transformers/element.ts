@@ -120,6 +120,14 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
     }
 `<EsIfStatement>;
 
+const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
+    {
+        if (danglingSlotName) {
+            yield \` slot="\${danglingSlotName}"\`; 
+        }   
+    }
+`<EsBlockStatement>;
+
 const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
 `;
@@ -263,6 +271,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        ...[bConditionallyYieldDanglingSlotName()],
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,
