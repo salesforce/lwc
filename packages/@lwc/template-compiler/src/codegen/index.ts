@@ -6,9 +6,7 @@
  */
 import * as astring from 'astring';
 
-import {
-    isUndefined,
-} from '@lwc/shared/language';
+import { isUndefined } from '@lwc/shared/language';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
 import { isBooleanAttribute } from '@lwc/shared/html-attributes';

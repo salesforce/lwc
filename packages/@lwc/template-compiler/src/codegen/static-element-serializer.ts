@@ -4,10 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    HTML_NAMESPACE,
-    
-} from '@lwc/shared/namespaces';
+import { HTML_NAMESPACE } from '@lwc/shared/namespaces';
 import { normalizeStyleAttributeValue } from '@lwc/shared/style';
 import { htmlEscape } from '@lwc/shared/html-escape';
 import { isVoidElement } from '@lwc/shared/void-elements';

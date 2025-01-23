@@ -5,7 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared/language';
+import {
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isNull,
+    isUndefined,
+} from '@lwc/shared/language';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { logWarnOnce } from '../shared/logger';
 import { getAssociatedVMIfPresent } from '../framework/vm';

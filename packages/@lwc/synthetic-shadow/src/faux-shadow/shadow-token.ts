@@ -4,16 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { defineProperty, isUndefined, isNull } from '@lwc/shared/language';
 import {
-    defineProperty,
-    isUndefined,
-    isNull,
-} from '@lwc/shared/language';
-import { KEY__SHADOW_TOKEN,
+    KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
     KEY__SHADOW_STATIC,
     KEY__SHADOW_STATIC_PRIVATE,
-    KEY__SHADOW_RESOLVER, } from '@lwc/shared/keys';
+    KEY__SHADOW_RESOLVER,
+} from '@lwc/shared/keys';
 import { setAttribute, removeAttribute } from '../env/element';
 import { firstChildGetter, nextSiblingGetter } from '../env/node';
 

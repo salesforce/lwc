@@ -5,12 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    getPrototypeOf,
-    hasOwnProperty,
-    isFalse,
-    isUndefined,
-} from '@lwc/shared/language';
+import { getPrototypeOf, hasOwnProperty, isFalse, isUndefined } from '@lwc/shared/language';
 import { KEY__SHADOW_RESOLVER } from '@lwc/shared/keys';
 import { renderer } from '../renderer';
 

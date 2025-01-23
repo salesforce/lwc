@@ -5,10 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { CompilerValidationErrors, invariant } from '@lwc/errors';
-import {
-    DEFAULT_SSR_MODE,
-    type CompilationMode,
-} from '@lwc/shared/ssr';
+import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared/ssr';
 import { isBoolean, isUndefined } from '@lwc/shared/language';
 import { getAPIVersionFromNumber } from '@lwc/shared/api-version';
 import type { InstrumentationObject } from '@lwc/errors';

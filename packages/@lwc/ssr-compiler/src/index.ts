@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {  generateCustomElementTagName } from '@lwc/shared/custom-element';
+import { generateCustomElementTagName } from '@lwc/shared/custom-element';
 import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared/ssr';
 import compileJS from './compile-js';
 import compileTemplate from './compile-template';

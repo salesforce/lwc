@@ -5,9 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { walk } from 'estree-walker';
-import {
-    isUndefined,
-} from '@lwc/shared/language';
+import { isUndefined } from '@lwc/shared/language';
 
 import { getAPIVersionFromNumber, isAPIFeatureEnabled, APIFeature } from '@lwc/shared/api-version';
 import { SVG_NAMESPACE } from '@lwc/shared/namespaces';

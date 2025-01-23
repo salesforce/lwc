@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isNull } from '@lwc/shared/language';
-import { LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared/meta'
+import { LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared/meta';
 
 import { logError } from '../shared/logger';
 

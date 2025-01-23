@@ -8,7 +8,6 @@ import {
     ArrayPop,
     ArrayPush,
     ArraySome,
-    
     create,
     isArray,
     isFalse,

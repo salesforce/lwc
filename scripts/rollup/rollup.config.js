@@ -186,16 +186,13 @@ export default {
 function generateInputConfig() {
     if (pkg.name === '@lwc/shared') {
         return Object.fromEntries(
-            globSync('src/*.ts', { root: packageRoot }).map(file => [
+            globSync('src/*.ts', { root: packageRoot }).map((file) => [
                 // This remove `src/` as well as the file extension from each
                 // file, so e.g. src/nested/foo.js becomes nested/foo
-                relative(
-                    `${packageRoot}/src`,
-                    file.slice(0, file.length - extname(file).length)
-                ),
+                relative(`${packageRoot}/src`, file.slice(0, file.length - extname(file).length)),
                 // This expands the relative paths to absolute paths, so e.g.
                 // src/nested/foo becomes /project/src/nested/foo.js
-                resolve(packageRoot, file)
+                resolve(packageRoot, file),
             ])
         );
     }
@@ -207,7 +204,6 @@ function generateInputConfig() {
  * @returns {import('rollup').OutputOptions}
  */
 function createOutputConfig(format) {
-
     if (pkg.name === '@lwc/shared') {
         return {
             dir: 'dist',
@@ -219,7 +215,7 @@ function createOutputConfig(format) {
             esModule: true,
             preserveModules: true,
             entryFileNames: '[name].[format].js',
-        }
+        };
     }
 
     return {
@@ -232,4 +228,3 @@ function createOutputConfig(format) {
         esModule: true,
     };
 }
-

@@ -9,7 +9,20 @@
  * that represents the HTMLElement extension used for any LWC inserted in the DOM.
  */
 
-import { ArrayIndexOf, ArraySlice, create, defineProperties, defineProperty, freeze, getOwnPropertyDescriptors, getOwnPropertyNames, isNull, isUndefined, keys, seal } from '@lwc/shared/language';
+import {
+    ArrayIndexOf,
+    ArraySlice,
+    create,
+    defineProperties,
+    defineProperty,
+    freeze,
+    getOwnPropertyDescriptors,
+    getOwnPropertyNames,
+    isNull,
+    isUndefined,
+    keys,
+    seal,
+} from '@lwc/shared/language';
 import { htmlPropertyToAttribute } from '@lwc/shared/html-attributes';
 import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
 import { logWarn } from '../shared/logger';
