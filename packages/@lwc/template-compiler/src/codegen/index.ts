@@ -11,6 +11,10 @@ import {
 } from '@lwc/shared/language';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
 
+import { isBooleanAttribute } from '@lwc/shared/html-attributes';
+import { parseStyleText } from '@lwc/shared/style';
+import { SVG_NAMESPACE } from '@lwc/shared/namespaces';
+import { LWC_VERSION_COMMENT } from '@lwc/shared/meta';
 import {
     isComment,
     isText,
@@ -77,10 +81,6 @@ import type {
     ScopedSlotFragment,
     StaticElement,
 } from '../shared/types';
-import { isBooleanAttribute } from '@lwc/shared/html-attributes';
-import { parseStyleText } from '@lwc/shared/style';
-import { SVG_NAMESPACE } from '@lwc/shared/namespaces';
-import { LWC_VERSION_COMMENT } from '@lwc/shared/meta';
 
 function transform(codeGen: CodeGen): t.Expression {
     const instrumentation = codeGen.state.config.instrumentation;
