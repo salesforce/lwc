@@ -20,11 +20,15 @@ export const enum OperationId {
     RenderedCallback = 4,
     DisconnectedCallback = 5,
     ErrorCallback = 6,
-    GlobalHydrate = 7,
-    GlobalRehydrate = 8,
+    GlobalRender = 7,
+    GlobalRerender = 8,
+    GlobalSsrHydrate = 9,
 }
 
-type GlobalOperationId = OperationId.GlobalHydrate | OperationId.GlobalRehydrate;
+type GlobalOperationId =
+    | OperationId.GlobalRender
+    | OperationId.GlobalRerender
+    | OperationId.GlobalSsrHydrate;
 
 const enum Phase {
     Start = 0,
@@ -60,8 +64,9 @@ const operationIdNameMapping = [
     'renderedCallback',
     'disconnectedCallback',
     'errorCallback',
-    'lwc-hydrate',
-    'lwc-rehydrate',
+    'lwc-render',
+    'lwc-rerender',
+    'lwc-ssr-hydrate',
 ] as const satisfies Record<OperationId, string>;
 
 const operationTooltipMapping = [
@@ -79,10 +84,12 @@ const operationTooltipMapping = [
     'component disconnectedCallback()',
     // errorCallback
     'component errorCallback()',
-    // lwc-hydrate
+    // lwc-render
     'component first rendered',
-    // lwc-rehydrate
+    // lwc-rerender
     'component re-rendered',
+    // lwc-ssr-hydrate
+    'component hydrated from server-rendered HTML',
 ] as const satisfies Record<OperationId, string>;
 
 // Even if all the browser the engine supports implements the UserTiming API, we need to guard the measure APIs.
@@ -154,13 +161,14 @@ function getProperties(vm: VM<any, any>): [string, string][] {
 function getColor(opId: OperationId): TrackColor {
     // As of Sept 2024: primary (dark blue), secondary (light blue), tertiary (green)
     switch (opId) {
-        // GlobalHydrate and Constructor tend to occur at the top level
-        case OperationId.GlobalHydrate:
+        // GlobalSsrHydrate, GlobalRender, and Constructor tend to occur at the top level
+        case OperationId.GlobalRender:
+        case OperationId.GlobalSsrHydrate:
         case OperationId.Constructor:
             return 'primary';
-        // GlobalRehydrate also occurs at the top level, but we want to use tertiary (green) because it's easier to
+        // GlobalRerender also occurs at the top level, but we want to use tertiary (green) because it's easier to
         // distinguish from primary, and at a glance you should be able to easily tell re-renders from first renders.
-        case OperationId.GlobalRehydrate:
+        case OperationId.GlobalRerender:
             return 'tertiary';
         // Everything else (patch/render/callbacks)
         default:
