@@ -174,7 +174,7 @@ type GenerateMarkupFnVariants =
     | GenerateMarkupFnAsyncNoGen
     | GenerateMarkupFnSyncNoGen;
 
-interface ComponentWithGenerateMarkup {
+interface ComponentWithGenerateMarkup extends LightningElementConstructor {
     [SYMBOL__GENERATE_MARKUP]: GenerateMarkupFnVariants;
 }
 
@@ -194,6 +194,14 @@ export async function serverSideRenderComponent(
     const emit = (segment: string) => {
         markup += segment;
     };
+
+    if (!generateMarkup) {
+        // If a non-component is accidentally provided, render an empty template
+        emit(`<${tagName}>`);
+        fallbackTmplNoYield(emit, null, null, null, Component, null);
+        emit(`</${tagName}>`);
+        return markup;
+    }
 
     if (mode === 'asyncYield') {
         for await (const segment of (generateMarkup as GenerateMarkupFn)(

@@ -20,13 +20,11 @@ import { catalogWireAdapters } from './wire';
 
 import { removeDecoratorImport } from './remove-decorator-import';
 import { generateError } from './errors';
-import type { NodePath } from 'estree-toolkit';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     Identifier as EsIdentifier,
     Program as EsProgram,
     Decorator as EsDecorator,
-    ClassDeclaration as EsClassDeclaration,
 } from 'estree';
 import type { Visitors, ComponentMetaState } from './types';
 import type { CompilationMode } from '@lwc/shared';
@@ -74,7 +72,15 @@ const visitors: Visitors = {
     },
     ClassDeclaration(path, state) {
         const { node } = path;
-        if (123) {
+        if (
+            node?.superClass &&
+            // export default class extends LightningElement {}
+            (is.exportDefaultDeclaration(path.parentPath) ||
+                // class Cmp extends LightningElement {}; export default Cmp
+                path.scope
+                    ?.getBinding(node.id.name)
+                    ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
+        ) {
             // If it's a default-exported class with a superclass, then it's an LWC component!
             state.isLWC = true;
             if (node.id) {
@@ -211,43 +217,6 @@ const visitors: Visitors = {
         },
     },
 };
-
-/**
- * Determines whether a class declaration is an LWC component. Returns true if the class has a
- * superclass and is a default export.
- */
-function isLwcComponent(path: NodePath<EsClassDeclaration>) {
-    const { node } = path;
-    if (!node?.superClass) {
-        // class Cmp {}
-        return false;
-    }
-    if (is.exportDefaultDeclaration(path.parentPath)) {
-        // export default class Cmp extends LightningElement {} => true
-        return true;
-    }
-    const binding = path.scope?.getBinding(node.id.name);
-    if (!binding) {
-        // Never exported
-        return false;
-    }
-    return binding.references.some((ref) => {
-        const { parent } = ref;
-        if (is.exportDefaultDeclaration(parent)) {
-            // class Cmp extends LightningElement {}; export default Cmp
-            return true;
-        }
-        if (is.exportSpecifier(parent)) {
-            // class Cmp extends LightningElement {}; export { Cmp as default }
-            // class Cmp extends LightningElement {}; export { Cmp as 'default' }
-            const exported = is.identifier(parent.exported)
-                ? parent.exported.name
-                : parent.exported.value;
-            return exported === 'default';
-        }
-        return false;
-    });
-}
 
 function validateUniqueDecorator(decorators: EsDecorator[]) {
     if (decorators.length < 2) {
