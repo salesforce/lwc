@@ -31,7 +31,9 @@ const bExportTemplate = esTemplate`
         // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
         let textContentBuffer = '';
         let didBufferTextContent = false;
-        let danglingSlotName = null;
+
+        // This will get overridden but requires initialization.
+        const slotAttributeValue = null;
 
         // Establishes a contextual relationship between two components for ContextProviders.
         // This variable will typically get overridden (shadowed) within slotted content.

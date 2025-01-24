@@ -30,9 +30,13 @@ const bConditionalSlot = esTemplateWithYield`
         const scopedGenerators = scopedSlottedContent?.[slotName ?? ""];
         const mismatchedSlots = isScopedSlot ? lightGenerators : scopedGenerators;
         const generators = isScopedSlot ? scopedGenerators : lightGenerators;
-        debugger;
-        danglingSlotName = ${/* danglingSlotName */ is.expression} || danglingSlotName;
-
+        /* 
+            If a slotAttributeValue is present, it should be provided for assignment to any slotted content. This behavior aligns with v1 and engine-dom.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example.
+            Note the slot mapping does not work for scoped slots, so the slot name is not rendered in this case.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/scoped-slots for example.
+        */
+        const danglingSlotName = !isScopedSlot ? ${/* slotAttributeValue */ is.expression} || slotAttributeValue : null;
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
@@ -92,7 +96,16 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     const slotChildren = irChildrenToEs(node.children, ctx);
     const isScopedSlot = b.literal(Boolean(slotBound));
     const isSlotted = b.literal(Boolean(ctx.isSlotted));
-    const danglingSlotName = bAttributeValue(node, 'slot');
-    debugger;
-    return [bConditionalSlot(isScopedSlot, isSlotted, slotName, danglingSlotName, slotBound, slotChildren, slotAst)];
+    const slotAttributeValue = bAttributeValue(node, 'slot');
+    return [
+        bConditionalSlot(
+            isScopedSlot,
+            isSlotted,
+            slotName,
+            slotAttributeValue,
+            slotBound,
+            slotChildren,
+            slotAst
+        ),
+    ];
 };

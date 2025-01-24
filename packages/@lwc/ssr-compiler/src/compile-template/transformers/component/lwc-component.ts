@@ -25,8 +25,12 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         }
         const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
-        if (danglingSlotName) {
-            childAttrs.slot = danglingSlotName;
+        /* 
+            If a slotAttributeValue is present, it is dangling and should be assigned to any slotted content. This behavior aligns with v1 and engine-dom.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+        */
+        if (slotAttributeValue) {
+            childAttrs.slot = slotAttributeValue;
         }
         ${
             /*
