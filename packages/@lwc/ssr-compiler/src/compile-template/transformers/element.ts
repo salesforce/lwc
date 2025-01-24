@@ -125,11 +125,9 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
     See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
 */
 const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
-    {
-        if (slotAttributeValue) {
-            yield \` slot="\${slotAttributeValue}"\`; 
-        }   
-    }
+    if (slotAttributeValue) {
+        yield \` slot="\${slotAttributeValue}"\`; 
+    }   
 `<EsBlockStatement>;
 
 const bYieldSanitizedHtml = esTemplateWithYield`
@@ -275,7 +273,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
     return [
         bYield(b.literal(`<${node.name}`)),
-        ...[bConditionallyYieldDanglingSlotName()],
+        bConditionallyYieldDanglingSlotName(),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,
