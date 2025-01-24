@@ -21,7 +21,7 @@ cd packages/@lwc/perf-benchmarks
 ../../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
->[!TIP]
+> [!TIP]
 > Running all of the benchmarks will take multiple hours. Let it run overnight!
 
 ## Manual testing
@@ -88,5 +88,5 @@ Or for CI:
 
     yarn test:performance:best:ci
 
->[!TIP]
+> [!TIP]
 > Best tests only take a few dozen minutes. Take a break!
