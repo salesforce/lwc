@@ -21,6 +21,9 @@ cd packages/@lwc/perf-benchmarks
 ../../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
+>[!TIP]
+> Running all of the benchmarks will take multiple hours. Let it run overnight!
+
 ## Manual testing
 
 When the benchmark is not working, the best way to debug it locally is to load its HTML file and inspect it in the Chrome DevTools. After building, you can run:
@@ -84,3 +87,6 @@ This package also supports [Best](https://bestjs.dev) as a benchmark runner. To 
 Or for CI:
 
     yarn test:performance:best:ci
+
+>[!TIP]
+> Best tests only take a few dozen minutes. Take a break!
