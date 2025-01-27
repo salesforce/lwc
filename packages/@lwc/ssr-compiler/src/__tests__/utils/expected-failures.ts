@@ -12,7 +12,6 @@ export const expectedFailures = new Set([
     'attribute-global-html/as-component-prop/without-@api/index.js',
     'exports/component-as-default/index.js',
     'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
-    //'render-dynamic-value/index.js',
     'wire/errors/throws-on-computed-key/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
 ]);
