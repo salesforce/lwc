@@ -78,7 +78,7 @@ const bGenerateSlottedContent = esTemplateWithYield`
 const bAddSlottedContent = esTemplate`
     addSlottedContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
-    }) {
+    }, slotAttributeValue) {
         // FIXME: make validation work again  
         ${/* slot content */ false}
     }, ${/* content map */ is.identifier});

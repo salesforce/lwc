@@ -30,7 +30,13 @@ const bConditionalSlot = esTemplateWithYield`
         const scopedGenerators = scopedSlottedContent?.[slotName ?? ""];
         const mismatchedSlots = isScopedSlot ? lightGenerators : scopedGenerators;
         const generators = isScopedSlot ? scopedGenerators : lightGenerators;
-
+        /* 
+            If a slotAttributeValue is present, it should be provided for assignment to any slotted content. This behavior aligns with v1 and engine-dom.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example.
+            Note the slot mapping does not work for scoped slots, so the slot name is not rendered in this case.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/scoped-slots for example.
+        */
+        const danglingSlotName = !isScopedSlot ? ${/* slotAttributeValue */ is.expression} || slotAttributeValue : null;
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
@@ -43,7 +49,7 @@ const bConditionalSlot = esTemplateWithYield`
 
         if (generators) {
             for (let i = 0; i < generators.length; i++) {
-                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)});
+                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)}, danglingSlotName);
                 // Scoped slotted data is separated by bookends. Final bookends are added outside of the loop below.
                 if (isScopedSlot && i < generators.length - 1) {
                     yield '<!---->';
@@ -90,5 +96,16 @@ export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[]
     const slotChildren = irChildrenToEs(node.children, ctx);
     const isScopedSlot = b.literal(Boolean(slotBound));
     const isSlotted = b.literal(Boolean(ctx.isSlotted));
-    return [bConditionalSlot(isScopedSlot, isSlotted, slotName, slotBound, slotChildren, slotAst)];
+    const slotAttributeValue = bAttributeValue(node, 'slot');
+    return [
+        bConditionalSlot(
+            isScopedSlot,
+            isSlotted,
+            slotName,
+            slotAttributeValue,
+            slotBound,
+            slotChildren,
+            slotAst
+        ),
+    ];
 };

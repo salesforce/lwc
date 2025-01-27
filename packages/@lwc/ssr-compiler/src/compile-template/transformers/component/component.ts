@@ -19,6 +19,13 @@ const bYieldFromChildGenerator = esTemplateWithYield`
     {
         const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
+        /* 
+            If 'slotAttributeValue' is set, it references a slot that does not exist, and the 'slot' attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+        */
+        if (slotAttributeValue) {
+            childAttrs.slot = slotAttributeValue;
+        }
         ${
             /*
                 Slotted content is inserted here.
