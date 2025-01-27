@@ -1,5 +1,6 @@
-import { createElement } from 'lwc';
+import { createElement, hydrateComponent } from 'lwc';
 import Container from 'x/container';
+import Simple from 'x/simple';
 
 describe('Profiler Sanity Test', () => {
     // Count the number of marks/measures before and after the test to ensure the profiler
@@ -41,8 +42,9 @@ describe('Profiler Sanity Test', () => {
         renderedCallback: 4,
         disconnectedCallback: 5,
         errorCallback: 6,
-        globalHydrate: 7,
-        globalRehydrate: 8,
+        globalRender: 7,
+        globalRerender: 8,
+        globalSsrHydrate: 9,
     };
 
     const Phase = {
@@ -124,7 +126,7 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.patch, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.connectedCallback, X_CONTAINER, profilerEvents);
         matchEventsOfTypeFor(OperationId.renderedCallback, X_CONTAINER, profilerEvents);
-        matchEventsOfTypeFor(OperationId.globalHydrate, X_CONTAINER, profilerEvents);
+        matchEventsOfTypeFor(OperationId.globalRender, X_CONTAINER, profilerEvents);
 
         matchEventsOfTypeFor(OperationId.constructor, X_LIGHT, profilerEvents);
         matchEventsOfTypeFor(OperationId.render, X_LIGHT, profilerEvents);
@@ -142,7 +144,7 @@ describe('Profiler Sanity Test', () => {
         matchEventsOfTypeFor(OperationId.constructor, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.render, X_ITEM, profilerEvents);
         matchEventsOfTypeFor(OperationId.patch, X_ITEM, profilerEvents);
-        matchEventsOfTypeFor(OperationId.globalRehydrate, undefined, profilerEvents);
+        matchEventsOfTypeFor(OperationId.globalRerender, undefined, profilerEvents);
     });
 
     it('error callback counted properly', async () => {
@@ -173,6 +175,83 @@ describe('Profiler Sanity Test', () => {
                 name,
                 renderMode: getExpectedRenderMode(name),
                 shadowMode: getExpectedShadowMode(name),
+            },
+        ];
+        expect(profilerEvents).toEqual(expectedEvents);
+    });
+
+    it('hydrateComponent', () => {
+        // Inject a minimal HTML snapshot, manually crafted
+        const ssrElement = document.createElement('x-simple');
+        ssrElement.attachShadow({ mode: 'open' });
+        const div = document.createElement('div');
+        div.textContent = 'hello world';
+        ssrElement.shadowRoot.appendChild(div);
+
+        document.body.appendChild(ssrElement);
+
+        // hydrate
+        const profilerEvents = enableProfilerAndRegisterBuffer();
+        hydrateComponent(ssrElement, Simple);
+        const name = 'X-SIMPLE';
+        const shadowMode = ShadowMode.Native; // ssr is always native
+        const renderMode = RenderMode.Shadow;
+        const expectedEvents = [
+            {
+                opId: OperationId.constructor,
+                phase: Phase.Start,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.constructor,
+                phase: Phase.Stop,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.globalSsrHydrate,
+                phase: Phase.Start,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.render,
+                phase: Phase.Start,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.render,
+                phase: Phase.Stop,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.patch,
+                phase: Phase.Start,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.patch,
+                phase: Phase.Stop,
+                name,
+                renderMode,
+                shadowMode,
+            },
+            {
+                opId: OperationId.globalSsrHydrate,
+                phase: Phase.Stop,
+                name,
+                renderMode,
+                shadowMode,
             },
         ];
         expect(profilerEvents).toEqual(expectedEvents);

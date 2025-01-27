@@ -20,8 +20,8 @@ function testConstructor(expected) {
     });
 }
 
-function testRehydration(expected) {
-    it('component rehydration', () => {
+function testRerender(expected) {
+    it('component rerender', () => {
         const elm = createElement('x-child', { is: Child });
         document.body.appendChild(elm);
 
@@ -43,8 +43,8 @@ function testNestedTree(expected) {
     });
 }
 
-function testNestedRehydration(expected) {
-    it('captures component nested component tree rehydration', () => {
+function testNestedRerender(expected) {
+    it('captures component nested component tree rerender', () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
 
@@ -92,40 +92,40 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
         describe.runIf(process.env.NODE_ENV === 'production')('production mode', () => {
             testConstructor([
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                 },
             ]);
 
-            testRehydration([
+            testRerender([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                 },
             ]);
 
             testNestedTree([
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                 },
             ]);
 
-            testNestedRehydration([
+            testNestedRerender([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                 },
             ]);
 
             testLifecycleHooks([
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                 },
             ]);
 
             testNestedComponentCreation([
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                     children: [
                         {
-                            label: /lwc-hydrate/,
+                            label: /lwc-render/,
                         },
                     ],
                 },
@@ -138,7 +138,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                     label: /<x-child> - constructor/,
                 },
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                     children: [
                         {
                             label: /<x-child> - render/,
@@ -150,9 +150,9 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                 },
             ]);
 
-            testRehydration([
+            testRerender([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                     children: [
                         {
                             label: /<x-child> - render/,
@@ -170,7 +170,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                     ? [
                           { label: '<x-parent> - constructor', children: [] },
                           {
-                              label: 'lwc-hydrate',
+                              label: 'lwc-render',
                               children: [
                                   { label: '<x-parent> - render', children: [] },
                                   {
@@ -178,7 +178,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                                       children: [
                                           { label: '<x-child> - constructor', children: [] },
                                           {
-                                              label: 'lwc-hydrate',
+                                              label: 'lwc-render',
                                               children: [
                                                   { label: '<x-child> - render', children: [] },
                                                   { label: '<x-child> - patch', children: [] },
@@ -186,7 +186,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                                           },
                                           { label: '<x-child> - constructor', children: [] },
                                           {
-                                              label: 'lwc-hydrate',
+                                              label: 'lwc-render',
                                               children: [
                                                   { label: '<x-child> - render', children: [] },
                                                   { label: '<x-child> - patch', children: [] },
@@ -202,7 +202,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                               label: /<x-parent> - constructor/,
                           },
                           {
-                              label: /lwc-hydrate/,
+                              label: /lwc-render/,
                               children: [
                                   {
                                       label: /<x-parent> - render/,
@@ -235,9 +235,9 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                       ]
             );
 
-            testNestedRehydration([
+            testNestedRerender([
                 {
-                    label: /lwc-rehydrate/,
+                    label: /lwc-rerender/,
                     children: [
                         {
                             label: /<x-parent> - render/,
@@ -268,7 +268,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                     label: /<x-lifecycle> - constructor/,
                 },
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                     children: [
                         {
                             label: /<x-lifecycle> - connectedCallback/,
@@ -294,7 +294,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                     label: /<x-nested> - constructor/,
                 },
                 {
-                    label: /lwc-hydrate/,
+                    label: /lwc-render/,
                     children: [
                         {
                             label: /<x-nested> - render/,
@@ -306,7 +306,7 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                                     label: /<x-child> - constructor/,
                                 },
                                 {
-                                    label: /lwc-hydrate/,
+                                    label: /lwc-render/,
                                     children: [
                                         {
                                             label: /<x-child> - render/,
