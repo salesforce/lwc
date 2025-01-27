@@ -118,7 +118,11 @@ export class PropertyDecorators extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapter)
     noConfig?: TestValue;
-    // @ts-expect-error must be 'config' or reactive
+    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
+    // the component's props, so we must accept all string props, even if they're incorrect.
+    // We could technically be strict, and enforce that all configs objects use `as const`, but very
+    // few projects currently use it (there is no need) and the error reported is not simple to
+    // understand.
     @wire(TestAdapter, { config: 'incorrect' })
     wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
@@ -180,7 +184,11 @@ export class PropertyDecoratorsWithImperative extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapterWithImperative)
     noConfig?: TestValue;
-    // @ts-expect-error config limited to specific string or valid reactive prop
+    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
+    // the component's props, so we must accept all string props, even if they're incorrect.
+    // We could technically be strict, and enforce that all configs objects use `as const`, but very
+    // few projects currently use it (there is no need) and the error reported is not simple to
+    // understand.
     @wire(TestAdapterWithImperative, { config: 'incorrect' })
     wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
@@ -272,7 +280,11 @@ export class MethodDecorators extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapter)
     noConfig(_: TestValue): void {}
-    // @ts-expect-error Must be 'config' or reactive
+    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
+    // the component's props, so we must accept all string props, even if they're incorrect.
+    // We could technically be strict, and enforce that all configs objects use `as const`, but very
+    // few projects currently use it (there is no need) and the error reported is not simple to
+    // understand.
     @wire(TestAdapter, { config: 'incorrect' })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
@@ -329,7 +341,11 @@ export class MethodDecoratorsWithImperative extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapterWithImperative)
     noConfig(_: TestValue): void {}
-    // @ts-expect-error config limited to specific string or valid reactive prop
+    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
+    // the component's props, so we must accept all string props, even if they're incorrect.
+    // We could technically be strict, and enforce that all configs objects use `as const`, but very
+    // few projects currently use it (there is no need) and the error reported is not simple to
+    // understand.
     @wire(TestAdapterWithImperative, { config: 'incorrect' })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
