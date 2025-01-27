@@ -101,27 +101,40 @@ export function renderAttrsNoYield(
 }
 
 export function* fallbackTmpl(
-    _shadowSlottedContent: unknown,
-    _lightSlottedContent: unknown,
-    _scopedSlottedContent: unknown,
+    _shadowSlottedContent: any,
+    _lightSlottedContent: any,
+    _scopedSlottedContent: any,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
-        yield '<template shadowrootmode="open"></template>';
+        yield `<template shadowrootmode="open"></template>`;
+        renderSlottedContent(_lightSlottedContent, _instance);
     }
 }
 
 export function fallbackTmplNoYield(
     emit: (segment: string) => void,
-    _shadowSlottedContent: unknown,
-    _lightSlottedContent: unknown,
-    _scopedSlottedContent: unknown,
+    _shadowSlottedContent: any,
+    _lightSlottedContent: any,
+    _scopedSlottedContent: any,
     Cmp: LightningElementConstructor,
     _instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
-        emit('<template shadowrootmode="open"></template>');
+        emit(`<template shadowrootmode="open"></template>`);
+        renderSlottedContent(_lightSlottedContent, emit);
+    }
+}
+
+function renderSlottedContent(_lightSlottedContent: any, contextfulParent: any) {
+    if (_lightSlottedContent) {
+        for (const slotName in _lightSlottedContent) {
+            const generators = _lightSlottedContent[slotName];
+            for (let i = 0; i < generators.length; i++) {
+                generators[i](contextfulParent, null, slotName);
+            }
+        }
     }
 }
 
