@@ -121,7 +121,7 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
 `<EsIfStatement>;
 
 /* 
-    If a slotAttributeValue is present, it is dangling and should be assigned to any slotted content. This behavior aligns with v1 and engine-dom.
+    If `slotAttributeValue` is set, it references a slot that does not exist, and the `slot` attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
     See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
 */
 const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
