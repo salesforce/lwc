@@ -34,27 +34,3 @@ export function validateUniqueDecorator(decorators: EsDecorator[]) {
         throw generateError(api, DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
     }
 }
-
-// function validateUniqueDecorator(decorators: EsDecorator[]) {
-//     if (decorators.length < 2) {
-//         return;
-//     }
-
-//     const expressions = decorators.map(({ expression }) => expression);
-
-//     const wire = expressions.find(
-//         (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
-//     );
-
-//     const api = expressions.find((expr) => is.identifier(expr, { name: 'api' }));
-
-//     if (wire && api) {
-//         throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
-//     }
-
-//     const track = expressions.find((expr) => is.identifier(expr, { name: 'track' }));
-
-//     if (wire && track) {
-//         throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
-//     }
-// }
