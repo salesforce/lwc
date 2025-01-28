@@ -120,6 +120,16 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
     }
 `<EsIfStatement>;
 
+/* 
+    If `slotAttributeValue` is set, it references a slot that does not exist, and the `slot` attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
+    See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+*/
+const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
+    if (slotAttributeValue) {
+        yield \` slot="\${slotAttributeValue}"\`; 
+    }   
+`<EsBlockStatement>;
+
 const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
 `;
@@ -263,6 +273,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        bConditionallyYieldDanglingSlotName(),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,

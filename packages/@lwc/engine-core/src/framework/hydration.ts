@@ -55,6 +55,13 @@ import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
 import { applyRefs } from './modules/refs';
 import { unwrapIfNecessary } from './sanitized-html-content';
+import {
+    logGlobalOperationEndWithVM,
+    logGlobalOperationStartWithVM,
+    logOperationEnd,
+    logOperationStart,
+    OperationId,
+} from './profiler';
 import type { Classes } from './hydration-utils';
 import type {
     VNodes,
@@ -85,6 +92,8 @@ let hasMismatch = false;
 export function hydrateRoot(vm: VM) {
     hasMismatch = false;
 
+    logGlobalOperationStartWithVM(OperationId.GlobalSsrHydrate, vm);
+
     runConnectedCallback(vm);
     hydrateVM(vm);
 
@@ -98,6 +107,7 @@ export function hydrateRoot(vm: VM) {
             logHydrationWarning('Hydration completed with errors.');
         }
     }
+    logGlobalOperationEndWithVM(OperationId.GlobalSsrHydrate, vm);
 }
 
 function hydrateVM(vm: VM) {
@@ -111,7 +121,9 @@ function hydrateVM(vm: VM) {
         renderRoot: parentNode,
         renderer: { getFirstChild },
     } = vm;
+    logOperationStart(OperationId.Patch, vm);
     hydrateChildren(getFirstChild(parentNode), children, parentNode, vm, false);
+    logOperationEnd(OperationId.Patch, vm);
     runRenderedCallback(vm);
 }
 

@@ -17,13 +17,20 @@ import type { Transformer } from '../../types';
 
 const bYieldFromChildGenerator = esTemplateWithYield`
     {
-        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
+        const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
+        /* 
+            If 'slotAttributeValue' is set, it references a slot that does not exist, and the 'slot' attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+        */
+        if (slotAttributeValue) {
+            childAttrs.slot = slotAttributeValue;
+        }
         ${
             /*
                 Slotted content is inserted here.
                 Note that the slotted content will be stored in variables named 
-                `shadowSlottedContent`/`lightSlottedContentMap` which are used below 
+                `shadowSlottedContent`/`lightSlottedContentMap / scopedSlottedContentMap` which are used below 
                 when the child's generateMarkup function is invoked.
             */
             is.statement
@@ -38,6 +45,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             childAttrs, 
             shadowSlottedContent,
             lightSlottedContentMap,
+            scopedSlottedContentMap,
             instance,
             scopeToken,
             contextfulParent
@@ -51,7 +59,6 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     const importPath = kebabcaseToCamelcase(node.name);
     cxt.import({ default: childComponentLocalName }, importPath);
     cxt.import({
-        getReadOnlyProxy: '__getReadOnlyProxy',
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
     });
     const childTagName = node.name;

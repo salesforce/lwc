@@ -25,9 +25,41 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    const isMemberExpression = id.isMemberExpression();
+    let adapter: NodePath<types.Identifier>;
 
-    if (!id.isIdentifier() && !isMemberExpression) {
+    if (id.isIdentifier()) {
+        // @wire(adapter)
+        adapter = id;
+    } else if (id.isMemberExpression()) {
+        if (id.node.computed) {
+            // @wire(adapter[computed])
+            throw generateError(
+                id,
+                {
+                    errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
+                },
+                state
+            );
+        }
+
+        const object = id.get('object');
+
+        if (object.isIdentifier()) {
+            // @wire(adapter.foo)
+            adapter = object;
+        } else {
+            // @wire(adapter.foo.bar)
+            throw generateError(
+                id,
+                {
+                    errorInfo:
+                        DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
+                },
+                state
+            );
+        }
+    } else {
+        // @wire(1), @wire('adapter'), @wire(function adapter() {}), etc.
         throw generateError(
             id,
             {
@@ -37,38 +69,14 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
         );
     }
 
-    if (id.isMemberExpression({ computed: true })) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
-            },
-            state
-        );
-    }
-
-    // TODO [#3444]: improve member expression computed typechecking
-    // @ts-expect-error type narrowing incorrectly reduces id to `never`
-    if (isMemberExpression && !id.get('object').isIdentifier()) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
-            },
-            state
-        );
-    }
-
-    // TODO [#3444]: improve member expression computed typechecking
     // Ensure wire adapter is imported (check for member expression or identifier)
-    // @ts-expect-error type narrowing incorrectly reduces id to `never`
-    const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
-    if (!path.scope.getBinding(wireBinding)) {
+    const adapterBinding = path.scope.getBinding(adapter.node.name);
+    if (!adapterBinding) {
         throw generateError(
             id,
             {
                 errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
-                messageArgs: [id.node.name],
+                messageArgs: [adapter.node.name],
             },
             state
         );
@@ -76,9 +84,8 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
 
     // ensure wire adapter is a first parameter
     if (
-        wireBinding &&
-        !path.scope.getBinding(wireBinding)!.path.isImportSpecifier() &&
-        !path.scope.getBinding(wireBinding)!.path.isImportDefaultSpecifier()
+        !adapterBinding.path.isImportSpecifier() &&
+        !adapterBinding.path.isImportDefaultSpecifier()
     ) {
         throw generateError(
             id,
