@@ -146,9 +146,16 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
+            // not a getter/setter
+            const isRealMethod = node.kind === 'method';
+            if (node.computed) {
+                throw new Error(
+                    `@wire cannot be used on computed ${isRealMethod ? 'method' : 'properties'} in SSR context.`
+                );
+            }
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (node.kind === 'get' || node.kind === 'set') {
+            if (!isRealMethod) {
                 const methodAsProp = b.propertyDefinition(
                     structuredClone(node.key),
                     null,

@@ -4,16 +4,12 @@ const sym = Symbol('computed prop');
 
 export default class Wire extends LightningElement {
     @wire(adapter, { name: 'symbol' })
-    get [sym]() {
-        throw new Error('getter should not be called');
-    }
-
-    @wire(adapter, { name: 'symbol' })
-    set [sym](v) {
+    set [sym](_) {
         throw new Error('setter should not be called');
     }
 
     get exposedSymbol() {
-        return this[sym];
+        this[sym] = 123;
+        return 123;
     }
 }
