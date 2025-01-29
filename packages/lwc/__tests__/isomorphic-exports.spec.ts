@@ -25,6 +25,7 @@ describe('isomorphic package exports', () => {
             'hydrateComponent',
             'isNodeFromTemplate',
             'rendererFactory',
+            'setContextKeys',
             'setTrustedSignalSet',
         ]);
     });
