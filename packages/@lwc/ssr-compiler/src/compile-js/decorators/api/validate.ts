@@ -63,7 +63,7 @@ function validateName(definition: ApiDefinition) {
 }
 
 function validatePropertyValue(property: ApiPropertyDefinition) {
-    if (property.value && property.value.type === 'Literal' && property.value.value === true) {
+    if (is.literal(property.value) && property.value.value === true) {
         throw generateError(property, DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY);
     }
 }
