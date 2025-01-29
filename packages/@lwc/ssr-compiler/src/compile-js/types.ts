@@ -51,7 +51,7 @@ export interface ComponentMetaState {
     // the public (`@api`-annotated) fields of the component class
     publicFields: Map<
         string,
-        (MethodDefinition & { key: Identifier }) | (PropertyDefinition & { key: Identifier })
+        (MethodDefinition | PropertyDefinition) & { key: Identifier }
     >;
     // the private fields of the component class
     privateFields: Set<string>;
