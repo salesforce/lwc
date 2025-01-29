@@ -274,5 +274,5 @@ export default function compileJS(
 function isKeyIdentifier<T extends EsPropertyDefinition | EsMethodDefinition>(
     node: T | undefined | null
 ): node is T & { key: Identifier } {
-    return is.identifier(node.key);
+    return is.identifier(node?.key);
 }

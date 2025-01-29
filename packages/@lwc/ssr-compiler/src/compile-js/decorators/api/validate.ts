@@ -7,10 +7,10 @@
 
 import { DecoratorErrors } from '@lwc/errors';
 import { DISALLOWED_PROP_SET, AMBIGUOUS_PROP_SET } from '@lwc/shared';
+import { is } from 'estree-toolkit';
 import { generateError } from '../../errors';
 import { type ComponentMetaState } from '../../types';
 import type { Identifier, MethodDefinition, PropertyDefinition } from 'estree';
-
 export type ApiMethodDefinition = MethodDefinition & {
     key: Identifier;
 };
