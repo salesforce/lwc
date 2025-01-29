@@ -28,6 +28,7 @@ export {
     serverSideRenderComponent,
     // renderComponent is an alias for serverSideRenderComponent
     serverSideRenderComponent as renderComponent,
+    unimplementedTmpl,
 } from './render';
 export { normalizeTextContent, renderTextContent } from './render-text-content';
 export { hasScopedStaticStylesheets, renderStylesheets } from './styles';

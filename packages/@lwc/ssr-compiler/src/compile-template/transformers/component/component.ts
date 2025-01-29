@@ -37,19 +37,23 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
-        const Ctor = ${/* Component */ is.identifier};
+        const generateMarkup = ${/* Component */ is.identifier}[__SYMBOL__GENERATE_MARKUP];
 
-        yield* Ctor[__SYMBOL__GENERATE_MARKUP](
-            ${/* tag name */ is.literal}, 
-            childProps, 
-            childAttrs, 
-            shadowSlottedContent,
-            lightSlottedContentMap,
-            scopedSlottedContentMap,
-            instance,
-            scopeToken,
-            contextfulParent
-        );
+        if (!generateMarkup) {
+            yield __unimplementedTmpl(${/* tag name */ is.literal}, ${/* Component */ 3});
+        } else {
+            yield* generateMarkup(
+                ${/* tag name */ 4}, 
+                childProps, 
+                childAttrs, 
+                shadowSlottedContent,
+                lightSlottedContentMap,
+                scopedSlottedContentMap,
+                instance,
+                scopeToken,
+                contextfulParent
+            );
+        }
     }
 `<EsBlockStatement>;
 
@@ -60,6 +64,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     cxt.import({ default: childComponentLocalName }, importPath);
     cxt.import({
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+        unimplementedTmpl: '__unimplementedTmpl',
     });
     const childTagName = node.name;
 

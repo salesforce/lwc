@@ -125,6 +125,20 @@ export function fallbackTmplNoYield(
     }
 }
 
+/**
+ * If a component is incorrectly implemented, and is missing a `generateMarkup` function,
+ * then use this template as a fallback so the world doesn't explode.
+ * @example export { Cmp as default }
+ */
+export function unimplementedTmpl(tagName: string, Cmp?: LightningElementConstructor): string {
+    let html = `<${tagName}>`;
+    if (Cmp?.renderMode !== 'light') {
+        html += '<template shadowrootmode="open"></template>';
+    }
+    html += `</${tagName}>`;
+    return html;
+}
+
 export type GenerateMarkupFn = (
     tagName: string,
     props: Properties | null,

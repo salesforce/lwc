@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
 
-class Component extends LightningElement {}
+class Shadow extends LightningElement {}
 
-export { Component as default };
+export { Shadow as default };
