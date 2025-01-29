@@ -109,7 +109,9 @@ export function* fallbackTmpl(
 ) {
     if (Cmp.renderMode !== 'light') {
         yield `<template shadowrootmode="open"></template>`;
-        renderSlottedContent(_lightSlottedContent, _instance);
+        if (_shadowSlottedContent) {
+            yield _shadowSlottedContent(_instance);
+        }
     }
 }
 
@@ -123,17 +125,8 @@ export function fallbackTmplNoYield(
 ) {
     if (Cmp.renderMode !== 'light') {
         emit(`<template shadowrootmode="open"></template>`);
-        renderSlottedContent(_lightSlottedContent, emit);
-    }
-}
-
-function renderSlottedContent(_lightSlottedContent: any, contextfulParent: any) {
-    if (_lightSlottedContent) {
-        for (const slotName in _lightSlottedContent) {
-            const generators = _lightSlottedContent[slotName];
-            for (let i = 0; i < generators.length; i++) {
-                generators[i](contextfulParent, null, slotName);
-            }
+        if (_shadowSlottedContent) {
+            _shadowSlottedContent(emit, _instance);
         }
     }
 }

@@ -1,10 +1,12 @@
 <x-outer>
-  <x-inner>
-    <template shadowrootmode="open">
-    </template>
-    slotted content
-    <h2 slot="bob">
-      more content
-    </h2>
-  </x-inner>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+      </template>
+      I am default slot
+      <div slot="foo">
+        I am the foo slot
+      </div>
+    </x-inner>
+  </template>
 </x-outer>
