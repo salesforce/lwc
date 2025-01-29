@@ -93,7 +93,11 @@ const visitors: Visitors = {
     },
     PropertyDefinition(path, state) {
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!node?.key) {
+            // Seems to occur for `@wire() [symbol];` -- not sure why
+            throw new Error('Unknown state: property definition has no key');
+        }
+        if (!is.identifier(node.key)) {
             return;
         }
 
@@ -107,6 +111,10 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
+            if (node.computed) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                throw new Error('@wire cannot be used on computed properties in SSR context.');
+            }
             catalogWireAdapters(path, state);
             state.privateFields.push(node.key.name);
         } else {
@@ -149,6 +157,7 @@ const visitors: Visitors = {
             // not a getter/setter
             const isRealMethod = node.kind === 'method';
             if (node.computed) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
                 throw new Error(
                     `@wire cannot be used on computed ${isRealMethod ? 'method' : 'properties'} in SSR context.`
                 );
