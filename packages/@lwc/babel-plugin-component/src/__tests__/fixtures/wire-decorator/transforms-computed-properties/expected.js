@@ -11,23 +11,34 @@ _registerDecorators(Test, {
   wire: {
     wiredIdentifier: {
       adapter: getFoo,
-      dynamic: [symbol],
-      config: function ($cmp) {
+      computed: [symbol],
+      dynamic: [$keys[0]],
+      config: function ($cmp, $keys) {
         return {
-          [symbol]: $cmp.prop
+          [$keys[0]]: $cmp.prop
         };
       }
     },
     wiredPrimitives: {
       adapter: getBar,
-      dynamic: ["computedStringLiteral", "123", "321", "null", undefined],
-      config: function ($cmp) {
+      computed: [Math.random(), undefined],
+      dynamic: ["identifier", "dynamic", "computedStringLiteral", "123", "321", "null", $keys[1]],
+      config: function ($cmp, $keys) {
         return {
-          ['computedStringLiteral']: $cmp.prop,
-          [123n]: $cmp.prop,
-          [321]: $cmp.prop,
-          [null]: $cmp.prop,
-          [undefined]: $cmp.prop
+          regular: 'is regular',
+          'string': 'a string',
+          4_5_6: true,
+          "computedNotDynamic": 'hello',
+          [$keys[0]]: Math.random(),
+          get foo() {},
+          set bar(v) {},
+          identifier: $cmp.yay,
+          'dynamic': $cmp.woot,
+          "computedStringLiteral": $cmp.prop,
+          "123": $cmp.prop,
+          "321": $cmp.prop,
+          "null": $cmp.prop,
+          [$keys[1]]: $cmp.prop
         };
       }
     }

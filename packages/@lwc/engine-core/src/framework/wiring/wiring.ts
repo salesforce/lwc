@@ -24,6 +24,7 @@ import type {
     WireDef,
     WireMethodDef,
     WireFieldDef,
+    PropertyKeyList,
 } from './types';
 
 const DeprecatedWiredElementHost = '$$DeprecatedWiredElementHostKey$$';
@@ -57,7 +58,8 @@ function createMethodDataCallback(vm: VM, method: (data: any) => any) {
 function createConfigWatcher(
     component: LightningElement,
     configCallback: ConfigCallback,
-    callbackWhenConfigIsReady: (newConfig: ConfigValue) => void
+    callbackWhenConfigIsReady: (newConfig: ConfigValue) => void,
+    computedKeys: PropertyKeyList
 ): { computeConfigAndUpdate: () => void; ro: ReactiveObserver } {
     let hasPendingConfig: boolean = false;
     // creating the reactive observer for reactive params when needed
@@ -80,7 +82,7 @@ function createConfigWatcher(
     }
     const computeConfigAndUpdate = () => {
         let config: ConfigValue;
-        ro.observe(() => (config = configCallback(component)));
+        ro.observe(() => (config = configCallback(component, computedKeys)));
         // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
         // TODO: dev-mode validation of config based on the adapter.configSchema
         // @ts-expect-error it is assigned in the observe() callback
@@ -101,7 +103,7 @@ function createConnector(
     computeConfigAndUpdate: () => void;
     resetConfigWatcher: () => void;
 } {
-    const { method, adapter, configCallback, dynamic } = wireDef;
+    const { method, adapter, configCallback, dynamic, computed } = wireDef;
     let debugInfo: WireDebugInfo;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -177,7 +179,8 @@ function createConnector(
     const { computeConfigAndUpdate, ro } = createConfigWatcher(
         vm.component,
         configCallback,
-        updateConnectorConfig
+        updateConnectorConfig,
+        computed
     );
 
     // if the adapter needs contextualization, we need to watch for new context and push it alongside the config
@@ -206,13 +209,14 @@ function createConnector(
 
 export function storeWiredMethodMeta(
     descriptor: PropertyDescriptor,
-    adapter: WireAdapterConstructor,
+    adapter: WireAdapterConstructor | { adapter: WireAdapterConstructor },
     configCallback: ConfigCallback,
-    dynamic: string[]
+    dynamic: PropertyKeyList,
+    computed: PropertyKeyList
 ) {
     // support for callable adapters
-    if ((adapter as any).adapter) {
-        adapter = (adapter as any).adapter;
+    if ('adapter' in adapter) {
+        adapter = adapter.adapter;
     }
     const method = descriptor.value;
     const def: WireMethodDef = {
@@ -220,24 +224,27 @@ export function storeWiredMethodMeta(
         method,
         configCallback,
         dynamic,
+        computed,
     };
     WireMetaMap.set(descriptor, def);
 }
 
 export function storeWiredFieldMeta(
     descriptor: PropertyDescriptor,
-    adapter: WireAdapterConstructor,
+    adapter: WireAdapterConstructor | { adapter: WireAdapterConstructor },
     configCallback: ConfigCallback,
-    dynamic: string[]
+    dynamic: PropertyKeyList,
+    computed: PropertyKeyList
 ) {
     // support for callable adapters
-    if ((adapter as any).adapter) {
-        adapter = (adapter as any).adapter;
+    if ('adapter' in adapter) {
+        adapter = adapter.adapter;
     }
     const def: WireFieldDef = {
         adapter,
         configCallback,
         dynamic,
+        computed,
     };
     WireMetaMap.set(descriptor, def);
 }

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { ArrayPush } from '@lwc/shared';
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { isWireDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
@@ -13,37 +14,89 @@ import type { BindingOptions } from '../types';
 
 const WIRE_PARAM_PREFIX = '$';
 const WIRE_CONFIG_ARG_NAME = '$cmp';
+const WIRE_CONFIG_COMPUTED_KEYS_NAME = '$keys';
 
-function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
-    const propertyValue = configProperty.get('value');
+/** Determines whether the given property has a value starting with `$`. */
+function isObservedProperty(
+    t: BabelTypes,
+    prop: types.ObjectProperty
+): prop is types.ObjectProperty & { value: types.StringLiteral } {
+    const { value } = prop;
+    return t.isStringLiteral(value) && value.value.startsWith(WIRE_PARAM_PREFIX);
+}
+
+/**
+ * Determines whether a node is a literal for a primitive value that can be converted to a string
+ * at compile time. Excludes template literals.
+ */
+function isPrimitiveLiteral(
+    t: BabelTypes,
+    node: types.Expression | types.PrivateName
+): node is
+    | types.StringLiteral
+    | types.NumericLiteral
+    | types.BigIntLiteral
+    | types.BooleanLiteral
+    | types.NullLiteral {
     return (
-        propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX)
+        t.isStringLiteral(node) ||
+        t.isNumericLiteral(node) ||
+        t.isBigIntLiteral(node) ||
+        t.isBooleanLiteral(node) ||
+        t.isNullLiteral(node)
     );
 }
 
-function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.ObjectProperty[] {
-    return wireConfig
-        .get('properties')
-        .filter((property) => !isObservedProperty(property as NodePath<types.ObjectProperty>))
-        .map((path) => path.node) as types.ObjectProperty[];
-}
+function parseWiredParams(t: BabelTypes, wireConfig: NodePath<types.ObjectExpression>) {
+    // excludes literals like {[123]: 321} because those can be stringified at compile time
+    const computedKeys: types.Expression[] = [];
+    // { key: 'value' } props, ...spread and methods(){}
+    const staticProps: types.ObjectExpression['properties'] = [];
+    // { key: '$dynamic' } props
+    const dynamicProps: types.ObjectProperty[] = [];
+    for (const prop of wireConfig.get('properties')) {
+        if (prop.isObjectProperty()) {
+            const { node } = prop;
+            let normalized = node;
 
-function getWiredParams(
-    t: BabelTypes,
-    wireConfig: NodePath<types.ObjectExpression>
-): types.ObjectProperty[] {
-    return wireConfig
-        .get('properties')
-        .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
-        .map((path) => {
-            // Need to clone deep the observed property to remove the param prefix
-            const clonedProperty = t.cloneNode(path.node) as types.ObjectProperty;
-            (clonedProperty.value as types.StringLiteral).value = (
-                clonedProperty.value as types.StringLiteral
-            ).value.slice(1);
+            if (node.computed) {
+                normalized = t.cloneNode(node);
+                const { key } = normalized;
+                if (isPrimitiveLiteral(t, key)) {
+                    // {[123]: 'bar'} => can normalize to non-computed string, for simplicity
+                    // null literals have no `value`, so get special handling
+                    normalized.key = t.stringLiteral('value' in key ? String(key.value) : 'null');
+                    normalized.computed = false;
+                } else if (!t.isPrivateName(key)) {
+                    // {[Math.random()]: val}
+                    // Add key to computed array, replace object key with array lookup
+                    normalized.key = t.memberExpression(
+                        t.identifier(WIRE_CONFIG_COMPUTED_KEYS_NAME),
+                        t.numericLiteral(computedKeys.length),
+                        true
+                    );
+                    computedKeys.push(key);
+                }
+            }
 
-            return clonedProperty;
-        });
+            if (isObservedProperty(t, normalized)) {
+                // props with $reactive values = dynamic
+                normalized.value.value = normalized.value.value.slice(1); // remove leading $
+                dynamicProps.push(normalized);
+            } else {
+                // props without $reactive values = static
+                staticProps.push(normalized);
+            }
+        } else {
+            // method(){} or ...spread -- pass through as is
+            staticProps.push(prop.node);
+        }
+    }
+    return {
+        computed: computedKeys,
+        params: dynamicProps,
+        static: staticProps,
+    };
 }
 
 function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
@@ -128,11 +181,11 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
         };
     };
 
-    if (wiredValue.static) {
-        Array.prototype.push.apply(configProps, wiredValue.static);
+    if (wiredValue.static?.length) {
+        ArrayPush.apply(configProps, wiredValue.static);
     }
 
-    if (wiredValue.params) {
+    if (wiredValue.params?.length) {
         wiredValue.params.forEach((param) => {
             const memberExprPaths = ((param as any).value.value as string).split('.');
             const paramConfigValue = generateParameterConfigValue(memberExprPaths);
@@ -151,7 +204,9 @@ function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
 
     const fnExpression = t.functionExpression(
         null,
-        [t.identifier(WIRE_CONFIG_ARG_NAME)],
+        wiredValue.computed?.length
+            ? [t.identifier(WIRE_CONFIG_ARG_NAME), t.identifier(WIRE_CONFIG_COMPUTED_KEYS_NAME)]
+            : [t.identifier(WIRE_CONFIG_ARG_NAME)],
         t.blockStatement(configBlockBody)
     );
 
@@ -168,25 +223,26 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                 );
             }
 
+            if (wiredValue.computed?.length) {
+                wireConfig.push(
+                    t.objectProperty(
+                        t.identifier('computed'),
+                        t.arrayExpression(wiredValue.computed)
+                    )
+                );
+            }
+
             if (wiredValue.params) {
-                const dynamicParamNames = wiredValue.params.map((p) => {
-                    if (t.isIdentifier(p.key)) {
-                        return p.computed ? t.identifier(p.key.name) : t.stringLiteral(p.key.name);
-                    } else if (
-                        t.isLiteral(p.key) &&
-                        // Template literals may contain expressions, so they are not allowed
-                        !t.isTemplateLiteral(p.key) &&
-                        // RegExp are not primitives, so they are not allowed
-                        !t.isRegExpLiteral(p.key)
-                    ) {
-                        const value = t.isNullLiteral(p.key) ? null : p.key.value;
-                        return t.stringLiteral(String(value));
-                    }
-                    // If it's not an identifier or primitive literal then it's a computed expression
-                    throw new TypeError(
-                        `Expected object property key to be an identifier or a literal, but instead saw "${p.key.type}".`
-                    );
-                });
+                const dynamicParamNames = wiredValue.params.map((p) =>
+                    p.computed
+                        ? // foo
+                          (p.key as types.Expression)
+                        : t.stringLiteral(
+                              t.isIdentifier(p.key)
+                                  ? p.key.name
+                                  : (p.key as types.StringLiteral).value
+                          )
+                );
                 wireConfig.push(
                     t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
                 );
@@ -252,7 +308,11 @@ const scopedReferenceLookup = (scope: NodePath['scope']) => (name: string) => {
 type WiredValue = {
     propertyName: string;
     isClassMethod: boolean;
-    static?: types.ObjectProperty[];
+    /** Computed property keys (excludes primitive literals). */
+    computed?: types.Expression[];
+    /** Properties without observed values ({x: 123}). */
+    static?: types.ObjectExpression['properties'];
+    /** Properties with observed values ({key: '$prop'}). */
     params?: types.ObjectProperty[];
     adapter?: {
         name: string;
@@ -270,19 +330,13 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
         ];
 
         const propertyName = (path.parentPath.get('key.name') as any).node as string;
-        const isClassMethod = path.parentPath.isClassMethod({
-            kind: 'method',
-        });
+        const isClassMethod = path.parentPath.isClassMethod({ kind: 'method' });
 
         const wiredValue: WiredValue = {
             propertyName,
             isClassMethod,
+            ...(config && parseWiredParams(t, config)),
         };
-
-        if (config) {
-            wiredValue.static = getWiredStatic(config);
-            wiredValue.params = getWiredParams(t, config);
-        }
 
         const referenceLookup = scopedReferenceLookup(path.scope);
         const isMemberExpression = id.isMemberExpression();
