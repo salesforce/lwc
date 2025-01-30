@@ -114,6 +114,7 @@ const visitors: Visitors = {
         //
         // - renderAttrs vs renderAttrsNoYield
         // - fallbackTmpl vs fallbackTmplNoYield
+        // - unimplementedTmpl vs unimplementedTmplNoYield
         //
         // If this becomes too burdensome to maintain, we can officially deprecate the generator-based approach
         // and switch the @lwc/ssr-runtime implementation wholesale over to the no-generator paradigm.
@@ -136,6 +137,8 @@ const visitors: Visitors = {
             node.imported.name = 'fallbackTmplNoYield';
         } else if (node.imported.name === 'renderAttrs') {
             node.imported.name = 'renderAttrsNoYield';
+        } else if (node.imported.name === 'unimplementedTmpl') {
+            node.imported.name = 'unimplementedTmplNoYield';
         }
     },
 };

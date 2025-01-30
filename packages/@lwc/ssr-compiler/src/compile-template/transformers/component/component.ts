@@ -38,9 +38,8 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
         const generateMarkup = ${/* Component */ is.identifier}[__SYMBOL__GENERATE_MARKUP];
-
         if (!generateMarkup) {
-            yield __unimplementedTmpl(${/* tag name */ is.literal}, ${/* Component */ 3});
+            yield* __unimplementedTmpl(${/* tag name */ is.literal}, instance, shadowSlottedContent, ${/* Component */ 3});
         } else {
             yield* generateMarkup(
                 ${/* tag name */ 4}, 
