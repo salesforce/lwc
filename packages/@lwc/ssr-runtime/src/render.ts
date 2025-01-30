@@ -105,12 +105,12 @@ export function* fallbackTmpl(
     _lightSlottedContent: unknown,
     _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
-    _instance: unknown
+    instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
         yield `<template shadowrootmode="open"></template>`;
         if (shadowSlottedContent) {
-            yield shadowSlottedContent(_instance);
+            yield shadowSlottedContent(instance);
         }
     }
 }
@@ -121,12 +121,12 @@ export function fallbackTmplNoYield(
     _lightSlottedContent: unknown,
     _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
-    _instance: unknown
+    instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
         emit(`<template shadowrootmode="open"></template>`);
         if (shadowSlottedContent) {
-            shadowSlottedContent(emit, _instance);
+            shadowSlottedContent(emit, instance);
         }
     }
 }
