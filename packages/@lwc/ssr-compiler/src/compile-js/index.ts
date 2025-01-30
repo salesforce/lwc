@@ -105,7 +105,7 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.publicFields.push(node.key.name);
+            state.publicProperties.push(node.key.name);
         } else if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
@@ -116,9 +116,9 @@ const visitors: Visitors = {
                 throw new Error('@wire cannot be used on computed properties in SSR context.');
             }
             catalogWireAdapters(path, state);
-            state.privateFields.push(node.key.name);
+            state.privateProperties.push(node.key.name);
         } else {
-            state.privateFields.push(node.key.name);
+            state.privateProperties.push(node.key.name);
         }
 
         if (
@@ -180,6 +180,14 @@ const visitors: Visitors = {
             } else {
                 catalogWireAdapters(path, state);
             }
+        } else if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
+            if (state.publicProperties.includes(node.key.name)) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                throw new Error(
+                    `LWC1112: @api get ${node.key.name} and @api set ${node.key.name} detected in class declaration. Only one of the two needs to be decorated with @api.`
+                );
+            }
+            state.publicProperties.push(node.key.name);
         }
 
         switch (node.key.name) {
@@ -285,8 +293,8 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicFields: [],
-        privateFields: [],
+        publicProperties: [],
+        privateProperties: [],
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),

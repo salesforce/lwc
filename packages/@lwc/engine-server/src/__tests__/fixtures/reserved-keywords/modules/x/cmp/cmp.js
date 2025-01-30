@@ -1,7 +1,7 @@
 import { LightningElement } from 'lwc';
 
-const privateFields = undefined;
-const publicFields = undefined;
+const privateProperties = undefined;
+const publicProperties = undefined;
 const stylesheetScopeToken = undefined;
 const hasScopedStylesheets = undefined;
 const defaultScopedStylesheets = undefined;
@@ -12,8 +12,8 @@ export default class extends LightningElement {
         Object.assign(
             {},
             {
-                privateFields,
-                publicFields,
+                privateProperties,
+                publicProperties,
                 stylesheetScopeToken,
                 hasScopedStylesheets,
                 defaultScopedStylesheets,
