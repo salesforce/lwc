@@ -16,7 +16,7 @@ import type { ComponentMetaState } from './types';
 
 const bGenerateMarkup = esTemplate`
     // These variables may mix with component-authored variables, so should be reasonably unique
-    const __lwcPublicFields__ = new Set(${/*public fields*/ is.arrayExpression});
+    const __lwcApi__ = new Set(${/*api*/ is.arrayExpression});
     const __lwcPrivateFields__ = new Set(${/*private fields*/ is.arrayExpression});
 
     async function* generateMarkup(
@@ -43,7 +43,7 @@ const bGenerateMarkup = esTemplate`
         instance[__SYMBOL__SET_INTERNALS](
             props,
             attrs,
-            __lwcPublicFields__,
+            __lwcApi__,
             __lwcPrivateFields__,
         );
         instance.isConnected = true;
@@ -101,7 +101,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { privateFields, publicFields, tmplExplicitImports } = state;
+    const { privateFields, api, tmplExplicitImports } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -141,7 +141,7 @@ export function addGenerateMarkupFunction(
     );
     program.body.push(
         ...bGenerateMarkup(
-            b.arrayExpression(publicFields.map(b.literal)),
+            b.arrayExpression(api.map(b.literal)),
             b.arrayExpression(privateFields.map(b.literal)),
             defaultTagName,
             classIdentifier,

@@ -101,7 +101,7 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.publicFields.push(node.key.name);
+            state.api.push(node.key.name);
         } else if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
@@ -164,6 +164,8 @@ const visitors: Visitors = {
             } else {
                 catalogWireAdapters(path, state);
             }
+        } else if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
+            state.api.push(node.key.name);
         }
 
         switch (node.key.name) {
@@ -269,7 +271,7 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicFields: [],
+        api: [],
         privateFields: [],
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,

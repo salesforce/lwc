@@ -1,7 +1,7 @@
 import { LightningElement } from 'lwc';
 
 const privateFields = undefined;
-const publicFields = undefined;
+const api = undefined;
 const stylesheetScopeToken = undefined;
 const hasScopedStylesheets = undefined;
 const defaultScopedStylesheets = undefined;
@@ -13,7 +13,7 @@ export default class extends LightningElement {
             {},
             {
                 privateFields,
-                publicFields,
+                api,
                 stylesheetScopeToken,
                 hasScopedStylesheets,
                 defaultScopedStylesheets,

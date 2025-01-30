@@ -78,7 +78,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     [SYMBOL__SET_INTERNALS](
         props: Properties,
         attrs: Attributes,
-        publicFields: Set<string>,
+        api: Set<string>,
         privateFields: Set<string>
     ) {
         this.#props = props;
@@ -91,7 +91,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
         for (const propName of keys(props)) {
             const attrName = htmlPropertyToAttribute(propName);
             if (
-                publicFields.has(propName) ||
+                api.has(propName) ||
                 ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
                     !privateFields.has(propName))
             ) {
