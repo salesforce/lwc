@@ -48,10 +48,10 @@ export interface ComponentMetaState {
     cssExplicitImports: Map<string, string> | null;
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
-    // the public (`@api`-annotated) fields of the component class
-    publicFields: Array<string>;
-    // the private fields of the component class
-    privateFields: Array<string>;
+    // the public (`@api`-annotated) properties of the component class
+    publicProperties: Array<string>;
+    // the private properties of the component class
+    privateProperties: Array<string>;
     // indicates whether the LightningElement has any wired props
     wireAdapters: WireAdapter[];
     // dynamic imports configuration
