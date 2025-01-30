@@ -166,6 +166,7 @@ const visitors: Visitors = {
             }
         } else if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
             if (state.publicProperties.includes(node.key.name)) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
                 throw new Error(
                     `LWC1112: @api get ${node.key.name} and @api set ${node.key.name} detected in class declaration. Only one of the two needs to be decorated with @api.`
                 );
