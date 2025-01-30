@@ -101,16 +101,16 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.api.push(node.key.name);
+            state.publicProperties.push(node.key.name);
         } else if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
             catalogWireAdapters(path, state);
-            state.privateFields.push(node.key.name);
+            state.privateProperties.push(node.key.name);
         } else {
-            state.privateFields.push(node.key.name);
+            state.privateProperties.push(node.key.name);
         }
 
         if (
@@ -165,7 +165,12 @@ const visitors: Visitors = {
                 catalogWireAdapters(path, state);
             }
         } else if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.api.push(node.key.name);
+            if (state.publicProperties.includes(node.key.name)) {
+                throw new Error(
+                    `LWC1112: @api get ${node.key.name} and @api set ${node.key.name} detected in class declaration. Only one of the two needs to be decorated with @api.`
+                );
+            }
+            state.publicProperties.push(node.key.name);
         }
 
         switch (node.key.name) {
@@ -271,8 +276,8 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        api: [],
-        privateFields: [],
+        publicProperties: [],
+        privateProperties: [],
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),
