@@ -41,7 +41,7 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         const tagName = ${/* tag name */ is.literal};
 
         if (generateMarkup) {
-                yield* generateMarkup(
+            yield* generateMarkup(
                 tagName, 
                 childProps, 
                 childAttrs, 
