@@ -66,12 +66,12 @@ _registerDecorators(Test, {
       computed: [undefined, Math.random(), {
         toString: Date.now
       }, `${Date.now()}`],
-      dynamic: ["identifier", "dynamic", "computedStringLiteral", "123", "321", "null", $keys[0], $keys[2]],
+      dynamic: ["identifier", "dynamic", "computedStringLiteral", "1234", "321", "null", $keys[0], $keys[2]],
       config: function ($cmp, $keys) {
         return {
           regular: 'is regular',
           'string': 'regular',
-          1.2_3e+2: true,
+          "123": true,
           // parsed as numeric literal, i.e. `123`
           "computedNotDynamic": 'hello',
           [$keys[1]]: Math.random(),
@@ -85,7 +85,7 @@ _registerDecorators(Test, {
           identifier: $cmp.dynamic,
           'dynamic': $cmp.dynamic,
           "computedStringLiteral": $cmp.prop,
-          "123": $cmp.prop,
+          "1234": $cmp.prop,
           "321": $cmp.prop,
           "null": $cmp.prop,
           [$keys[0]]: $cmp.prop,

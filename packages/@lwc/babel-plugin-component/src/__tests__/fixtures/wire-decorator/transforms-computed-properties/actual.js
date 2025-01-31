@@ -37,7 +37,7 @@ export default class Test extends LightningElement {
     1.2_3e+2: true, // parsed as numeric literal, i.e. `123`
     ['computedNotDynamic']: 'hello',
     ['computedStringLiteral']: '$prop',
-    [123n]: '$prop',
+    [1234n]: '$prop',
     [321]: '$prop',
     [null]: '$prop',
     [undefined]: '$prop',

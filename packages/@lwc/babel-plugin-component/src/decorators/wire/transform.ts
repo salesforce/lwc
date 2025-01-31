@@ -56,36 +56,37 @@ function parseWiredParams(t: BabelTypes, wireConfig: NodePath<types.ObjectExpres
     const dynamicProps: types.ObjectProperty[] = [];
     for (const prop of wireConfig.get('properties')) {
         if (prop.isObjectProperty()) {
-            const { node } = prop;
-            let normalized = node;
+            const node = t.cloneNode(prop.node);
+            const { key } = node;
 
             if (node.computed) {
-                normalized = t.cloneNode(node);
-                const { key } = normalized;
                 if (isPrimitiveLiteral(t, key)) {
                     // {[123]: 'bar'} => can normalize to non-computed string, for simplicity
                     // null literals have no `value`, so get special handling
-                    normalized.key = t.stringLiteral('value' in key ? String(key.value) : 'null');
-                    normalized.computed = false;
+                    node.key = t.stringLiteral('value' in key ? String(key.value) : 'null');
+                    node.computed = false;
                 } else if (!t.isPrivateName(key)) {
                     // {[Math.random()]: val}
                     // Add key to computed array, replace object key with array lookup
-                    normalized.key = t.memberExpression(
+                    node.key = t.memberExpression(
                         t.identifier(WIRE_CONFIG_COMPUTED_KEYS_NAME),
                         t.numericLiteral(computedKeys.length),
                         true
                     );
                     computedKeys.push(key);
                 }
+            } else if (t.isNumericLiteral(key)) {
+                // {123: val} => {"123": val} so that later code doesn't have to handle numbers
+                node.key = t.stringLiteral(String(key.value));
             }
 
-            if (isObservedProperty(t, normalized)) {
+            if (isObservedProperty(t, node)) {
                 // props with $reactive values = dynamic
-                normalized.value.value = normalized.value.value.slice(1); // remove leading $
-                dynamicProps.push(normalized);
+                node.value.value = node.value.value.slice(1); // remove leading $
+                dynamicProps.push(node);
             } else {
                 // props without $reactive values = static
-                staticProps.push(normalized);
+                staticProps.push(node);
             }
         } else {
             // method(){} or ...spread -- pass through as is
