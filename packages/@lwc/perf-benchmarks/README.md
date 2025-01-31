@@ -14,11 +14,13 @@ Then run the benchmarks:
 yarn test:performance
 ```
 
+The test results are saved in `*.tachometer.results.json` files, and a summary table is printed to the console. To recreate the table without re-running the full test suite, ensure the JSON files exist and run `yarn test:format`.
+
 To run an individual benchmark, do:
 
 ```shell
 cd packages/@lwc/perf-benchmarks
-../../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
+yarn tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
 > [!TIP]
@@ -30,7 +32,7 @@ When the benchmark is not working, the best way to debug it locally is to load i
 
 ```shell
 cd packages/@lwc/perf-benchmarks
-../../../node_modules/.bin/tach --manual --config dist/__benchmarks__/path/to/tachometer.json
+yarn tach --manual --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
 This will print out the URLs you can use to test manually.
