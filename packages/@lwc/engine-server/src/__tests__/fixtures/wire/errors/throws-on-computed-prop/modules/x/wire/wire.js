@@ -8,11 +8,6 @@ export default class Wire extends LightningElement {
         throw new Error('getter should not be called');
     }
 
-    @wire(adapter, { name: 'symbol' })
-    set [sym](v) {
-        throw new Error('setter should not be called');
-    }
-
     get exposedSymbol() {
         return this[sym];
     }

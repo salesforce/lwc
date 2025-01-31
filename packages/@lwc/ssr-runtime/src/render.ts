@@ -101,27 +101,33 @@ export function renderAttrsNoYield(
 }
 
 export function* fallbackTmpl(
-    _shadowSlottedContent: unknown,
+    shadowSlottedContent: AsyncGeneratorFunction,
     _lightSlottedContent: unknown,
     _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
-    _instance: unknown
+    instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
-        yield '<template shadowrootmode="open"></template>';
+        yield `<template shadowrootmode="open"></template>`;
+        if (shadowSlottedContent) {
+            yield shadowSlottedContent(instance);
+        }
     }
 }
 
 export function fallbackTmplNoYield(
     emit: (segment: string) => void,
-    _shadowSlottedContent: unknown,
+    shadowSlottedContent: AsyncGeneratorFunction,
     _lightSlottedContent: unknown,
     _scopedSlottedContent: unknown,
     Cmp: LightningElementConstructor,
-    _instance: unknown
+    instance: unknown
 ) {
     if (Cmp.renderMode !== 'light') {
-        emit('<template shadowrootmode="open"></template>');
+        emit(`<template shadowrootmode="open"></template>`);
+        if (shadowSlottedContent) {
+            shadowSlottedContent(emit, instance);
+        }
     }
 }
 

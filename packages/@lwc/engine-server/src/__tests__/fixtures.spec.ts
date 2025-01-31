@@ -11,6 +11,7 @@ import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
+import type { FeatureFlagName } from '@lwc/features/dist/types';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
@@ -128,16 +129,17 @@ function testFixtures(options?: RollupLwcOptions) {
             // the LightningElement. Therefor the compiled module should also be evaluated in the
             // same sandbox registry as the engine.
             const lwcEngineServer = await import('../index');
-            const module = (await import(compiledFixturePath)) as FixtureModule;
-
-            const features = module!.features ?? [];
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, true);
-            });
 
             let result;
             let err;
+            let features: FeatureFlagName[] = [];
             try {
+                const module = (await import(compiledFixturePath)) as FixtureModule;
+
+                features = module!.features ?? [];
+                features.forEach((flag) => {
+                    lwcEngineServer!.setFeatureFlagForTest(flag, true);
+                });
                 result = formatHTML(
                     lwcEngineServer!.renderComponent(
                         module!.tagName,
@@ -146,10 +148,10 @@ function testFixtures(options?: RollupLwcOptions) {
                     )
                 );
             } catch (_err: any) {
-                if (_err.name === 'AssertionError') {
+                if (_err?.name === 'AssertionError') {
                     throw _err;
                 }
-                err = _err.message;
+                err = _err?.message || 'An empty error occurred?!';
             }
 
             features.forEach((flag) => {

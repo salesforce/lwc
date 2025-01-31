@@ -93,7 +93,11 @@ const visitors: Visitors = {
     },
     PropertyDefinition(path, state) {
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!node?.key) {
+            // Seems to occur for `@wire() [symbol];` -- not sure why
+            throw new Error('Unknown state: property definition has no key');
+        }
+        if (!is.identifier(node.key)) {
             return;
         }
 
@@ -101,16 +105,20 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         const decoratedExpression = decorators?.[0]?.expression;
         if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.publicFields.push(node.key.name);
+            state.publicProperties.push(node.key.name);
         } else if (
             is.callExpression(decoratedExpression) &&
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
+            if (node.computed) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                throw new Error('@wire cannot be used on computed properties in SSR context.');
+            }
             catalogWireAdapters(path, state);
-            state.privateFields.push(node.key.name);
+            state.privateProperties.push(node.key.name);
         } else {
-            state.privateFields.push(node.key.name);
+            state.privateProperties.push(node.key.name);
         }
 
         if (
@@ -146,9 +154,17 @@ const visitors: Visitors = {
             is.identifier(decoratedExpression.callee) &&
             decoratedExpression.callee.name === 'wire'
         ) {
+            // not a getter/setter
+            const isRealMethod = node.kind === 'method';
+            if (node.computed) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                throw new Error(
+                    `@wire cannot be used on computed ${isRealMethod ? 'method' : 'properties'} in SSR context.`
+                );
+            }
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (node.kind === 'get' || node.kind === 'set') {
+            if (!isRealMethod) {
                 const methodAsProp = b.propertyDefinition(
                     structuredClone(node.key),
                     null,
@@ -164,6 +180,14 @@ const visitors: Visitors = {
             } else {
                 catalogWireAdapters(path, state);
             }
+        } else if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
+            if (state.publicProperties.includes(node.key.name)) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                throw new Error(
+                    `LWC1112: @api get ${node.key.name} and @api set ${node.key.name} detected in class declaration. Only one of the two needs to be decorated with @api.`
+                );
+            }
+            state.publicProperties.push(node.key.name);
         }
 
         switch (node.key.name) {
@@ -269,8 +293,8 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicFields: [],
-        privateFields: [],
+        publicProperties: [],
+        privateProperties: [],
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),
