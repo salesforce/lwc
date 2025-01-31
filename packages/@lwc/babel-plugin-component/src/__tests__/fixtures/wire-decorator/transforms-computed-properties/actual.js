@@ -46,7 +46,8 @@ export default class Test extends LightningElement {
     [`${Date.now()}`]: 'now',
     // methods / spread should be ignored but preserved
     get foo() {},
-    set bar(v){},
+    set bar(v) {},
+    method() {},
     ...({spread: true})
   })
   mixedAndEdgeCases;

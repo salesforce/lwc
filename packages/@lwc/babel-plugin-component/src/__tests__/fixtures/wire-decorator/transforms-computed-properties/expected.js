@@ -77,6 +77,7 @@ _registerDecorators(Test, {
           // methods / spread should be ignored but preserved
           get foo() {},
           set bar(v) {},
+          method() {},
           ...{
             spread: true
           },

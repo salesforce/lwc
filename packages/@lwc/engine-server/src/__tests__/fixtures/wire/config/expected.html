@@ -1,20 +1,60 @@
 <x-wire>
   <template shadowrootmode="open">
-    Wire adapter value: {
-    : ,
-    0: 0,
-    array: [value],
-    fakeMagic: [$cmpProp,$ string in arrays aren&#x27;t magic],
-    false: false,
-    Infinity: null,
-    magic: 123,
-    NaN: null,
-    null: null,
-    prop: not magic,
-    true: true,
-    undefined: undefined,
-    variable: 4404,
-    why: undefined,
+    <p>
+      Empty config: {
+
 }
+    </p>
+    <p>
+      Static props, regular values: {
+    computed literal can be treated like static: regular value,
+    staticIdentifier: regular value,
+    staticLiteral: regular value,
+}
+    </p>
+    <p>
+      Static props, dynamic values: {
+    computed literal can be treated like static: a dynamic value,
+    staticIdentifier: a dynamic value,
+    staticLiteral: a dynamic value,
+}
+    </p>
+    <p>
+      Computed props, regular values: {
+    4404: regular value,
+    computed expression: regular value,
+}
+    </p>
+    <p>
+      Computed props, dynamic values: {
+    4404: a dynamic value,
+    computed expression: a dynamic value,
+}
+    </p>
+    <p>
+      Mixed / edge cases: {
+    123: true,
+    321: 123,
+    555: 123,
+    array: [value],
+    bar: undefined,
+    computedNotDynamic: hello,
+    computedStringLiteral: 123,
+    dynamic: a dynamic value,
+    fakeMagic: [$cmpProp,$ string in arrays aren&#x27;t magic],
+    foo: undefined,
+    identifier: a dynamic value,
+    method: undefined,
+    null: 123,
+    regular: is regular,
+    spread: true,
+    string: regular,
+    template literal: fancy!,
+    undefined: 123,
+    variable: 4404,
+    weird IIFE: why,
+    yes: expression,
+}
+    </p>
   </template>
 </x-wire>
