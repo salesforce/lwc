@@ -40,12 +40,8 @@ const bYieldFromChildGenerator = esTemplateWithYield`
         const generateMarkup = ${/* Component */ is.identifier}[__SYMBOL__GENERATE_MARKUP];
         const tagName = ${/* tag name */ is.literal};
 
-        if (!generateMarkup) {
-            yield \`<\${tagName}>\`;
-            yield* __fallbackTmpl(shadowSlottedContent, lightSlottedContentMap, scopedSlottedContentMap, ${/* Component */ 3}, instance)
-            yield \`</\${tagName}>\`;
-        } else {
-            yield* generateMarkup(
+        if (generateMarkup) {
+                yield* generateMarkup(
                 tagName, 
                 childProps, 
                 childAttrs, 
@@ -56,6 +52,10 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 scopeToken,
                 contextfulParent
             );
+        } else {
+            yield \`<\${tagName}>\`;
+            yield* __fallbackTmpl(shadowSlottedContent, lightSlottedContentMap, scopedSlottedContentMap, ${/* Component */ 3}, instance)
+            yield \`</\${tagName}>\`;
         }
     }
 `<EsBlockStatement>;
