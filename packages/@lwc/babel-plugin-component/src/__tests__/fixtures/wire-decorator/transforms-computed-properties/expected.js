@@ -14,7 +14,6 @@ _registerDecorators(Test, {
   wire: {
     staticPropsRegularValues: {
       adapter: getSmart,
-      dynamic: [],
       config: function ($cmp) {
         return {
           staticIdentifier: 'regular value',
@@ -40,7 +39,6 @@ _registerDecorators(Test, {
     computedPropsRegularValues: {
       adapter: getSmart,
       computed: [symbol /* computed identifier */, Symbol('computed expression')],
-      dynamic: [],
       config: function ($cmp, $keys) {
         return {
           [$keys[0]]: 'regular value',
@@ -51,7 +49,7 @@ _registerDecorators(Test, {
     computedPropsDynamicValues: {
       adapter: getSmart,
       computed: [symbol /* computed identifier */, Symbol('computed expression')],
-      dynamic: [$keys[0], $keys[1]],
+      dynamic: [0, 1],
       config: function ($cmp, $keys) {
         let v1 = $cmp.dynamic;
         let v2 = $cmp.dynamic;
@@ -66,7 +64,7 @@ _registerDecorators(Test, {
       computed: [undefined, Math.random(), {
         toString: Date.now
       }, `${Date.now()}`],
-      dynamic: ["identifier", "dynamic", "computedStringLiteral", "1234", "321", "null", $keys[0], $keys[2]],
+      dynamic: ["identifier", "dynamic", "computedStringLiteral", "1234", "321", "null", 0, 2],
       config: function ($cmp, $keys) {
         return {
           regular: 'is regular',

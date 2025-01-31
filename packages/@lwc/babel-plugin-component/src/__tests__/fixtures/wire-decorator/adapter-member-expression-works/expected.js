@@ -9,7 +9,6 @@ _registerDecorators(Test, {
   wire: {
     wiredProp: {
       adapter: Foo.Bar,
-      dynamic: [],
       config: function ($cmp) {
         return {};
       }

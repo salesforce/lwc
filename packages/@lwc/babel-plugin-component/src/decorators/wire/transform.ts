@@ -48,12 +48,13 @@ function isPrimitiveLiteral(
 }
 
 function parseWiredParams(t: BabelTypes, wireConfig: NodePath<types.ObjectExpression>) {
-    // excludes literals like {[123]: 321} because those can be stringified at compile time
+    /** excludes literals like {[123]: 321} because those can be stringified at compile time */
     const computedKeys: types.Expression[] = [];
-    // { key: 'value' } props, ...spread and methods(){}
+    /** { key: 'value' } props, ...spread and methods(){} */
     const staticProps: types.ObjectExpression['properties'] = [];
-    // { key: '$dynamic' } props
+    /** { key: '$dynamic' } props */
     const dynamicProps: types.ObjectProperty[] = [];
+
     for (const prop of wireConfig.get('properties')) {
         if (prop.isObjectProperty()) {
             const node = t.cloneNode(prop.node);
@@ -65,7 +66,7 @@ function parseWiredParams(t: BabelTypes, wireConfig: NodePath<types.ObjectExpres
                     // null literals have no `value`, so get special handling
                     node.key = t.stringLiteral('value' in key ? String(key.value) : 'null');
                     node.computed = false;
-                } else if (!t.isPrivateName(key)) {
+                } else if (t.isExpression(key)) {
                     // {[Math.random()]: val}
                     // Add key to computed array, replace object key with array lookup
                     node.key = t.memberExpression(
@@ -233,17 +234,22 @@ function buildWireConfigValue(t: BabelTypes, wiredValues: WiredValue[]) {
                 );
             }
 
-            if (wiredValue.params) {
-                const dynamicParamNames = wiredValue.params.map((p) =>
-                    p.computed
-                        ? // foo
-                          (p.key as types.Expression)
-                        : t.stringLiteral(
-                              t.isIdentifier(p.key)
-                                  ? p.key.name
-                                  : (p.key as types.StringLiteral).value
-                          )
-                );
+            if (wiredValue.params?.length) {
+                const dynamicParamNames = wiredValue.params.map((prop) => {
+                    const { computed, key } = prop;
+                    if (computed) {
+                        // Computed dynamic params have all been normalized to `$keys[0]`
+                        // Extract just the index because this array won't have access to `$keys`
+                        return (key as types.MemberExpression & { property: types.NumericLiteral })
+                            .property;
+                    } else if (t.isIdentifier(key)) {
+                        // regular prop, {foo: bar}
+                        return t.stringLiteral(key.name);
+                    } else {
+                        // Key should have been normalized earlier to only be a string literal
+                        return t.stringLiteral(String((key as types.StringLiteral).value));
+                    }
+                });
                 wireConfig.push(
                     t.objectProperty(t.identifier('dynamic'), t.arrayExpression(dynamicParamNames))
                 );
