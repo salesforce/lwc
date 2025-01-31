@@ -31,25 +31,32 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 Slotted content is inserted here.
                 Note that the slotted content will be stored in variables named 
                 `shadowSlottedContent`/`lightSlottedContentMap / scopedSlottedContentMap` which are used below 
-                when the child's generateMarkup function is invoked.
+            when the child's generateMarkup function is invoked.
             */
             is.statement
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
-        const Ctor = ${/* Component */ is.identifier};
+        const generateMarkup = ${/* Component */ is.identifier}[__SYMBOL__GENERATE_MARKUP];
+        const tagName = ${/* tag name */ is.literal};
 
-        yield* Ctor[__SYMBOL__GENERATE_MARKUP](
-            ${/* tag name */ is.literal}, 
-            childProps, 
-            childAttrs, 
-            shadowSlottedContent,
-            lightSlottedContentMap,
-            scopedSlottedContentMap,
-            instance,
-            scopeToken,
-            contextfulParent
-        );
+        if (generateMarkup) {
+            yield* generateMarkup(
+                tagName, 
+                childProps, 
+                childAttrs, 
+                shadowSlottedContent,
+                lightSlottedContentMap,
+                scopedSlottedContentMap,
+                instance,
+                scopeToken,
+                contextfulParent
+            );
+        } else {
+            yield \`<\${tagName}>\`;
+            yield* __fallbackTmpl(shadowSlottedContent, lightSlottedContentMap, scopedSlottedContentMap, ${/* Component */ 3}, instance)
+            yield \`</\${tagName}>\`;
+        }
     }
 `<EsBlockStatement>;
 
@@ -60,6 +67,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     cxt.import({ default: childComponentLocalName }, importPath);
     cxt.import({
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
+        fallbackTmpl: '__fallbackTmpl',
     });
     const childTagName = node.name;
 
