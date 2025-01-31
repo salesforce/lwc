@@ -5,13 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { DecoratorErrors } from '@lwc/errors';
+import { AMBIGUOUS_PROP_SET, DISALLOWED_PROP_SET } from '@lwc/shared';
 import { generateError } from '../../utils';
-import {
-    AMBIGUOUS_PROP_SET,
-    DECORATOR_TYPES,
-    DISALLOWED_PROP_SET,
-    LWC_PACKAGE_EXPORTS,
-} from '../../constants';
+import { DECORATOR_TYPES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { isApiDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from '../../types';
