@@ -97,7 +97,10 @@ const visitors: Visitors = {
     },
     PropertyDefinition(path, state) {
         const node = path.node;
-
+        if (!node?.key) {
+            // Seems to occur for `@wire() [symbol];` -- not sure why
+            throw new Error('Unknown state: property definition has no key');
+        }
         if (!isKeyIdentifier(node)) {
             return;
         }
@@ -106,12 +109,12 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         if (isApiDecorator(decorators[0])) {
             validateApiProperty(node, state);
-            state.publicFields.set(node.key.name, node);
+            state.publicProperties.set(node.key.name, node);
         } else if (isWireDecorator(decorators[0])) {
             catalogWireAdapters(path, state);
-            state.privateFields.add(node.key.name);
+            state.privateProperties.add(node.key.name);
         } else {
-            state.privateFields.add(node.key.name);
+            state.privateProperties.add(node.key.name);
         }
 
         if (
@@ -141,11 +144,16 @@ const visitors: Visitors = {
         validateUniqueDecorator(decorators);
         if (isApiDecorator(decorators[0])) {
             validateApiMethod(node, state);
-            state.publicFields.set(node.key.name, node);
+            state.publicProperties.set(node.key.name, node);
         } else if (isWireDecorator(decorators[0])) {
+            if (node.computed) {
+                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                throw new Error('@wire cannot be used on computed properties in SSR context.');
+            }
+            const isRealMethod = node.kind === 'method';
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (node.kind === 'get' || node.kind === 'set') {
+            if (!isRealMethod) {
                 const methodAsProp = b.propertyDefinition(
                     structuredClone(node.key),
                     null,
@@ -242,8 +250,8 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicFields: new Map(),
-        privateFields: new Set(),
+        publicProperties: new Map(),
+        privateProperties: new Set(),
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),

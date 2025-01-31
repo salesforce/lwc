@@ -69,7 +69,7 @@ function validatePropertyValue(property: ApiPropertyDefinition) {
 }
 
 function validatePropertyUnique(node: ApiPropertyDefinition, state: ComponentMetaState) {
-    if (state.publicFields.has(node.key.name)) {
+    if (state.publicProperties.has(node.key.name)) {
         throw generateError(node, DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
     }
 }
@@ -81,7 +81,7 @@ export function validateApiProperty(node: ApiPropertyDefinition, state: Componen
 }
 
 function validateUniqueMethod(node: ApiMethodDefinition, state: ComponentMetaState) {
-    const field = state.publicFields.get(node.key.name);
+    const field = state.publicProperties.get(node.key.name);
 
     if (!field) {
         return;
