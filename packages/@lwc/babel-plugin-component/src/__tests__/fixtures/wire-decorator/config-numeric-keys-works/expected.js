@@ -13,7 +13,7 @@ _registerDecorators(Test, {
       dynamic: ["123"],
       config: function ($cmp) {
         return {
-          1.2_3e2: $cmp.prop
+          "123": $cmp.prop
         };
       }
     }
