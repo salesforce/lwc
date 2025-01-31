@@ -14,7 +14,14 @@ Then run the benchmarks:
 yarn test:performance
 ```
 
-The test results are saved in `*.tachometer.results.json` files, and a summary table is printed to the console. To recreate the table without re-running the full test suite, ensure the JSON files exist and run `yarn test:format`.
+Individual benchmark results are saved in `*.tachometer.results.json` files. A summary table is printed to console and saved as `results.md` and `results.html`.
+
+To recreate the summary tables without re-running the full test suite, ensure the JSON files exist do:
+
+```shell
+cd packages/@lwc/perf-benchmarks
+yarn test:format
+```
 
 To run an individual benchmark, do:
 
