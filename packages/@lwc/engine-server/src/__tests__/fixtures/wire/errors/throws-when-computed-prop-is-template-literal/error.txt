@@ -1,1 +1,0 @@
-LWC1199: Cannot use a template literal as a computed property key. Instead, use a string or extract the value to a constant.
