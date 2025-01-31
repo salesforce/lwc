@@ -31,18 +31,22 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 Slotted content is inserted here.
                 Note that the slotted content will be stored in variables named 
                 `shadowSlottedContent`/`lightSlottedContentMap / scopedSlottedContentMap` which are used below 
-                when the child's generateMarkup function is invoked.
+            when the child's generateMarkup function is invoked.
             */
             is.statement
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
         const generateMarkup = ${/* Component */ is.identifier}[__SYMBOL__GENERATE_MARKUP];
+        const tagName = ${/* tag name */ is.literal};
+
         if (!generateMarkup) {
-            yield* __unimplementedTmpl(${/* tag name */ is.literal}, instance, shadowSlottedContent, ${/* Component */ 3});
+            yield \`<\${tagName}>\`;
+            yield* __fallbackTmpl(shadowSlottedContent, lightSlottedContentMap, scopedSlottedContentMap, ${/* Component */ 3}, instance)
+            yield \`</\${tagName}>\`;
         } else {
             yield* generateMarkup(
-                ${/* tag name */ 4}, 
+                tagName, 
                 childProps, 
                 childAttrs, 
                 shadowSlottedContent,
@@ -63,7 +67,7 @@ export const Component: Transformer<IrComponent> = function Component(node, cxt)
     cxt.import({ default: childComponentLocalName }, importPath);
     cxt.import({
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
-        unimplementedTmpl: '__unimplementedTmpl',
+        fallbackTmpl: '__fallbackTmpl',
     });
     const childTagName = node.name;
 
