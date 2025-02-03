@@ -215,7 +215,13 @@ const visitors: Visitors = {
                 break;
         }
     },
-    Super(path, _state) {
+    Super(path, state) {
+        // If we mutate any super calls that are piped through this compiler, then we'll be
+        // inadvertently mutating things like Wire adapters.
+        if (!state.isLWC) {
+            return;
+        }
+
         const parentFn = path.getFunctionParent();
         if (
             parentFn &&
