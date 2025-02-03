@@ -31,7 +31,6 @@ const bGenerateMarkup = esTemplate`
             scopeToken,
             contextfulParent
     ) {
-        debugger;
         tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
