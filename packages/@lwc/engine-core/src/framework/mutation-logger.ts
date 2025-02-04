@@ -60,6 +60,18 @@ function safelyCallGetter(target: any, key: PropertyKey) {
     }
 }
 
+function isRevokedProxy(target: object) {
+    try {
+        // `str in obj` will never throw for normal objects or active proxies,
+        // but the operation is not allowed for revoked proxies
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        '' in target;
+        return false;
+    } catch (_) {
+        return true;
+    }
+}
+
 /**
  * Flush all the logs we've written so far and return the current logs.
  */
@@ -126,7 +138,9 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
         // Guard against recursive objects - don't traverse forever
         return;
     }
-    if (isObject(target) && !isNull(target)) {
+
+    // Revoked proxies (e.g. window props in LWS sandboxes) throw an error if we try to track them
+    if (isObject(target) && !isNull(target) && !isRevokedProxy(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
         targetsToPropertyKeys.set(target, key);
 
