@@ -16,8 +16,9 @@ import type { ComponentMetaState } from './types';
 
 const bGenerateMarkup = esTemplate`
     // These variables may mix with component-authored variables, so should be reasonably unique
-    const __lwcPublicProperties__ = new Set(${/*api*/ is.arrayExpression});
-    const __lwcPrivateProperties__ = new Set(${/*private fields*/ is.arrayExpression});
+    const __lwcSuperPublicProperties__ = Array.from(Object.getPrototypeOf(${/* Component class */ is.identifier})?.__lwcPublicProperties__?.values?.() ?? []);
+    const __lwcPublicProperties__ = new Set(${/*public properties*/ is.arrayExpression}.concat(__lwcSuperPublicProperties__));
+    const __lwcPrivateProperties__ = new Set(${/*private properties*/ is.arrayExpression});
 
     async function* generateMarkup(
             tagName, 
@@ -33,7 +34,7 @@ const bGenerateMarkup = esTemplate`
         tagName = tagName ?? ${/*component tag name*/ is.literal};
         attrs = attrs ?? Object.create(null);
         props = props ?? Object.create(null);
-        const instance = new ${/* Component class */ is.identifier}({
+        const instance = new ${/* Component class */ 0}({
             tagName: tagName.toUpperCase(),
         });
 
@@ -55,12 +56,12 @@ const bGenerateMarkup = esTemplate`
         // If a render() function is defined on the class or any of its superclasses, then that takes priority.
         // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
         // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
-        const tmplFn = instance.render?.() ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+        const tmplFn = instance.render?.() ?? ${/*component class*/ 0}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
         yield \`<\${tagName}\`;
 
         const hostHasScopedStylesheets =
             tmplFn.hasScopedStylesheets ||
-            hasScopedStaticStylesheets(${/*component class*/ 3});
+            hasScopedStaticStylesheets(${/*component class*/ 0});
         const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
 
         yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
@@ -69,12 +70,13 @@ const bGenerateMarkup = esTemplate`
             shadowSlottedContent,
             lightSlottedContent,
             scopedSlottedContent,
-            ${/*component class*/ 3},
+            ${/*component class*/ 0},
             instance
         );
         yield \`</\${tagName}>\`;
     }
-    ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+    ${/* component class */ 0}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
+    ${/* component class */ 0}.__lwcPublicProperties__ = __lwcPublicProperties__;
 `<[Statement]>;
 
 const bExposeTemplate = esTemplate`
@@ -141,10 +143,10 @@ export function addGenerateMarkupFunction(
     );
     program.body.push(
         ...bGenerateMarkup(
+            classIdentifier,
             b.arrayExpression(publicProperties.map(b.literal)),
             b.arrayExpression(privateProperties.map(b.literal)),
             defaultTagName,
-            classIdentifier,
             connectWireAdapterCode
         )
     );

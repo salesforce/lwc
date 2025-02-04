@@ -1,8 +1,28 @@
 <template>
+    <h1>True!</h1>
     <template if:true={isTrue}>
-        I am rendered!
+        <p>I am rendered because I am true to myself!</p>
     </template>
     <template if:true={isFalse}>
-        I am not rendered!
+        <p>I am not rendered because I am very false!</p>
+    </template>
+    <template if:true={isTruthy}>
+        <p>I am rendered because I am true enough!</p>
+    </template>
+    <template if:true={isFalsey}>
+        <p>I am not rendered because I am untrustworthy!</p>
+    </template>
+    <h1>False!</h1>
+    <template if:false={isTrue}>
+        <p>I am not rendered because I am true to myself!</p>
+    </template>
+    <template if:false={isFalse}>
+        <p>I am rendered because I am very false!</p>
+    </template>
+    <template if:false={isTruthy}>
+        <p>I am not rendered because I am true enough!</p>
+    </template>
+    <template if:false={isFalsey}>
+        <p>I am rendered because I am untrustworthy!</p>
     </template>
 </template>
