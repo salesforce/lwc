@@ -20,7 +20,7 @@ const bGenerateMarkup = esTemplate`
     const __lwcPublicProperties__ = new Set(${/*public properties*/ is.arrayExpression}.concat(__lwcSuperPublicProperties__));
     const __lwcPrivateProperties__ = new Set(${/*private properties*/ is.arrayExpression});
 
-    async function* generateMarkup(
+    ${/* component class */ 0}[__SYMBOL__GENERATE_MARKUP] = async function* generateMarkup(
             tagName, 
             props, 
             attrs, 
@@ -75,7 +75,6 @@ const bGenerateMarkup = esTemplate`
         );
         yield \`</\${tagName}>\`;
     }
-    ${/* component class */ 0}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
     ${/* component class */ 0}.__lwcPublicProperties__ = __lwcPublicProperties__;
 `<[Statement]>;
 
