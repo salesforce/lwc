@@ -261,6 +261,13 @@ const visitors: Visitors = {
             }
         },
     },
+    Identifier(path, _state) {
+        const { node } = path;
+        if (node?.name.startsWith('__lwc') && node.name.endsWith('__')) {
+            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+            throw new Error(`LWCTODO: identifier name '${node.name}' cannot start with '__lwc'`);
+        }
+    },
 };
 
 function validateUniqueDecorator(decorators: EsDecorator[]) {
