@@ -92,6 +92,11 @@ export class ClassList implements DOMTokenList {
         return this.el.className;
     }
 
+    get length(): number {
+        const currentClassNameStr = this.el.className ?? '';
+        return currentClassNameStr.split(MULTI_SPACE).length;
+    }
+
     // Stubs to satisfy DOMTokenList interface
     [index: number]: never; // Can't implement arbitrary index getters without a proxy
     item(_index: number): string | null {
@@ -105,8 +110,5 @@ export class ClassList implements DOMTokenList {
         _thisArg?: any
     ): void {
         throw new Error('Method "forEach" not implemented.');
-    }
-    get length(): number {
-        throw new Error('Property "length" not implemented.');
     }
 }

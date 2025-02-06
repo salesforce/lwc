@@ -8,7 +8,6 @@
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
 import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
-import { DiagnosticLevel } from '@lwc/errors';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
@@ -93,19 +92,15 @@ export default function compileTemplate(
         experimentalDynamicDirective: options.experimentalDynamicDirective,
     });
     if (!root || warnings.length) {
-        let fatal = !root;
         for (const warning of warnings) {
             // eslint-disable-next-line no-console
             console.error('Cannot compile:', warning.message);
-            if (
-                warning.level === DiagnosticLevel.Fatal ||
-                warning.level === DiagnosticLevel.Error
-            ) {
-                fatal = true;
-            }
         }
-        // || !root is just used here to make TypeScript happy
-        if (fatal || !root) {
+        // The legacy SSR implementation would not bail from compilation even if a
+        // DiagnosticLevel.Fatal error was encountered. It would only fail if the
+        // template parser failed to return a root node. That behavior is duplicated
+        // here.
+        if (!root) {
             throw new Error('Template compilation failure; see warnings in the console.');
         }
     }
@@ -115,7 +110,7 @@ export default function compileTemplate(
     )?.value?.value;
     const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root!, {
+    const { addImport, getImports, statements } = templateIrToEsTree(root, {
         preserveComments,
         experimentalComplexExpressions,
     });

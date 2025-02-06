@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { describe, test, expect } from 'vitest';
 import { CompilerError } from '@lwc/errors';
+import { LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 import { compileComponentForSSR } from '../index';
 
 expect.addSnapshotSerializer({
@@ -41,6 +42,15 @@ describe('component compilation', () => {
         const filename = path.resolve('component.js');
         const { code } = compileComponentForSSR(src, filename, {});
         expect(code).toContain('import explicit from "./explicit.html"');
+    });
+    test('components include LWC version comment', () => {
+        const src = `
+      import { LightningElement } from 'lwc';
+      export default class extends LightningElement {}
+      `;
+        const filename = path.resolve('component.js');
+        const { code } = compileComponentForSSR(src, filename, {});
+        expect(code).toMatch(LWC_VERSION_COMMENT_REGEX);
     });
     test('supports .ts file imports', () => {
         const src = `
