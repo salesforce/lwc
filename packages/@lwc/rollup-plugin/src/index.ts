@@ -182,7 +182,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
     return {
         name: PLUGIN_NAME,
-
+        // The version from the package.json is inlined by the build script
+        version: process.env.LWC_VERSION,
         buildStart({ input }) {
             if (rootDir === undefined) {
                 if (Array.isArray(input)) {
