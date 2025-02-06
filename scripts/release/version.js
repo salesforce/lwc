@@ -7,10 +7,18 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const readline = require('node:readline');
+const semver = require('semver');
 const { globSync } = require('glob');
 
+const rootPath = path.resolve(__dirname, '../../');
+const rootPackageJsonPath = `${rootPath}/package.json`;
+const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
+
 (async () => {
-    const newVersion = process.argv[2] || (await promptVersion());
+    let newVersion = process.argv[2] || (await promptVersion());
+    if (/^(?:prerelease|(?:pre)?(?:major|minor|patch))$/.test(newVersion)) {
+        newVersion = semver.inc(rootPackageJson.version, newVersion);
+    }
     updatePackages(newVersion);
 })().catch(console.error);
 
@@ -71,9 +79,6 @@ function updatePackages(newVersion) {
 }
 
 function getPackagesToUpdate() {
-    const rootPath = path.resolve(__dirname, '../../');
-    const rootPackageJsonPath = `${rootPath}/package.json`;
-    const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
     const packagesToUpdate = [];
 
     const workspacePkgs = rootPackageJson.workspaces.reduce(
