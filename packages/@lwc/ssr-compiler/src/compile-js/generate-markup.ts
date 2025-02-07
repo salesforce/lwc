@@ -9,7 +9,7 @@ import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { bImportDeclaration } from '../estree/builders';
-import { bWireAdaptersPlumbing } from './wire';
+import { bWireAdaptersPlumbing } from './decorators/wire';
 
 import type { Program, Statement, IfStatement } from 'estree';
 import type { ComponentMetaState } from './types';
@@ -143,8 +143,8 @@ export function addGenerateMarkupFunction(
     program.body.push(
         ...bGenerateMarkup(
             classIdentifier,
-            b.arrayExpression(publicProperties.map(b.literal)),
-            b.arrayExpression(privateProperties.map(b.literal)),
+            b.arrayExpression([...publicProperties.keys()].map(b.literal)),
+            b.arrayExpression([...privateProperties].map(b.literal)),
             defaultTagName,
             connectWireAdapterCode
         )
