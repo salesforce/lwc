@@ -1,0 +1,6 @@
+{
+    "ssrFiles": {
+        "error": "error-ssr.txt",
+        "expected": "expected-ssr.txt"
+    }
+}
