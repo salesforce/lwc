@@ -20,7 +20,14 @@ const bGenerateMarkup = esTemplate`
     const __lwcPublicProperties__ = new Set(${/*public properties*/ is.arrayExpression}.concat(__lwcSuperPublicProperties__));
     const __lwcPrivateProperties__ = new Set(${/*private properties*/ is.arrayExpression});
 
-    ${/* component class */ 0}[__SYMBOL__GENERATE_MARKUP] = async function* generateMarkup(
+    Object.defineProperty(
+    ${/* component class */ 0},
+    __SYMBOL__GENERATE_MARKUP,
+    {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: async function* generateMarkup(
             tagName, 
             props, 
             attrs, 
@@ -30,57 +37,76 @@ const bGenerateMarkup = esTemplate`
             parent, 
             scopeToken,
             contextfulParent
-    ) {
-        tagName = tagName ?? ${/*component tag name*/ is.literal};
-        attrs = attrs ?? Object.create(null);
-        props = props ?? Object.create(null);
-        const instance = new ${/* Component class */ 0}({
-            tagName: tagName.toUpperCase(),
-        });
+        ) {
+            tagName = tagName ?? ${/*component tag name*/ is.literal};
+            attrs = attrs ?? Object.create(null);
+            props = props ?? Object.create(null);
+            const instance = new ${/* Component class */ 0}({
+                tagName: tagName.toUpperCase(),
+            });
 
-        __establishContextfulRelationship(contextfulParent, instance);
-        ${/*connect wire*/ is.statement}
+            __establishContextfulRelationship(contextfulParent, instance);
+            ${/*connect wire*/ is.statement}
 
-        instance[__SYMBOL__SET_INTERNALS](
-            props,
-            attrs,
-            __lwcPublicProperties__,
-            __lwcPrivateProperties__,
-        );
-        instance.isConnected = true;
-        if (instance.connectedCallback) {
-            __mutationTracker.enable(instance);
-            instance.connectedCallback();
-            __mutationTracker.disable(instance);
+            instance[__SYMBOL__SET_INTERNALS](
+                props,
+                attrs,
+                __lwcPublicProperties__,
+                __lwcPrivateProperties__,
+            );
+            instance.isConnected = true;
+            if (instance.connectedCallback) {
+                __mutationTracker.enable(instance);
+                instance.connectedCallback();
+                __mutationTracker.disable(instance);
+            }
+            // If a render() function is defined on the class or any of its superclasses, then that takes priority.
+            // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
+            // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
+            const tmplFn = instance.render?.() ?? ${/*component class*/ 0}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+            yield \`<\${tagName}\`;
+
+            const hostHasScopedStylesheets =
+                tmplFn.hasScopedStylesheets ||
+                hasScopedStaticStylesheets(${/*component class*/ 0});
+            const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
+
+            yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
+            yield '>';
+            yield* tmplFn(
+                shadowSlottedContent,
+                lightSlottedContent,
+                scopedSlottedContent,
+                ${/*component class*/ 0},
+                instance
+            );
+            yield \`</\${tagName}>\`;
         }
-        // If a render() function is defined on the class or any of its superclasses, then that takes priority.
-        // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
-        // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
-        const tmplFn = instance.render?.() ?? ${/*component class*/ 0}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
-        yield \`<\${tagName}\`;
-
-        const hostHasScopedStylesheets =
-            tmplFn.hasScopedStylesheets ||
-            hasScopedStaticStylesheets(${/*component class*/ 0});
-        const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
-
-        yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
-        yield '>';
-        yield* tmplFn(
-            shadowSlottedContent,
-            lightSlottedContent,
-            scopedSlottedContent,
-            ${/*component class*/ 0},
-            instance
-        );
-        yield \`</\${tagName}>\`;
-    }
-    ${/* component class */ 0}.__lwcPublicProperties__ = __lwcPublicProperties__;
+    });
+    Object.defineProperty(
+        ${/* component class */ 0},
+        '__lwcPublicProperties__',
+        {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: __lwcPublicProperties__
+        }
+    );
 `<[Statement]>;
 
 const bExposeTemplate = esTemplate`
     if (${/*template*/ is.identifier}) {
-        ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ 0}
+        Object.defineProperty(
+            ${/* component class */ is.identifier},
+            __SYMBOL__DEFAULT_TEMPLATE,
+            {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: ${/*template*/ 0}
+            }
+        );
     }
 `<IfStatement>;
 
