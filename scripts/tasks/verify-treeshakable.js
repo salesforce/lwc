@@ -7,11 +7,27 @@
 
 // Inspired from: https://github.com/Rich-Harris/agadoo
 
+const { readdirSync, existsSync } = require('fs');
 const path = require('path');
 const { rollup } = require('rollup');
 
 async function check(input) {
+    const dirs = input.split(path.sep);
+    dirs.pop(); // remove filename from input
+    let cwd = process.cwd();
+    while (dirs.length) {
+        console.log(`== ${cwd}`);
+        console.log(readdirSync(cwd));
+        cwd = path.join(cwd, dirs.shift());
+    }
+
     const resolved = path.resolve(input);
+
+    if (existsSync(resolved)) {
+        console.log(`${resolved} exists`);
+    } else {
+        throw new Error(`${resolved} does not exist`);
+    }
 
     // Tell rollup to bundle a fake file whose content is just `import "path from CLI arg"`
     // If the imported file is tree-shakeable (pure imports/exports, no side effects),
@@ -33,28 +49,17 @@ async function check(input) {
         },
     });
 
-    const res = await bundle.generate({
-        format: 'esm',
-    });
+    const res = await bundle.generate({ format: 'esm' });
 
-    const [chunk] = res.output;
-
-    return {
-        code: chunk.code,
-        isTreeShakable: chunk.code.trim().length === 0,
-    };
+    const [{ code }] = res.output;
+    const isTreeShakable = code.trim() === '';
+    if (!isTreeShakable) {
+        console.error(`${code}\n❗️ Failed to fully treeshake ${input}`);
+        process.exitCode = 1;
+    }
 }
 
-const input = process.argv[2];
-check(input)
-    .then((res) => {
-        if (res.isTreeShakable === false) {
-            console.error(`${res.code}\n❗️ Failed to fully treeshake ${input}`);
-        }
-
-        process.exit(res.isTreeShakable ? 0 : 1);
-    })
-    .catch((err) => {
-        console.error(err);
-        process.exit(1);
-    });
+check(process.argv[2]).catch((err) => {
+    console.error(err);
+    process.exitCode = process.exitCode || 1;
+});
