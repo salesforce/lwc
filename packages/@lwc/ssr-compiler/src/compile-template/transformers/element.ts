@@ -51,7 +51,7 @@ const bYieldDynamicValue = esTemplateWithYield`
         if (isHtmlBooleanAttr) {
             attrValue = attrValue ? '' : undefined;
         }
-
+        debugger;
         // Global HTML "tabindex" attribute is specially massaged into a stringified number
         // This follows the historical behavior in api.ts:
         // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/engine-core/src/framework/api.ts#L193-L211

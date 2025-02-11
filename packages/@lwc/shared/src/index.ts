@@ -22,5 +22,6 @@ export * from './style';
 export * from './signals';
 export * from './custom-element';
 export * from './ssr';
+export * from './normalize-tab-index';
 
 export { assert };
