@@ -162,6 +162,12 @@ export class LightningElement implements PropsAvailableAtConstruction {
         // noop
     }
 
+    get template() {
+        return {
+            synthetic: false,
+        };
+    }
+
     // ----------------------------------------------------------- //
     // Props/methods explicitly not available in this environment  //
     // Getters are named "get*" for parity with @lwc/engine-server //
