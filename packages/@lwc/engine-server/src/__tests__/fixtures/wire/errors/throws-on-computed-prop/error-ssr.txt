@@ -1,0 +1,1 @@
+@wire cannot be used on computed properties in SSR context.
