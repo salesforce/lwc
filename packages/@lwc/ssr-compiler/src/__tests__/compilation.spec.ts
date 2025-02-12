@@ -2,7 +2,7 @@ import path from 'node:path';
 import { describe, test, expect } from 'vitest';
 import { CompilerError } from '@lwc/errors';
 import { LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
-import { compileComponentForSSR } from '../index';
+import { compileComponentForSSR, compileTemplateForSSR } from '../index';
 
 expect.addSnapshotSerializer({
     test(val) {
@@ -135,5 +135,14 @@ export default class Test extends LightningElement {
               }
             `);
         });
+    });
+});
+
+describe('template compilation', () => {
+    test('template include LWC version comment', () => {
+        const src = `<template></template>`;
+        const filename = path.resolve('component.html');
+        const { code } = compileTemplateForSSR(src, filename, {});
+        expect(code).toMatch(LWC_VERSION_COMMENT_REGEX);
     });
 });
