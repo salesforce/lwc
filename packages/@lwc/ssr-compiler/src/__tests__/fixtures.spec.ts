@@ -15,7 +15,6 @@ import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
 
 interface FixtureModule {
-    tagName: string;
     default: any;
     props?: { [key: string]: unknown };
 }
@@ -108,7 +107,7 @@ describe.concurrent('fixtures', () => {
             try {
                 result = formatHTML(
                     await serverSideRenderComponent(
-                        module!.tagName,
+                        'x-test',
                         module!.default,
                         config?.props ?? {},
                         SSR_MODE

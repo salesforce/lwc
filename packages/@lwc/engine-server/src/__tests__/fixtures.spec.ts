@@ -15,7 +15,6 @@ import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
 interface FixtureModule {
-    tagName: string;
     default: typeof lwc.LightningElement;
     props?: { [key: string]: unknown };
 }
@@ -133,11 +132,7 @@ function testFixtures(options?: RollupLwcOptions) {
             try {
                 const module = (await import(compiledFixturePath)) as FixtureModule;
                 result = formatHTML(
-                    lwcEngineServer!.renderComponent(
-                        module!.tagName,
-                        module!.default,
-                        config?.props ?? {}
-                    )
+                    lwcEngineServer!.renderComponent('x-test', module!.default, config?.props ?? {})
                 );
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
