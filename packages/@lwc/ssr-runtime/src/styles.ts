@@ -39,6 +39,7 @@ export function hasScopedStaticStylesheets(Component: LightningElementConstructo
 }
 
 export function renderStylesheets(
+    emit: any, // sorry will
     defaultStylesheets: ForgivingStylesheets,
     defaultScopedStylesheets: ForgivingStylesheets,
     staticStylesheets: ForgivingStylesheets,
@@ -52,17 +53,26 @@ export function renderStylesheets(
     let result = '';
 
     const renderStylesheet = (stylesheet: Stylesheet) => {
-        const { $scoped$: scoped } = stylesheet;
+        if (emit.stylesheetToId.has(stylesheet)) {
+            const styleId = emit.stylesheetToId.get(stylesheet);
+            result += `<lwc-style style-id="lwc-style--${styleId}"></lwc-style>`;
+        } else {
+            const styleId = emit.nextId++;
+            emit.stylesheetToId.set(stylesheet, styleId);
 
-        const token = scoped ? scopeToken : undefined;
-        const useActualHostSelector = !scoped || renderMode !== 'light';
-        const useNativeDirPseudoclass = true;
+            const { $scoped$: scoped } = stylesheet;
 
-        const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-        validateStyleTextContents(styleContents);
+            const token = scoped ? scopeToken : undefined;
+            const useActualHostSelector = !scoped || renderMode !== 'light';
+            const useNativeDirPseudoclass = true;
 
-        // TODO [#2869]: `<style>`s should not have scope token classes
-        result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
+            const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+            validateStyleTextContents(styleContents);
+
+            // TODO [#2869]: `<style>`s should not have scope token classes
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style--${styleId}" type="text/css">${styleContents}</style>`;
+            result += `<lwc-style style-id="lwc-style--${styleId}"></lwc-style>`;
+        }
     };
 
     traverseStylesheets(defaultStylesheets, renderStylesheet);

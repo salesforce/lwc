@@ -28,6 +28,7 @@ const bGenerateMarkup = esTemplate`
         enumerable: false,
         writable: false,
         value: async function* generateMarkup(
+            // The $$emit function is magically inserted here
             tagName, 
             props, 
             attrs, 

@@ -20,6 +20,7 @@ import type { CompilationMode } from '@lwc/shared';
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
     export default async function* tmpl(
+            // This is where $$emit comes from
             shadowSlottedContent,
             lightSlottedContent,
             scopedSlottedContent,
@@ -46,6 +47,7 @@ const bExportTemplate = esTemplate`
         const { stylesheets: staticStylesheets } = Cmp;
         if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
             yield renderStylesheets(
+                $$emit,
                 defaultStylesheets, 
                 defaultScopedStylesheets, 
                 staticStylesheets,
