@@ -11,7 +11,7 @@ import {
     isUndefined,
     DEFAULT_SSR_MODE,
     htmlEscape,
-    Stylesheet,
+    type Stylesheet,
 } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
@@ -185,7 +185,7 @@ interface ComponentWithGenerateMarkup extends LightningElementConstructor {
     [SYMBOL__GENERATE_MARKUP]: GenerateMarkupFnVariants;
 }
 
-class CompilationContext {
+class RenderContext {
     stylesheetToId = new WeakMap<Stylesheet, string>();
     nextId = 0;
 }
@@ -206,8 +206,8 @@ export async function serverSideRenderComponent(
     const emit = (segment: string) => {
         markup += segment;
     };
-    
-    emit.cxt = new CompilationContext();  
+
+    emit.cxt = new RenderContext();
 
     if (!generateMarkup) {
         // If a non-component is accidentally provided, render an empty template
