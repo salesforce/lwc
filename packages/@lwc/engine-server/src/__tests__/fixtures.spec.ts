@@ -17,8 +17,7 @@ import type * as lwc from '../index';
 interface FixtureModule {
     tagName: string;
     default: typeof lwc.LightningElement;
-    props?: { [key: string]: any };
-    features?: any[];
+    props?: { [key: string]: unknown };
 }
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
