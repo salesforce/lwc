@@ -53,12 +53,12 @@ export function renderStylesheets(
     let result = '';
 
     const renderStylesheet = (stylesheet: Stylesheet) => {
-        if (emit.stylesheetToId.has(stylesheet)) {
-            const styleId = emit.stylesheetToId.get(stylesheet);
+        if (emit.cxt.stylesheetToId.has(stylesheet)) {
+            const styleId = emit.cxt.stylesheetToId.get(stylesheet);
             result += `<lwc-style style-id="lwc-style--${styleId}"></lwc-style>`;
         } else {
-            const styleId = emit.nextId++;
-            emit.stylesheetToId.set(stylesheet, styleId);
+            const styleId = emit.cxt.nextId++;
+            emit.cxt.stylesheetToId.set(stylesheet, styleId);
 
             const { $scoped$: scoped } = stylesheet;
 
