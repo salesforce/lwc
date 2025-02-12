@@ -77,6 +77,11 @@ export interface FeatureFlagMap {
     DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
 
     /**
+     * If true, a broader set of characters are allowed in scope tokens.
+     */
+    ENABLE_EXTENDED_SCOPE_TOKENS: FeatureFlagValue;
+
+    /**
      * If true, then lightning legacy locker is supported, otherwise lightning legacy locker will not function
      * properly.
      */

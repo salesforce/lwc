@@ -20,6 +20,7 @@ const features: FeatureFlagMap = {
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
     ENABLE_EXPERIMENTAL_SIGNALS: null,
     DISABLE_SYNTHETIC_SHADOW: null,
+    ENABLE_EXTENDED_SCOPE_TOKENS: null,
     LEGACY_LOCKER_ENABLED: null,
 };
 
