@@ -20,6 +20,12 @@ import type { Checker } from 'estree-toolkit/dist/generated/is-type';
 /** Placeholder value to use to opt out of validation. */
 const NO_VALIDATION = false;
 
+/**
+ * `esTemplate` generates JS code with "holes" to be filled later. In order to have a valid AST,
+ * it uses identifiers with this prefix at the location of the holes.
+ */
+const PLACEHOLDER_PREFIX = '__lwc_ESTEMPLATE_PLACEHOLDER__';
+
 /** A function that accepts a node and checks that it is a particular type of node. */
 type Validator<T extends EsNode | null = EsNode | null> = (
     node: EsNode | null | undefined
@@ -64,8 +70,6 @@ type ToReplacementParameters<Arr extends unknown[]> = Arr extends [infer Head, .
         : // `Head` is a validator, extract the type that it validates
           [ValidatedType<Head>, ...ToReplacementParameters<Rest>]
     : []; // `Arr` is an empty array -- nothing to transform
-
-const PLACEHOLDER_PREFIX = `__ESTEMPLATE_${Math.random().toString().slice(2)}_PLACEHOLDER__`;
 
 interface TraversalState {
     placeholderToValidator: Map<number, Validator>;
