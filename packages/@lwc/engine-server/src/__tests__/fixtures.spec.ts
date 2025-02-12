@@ -11,7 +11,6 @@ import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
@@ -132,14 +131,8 @@ function testFixtures(options?: RollupLwcOptions) {
 
             let result;
             let err;
-            let features: FeatureFlagName[] = [];
             try {
                 const module = (await import(compiledFixturePath)) as FixtureModule;
-
-                features = module!.features ?? [];
-                features.forEach((flag) => {
-                    lwcEngineServer!.setFeatureFlagForTest(flag, true);
-                });
                 result = formatHTML(
                     lwcEngineServer!.renderComponent(
                         module!.tagName,
@@ -153,10 +146,6 @@ function testFixtures(options?: RollupLwcOptions) {
                 }
                 err = _err?.message || 'An empty error occurred?!';
             }
-
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, false);
-            });
 
             return {
                 'expected.html': result,
