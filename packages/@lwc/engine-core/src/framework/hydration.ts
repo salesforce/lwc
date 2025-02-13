@@ -455,6 +455,42 @@ function hydrateChildren(
         const childVnode = children[i];
 
         if (!isNull(childVnode)) {
+            /**
+             * TO-DO: the hydration logic here needs to be updated.
+             *
+             * During hydration, this is where a custom element's child nodes & the corresponding
+             * VDOM nodes are iterated over. As things stand today, if the number of DOM nodes
+             * does not match the number of VDOM nodes, that results in a hydration error. Similarly,
+             * if domNode[i] !== vdomNode[i], a hydration error occurs.
+             *
+             * However, when styles are deduped on the server, an <lwc-style> tag will be rendered
+             * in place of a style tag for all but the first instance of a given LWC. That means
+             * there will not be a <style> DOM node, but there will be a <style> VDOM node here
+             * during hydration. If we make no modifications to this logic, hydration will fail
+             * whenever style dedupe occurs.
+             *
+             * Despite the fact that the <style> tag is not present, a constructed stylesheet with
+             * the equivalent style content will have been attached to the shadow root prior to
+             * hydration. See packages/@lwc/ssr-client-utils/src/index.ts#L24.
+             *
+             * We can handle this in a handful of ways. We could add a property to the shadow root
+             * object over in StyleDeduplicator - something like `usesAltConstructedStylesheet = true`.
+             * Then we could detect that property here and skip to the `nextNode` if it is found.
+             * We'd probably have to do something similar over in the VDOM patching algo.
+             *
+             * Another option would be to insert a dummy/empty <style> tag either right here or in the
+             * implementation of StyleDeduplicator. Although inserting a dummy style tag would not
+             * result in any style changes, the mutation of the DOM might result in a performance hit.
+             * However, it might be worth setting up an experiment to see if that is true. If we could
+             * insert empty style tags during StyleDeduplicator's connectedCallback, that would
+             * mean less invasive changes here to the hydration logic & in the VDOM patching logic.
+             *
+             * Another option would be to look for adoptedStyleSheets on the DOM element's rootNode
+             * and, if found, treat it as a special case here and in VDOM patching. That seems somewhat
+             * fragile, and it would involve multiple interactiosn with DOM APIs: getRootNode,
+             * rootNode.adoptedStyleSheets, etc. That's probably not great from a performance perspective
+             * either. So this is probably not the best option, but is mentioned here for completeness.
+             */
             if (nextNode) {
                 nextNode = hydrateNode(nextNode, childVnode, renderer);
             } else {
