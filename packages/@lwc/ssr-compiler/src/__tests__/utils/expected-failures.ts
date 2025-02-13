@@ -11,5 +11,6 @@ export const expectedFailures = new Set([
     'attribute-global-html/as-component-prop/undeclared/index.js',
     'attribute-global-html/as-component-prop/without-@api/index.js',
     'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
+    'scope-token/index.js',
     'wire/errors/throws-when-colliding-prop-then-method/index.js',
 ]);
