@@ -22,8 +22,6 @@ interface FixtureModule {
     features?: FeatureFlagName[];
 }
 
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
-
 vi.mock('@lwc/ssr-runtime', async () => {
     const runtime = await import('@lwc/ssr-runtime');
     try {

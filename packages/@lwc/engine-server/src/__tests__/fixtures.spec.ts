@@ -22,8 +22,6 @@ interface FixtureModule {
     features?: any[];
 }
 
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
-
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
     try {
