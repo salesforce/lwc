@@ -66,7 +66,10 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
+const VALID_SCOPE_TOKEN_REGEX =
+    process.env.IS_BROWSER && lwcRuntimeFlags.ENABLE_EXTENDED_SCOPE_TOKENS
+        ? /^[a-zA-Z0-9\-_.]+$/
+        : /^[a-zA-Z0-9\-_]+$/;
 
 // See W-16614556
 // TODO [#2826]: freeze the template object
