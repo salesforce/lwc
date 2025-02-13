@@ -8,14 +8,18 @@
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
 import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
+import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
+import { produce } from 'immer';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
-import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
-import type { CompilationMode } from '@lwc/shared';
+import type {
+    ExportDefaultDeclaration as EsExportDefaultDeclaration,
+    FunctionDeclaration,
+} from 'estree';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
@@ -66,7 +70,7 @@ const bExportTemplate = esTemplate`
             }
         }
     }
-`<EsExportDefaultDeclaration>;
+`<EsExportDefaultDeclaration & { declaration: FunctionDeclaration }>;
 
 export default function compileTemplate(
     src: string,
@@ -119,8 +123,19 @@ export default function compileTemplate(
         addImport(imports, source);
     }
 
-    const moduleBody = [...getImports(), bExportTemplate(optimizeAdjacentYieldStmts(statements))];
-    let program = b.program(moduleBody, 'module');
+    let tmplDecl = bExportTemplate(optimizeAdjacentYieldStmts(statements));
+    // Ideally, we'd just do ${LWC_VERSION_COMMENT} in the code template,
+    // but placeholders have a special meaning for `esTemplate`.
+    tmplDecl = produce(tmplDecl, (draft) => {
+        draft.declaration.body.trailingComments = [
+            {
+                type: 'Block',
+                value: LWC_VERSION_COMMENT,
+            },
+        ];
+    });
+
+    let program = b.program([...getImports(), tmplDecl], 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
@@ -129,6 +144,9 @@ export default function compileTemplate(
     }
 
     return {
-        code: generate(program, {}),
+        code: generate(program, {
+            // The generated AST doesn't have comments; this just preserves the LWC version comment
+            comments: true,
+        }),
     };
 }
