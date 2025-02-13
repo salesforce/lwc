@@ -19,8 +19,6 @@ interface FixtureModule {
     props?: { [key: string]: unknown };
 }
 
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
-
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
     try {
