@@ -13,13 +13,10 @@ import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
 
 interface FixtureModule {
-    tagName: string;
-    default: any;
-    props?: { [key: string]: any };
-    features?: FeatureFlagName[];
+    default: Parameters<typeof serverSideRenderComponent>[1];
+    props?: { [key: string]: unknown };
 }
 
 vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
@@ -102,7 +99,7 @@ describe.concurrent('fixtures', () => {
                 };
             }
 
-            const module = (await import(compiledFixturePath)) as FixtureModule;
+            const { default: module } = (await import(compiledFixturePath)) as FixtureModule;
 
             let result;
             let error;
@@ -110,8 +107,8 @@ describe.concurrent('fixtures', () => {
             try {
                 result = formatHTML(
                     await serverSideRenderComponent(
-                        module!.tagName,
-                        module!.default,
+                        'fixture-test',
+                        module,
                         config?.props ?? {},
                         SSR_MODE
                     )
