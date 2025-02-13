@@ -54,6 +54,8 @@ export interface TestFixtureConfig extends StyleCompilerConfig {
         error?: string;
         expected?: string;
     };
+    /** An island-specific prefix to add to style dedupe identifiers. */
+    styleDedupePrefix?: string;
 }
 
 /** Loads the the contents of the `config.json` in the provided directory, if present. */

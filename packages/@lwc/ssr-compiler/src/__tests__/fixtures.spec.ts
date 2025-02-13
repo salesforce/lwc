@@ -113,7 +113,8 @@ describe.concurrent('fixtures', () => {
                         module!.tagName,
                         module!.default,
                         config?.props ?? {},
-                        SSR_MODE
+                        SSR_MODE,
+                        config?.styleDedupePrefix ?? ''
                     )
                 );
             } catch (err: any) {

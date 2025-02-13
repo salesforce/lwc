@@ -55,7 +55,7 @@ export function renderStylesheets(
     const renderStylesheet = (stylesheet: Stylesheet) => {
         if (emit.cxt.stylesheetToId.has(stylesheet)) {
             const styleId = emit.cxt.stylesheetToId.get(stylesheet);
-            result += `<lwc-style style-id="lwc-style--${styleId}"></lwc-style>`;
+            result += `<lwc-style style-id="lwc-style-${emit.cxt.styleDedupePrefix}-${styleId}"></lwc-style>`;
         } else {
             const styleId = emit.cxt.nextId++;
             emit.cxt.stylesheetToId.set(stylesheet, styleId);
@@ -70,8 +70,8 @@ export function renderStylesheets(
             validateStyleTextContents(styleContents);
 
             // TODO [#2869]: `<style>`s should not have scope token classes
-            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style--${styleId}" type="text/css">${styleContents}</style>`;
-            result += `<lwc-style style-id="lwc-style--${styleId}"></lwc-style>`;
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style-${emit.cxt.styleDedupePrefix}-${styleId}" type="text/css">${styleContents}</style>`;
+            result += `<lwc-style style-id="lwc-style-${emit.cxt.styleDedupePrefix}-${styleId}"></lwc-style>`;
         }
     };
 

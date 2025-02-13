@@ -187,14 +187,20 @@ interface ComponentWithGenerateMarkup extends LightningElementConstructor {
 
 class RenderContext {
     stylesheetToId = new WeakMap<Stylesheet, string>();
+    styleDedupePrefix: string;
     nextId = 0;
+
+    constructor(styleDedupePrefix: string) {
+        this.styleDedupePrefix = styleDedupePrefix;
+    }
 }
 
 export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
-    mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE
+    mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE,
+    styleDedupePrefix = ''
 ): Promise<string> {
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);
@@ -207,7 +213,7 @@ export async function serverSideRenderComponent(
         markup += segment;
     };
 
-    emit.cxt = new RenderContext();
+    emit.cxt = new RenderContext(styleDedupePrefix);
 
     if (!generateMarkup) {
         // If a non-component is accidentally provided, render an empty template
