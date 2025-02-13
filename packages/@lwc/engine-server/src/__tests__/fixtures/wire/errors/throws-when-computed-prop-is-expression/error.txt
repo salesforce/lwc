@@ -1,1 +1,0 @@
-LWC1200: Computed property in @wire config must be a constant or primitive literal.

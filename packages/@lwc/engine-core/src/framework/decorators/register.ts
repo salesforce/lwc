@@ -43,9 +43,20 @@ interface PropCompilerDef {
 }
 interface WireCompilerDef {
     method?: number;
-    adapter: WireAdapterConstructor;
+    adapter: WireAdapterConstructor | { adapter: WireAdapterConstructor };
     config: ConfigCallback;
-    dynamic?: string[];
+    /**
+     * String values are static keys (e.g. from {foo: '$prop'}). Number values correspond to
+     * computed keys (e.g. {[Math.random()]: '$prop'}), and point to an index in the `computed`
+     * array.
+     */
+    dynamic?: (string | number)[];
+    /**
+     * Snapshots of computed keys from expressions (e.g. `{[Math.random()]: 1}`).
+     * Literal computed keys (e.g. `{[123]: val}`) can be stringified at compile time and do not
+     * need to be included.
+     */
+    computed?: unknown[];
 }
 interface RegisterDecoratorMeta {
     readonly publicMethods?: MethodCompilerMeta;
@@ -240,8 +251,23 @@ export function registerDecorators(
                 adapter,
                 method,
                 config: configCallback,
-                dynamic = [],
+                dynamic: rawDynamic,
+                computed: rawComputed,
             } = wire[fieldOrMethodName];
+
+            // A computed config key can be any value; to use safely, we must cast to string/symbol
+            const computed =
+                rawComputed?.map((val): string | symbol =>
+                    typeof val === 'symbol' ? val : String(val)
+                ) ?? [];
+
+            // Wire config keys may be computed, i.e. determined at runtime. The `rawDynamic` array
+            // has static keys (strings) or references to an index in the `computed` array (numbers)
+            const dynamic =
+                rawDynamic?.map((val): string | symbol =>
+                    typeof val === 'number' ? computed![val] : val
+                ) ?? [];
+
             descriptor = getOwnPropertyDescriptor(proto, fieldOrMethodName);
             if (method === 1) {
                 if (process.env.NODE_ENV !== 'production') {
@@ -257,7 +283,7 @@ export function registerDecorators(
                     throw new Error();
                 }
                 wiredMethods[fieldOrMethodName] = descriptor;
-                storeWiredMethodMeta(descriptor, adapter, configCallback, dynamic);
+                storeWiredMethodMeta(descriptor, adapter, configCallback, dynamic, computed);
             } else {
                 if (process.env.NODE_ENV !== 'production') {
                     if (!adapter) {
@@ -270,7 +296,7 @@ export function registerDecorators(
                 }
                 descriptor = internalWireFieldDecorator(fieldOrMethodName);
                 wiredFields[fieldOrMethodName] = descriptor;
-                storeWiredFieldMeta(descriptor, adapter, configCallback, dynamic);
+                storeWiredFieldMeta(descriptor, adapter, configCallback, dynamic, computed);
                 defineProperty(proto, fieldOrMethodName, descriptor);
             }
         }
