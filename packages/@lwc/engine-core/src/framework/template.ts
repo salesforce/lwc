@@ -66,17 +66,6 @@ export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
 }
 
-const VALID_SCOPE_TOKEN_REGEX =
-    process.env.IS_BROWSER && lwcRuntimeFlags.ENABLE_EXTENDED_SCOPE_TOKENS
-        ? /^[a-zA-Z0-9\-_.]+$/
-        : /^[a-zA-Z0-9\-_]+$/;
-
-// See W-16614556
-// TODO [#2826]: freeze the template object
-function isValidScopeToken(token: any) {
-    return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
-}
-
 function validateSlots(vm: VM) {
     assertNotProd(); // this method should never leak to prod
 
@@ -274,14 +263,6 @@ function buildParseFragmentFn(
                 if (!isUndefined(cached)) {
                     return cached;
                 }
-            }
-
-            // See W-16614556
-            if (
-                (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
-                (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))
-            ) {
-                throw new Error('stylesheet token must be a valid string');
             }
 
             // If legacy stylesheet tokens are required, then add them to the rendered string

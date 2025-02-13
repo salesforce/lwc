@@ -13,6 +13,7 @@ import {
     isArray,
     isFalse,
     isNull,
+    isString,
     isTrue,
     isUndefined,
     KEY__SHADOW_RESOLVER,
@@ -73,6 +74,14 @@ import type {
 } from './vnodes';
 import type { VM } from './vm';
 import type { RendererAPI } from './renderer';
+
+const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
+
+// See W-16614556
+// TODO [#2826]: freeze the template object
+function isValidScopeToken(token: any) {
+    return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
+}
 
 export function patchChildren(
     c1: VNodes,
@@ -604,6 +613,10 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
 
     // Set the class name for `*.scoped.css` style scoping.
     const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
+    if (!isValidScopeToken(scopeToken)) {
+        // See W-16614556
+        throw new Error('stylesheet token must be a valid string');
+    }
     if (!isNull(scopeToken)) {
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
@@ -614,6 +627,10 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
         const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
         if (!isNull(legacyScopeToken)) {
+            if (!isValidScopeToken(legacyScopeToken)) {
+                // See W-16614556
+                throw new Error('stylesheet token must be a valid string');
+            }
             // TODO [#2762]: this dot notation with add is probably problematic
             // probably we should have a renderer api for just the add operation
             getClassList(elm).add(legacyScopeToken);
