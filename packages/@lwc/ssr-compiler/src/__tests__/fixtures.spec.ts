@@ -106,7 +106,12 @@ describe.concurrent('fixtures', () => {
 
             try {
                 result = formatHTML(
-                    await serverSideRenderComponent('x-test', module, config?.props ?? {}, SSR_MODE)
+                    await serverSideRenderComponent(
+                        'fixture-test',
+                        module,
+                        config?.props ?? {},
+                        SSR_MODE
+                    )
                 );
             } catch (err: any) {
                 error = err.message;

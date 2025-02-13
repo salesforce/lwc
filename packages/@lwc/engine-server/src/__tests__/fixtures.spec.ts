@@ -132,7 +132,7 @@ function testFixtures(options?: RollupLwcOptions) {
             try {
                 const { default: module } = (await import(compiledFixturePath)) as FixtureModule;
                 result = formatHTML(
-                    lwcEngineServer!.renderComponent('x-test', module, config?.props ?? {})
+                    lwcEngineServer!.renderComponent('fixture-test', module, config?.props ?? {})
                 );
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
