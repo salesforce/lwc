@@ -4,5 +4,4 @@ cmp.stylesheetToken = 'stylesheet.token';
 
 export default class HelloWorld extends LightningElement {
     static renderMode = 'light';
-    prop = lwcRuntimeFlags.ENABLE_EXTENDED_SCOPE_TOKENS + '';
 }
