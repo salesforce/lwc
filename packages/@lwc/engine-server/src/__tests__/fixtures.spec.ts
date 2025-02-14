@@ -11,18 +11,13 @@ import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
 interface FixtureModule {
-    tagName: string;
     default: typeof lwc.LightningElement;
-    props?: { [key: string]: any };
-    features?: any[];
+    props?: { [key: string]: unknown };
 }
-
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
@@ -132,20 +127,10 @@ function testFixtures(options?: RollupLwcOptions) {
 
             let result;
             let err;
-            let features: FeatureFlagName[] = [];
             try {
-                const module = (await import(compiledFixturePath)) as FixtureModule;
-
-                features = module!.features ?? [];
-                features.forEach((flag) => {
-                    lwcEngineServer!.setFeatureFlagForTest(flag, true);
-                });
+                const { default: module } = (await import(compiledFixturePath)) as FixtureModule;
                 result = formatHTML(
-                    lwcEngineServer!.renderComponent(
-                        module!.tagName,
-                        module!.default,
-                        config?.props ?? {}
-                    )
+                    lwcEngineServer!.renderComponent('fixture-test', module, config?.props ?? {})
                 );
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
@@ -153,10 +138,6 @@ function testFixtures(options?: RollupLwcOptions) {
                 }
                 err = _err?.message || 'An empty error occurred?!';
             }
-
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, false);
-            });
 
             return {
                 'expected.html': result,

@@ -17,15 +17,12 @@ export const LegacyIf: Transformer<IrIf> = function If(node, cxt) {
     const { modifier: trueOrFalseAsStr, condition, children } = node;
 
     const trueOrFalse = trueOrFalseAsStr === 'true';
-    // FIXME: Does engine-server actually do triple-equals here?
-    const comparison = b.binaryExpression(
-        '===',
-        b.literal(trueOrFalse),
-        expressionIrToEs(condition, cxt)
-    );
+    const test = trueOrFalse
+        ? expressionIrToEs(condition, cxt)
+        : b.unaryExpression('!', expressionIrToEs(condition, cxt));
 
     const childStatements = irChildrenToEs(children, cxt);
     const block = b.blockStatement(optimizeAdjacentYieldStmts(childStatements));
 
-    return [b.ifStatement(comparison, block)];
+    return [b.ifStatement(test, block)];
 };

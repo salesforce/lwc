@@ -1,0 +1,1 @@
+LWCTODO: identifier name '__lwcThrowAnError__' cannot start with '__lwc'

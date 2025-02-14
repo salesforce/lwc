@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { type LWCErrorInfo, generateCompilerError } from '@lwc/errors';
-import type { Node } from 'estree';
+import type { BaseNodeWithoutComments } from 'estree';
 
 // This type extracts the arguments in a string. Example: "Error {0} {1}" -> [string, string]
 type ExtractArguments<
@@ -19,7 +19,7 @@ type ExtractArguments<
     : Args; // No `N` found, nothing more to check
 
 export function generateError<const T extends LWCErrorInfo>(
-    node: Node,
+    node: BaseNodeWithoutComments,
     error: T,
     ...messageArgs: ExtractArguments<T['message']>
 ) {

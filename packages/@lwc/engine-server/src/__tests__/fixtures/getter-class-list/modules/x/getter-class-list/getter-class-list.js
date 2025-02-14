@@ -9,5 +9,6 @@ export default class GetterClassList extends LightningElement {
         classList.remove('b');
 
         expect(this.getAttribute('class')).toBe('a c d-e');
+        expect(() => this.classList.length).not.toThrow();
     }
 }

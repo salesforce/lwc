@@ -63,12 +63,6 @@ export interface RollupLwcOptions {
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
 
-const DEFAULT_MODULES = [
-    { npm: '@lwc/engine-dom' },
-    { npm: '@lwc/synthetic-shadow' },
-    { npm: '@lwc/wire-service' },
-];
-
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
@@ -182,7 +176,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
     return {
         name: PLUGIN_NAME,
-
+        // The version from the package.json is inlined by the build script
+        version: process.env.LWC_VERSION,
         buildStart({ input }) {
             if (rootDir === undefined) {
                 if (Array.isArray(input)) {
@@ -204,7 +199,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 rootDir = path.resolve(rootDir);
             }
 
-            modules = [...modules, ...DEFAULT_MODULES, { dir: rootDir }];
+            modules = [...modules, { dir: rootDir }];
         },
 
         resolveId(importee, importer) {

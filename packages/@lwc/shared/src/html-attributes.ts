@@ -194,3 +194,26 @@ export function kebabCaseToCamelCase(attrName: string): string {
 
     return result;
 }
+
+/**
+ * This set is for attributes that have a camel cased property name
+ * For example, div.tabIndex.
+ * We do not want users to define `@api` properties with these names
+ * Because the template will never call them. It'll always call the camel
+ * cased version.
+ */
+export const AMBIGUOUS_PROP_SET = /*@__PURE__@*/ new Map([
+    ['bgcolor', 'bgColor'],
+    ['accesskey', 'accessKey'],
+    ['contenteditable', 'contentEditable'],
+    ['tabindex', 'tabIndex'],
+    ['maxlength', 'maxLength'],
+    ['maxvalue', 'maxValue'],
+]);
+
+/**
+ * This set is for attributes that can never be defined
+ * by users on their components.
+ * We throw for these.
+ */
+export const DISALLOWED_PROP_SET = /*@__PURE__@*/ new Set(['is', 'class', 'slot', 'style']);
