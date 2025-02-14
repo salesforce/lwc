@@ -8,8 +8,7 @@
 // Inspired from: https://github.com/Rich-Harris/agadoo
 import path from 'node:path';
 import { rollup } from 'rollup';
-// Even though it has a .ts file extension, it only contains JS
-import pluginVirtual from '../rollup/plugin-virtual.ts';
+import pluginVirtual from '../rollup/plugin-virtual.mjs';
 
 async function check(input) {
     const resolved = path.resolve(input);
