@@ -16,7 +16,6 @@ import type * as lwc from '../index';
 
 interface FixtureModule {
     default: typeof lwc.LightningElement;
-    props?: { [key: string]: unknown };
 }
 
 vi.mock('lwc', async () => {
@@ -128,9 +127,12 @@ function testFixtures(options?: RollupLwcOptions) {
             let result;
             let err;
             try {
+                config?.features?.forEach((flag) => {
+                    lwcEngineServer.setFeatureFlagForTest(flag, true);
+                });
                 const { default: module } = (await import(compiledFixturePath)) as FixtureModule;
                 result = formatHTML(
-                    lwcEngineServer!.renderComponent('fixture-test', module, config?.props ?? {})
+                    lwcEngineServer.renderComponent('fixture-test', module, config?.props ?? {})
                 );
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
@@ -138,6 +140,10 @@ function testFixtures(options?: RollupLwcOptions) {
                 }
                 err = _err?.message || 'An empty error occurred?!';
             }
+
+            config?.features?.forEach((flag) => {
+                lwcEngineServer.setFeatureFlagForTest(flag, true);
+            });
 
             return {
                 'expected.html': result,

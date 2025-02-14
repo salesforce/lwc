@@ -10,6 +10,7 @@ import path from 'node:path';
 import { AssertionError } from 'node:assert';
 import { test } from 'vitest';
 import * as glob from 'glob';
+import type { FeatureFlagName } from '@lwc/features/src/types';
 import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
 
@@ -54,6 +55,8 @@ export interface TestFixtureConfig extends StyleCompilerConfig {
         error?: string;
         expected?: string;
     };
+    /** Feature flags to enable just for the fixture. */
+    features?: FeatureFlagName[];
 }
 
 /** Loads the the contents of the `config.json` in the provided directory, if present. */
