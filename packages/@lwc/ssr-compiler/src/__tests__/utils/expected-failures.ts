@@ -8,9 +8,9 @@
 // We should slowly drive down these test failures or at least document where we expect the failures
 // TODO [#4815]: enable all SSR v2 tests
 export const expectedFailures = new Set([
-    'attribute-global-html/as-component-prop/undeclared/index.js',
-    'attribute-global-html/as-component-prop/without-@api/index.js',
-    'known-boolean-attributes/default-def-html-attributes/static-on-component/index.js',
-    'wire/config/index.js',
-    'wire/errors/throws-when-colliding-prop-then-method/index.js',
+    'attribute-global-html/as-component-prop/undeclared/config.json',
+    'attribute-global-html/as-component-prop/without-@api/config.json',
+    'known-boolean-attributes/default-def-html-attributes/static-on-component/config.json',
+    'wire/config/config.json',
+    'wire/errors/throws-when-colliding-prop-then-method/config.json',
 ]);

@@ -9,7 +9,7 @@ import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
-import plugin from '../index';
+import plugin, { type LwcBabelPluginOptions } from '../index';
 
 const BASE_OPTS = {
     namespace: 'lwc',
@@ -62,7 +62,7 @@ function transform(source: string, opts = {}) {
 }
 
 describe('fixtures', () => {
-    testFixtureDir(
+    testFixtureDir<LwcBabelPluginOptions>(
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.js',

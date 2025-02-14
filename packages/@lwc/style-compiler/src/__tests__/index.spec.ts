@@ -9,7 +9,7 @@ import { describe } from 'vitest';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 import { LWC_VERSION } from '@lwc/shared';
 
-import { transform } from '../index';
+import { transform, type Config } from '../index';
 
 import type { CssSyntaxError } from 'postcss';
 
@@ -30,7 +30,7 @@ function normalizeError(err: Error) {
 }
 
 describe('fixtures', () => {
-    testFixtureDir(
+    testFixtureDir<Config>(
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.css',
