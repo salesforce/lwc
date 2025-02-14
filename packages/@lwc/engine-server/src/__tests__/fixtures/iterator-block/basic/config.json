@@ -1,4 +1,5 @@
 {
+    "entry": "x/iterator-block",
     "props": {
         "list": ["paris", "london", "tokyo"]
     }

@@ -6,3 +6,4 @@
  */
 export * from './test-fixture-dir';
 export * from './format-html';
+export { default as pluginVirtual } from '../rollup/plugin-virtual';

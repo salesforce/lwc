@@ -10,7 +10,6 @@ import path from 'node:path';
 import { AssertionError } from 'node:assert';
 import { test } from 'vitest';
 import * as glob from 'glob';
-import type { Config as StyleCompilerConfig } from '@lwc/style-compiler';
 const { globSync } = glob;
 
 type TestFixtureOutput = { [filename: string]: unknown };
@@ -42,22 +41,8 @@ function getTestOptions(dirname: string) {
     return isOnly ? { only: true } : isSkip ? { skip: true } : {};
 }
 
-export interface TestFixtureConfig extends StyleCompilerConfig {
-    /** Component name. */
-    name?: string;
-    /** Component namespace. */
-    namespace?: string;
-    /** Props to provide to the top-level component. */
-    props?: Record<string, string | string[]>;
-    /** Output files used by ssr-compiler, when the output needs to differ fron engine-server */
-    ssrFiles?: {
-        error?: string;
-        expected?: string;
-    };
-}
-
 /** Loads the the contents of the `config.json` in the provided directory, if present. */
-function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | undefined {
+function getFixtureConfig<T>(dirname: string): T | undefined {
     const filepath = path.join(dirname, 'config.json');
     let contents: string;
     try {
@@ -93,7 +78,7 @@ function getFixtureConfig<T extends TestFixtureConfig>(dirname: string): T | und
  *   }
  * )
  */
-export function testFixtureDir<T extends TestFixtureConfig>(
+export function testFixtureDir<T>(
     config: {
         pattern: string;
         root: string;
@@ -127,7 +112,10 @@ export function testFixtureDir<T extends TestFixtureConfig>(
     for (const filename of matches) {
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
-        const fixtureConfig = getFixtureConfig<T>(dirname);
+        const fixtureConfig =
+            path.basename(filename) === 'config.json'
+                ? JSON.parse(src)
+                : getFixtureConfig<T>(dirname);
         const relpath = path.relative(root, filename);
         const options = getTestOptions(dirname);
         const fails = config.expectedFailures?.has(relpath);
