@@ -142,7 +142,7 @@ function testFixtures(options?: RollupLwcOptions) {
             }
 
             config?.features?.forEach((flag) => {
-                lwcEngineServer.setFeatureFlagForTest(flag, true);
+                lwcEngineServer.setFeatureFlagForTest(flag, false);
             });
 
             return {

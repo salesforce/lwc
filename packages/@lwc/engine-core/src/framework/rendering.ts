@@ -79,8 +79,11 @@ const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
 
 // See W-16614556
 // TODO [#2826]: freeze the template object
-function isValidScopeToken(token: any) {
-    return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
+function isValidScopeToken(token: unknown) {
+    if (!isString(token)) {
+        return false;
+    }
+    return lwcRuntimeFlags.ENABLE_EXTENDED_SCOPE_TOKENS || VALID_SCOPE_TOKEN_REGEX.test(token);
 }
 
 export function patchChildren(
@@ -613,7 +616,7 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
 
     // Set the class name for `*.scoped.css` style scoping.
     const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
-    if (!isValidScopeToken(scopeToken)) {
+    if (!isNull(scopeToken) && !isValidScopeToken(scopeToken)) {
         // See W-16614556
         throw new Error('stylesheet token must be a valid string');
     }
