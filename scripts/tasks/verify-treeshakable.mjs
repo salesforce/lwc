@@ -6,9 +6,10 @@
  */
 
 // Inspired from: https://github.com/Rich-Harris/agadoo
-
-const path = require('path');
-const { rollup } = require('rollup');
+import path from 'node:path';
+import { rollup } from 'rollup';
+// Even though it has a .ts file extension, it only contains JS
+import pluginVirtual from '../rollup/plugin-virtual.ts';
 
 async function check(input) {
     const resolved = path.resolve(input);
@@ -17,17 +18,8 @@ async function check(input) {
     // If the imported file is tree-shakeable (pure imports/exports, no side effects),
     // then the bundled code will be an empty file
     const bundle = await rollup({
-        input: '__root__',
-        plugins: [
-            {
-                resolveId(id) {
-                    if (id === '__root__') return id;
-                },
-                load(id) {
-                    if (id === '__root__') return `import "${resolved}"`;
-                },
-            },
-        ],
+        input: '__virtual__',
+        plugins: [pluginVirtual(`import "${resolved}";`)],
         onwarn: (warning, handle) => {
             if (warning.code !== 'EMPTY_BUNDLE') handle(warning);
         },
@@ -49,7 +41,9 @@ const input = process.argv[2];
 check(input)
     .then((res) => {
         if (res.isTreeShakable === false) {
-            console.error(`${res.code}\n❗️ Failed to fully treeshake ${input}`);
+            console.error(
+                `${res.code}\n❗️ Failed to fully treeshake ${input}; see remaining code above.`
+            );
         }
 
         process.exit(res.isTreeShakable ? 0 : 1);
