@@ -1,4 +1,5 @@
 {
+    "entry": "x/dontDoItStupid",
     "ssrFiles": {
         "error": "error-ssr.txt",
         "expected": "expected-ssr.html"

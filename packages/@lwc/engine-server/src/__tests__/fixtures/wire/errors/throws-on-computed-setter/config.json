@@ -1,4 +1,5 @@
 {
+    "entry": "x/wire",
     "ssrFiles": {
         "error": "error-ssr.txt",
         "expected": "expected-ssr.html"
