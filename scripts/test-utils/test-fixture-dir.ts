@@ -112,7 +112,10 @@ export function testFixtureDir<T>(
     for (const filename of matches) {
         const src = fs.readFileSync(filename, 'utf-8');
         const dirname = path.dirname(filename);
-        const fixtureConfig = getFixtureConfig<T>(dirname);
+        const fixtureConfig =
+            path.basename(filename) === 'config.json'
+                ? JSON.parse(src)
+                : getFixtureConfig<T>(dirname);
         const relpath = path.relative(root, filename);
         const options = getTestOptions(dirname);
         const fails = config.expectedFailures?.has(relpath);

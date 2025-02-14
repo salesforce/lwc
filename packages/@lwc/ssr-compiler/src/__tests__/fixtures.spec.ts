@@ -9,16 +9,19 @@ import path from 'node:path';
 import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
-
-interface FixtureModule {
-    default: Parameters<typeof serverSideRenderComponent>[1];
-}
+import type { LightningElementConstructor } from '@lwc/ssr-runtime';
 
 interface FixtureConfig {
+    /**
+     * Component name that serves as the entrypoint / root component of the fixture.
+     * @example x/test
+     */
+    entry: string;
+
     /** Props to provide to the top-level component. */
     props?: Record<string, string | string[]>;
 
@@ -45,14 +48,16 @@ vi.mock('@lwc/ssr-runtime', async () => {
 
 const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
-async function compileFixture({ input, dirname }: { input: string; dirname: string }) {
+async function compileFixture({ entry, dirname }: { entry: string; dirname: string }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
+    const input = 'virtual/fixture/test.js';
 
     const bundle = await rollup({
         input,
         external: ['lwc', '@lwc/ssr-runtime', 'vitest'],
         plugins: [
+            pluginVirtual(`export { default } from "${entry}";`, input),
             lwcRollupPlugin({
                 targetSSR: true,
                 ssrMode: SSR_MODE,
@@ -86,18 +91,18 @@ describe.concurrent('fixtures', () => {
     testFixtureDir<FixtureConfig>(
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
-            pattern: '**/index.js',
+            pattern: '**/config.json',
             // TODO [#4815]: enable all SSR v2 tests
             expectedFailures,
         },
-        async ({ filename, dirname, config }) => {
+        async ({ dirname, config }) => {
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';
             const expectedFile = config?.ssrFiles?.expected ?? 'expected.html';
 
             let compiledFixturePath;
             try {
                 compiledFixturePath = await compileFixture({
-                    input: filename,
+                    entry: config!.entry,
                     dirname,
                 });
             } catch (err: any) {
@@ -107,7 +112,7 @@ describe.concurrent('fixtures', () => {
                 };
             }
 
-            const { default: module } = (await import(compiledFixturePath)) as FixtureModule;
+            const module: LightningElementConstructor = (await import(compiledFixturePath)).default;
 
             let result;
             let error;
