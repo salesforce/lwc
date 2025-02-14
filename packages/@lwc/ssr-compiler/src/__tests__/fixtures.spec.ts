@@ -16,7 +16,17 @@ import { expectedFailures } from './utils/expected-failures';
 
 interface FixtureModule {
     default: Parameters<typeof serverSideRenderComponent>[1];
-    props?: { [key: string]: unknown };
+}
+
+interface FixtureConfig {
+    /** Props to provide to the top-level component. */
+    props?: Record<string, string | string[]>;
+
+    /** Output files used by ssr-compiler, when the output needs to differ fron engine-server */
+    ssrFiles?: {
+        error?: string;
+        expected?: string;
+    };
 }
 
 vi.mock('@lwc/ssr-runtime', async () => {
@@ -73,7 +83,7 @@ async function compileFixture({ input, dirname }: { input: string; dirname: stri
 }
 
 describe.concurrent('fixtures', () => {
-    testFixtureDir(
+    testFixtureDir<FixtureConfig>(
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/index.js',

@@ -14,11 +14,6 @@ import { setFeatureFlagForTest } from '../index';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type * as lwc from '../index';
 
-interface FixtureModule {
-    default: typeof lwc.LightningElement;
-    props?: { [key: string]: unknown };
-}
-
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
     try {
@@ -95,7 +90,7 @@ async function compileFixture({
 }
 
 function testFixtures(options?: RollupLwcOptions) {
-    testFixtureDir(
+    testFixtureDir<{ props?: Record<string, string> }>(
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/index.js',
@@ -130,7 +125,7 @@ function testFixtures(options?: RollupLwcOptions) {
             try {
                 const { default: module } = (await import(compiledFixturePath)) as FixtureModule;
                 result = formatHTML(
-                    lwcEngineServer!.renderComponent('fixture-test', module, config?.props ?? {})
+                    lwcEngineServer.renderComponent('fixture-test', module, config?.props ?? {})
                 );
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
