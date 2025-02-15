@@ -107,47 +107,6 @@ function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPlu
             state
         );
     }
-
-    for (const prop of config.get('properties')) {
-        // Only validate {[computed]: true} object properties; {static: true} props are all valid
-        // and we ignore {...spreads} and {methods(){}}
-        if (!prop.isObjectProperty() || !prop.node.computed) continue;
-
-        const key: NodePath = prop.get('key');
-        if (key.isIdentifier()) {
-            // Only allow identifiers that originated from a `const` declaration
-            const binding = key.scope.getBinding(key.node.name);
-            // TODO [#3956]: Investigate allowing imported constants
-            if (binding?.kind === 'const') continue;
-            // By default, the identifier `undefined` has no binding (when it's actually undefined),
-            // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
-            if (key.node.name === 'undefined' && !binding) continue;
-        } else if (key.isLiteral()) {
-            // A literal can be a regexp, template literal, or primitive; only allow primitives
-            if (key.isTemplateLiteral()) {
-                // A template literal is not guaranteed to always result in the same value
-                // (e.g. `${Math.random()}`), so we disallow them entirely.
-                // TODO [#3956]: Investigate allowing template literals
-                throw generateError(
-                    key,
-                    {
-                        errorInfo: DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL,
-                    },
-                    state
-                );
-            } else if (!key.isRegExpLiteral()) {
-                continue;
-            }
-        }
-
-        throw generateError(
-            key,
-            {
-                errorInfo: DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL,
-            },
-            state
-        );
-    }
 }
 
 function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {

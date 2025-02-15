@@ -13,6 +13,9 @@ export type ConfigValue = Record<string, any>;
 export type WireAdapterSchemaValue = 'optional' | 'required';
 export type ContextValue = Record<string, any>;
 
+/** Array of property keys. Numbers not included because they're normalized to string. */
+export type PropertyKeyList = (string | symbol)[];
+
 export interface WireAdapter<
     Config extends ConfigValue = ConfigValue,
     Context extends ContextValue = ContextValue,
@@ -38,7 +41,8 @@ export interface WireAdapterConstructor<
 export interface WireDef {
     method?: (data: any) => void;
     adapter: WireAdapterConstructor;
-    dynamic: string[];
+    dynamic: PropertyKeyList;
+    computed: PropertyKeyList;
     configCallback: ConfigCallback;
 }
 
@@ -50,7 +54,10 @@ export interface WireFieldDef extends WireDef {
     method?: undefined;
 }
 
-export type ConfigCallback = (component: LightningElement) => ConfigValue;
+export type ConfigCallback = (
+    component: LightningElement,
+    computedKeys: PropertyKeyList
+) => ConfigValue;
 
 export interface WireDebugInfo {
     data?: any;

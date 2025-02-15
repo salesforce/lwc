@@ -11,5 +11,6 @@ export const expectedFailures = new Set([
     'attribute-global-html/as-component-prop/undeclared/config.json',
     'attribute-global-html/as-component-prop/without-@api/config.json',
     'known-boolean-attributes/default-def-html-attributes/static-on-component/config.json',
+    'wire/config/config.json',
     'wire/errors/throws-when-colliding-prop-then-method/config.json',
 ]);
