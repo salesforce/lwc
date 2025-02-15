@@ -83,7 +83,7 @@ function isValidScopeToken(token: unknown) {
     if (!isString(token)) {
         return false;
     }
-    return lwcRuntimeFlags.ENABLE_EXTENDED_SCOPE_TOKENS || VALID_SCOPE_TOKEN_REGEX.test(token);
+    return lwcRuntimeFlags.DISABLE_SCOPE_TOKEN_VALIDATION || VALID_SCOPE_TOKEN_REGEX.test(token);
 }
 
 export function patchChildren(

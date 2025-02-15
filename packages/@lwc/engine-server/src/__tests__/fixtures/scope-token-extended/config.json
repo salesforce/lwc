@@ -1,4 +1,4 @@
 {
     "entry": "x/component",
-    "features": ["ENABLE_EXTENDED_SCOPE_TOKENS"]
+    "features": ["DISABLE_SCOPE_TOKEN_VALIDATION"]
 }
