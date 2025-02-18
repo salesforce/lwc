@@ -11,7 +11,7 @@ const fs = require('node:fs/promises');
 const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
-const ssr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-runtime'); 
+const ssr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-runtime');
 const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
@@ -24,8 +24,8 @@ const EXPECTED_V2_FAILURES = [
     'mismatches/host-mutation-in-connected-callback/class-mutated-attr-mismatch',
     'mismatches/host-mutation-in-connected-callback/class',
     'directives/lwc-dynamic',
-    'inner-outer-html'
-]
+    'inner-outer-html',
+];
 
 const context = {
     LWC: ssr,
@@ -103,7 +103,7 @@ async function getCompiledModule(dirName, compileForSSR) {
         format: 'iife',
         name: 'Main',
         globals: {
-            'lwc': 'LWC',
+            lwc: 'LWC',
             '@lwc/ssr-runtime': 'LWC',
             'test-utils': 'TestUtils',
         },
@@ -148,7 +148,7 @@ function throwOnUnexpectedConsoleCalls(runnable) {
  * runs, utilizing the `LWC` object that we've attached to the global scope, it sets a
  * new value (the rendered markup) to the globalThis.moduleOutput, which correspond to
  * context.moduleOutput in the hydration-test.js module scope.
- * 
+ *
  * So, script runs, generates markup, & we get that markup out and return it to Karma for use
  * in client-side tests.
  */
@@ -176,7 +176,6 @@ async function getTestModuleCode(input) {
     });
 
     const { watchFiles } = bundle;
-    cache = bundle.cache;
 
     const { output } = await bundle.generate({
         format: 'iife',
@@ -217,11 +216,12 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
         try {
             const { code: testCode, watchFiles: testWatchFiles } =
                 await getTestModuleCode(filePath);
-            
+
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await existsUp(suiteDir, '.only');
             // If V2 failure is expected, skip it.
-            const failureExpected = !ENGINE_SERVER && EXPECTED_V2_FAILURES.some(dir => suiteDir.includes(dir))
+            const v2FailureExpected =
+                !ENGINE_SERVER && EXPECTED_V2_FAILURES.some((dir) => suiteDir.includes(dir));
 
             let describe = onlyFileExists ? 'fdescribe' : 'describe';
 
@@ -229,22 +229,34 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                 await getCompiledModule(suiteDir, false);
 
             let ssrOutput;
+            /* eslint-disable vitest/no-conditional-tests */
             if (ENGINE_SERVER) {
                 // engine-server uses the same def as the client
                 watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR));
-                ssrOutput = await getSsrCode(componentDefCSR, testCode, path.join(suiteDir, 'ssr.js'));  
-            } else if (!failureExpected) {
+                ssrOutput = await getSsrCode(
+                    componentDefCSR,
+                    testCode,
+                    path.join(suiteDir, 'ssr.js')
+                );
+            } else if (!v2FailureExpected) {
                 // ssr-compiler has it's own def
-                let { code: componentDefSSR, watchFiles: componentWatchFilesSSR } =
+                const { code: componentDefSSR, watchFiles: componentWatchFilesSSR } =
                     await getCompiledModule(suiteDir, true);
-                componentDefSSR = componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true');
-                watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR).concat(componentWatchFilesSSR));
-                ssrOutput = await getSsrCode(componentDefSSR, testCode, path.join(suiteDir, 'ssr.js'));
+                watcher.watchSuite(
+                    filePath,
+                    testWatchFiles.concat(componentWatchFilesCSR).concat(componentWatchFilesSSR)
+                );
+                ssrOutput = await getSsrCode(
+                    componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true'),
+                    testCode,
+                    path.join(suiteDir, 'ssr.js')
+                );
             } else {
                 console.log(`Expected failure for ${suiteDir}, skipping`);
                 describe = 'xdescribe';
             }
-            
+            /* eslint-enable vitest/no-conditional-tests */
+
             const newContent = format(
                 TEMPLATE,
                 JSON.stringify(ssrOutput),
