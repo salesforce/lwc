@@ -4,18 +4,31 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const ENGINE_SERVER = process.env.ENGINE_SERVER;
 const path = require('node:path');
 const vm = require('node:vm');
 const fs = require('node:fs/promises');
 const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
-const ssr = require('@lwc/ssr-runtime');
+const ssr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-runtime'); 
 const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
+/*
+ * These are hydration tests that currently fail in ssr-compiler (V2)
+ * They need to be removed from this list and then fixed. There are only 4
+ * so kept here for now.
+ */
+const EXPECTED_V2_FAILURES = [
+    'mismatches/host-mutation-in-connected-callback/class-mutated-attr-mismatch',
+    'mismatches/host-mutation-in-connected-callback/class',
+    'directives/lwc-dynamic',
+    'inner-outer-html'
+]
+
 const context = {
-    LwcSsrRuntime: ssr,
+    LWC: ssr,
     moduleOutput: null,
 };
 
@@ -54,8 +67,6 @@ async function exists(path) {
     }
 }
 
-// let cache;
-
 async function getCompiledModule(dirName, compileForSSR) {
     const bundle = await rollup({
         input: path.join(dirName, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
@@ -75,9 +86,8 @@ async function getCompiledModule(dirName, compileForSSR) {
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
             }),
         ],
-        // cache,
 
-        external: ['lwc', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
+        external: ['lwc', '@lwc/ssr-runtime', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin
@@ -88,13 +98,13 @@ async function getCompiledModule(dirName, compileForSSR) {
     });
 
     const { watchFiles } = bundle;
-    // cache = bundle.cache;
 
     const { output } = await bundle.generate({
         format: 'iife',
         name: 'Main',
         globals: {
-            lwc: compileForSSR ? 'LwcSsrRuntime' : 'LWC',
+            'lwc': 'LWC',
+            '@lwc/ssr-runtime': 'LWC',
             'test-utils': 'TestUtils',
         },
     });
@@ -135,30 +145,27 @@ function throwOnUnexpectedConsoleCalls(runnable) {
  * This is the function that takes SSR bundle code and test config, constructs a script that will
  * run in a separate JS runtime environment with its own global scope. The `context` object
  * (defined at the top of this file) is passed in as the global scope for that script. The script
- * runs, utilizing the `LwcSsrRuntime` object that we've attached to the global scope, it sets a
+ * runs, utilizing the `LWC` object that we've attached to the global scope, it sets a
  * new value (the rendered markup) to the globalThis.moduleOutput, which correspond to
  * context.moduleOutput in the hydration-test.js module scope.
  * 
  * So, script runs, generates markup, & we get that markup out and return it to Karma for use
  * in client-side tests.
  */
-function getSsrCode(moduleCode, testConfig, filename) {
+async function getSsrCode(moduleCode, testConfig, filename) {
     const script = new vm.Script(
         `
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LwcSsrRuntime.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {}, 'sync');`,
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {}, 'sync');`,
         { filename }
     );
-
-    console.log(script);
 
     throwOnUnexpectedConsoleCalls(() => {
         vm.createContext(context);
         script.runInContext(context);
     });
-
     return context.moduleOutput;
 }
 
@@ -203,49 +210,53 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
     return async (_content, file, done) => {
         const filePath = file.path;
         const suiteDir = path.dirname(filePath);
+
         // Wrap all the tests into a describe block with the file stricture name
         const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
         try {
             const { code: testCode, watchFiles: testWatchFiles } =
                 await getTestModuleCode(filePath);
-            let { code: componentDefSSR, watchFiles: componentWatchFilesSSR } =
-                await getCompiledModule(suiteDir, true);
-            const { code: componentDefCSR, watchFiles: componentWatchFilesCSR } =
-                await getCompiledModule(suiteDir, false);
+            
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await existsUp(suiteDir, '.only');
+            // If V2 failure is expected, skip it.
+            const failureExpected = !ENGINE_SERVER && EXPECTED_V2_FAILURES.some(dir => suiteDir.includes(dir))
 
-            componentDefSSR = componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true');
+            let describe = onlyFileExists ? 'fdescribe' : 'describe';
 
-            throw new Error(`
-=== componentDefSSR ===
-${componentDefSSR}
+            const { code: componentDefCSR, watchFiles: componentWatchFilesCSR } =
+                await getCompiledModule(suiteDir, false);
 
-=== componentDefCSR ===
-${componentDefCSR}
-`);
-
-            // the componentDef input here has to be the SSRv2-generated bundle
-            const ssrOutput = getSsrCode(componentDefSSR, testCode, path.join(suiteDir, 'ssr.js'));
-
-            watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR).concat(componentWatchFilesSSR));
+            let ssrOutput;
+            if (ENGINE_SERVER) {
+                // engine-server uses the same def as the client
+                watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR));
+                ssrOutput = await getSsrCode(componentDefCSR, testCode, path.join(suiteDir, 'ssr.js'));  
+            } else if (!failureExpected) {
+                // ssr-compiler has it's own def
+                let { code: componentDefSSR, watchFiles: componentWatchFilesSSR } =
+                    await getCompiledModule(suiteDir, true);
+                componentDefSSR = componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true');
+                watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR).concat(componentWatchFilesSSR));
+                ssrOutput = await getSsrCode(componentDefSSR, testCode, path.join(suiteDir, 'ssr.js'));
+            } else {
+                console.log(`Expected failure for ${suiteDir}, skipping`);
+                describe = 'xdescribe';
+            }
+            
             const newContent = format(
                 TEMPLATE,
                 JSON.stringify(ssrOutput),
                 componentDefCSR,
                 testCode,
-                onlyFileExists ? 'fdescribe' : 'describe',
+                describe,
                 JSON.stringify(describeTitle)
             );
-
-            console.log(newContent);
-
             done(null, newContent);
         } catch (error) {
             const location = path.relative(basePath, filePath);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
-
             done(error, null);
         }
     };

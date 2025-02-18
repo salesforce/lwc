@@ -5,6 +5,10 @@
     "scripts": {
         "start": "KARMA_MODE=watch karma start ./scripts/karma-configs/test/local.js",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
+        "hydration:start:engine-server": "ENGINE_SERVER=true KARMA_MODE=watch karma start ./scripts/karma-configs/hydration/local.js",
+        "hydration:test:engine-server": "ENGINE_SERVER=true karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
+        "hydration:sauce:engine-server": "ENGINE_SERVER=true karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
+        "hydration:sauce:ci:engine-server": "ENGINE_SERVER=true ../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "hydration:start": "KARMA_MODE=watch karma start ./scripts/karma-configs/hydration/local.js",
         "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
         "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
