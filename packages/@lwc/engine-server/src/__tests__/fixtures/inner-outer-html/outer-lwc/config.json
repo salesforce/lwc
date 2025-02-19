@@ -1,7 +1,3 @@
 {
-    "entry": "x/outer",
-    "ssrFiles": {
-        "error": "error-ssr.txt",
-        "expected": "expected-ssr.html"
-    }
+    "entry": "x/outer"
 }
