@@ -15,18 +15,6 @@ const ssr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-ru
 const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
-/*
- * These are hydration tests that currently fail in ssr-compiler (V2)
- * They need to be removed from this list and then fixed. There are only 4
- * so kept here for now.
- */
-const EXPECTED_V2_FAILURES = [
-    'mismatches/host-mutation-in-connected-callback/class-mutated-attr-mismatch',
-    'mismatches/host-mutation-in-connected-callback/class',
-    'directives/lwc-dynamic',
-    'inner-outer-html',
-];
-
 const context = {
     LWC: ssr,
     moduleOutput: null,
@@ -84,6 +72,7 @@ async function getCompiledModule(dirName, compileForSSR) {
                 },
                 enableDynamicComponents: true,
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
+                experimentalDynamicDirective: true,
             }),
         ],
 
@@ -219,17 +208,14 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
 
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await existsUp(suiteDir, '.only');
-            // If V2 failure is expected, skip it.
-            const v2FailureExpected =
-                !ENGINE_SERVER && EXPECTED_V2_FAILURES.some((dir) => suiteDir.includes(dir));
 
-            let describe = onlyFileExists ? 'fdescribe' : 'describe';
+            const describe = onlyFileExists ? 'fdescribe' : 'describe';
 
             const { code: componentDefCSR, watchFiles: componentWatchFilesCSR } =
                 await getCompiledModule(suiteDir, false);
 
             let ssrOutput;
-            /* eslint-disable vitest/no-conditional-tests */
+
             if (ENGINE_SERVER) {
                 // engine-server uses the same def as the client
                 watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR));
@@ -238,7 +224,7 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                     testCode,
                     path.join(suiteDir, 'ssr.js')
                 );
-            } else if (!v2FailureExpected) {
+            } else {
                 // ssr-compiler has it's own def
                 const { code: componentDefSSR, watchFiles: componentWatchFilesSSR } =
                     await getCompiledModule(suiteDir, true);
@@ -251,11 +237,7 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                     testCode,
                     path.join(suiteDir, 'ssr.js')
                 );
-            } else {
-                console.log(`Expected failure for ${suiteDir}, skipping`);
-                describe = 'xdescribe';
             }
-            /* eslint-enable vitest/no-conditional-tests */
 
             const newContent = format(
                 TEMPLATE,
