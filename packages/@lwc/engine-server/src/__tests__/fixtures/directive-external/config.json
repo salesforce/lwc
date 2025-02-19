@@ -1,4 +1,5 @@
 {
+    "entry": "x/test",
     "props": {
         "foo": "configured foo",
         "bar": "configured bar"

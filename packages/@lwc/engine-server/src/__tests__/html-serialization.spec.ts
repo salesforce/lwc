@@ -7,7 +7,7 @@
 
 import path from 'node:path';
 import vm from 'node:vm';
-import { vi, describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { parseFragment, serialize } from 'parse5';
 import { rollup } from 'rollup';
 import replace from '@rollup/plugin-replace';
@@ -21,8 +21,6 @@ import type { RollupLog } from 'rollup';
  * HTML parser to ensure that the serialized content is correct. It's slightly more
  * robust than snapshots, which may have invalid/incorrect HTML.
  */
-
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
 
 // Compile a component to an HTML string, using the full LWC compilation pipeline
 async function compileComponent(tagName: string, componentName: string) {

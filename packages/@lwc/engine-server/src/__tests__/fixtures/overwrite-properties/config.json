@@ -1,4 +1,5 @@
 {
+    "entry": "x/overwrite-properties",
     "props": {
         "name": "my name",
         "namespace": "my namespace",

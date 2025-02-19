@@ -53,7 +53,7 @@ jobs:
             - name: Check licenses are up to date
               run: node ./scripts/tasks/generate-license-files.js --test
             - name: Verify @lwc/shared is tree-shakable
-              run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+              run: node ./scripts/tasks/verify-treeshakable.mjs ./packages/@lwc/shared/dist/index.js
             - name: Verify that dependencies are declared
               run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
             - name: Check formatting

@@ -182,7 +182,7 @@ type GenerateMarkupFnVariants =
     | GenerateMarkupFnSyncNoGen;
 
 interface ComponentWithGenerateMarkup extends LightningElementConstructor {
-    [SYMBOL__GENERATE_MARKUP]: GenerateMarkupFnVariants;
+    [SYMBOL__GENERATE_MARKUP]?: GenerateMarkupFnVariants;
 }
 
 class RenderContext {
