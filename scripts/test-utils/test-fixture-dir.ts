@@ -10,6 +10,7 @@ import path from 'node:path';
 import { AssertionError } from 'node:assert';
 import { test } from 'vitest';
 import * as glob from 'glob';
+
 const { globSync } = glob;
 
 type TestFixtureOutput = { [filename: string]: unknown };
