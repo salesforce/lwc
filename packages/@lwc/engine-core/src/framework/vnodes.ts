@@ -153,6 +153,7 @@ export interface VNodeData {
     readonly styleDecls?: ReadonlyArray<[string, string, boolean]>;
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
+    readonly dynamicOn?: Readonly<Record<string, (event: Event) => any>>;
     readonly svg?: boolean;
     readonly renderer?: RendererAPI;
 }
