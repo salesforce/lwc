@@ -50,6 +50,7 @@ import { VNodeType, isVStaticPartElement } from './vnodes';
 
 import { patchProps } from './modules/props';
 import { applyEventListeners } from './modules/events';
+import { patchDynamicEventListeners } from './modules/dynamic-events';
 import { hydrateStaticParts, traverseAndSetElements } from './modules/static-parts';
 import { getScopeTokenClass } from './stylesheet';
 import { renderComponent } from './component';
@@ -517,6 +518,7 @@ function handleMismatch(node: Node, vnode: VNode, renderer: RendererAPI): Node |
 
 function patchElementPropsAndAttrsAndRefs(vnode: VBaseElement, renderer: RendererAPI) {
     applyEventListeners(vnode, renderer);
+    patchDynamicEventListeners(null, vnode, renderer, vnode.owner);
     patchProps(null, vnode, renderer);
     // The `refs` object is blown away in every re-render, so we always need to re-apply them
     applyRefs(vnode, vnode.owner);
