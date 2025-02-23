@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull, keys } from '@lwc/shared';
+import { isUndefined, isNull, keys, propertyIsEnumerable } from '@lwc/shared';
 import { EmptyObject } from '../utils';
 import { invokeEventListener } from '../invoker';
 import type { VM } from '../vm';
@@ -39,7 +39,7 @@ export function patchDynamicEventListeners(
     const newDynamicOnNames = keys(newDynamicOn);
 
     for (const name of oldDynamicOnNames) {
-        if (!Object.prototype.propertyIsEnumerable.call(newDynamicOn, name)) {
+        if (!propertyIsEnumerable.call(newDynamicOn, name)) {
             const actualListener = actualEventListeners[name];
             removeEventListener(elm, name, actualListener);
             delete actualEventListeners[name];
@@ -47,7 +47,7 @@ export function patchDynamicEventListeners(
     }
 
     for (const name of newDynamicOnNames) {
-        const oldHandler = Object.prototype.propertyIsEnumerable.call(oldDynamicOn, name)
+        const oldHandler = propertyIsEnumerable.call(oldDynamicOn, name)
             ? oldDynamicOn[name]
             : null;
         const newHandler = newDynamicOn[name];
