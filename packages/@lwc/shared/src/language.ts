@@ -42,6 +42,9 @@ const {
     setPrototypeOf,
 } = Object;
 
+/** Detached {@linkcode Object.prototype.propertyIsEnumerable}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable MDN Reference}. */
+const { propertyIsEnumerable } = Object.prototype;
+
 const {
     /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
     isArray,
@@ -230,6 +233,10 @@ export {
     keys,
     seal,
     setPrototypeOf,
+    /*
+     * Object prototype
+     */
+    propertyIsEnumerable,
     /*
      * String static
      */
