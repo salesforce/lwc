@@ -48,7 +48,7 @@
         }
     },
     "dependencies": {
-        "@babel/types": "7.26.8",
+        "@babel/types": "7.26.9",
         "@lwc/shared": "8.13.3",
         "@lwc/errors": "8.13.3",
         "@lwc/template-compiler": "8.13.3",
