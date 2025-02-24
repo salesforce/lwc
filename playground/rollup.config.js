@@ -2,12 +2,13 @@ import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import livereload from 'rollup-plugin-livereload';
-
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 const __ENV__ = process.env.NODE_ENV ?? 'development';
 
 export default (args) => {
     return {
         input: 'src/main.js',
+        external: [/node_modules/],
 
         output: {
             file: 'dist/main.js',
@@ -20,6 +21,7 @@ export default (args) => {
                 preventAssignment: true,
             }),
             lwc(),
+            nodeResolve(),
             args.watch &&
                 serve({
                     open: false,
