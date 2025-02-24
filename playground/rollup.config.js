@@ -8,7 +8,6 @@ const __ENV__ = process.env.NODE_ENV ?? 'development';
 export default (args) => {
     return {
         input: 'src/main.js',
-        external: [/node_modules/],
 
         output: {
             file: 'dist/main.js',
