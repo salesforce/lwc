@@ -84,6 +84,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
         this.#props = props;
         this.#attrs = attrs;
 
+        // Class should be set explicitly to avoid it being overridden by connectedCallback classList mutation.
+        if (attrs.class) {
+            this.className = attrs.class;
+        }
+
         // Avoid setting the following types of properties that should not be set:
         // - Properties that are not public.
         // - Properties that are not global.
