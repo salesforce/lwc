@@ -1,3 +1,7 @@
 {
-    "entry": "x/getter-class-list"
+    "entry": "x/getter-class-list",
+    "ssrFiles": {
+        "error": "error-ssr.txt",
+        "expected": "expected-ssr.html"
+    }
 }
