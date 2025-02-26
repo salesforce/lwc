@@ -50,6 +50,9 @@ export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
     static stylesheets?: Stylesheets;
+    static delegatesFocus?: boolean;
+    static formAssociated?: boolean;
+    static shadowSupportMode?: 'any' | 'reset' | 'native';
 
     // Using ! because these are defined by descriptors in ./reflection
     accessKey!: string;
