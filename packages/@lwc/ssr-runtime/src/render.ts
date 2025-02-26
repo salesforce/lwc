@@ -14,8 +14,61 @@ import {
 } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
+import type { CompilationMode } from '@lwc/shared';
 import type { LightningElement, LightningElementConstructor } from './lightning-element';
 import type { Attributes, Properties } from './types';
+
+export type GenerateMarkupFn = (
+    tagName: string,
+    props: Properties | null,
+    attrs: Attributes | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null,
+
+    shadowSlottedContent: AsyncGenerator<string> | null,
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null
+) => AsyncGenerator<string>;
+
+export type GenerateMarkupFnAsyncNoGen = (
+    emit: (segment: string) => void,
+    tagName: string,
+    props: Properties | null,
+    attrs: Attributes | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null,
+
+    shadowSlottedContent: AsyncGenerator<string> | null,
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null
+) => Promise<void>;
+
+export type GenerateMarkupFnSyncNoGen = (
+    emit: (segment: string) => void,
+    tagName: string,
+    props: Properties | null,
+    attrs: Attributes | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null,
+
+    shadowSlottedContent: AsyncGenerator<string> | null,
+    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
+    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null
+) => void;
+
+type GenerateMarkupFnVariants =
+    | GenerateMarkupFn
+    | GenerateMarkupFnAsyncNoGen
+    | GenerateMarkupFnSyncNoGen;
 
 function renderAttrsPrivate(
     instance: LightningElement,
@@ -131,55 +184,6 @@ export function fallbackTmplNoYield(
     }
 }
 
-export type GenerateMarkupFn = (
-    tagName: string,
-    props: Properties | null,
-    attrs: Attributes | null,
-    shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
-    scopeToken: string | null,
-    contextfulParent: LightningElement | null
-) => AsyncGenerator<string>;
-
-export type GenerateMarkupFnAsyncNoGen = (
-    emit: (segment: string) => void,
-    tagName: string,
-    props: Properties | null,
-    attrs: Attributes | null,
-    shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
-    scopeToken: string | null,
-    contextfulParent: LightningElement | null
-) => Promise<void>;
-
-export type GenerateMarkupFnSyncNoGen = (
-    emit: (segment: string) => void,
-    tagName: string,
-    props: Properties | null,
-    attrs: Attributes | null,
-    shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    scopedSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
-    scopeToken: string | null,
-    contextfulParent: LightningElement | null
-) => void;
-
-type GenerateMarkupFnVariants =
-    | GenerateMarkupFn
-    | GenerateMarkupFnAsyncNoGen
-    | GenerateMarkupFnSyncNoGen;
-
 interface ComponentWithGenerateMarkup extends LightningElementConstructor {
     [SYMBOL__GENERATE_MARKUP]?: GenerateMarkupFnVariants;
 }
@@ -188,7 +192,7 @@ export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
-    mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE
+    mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);
