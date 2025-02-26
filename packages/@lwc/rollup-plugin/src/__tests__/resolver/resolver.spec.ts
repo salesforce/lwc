@@ -45,6 +45,17 @@ describe('resolver', () => {
         expect(warnings).toHaveLength(0);
     });
 
+    it('should be capable of resolving all the base LWC modules using a custom resolver', async () => {
+        const { warnings } = await runRollup('lwc-modules/lwc-modules.js', {
+            external: [],
+            plugins: [nodeResolve()],
+            options: {
+                defaultModules: [],
+            },
+        });
+        expect(warnings).toHaveLength(0);
+    });
+
     it('should use lwc.config.json to resolve LWC modules', async () => {
         const { bundle } = await runRollup('lwc-config-json/src/index.js');
 
