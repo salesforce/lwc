@@ -10,10 +10,10 @@ import { LWC_VERSION } from '@lwc/shared';
 import prettier from 'prettier';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 
-import compiler from '../index';
+import compiler, { type Config } from '../index';
 
 describe('fixtures', () => {
-    testFixtureDir(
+    testFixtureDir<Config>(
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.html',
@@ -23,7 +23,7 @@ describe('fixtures', () => {
 
             config = { namespace: 'x', name: filename, ...config };
 
-            const compiled = compiler(src, filename, config);
+            const compiled = compiler(src, filename, config!);
             const { warnings, root } = compiled;
 
             // Replace LWC's version with X.X.X so the snapshots don't frequently change

@@ -1,7 +1,8 @@
 import path from 'node:path';
 import { describe, test, expect } from 'vitest';
 import { CompilerError } from '@lwc/errors';
-import { compileComponentForSSR } from '../index';
+import { LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
+import { compileComponentForSSR, compileTemplateForSSR } from '../index';
 
 expect.addSnapshotSerializer({
     test(val) {
@@ -41,6 +42,15 @@ describe('component compilation', () => {
         const filename = path.resolve('component.js');
         const { code } = compileComponentForSSR(src, filename, {});
         expect(code).toContain('import explicit from "./explicit.html"');
+    });
+    test('components include LWC version comment', () => {
+        const src = `
+      import { LightningElement } from 'lwc';
+      export default class extends LightningElement {}
+      `;
+        const filename = path.resolve('component.js');
+        const { code } = compileComponentForSSR(src, filename, {});
+        expect(code).toMatch(LWC_VERSION_COMMENT_REGEX);
     });
     test('supports .ts file imports', () => {
         const src = `
@@ -125,5 +135,14 @@ export default class Test extends LightningElement {
               }
             `);
         });
+    });
+});
+
+describe('template compilation', () => {
+    test('template include LWC version comment', () => {
+        const src = `<template></template>`;
+        const filename = path.resolve('component.html');
+        const { code } = compileTemplateForSSR(src, filename, {});
+        expect(code).toMatch(LWC_VERSION_COMMENT_REGEX);
     });
 });

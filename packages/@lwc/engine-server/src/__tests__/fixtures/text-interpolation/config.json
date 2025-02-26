@@ -1,4 +1,5 @@
 {
+    "entry": "x/text-interpolation",
     "props": {
         "publicProp": "public-prop"
     }

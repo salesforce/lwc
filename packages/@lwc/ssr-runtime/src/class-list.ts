@@ -7,8 +7,6 @@
 
 import type { LightningElement } from './lightning-element';
 
-const MULTI_SPACE = /\s+/g;
-
 // Copied from lib.dom
 interface DOMTokenList {
     readonly length: number;
@@ -28,6 +26,15 @@ interface DOMTokenList {
     [index: number]: string;
 }
 
+const MULTI_SPACE = /\s+/g;
+
+function parseClassName(className: string | null): string[] {
+    return (className ?? '')
+        .split(MULTI_SPACE)
+        .map((item) => item.trim())
+        .filter(Boolean);
+}
+
 export class ClassList implements DOMTokenList {
     el: LightningElement;
 
@@ -36,8 +43,7 @@ export class ClassList implements DOMTokenList {
     }
 
     add(...newClassNames: string[]) {
-        const className = this.el.className;
-        const set = new Set(className.split(MULTI_SPACE).filter(Boolean));
+        const set = new Set(parseClassName(this.el.className));
         for (const newClassName of newClassNames) {
             set.add(newClassName);
         }
@@ -45,13 +51,11 @@ export class ClassList implements DOMTokenList {
     }
 
     contains(className: string) {
-        const currentClassNameStr = this.el.className;
-        return currentClassNameStr.split(MULTI_SPACE).includes(className);
+        return parseClassName(this.el.className).includes(className);
     }
 
     remove(...classNamesToRemove: string[]) {
-        const className = this.el.className;
-        const set = new Set(className.split(MULTI_SPACE).filter(Boolean));
+        const set = new Set(parseClassName(this.el.className));
         for (const newClassName of classNamesToRemove) {
             set.delete(newClassName);
         }
@@ -60,8 +64,7 @@ export class ClassList implements DOMTokenList {
 
     replace(oldClassName: string, newClassName: string) {
         let classWasReplaced = false;
-        const className = this.el.className;
-        const listOfClasses = className.split(MULTI_SPACE).filter(Boolean) as string[];
+        const listOfClasses = parseClassName(this.el.className);
         listOfClasses.forEach((value, idx) => {
             if (value === oldClassName) {
                 classWasReplaced = true;
@@ -73,8 +76,7 @@ export class ClassList implements DOMTokenList {
     }
 
     toggle(classNameToToggle: string, force?: boolean) {
-        const classNameStr = this.el.className;
-        const set = new Set(classNameStr.split(MULTI_SPACE).filter(Boolean));
+        const set = new Set(parseClassName(this.el.className));
         if (!set.has(classNameToToggle) && force !== false) {
             set.add(classNameToToggle);
         } else if (set.has(classNameToToggle) && force !== true) {
@@ -92,21 +94,29 @@ export class ClassList implements DOMTokenList {
         return this.el.className;
     }
 
+    get length(): number {
+        return parseClassName(this.el.className).length;
+    }
+
     // Stubs to satisfy DOMTokenList interface
     [index: number]: never; // Can't implement arbitrary index getters without a proxy
-    item(_index: number): string | null {
-        throw new Error('Method "item" not implemented.');
+
+    item(index: number): string | null {
+        return parseClassName(this.el.className ?? '')[index] ?? null;
     }
-    supports(_token: string): boolean {
-        throw new Error('Method "supports" not implemented.');
-    }
+
     forEach(
-        _callbackfn: (value: string, key: number, parent: DOMTokenList) => void,
-        _thisArg?: any
+        callbackFn: (value: string, key: number, parent: DOMTokenList) => void,
+        thisArg?: any
     ): void {
-        throw new Error('Method "forEach" not implemented.');
+        parseClassName(this.el.className).forEach((value, index) =>
+            callbackFn.call(thisArg, value, index, this)
+        );
     }
-    get length(): number {
-        throw new Error('Property "length" not implemented.');
+
+    // This method is present on DOMTokenList but throws an error in the browser when used
+    // in connection with Element#classList.
+    supports(_token: string): boolean {
+        throw new TypeError('DOMTokenList has no supported tokens.');
     }
 }

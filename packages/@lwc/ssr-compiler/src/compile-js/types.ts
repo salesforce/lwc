@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { type traverse } from 'estree-toolkit';
 import type { ImportManager } from '../imports';
 import type { ComponentTransformOptions } from '../shared';
-import type { traverse } from 'estree-toolkit';
 import type {
     Identifier,
     MemberExpression,
@@ -49,9 +49,9 @@ export interface ComponentMetaState {
     // the set of variable names associated with explicitly imported CSS files
     staticStylesheetIds: Set<string> | null;
     // the public (`@api`-annotated) properties of the component class
-    publicProperties: Array<string>;
+    publicProperties: Map<string, (MethodDefinition | PropertyDefinition) & { key: Identifier }>;
     // the private properties of the component class
-    privateProperties: Array<string>;
+    privateProperties: Set<string>;
     // indicates whether the LightningElement has any wired props
     wireAdapters: WireAdapter[];
     // dynamic imports configuration

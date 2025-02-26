@@ -4,13 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+const ENGINE_SERVER = process.env.ENGINE_SERVER;
 const path = require('node:path');
 const vm = require('node:vm');
 const fs = require('node:fs/promises');
 const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
-const ssr = require('@lwc/engine-server');
+const ssr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-runtime');
 const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
@@ -54,13 +55,12 @@ async function exists(path) {
     }
 }
 
-let cache;
-
-async function getCompiledModule(dirName) {
+async function getCompiledModule(dirName, compileForSSR) {
     const bundle = await rollup({
         input: path.join(dirName, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
         plugins: [
             lwcRollupPlugin({
+                targetSSR: !!compileForSSR,
                 modules: [
                     {
                         dir: dirName,
@@ -72,11 +72,11 @@ async function getCompiledModule(dirName) {
                 },
                 enableDynamicComponents: true,
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
+                experimentalDynamicDirective: true,
             }),
         ],
-        cache,
 
-        external: ['lwc', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
+        external: ['lwc', '@lwc/ssr-runtime', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin
@@ -87,13 +87,13 @@ async function getCompiledModule(dirName) {
     });
 
     const { watchFiles } = bundle;
-    cache = bundle.cache;
 
     const { output } = await bundle.generate({
         format: 'iife',
         name: 'Main',
         globals: {
             lwc: 'LWC',
+            '@lwc/ssr-runtime': 'LWC',
             'test-utils': 'TestUtils',
         },
     });
@@ -131,17 +131,23 @@ function throwOnUnexpectedConsoleCalls(runnable) {
 }
 
 /**
- * @param {string} moduleCode
- * @param {string} testConfig
- * @param {string} filename
+ * This is the function that takes SSR bundle code and test config, constructs a script that will
+ * run in a separate JS runtime environment with its own global scope. The `context` object
+ * (defined at the top of this file) is passed in as the global scope for that script. The script
+ * runs, utilizing the `LWC` object that we've attached to the global scope, it sets a
+ * new value (the rendered markup) to the globalThis.moduleOutput, which correspond to
+ * context.moduleOutput in the hydration-test.js module scope.
+ *
+ * So, script runs, generates markup, & we get that markup out and return it to Karma for use
+ * in client-side tests.
  */
-function getSsrCode(moduleCode, testConfig, filename) {
+async function getSsrCode(moduleCode, testConfig, filename) {
     const script = new vm.Script(
         `
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {});`,
+        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {}, 'sync');`,
         { filename }
     );
 
@@ -149,7 +155,6 @@ function getSsrCode(moduleCode, testConfig, filename) {
         vm.createContext(context);
         script.runInContext(context);
     });
-
     return context.moduleOutput;
 }
 
@@ -160,7 +165,6 @@ async function getTestModuleCode(input) {
     });
 
     const { watchFiles } = bundle;
-    cache = bundle.cache;
 
     const { output } = await bundle.generate({
         format: 'iife',
@@ -194,33 +198,59 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
     return async (_content, file, done) => {
         const filePath = file.path;
         const suiteDir = path.dirname(filePath);
+
         // Wrap all the tests into a describe block with the file stricture name
         const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
         try {
             const { code: testCode, watchFiles: testWatchFiles } =
                 await getTestModuleCode(filePath);
-            const { code: componentDef, watchFiles: componentWatchFiles } =
-                await getCompiledModule(suiteDir);
+
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await existsUp(suiteDir, '.only');
 
-            const ssrOutput = getSsrCode(componentDef, testCode, path.join(suiteDir, 'ssr.js'));
+            const describe = onlyFileExists ? 'fdescribe' : 'describe';
 
-            watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFiles));
+            const { code: componentDefCSR, watchFiles: componentWatchFilesCSR } =
+                await getCompiledModule(suiteDir, false);
+
+            let ssrOutput;
+
+            if (ENGINE_SERVER) {
+                // engine-server uses the same def as the client
+                watcher.watchSuite(filePath, testWatchFiles.concat(componentWatchFilesCSR));
+                ssrOutput = await getSsrCode(
+                    componentDefCSR,
+                    testCode,
+                    path.join(suiteDir, 'ssr.js')
+                );
+            } else {
+                // ssr-compiler has it's own def
+                const { code: componentDefSSR, watchFiles: componentWatchFilesSSR } =
+                    await getCompiledModule(suiteDir, true);
+                watcher.watchSuite(
+                    filePath,
+                    testWatchFiles.concat(componentWatchFilesCSR).concat(componentWatchFilesSSR)
+                );
+                ssrOutput = await getSsrCode(
+                    componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true'),
+                    testCode,
+                    path.join(suiteDir, 'ssr.js')
+                );
+            }
+
             const newContent = format(
                 TEMPLATE,
                 JSON.stringify(ssrOutput),
-                componentDef,
+                componentDefCSR,
                 testCode,
-                onlyFileExists ? 'fdescribe' : 'describe',
+                describe,
                 JSON.stringify(describeTitle)
             );
             done(null, newContent);
         } catch (error) {
             const location = path.relative(basePath, filePath);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
-
             done(error, null);
         }
     };
