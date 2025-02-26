@@ -22,7 +22,7 @@ export { mutationTracker } from './mutation-tracker';
 export {
     fallbackTmpl,
     fallbackTmplNoYield,
-    GenerateMarkupFn,
+    GenerateMarkupAsyncYield as GenerateMarkupFn,
     renderAttrs,
     renderAttrsNoYield,
     serverSideRenderComponent,
