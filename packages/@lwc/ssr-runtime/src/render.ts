@@ -155,17 +155,24 @@ export function renderAttrsNoYield(
     emit(renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken));
 }
 
-export function* fallbackTmpl(
+export async function* fallbackTmpl(
     shadowSlottedContent: SlottedContentGenerator | null,
-    _lightSlottedContent: SlottedContentGeneratorMap | null,
+    lightSlottedContent: SlottedContentGeneratorMap | null,
     _scopedSlottedContent: SlottedContentGeneratorMap | null,
     Cmp: LightningElementConstructor,
     instance: LightningElement
-) {
+): AsyncGenerator<string> {
     if (Cmp.renderMode !== 'light') {
         yield `<template shadowrootmode="open"></template>`;
         if (shadowSlottedContent) {
-            yield shadowSlottedContent(instance);
+            yield* shadowSlottedContent(instance);
+        }
+    } else if (lightSlottedContent) {
+        const defaultSlot = lightSlottedContent[''];
+        if (defaultSlot?.length > 0) {
+            for (const content of defaultSlot) {
+                yield* content(instance);
+            }
         }
     }
 }
@@ -173,15 +180,22 @@ export function* fallbackTmpl(
 export function fallbackTmplNoYield(
     emit: Emit,
     shadowSlottedContent: SlottedContentEmitter | null,
-    _lightSlottedContent: SlottedContentEmitterMap | null,
+    lightSlottedContent: SlottedContentEmitterMap | null,
     _scopedSlottedContent: SlottedContentEmitterMap | null,
     Cmp: LightningElementConstructor,
     instance: LightningElement
-) {
+): void {
     if (Cmp.renderMode !== 'light') {
         emit(`<template shadowrootmode="open"></template>`);
         if (shadowSlottedContent) {
             shadowSlottedContent(emit, instance);
+        }
+    } else if (lightSlottedContent) {
+        const defaultSlot = lightSlottedContent[''];
+        if (defaultSlot?.length > 0) {
+            for (const content of defaultSlot) {
+                content(emit, instance);
+            }
         }
     }
 }
