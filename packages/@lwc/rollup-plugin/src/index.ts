@@ -34,6 +34,11 @@ export interface RollupLwcOptions {
     sourcemap?: boolean | 'inline';
     /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
+    /**
+     * Default modules passed to the `@lwc/module-resolver`.
+     * If unspecified, defaults to `["@lwc/engine-dom", "@lwc/synthetic-shadow", "@lwc/wire-service"]`.
+     */
+    defaultModules?: ModuleRecord[];
     /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
     stylesheetConfig?: StylesheetConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
@@ -68,6 +73,12 @@ const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
+
+const DEFAULT_MODULES = [
+    { npm: '@lwc/engine-dom' },
+    { npm: '@lwc/synthetic-shadow' },
+    { npm: '@lwc/wire-service' },
+];
 
 function isImplicitHTMLImport(importee: string, importer: string, importerExt: string): boolean {
     return (
@@ -158,6 +169,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
     let { rootDir, modules = [] } = pluginOptions;
+
     const {
         targetSSR,
         ssrMode,
@@ -172,6 +184,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
         apiVersion,
+        defaultModules = DEFAULT_MODULES,
     } = pluginOptions;
 
     return {
@@ -199,7 +212,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 rootDir = path.resolve(rootDir);
             }
 
-            modules = [...modules, { dir: rootDir }];
+            modules = [...modules, ...defaultModules, { dir: rootDir }];
         },
 
         resolveId(importee, importer) {
