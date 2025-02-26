@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, salesforce.com, inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -157,7 +157,7 @@ export function renderAttrsNoYield(
 
 export async function* fallbackTmpl(
     shadowSlottedContent: SlottedContentGenerator | null,
-    lightSlottedContent: SlottedContentGeneratorMap | null,
+    _lightSlottedContent: SlottedContentGeneratorMap | null,
     _scopedSlottedContent: SlottedContentGeneratorMap | null,
     Cmp: LightningElementConstructor,
     instance: LightningElement
@@ -167,20 +167,13 @@ export async function* fallbackTmpl(
         if (shadowSlottedContent) {
             yield* shadowSlottedContent(instance);
         }
-    } else if (lightSlottedContent) {
-        const defaultSlot = lightSlottedContent[''];
-        if (defaultSlot?.length > 0) {
-            for (const content of defaultSlot) {
-                yield* content(instance);
-            }
-        }
     }
 }
 
 export function fallbackTmplNoYield(
     emit: Emit,
     shadowSlottedContent: SlottedContentEmitter | null,
-    lightSlottedContent: SlottedContentEmitterMap | null,
+    _lightSlottedContent: SlottedContentEmitterMap | null,
     _scopedSlottedContent: SlottedContentEmitterMap | null,
     Cmp: LightningElementConstructor,
     instance: LightningElement
@@ -189,13 +182,6 @@ export function fallbackTmplNoYield(
         emit(`<template shadowrootmode="open"></template>`);
         if (shadowSlottedContent) {
             shadowSlottedContent(emit, instance);
-        }
-    } else if (lightSlottedContent) {
-        const defaultSlot = lightSlottedContent[''];
-        if (defaultSlot?.length > 0) {
-            for (const content of defaultSlot) {
-                content(emit, instance);
-            }
         }
     }
 }
