@@ -13,7 +13,6 @@ import {
     isArray,
     isFalse,
     isNull,
-    isString,
     isTrue,
     isUndefined,
     KEY__SHADOW_RESOLVER,
@@ -26,7 +25,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { EmptyArray, shouldBeFormAssociated } from './utils';
 import { markComponentAsDirty } from './component';
-import { getScopeTokenClass } from './stylesheet';
+import { getScopeTokenClass, isValidScopeToken } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
     appendVM,
@@ -74,17 +73,6 @@ import type {
 } from './vnodes';
 import type { VM } from './vm';
 import type { RendererAPI } from './renderer';
-
-const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
-
-// See W-16614556
-// TODO [#2826]: freeze the template object
-function isValidScopeToken(token: unknown) {
-    if (!isString(token)) {
-        return false;
-    }
-    return lwcRuntimeFlags.DISABLE_SCOPE_TOKEN_VALIDATION || VALID_SCOPE_TOKEN_REGEX.test(token);
-}
 
 export function patchChildren(
     c1: VNodes,

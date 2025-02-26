@@ -26,7 +26,12 @@ import api from './api';
 import { RenderMode, resetComponentRoot, runWithBoundaryProtection, ShadowMode } from './vm';
 import { assertNotProd, EmptyObject } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
-import { createStylesheet, getStylesheetsContent, updateStylesheetToken } from './stylesheet';
+import {
+    createStylesheet,
+    getStylesheetsContent,
+    isValidScopeToken,
+    updateStylesheetToken,
+} from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { getMapFromClassName } from './modules/computed-class-attr';
@@ -263,6 +268,15 @@ function buildParseFragmentFn(
                 if (!isUndefined(cached)) {
                     return cached;
                 }
+            }
+
+            // See W-16614556
+            // TODO [#2826]: freeze the template object
+            if (
+                (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
+                (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))
+            ) {
+                throw new Error('stylesheet token must be a valid string');
             }
 
             // If legacy stylesheet tokens are required, then add them to the rendered string
