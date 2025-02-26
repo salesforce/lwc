@@ -40,12 +40,12 @@ async function runRollup(
 }
 
 describe('resolver', () => {
-    it('should be capable to resolve all the base LWC module imports', async () => {
+    it('should be capable to resolve all the base LWC module imports without @rollup/plugin-node-resolve', async () => {
         const { warnings } = await runRollup('lwc-modules/lwc-modules.js', { external: [] });
         expect(warnings).toHaveLength(0);
     });
 
-    it('should be capable of resolving all the base LWC modules using a custom resolver', async () => {
+    it('should be capable to resolve all the base LWC modules using @rollup/plugin-node-resolve', async () => {
         const { warnings } = await runRollup('lwc-modules/lwc-modules.js', {
             external: [],
             plugins: [nodeResolve()],
@@ -89,7 +89,7 @@ describe('resolver', () => {
         });
     });
 
-    it('should properly resolve modules with @rollup/rollup-node-resolve and third-party package', async () => {
+    it('should properly resolve modules with @rollup/plugin-node-resolve and third-party package', async () => {
         const { warnings } = await runRollup('third-party-import/src/main.js', {
             plugins: [nodeResolve()],
         });
