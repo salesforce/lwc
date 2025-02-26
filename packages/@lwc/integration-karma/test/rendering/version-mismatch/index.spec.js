@@ -61,11 +61,7 @@ describe('compiler version mismatch', () => {
 
             expect(() => {
                 registerTemplate(tmpl);
-            }).not.toLogErrorDev(
-                new RegExp(
-                    `LWC WARNING: current engine is v${process.env.LWC_VERSION}, but template was compiled with v123.456.789`
-                )
-            );
+            }).not.toLogErrorDev(new RegExp(`LWC WARNING:`));
             expect(dispatcher).not.toHaveBeenCalled();
         });
 
