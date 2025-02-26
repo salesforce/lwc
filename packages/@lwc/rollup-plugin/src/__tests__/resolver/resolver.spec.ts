@@ -10,20 +10,24 @@ import { describe, it, expect } from 'vitest';
 import { rollup, type RollupLog, type Plugin, type RollupBuild } from 'rollup';
 import nodeResolve from '@rollup/plugin-node-resolve';
 
-import lwc from '../../index';
+import lwc, { type RollupLwcOptions } from '../../index';
 
 const fixturesdir = path.resolve(__dirname, 'fixtures');
 
 async function runRollup(
     pathname: string,
-    { plugins = [] as Plugin[] } = {}
+    {
+        plugins = [] as Plugin[],
+        external = ['lwc', '@lwc/synthetic-shadow', '@lwc/wire-service'],
+        options = undefined as RollupLwcOptions | undefined,
+    } = {}
 ): Promise<{ bundle: RollupBuild; warnings: RollupLog[] }> {
     const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
         input: path.resolve(fixturesdir, pathname),
-        plugins: [lwc(), ...plugins],
-        external: ['lwc', '@lwc/synthetic-shadow', '@lwc/wire-service'],
+        plugins: [lwc(options), ...plugins],
+        external,
         onwarn(warning) {
             warnings.push(warning);
         },
@@ -37,8 +41,7 @@ async function runRollup(
 
 describe('resolver', () => {
     it('should be capable to resolve all the base LWC module imports', async () => {
-        const { warnings } = await runRollup('lwc-modules/lwc-modules.js');
-
+        const { warnings } = await runRollup('lwc-modules/lwc-modules.js', { external: [] });
         expect(warnings).toHaveLength(0);
     });
 
