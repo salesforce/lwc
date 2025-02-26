@@ -34,7 +34,10 @@ export interface RollupLwcOptions {
     sourcemap?: boolean | 'inline';
     /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
-    /** Default modules passed to the `@lwc/module-resolver`. */
+    /**
+     * Default modules passed to the `@lwc/module-resolver`.
+     * If unspecified, defaults to `["@lwc/engine-dom", "@lwc/synthetic-shadow", "@lwc/wire-service"]`.
+     */
     defaultModules?: ModuleRecord[];
     /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
     stylesheetConfig?: StylesheetConfig;
