@@ -1,4 +1,7 @@
 <template>
+    <!-- 
+        V1/V2 deviate, where V2 matches CSR
+    -->
     <x-child draggable={undefined}></x-child>
     <x-child draggable={aNull}></x-child>
     <x-child draggable={string}></x-child>
@@ -7,10 +10,16 @@
     <x-child draggable={minusOne}></x-child>
     <x-child draggable={truthy}></x-child>
     <x-child draggable={falsy}></x-child>
+    <x-child draggable="true"></x-child>
+    <x-child draggable="false"></x-child>
+    <x-child draggable="truthy"></x-child>
+    <x-child draggable="0"></x-child>
+    <x-child draggable="-1"></x-child>
 </template>
 
 
 <!--
+        tabindex={dynamic}
         draggable={dynamic}
         hidden={dynamic}
         spellcheck={dynamic}

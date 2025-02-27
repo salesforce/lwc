@@ -2,7 +2,7 @@ import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
     accessKey;
-    ariaActiveDescendant;
+    ariaActiveDescendant = 'bar';
     ariaAtomic;
     ariaAutoComplete;
     ariaBusy;
@@ -72,7 +72,7 @@ export default class extends LightningElement {
     formaction;
     formnovalidate;
     hidden;
-    id;
+    //id = 'bar';
     input;
     inputmode;
     ismap;
