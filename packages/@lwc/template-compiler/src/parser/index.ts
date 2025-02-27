@@ -1645,6 +1645,10 @@ function validateTemplate(
         ctx.throwAtLocation(ParserDiagnostics.LWC_IS_INVALID_ELEMENT, location, ['<template>']);
     }
 
+    if (parsedAttr.get(ElementDirectiveName.On)) {
+        ctx.throwAtLocation(ParserDiagnostics.LWC_ON_INVALID_ELEMENT, location, ['<template>']);
+    }
+
     // At this point in the parsing all supported attributes from a non root template element
     // should have been removed from ParsedAttribute and all other attributes will be ignored.
     const invalidTemplateAttributes = parsedAttr.getAttributes();

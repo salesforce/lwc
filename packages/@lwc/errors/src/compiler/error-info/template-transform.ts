@@ -947,4 +947,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
+    LWC_ON_INVALID_ELEMENT: {
+        code: 1202,
+        message:
+            'Invalid lwc:on usage on element "{0}". The directive can\'t be used on a template element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
