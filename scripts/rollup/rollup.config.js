@@ -55,6 +55,7 @@ function sharedPlugins() {
         // This is only used inside @lwc/engine-dom and @lwc/engine-server
         // Elsewhere, it _not_ be replaced, so that it can be replaced later (e.g. in @lwc/engine-core)
         'process.env.IS_BROWSER': packageName === '@lwc/engine-dom' ? 'true' : 'false',
+        // Only used in @lwc/engine-server, set to false for @lwc/engine-dom
         ...(packageName === '@lwc/engine-dom'
             ? { 'process.env.SKIP_LWC_VERSION_MISMATCH_CHECK': 'false' }
             : {}),
