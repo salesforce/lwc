@@ -67,12 +67,7 @@ function getFiles() {
         specFiles.push(createPattern('**/*.spec.js', { watched: false }));
     }
 
-    return [
-        ...frameworkFiles,
-        createPattern(TEST_UTILS),
-        ...specFiles,
-        //createPattern('**/*.spec.js', { watched: false }),
-    ];
+    return [...frameworkFiles, createPattern(TEST_UTILS), ...specFiles];
 }
 
 /**
