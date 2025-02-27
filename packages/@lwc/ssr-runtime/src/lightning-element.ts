@@ -81,6 +81,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
         publicProperties: Set<string>,
         privateProperties: Set<string>
     ) {
+        debugger;
         this.#props = props;
         this.#attrs = attrs;
 
@@ -97,8 +98,8 @@ export class LightningElement implements PropsAvailableAtConstruction {
             const attrName = htmlPropertyToAttribute(propName);
             if (
                 publicProperties.has(propName) ||
-                ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
-                    !privateProperties.has(propName))
+                ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName))) // &&
+                    // !privateProperties.has(propName))
             ) {
                 // For props passed from parents to children, they are intended to be read-only
                 // to avoid a child mutating its parent's state
