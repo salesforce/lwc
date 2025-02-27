@@ -57,7 +57,9 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // Check indirectly if the constructor result is an instance of LightningElement. Using
         // the "instanceof" operator would not work here since Locker Service provides its own
         // implementation of LightningElement, so we indirectly check if the base constructor is
-        // invoked by accessing the component on the vm.
+        // invoked by accessing the component on the vm. In some core tests Legacy Locker is running
+        // on top of LWS so the flag will return false. The additional check for 'SecureLightningElement'
+        // is required for these cases.
         const isLegacyLockerEnabled =
             lwcRuntimeFlags.LEGACY_LOCKER_ENABLED ||
             result?.toString()?.startsWith('SecureLightningElement');
