@@ -9,6 +9,7 @@
 
 const path = require('path');
 
+const { globSync } = require('glob');
 const karmaPluginLwc = require('../../karma-plugins/lwc');
 const karmaPluginEnv = require('../../karma-plugins/env');
 const karmaPluginTransformFramework = require('../../karma-plugins/transform-framework.js');
@@ -53,10 +54,24 @@ function getFiles() {
     frameworkFiles.push(createPattern(WIRE_SERVICE));
     frameworkFiles.push(createPattern(TEST_SETUP));
 
+    // check if a .only file exists
+    const onlyFile = globSync('**/*/.only', { cwd: BASE_DIR, absolute: true });
+
+    const specFiles = [];
+    if (onlyFile.length > 0) {
+        for (const file of onlyFile) {
+            const dir = path.dirname(file);
+            specFiles.push(createPattern(`${dir}/**/*.spec.js`, { watched: false }));
+        }
+    } else {
+        specFiles.push(createPattern('**/*.spec.js', { watched: false }));
+    }
+
     return [
         ...frameworkFiles,
         createPattern(TEST_UTILS),
-        createPattern('**/*.spec.js', { watched: false }),
+        ...specFiles,
+        //createPattern('**/*.spec.js', { watched: false }),
     ];
 }
 
