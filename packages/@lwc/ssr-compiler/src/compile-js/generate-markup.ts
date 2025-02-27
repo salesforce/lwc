@@ -31,13 +31,13 @@ const bGenerateMarkup = esTemplate`
             // The $$emit function is magically inserted here
             tagName, 
             props, 
-            attrs, 
+            attrs,
+            parent, 
+            scopeToken,
+            contextfulParent,
             shadowSlottedContent,
             lightSlottedContent, 
             scopedSlottedContent,
-            parent, 
-            scopeToken,
-            contextfulParent
         ) {
             tagName = tagName ?? ${/*component tag name*/ is.literal};
             attrs = attrs ?? Object.create(null);
