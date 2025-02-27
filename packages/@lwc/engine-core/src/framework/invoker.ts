@@ -11,7 +11,7 @@ import { addErrorComponentStack } from '../shared/error';
 import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered } from './template';
 import { runWithBoundaryProtection } from './vm';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
-import type { LightningElement } from './base-lightning-element';
+import { LightningElement } from './base-lightning-element';
 import type { Template } from './template';
 import type { VM } from './vm';
 import type { LightningElementConstructor } from './base-lightning-element';
@@ -58,12 +58,12 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // the "instanceof" operator would not work here since Locker Service provides its own
         // implementation of LightningElement, so we indirectly check if the base constructor is
         // invoked by accessing the component on the vm.
-
-        // TODO [W-17769475]: Restore this fix when we can reliably detect Locker enabled
-        // const isInvalidConstructor = lwcRuntimeFlags.LEGACY_LOCKER_ENABLED
-        //     ? vmBeingConstructed.component !== result
-        //     : !(result instanceof LightningElement);
-        const isInvalidConstructor = vmBeingConstructed.component !== result;
+        const isLegacyLockerEnabled =
+            lwcRuntimeFlags.LEGACY_LOCKER_ENABLED ||
+            result?.toString()?.startsWith('SecureLightningElement');
+        const isInvalidConstructor = isLegacyLockerEnabled
+            ? vmBeingConstructed.component !== result
+            : !(result instanceof LightningElement);
 
         if (isInvalidConstructor) {
             throw new TypeError(
