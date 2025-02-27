@@ -368,7 +368,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
 
     patchElementPropsAndAttrsAndRefs(vnode, renderer);
 
-    if (!isDomManual) {
+    if (!isDomManual && vnode.elm.tagName !== 'STYLE') {
         const { getFirstChild } = renderer;
         hydrateChildren(getFirstChild(elm), vnode.children, elm, owner, false);
     }

@@ -22,6 +22,11 @@ class StyleDeduplicator extends HTMLElement {
 
         if (stylesheet) {
             root.adoptedStyleSheets.push(stylesheet);
+            const placeholder = document.createElement('style');
+            placeholder.setAttribute('type', 'text/css');
+            // Not-first <lwc-style> should be replaced with a placeholder <style>, since that's
+            // what the diffing algorithm and hydration logic will expect to find
+            this.replaceWith(placeholder);
         } else {
             stylesheet = new CSSStyleSheet();
             const element = root.getElementById(styleId);
@@ -34,9 +39,9 @@ class StyleDeduplicator extends HTMLElement {
 
             stylesheet.replaceSync(element.innerHTML);
             stylesheetCache.set(styleId, stylesheet);
+            // The first <lwc-style> should be removed, because it already has a <style> next to it
+            this.remove();
         }
-
-        this.remove();
     }
 }
 
