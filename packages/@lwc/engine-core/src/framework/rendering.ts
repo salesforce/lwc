@@ -604,11 +604,11 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
 
     // Set the class name for `*.scoped.css` style scoping.
     const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
-    if (!isNull(scopeToken) && !isValidScopeToken(scopeToken)) {
-        // See W-16614556
-        throw new Error('stylesheet token must be a valid string');
-    }
     if (!isNull(scopeToken)) {
+        if (!isValidScopeToken(scopeToken)) {
+            // See W-16614556
+            throw new Error('stylesheet token must be a valid string');
+        }
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(scopeToken);
