@@ -955,4 +955,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    INVALID_LWC_ON_LITERAL_PROP: {
+        code: 1203,
+        message:
+            'Invalid lwc:on usage on element "{0}". The directive binding must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

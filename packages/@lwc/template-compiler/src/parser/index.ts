@@ -884,6 +884,7 @@ const LWC_DIRECTIVE_PROCESSORS = [
     applyLwcInnerHtmlDirective,
     applyRefDirective,
     applyLwcSpreadDirective,
+    applyLwcOnDirective,
     applyLwcSlotBindDirective,
 ];
 
@@ -970,6 +971,26 @@ function applyLwcSpreadDirective(
     }
 
     element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpread.location));
+}
+
+function applyLwcOnDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+
+    const lwcOn = parsedAttr.pick(ElementDirectiveName.On);
+    if (!lwcOn) {
+        return;
+    }
+
+    const { value: lwcOnValue } = lwcOn;
+    if (!ast.isExpression(lwcOnValue)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_LITERAL_PROP, element, [`<${tag}>`]);
+    }
+
+    element.directives.push(ast.OnDirective(lwcOnValue, lwcOn.location));
 }
 
 function applyLwcExternalDirective(
