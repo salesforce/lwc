@@ -6,6 +6,8 @@ export default class extends LightningElement {
     static renderMode = 'light';
     innerTemplateFn = innerTemplateFn;
 
+    // This isn't strictly necessary and has no functional value relative to an implicit template. It is present
+    // only to disambiguate the outer component's template from the one we're passing to the child.
     render() {
         return tmpl;
     }
