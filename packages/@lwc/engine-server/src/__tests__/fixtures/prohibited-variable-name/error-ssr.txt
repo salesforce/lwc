@@ -1,1 +1,1 @@
-LWCTODO: identifier name '__lwcThrowAnError__' cannot start with '__lwc'
+LWC1202: Identifier name cannot start with "__lwc".
