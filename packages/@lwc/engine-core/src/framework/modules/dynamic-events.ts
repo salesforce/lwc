@@ -22,6 +22,9 @@ export function patchDynamicEventListeners(
         data: { dynamicOn },
     } = vnode;
 
+    // The argument passed to lwc:on is frozen.
+    // Because of this, `oldVnode.data.dynamicOn` is deeply equal
+    // to its value from the previous render cycle.
     const oldDynamicOn =
         isNull(oldVnode) || isUndefined(oldVnode.data.dynamicOn)
             ? EmptyObject
