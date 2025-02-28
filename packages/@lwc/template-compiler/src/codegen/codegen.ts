@@ -62,6 +62,7 @@ import type {
     Attribute,
     KeyDirective,
     StaticChildNode,
+    OnDirective,
 } from '../shared/types';
 import type { APIVersion } from '@lwc/shared';
 import type { Node } from 'estree';
@@ -94,7 +95,8 @@ type RenderPrimitive =
     | 'staticFragment'
     | 'scopedSlotFactory'
     | 'staticPart'
-    | 'normalizeClassName';
+    | 'normalizeClassName'
+    | 'freeze';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -112,6 +114,7 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     element: { name: 'h', alias: 'api_element' },
     flatten: { name: 'f', alias: 'api_flatten' },
     fragment: { name: 'fr', alias: 'api_fragment' },
+    freeze: { name: 'frz', alias: 'api_freeze' },
     iterator: { name: 'i', alias: 'api_iterator' },
     key: { name: 'k', alias: 'api_key' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
@@ -454,6 +457,12 @@ export default class CodeGen {
                 memoize(objectToAST(listenerObj, (k) => listenerObj[k].handler))
             );
         }
+    }
+
+    genDynamicEventListeners(onDirective: OnDirective) {
+        const onDirectiveArg = this.bindExpression(onDirective.value);
+        const freezedArg = this._renderApiCall(RENDER_APIS.freeze, [onDirectiveArg]);
+        return t.property(t.identifier('dynamicOn'), freezedArg);
     }
 
     genRef(ref: RefDirective) {

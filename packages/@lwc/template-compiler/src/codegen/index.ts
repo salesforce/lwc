@@ -40,6 +40,7 @@ import {
     isScopedSlotFragment,
     isSlotBindDirective,
     isLwcIsDirective,
+    isOnDirective,
 } from '../shared/ast';
 import { TEMPLATE_PARAMS, TEMPLATE_FUNCTION_NAME, RENDERER } from '../shared/constants';
 import * as t from '../shared/estree';
@@ -502,6 +503,7 @@ function transform(codeGen: CodeGen): t.Expression {
         const dom = element.directives.find(isDomDirective);
         const ref = element.directives.find(isRefDirective);
         const spread = element.directives.find(isSpreadDirective);
+        const onDirective = element.directives.find(isOnDirective);
         const addSanitizationHook = isCustomRendererHookRequired(element, codeGen.state);
         const slotBindDirective = element.directives.find(isSlotBindDirective);
 
@@ -625,6 +627,10 @@ function transform(codeGen: CodeGen): t.Expression {
         // Event handler
         if (listeners.length) {
             data.push(codeGen.genEventListeners(listeners));
+        }
+
+        if (onDirective) {
+            data.push(codeGen.genDynamicEventListeners(onDirective));
         }
 
         // SVG handling
