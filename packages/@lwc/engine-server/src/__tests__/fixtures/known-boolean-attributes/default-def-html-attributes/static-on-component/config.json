@@ -1,3 +1,7 @@
 {
-    "entry": "x/component"
+    "entry": "x/component",
+    "ssrFiles": {
+        "error": "error-ssr.txt",
+        "expected": "expected-ssr.html"
+    }
 }

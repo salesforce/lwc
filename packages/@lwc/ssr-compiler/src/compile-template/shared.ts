@@ -140,7 +140,7 @@ export function getChildAttrsOrProps(
         .map(({ name, value, type }) => {
             // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
             const key = isValidES3Identifier(name) ? b.identifier(name) : b.literal(name);
-        
+
             if (value.type === 'Literal' && typeof value.value === 'string') {
                 let literalValue: string | boolean = value.value;
                 if (name === 'style') {
@@ -158,8 +158,8 @@ export function getChildAttrsOrProps(
                     // Global HTML "tabindex" attribute is specially massaged into a stringified number
                     // This follows the historical behavior in api.ts:
                     // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/engine-core/src/framework/api.ts#L193-L211
-                    const validTabIndex = parseInt(literalValue) > 0; 
-                    literalValue = validTabIndex ? literalValue : '0';
+                    const shouldNormalize = parseInt(literalValue) > 0;
+                    literalValue = shouldNormalize ? '0' : literalValue;
                 }
                 return b.property('init', key, b.literal(literalValue));
             } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
@@ -169,11 +169,10 @@ export function getChildAttrsOrProps(
                 return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
             } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
                 let propValue = expressionIrToEs(value, cxt);
-                debugger;
                 if (name === 'class') {
                     cxt.import('normalizeClass');
                     propValue = b.callExpression(b.identifier('normalizeClass'), [propValue]);
-                } else if(name.toLowerCase() === 'tabindex') {
+                } else if (name.toLowerCase() === 'tabindex') {
                     cxt.import('normalizeTabIndex');
                     propValue = b.callExpression(b.identifier('normalizeTabIndex'), [propValue]);
                 }

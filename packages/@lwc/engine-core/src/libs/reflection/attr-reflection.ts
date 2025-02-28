@@ -100,13 +100,11 @@ const tabIndexDescriptor = (): TypedPropertyDescriptor<number> => ({
     configurable: true,
     enumerable: true,
     get(this: LightningElement): number {
-        debugger;
         const str = this.getAttribute('tabindex');
         const num = Number(str);
         return isFinite(num) ? Math.trunc(num) : -1;
     },
     set(this: LightningElement, newValue: number): void {
-        debugger;
         const currentValue = this.getAttribute('tabindex');
         const num = Number(newValue);
         const normalizedValue = isFinite(num) ? String(Math.trunc(num)) : '0';
