@@ -14,6 +14,11 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
+if [ -z "$VERSION" ]; then
+  echo 'Specify a new version.'
+  exit 1
+fi
+
 # Avoid accidentally committing unrelated files
 if [[ -n `git status --porcelain` ]]; then
   echo -e '\033[1mPlease stash your work before continuing.\n\033[0m'
@@ -25,6 +30,8 @@ git switch "$BASE_BRANCH"
 git pull
 git switch -c "$BRANCH"
 node ./version.js "$VERSION"
+# Input could have been major/minor/patch; update the var to the resolved version
+VERSION=$(jq -r .version package.json)
 VERSION_BUMP_MESSAGE="chore: bump version to $VERSION"
 git commit -am "$VERSION_BUMP_MESSAGE"
 git push origin HEAD
