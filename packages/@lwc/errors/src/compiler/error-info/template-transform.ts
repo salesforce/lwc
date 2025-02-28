@@ -963,4 +963,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    INVALID_LWC_ON_WITH_DECLARATIVE_LISTENERS: {
+        code: 1204,
+        message:
+            'Invalid lwc:on usage on element "{0}". It is not permitted to use declarative event listeners alongside lwc:on',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

@@ -989,6 +989,11 @@ function applyLwcOnDirective(
     if (!ast.isExpression(lwcOnValue)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_LITERAL_PROP, element, [`<${tag}>`]);
     }
+    if (element.listeners.length) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_WITH_DECLARATIVE_LISTENERS, element, [
+            `<${tag}>`,
+        ]);
+    }
 
     element.directives.push(ast.OnDirective(lwcOnValue, lwcOn.location));
 }
