@@ -716,6 +716,11 @@ function shc(content: unknown): SanitizedHtmlContent {
     return createSanitizedHtmlContent(sanitizedString);
 }
 
+// [fr]ee[z]e
+function frz(obj: object) {
+    return ObjectFreeze(obj);
+}
+
 const ncls = normalizeClass;
 
 const api = ObjectFreeze({
@@ -740,6 +745,7 @@ const api = ObjectFreeze({
     ddc,
     sp,
     ncls,
+    frz,
 });
 
 export default api;
