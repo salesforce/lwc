@@ -12,5 +12,5 @@
  */
 export function normalizeTabIndex(value: any): any {
     const shouldNormalize = value > 0 && typeof value !== 'boolean';
-    return shouldNormalize ? '0' : value;
+    return shouldNormalize ? 0 : value;
 }
