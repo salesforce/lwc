@@ -10,6 +10,7 @@ import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
 import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
+import { LWCClassErrors, SsrCompilerErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
@@ -24,6 +25,7 @@ import { removeDecoratorImport } from './remove-decorator-import';
 
 import { type Visitors, type ComponentMetaState } from './types';
 import { validateUniqueDecorator } from './decorators';
+import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     Identifier as EsIdentifier,
@@ -60,8 +62,10 @@ const visitors: Visitors = {
         }
         if (experimentalDynamicComponent.strictSpecifier) {
             if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-                throw new Error('todo - LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT');
+                throw generateError(
+                    path.node!,
+                    LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT
+                );
             }
         }
         const loader = experimentalDynamicComponent.loader;
@@ -162,7 +166,7 @@ const visitors: Visitors = {
             state.publicProperties.set(node.key.name, node);
         } else if (isWireDecorator(decorators[0])) {
             if (node.computed) {
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
+                // TODO [W-17758410]: implement
                 throw new Error('@wire cannot be used on computed properties in SSR context.');
             }
             const isRealMethod = node.kind === 'method';
@@ -245,8 +249,7 @@ const visitors: Visitors = {
     Identifier(path, _state) {
         const { node } = path;
         if (node?.name.startsWith('__lwc')) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-            throw new Error(`LWCTODO: identifier name '${node.name}' cannot start with '__lwc'`);
+            throw generateError(node, SsrCompilerErrors.RESERVED_IDENTIFIER_PREFIX);
         }
     },
 };

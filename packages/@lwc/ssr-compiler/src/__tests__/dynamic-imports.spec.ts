@@ -50,7 +50,7 @@ describe('dynamic imports', () => {
             };
 
             if (strictSpecifier && !isStrict) {
-                expect(callback).toThrowError(/INVALID_DYNAMIC_IMPORT_SOURCE_STRICT/);
+                expect(callback).toThrowError(/LWC1121/);
                 return;
             } else {
                 callback();
