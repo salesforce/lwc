@@ -62,7 +62,6 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
     const { directives } = node;
 
     const lwcIs = directives.find((directive) => directive.name === 'Is');
-
     if (!isUndefined(lwcIs)) {
         cxt.import({
             LightningElement: undefined,
