@@ -13,7 +13,7 @@ export default {
         // For static and dynamic
         for (let i = 0; i < 2; i++) {
             expect(divs[0].textContent).toBe(process.env.ENGINE_SERVER);
-            expect(divs[1].textContent).toBe(consoleCalls.warn);
+            expect(divs[1].textContent).toBe(consoleCalls.warn.length);
             expect(divs[2].textContent).toBe('hidden: true');
             expect(divs[3].textContent).toBe('spellcheck: true');
             expect(divs[4].textContent).toBe('tabindex: -1');
