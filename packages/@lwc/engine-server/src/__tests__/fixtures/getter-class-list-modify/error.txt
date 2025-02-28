@@ -1,0 +1,1 @@
+classList.forEach is not a function

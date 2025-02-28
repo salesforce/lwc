@@ -44,13 +44,13 @@ const bYieldFromChildGenerator = esTemplateWithYield`
             yield* generateMarkup(
                 tagName, 
                 childProps, 
-                childAttrs, 
-                shadowSlottedContent,
-                lightSlottedContentMap,
-                scopedSlottedContentMap,
+                childAttrs,
                 instance,
                 scopeToken,
-                contextfulParent
+                contextfulParent,
+                shadowSlottedContent,
+                lightSlottedContentMap,
+                scopedSlottedContentMap
             );
         } else {
             yield \`<\${tagName}>\`;

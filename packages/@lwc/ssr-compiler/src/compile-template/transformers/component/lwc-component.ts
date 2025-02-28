@@ -48,12 +48,12 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
             null, 
             childProps,
             childAttrs,
-            shadowSlottedContent,
-            lightSlottedContentMap,
-            scopedSlottedContentMap,
             instance,
             scopeToken,
-            contextfulParent
+            contextfulParent,
+            shadowSlottedContent,
+            lightSlottedContentMap,
+            scopedSlottedContentMap
         );
     }
 `<EsStatement[]>;

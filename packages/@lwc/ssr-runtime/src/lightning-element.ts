@@ -50,6 +50,9 @@ export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
     static stylesheets?: Stylesheets;
+    static delegatesFocus?: boolean;
+    static formAssociated?: boolean;
+    static shadowSupportMode?: 'any' | 'reset' | 'native';
 
     // Using ! because these are defined by descriptors in ./reflection
     accessKey!: string;
@@ -83,6 +86,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     ) {
         this.#props = props;
         this.#attrs = attrs;
+
+        // Class should be set explicitly to avoid it being overridden by connectedCallback classList mutation.
+        if (attrs.class) {
+            this.className = attrs.class;
+        }
 
         // Avoid setting the following types of properties that should not be set:
         // - Properties that are not public.
@@ -160,6 +168,12 @@ export class LightningElement implements PropsAvailableAtConstruction {
         _options?: boolean | EventListenerOptions
     ): void {
         // noop
+    }
+
+    get template() {
+        return {
+            synthetic: false,
+        };
     }
 
     // ----------------------------------------------------------- //

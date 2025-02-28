@@ -9,26 +9,32 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
-import { DecoratorErrors } from '@lwc/errors';
 import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
+import { LWCClassErrors, SsrCompilerErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
-import { catalogWireAdapters } from './wire';
+import { catalogWireAdapters, isWireDecorator } from './decorators/wire';
+import { validateApiProperty, validateApiMethod } from './decorators/api/validate';
+import { isApiDecorator } from './decorators/api';
 
 import { removeDecoratorImport } from './remove-decorator-import';
+
+import { type Visitors, type ComponentMetaState } from './types';
+import { validateUniqueDecorator } from './decorators';
 import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     Identifier as EsIdentifier,
     Program as EsProgram,
-    Decorator as EsDecorator,
+    PropertyDefinition as EsPropertyDefinition,
+    MethodDefinition as EsMethodDefinition,
+    Identifier,
     Comment as EsComment,
 } from 'estree';
-import type { Visitors, ComponentMetaState } from './types';
 
 const visitors: Visitors = {
     $: { scope: true },
@@ -56,8 +62,10 @@ const visitors: Visitors = {
         }
         if (experimentalDynamicComponent.strictSpecifier) {
             if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-                throw new Error('todo - LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT');
+                throw generateError(
+                    path.node!,
+                    LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT
+                );
             }
         }
         const loader = experimentalDynamicComponent.loader;
@@ -112,28 +120,20 @@ const visitors: Visitors = {
             // Seems to occur for `@wire() [symbol];` -- not sure why
             throw new Error('Unknown state: property definition has no key');
         }
-        if (!is.identifier(node.key)) {
+        if (!isKeyIdentifier(node)) {
             return;
         }
 
         const { decorators } = node;
         validateUniqueDecorator(decorators);
-        const decoratedExpression = decorators?.[0]?.expression;
-        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.publicProperties.push(node.key.name);
-        } else if (
-            is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
-        ) {
-            if (node.computed) {
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-                throw new Error('@wire cannot be used on computed properties in SSR context.');
-            }
+        if (isApiDecorator(decorators[0])) {
+            validateApiProperty(node, state);
+            state.publicProperties.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
             catalogWireAdapters(path, state);
-            state.privateProperties.push(node.key.name);
+            state.privateProperties.add(node.key.name);
         } else {
-            state.privateProperties.push(node.key.name);
+            state.privateProperties.add(node.key.name);
         }
 
         if (
@@ -150,10 +150,9 @@ const visitors: Visitors = {
     },
     MethodDefinition(path, state) {
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!isKeyIdentifier(node)) {
             return;
         }
-
         // If we mutate any class-methods that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
         if (!state.isLWC) {
@@ -162,21 +161,15 @@ const visitors: Visitors = {
 
         const { decorators } = node;
         validateUniqueDecorator(decorators);
-        // The real type is a subset of `Expression`, which doesn't work with the `is` validators
-        const decoratedExpression = decorators?.[0]?.expression;
-        if (
-            is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
-        ) {
-            // not a getter/setter
-            const isRealMethod = node.kind === 'method';
+        if (isApiDecorator(decorators[0])) {
+            validateApiMethod(node, state);
+            state.publicProperties.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
             if (node.computed) {
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-                throw new Error(
-                    `@wire cannot be used on computed ${isRealMethod ? 'method' : 'properties'} in SSR context.`
-                );
+                // TODO [W-17758410]: implement
+                throw new Error('@wire cannot be used on computed properties in SSR context.');
             }
+            const isRealMethod = node.kind === 'method';
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
             if (!isRealMethod) {
@@ -195,14 +188,6 @@ const visitors: Visitors = {
             } else {
                 catalogWireAdapters(path, state);
             }
-        } else if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            if (state.publicProperties.includes(node.key.name)) {
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-                throw new Error(
-                    `LWC1112: @api get ${node.key.name} and @api set ${node.key.name} detected in class declaration. Only one of the two needs to be decorated with @api.`
-                );
-            }
-            state.publicProperties.push(node.key.name);
         }
 
         switch (node.key.name) {
@@ -263,36 +248,11 @@ const visitors: Visitors = {
     },
     Identifier(path, _state) {
         const { node } = path;
-        if (node?.name.startsWith('__lwc') && node.name.endsWith('__')) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-            throw new Error(`LWCTODO: identifier name '${node.name}' cannot start with '__lwc'`);
+        if (node?.name.startsWith('__lwc')) {
+            throw generateError(node, SsrCompilerErrors.RESERVED_IDENTIFIER_PREFIX);
         }
     },
 };
-
-function validateUniqueDecorator(decorators: EsDecorator[]) {
-    if (decorators.length < 2) {
-        return;
-    }
-
-    const expressions = decorators.map(({ expression }) => expression);
-
-    const wire = expressions.find(
-        (expr) => is.callExpression(expr) && is.identifier(expr.callee, { name: 'wire' })
-    );
-
-    const api = expressions.find((expr) => is.identifier(expr, { name: 'api' }));
-
-    if (wire && api) {
-        throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
-    }
-
-    const track = expressions.find((expr) => is.identifier(expr, { name: 'track' }));
-
-    if (wire && track) {
-        throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
-    }
-}
 
 export default function compileJS(
     src: string,
@@ -321,8 +281,8 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicProperties: [],
-        privateProperties: [],
+        publicProperties: new Map(),
+        privateProperties: new Set(),
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),
@@ -352,4 +312,10 @@ export default function compileJS(
             comments: true,
         }),
     };
+}
+
+function isKeyIdentifier<T extends EsPropertyDefinition | EsMethodDefinition>(
+    node: T | undefined | null
+): node is T & { key: Identifier } {
+    return is.identifier(node?.key);
 }
