@@ -18,7 +18,6 @@ const bGenerateMarkup = esTemplate`
     // These variables may mix with component-authored variables, so should be reasonably unique
     const __lwcSuperPublicProperties__ = Array.from(Object.getPrototypeOf(${/* Component class */ is.identifier})?.__lwcPublicProperties__?.values?.() ?? []);
     const __lwcPublicProperties__ = new Set(${/*public properties*/ is.arrayExpression}.concat(__lwcSuperPublicProperties__));
-    const __lwcPrivateProperties__ = new Set(${/*private properties*/ is.arrayExpression});
 
     Object.defineProperty(
     ${/* component class */ 0},
@@ -51,8 +50,7 @@ const bGenerateMarkup = esTemplate`
             instance[__SYMBOL__SET_INTERNALS](
                 props,
                 attrs,
-                __lwcPublicProperties__,
-                __lwcPrivateProperties__,
+                __lwcPublicProperties__
             );
             instance.isConnected = true;
             if (instance.connectedCallback) {
@@ -128,7 +126,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { privateProperties, publicProperties, tmplExplicitImports } = state;
+    const { publicProperties, tmplExplicitImports } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -170,7 +168,6 @@ export function addGenerateMarkupFunction(
         ...bGenerateMarkup(
             classIdentifier,
             b.arrayExpression([...publicProperties.keys()].map(b.literal)),
-            b.arrayExpression([...privateProperties].map(b.literal)),
             defaultTagName,
             connectWireAdapterCode
         )
