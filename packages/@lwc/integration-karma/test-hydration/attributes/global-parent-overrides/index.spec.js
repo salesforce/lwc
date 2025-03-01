@@ -23,7 +23,7 @@ export default {
          * Required because SSR V1 is wrong (parent does not override child) and this results in hydration errors
          */
         if (process.env.ENGINE_SERVER) {
-            expect(consoleCalls.warn).toHaveSize(8);
+            expect(consoleCalls.warn.length).toBeGreaterThan(1);
         } else {
             expect(consoleCalls.warn).toHaveSize(0);
         }

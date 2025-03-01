@@ -48,7 +48,7 @@ function createEnvFile() {
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
                 NATIVE_SHADOW: ${DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
-                ENGINE_SERVER: ${ENGINE_SERVER}
+                ENGINE_SERVER: ${ENGINE_SERVER},
             }
         };
         globalThis.lwcRuntimeFlags = {
