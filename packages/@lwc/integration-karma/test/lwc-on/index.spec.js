@@ -40,10 +40,35 @@ describe('lwc:on', () => {
     describe('ignored properties', () => {
         let element;
         let button;
+        const EVENT_HANDLER_OBJECTS = {
+            nonEnumerableProp: Object.create(null, {
+                click: {
+                    value: function () {
+                        // eslint-disable-next-line no-console
+                        console.log('non-enumerable handler called');
+                    },
+                    enumerable: false,
+                },
+            }),
+            inheritedProp: {
+                __proto__: {
+                    click: function () {
+                        // eslint-disable-next-line no-console
+                        console.log('inherited handler called');
+                    },
+                },
+            },
+            symbolKeyProp: {
+                [Symbol('test')]: function () {
+                    // eslint-disable-next-line no-console
+                    console.log('symbol-keyed handler called');
+                },
+            },
+        };
 
         function setup(propType) {
             element = createElement('x-ignored', { is: Ignored });
-            element[propType] = true;
+            element.eventHandlers = EVENT_HANDLER_OBJECTS[propType];
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');
         }
@@ -73,8 +98,8 @@ describe('lwc:on', () => {
 
         beforeEach(() => {
             element = createElement('x-case-variants', { is: CaseVariants });
-            button = element.shadowRoot.querySelector('button');
             document.body.appendChild(element);
+            button = element.shadowRoot.querySelector('button');
         });
 
         it('adds event listeners corresponding to lowercase keyed property', () => {
