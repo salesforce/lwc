@@ -96,7 +96,7 @@ type RenderPrimitive =
     | 'scopedSlotFactory'
     | 'staticPart'
     | 'normalizeClassName'
-    | 'freeze';
+    | 'copy';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -106,6 +106,7 @@ interface RenderPrimitiveDefinition {
 const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition } = {
     bind: { name: 'b', alias: 'api_bind' },
     comment: { name: 'co', alias: 'api_comment' },
+    copy: { name: 'cop', alias: 'api_copy' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     // TODO [#3331]: remove usage of lwc:dynamic in 246
     deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
@@ -114,7 +115,6 @@ const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition }
     element: { name: 'h', alias: 'api_element' },
     flatten: { name: 'f', alias: 'api_flatten' },
     fragment: { name: 'fr', alias: 'api_fragment' },
-    freeze: { name: 'frz', alias: 'api_freeze' },
     iterator: { name: 'i', alias: 'api_iterator' },
     key: { name: 'k', alias: 'api_key' },
     sanitizeHtmlContent: { name: 'shc', alias: 'api_sanitize_html_content' },
@@ -460,9 +460,47 @@ export default class CodeGen {
     }
 
     genDynamicEventListeners(onDirective: OnDirective) {
-        const onDirectiveArg = this.bindExpression(onDirective.value);
-        const freezedArg = this._renderApiCall(RENDER_APIS.freeze, [onDirectiveArg]);
-        return t.property(t.identifier('dynamicOn'), freezedArg);
+        // Example Input : lwc:on={someObj}
+        const inputListeners = this.bindExpression(onDirective.value); // $cmp.someObj
+        const inputMemoizationId = this.getMemoizationId(); // say _m0
+        const copyMemoizationId = this.getMemoizationId(); // say _m1
+
+        // $ctx._m1
+        const copyMemoizationExpression = t.memberExpression(
+            t.identifier(TEMPLATE_PARAMS.CONTEXT),
+            copyMemoizationId
+        );
+        // $ctx._m1 = api_copy($cmp.someObj, _m0, _m1)
+        const memoizeCopiedObject = t.assignmentExpression(
+            '=',
+            copyMemoizationExpression,
+            this._renderApiCall(RENDER_APIS.copy, [
+                inputListeners,
+                inputMemoizationId,
+                copyMemoizationId,
+            ])
+        );
+
+        // $ctx._m0 = $cmp.someObj
+        const memoizeInputObject = t.assignmentExpression(
+            '=',
+            t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), inputMemoizationId),
+            inputListeners
+        );
+
+        // dynamicOn : (
+        //     $ctx._m1 = api_copy($cmp.someObj, _m0, _m1),
+        //     $ctx._m0 = $cmp.someObj,
+        //     $ctx._m1
+        // )
+        return t.property(
+            t.identifier('dynamicOn'),
+            t.sequenceExpression([
+                memoizeCopiedObject,
+                memoizeInputObject,
+                copyMemoizationExpression,
+            ])
+        );
     }
 
     genRef(ref: RefDirective) {

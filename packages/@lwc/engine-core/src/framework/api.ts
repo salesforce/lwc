@@ -21,6 +21,8 @@ import {
     isString,
     isTrue,
     isUndefined,
+    keys as ObjectKeys,
+    propertyIsEnumerable,
     StringReplace,
     toString,
     sanitizeHtmlContent,
@@ -716,9 +718,50 @@ function shc(content: unknown): SanitizedHtmlContent {
     return createSanitizedHtmlContent(sanitizedString);
 }
 
-// [fr]ee[z]e
-function frz(obj: object) {
-    return ObjectFreeze(obj);
+/**
+ * [cop]y object for lwc:on directive
+ *
+ * - Copies all own enumerable properties from the input object to a new object.
+ * - If the input object remains unchanged between renders, its own enumerable string-keyed properties are checked for mutations.
+ * - If any mutations are detected, an error is thrown.
+ * - If no changes are found, the previously returned object is reused to optimize patching by allowing early exit.
+ */
+function cop(currInp: unknown, prevInp: unknown, prevOut: object | undefined): object {
+    if (!isObject(currInp) || isNull(currInp)) {
+        throw new Error(
+            `Invalid argument passed to 'lwc:on': "${toString(currInp)}" is not an object.`
+        );
+    }
+    if (currInp !== prevInp) {
+        return { __proto__: null, ...currInp };
+    }
+
+    const prevPropertyNames = ObjectKeys(prevInp);
+    const currPropertyNames = ObjectKeys(currInp);
+
+    for (const name of prevPropertyNames) {
+        if (!propertyIsEnumerable.call(currInp, name)) {
+            throw new Error(
+                `object passed to lwc:on should not be mutated, attempted to mutate property "${name}" of "${toString(currInp)}"`
+            );
+        }
+    }
+
+    for (const name of currPropertyNames) {
+        if (
+            !(
+                propertyIsEnumerable.call(prevInp, name) &&
+                (prevInp as Record<string | symbol, any>)[name] ===
+                    (currInp as Record<string | symbol, any>)[name]
+            )
+        ) {
+            throw new Error(
+                `object passed to lwc:on should not be mutated, attempted to mutate property "${name}" of "${toString(currInp)}"`
+            );
+        }
+    }
+
+    return prevOut!;
 }
 
 const ncls = normalizeClass;
@@ -745,7 +788,7 @@ const api = ObjectFreeze({
     ddc,
     sp,
     ncls,
-    frz,
+    cop,
 });
 
 export default api;

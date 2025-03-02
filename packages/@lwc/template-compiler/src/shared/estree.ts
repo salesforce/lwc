@@ -445,6 +445,17 @@ export function comment(content: string): t.Comment {
     };
 }
 
+export function sequenceExpression(
+    expressions: t.SequenceExpression['expressions'],
+    config?: Partial<t.SequenceExpression>
+): t.SequenceExpression {
+    return {
+        type: 'SequenceExpression',
+        expressions,
+        ...config,
+    };
+}
+
 export type BaseNode = t.BaseNode;
 export type Identifier = t.Identifier;
 export type MemberExpression = t.MemberExpression;
@@ -482,3 +493,4 @@ export type ImportSpecifier = t.ImportSpecifier;
 export type ExportDefaultDeclaration = t.ExportDefaultDeclaration;
 export type Statement = t.Statement;
 export type Program = t.Program;
+export type SequenceExpression = t.SequenceExpression;

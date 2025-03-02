@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isNull, keys, propertyIsEnumerable } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
 import { EmptyObject } from '../utils';
 import { invokeEventListener } from '../invoker';
 import type { VM } from '../vm';
@@ -22,13 +22,12 @@ export function patchDynamicEventListeners(
         data: { dynamicOn },
     } = vnode;
 
-    // The argument passed to lwc:on is frozen.
-    // Because of this, `oldVnode.data.dynamicOn` is deeply equal
-    // to its value from the previous render cycle.
-    const oldDynamicOn =
-        oldVnode?.data?.dynamicOn ?? EmptyObject;
+    const oldDynamicOn = oldVnode?.data?.dynamicOn ?? EmptyObject;
     const newDynamicOn = dynamicOn ?? EmptyObject;
 
+    // the copy api ensures that if the input is same and
+    // none of its own enumerable string-keyed property is modified
+    // then the copy output is same
     if (oldDynamicOn === newDynamicOn) {
         return;
     }
@@ -36,12 +35,9 @@ export function patchDynamicEventListeners(
     const { addEventListener, removeEventListener } = renderer;
     const actualEventListeners = getActualEventListeners(owner, elm!);
 
-    const oldDynamicOnNames = keys(oldDynamicOn);
-    const newDynamicOnNames = keys(newDynamicOn);
-
     // Remove listeners that were attached previously but don't have a corresponding listener in newDynamicOn
-    for (const name of oldDynamicOnNames) {
-        if (!propertyIsEnumerable.call(newDynamicOn, name)) {
+    for (const name in oldDynamicOn) {
+        if (name in newDynamicOn) {
             const actualListener = actualEventListeners[name];
             removeEventListener(elm, name, actualListener);
             delete actualEventListeners[name];
@@ -49,10 +45,8 @@ export function patchDynamicEventListeners(
     }
 
     // Ensure that the event listeners that are attached match what is present in `newDynamicOnNames`
-    for (const name of newDynamicOnNames) {
-        const oldHandler = propertyIsEnumerable.call(oldDynamicOn, name)
-            ? oldDynamicOn[name]
-            : null;
+    for (const name in newDynamicOn) {
+        const oldHandler = oldDynamicOn[name];
         const newHandler = newDynamicOn[name];
 
         if (oldHandler === newHandler) {
