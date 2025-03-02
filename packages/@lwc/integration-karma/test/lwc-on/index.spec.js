@@ -2,11 +2,9 @@ import { createElement } from 'lwc';
 import Basic from 'x/basic';
 import Ignored from 'x/ignored';
 import CaseVariants from 'x/caseVariants';
-// import Override from 'x/override';
 import Spread from 'x/spread';
 import Lifecycle from 'x/lifecycle';
-// import Rerender from 'x/rerender';
-// import Loop from 'x/loop';
+import Rerender from 'x/rerender';
 
 describe('lwc:on', () => {
     let consoleSpy;
@@ -133,18 +131,6 @@ describe('lwc:on', () => {
         });
     });
 
-    // it("lwc:on's event listeners overrides event listener directly defined on template", () => {
-    //     const consoleSpy = spyOn(console, 'log');
-    //     const element = createElement('x-override', { is: Override });
-    //     document.body.appendChild(element);
-
-    //     const button = element.shadowRoot.querySelector('button');
-    //     button.click();
-
-    //     expect(consoleSpy).toHaveBeenCalledWith('lwc:on handler called');
-    //     expect(consoleSpy).not.toHaveBeenCalledWith('template handler called');
-    // });
-
     describe('event listeners with spread', () => {
         it('event listeners are added independently from lwc:on and lwc:spread', () => {
             const element = createElement('x-spread', { is: Spread });
@@ -168,99 +154,41 @@ describe('lwc:on', () => {
         );
     });
 
-    // describe('re-render behavior', () => {
-    //     it('Event listeners on simple lwc component do not update when re-rendering with changed lwc:on arguments', () => {
-    //         const consoleSpy = spyOn(console, 'log');
-    //         const element = createElement('x-rerender', { is: Rerender });
-    //         document.body.appendChild(element);
+    describe('re-render behavior', () => {
+        let element;
+        let button;
 
-    //         const child = element.shadowRoot.querySelector('[data-id="static"]');
-    //         child.click();
-    //         expect(consoleSpy).toHaveBeenCalledWith('original handler called');
+        beforeEach(() => {
+            element = createElement('x-rerender', { is: Rerender });
+            document.body.appendChild(element);
+            button = element.shadowRoot.querySelector('button');
+        });
 
-    //         // Update handlers and verify it doesn't change
-    //         element.updateHandlers();
-    //         element.triggerReRender();
+        it('Event listeners are added when lwc:on is provided a new object with additional properties', async () => {
+            element.listenersName = 'click and mouseover';
+            await element.triggerReRender();
 
-    //         consoleSpy.calls.reset();
-    //         child.click();
-    //         expect(consoleSpy).toHaveBeenCalledWith('original handler called');
-    //         expect(consoleSpy).not.toHaveBeenCalledWith('new handler called');
-    //     });
+            button.click();
+            button.dispatchEvent(new MouseEvent('mouseover'));
+            expect(consoleSpy).toHaveBeenCalledWith('click handler called');
+            expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+        });
 
-    //     it('Event listeners on lwc:component do not update when re-rendering with changed lwc:on arguments but unchanged lwc:is arguments', () => {
-    //         const consoleSpy = spyOn(console, 'log');
-    //         const element = createElement('x-rerender', { is: Rerender });
-    //         document.body.appendChild(element);
+        it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
+            element.listenersName = 'empty';
+            await element.triggerReRender();
 
-    //         const child = element.shadowRoot.querySelector('[data-id="dynamic"]');
-    //         child.click();
-    //         expect(consoleSpy).toHaveBeenCalledWith('original handler called');
+            button.click();
+            expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+        });
 
-    //         // Update handlers but keep same component
-    //         element.updateHandlers();
-    //         element.triggerReRender();
+        it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
+            element.listenersName = 'modified click';
+            await element.triggerReRender();
 
-    //         consoleSpy.calls.reset();
-    //         child.click();
-    //         expect(consoleSpy).toHaveBeenCalledWith('original handler called');
-    //         expect(consoleSpy).not.toHaveBeenCalledWith('new handler called');
-    //     });
-
-    //     it('Event listeners on lwc:component do update when re-rendering with both lwc:on and lwc:is arguments changed', () => {
-    //         const consoleSpy = spyOn(console, 'log');
-    //         const element = createElement('x-rerender', { is: Rerender });
-    //         document.body.appendChild(element);
-
-    //         const child = element.shadowRoot.querySelector('[data-id="dynamic"]');
-    //         child.click();
-    //         expect(consoleSpy).toHaveBeenCalledWith('original handler called');
-
-    //         // Update both handlers and component
-    //         element.updateHandlers();
-    //         element.updateDynamicComponent();
-    //         element.triggerReRender();
-
-    //         consoleSpy.calls.reset();
-    //         const newChild = element.shadowRoot.querySelector('[data-id="dynamic"]');
-    //         newChild.click();
-    //         expect(consoleSpy).toHaveBeenCalledWith('new handler called');
-    //         expect(consoleSpy).not.toHaveBeenCalledWith('original handler called');
-    //     });
-    // });
-
-    // describe('for:each loop handling', () => {
-    //     describe('with non-local handlers', () => {
-    //         it('event listeners are not updated on rerender', () => {
-    //             const consoleSpy = spyOn(console, 'log');
-    //             const element = createElement('x-loop', { is: Loop });
-    //             document.body.appendChild(element);
-
-    //             const button = element.shadowRoot.querySelector('.non-local[data-id="1"]');
-    //             button.click();
-    //             expect(consoleSpy).toHaveBeenCalledWith('original handler called');
-
-    //             // Update handlers and verify it doesn't change
-    //             element.updateHandlers();
-    //             element.triggerReRender();
-
-    //             consoleSpy.calls.reset();
-    //             button.click();
-    //             expect(consoleSpy).toHaveBeenCalledWith('original handler called');
-    //             expect(consoleSpy).not.toHaveBeenCalledWith('new handler called');
-    //         });
-    //     });
-
-    //     describe('with local handlers', () => {
-    //         it('event listeners use current item handler', () => {
-    //             const consoleSpy = spyOn(console, 'log');
-    //             const element = createElement('x-loop', { is: Loop });
-    //             document.body.appendChild(element);
-
-    //             const button = element.shadowRoot.querySelector('.local[data-id="1"]');
-    //             button.click();
-    //             expect(consoleSpy).toHaveBeenCalledWith('item handler called');
-    //         });
-    //     });
-    // });
+            button.click();
+            expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+            expect(consoleSpy).toHaveBeenCalledWith('modified click handler called');
+        });
+    });
 });
