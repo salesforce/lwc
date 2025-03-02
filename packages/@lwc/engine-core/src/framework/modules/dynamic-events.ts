@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2025, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -26,10 +26,8 @@ export function patchDynamicEventListeners(
     // Because of this, `oldVnode.data.dynamicOn` is deeply equal
     // to its value from the previous render cycle.
     const oldDynamicOn =
-        isNull(oldVnode) || isUndefined(oldVnode.data.dynamicOn)
-            ? EmptyObject
-            : oldVnode.data.dynamicOn;
-    const newDynamicOn = isUndefined(dynamicOn) ? EmptyObject : dynamicOn;
+        oldVnode?.data?.dynamicOn ?? EmptyObject;
+    const newDynamicOn = dynamicOn ?? EmptyObject;
 
     if (oldDynamicOn === newDynamicOn) {
         return;
@@ -41,6 +39,7 @@ export function patchDynamicEventListeners(
     const oldDynamicOnNames = keys(oldDynamicOn);
     const newDynamicOnNames = keys(newDynamicOn);
 
+    // Remove listeners that were attached previously but don't have a corresponding listener in newDynamicOn
     for (const name of oldDynamicOnNames) {
         if (!propertyIsEnumerable.call(newDynamicOn, name)) {
             const actualListener = actualEventListeners[name];
@@ -49,6 +48,7 @@ export function patchDynamicEventListeners(
         }
     }
 
+    // Ensure that the event listeners that are attached match what is present in `newDynamicOnNames`
     for (const name of newDynamicOnNames) {
         const oldHandler = propertyIsEnumerable.call(oldDynamicOn, name)
             ? oldDynamicOn[name]
