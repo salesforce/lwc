@@ -736,22 +736,24 @@ function cop(currInp: unknown, prevInp: unknown, prevOut: object | undefined): o
         return { __proto__: null, ...currInp };
     }
 
-    const prevPropertyNames = ObjectKeys(prevInp);
+    const prevPropertyNames = ObjectKeys(prevOut!);
     const currPropertyNames = ObjectKeys(currInp);
 
-    for (const name of prevPropertyNames) {
-        if (!propertyIsEnumerable.call(currInp, name)) {
+    // verify no new property is added
+    for (const name of currPropertyNames) {
+        if (!propertyIsEnumerable.call(prevOut, name)) {
             throw new Error(
                 `object passed to lwc:on should not be mutated, attempted to mutate property "${name}" of "${toString(currInp)}"`
             );
         }
     }
 
-    for (const name of currPropertyNames) {
+    // verify all previous properties are present and their values are same
+    for (const name of prevPropertyNames) {
         if (
             !(
-                propertyIsEnumerable.call(prevInp, name) &&
-                (prevInp as Record<string | symbol, any>)[name] ===
+                propertyIsEnumerable.call(currInp, name) &&
+                (prevOut as Record<string | symbol, any>)[name] ===
                     (currInp as Record<string | symbol, any>)[name]
             )
         ) {
