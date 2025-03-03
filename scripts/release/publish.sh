@@ -29,7 +29,7 @@ git push origin HEAD
 
 if which gh 2>/dev/null 1>/dev/null; then
   # Use GitHub CLI to create a PR and wait for it to be merged before exiting
-  gh pr create -t "chore: release $VERSION" -B "$RELEASE_BRANCH"
+  gh pr create -t "chore: release $VERSION" -B "$RELEASE_BRANCH" -b ''
   gh pr checks --fail-fast --watch
   gh pr comment -b "/nucleus release"
   git switch "$BASE_BRANCH"
