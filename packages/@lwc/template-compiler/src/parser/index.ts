@@ -1672,7 +1672,7 @@ function validateTemplate(
     }
 
     if (parsedAttr.get(ElementDirectiveName.On)) {
-        ctx.throwAtLocation(ParserDiagnostics.LWC_ON_INVALID_ELEMENT, location, ['<template>']);
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_LWC_ON_ELEMENT, location, ['<template>']);
     }
 
     // At this point in the parsing all supported attributes from a non root template element
