@@ -1,29 +1,35 @@
 import { LightningElement, api } from 'lwc';
 
 /* eslint-disable no-console */
+const clickHandler = function () {
+    console.log('click handler called');
+};
+
+const modifiedClickHandler = function () {
+    console.log('modified click handler called');
+};
+
+const mouseoverHandler = function () {
+    console.log('mouseover handler called');
+};
+/* eslint-enable no-console */
+
 const clickObject = {
-    click: function () {
-        console.log('click handler called');
-    },
+    click: clickHandler,
 };
 
 const modifiedClickObject = {
-    click: function () {
-        console.log('modified click handler called');
-    },
+    click: modifiedClickHandler,
 };
 
 const clickAndMouseoverObject = {
-    click: function () {
-        console.log('click handler called');
-    },
-    mouseover: function () {
-        console.log('mouseover handler called');
-    },
+    click: clickHandler,
+    mouseover: mouseoverHandler,
 };
 
 const emptyObject = {};
-/* eslint-enable no-console */
+
+const defaultObject = clickObject;
 
 export default class Rerender extends LightningElement {
     dummy = 'dummy initial';
@@ -38,12 +44,27 @@ export default class Rerender extends LightningElement {
             case 'empty':
                 return emptyObject;
             default:
-                return clickObject;
+                return defaultObject;
         }
     }
 
     @api
     triggerReRender() {
         this.dummy = 'dummy changed';
+    }
+
+    @api
+    addMouseoverHandler() {
+        defaultObject['mouseover'] = mouseoverHandler;
+    }
+
+    @api
+    modifyClickHandler() {
+        defaultObject['click'] = modifiedClickHandler;
+    }
+
+    @api
+    deleteClickHandler() {
+        delete defaultObject['click'];
     }
 }
