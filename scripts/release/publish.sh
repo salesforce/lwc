@@ -24,7 +24,7 @@ git pull
 VERSION_SHA=$(git blame -- package.json | grep '"version"' | cut -d' ' -f1)
 
 # Create a new branch with the changes to release
-git switch -c "$BRANCH" "$(gh pr view --json mergeCommit -q .mergeCommit.oid)"
+git switch -c "$BRANCH" "$VERSION_SHA"
 git push origin HEAD
 
 if which gh 2>/dev/null 1>/dev/null; then
