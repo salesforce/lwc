@@ -14,11 +14,6 @@ if [ -z "$VERSION" ]; then
   exit 1
 fi
 
-if [ -z "$VERSION" ]; then
-  echo 'Specify a new version.'
-  exit 1
-fi
-
 # Avoid accidentally committing unrelated files
 if [[ -n `git status --porcelain` ]]; then
   echo -e '\033[1mPlease stash your work before continuing.\n\033[0m'
@@ -38,10 +33,10 @@ git push origin HEAD
 
 if which gh 2>/dev/null 1>/dev/null; then
   # Use GitHub CLI to create a PR and wait for it to be merged before exiting
-  gh pr create -t "$VERSION_BUMP_MESSAGE"
+  gh pr create -t "$VERSION_BUMP_MESSAGE" -b ''
   gh pr merge --auto --squash --delete-branch
   git switch "$BASE_BRANCH" # Change branch now so --delete-branch works locally
-  gh pr checks --fail-fast --watch
+  gh pr checks --fail-fast --watch "$BRANCH"
 else
   # Clean up and prompt for manual branch creation
   git switch "$BASE_BRANCH"
