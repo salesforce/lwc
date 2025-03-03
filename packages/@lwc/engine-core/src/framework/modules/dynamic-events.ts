@@ -33,42 +33,49 @@ export function patchDynamicEventListeners(
     }
 
     const { addEventListener, removeEventListener } = renderer;
-    const actualEventListeners = getActualEventListeners(owner, elm!);
+    const attachedEventListeners = getAttachedEventListeners(owner, elm!);
 
-    // Remove listeners that were attached previously but don't have a corresponding listener in newDynamicOn
-    for (const name in oldDynamicOn) {
-        if (name in newDynamicOn) {
-            const actualListener = actualEventListeners[name];
-            removeEventListener(elm, name, actualListener);
-            delete actualEventListeners[name];
+    // Remove listeners that were attached previously but don't have a corresponding callback in `newDynamicOn`
+    for (const eventType in oldDynamicOn) {
+        if (eventType in newDynamicOn) {
+            const attachedEventListener = attachedEventListeners[eventType];
+            removeEventListener(elm, eventType, attachedEventListener);
+            delete attachedEventListeners[eventType];
         }
     }
 
-    // Ensure that the event listeners that are attached match what is present in `newDynamicOnNames`
-    for (const name in newDynamicOn) {
-        const oldHandler = oldDynamicOn[name];
-        const newHandler = newDynamicOn[name];
+    // Ensure that the event listeners that are attached match what is present in `newDynamicOn`
+    for (const eventType in newDynamicOn) {
+        const oldCallback = oldDynamicOn[eventType];
+        const newCallback = newDynamicOn[eventType];
 
-        if (oldHandler === newHandler) {
+        // Skip if the provided callback has not changed
+        if (oldCallback === newCallback) {
             continue;
         }
-        if (oldHandler) {
-            const actualListener = actualEventListeners[name];
-            removeEventListener(elm, name, actualListener);
+
+        // Remove listener that was attached previously
+        if (oldCallback) {
+            const attachedEventListener = attachedEventListeners[eventType];
+            removeEventListener(elm, eventType, attachedEventListener);
         }
-        const actualListener = bindEventListener(owner, newHandler);
-        addEventListener(elm, name, actualListener);
-        actualEventListeners[name] = actualListener;
+
+        // Bind callback to owner component and add it as listener to element
+        const newBoundEventListener = bindEventListener(owner, newCallback);
+        addEventListener(elm, eventType, newBoundEventListener);
+
+        // Store the newly added eventListener
+        attachedEventListeners[eventType] = newBoundEventListener;
     }
 }
 
-function getActualEventListeners(vm: VM, elm: Element): Record<string, EventListener> {
-    let actualEventListeners = vm.actualEventListeners.get(elm);
-    if (isUndefined(actualEventListeners)) {
-        actualEventListeners = {};
-        vm.actualEventListeners.set(elm, actualEventListeners);
+function getAttachedEventListeners(vm: VM, elm: Element): Record<string, EventListener> {
+    let attachedEventListeners = vm.attachedEventListeners.get(elm);
+    if (isUndefined(attachedEventListeners)) {
+        attachedEventListeners = {};
+        vm.attachedEventListeners.set(elm, attachedEventListeners);
     }
-    return actualEventListeners;
+    return attachedEventListeners;
 }
 
 function bindEventListener(vm: VM, fn: EventListener): EventListener {
