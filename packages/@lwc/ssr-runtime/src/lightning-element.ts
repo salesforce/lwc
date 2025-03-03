@@ -78,12 +78,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
         assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](
-        props: Properties,
-        attrs: Attributes,
-        publicProperties: Set<string>,
-        privateProperties: Set<string>
-    ) {
+    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes, publicProperties: Set<string>) {
         this.#props = props;
         this.#attrs = attrs;
 
@@ -95,13 +90,12 @@ export class LightningElement implements PropsAvailableAtConstruction {
         // Avoid setting the following types of properties that should not be set:
         // - Properties that are not public.
         // - Properties that are not global.
-        // - Properties that are global but are internally overridden.
         for (const propName of keys(props)) {
             const attrName = htmlPropertyToAttribute(propName);
             if (
                 publicProperties.has(propName) ||
-                ((REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) &&
-                    !privateProperties.has(propName))
+                REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) ||
+                isAriaAttribute(attrName)
             ) {
                 // For props passed from parents to children, they are intended to be read-only
                 // to avoid a child mutating its parent's state
