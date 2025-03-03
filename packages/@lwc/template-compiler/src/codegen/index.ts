@@ -629,6 +629,8 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(codeGen.genEventListeners(listeners));
         }
 
+        // dynamic event listeners: lwc:on directive
+        // codeGen.genDynamicEventListeners returns a property with key 'dynamicOn'
         if (onDirective) {
             data.push(codeGen.genDynamicEventListeners(onDirective));
         }
