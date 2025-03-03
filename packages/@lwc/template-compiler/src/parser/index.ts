@@ -989,6 +989,9 @@ function applyLwcOnDirective(
     if (!ast.isExpression(lwcOnValue)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_LITERAL_PROP, element, [`<${tag}>`]);
     }
+
+    // At this point element.listeners stores declarative event listeners (e.g., `onfoo`)
+    // `lwc:on` directive cannot be used together with declarative event listeners.
     if (element.listeners.length) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_WITH_DECLARATIVE_LISTENERS, element, [
             `<${tag}>`,
