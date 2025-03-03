@@ -29,7 +29,7 @@ fi
 git switch "$BASE_BRANCH"
 git pull
 git switch -c "$BRANCH"
-node ./version.js "$VERSION"
+node "$(dirname "$0")/version.js" "$VERSION"
 # Input could have been major/minor/patch; update the var to the resolved version
 VERSION=$(jq -r .version package.json)
 VERSION_BUMP_MESSAGE="chore: bump version to $VERSION"
