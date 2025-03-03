@@ -37,7 +37,7 @@ export function patchDynamicEventListeners(
 
     // Remove listeners that were attached previously but don't have a corresponding callback in `newDynamicOn`
     for (const eventType in oldDynamicOn) {
-        if (eventType in newDynamicOn) {
+        if (!(eventType in newDynamicOn)) {
             const attachedEventListener = attachedEventListeners[eventType];
             removeEventListener(elm, eventType, attachedEventListener);
             delete attachedEventListeners[eventType];
