@@ -40,24 +40,36 @@ if which gh 2>/dev/null 1>/dev/null; then
     done
   }
 
+
+  # Done locally, can clean up
+  git switch "$BASE_BRANCH"
+  git branch -D "$BRANCH"
+
   # Also wait for approvals, if needed
   if [ "$(gh pr view "$BRANCH" --json reviewDecision -q .reviewDecision)" != 'APPROVED' ]; then
     echo 'Release cannot continue without approval.'
     wait_until reviewDecision APPROVED 30
+    echo 'PR approved! Continuing...'
+  else
+    sleep 10 # Give nucleus time to start the release job
   fi
 
-  # Do the release!
-  gh pr comment -b "/nucleus release"
-  sleep 60 # Nucleus release always takes at least a minute
-  wait_until state CLOSED 10
-  LATEST=$([[ "$RELEASE_BRANCH" == release ]] && echo '--latest' || echo '')
-  gh release create "v$VERSION" --generate-notes "$LATEST"
+  RELEASE_JOB=$(gh pr checks "$BRANCH" --json name,link -q '.[]|select(.name=="continuous-integration/nucleus/release").link')
+  echo "Nucleus release started: $RELEASE_JOB"
+
+  # Wait for GitHub release to be created by Nucleus, then open it
+  echo 'The GitHub release notes must be added manually. You can exit the script now and open GitHub on your own, or wait until the release is created and the script will open the page for you.'
+  sleep 300 # Nucleus job usually takes ~5 minutes
+  while ! gh release view "v$VERSION" 1>/dev/null 2>/dev/null; do
+    sleep 15
+  done
+  gh release view "v$VERSION" --web
 
   # Cleanup
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
 else
-  # Clean up and prompt for manual branch creation
+  # GitHub CLI not installed - clean up and prompt for manual branch creation
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
   echo "Open a PR: https://github.com/salesforce/lwc/pull/new/$BRANCH"
