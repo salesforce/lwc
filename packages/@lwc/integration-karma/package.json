@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-karma",
     "private": true,
-    "version": "8.15.0",
+    "version": "patch",
     "scripts": {
         "start": "KARMA_MODE=watch karma start ./scripts/karma-configs/test/local.js",
         "test": "karma start ./scripts/karma-configs/test/local.js --single-run --browsers ChromeHeadless",
@@ -21,11 +21,11 @@
         "karma-sauce-launcher-fix-firefox": "using a fork to work around https://github.com/karma-runner/karma-sauce-launcher/issues/275"
     },
     "devDependencies": {
-        "@lwc/compiler": "8.15.0",
-        "@lwc/engine-dom": "8.15.0",
-        "@lwc/engine-server": "8.15.0",
-        "@lwc/rollup-plugin": "8.15.0",
-        "@lwc/synthetic-shadow": "8.15.0",
+        "@lwc/compiler": "patch",
+        "@lwc/engine-dom": "patch",
+        "@lwc/engine-server": "patch",
+        "@lwc/rollup-plugin": "patch",
+        "@lwc/synthetic-shadow": "patch",
         "@types/jasmine": "^5.1.6",
         "chokidar": "^4.0.3",
         "istanbul-lib-coverage": "^3.2.2",
