@@ -5,6 +5,7 @@ import CaseVariants from 'x/caseVariants';
 import Spread from 'x/spread';
 import Lifecycle from 'x/lifecycle';
 import Rerender from 'x/rerender';
+import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 
 import { catchUnhandledRejectionsAndErrors } from 'test-utils';
@@ -140,80 +141,161 @@ describe('lwc:on', () => {
         let element;
         let button;
 
-        beforeEach(() => {
-            element = createElement('x-rerender', { is: Rerender });
-            document.body.appendChild(element);
-            button = element.shadowRoot.querySelector('button');
+        describe('without for:each loop', () => {
+            beforeEach(() => {
+                element = createElement('x-rerender', { is: Rerender });
+                document.body.appendChild(element);
+                button = element.shadowRoot.querySelector('button');
+            });
+
+            describe('with new object', () => {
+                it('Event listeners are added when lwc:on is provided a new object with additional properties', async () => {
+                    element.listenersName = 'click and mouseover';
+                    await element.triggerReRender();
+
+                    button.click();
+                    button.dispatchEvent(new MouseEvent('mouseover'));
+                    expect(consoleSpy).toHaveBeenCalledWith('click handler called');
+                    expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+                });
+
+                it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
+                    element.listenersName = 'empty';
+                    await element.triggerReRender();
+
+                    button.click();
+                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                });
+
+                it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
+                    element.listenersName = 'modified click';
+                    await element.triggerReRender();
+
+                    button.click();
+                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                    expect(consoleSpy).toHaveBeenCalledWith('modified click handler called');
+                });
+            });
+
+            describe('with same object modified', () => {
+                let caughtError;
+
+                catchUnhandledRejectionsAndErrors((error) => {
+                    caughtError = error;
+                });
+
+                afterEach(() => {
+                    caughtError = undefined;
+                });
+
+                it('throws when a new property is added to object passed to lwc:on', async () => {
+                    element.addMouseoverHandler();
+                    await element.triggerReRender();
+                    await new Promise((resolve) => setTimeout(resolve));
+                    await new Promise((resolve) => setTimeout(resolve));
+                    expect(caughtError.message).toBe(
+                        'object passed to lwc:on should not be mutated, attempted to mutate property "mouseover" of "[object Object]"'
+                    );
+                });
+
+                it('throws when a property is modified in object passed to lwc:on', async () => {
+                    element.modifyClickHandler();
+                    await element.triggerReRender();
+                    await new Promise((resolve) => setTimeout(resolve));
+                    await new Promise((resolve) => setTimeout(resolve));
+                    expect(caughtError.message).toBe(
+                        'object passed to lwc:on should not be mutated, attempted to mutate property "click" of "[object Object]"'
+                    );
+                });
+
+                it('throws when a property is deleted from object passed to lwc:on', async () => {
+                    element.deleteClickHandler();
+                    await element.triggerReRender();
+                    await new Promise((resolve) => setTimeout(resolve));
+                    await new Promise((resolve) => setTimeout(resolve));
+                    expect(caughtError.message).toBe(
+                        'object passed to lwc:on should not be mutated, attempted to mutate property "click" of "[object Object]"'
+                    );
+                });
+            });
         });
 
-        describe('with new object', () => {
-            it('Event listeners are added when lwc:on is provided a new object with additional properties', async () => {
-                element.listenersName = 'click and mouseover';
-                await element.triggerReRender();
-
-                button.click();
-                button.dispatchEvent(new MouseEvent('mouseover'));
-                expect(consoleSpy).toHaveBeenCalledWith('click handler called');
-                expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+        describe('with for:each loop and local variable passed as argument to lwc:on', () => {
+            beforeEach(() => {
+                element = createElement('x-rerender-loop', { is: RerenderLoop });
+                document.body.appendChild(element);
+                button = element.shadowRoot.querySelector('button');
             });
 
-            it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
-                element.listenersName = 'empty';
-                await element.triggerReRender();
+            describe('with new object', () => {
+                it('Event listeners are added when lwc:on is provided a new object with additional properties', async () => {
+                    element.listenersName = 'click and mouseover';
+                    await element.triggerReRender();
 
-                button.click();
-                expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                    button.click();
+                    button.dispatchEvent(new MouseEvent('mouseover'));
+                    expect(consoleSpy).toHaveBeenCalledWith('click handler called');
+                    expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+                });
+
+                it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
+                    element.listenersName = 'empty';
+                    await element.triggerReRender();
+
+                    button.click();
+                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                });
+
+                it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
+                    element.listenersName = 'modified click';
+                    await element.triggerReRender();
+
+                    button.click();
+                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                    expect(consoleSpy).toHaveBeenCalledWith('modified click handler called');
+                });
             });
 
-            it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
-                element.listenersName = 'modified click';
-                await element.triggerReRender();
+            describe('with same object modified', () => {
+                let caughtError;
 
-                button.click();
-                expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
-                expect(consoleSpy).toHaveBeenCalledWith('modified click handler called');
-            });
-        });
+                catchUnhandledRejectionsAndErrors((error) => {
+                    caughtError = error;
+                });
 
-        describe('with same object modified', () => {
-            let caughtError;
+                afterEach(() => {
+                    caughtError = undefined;
+                });
 
-            catchUnhandledRejectionsAndErrors((error) => {
-                caughtError = error;
-            });
+                it('throws when a new property is added to object passed to lwc:on', async () => {
+                    element.addMouseoverHandler();
+                    await element.triggerReRender();
+                    await new Promise((resolve) => setTimeout(resolve));
+                    await new Promise((resolve) => setTimeout(resolve));
+                    expect(caughtError.message).toBe(
+                        'object passed to lwc:on should not be mutated, attempted to mutate property "mouseover" of "[object Object]"'
+                    );
+                });
 
-            afterEach(() => {
-                caughtError = undefined;
-            });
+                it('throws when a property is modified in object passed to lwc:on', async () => {
+                    element.modifyClickHandler();
+                    await element.triggerReRender();
+                    await new Promise((resolve) => setTimeout(resolve));
+                    await new Promise((resolve) => setTimeout(resolve));
+                    expect(caughtError.message).toBe(
+                        'object passed to lwc:on should not be mutated, attempted to mutate property "click" of "[object Object]"'
+                    );
+                });
 
-            it('throws when a new property is added to object passed to lwc:on', async () => {
-                element.addMouseoverHandler();
-                await element.triggerReRender();
-                await new Promise((resolve) => setTimeout(resolve));
-                await new Promise((resolve) => setTimeout(resolve));
-                expect(caughtError.message).toBe(
-                    'object passed to lwc:on should not be mutated, attempted to mutate property "mouseover" of "[object Object]"'
-                );
-            });
-
-            it('throws when a property is modified in object passed to lwc:on', async () => {
-                element.modifyClickHandler();
-                await element.triggerReRender();
-                await new Promise((resolve) => setTimeout(resolve));
-                await new Promise((resolve) => setTimeout(resolve));
-                expect(caughtError.message).toBe(
-                    'object passed to lwc:on should not be mutated, attempted to mutate property "click" of "[object Object]"'
-                );
-            });
-
-            it('throws when a property is deleted from object passed to lwc:on', async () => {
-                element.deleteClickHandler();
-                await element.triggerReRender();
-                await new Promise((resolve) => setTimeout(resolve));
-                await new Promise((resolve) => setTimeout(resolve));
-                expect(caughtError.message).toBe(
-                    'object passed to lwc:on should not be mutated, attempted to mutate property "click" of "[object Object]"'
-                );
+                it('throws when a property is deleted from object passed to lwc:on', async () => {
+                    element.deleteClickHandler();
+                    await element.triggerReRender();
+                    await new Promise((resolve) => setTimeout(resolve));
+                    await new Promise((resolve) => setTimeout(resolve));
+                    expect(caughtError.message).toBe(
+                        'object passed to lwc:on should not be mutated, attempted to mutate property "click" of "[object Object]"'
+                    );
+                });
             });
         });
     });
