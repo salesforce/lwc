@@ -9,7 +9,6 @@ import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 import { logError } from '../shared/logger';
 
 import { report, ReportingEventId } from './reporting';
-import { assertNotProd } from './utils';
 import type { Template } from './template';
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { Stylesheet } from '@lwc/shared';
@@ -37,7 +36,6 @@ export function checkVersionMismatch(
     func: Template | Stylesheet | LightningElementConstructor,
     type: 'template' | 'stylesheet' | 'component'
 ) {
-    assertNotProd();
     const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
         if (typeof process === 'object' && process.env.SKIP_LWC_VERSION_MISMATCH_CHECK === 'true') {
