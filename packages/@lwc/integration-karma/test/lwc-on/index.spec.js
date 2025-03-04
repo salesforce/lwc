@@ -16,16 +16,6 @@ describe('lwc:on', () => {
         consoleSpy = spyOn(console, 'log');
     });
 
-    let caughtError;
-
-    catchUnhandledRejectionsAndErrors((error) => {
-        caughtError = error;
-    });
-
-    afterEach(() => {
-        caughtError = undefined;
-    });
-
     it('adds multiple event listeners', () => {
         const element = createElement('x-basic', { is: Basic });
         document.body.appendChild(element);
@@ -186,6 +176,16 @@ describe('lwc:on', () => {
         });
 
         describe('with same object modified', () => {
+            let caughtError;
+
+            catchUnhandledRejectionsAndErrors((error) => {
+                caughtError = error;
+            });
+
+            afterEach(() => {
+                caughtError = undefined;
+            });
+
             it('throws when a new property is added to object passed to lwc:on', async () => {
                 element.addMouseoverHandler();
                 await element.triggerReRender();
