@@ -19,25 +19,30 @@ export function patchDynamicEventListeners(
 ) {
     const {
         elm,
-        data: { dynamicOn },
+        data: { dynamicOn, dynamicOnRaw },
+        sel,
     } = vnode;
 
     const oldDynamicOn = oldVnode?.data?.dynamicOn ?? EmptyObject;
     const newDynamicOn = dynamicOn ?? EmptyObject;
 
-    // the copy api ensures that if the input is same and
-    // none of its own enumerable string-keyed property is modified
-    // then the copy output is same
-    if (oldDynamicOn === newDynamicOn) {
-        return;
-    }
+    // Compare raw values to check if same object is passed to lwc:on
+    const isObjectSame = oldVnode?.data?.dynamicOnRaw === dynamicOnRaw;
 
     const { addEventListener, removeEventListener } = renderer;
     const attachedEventListeners = getAttachedEventListeners(owner, elm!);
 
-    // Remove listeners that were attached previously but don't have a corresponding callback in `newDynamicOn`
+    // Properties that are present in 'oldDynamicOn' but not in 'newDynamicOn'
     for (const eventType in oldDynamicOn) {
         if (!(eventType in newDynamicOn)) {
+            // Throw if same object is passed
+            if (isObjectSame) {
+                throw new Error(
+                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for '${sel}'. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
+                );
+            }
+
+            // Remove listeners that were attached previously but don't have a corresponding property in `newDynamicOn`
             const attachedEventListener = attachedEventListeners[eventType];
             removeEventListener(elm, eventType, attachedEventListener);
             delete attachedEventListeners[eventType];
@@ -49,23 +54,28 @@ export function patchDynamicEventListeners(
         const oldCallback = oldDynamicOn[eventType];
         const newCallback = newDynamicOn[eventType];
 
-        // Skip if the provided callback has not changed
-        if (oldCallback === newCallback) {
-            continue;
+        // Properties that are present in 'newDynamicOn' but whose value are different from that in `oldDynamicOn`
+        if (oldCallback !== newCallback) {
+            // Throw if same object is passed
+            if (isObjectSame) {
+                throw new Error(
+                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for '${sel}'. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
+                );
+            }
+
+            // Remove listener that was attached previously
+            if (oldCallback) {
+                const attachedEventListener = attachedEventListeners[eventType];
+                removeEventListener(elm, eventType, attachedEventListener);
+            }
+
+            // Bind callback to owner component and add it as listener to element
+            const newBoundEventListener = bindEventListener(owner, newCallback);
+            addEventListener(elm, eventType, newBoundEventListener);
+
+            // Store the newly added eventListener
+            attachedEventListeners[eventType] = newBoundEventListener;
         }
-
-        // Remove listener that was attached previously
-        if (oldCallback) {
-            const attachedEventListener = attachedEventListeners[eventType];
-            removeEventListener(elm, eventType, attachedEventListener);
-        }
-
-        // Bind callback to owner component and add it as listener to element
-        const newBoundEventListener = bindEventListener(owner, newCallback);
-        addEventListener(elm, eventType, newBoundEventListener);
-
-        // Store the newly added eventListener
-        attachedEventListeners[eventType] = newBoundEventListener;
     }
 }
 

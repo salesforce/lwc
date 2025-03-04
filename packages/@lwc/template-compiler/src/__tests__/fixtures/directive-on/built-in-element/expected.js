@@ -2,15 +2,15 @@ import _implicitStylesheets from "./built-in-element.css";
 import _implicitScopedStylesheets from "./built-in-element.scoped.css?scoped=true";
 import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { cop: api_copy, h: api_element } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { h: api_element } = $api;
   return [
     api_element("a", {
       key: 0,
-      dynamicOn:
-        (($ctx._m1 = api_copy($cmp.hello, _m0, _m1)),
-        ($ctx._m0 = $cmp.hello),
-        $ctx._m1),
+      dynamicOnRaw: $cmp.hello,
+      dynamicOn: {
+        __proto__: null,
+        ...$cmp.hello,
+      },
     }),
   ];
   /*LWC compiler vX.X.X*/

@@ -630,9 +630,9 @@ function transform(codeGen: CodeGen): t.Expression {
         }
 
         // dynamic event listeners: lwc:on directive
-        // codeGen.genDynamicEventListeners returns a property with key 'dynamicOn'
+        // codeGen.genDynamicEventListeners returns an array containing 2 properties: 'dynamicOn' & 'dynamicOnRaw'
         if (onDirective) {
-            data.push(codeGen.genDynamicEventListeners(onDirective));
+            data.push(...codeGen.genDynamicEventListeners(onDirective));
         }
 
         // SVG handling

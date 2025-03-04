@@ -3,15 +3,15 @@ import _implicitScopedStylesheets from "./custom-element.scoped.css?scoped=true"
 import _xFoo from "x/foo";
 import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const { cop: api_copy, c: api_custom_element } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { c: api_custom_element } = $api;
   return [
     api_custom_element("x-foo", _xFoo, {
       key: 0,
-      dynamicOn:
-        (($ctx._m1 = api_copy($cmp.hello, _m0, _m1)),
-        ($ctx._m0 = $cmp.hello),
-        $ctx._m1),
+      dynamicOnRaw: $cmp.hello,
+      dynamicOn: {
+        __proto__: null,
+        ...$cmp.hello,
+      },
     }),
   ];
   /*LWC compiler vX.X.X*/

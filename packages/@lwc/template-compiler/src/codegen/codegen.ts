@@ -461,46 +461,21 @@ export default class CodeGen {
 
     genDynamicEventListeners(onDirective: OnDirective) {
         // Example Input : lwc:on={someObj}
-        const inputListeners = this.bindExpression(onDirective.value); // $cmp.someObj
-        const inputMemoizationId = this.getMemoizationId(); // say _m0
-        const copyMemoizationId = this.getMemoizationId(); // say _m1
 
-        // $ctx._m1
-        const copyMemoizationExpression = t.memberExpression(
-            t.identifier(TEMPLATE_PARAMS.CONTEXT),
-            copyMemoizationId
-        );
-        // $ctx._m1 = api_copy($cmp.someObj, _m0, _m1)
-        const memoizeCopiedObject = t.assignmentExpression(
-            '=',
-            copyMemoizationExpression,
-            this._renderApiCall(RENDER_APIS.copy, [
-                inputListeners,
-                inputMemoizationId,
-                copyMemoizationId,
-            ])
-        );
+        // $cmp.someObj
+        const rawValue = this.bindExpression(onDirective.value);
 
-        // $ctx._m0 = $cmp.someObj
-        const memoizeInputObject = t.assignmentExpression(
-            '=',
-            t.memberExpression(t.identifier(TEMPLATE_PARAMS.CONTEXT), inputMemoizationId),
-            inputListeners
-        );
+        // {__proto__: null, ...$cmp.someObj}
+        const clonedValue = t.objectExpression([
+            t.property(t.identifier('__proto__'), t.literal(null)),
+            t.spreadElement(rawValue),
+        ]);
 
-        // dynamicOn : (
-        //     $ctx._m1 = api_copy($cmp.someObj, _m0, _m1),
-        //     $ctx._m0 = $cmp.someObj,
-        //     $ctx._m1
-        // )
-        return t.property(
-            t.identifier('dynamicOn'),
-            t.sequenceExpression([
-                memoizeCopiedObject,
-                memoizeInputObject,
-                copyMemoizationExpression,
-            ])
-        );
+        const dynamicOnRawProperty = t.property(t.identifier('dynamicOnRaw'), rawValue);
+
+        const dynamicOnProperty = t.property(t.identifier('dynamicOn'), clonedValue);
+
+        return [dynamicOnRawProperty, dynamicOnProperty];
     }
 
     genRef(ref: RefDirective) {

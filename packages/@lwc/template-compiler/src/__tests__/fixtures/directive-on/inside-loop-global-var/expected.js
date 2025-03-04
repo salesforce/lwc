@@ -3,20 +3,15 @@ import _implicitScopedStylesheets from "./inside-loop-global-var.scoped.css?scop
 import _xFoo from "x/foo";
 import { freezeTemplate, registerTemplate } from "lwc";
 function tmpl($api, $cmp, $slotset, $ctx) {
-  const {
-    k: api_key,
-    cop: api_copy,
-    c: api_custom_element,
-    i: api_iterator,
-  } = $api;
-  const { _m0, _m1 } = $ctx;
+  const { k: api_key, c: api_custom_element, i: api_iterator } = $api;
   return api_iterator($cmp.someArray, function (item) {
     return api_custom_element("x-foo", _xFoo, {
       key: api_key(0, item.key),
-      dynamicOn:
-        (($ctx._m1 = api_copy($cmp.hello, _m0, _m1)),
-        ($ctx._m0 = $cmp.hello),
-        $ctx._m1),
+      dynamicOnRaw: $cmp.hello,
+      dynamicOn: {
+        __proto__: null,
+        ...$cmp.hello,
+      },
     });
   });
   /*LWC compiler vX.X.X*/
