@@ -95,8 +95,7 @@ type RenderPrimitive =
     | 'staticFragment'
     | 'scopedSlotFactory'
     | 'staticPart'
-    | 'normalizeClassName'
-    | 'copy';
+    | 'normalizeClassName';
 
 interface RenderPrimitiveDefinition {
     name: string;
@@ -106,7 +105,6 @@ interface RenderPrimitiveDefinition {
 const RENDER_APIS: { [primitive in RenderPrimitive]: RenderPrimitiveDefinition } = {
     bind: { name: 'b', alias: 'api_bind' },
     comment: { name: 'co', alias: 'api_comment' },
-    copy: { name: 'cop', alias: 'api_copy' },
     customElement: { name: 'c', alias: 'api_custom_element' },
     // TODO [#3331]: remove usage of lwc:dynamic in 246
     deprecatedDynamicCtor: { name: 'ddc', alias: 'api_deprecated_dynamic_component' },
