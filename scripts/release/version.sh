@@ -15,7 +15,7 @@ if [ -z "$VERSION" ]; then
 fi
 
 # Avoid accidentally committing unrelated files
-if [[ -n `git status --porcelain` ]]; then
+if [[ -n $(git status --porcelain) ]]; then
   echo -e '\033[1mPlease stash your work before continuing.\n\033[0m'
   git status
   exit 1
