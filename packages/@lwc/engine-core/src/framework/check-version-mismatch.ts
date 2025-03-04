@@ -38,7 +38,7 @@ export function checkVersionMismatch(
 ) {
     const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
-        if (process?.env?.SKIP_LWC_VERSION_MISMATCH_CHECK === 'true') {
+        if (typeof process === 'object' && process.env.SKIP_LWC_VERSION_MISMATCH_CHECK === 'true') {
             warned = true; // skip printing out version mismatch errors when env var is set
             return;
         }
