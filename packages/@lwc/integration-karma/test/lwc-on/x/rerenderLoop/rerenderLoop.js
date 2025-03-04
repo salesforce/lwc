@@ -38,7 +38,13 @@ export default class RerenderLoop extends LightningElement {
     loopArray = [
         {
             key: 0,
-            get eventHandlers() {
+        },
+    ];
+
+    constructor() {
+        super();
+        Object.defineProperty(this.loopArray[0], 'eventHandlers', {
+            get: () => {
                 switch (this.listenersName) {
                     case 'modified click':
                         return modifiedClickObject;
@@ -50,8 +56,8 @@ export default class RerenderLoop extends LightningElement {
                         return defaultObject;
                 }
             },
-        },
-    ];
+        });
+    }
 
     @api
     triggerReRender() {
