@@ -38,7 +38,7 @@ export function patchDynamicEventListeners(
             // Throw if same object is passed
             if (isObjectSame) {
                 throw new Error(
-                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for '${sel}'. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
+                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for <${sel}>. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
                 );
             }
 
@@ -59,7 +59,7 @@ export function patchDynamicEventListeners(
             // Throw if same object is passed
             if (isObjectSame) {
                 throw new Error(
-                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for '${sel}'. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
+                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for <${sel}>. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
                 );
             }
 
