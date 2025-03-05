@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1203,
-            "message": "LWC1203: Invalid lwc:on usage on element \"<a>\". The directive binding must be an expression.",
+            "code": 1204,
+            "message": "LWC1204: Invalid lwc:on usage on element \"<a>\". The directive binding must be an expression.",
             "level": 1,
             "location": {
                 "line": 2,

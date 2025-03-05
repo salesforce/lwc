@@ -1,8 +1,8 @@
 {
     "warnings": [
         {
-            "code": 1204,
-            "message": "LWC1204: Invalid lwc:on usage on element \"<a>\". It is not permitted to use declarative event listeners alongside lwc:on",
+            "code": 1205,
+            "message": "LWC1205: Invalid lwc:on usage on element \"<a>\". It is not permitted to use declarative event listeners alongside lwc:on",
             "level": 1,
             "location": {
                 "line": 2,
