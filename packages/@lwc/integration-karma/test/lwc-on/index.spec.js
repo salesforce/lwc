@@ -194,7 +194,7 @@ describe('lwc:on', () => {
                     await new Promise((resolve) => setTimeout(resolve));
                     await new Promise((resolve) => setTimeout(resolve));
                     expect(caughtError.message).toBe(
-                        "Detected mutation of property 'mouseover' in the object passed to lwc:on for 'button'. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
                     );
                 });
 
@@ -204,7 +204,7 @@ describe('lwc:on', () => {
                     await new Promise((resolve) => setTimeout(resolve));
                     await new Promise((resolve) => setTimeout(resolve));
                     expect(caughtError.message).toBe(
-                        "Detected mutation of property 'click' in the object passed to lwc:on for 'button'. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
                     );
                 });
 
@@ -214,7 +214,7 @@ describe('lwc:on', () => {
                     await new Promise((resolve) => setTimeout(resolve));
                     await new Promise((resolve) => setTimeout(resolve));
                     expect(caughtError.message).toBe(
-                        "Detected mutation of property 'click' in the object passed to lwc:on for 'button'. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
                     );
                 });
             });
@@ -273,7 +273,7 @@ describe('lwc:on', () => {
                     await new Promise((resolve) => setTimeout(resolve));
                     await new Promise((resolve) => setTimeout(resolve));
                     expect(caughtError.message).toBe(
-                        "Detected mutation of property 'mouseover' in the object passed to lwc:on for 'button'. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
                     );
                 });
 
@@ -283,7 +283,7 @@ describe('lwc:on', () => {
                     await new Promise((resolve) => setTimeout(resolve));
                     await new Promise((resolve) => setTimeout(resolve));
                     expect(caughtError.message).toBe(
-                        "Detected mutation of property 'click' in the object passed to lwc:on for 'button'. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
                     );
                 });
 
@@ -293,7 +293,7 @@ describe('lwc:on', () => {
                     await new Promise((resolve) => setTimeout(resolve));
                     await new Promise((resolve) => setTimeout(resolve));
                     expect(caughtError.message).toBe(
-                        "Detected mutation of property 'click' in the object passed to lwc:on for 'button'. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
                     );
                 });
             });
