@@ -66,23 +66,24 @@ export function renderStylesheets(
         const token = scoped ? scopeToken : undefined;
         const useActualHostSelector = !scoped || renderMode !== 'light';
         const useNativeDirPseudoclass = true;
+        const { styleDedupeIsEnabled, stylesheetToId, styleDedupePrefix } = emit.cxt;
 
-        if (!emit.cxt.styleDedupeIsEnabled) {
+        if (!styleDedupeIsEnabled) {
             const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
             validateStyleTextContents(styleContents);
             result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
-        } else if (emit.cxt.stylesheetToId.has(stylesheet)) {
-            const styleId = emit.cxt.stylesheetToId.get(stylesheet);
-            result += `<lwc-style style-id="lwc-style-${emit.cxt.styleDedupePrefix}-${styleId}"></lwc-style>`;
+        } else if (stylesheetToId.has(stylesheet)) {
+            const styleId = stylesheetToId.get(stylesheet);
+            result += `<lwc-style style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
         } else {
             const styleId = emit.cxt.nextId++;
-            emit.cxt.stylesheetToId.set(stylesheet, styleId.toString());
+            stylesheetToId.set(stylesheet, styleId.toString());
             const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
             validateStyleTextContents(styleContents);
 
             // TODO [#2869]: `<style>`s should not have scope token classes
-            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style-${emit.cxt.styleDedupePrefix}-${styleId}" type="text/css">${styleContents}</style>`;
-            result += `<lwc-style style-id="lwc-style-${emit.cxt.styleDedupePrefix}-${styleId}"></lwc-style>`;
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style-${styleDedupePrefix}-${styleId}" type="text/css">${styleContents}</style>`;
+            result += `<lwc-style style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
         }
     };
 
