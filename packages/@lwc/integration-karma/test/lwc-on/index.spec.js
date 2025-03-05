@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import Basic from 'x/basic';
+import ExecutionContext from 'x/executionContext';
 import Ignored from 'x/ignored';
 import CaseVariants from 'x/caseVariants';
 import Spread from 'x/spread';
@@ -11,40 +12,43 @@ import PublicProp from 'x/publicProp';
 import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 
 describe('lwc:on', () => {
-    let consoleSpy;
-
-    beforeEach(() => {
-        consoleSpy = spyOn(console, 'log');
-    });
-
     it('adds multiple event listeners', () => {
         const element = createElement('x-basic', { is: Basic });
+        const testClick = jasmine.createSpy('click handler');
+        const testMouseover = jasmine.createSpy('mouseover handler');
+        element.testClick = testClick;
+        element.testMouseover = testMouseover;
         document.body.appendChild(element);
-
         const button = element.shadowRoot.querySelector('button');
+
         button.click();
         button.dispatchEvent(new MouseEvent('mouseover'));
 
-        expect(consoleSpy).toHaveBeenCalledWith('click handler called');
-        expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+        expect(testClick).toHaveBeenCalled();
+        expect(testMouseover).toHaveBeenCalled();
     });
 
     it('event listeners added by lwc:on are bound to the owner component', () => {
-        const element = createElement('x-basic', { is: Basic });
+        const element = createElement('x-execution-context', { is: ExecutionContext });
+        const testClick = jasmine.createSpy('click handler');
+        element.testClick = testClick;
         document.body.appendChild(element);
-
         const button = element.shadowRoot.querySelector('button');
+
         button.click();
 
-        expect(consoleSpy).toHaveBeenCalledWith("'this' is the component");
+        expect(testClick).toHaveBeenCalledWith("'this' is the component");
     });
 
     describe('ignored properties', () => {
         let element;
         let button;
+        let testClick;
 
         function setup(propType) {
             element = createElement('x-ignored', { is: Ignored });
+            testClick = jasmine.createSpy('click handler');
+            element.testClick = testClick;
             element.propType = propType;
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');
@@ -55,13 +59,13 @@ describe('lwc:on', () => {
         it('silently ignores non-enumerable properties', () => {
             setup('non-enumerable');
             button.click();
-            expect(consoleSpy).not.toHaveBeenCalledWith('non-enumerable handler called');
+            expect(testClick).not.toHaveBeenCalled();
         });
 
         it('silently ignores inherited properties', () => {
             setup('inherited');
             button.click();
-            expect(consoleSpy).not.toHaveBeenCalledWith('inherited handler called');
+            expect(testClick).not.toHaveBeenCalled();
         });
 
         it('silently ignores symbol-keyed properties', () => {
@@ -72,9 +76,12 @@ describe('lwc:on', () => {
     describe('event type case', () => {
         let element;
         let button;
+        let testClick;
 
         function setup(propCase) {
             element = createElement('x-case-variants', { is: CaseVariants });
+            testClick = jasmine.createSpy('click handler');
+            element.testClick = testClick;
             element.propCase = propCase;
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');
@@ -83,56 +90,60 @@ describe('lwc:on', () => {
         it('adds event listeners corresponding to lowercase keyed property', () => {
             setup('lower');
             button.dispatchEvent(new CustomEvent('lowercase'));
-            expect(consoleSpy).toHaveBeenCalledWith('lowercase handler called');
+            expect(testClick).toHaveBeenCalledWith('lowercase handler called');
         });
 
         it('adds event listeners corresponding to kebab-case keyed property', () => {
             setup('kebab');
             button.dispatchEvent(new CustomEvent('kebab-case'));
-            expect(consoleSpy).toHaveBeenCalledWith('kebab-case handler called');
+            expect(testClick).toHaveBeenCalledWith('kebab-case handler called');
         });
 
         it('adds event listeners corresponding to camelCase keyed property', () => {
             setup('camel');
             button.dispatchEvent(new CustomEvent('camelCase'));
-            expect(consoleSpy).toHaveBeenCalledWith('camelCase handler called');
+            expect(testClick).toHaveBeenCalledWith('camelCase handler called');
         });
 
         it('adds event listeners corresponding to CAPScase keyed property', () => {
             setup('caps');
             button.dispatchEvent(new CustomEvent('CAPSCASE'));
-            expect(consoleSpy).toHaveBeenCalledWith('CAPSCASE handler called');
+            expect(testClick).toHaveBeenCalledWith('CAPSCASE handler called');
         });
 
         it('adds event listeners corresponding to PascalCase keyed property', () => {
             setup('pascal');
             button.dispatchEvent(new CustomEvent('PascalCase'));
-            expect(consoleSpy).toHaveBeenCalledWith('PascalCase handler called');
+            expect(testClick).toHaveBeenCalledWith('PascalCase handler called');
         });
 
         it('adds event listeners corresponding to empty-string keyed property', () => {
             setup('empty');
             button.dispatchEvent(new CustomEvent(''));
-            expect(consoleSpy).toHaveBeenCalledWith('empty string handler called');
+            expect(testClick).toHaveBeenCalledWith('empty string handler called');
         });
     });
 
     it('event listeners are added independently from lwc:on and lwc:spread', () => {
         const element = createElement('x-spread', { is: Spread });
+        const testClick = jasmine.createSpy('click handler');
+        element.testClick = testClick;
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
         button.click();
 
-        expect(consoleSpy).toHaveBeenCalledWith('lwc:spread handler called');
-        expect(consoleSpy).toHaveBeenCalledWith('lwc:on handler called');
+        expect(testClick).toHaveBeenCalledWith('lwc:spread handler called');
+        expect(testClick).toHaveBeenCalledWith('lwc:on handler called');
     });
 
     it("event listeners are added before child's connectedCallback", () => {
         const element = createElement('x-lifecycle', { is: Lifecycle });
+        const testFoo = jasmine.createSpy('foo handler');
+        element.testFoo = testFoo;
         document.body.appendChild(element);
 
-        expect(consoleSpy).toHaveBeenCalledWith(
+        expect(testFoo).toHaveBeenCalledWith(
             'handled events dispatched from child connectedCallback'
         );
     });
@@ -140,10 +151,19 @@ describe('lwc:on', () => {
     describe('re-render behavior', () => {
         let element;
         let button;
+        let testClick;
+        let testModifiedClick;
+        let testMouseover;
 
         describe('without for:each loop', () => {
             beforeEach(() => {
                 element = createElement('x-rerender', { is: Rerender });
+                testClick = jasmine.createSpy('click handler');
+                testModifiedClick = jasmine.createSpy('modified click handler');
+                testMouseover = jasmine.createSpy('mouseover handler');
+                element.testClick = testClick;
+                element.testModifiedClick = testModifiedClick;
+                element.testMouseover = testMouseover;
                 document.body.appendChild(element);
                 button = element.shadowRoot.querySelector('button');
             });
@@ -155,8 +175,8 @@ describe('lwc:on', () => {
 
                     button.click();
                     button.dispatchEvent(new MouseEvent('mouseover'));
-                    expect(consoleSpy).toHaveBeenCalledWith('click handler called');
-                    expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+                    expect(testClick).toHaveBeenCalledWith('click handler called');
+                    expect(testMouseover).toHaveBeenCalledWith('mouseover handler called');
                 });
 
                 it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
@@ -164,7 +184,7 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                    expect(testClick).not.toHaveBeenCalledWith('click handler called');
                 });
 
                 it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
@@ -172,8 +192,8 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
-                    expect(consoleSpy).toHaveBeenCalledWith('modified click handler called');
+                    expect(testClick).not.toHaveBeenCalledWith('click handler called');
+                    expect(testModifiedClick).toHaveBeenCalledWith('modified click handler called');
                 });
             });
 
@@ -223,6 +243,12 @@ describe('lwc:on', () => {
         describe('with for:each loop and local variable passed as argument to lwc:on', () => {
             beforeEach(() => {
                 element = createElement('x-rerender-loop', { is: RerenderLoop });
+                testClick = jasmine.createSpy('click handler');
+                testModifiedClick = jasmine.createSpy('modified click handler');
+                testMouseover = jasmine.createSpy('mouseover handler');
+                element.testClick = testClick;
+                element.testModifiedClick = testModifiedClick;
+                element.testMouseover = testMouseover;
                 document.body.appendChild(element);
                 button = element.shadowRoot.querySelector('button');
             });
@@ -234,8 +260,8 @@ describe('lwc:on', () => {
 
                     button.click();
                     button.dispatchEvent(new MouseEvent('mouseover'));
-                    expect(consoleSpy).toHaveBeenCalledWith('click handler called');
-                    expect(consoleSpy).toHaveBeenCalledWith('mouseover handler called');
+                    expect(testClick).toHaveBeenCalledWith('click handler called');
+                    expect(testMouseover).toHaveBeenCalledWith('mouseover handler called');
                 });
 
                 it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
@@ -243,7 +269,7 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
+                    expect(testClick).not.toHaveBeenCalledWith('click handler called');
                 });
 
                 it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
@@ -251,8 +277,8 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(consoleSpy).not.toHaveBeenCalledWith('click handler called');
-                    expect(consoleSpy).toHaveBeenCalledWith('modified click handler called');
+                    expect(testClick).not.toHaveBeenCalledWith('click handler called');
+                    expect(testModifiedClick).toHaveBeenCalledWith('modified click handler called');
                 });
             });
 
@@ -303,16 +329,14 @@ describe('lwc:on', () => {
     it('works when the object is passed as public property to component', () => {
         // In this test, we are implicitly asserting that no error is thrown if the test passes
         const element = createElement('x-public-prop', { is: PublicProp });
+        const testClick = jasmine.createSpy('click handler');
         element.eventHandlers = {
-            click: function () {
-                // eslint-disable-next-line no-console
-                console.log('click handler called');
-            },
+            click: testClick,
         };
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
         button.click();
-        expect(consoleSpy).toHaveBeenCalledWith('click handler called');
+        expect(testClick).toHaveBeenCalled();
     });
 });

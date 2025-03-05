@@ -2,7 +2,7 @@ import { LightningElement, api } from 'lwc';
 
 let testClick;
 
-export default class Spread extends LightningElement {
+export default class ExecutionContext extends LightningElement {
     @api
     get testClick() {
         return testClick;
@@ -11,15 +11,11 @@ export default class Spread extends LightningElement {
         testClick = val;
     }
 
-    spreadObject = {
-        onclick: function () {
-            testClick('lwc:spread handler called');
-        },
-    };
+    privateVariable = "'this' is the component"; // available only on the component not on the element
 
     eventHandlers = {
         click: function () {
-            testClick('lwc:on handler called');
+            testClick(this.privateVariable);
         },
     };
 }

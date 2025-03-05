@@ -1,18 +1,20 @@
 import { LightningElement, api } from 'lwc';
 
-/* eslint-disable no-console */
+let testClick;
+let testModifiedClick;
+let testMouseover;
+
 const clickHandler = function () {
-    console.log('click handler called');
+    testClick('click handler called');
 };
 
 const modifiedClickHandler = function () {
-    console.log('modified click handler called');
+    testModifiedClick('modified click handler called');
 };
 
 const mouseoverHandler = function () {
-    console.log('mouseover handler called');
+    testMouseover('mouseover handler called');
 };
-/* eslint-enable no-console */
 
 const clickObject = {
     click: clickHandler,
@@ -34,6 +36,30 @@ const defaultObject = clickObject;
 export default class Rerender extends LightningElement {
     dummy = 'dummy initial';
     @api listenersName;
+
+    @api
+    get testClick() {
+        return testClick;
+    }
+    set testClick(val) {
+        testClick = val;
+    }
+
+    @api
+    get testModifiedClick() {
+        return testModifiedClick;
+    }
+    set testModifiedClick(val) {
+        testModifiedClick = val;
+    }
+
+    @api
+    get testMouseover() {
+        return testMouseover;
+    }
+    set testMouseover(val) {
+        testMouseover = val;
+    }
 
     get eventHandlers() {
         switch (this.listenersName) {

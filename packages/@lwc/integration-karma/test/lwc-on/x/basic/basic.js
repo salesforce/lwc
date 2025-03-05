@@ -1,17 +1,30 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
 
+let testClick;
+let testMouseover;
 export default class Basic extends LightningElement {
-    privateVariable = "'this' is the component"; // available only on the component not on the element
+    @api
+    get testClick() {
+        return testClick;
+    }
+    set testClick(val) {
+        testClick = val;
+    }
 
-    /* eslint-disable no-console */
+    @api
+    get testMouseover() {
+        return testMouseover;
+    }
+    set testMouseover(val) {
+        testMouseover = val;
+    }
+
     eventHandlers = {
         click: function () {
-            console.log('click handler called');
-            console.log(this.privateVariable);
+            testClick('click handler called');
         },
         mouseover: function () {
-            console.log('mouseover handler called');
+            testMouseover('mouseover handler called');
         },
     };
-    /* eslint-enable no-console */
 }

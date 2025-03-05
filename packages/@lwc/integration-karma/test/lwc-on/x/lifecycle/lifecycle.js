@@ -1,11 +1,19 @@
-import { LightningElement } from 'lwc';
+import { LightningElement, api } from 'lwc';
+
+let testFoo;
 
 export default class Lifecycle extends LightningElement {
-    /* eslint-disable no-console */
+    @api
+    get testFoo() {
+        return testFoo;
+    }
+    set testFoo(val) {
+        testFoo = val;
+    }
+
     eventHandlers = {
-        test: function () {
-            console.log('handled events dispatched from child connectedCallback');
+        foo: function () {
+            testFoo('handled events dispatched from child connectedCallback');
         },
     };
-    /* eslint-enable no-console */
 }
