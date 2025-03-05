@@ -44,8 +44,8 @@ export function patchDynamicEventListeners(
 
             // Remove listeners that were attached previously but don't have a corresponding property in `newDynamicOn`
             const attachedEventListener = attachedEventListeners[eventType];
-            removeEventListener(elm, eventType, attachedEventListener);
-            delete attachedEventListeners[eventType];
+            removeEventListener(elm, eventType, attachedEventListener!);
+            attachedEventListeners[eventType] = undefined;
         }
     }
 
@@ -66,7 +66,7 @@ export function patchDynamicEventListeners(
             // Remove listener that was attached previously
             if (oldCallback) {
                 const attachedEventListener = attachedEventListeners[eventType];
-                removeEventListener(elm, eventType, attachedEventListener);
+                removeEventListener(elm, eventType, attachedEventListener!);
             }
 
             // Bind callback to owner component and add it as listener to element
@@ -79,7 +79,10 @@ export function patchDynamicEventListeners(
     }
 }
 
-function getAttachedEventListeners(vm: VM, elm: Element): Record<string, EventListener> {
+function getAttachedEventListeners(
+    vm: VM,
+    elm: Element
+): Record<string, EventListener | undefined> {
     let attachedEventListeners = vm.attachedEventListeners.get(elm);
     if (isUndefined(attachedEventListeners)) {
         attachedEventListeners = {};
