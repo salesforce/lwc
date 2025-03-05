@@ -6,4 +6,5 @@
  */
 export * from './test-fixture-dir';
 export * from './format-html';
+export * from './swap-lwc-style-for-style';
 export { default as pluginVirtual } from '../rollup/plugin-virtual';

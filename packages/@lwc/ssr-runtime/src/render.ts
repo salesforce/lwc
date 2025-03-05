@@ -11,6 +11,7 @@ import {
     isUndefined,
     DEFAULT_SSR_MODE,
     htmlEscape,
+    type Stylesheet,
 } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
@@ -190,10 +191,24 @@ interface ComponentWithGenerateMarkup extends LightningElementConstructor {
     [SYMBOL__GENERATE_MARKUP]?: GenerateMarkupVariants;
 }
 
+export class RenderContext {
+    styleDedupeIsEnabled: boolean;
+    stylesheetToId = new WeakMap<Stylesheet, string>();
+    styleDedupePrefix: string;
+    nextId = 0;
+
+    constructor(styleDedupePrefix: string, styleDedupeIsEnabled: boolean) {
+        this.styleDedupeIsEnabled = styleDedupeIsEnabled;
+        this.styleDedupePrefix = styleDedupePrefix;
+    }
+}
+
 export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
+    styleDedupePrefix = '',
+    styleDedupeIsEnabled = false,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
     if (typeof tagName !== 'string') {
@@ -206,6 +221,8 @@ export async function serverSideRenderComponent(
     const emit = (segment: string) => {
         markup += segment;
     };
+
+    emit.cxt = new RenderContext(styleDedupePrefix, styleDedupeIsEnabled);
 
     if (!generateMarkup) {
         // If a non-component is accidentally provided, render an empty template
