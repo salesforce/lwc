@@ -85,6 +85,7 @@ export function testFixtureDir<T>(
     config: {
         pattern: string;
         root: string;
+        ssrVersion: number;
         expectedFailures?: Set<string>;
     },
     testFn: (options: {
@@ -102,7 +103,7 @@ export function testFixtureDir<T>(
         throw new TypeError(`Expected second argument to be a function`);
     }
 
-    const { pattern, root } = config;
+    const { pattern, root, ssrVersion } = config;
     if (!pattern || !root) {
         throw new TypeError(`Expected a "root" and a "pattern" config to be specified`);
     }
@@ -142,7 +143,15 @@ export function testFixtureDir<T>(
             for (const [outputName, content] of outputsList) {
                 const outputPath = path.resolve(dirname, outputName);
                 try {
-                    await expect(content ?? '').toMatchHtmlSnapshot(outputPath, expect);
+                    if (ssrVersion === 1) {
+                        await expect(content ?? '').toMatchHtmlSnapshot(outputPath, expect);
+                    } else if (ssrVersion === 2) {
+                        await expect(content ?? '').toMatchFileSnapshot(outputPath);
+                    } else {
+                        throw new Error(
+                            `Invalid ssrVertion provided to testFixtureDir: ${ssrVersion}`
+                        );
+                    }
                 } catch (err) {
                     if (typeof err === 'object' && err !== null) {
                         // Hide unhelpful noise in the stack trace

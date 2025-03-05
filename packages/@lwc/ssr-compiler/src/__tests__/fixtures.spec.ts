@@ -92,6 +92,7 @@ describe.concurrent('fixtures', () => {
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/config.json',
+            ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests
             expectedFailures,
         },

@@ -102,6 +102,7 @@ function testFixtures(options?: RollupLwcOptions) {
     testFixtureDir<FixtureConfig>(
         {
             root: path.resolve(__dirname, 'fixtures'),
+            ssrVersion: 1,
             pattern: '**/config.json',
         },
         async ({ dirname, config }) => {
