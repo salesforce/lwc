@@ -17,7 +17,7 @@ interface StyleTagInfo {
     idAttrStr: string;
     styleId: string;
     styleTagIdx: number;
-    indentation: number | null;
+    indentation: number;
 }
 
 export function swapLwcStyleForStyleTag(src: string): string {
@@ -46,7 +46,7 @@ export function swapLwcStyleForStyleTag(src: string): string {
             idAttrStr,
             styleId,
             styleTagIdx,
-            indentation: leadingWhiteSpace.length ? leadingWhiteSpace.length : null,
+            indentation: leadingWhiteSpace.length,
         });
     }
 
