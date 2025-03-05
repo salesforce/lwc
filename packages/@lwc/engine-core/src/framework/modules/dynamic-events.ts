@@ -24,10 +24,12 @@ export function patchDynamicEventListeners(
         sel,
     } = vnode;
 
+    // dynamicOn : A cloned version of the object passed to lwc:on, with a null prototype and only its own enumerable properties.
     const oldDynamicOn = oldVnode?.data?.dynamicOn ?? EmptyObject;
     const newDynamicOn = dynamicOn ?? EmptyObject;
 
-    // Compare raw values to check if same object is passed to lwc:on
+    // dynamicOnRaw : object passed to lwc:on
+    // Compare dynamicOnRaw to check if same object is passed to lwc:on
     const isObjectSame = oldVnode?.data?.dynamicOnRaw === dynamicOnRaw;
 
     const { addEventListener, removeEventListener } = renderer;
