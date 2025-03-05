@@ -89,7 +89,7 @@ export function swapLwcStyleForStyleTag(src: string): string {
                         return line.padStart(line.length + indentationDelta);
                     }
                     // The original <style> is less indented than the <lwc-style>
-                    return line.slice(indentationDelta * -1);
+                    return line.slice(-indentationDelta);
                 })
                 .join('\n');
             console.log(styleTagWithoutId);
