@@ -22,11 +22,11 @@ import * as fs from 'node:fs/promises';
 import { equals, type Assertion, type ChaiPlugin, type ExpectStatic } from '@vitest/expect';
 import { swapLwcStyleForStyleTag } from './swap-lwc-style-for-style';
 
-function createMismatchError(
+function createMismatchError<T = unknown>(
     message: string,
     expand: boolean | undefined,
-    actual: unknown,
-    expected: unknown
+    actual: T,
+    expected: T
 ) {
     // TODO [W-17971915]: clean this up, potentially using AssertionError
     const error = new Error(message);
