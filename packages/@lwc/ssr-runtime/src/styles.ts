@@ -44,7 +44,7 @@ export function hasScopedStaticStylesheets(Component: LightningElementConstructo
 }
 
 export function renderStylesheets(
-    // Follow-up needed: the `emit` function does not exist in the SSR's compiler's yield mode. If we
+    // FIXME: the `emit` function does not exist in the SSR's compiler's yield mode. If we
     // are going to use it to transport the RenderContext down the call stack, we'll need to figure out
     // how to make htat work in yield mode.
     emit: EmitFn,
