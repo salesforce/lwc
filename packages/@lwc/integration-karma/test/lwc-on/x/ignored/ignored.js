@@ -1,11 +1,11 @@
 import { LightningElement, api } from 'lwc';
 
-let testClick;
+let testFn;
 
 const nonEnumerableProp = Object.create(null, {
     click: {
         value: function () {
-            testClick('non-enumerable handler called');
+            testFn('non-enumerable handler called');
         },
         enumerable: false,
     },
@@ -14,25 +14,25 @@ const nonEnumerableProp = Object.create(null, {
 const inheritedProp = {
     __proto__: {
         click: function () {
-            testClick('inherited handler called');
+            testFn('inherited handler called');
         },
     },
 };
 
 const symbolKeyProp = {
     [Symbol('test')]: function () {
-        testClick('symbol-keyed handler called');
+        testFn('symbol-keyed handler called');
     },
 };
 export default class Ignored extends LightningElement {
     @api propType;
 
     @api
-    get testClick() {
-        return testClick;
+    get testFn() {
+        return testFn;
     }
-    set testClick(val) {
-        testClick = val;
+    set testFn(val) {
+        testFn = val;
     }
 
     get eventHandlers() {

@@ -1,19 +1,19 @@
 import { LightningElement, api } from 'lwc';
 
-let testFoo;
+let testFn;
 
 export default class Lifecycle extends LightningElement {
     @api
-    get testFoo() {
-        return testFoo;
+    get testFn() {
+        return testFn;
     }
-    set testFoo(val) {
-        testFoo = val;
+    set testFn(val) {
+        testFn = val;
     }
 
     eventHandlers = {
         foo: function () {
-            testFoo('handled events dispatched from child connectedCallback');
+            testFn('handled events dispatched from child connectedCallback');
         },
     };
 }

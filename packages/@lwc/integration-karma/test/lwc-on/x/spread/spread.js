@@ -1,25 +1,25 @@
 import { LightningElement, api } from 'lwc';
 
-let testClick;
+let testFn;
 
 export default class Spread extends LightningElement {
     @api
-    get testClick() {
-        return testClick;
+    get testFn() {
+        return testFn;
     }
-    set testClick(val) {
-        testClick = val;
+    set testFn(val) {
+        testFn = val;
     }
 
     spreadObject = {
         onclick: function () {
-            testClick('lwc:spread handler called');
+            testFn('lwc:spread handler called');
         },
     };
 
     eventHandlers = {
         click: function () {
-            testClick('lwc:on handler called');
+            testFn('lwc:on handler called');
         },
     };
 }

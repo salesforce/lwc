@@ -1,21 +1,21 @@
 import { LightningElement, api } from 'lwc';
 
-let testClick;
+let testFn;
 
 export default class ExecutionContext extends LightningElement {
     @api
-    get testClick() {
-        return testClick;
+    get testFn() {
+        return testFn;
     }
-    set testClick(val) {
-        testClick = val;
+    set testFn(val) {
+        testFn = val;
     }
 
     privateVariable = "'this' is the component"; // available only on the component not on the element
 
     eventHandlers = {
         click: function () {
-            testClick(this.privateVariable);
+            testFn(this.privateVariable);
         },
     };
 }

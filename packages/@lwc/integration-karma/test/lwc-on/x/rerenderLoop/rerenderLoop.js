@@ -1,19 +1,17 @@
 import { LightningElement, api } from 'lwc';
 
-let testClick;
-let testModifiedClick;
-let testMouseover;
+let testFn;
 
 const clickHandler = function () {
-    testClick('click handler called');
+    testFn('click handler called');
 };
 
 const modifiedClickHandler = function () {
-    testModifiedClick('modified click handler called');
+    testFn('modified click handler called');
 };
 
 const mouseoverHandler = function () {
-    testMouseover('mouseover handler called');
+    testFn('mouseover handler called');
 };
 
 const clickObject = {
@@ -38,27 +36,11 @@ export default class RerenderLoop extends LightningElement {
     @api listenersName;
 
     @api
-    get testClick() {
-        return testClick;
+    get testFn() {
+        return testFn;
     }
-    set testClick(val) {
-        testClick = val;
-    }
-
-    @api
-    get testModifiedClick() {
-        return testModifiedClick;
-    }
-    set testModifiedClick(val) {
-        testModifiedClick = val;
-    }
-
-    @api
-    get testMouseover() {
-        return testMouseover;
-    }
-    set testMouseover(val) {
-        testMouseover = val;
+    set testFn(val) {
+        testFn = val;
     }
 
     loopArray = [

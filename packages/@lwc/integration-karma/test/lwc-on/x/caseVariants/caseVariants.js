@@ -1,40 +1,40 @@
 import { LightningElement, api } from 'lwc';
 
-let testClick;
+let testFn;
 
 const lowercase = {
     lowercase: function () {
-        testClick('lowercase handler called');
+        testFn('lowercase handler called');
     },
 };
 
 const kebab_case = {
     'kebab-case': function () {
-        testClick('kebab-case handler called');
+        testFn('kebab-case handler called');
     },
 };
 
 const camelCase = {
     camelCase: function () {
-        testClick('camelCase handler called');
+        testFn('camelCase handler called');
     },
 };
 
 const CAPSCASE = {
     CAPSCASE: function () {
-        testClick('CAPSCASE handler called');
+        testFn('CAPSCASE handler called');
     },
 };
 
 const PascalCase = {
     PascalCase: function () {
-        testClick('PascalCase handler called');
+        testFn('PascalCase handler called');
     },
 };
 
 const empty_string = {
     '': function () {
-        testClick('empty string handler called');
+        testFn('empty string handler called');
     },
 };
 
@@ -42,11 +42,11 @@ export default class CaseVariants extends LightningElement {
     @api propCase;
 
     @api
-    get testClick() {
-        return testClick;
+    get testFn() {
+        return testFn;
     }
-    set testClick(val) {
-        testClick = val;
+    set testFn(val) {
+        testFn = val;
     }
 
     get eventHandlers() {
