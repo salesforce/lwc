@@ -985,6 +985,10 @@ function applyLwcOnDirective(
         return;
     }
 
+    if (!ctx.config.enableLwcOn) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_OPTS, element);
+    }
+
     const { value: lwcOnValue } = lwcOn;
     if (!ast.isExpression(lwcOnValue)) {
         ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_LITERAL_PROP, element, [`<${tag}>`]);
@@ -1675,6 +1679,9 @@ function validateTemplate(
     }
 
     if (parsedAttr.get(ElementDirectiveName.On)) {
+        if (!ctx.config.enableLwcOn) {
+            ctx.throwAtLocation(ParserDiagnostics.INVALID_LWC_ON_OPTS, location, ['<template>']);
+        }
         ctx.throwAtLocation(ParserDiagnostics.INVALID_LWC_ON_ELEMENT, location, ['<template>']);
     }
 

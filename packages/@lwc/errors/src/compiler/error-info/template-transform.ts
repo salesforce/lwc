@@ -971,4 +971,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    INVALID_LWC_ON_OPTS: {
+        code: 1205,
+        message:
+            'Invalid lwc:on usage. The `lwc:on` directive must be enabled in order to use this feature.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

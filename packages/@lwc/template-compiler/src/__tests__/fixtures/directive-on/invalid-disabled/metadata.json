@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1205,
+            "message": "LWC1205: Invalid lwc:on usage. The `lwc:on` directive must be enabled in order to use this feature.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 22
+            }
+        }
+    ]
+}

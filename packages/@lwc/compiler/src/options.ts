@@ -125,6 +125,8 @@ export interface TransformOptions {
     customRendererConfig?: CustomRendererConfig;
     /** @deprecated Ignored by compiler. `lwc:spread` is always enabled. */
     enableLwcSpread?: boolean;
+    /** Flag to enable usage of dynamic event listeners (lwc:on) directive in HTML template */
+    enableLwcOn?: boolean;
     /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output. */
     disableSyntheticShadowSupport?: boolean;
     /**
@@ -148,6 +150,7 @@ type OptionalTransformKeys =
     | 'scopedStyles'
     | 'customRendererConfig'
     | 'enableLwcSpread'
+    | 'enableLwcOn'
     | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
     | 'experimentalDynamicDirective'
