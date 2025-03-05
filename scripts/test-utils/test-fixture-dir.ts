@@ -143,14 +143,10 @@ export function testFixtureDir<T>(
             for (const [outputName, content] of outputsList) {
                 const outputPath = path.resolve(dirname, outputName);
                 try {
-                    if (ssrVersion === 1) {
+                    if (ssrVersion === 1 && outputName.endsWith('.html')) {
                         await expect(content ?? '').toMatchHtmlSnapshot(outputPath, expect);
-                    } else if (ssrVersion === 2) {
-                        await expect(content ?? '').toMatchFileSnapshot(outputPath);
                     } else {
-                        throw new Error(
-                            `Invalid ssrVertion provided to testFixtureDir: ${ssrVersion}`
-                        );
+                        await expect(content ?? '').toMatchFileSnapshot(outputPath);
                     }
                 } catch (err) {
                     if (typeof err === 'object' && err !== null) {

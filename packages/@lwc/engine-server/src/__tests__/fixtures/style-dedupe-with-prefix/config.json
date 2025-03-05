@@ -1,3 +1,4 @@
 {
+    "entry": "x/parent",
     "styleDedupePrefix": "island1"
 }
