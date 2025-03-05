@@ -27,7 +27,7 @@ export function swapLwcStyleForStyleTag(src: string): string {
     const capturedStyleTags: StyleTagInfo[] = [];
     let styleTagMatch: RegExpExecArray | null = null;
 
-    // Find all <style> tags, remove id attrs, capture information for later replacement of <lwc-style> tags
+    // Find all <style> tags with an id, remove id attrs, capture information for later replacement of <lwc-style> tags
     while ((styleTagMatch = styleCapture.exec(modifiedSrc))) {
         const [tagWithLeadingWhitespace, leadingWhiteSpace, originalStyleTag, idAttrStr, styleId] =
             styleTagMatch;
