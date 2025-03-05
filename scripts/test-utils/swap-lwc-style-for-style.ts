@@ -92,7 +92,6 @@ export function swapLwcStyleForStyleTag(src: string): string {
                     return line.slice(-indentationDelta);
                 })
                 .join('\n');
-            console.log(styleTagWithoutId);
         }
 
         modifiedSrc =
