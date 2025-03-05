@@ -22,6 +22,7 @@ interface StyleTagInfo {
 
 export function swapLwcStyleForStyleTag(src: string): string {
     let modifiedSrc = src;
+    // ([leading whitespace])(<style (id="(text)")...>...</style>)
     const styleCapture = /(\s*)(<style [^>]*(id="([^"]+)" ?)[^>]*>.*?<\/style>)/s;
     const capturedStyleTags: StyleTagInfo[] = [];
     let styleTagMatch: RegExpExecArray | null = null;
