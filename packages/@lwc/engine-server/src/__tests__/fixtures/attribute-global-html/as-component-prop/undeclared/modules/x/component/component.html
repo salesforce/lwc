@@ -1,4 +1,11 @@
 <template>
+    <!--
+        Please Note: There are dedicated tests for the following due to V1/2 disparities:
+            - @lwc/engine-server/src/__tests__/fixtures/attribute-global-html/draggable
+            - @lwc/engine-server/src/__tests__/fixtures/attribute-global-html/hidden
+            - @lwc/engine-server/src/__tests__/fixtures/attribute-global-html/spellcheck
+            - @lwc/engine-server/src/__tests__/fixtures/attribute-global-html/tabindex
+    -->
     <x-child
         accesskey={dynamic}
         aria-activedescendant={dynamic}
@@ -62,14 +69,12 @@
         details={dynamic}
         dir={dynamic}
         disabled={dynamic}
-        draggable={dynamic}
         enterkeyhint={dynamic}
         exportparts={dynamic}
         fieldset={dynamic}
         form={dynamic}
         formaction={dynamic}
         formnovalidate={dynamic}
-        hidden={dynamic}
         id={dynamic}
         input={dynamic}
         inputmode={dynamic}
@@ -100,8 +105,6 @@
         rowspan={dynamic}
         select={dynamic}
         selected={dynamic}
-        spellcheck={dynamic}
-        tabindex={dynamic}
         textarea={dynamic}
         title={dynamic}
         translate={dynamic}

@@ -24,6 +24,7 @@ const {
     DISABLE_SYNTHETIC,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
+    ENGINE_SERVER,
 } = require('../shared/options');
 
 const DIST_DIR = path.resolve(__dirname, '../../dist');
@@ -47,6 +48,7 @@ function createEnvFile() {
                 LWC_VERSION: ${JSON.stringify(LWC_VERSION)},
                 NATIVE_SHADOW: ${DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST},
                 NODE_ENV: ${JSON.stringify(NODE_ENV_FOR_TEST || 'development')},
+                ENGINE_SERVER: ${ENGINE_SERVER},
             }
         };
         globalThis.lwcRuntimeFlags = {

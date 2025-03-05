@@ -36,6 +36,7 @@ const API_VERSION = process.env.API_VERSION
 const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
     process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
 );
+const ENGINE_SERVER = Boolean(process.env.ENGINE_SERVER);
 
 const baseOptions = {
     API_VERSION,
@@ -48,6 +49,7 @@ const baseOptions = {
     LEGACY_BROWSERS,
     NODE_ENV_FOR_TEST,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
+    ENGINE_SERVER,
 };
 
 /** Unique directory name that encodes the flags that the tests were executed with. */

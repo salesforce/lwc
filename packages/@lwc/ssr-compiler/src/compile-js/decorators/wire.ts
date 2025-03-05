@@ -24,6 +24,7 @@ import type {
     BlockStatement,
     Decorator,
     CallExpression,
+    SpreadElement,
 } from 'estree';
 import type { ComponentMetaState, WireAdapter } from '../types';
 
@@ -42,36 +43,29 @@ function bMemberExpressionChain(props: string[]): MemberExpression {
 
 function getWireParams(
     node: MethodDefinition | PropertyDefinition
-): [Expression, Expression | undefined] {
+): (Expression | SpreadElement)[] {
     const { decorators } = node;
 
     if (decorators.length > 1) {
         throw generateError(node, DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED);
     }
 
-    // validate the parameters
+    // Before calling this function, we validate that it has exactly one decorator, @wire
     const wireDecorator = decorators[0].expression;
     if (!is.callExpression(wireDecorator)) {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-        throw new Error('todo - invalid usage');
+        throw generateError(node, DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER);
     }
 
     const args = wireDecorator.arguments;
-    if (args.length === 0 || args.length > 2) {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-        throw new Error('todo - wrong number of args');
+    if (args.length === 0) {
+        throw generateError(node, DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER);
     }
 
-    const [id, config] = args;
-    if (is.spreadElement(id) || is.spreadElement(config)) {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-        throw new Error('todo - spread in params');
-    }
-    return [id, config];
+    return args;
 }
 
 function validateWireId(
-    id: Expression,
+    id: Expression | SpreadElement,
     path: NodePath<PropertyDefinition | MethodDefinition>
 ): asserts id is Identifier | MemberExpression {
     // name of identifier or object used in member expression (e.g. "foo" for `foo.bar`)
@@ -79,17 +73,23 @@ function validateWireId(
 
     if (is.memberExpression(id)) {
         if (id.computed) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-            throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS');
+            throw generateError(
+                path.node!,
+                DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS
+            );
         }
         if (!is.identifier(id.object)) {
-            // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-            throw new Error('todo - FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS');
+            throw generateError(
+                path.node!,
+                DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS
+            );
         }
         wireAdapterVar = id.object.name;
     } else if (!is.identifier(id)) {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-        throw new Error('todo - invalid adapter name');
+        throw generateError(
+            path.node!,
+            DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER
+        );
     } else {
         wireAdapterVar = id.name;
     }
@@ -104,12 +104,11 @@ function validateWireId(
 }
 
 function validateWireConfig(
-    config: Expression,
+    config: Expression | SpreadElement | undefined,
     path: NodePath<PropertyDefinition | MethodDefinition>
 ): asserts config is NoSpreadObjectExpression {
     if (!is.objectExpression(config)) {
-        // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-        throw new Error('todo - CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER');
+        throw generateError(path.node!, DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER);
     }
     for (const property of config.properties) {
         // Only validate computed object properties because static props are all valid
@@ -127,8 +126,10 @@ function validateWireConfig(
             if (is.templateLiteral(key)) {
                 // A template literal is not guaranteed to always result in the same value
                 // (e.g. `${Math.random()}`), so we disallow them entirely.
-                // TODO [#5032]: Harmonize errors thrown in `@lwc/ssr-compiler`
-                throw new Error('todo - COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL');
+                throw generateError(
+                    path.node!,
+                    DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL
+                );
             } else if (!('regex' in key)) {
                 // A literal can be a regexp, template literal, or primitive; only allow primitives
                 continue;

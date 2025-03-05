@@ -67,10 +67,11 @@ props.forEach((prop) => {
 
                     if (
                         process.env.NATIVE_SHADOW &&
-                        process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
+                        process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION &&
+                        Ctor !== Scoping
                     ) {
                         // If we're rendering in native shadow and the static content optimization is disabled,
-                        // then there's no problem with non-string stylesheet tokens because they are only rendered
+                        // then there's no problem with invalid stylesheet tokens because they are only rendered
                         // as class attribute values using either `classList` or `setAttribute` (and this only applies
                         // when `*.scoped.css` is being used).
                         expect(elm.shadowRoot.children.length).toBe(1);

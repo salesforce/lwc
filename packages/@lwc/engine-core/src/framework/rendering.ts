@@ -25,7 +25,7 @@ import { logError } from '../shared/logger';
 import { getComponentTag } from '../shared/format';
 import { EmptyArray, shouldBeFormAssociated } from './utils';
 import { markComponentAsDirty } from './component';
-import { getScopeTokenClass } from './stylesheet';
+import { getScopeTokenClass, isValidScopeToken } from './stylesheet';
 import { lockDomMutation, patchElementWithRestrictions, unlockDomMutation } from './restrictions';
 import {
     appendVM,
@@ -607,6 +607,10 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     // Set the class name for `*.scoped.css` style scoping.
     const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
     if (!isNull(scopeToken)) {
+        if (!isValidScopeToken(scopeToken)) {
+            // See W-16614556
+            throw new Error('stylesheet token must be a valid string');
+        }
         // TODO [#2762]: this dot notation with add is probably problematic
         // probably we should have a renderer api for just the add operation
         getClassList(elm).add(scopeToken);
@@ -616,6 +620,10 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
         const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
         if (!isNull(legacyScopeToken)) {
+            if (!isValidScopeToken(legacyScopeToken)) {
+                // See W-16614556
+                throw new Error('stylesheet token must be a valid string');
+            }
             // TODO [#2762]: this dot notation with add is probably problematic
             // probably we should have a renderer api for just the add operation
             getClassList(elm).add(legacyScopeToken);
