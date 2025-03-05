@@ -28,6 +28,7 @@ function createMismatchError(
     actual: unknown,
     expected: unknown
 ) {
+    // TODO [W-17971915]: clean this up, potentially using AssertionError
     const error = new Error(message);
     Object.defineProperty(error, 'actual', {
         value: actual,
