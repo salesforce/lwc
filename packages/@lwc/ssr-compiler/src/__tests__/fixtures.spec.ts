@@ -30,6 +30,9 @@ interface FixtureConfig {
         error?: string;
         expected?: string;
     };
+
+    /** The string used to uniquely identify one set of dedupe IDs with multiple SSR islands */
+    styleDedupePrefix?: string;
 }
 
 vi.mock('@lwc/ssr-runtime', async () => {
@@ -124,8 +127,9 @@ describe.concurrent('fixtures', () => {
                         'fixture-test',
                         module,
                         config?.props ?? {},
-                        SSR_MODE,
-                        config?.styleDedupePrefix ?? ''
+                        config?.styleDedupePrefix ?? '',
+                        true,
+                        SSR_MODE
                     )
                 );
             } catch (err: any) {
