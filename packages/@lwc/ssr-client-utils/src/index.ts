@@ -51,6 +51,7 @@ class StyleDeduplicator extends HTMLElement {
  * document. This ensures that deduplicated styles will be in effect
  * for components that insert an <lwc-style> tag in place of a full
  * stylesheet.
+ * It can also be implicitly invoked by importing `@lwc/ssr-client-utils/register-lwc-style` as a bare import.
  */
 export function registerLwcStyleComponent() {
     customElements.define('lwc-style', StyleDeduplicator);
