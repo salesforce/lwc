@@ -11,6 +11,7 @@ import { AssertionError } from 'node:assert';
 import { test, chai } from 'vitest';
 import * as glob from 'glob';
 import { HtmlSnapshotPlugin } from './html-snapshot-matcher';
+
 const { globSync } = glob;
 
 chai.use(HtmlSnapshotPlugin);

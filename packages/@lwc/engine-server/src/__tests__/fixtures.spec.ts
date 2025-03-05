@@ -133,8 +133,13 @@ function testFixtures(options?: RollupLwcOptions) {
             let result;
             let err;
             try {
+                config?.features?.forEach((flag) => {
+                    lwcEngineServer.setFeatureFlagForTest(flag, true);
+                });
+
                 const module: LightningElementConstructor = (await import(compiledFixturePath))
                     .default;
+
                 result = formatHTML(
                     lwcEngineServer.renderComponent('fixture-test', module, config?.props ?? {})
                 );
@@ -144,6 +149,10 @@ function testFixtures(options?: RollupLwcOptions) {
                 }
                 err = _err?.message || 'An empty error occurred?!';
             }
+
+            config?.features?.forEach((flag) => {
+                lwcEngineServer.setFeatureFlagForTest(flag, false);
+            });
 
             return {
                 'expected.html': result,

@@ -6,7 +6,12 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import { normalizeStyleAttributeValue, StringReplace, StringTrim } from '@lwc/shared';
+import {
+    normalizeStyleAttributeValue,
+    normalizeTabIndex,
+    StringReplace,
+    StringTrim,
+} from '@lwc/shared';
 import { isValidES3Identifier } from '@babel/types';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
@@ -140,6 +145,8 @@ export function getChildAttrsOrProps(
         .map(({ name, value, type }) => {
             // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
             const key = isValidES3Identifier(name) ? b.identifier(name) : b.literal(name);
+            const nameLower = name.toLowerCase();
+
             if (value.type === 'Literal' && typeof value.value === 'string') {
                 let literalValue: string | boolean = value.value;
                 if (name === 'style') {
@@ -153,20 +160,27 @@ export function getChildAttrsOrProps(
                     // `spellcheck` string values are specially handled to massage them into booleans:
                     // https://github.com/salesforce/lwc/blob/574ffbd/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
                     literalValue = literalValue.toLowerCase() !== 'false';
+                } else if (nameLower === 'tabindex') {
+                    // Global HTML "tabindex" attribute is specially massaged into a stringified number
+                    // This follows the historical behavior in api.ts:
+                    // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/engine-core/src/framework/api.ts#L193-L211
+
+                    literalValue = normalizeTabIndex(literalValue);
                 }
                 return b.property('init', key, b.literal(literalValue));
             } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
                 if (name === 'class') {
                     return; // do not render empty `class=""`
                 }
-
                 return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
             } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
                 let propValue = expressionIrToEs(value, cxt);
-
                 if (name === 'class') {
                     cxt.import('normalizeClass');
                     propValue = b.callExpression(b.identifier('normalizeClass'), [propValue]);
+                } else if (nameLower === 'tabindex') {
+                    cxt.import('normalizeTabIndex');
+                    propValue = b.callExpression(b.identifier('normalizeTabIndex'), [propValue]);
                 }
 
                 return b.property('init', key, propValue);

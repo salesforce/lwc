@@ -9,6 +9,7 @@ import {
     ArrayPush,
     isArray,
     isNull,
+    isString,
     isTrue,
     isUndefined,
     KEY__NATIVE_ONLY_CSS,
@@ -28,6 +29,8 @@ import type { VCustomElement, VNode } from './vnodes';
 import type { Template } from './template';
 import type { VM } from './vm';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
+
+const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
 
 // These are only used for HMR in dev mode
 // The "pure" annotations are so that Rollup knows for sure it can remove these from prod mode
@@ -393,4 +396,13 @@ export function unrenderStylesheet(stylesheet: Stylesheet) {
         // remove association with AbortController in case stylesheet is rendered again
         cssContentToAbortControllers.delete(cssContent);
     }
+}
+
+export function isValidScopeToken(token: unknown) {
+    if (!isString(token)) {
+        return false;
+    }
+
+    // See W-16614556
+    return lwcRuntimeFlags.DISABLE_SCOPE_TOKEN_VALIDATION || VALID_SCOPE_TOKEN_REGEX.test(token);
 }
