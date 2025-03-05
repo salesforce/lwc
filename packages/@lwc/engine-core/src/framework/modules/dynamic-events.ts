@@ -7,6 +7,7 @@
 import { isUndefined } from '@lwc/shared';
 import { EmptyObject } from '../utils';
 import { invokeEventListener } from '../invoker';
+import { logError } from '../../shared/logger';
 import type { VM } from '../vm';
 import type { VBaseElement } from '../vnodes';
 import type { RendererAPI } from '../renderer';
@@ -35,10 +36,11 @@ export function patchDynamicEventListeners(
     // Properties that are present in 'oldDynamicOn' but not in 'newDynamicOn'
     for (const eventType in oldDynamicOn) {
         if (!(eventType in newDynamicOn)) {
-            // Throw if same object is passed
-            if (isObjectSame) {
-                throw new Error(
-                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for <${sel}>. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
+            // log error if same object is passed
+            if (isObjectSame && process.env.NODE_ENV !== 'production') {
+                logError(
+                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for <${sel}>. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`,
+                    owner
                 );
             }
 
@@ -56,10 +58,11 @@ export function patchDynamicEventListeners(
 
         // Properties that are present in 'newDynamicOn' but whose value are different from that in `oldDynamicOn`
         if (oldCallback !== newCallback) {
-            // Throw if same object is passed
-            if (isObjectSame) {
-                throw new Error(
-                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for <${sel}>. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`
+            // log error if same object is passed
+            if (isObjectSame && process.env.NODE_ENV !== 'production') {
+                logError(
+                    `Detected mutation of property '${eventType}' in the object passed to lwc:on for <${sel}>. Reusing the same object with modified properties is prohibited. Please pass a new object instead.`,
+                    owner
                 );
             }
 
