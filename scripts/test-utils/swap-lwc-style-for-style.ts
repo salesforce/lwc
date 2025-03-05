@@ -1,3 +1,16 @@
+/**
+ * SSRv2 implements style deduplication, where an <lwc-style> tag is inserted alongside the first instance
+ * of a given component's <style> tag. In subsequent renders of that component, only the <lwc-style> tag
+ * is present in the generated markup.
+ *
+ * This presents a problem when sharing fixtures between SSRv1 and SSRv2. SSRv1 will expect to find repeated
+ * <style> tags and won't expect to find <lwc-style> tags.
+ *
+ * The `swapLwcStyleForStyleTag` function takes the SSRv2 fixtures and modifies it to look how SSRv1 would
+ * expect. As more divergences between the implementations crop up, we may need to add more fixture mutations
+ * to accommodate the differences.
+ */
+
 interface StyleTagInfo {
     originalStyleTag: string;
     styleTagWithoutId: string;

@@ -1,4 +1,22 @@
-// adapted from https://github.com/vitest-dev/vitest/blob/0c2924b7aeb7eaf1b1fa0e78d2da76a7f3197b50/packages/vitest/src/integrations/snapshot/chai.ts
+/**
+ * The built-in `toMatchFileSnapshot` assertion does not provide a mechanism to intercept the on-disk content
+ * (expected) prior to comparison to the in-memory content (actual). Because we want SSRv2 to be canonical
+ * vis a vis the fixtures, there needs to be a way to modify the on-disk content prior to comparing to SSRv1
+ * output.
+ *
+ * This Chai assertion provides a similar mechanism to what you get with `toMatchFileSnapshot`. If a fixture
+ * is not present on disk when the SSRv1 tests are run, a new file will be generated. And if an SSRv2 fixture
+ * is present on disk, it'll be modified to look like SSRv1 output prior to asserting equality.
+ *
+ * The one deficiency of `toMatchHtmlSnapshot` is that it doesn't support automatic snapshot updating. If you
+ * need to update a fixture and you want SSRv1 to write its output to disk, the `.html` file must first be
+ * deleted. An attempt was made to integrate with the internal Vitest plumbing to support this properly, but
+ * the necessary objects are not exposed to outside consumers.
+ *
+ * The actual transformation of SSRv2-markup to SSRv1-markup is performed in `swapLwcStyleForStyleTag`.
+ *
+ * Adapted from https://github.com/vitest-dev/vitest/blob/0c2924b7aeb7eaf1b1fa0e78d2da76a7f3197b50/packages/vitest/src/integrations/snapshot/chai.ts
+ */
 
 import * as fs from 'node:fs/promises';
 import { equals, type Assertion, type ChaiPlugin, type ExpectStatic } from '@vitest/expect';
