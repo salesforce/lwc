@@ -8,9 +8,12 @@
 import fs, { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { AssertionError } from 'node:assert';
-import { test } from 'vitest';
+import { test, chai } from 'vitest';
 import * as glob from 'glob';
+import { HtmlSnapshotPlugin } from './html-snapshot-matcher';
 const { globSync } = glob;
+
+chai.use(HtmlSnapshotPlugin);
 
 type TestFixtureOutput = { [filename: string]: unknown };
 
@@ -139,7 +142,7 @@ export function testFixtureDir<T>(
             for (const [outputName, content] of outputsList) {
                 const outputPath = path.resolve(dirname, outputName);
                 try {
-                    await expect(content ?? '').toMatchFileSnapshot(outputPath);
+                    await expect(content ?? '').toMatchHtmlSnapshot(outputPath, expect);
                 } catch (err) {
                     if (typeof err === 'object' && err !== null) {
                         // Hide unhelpful noise in the stack trace
