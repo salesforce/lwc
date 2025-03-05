@@ -144,6 +144,10 @@ export function testFixtureDir<T>(
             for (const [outputName, content] of outputsList) {
                 const outputPath = path.resolve(dirname, outputName);
                 try {
+                    // SSRv2 is now the source of truth for SSR behavior. However, there are small
+                    // intentional divergences between SSRv2 and SSRv1 rendering behavior. As such,
+                    // The fixtures on-disk need to be transformed prior to comparison with SSRv1
+                    // output. The only way to accomplish this was with a custom Chai matcher.
                     if (ssrVersion === 1 && outputName.endsWith('.html')) {
                         await expect(content ?? '').toMatchHtmlSnapshot(outputPath, expect);
                     } else {
