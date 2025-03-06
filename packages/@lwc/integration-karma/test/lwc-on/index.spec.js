@@ -5,10 +5,12 @@ import Ignored from 'x/ignored';
 import CaseVariants from 'x/caseVariants';
 import Spread from 'x/spread';
 import Lifecycle from 'x/lifecycle';
+import ValueNotFunction from 'x/valueNotFunction';
 import Rerender from 'x/rerender';
 import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 import ComputedKey from 'x/computedKey';
+import ValueEvaluationThrows from 'x/ValueEvaluationThrows';
 
 describe('lwc:on', () => {
     it('adds multiple event listeners', () => {
@@ -142,6 +144,68 @@ describe('lwc:on', () => {
         expect(testFn).toHaveBeenCalledWith(
             'handled events dispatched from child connectedCallback'
         );
+    });
+
+    describe('object passed to lwc:on has property whose values is not a function', () => {
+        let element;
+        let button;
+
+        let caughtError;
+
+        TestUtils.catchUnhandledRejectionsAndErrors((error) => {
+            caughtError = error;
+        });
+
+        afterEach(() => {
+            caughtError = undefined;
+        });
+
+        function setup(handlerType) {
+            element = createElement('x-value-not-function', { is: ValueNotFunction });
+            element.handlerType = handlerType;
+            document.body.appendChild(element);
+            button = element.shadowRoot.querySelector('button');
+        }
+
+        function assertError() {
+            if (process.env.NODE_ENV !== 'production') {
+                expect(caughtError.message).toContain(
+                    "Uncaught Error: Assert Violation: Invalid event handler for event 'click' on"
+                );
+            } else {
+                expect(caughtError.error instanceof TypeError).toBe(true);
+            }
+        }
+
+        it('null passed as handler', () => {
+            setup('null');
+            button.click();
+
+            assertError();
+        });
+
+        describe('undefined passed as handler', () => {
+            it('directly sets undefined', () => {
+                setup('undefined');
+                button.click();
+
+                assertError();
+            });
+
+            it('value of an accessor property without getter', () => {
+                setup('setter without getter');
+                button.click();
+
+                assertError();
+            });
+        });
+
+        it('string passed as handler', () => {
+            setup('string');
+            button.click();
+
+            assertError();
+        });
     });
 
     describe('re-render behavior', () => {
@@ -355,5 +419,48 @@ describe('lwc:on', () => {
 
         button.click();
         expect(testFn).toHaveBeenCalled();
+    });
+
+    describe('object passed to lwc:on has property whose value evaluation throws', () => {
+        let element;
+        let testFn;
+
+        let caughtError;
+
+        TestUtils.catchUnhandledRejectionsAndErrors((error) => {
+            caughtError = error;
+        });
+
+        afterEach(() => {
+            caughtError = undefined;
+        });
+
+        function setup(handlerType) {
+            element = createElement('x-value-evaluation-throws', { is: ValueEvaluationThrows });
+            element.handlerType = handlerType;
+        }
+
+        it('getter that throws passed as handler', () => {
+            setup('getter that throws');
+            document.body.appendChild(element);
+
+            expect(caughtError.message).toBe('Uncaught Error: some error');
+
+            const button = element.shadowRoot.querySelector('button');
+            expect(button).toBeNull();
+        });
+
+        it('LightningElement instance is passed as argument to lwc:on', () => {
+            setup('LightningElement instance');
+            testFn = jasmine.createSpy('test function');
+            element.testFn = testFn;
+            document.body.appendChild(element);
+
+            expect(caughtError.error instanceof TypeError).toBe(true);
+            expect(caughtError.message).toBe('Uncaught TypeError: Illegal constructor');
+
+            const button = element.shadowRoot.querySelector('button');
+            expect(button).toBeNull();
+        });
     });
 });
