@@ -8,8 +8,7 @@ import Lifecycle from 'x/lifecycle';
 import Rerender from 'x/rerender';
 import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
-
-// import { catchUnhandledRejectionsAndErrors, spyConsole } from 'test-utils';
+import ComputedKey from 'x/computedKey';
 
 describe('lwc:on', () => {
     it('adds multiple event listeners', () => {
@@ -340,6 +339,17 @@ describe('lwc:on', () => {
         element.eventHandlers = {
             click: testFn,
         };
+        document.body.appendChild(element);
+        const button = element.shadowRoot.querySelector('button');
+
+        button.click();
+        expect(testFn).toHaveBeenCalled();
+    });
+
+    it('works properly with objects whose keys are computed', () => {
+        const element = createElement('x-computed-key', { is: ComputedKey });
+        const testFn = jasmine.createSpy('test function');
+        element.testFn = testFn;
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
