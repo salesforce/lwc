@@ -1,9 +1,12 @@
 import inspector from 'node:inspector';
+import process from 'node:process';
 import { defineConfig } from 'vitest/config';
 import pkg from './package.json';
-
 export default defineConfig({
     test: {
+        env: {
+            NODE_ENV: process.env.VITE_NODE_ENV,
+        },
         // Don't time out if we detect a debugger attached
         testTimeout: inspector.url()
             ? // Largest allowed delay, see https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout#maximum_delay_value
