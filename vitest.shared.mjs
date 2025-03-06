@@ -4,6 +4,8 @@ import { defineConfig } from 'vitest/config';
 import pkg from './package.json';
 export default defineConfig({
     test: {
+        // We can't set `NODE_ENV` directly (i.e. `NODE_ENV=production yarn test`), because some packages
+        // set their env to jsdom, and NODE_ENV=production + jsdom causes `node:` imports to break
         env: {
             NODE_ENV: process.env.VITE_NODE_ENV,
         },
