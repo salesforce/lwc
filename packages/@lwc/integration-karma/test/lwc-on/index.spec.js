@@ -423,7 +423,7 @@ describe('lwc:on', () => {
 
     describe('object passed to lwc:on has property whose value evaluation throws', () => {
         let element;
-        let testFn;
+        let button;
 
         let caughtError;
 
@@ -438,28 +438,24 @@ describe('lwc:on', () => {
         function setup(handlerType) {
             element = createElement('x-value-evaluation-throws', { is: ValueEvaluationThrows });
             element.handlerType = handlerType;
+            document.body.appendChild(element);
+            button = element.shadowRoot.querySelector('button');
         }
 
         it('getter that throws passed as handler', () => {
             setup('getter that throws');
-            document.body.appendChild(element);
 
             expect(caughtError.message).toBe('Uncaught Error: some error');
 
-            const button = element.shadowRoot.querySelector('button');
             expect(button).toBeNull();
         });
 
         it('LightningElement instance is passed as argument to lwc:on', () => {
             setup('LightningElement instance');
-            testFn = jasmine.createSpy('test function');
-            element.testFn = testFn;
-            document.body.appendChild(element);
 
             expect(caughtError.error instanceof TypeError).toBe(true);
             expect(caughtError.message).toBe('Uncaught TypeError: Illegal constructor');
 
-            const button = element.shadowRoot.querySelector('button');
             expect(button).toBeNull();
         });
     });

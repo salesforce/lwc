@@ -1,17 +1,7 @@
 import { LightningElement, api } from 'lwc';
 
-let testFn;
-
 export default class ValueNotFunction extends LightningElement {
     @api handlerType;
-
-    @api
-    get testFn() {
-        return testFn;
-    }
-    set testFn(val) {
-        testFn = val;
-    }
 
     get eventHandlers() {
         switch (this.handlerType) {
@@ -22,11 +12,7 @@ export default class ValueNotFunction extends LightningElement {
                     },
                 };
             case 'LightningElement instance':
-                return new (class extends LightningElement {
-                    render() {
-                        testFn();
-                    }
-                })();
+                return new (class extends LightningElement {})();
             default:
                 return {};
         }
