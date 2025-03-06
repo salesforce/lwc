@@ -193,13 +193,18 @@ interface ComponentWithGenerateMarkup extends LightningElementConstructor {
 
 export class RenderContext {
     styleDedupeIsEnabled: boolean;
-    stylesheetToId = new WeakMap<Stylesheet, string>();
     styleDedupePrefix: string;
+    stylesheetToId = new WeakMap<Stylesheet, string>();
     nextId = 0;
 
-    constructor(styleDedupePrefix: string, styleDedupeIsEnabled: boolean) {
-        this.styleDedupeIsEnabled = styleDedupeIsEnabled;
-        this.styleDedupePrefix = styleDedupePrefix;
+    constructor(styleDedupe: string | boolean) {
+        if (styleDedupe || styleDedupe === '') {
+            this.styleDedupePrefix = styleDedupe && '';
+            this.styleDedupeIsEnabled = true;
+        } else {
+            this.styleDedupePrefix = '';
+            this.styleDedupeIsEnabled = false;
+        }
     }
 }
 
@@ -207,8 +212,7 @@ export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
-    styleDedupePrefix = '',
-    styleDedupeIsEnabled = false,
+    styleDedupe: string | boolean = '',
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
     if (typeof tagName !== 'string') {
@@ -222,7 +226,7 @@ export async function serverSideRenderComponent(
         markup += segment;
     };
 
-    emit.cxt = new RenderContext(styleDedupePrefix, styleDedupeIsEnabled);
+    emit.cxt = new RenderContext(styleDedupe);
 
     if (!generateMarkup) {
         // If a non-component is accidentally provided, render an empty template
