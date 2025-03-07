@@ -36,7 +36,7 @@ export default defineConfig({
                 // SSR compiler/runtime is relatively newer, so has lower thresholds for now
                 '**/packages/@lwc/ssr-*/**': {
                     branches: 90,
-                    functions: 60,
+                    functions: 65,
                     lines: 85,
                     statements: 85,
                 },
