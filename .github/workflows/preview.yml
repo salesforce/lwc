@@ -23,6 +23,6 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Publish preview
-              run: npx pkg-pr-new publish './packages/@lwc/*' './packages/lwc' --template './playground'
+              run: yarn exec pkg-pr-new publish './packages/@lwc/*' './packages/lwc' --template './playground'
               env:
                   GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
