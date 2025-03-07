@@ -33,6 +33,7 @@ export default defineConfig({
                 'rollup-plugin',
                 'shared',
                 'signals',
+                'ssr-client-utils',
                 'ssr-compiler',
                 'ssr-runtime',
                 'style-compiler',
