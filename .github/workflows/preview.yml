@@ -1,4 +1,4 @@
-name: Publish Any Commit
+name: Publish Playground Preview, Please!
 on:
     pull_request:
         types: [opened, synchronize, reopened]
