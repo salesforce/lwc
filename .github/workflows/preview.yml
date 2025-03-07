@@ -1,0 +1,25 @@
+name: Publish Playground Preview, Please!
+on:
+    pull_request:
+        types: [opened, synchronize, reopened]
+
+jobs:
+    build:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20.18.1'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Publish preview
+              run: yarn exec pkg-pr-new -- publish './packages/@lwc/*' './packages/lwc' --template './playground'
+              env:
+                  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
