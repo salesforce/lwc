@@ -67,6 +67,7 @@ module.exports = {
     COVERAGE_DIR_FOR_OPTIONS,
 
     // Sauce labs
+    SAUCE_REGION: process.env.SAUCE_REGION || 'us',
     SAUCE_USERNAME: process.env.SAUCE_USERNAME,
     SAUCE_ACCESS_KEY: process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY,
     SAUCE_TUNNEL_ID: process.env.SAUCE_TUNNEL_ID,
