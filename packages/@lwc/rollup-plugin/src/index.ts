@@ -371,7 +371,11 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 disableSyntheticShadowSupport,
                 apiVersion: apiVersionToUse,
                 enableStaticContentOptimization:
-                    pluginOptions.enableStaticContentOptimization ?? true,
+                    // {enableStaticContentOptimization:undefined} behaves like `false`
+                    // but {} (prop unspecified) behaves like `true`
+                    'enableStaticContentOptimization' in pluginOptions
+                        ? pluginOptions.enableStaticContentOptimization
+                        : true,
                 targetSSR,
                 ssrMode,
             });
