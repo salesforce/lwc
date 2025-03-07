@@ -199,7 +199,7 @@ export class RenderContext {
 
     constructor(styleDedupe: string | boolean) {
         if (styleDedupe || styleDedupe === '') {
-            this.styleDedupePrefix = styleDedupe && '';
+            this.styleDedupePrefix = typeof styleDedupe === 'string' ? styleDedupe : '';
             this.styleDedupeIsEnabled = true;
         } else {
             this.styleDedupePrefix = '';
@@ -212,7 +212,7 @@ export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
-    styleDedupe: string | boolean = '',
+    styleDedupe: string | boolean = false,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
     if (typeof tagName !== 'string') {
