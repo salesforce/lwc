@@ -30,6 +30,9 @@ interface FixtureConfig {
         error?: string;
         expected?: string;
     };
+
+    /** The string used to uniquely identify one set of dedupe IDs with multiple SSR islands */
+    styleDedupePrefix?: string;
 }
 
 vi.mock('@lwc/ssr-runtime', async () => {
@@ -92,6 +95,7 @@ describe.concurrent('fixtures', () => {
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
             pattern: '**/config.json',
+            ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests
             expectedFailures,
         },
@@ -123,6 +127,8 @@ describe.concurrent('fixtures', () => {
                         'fixture-test',
                         module,
                         config?.props ?? {},
+                        config?.styleDedupePrefix ?? '',
+                        true,
                         SSR_MODE
                     )
                 );
