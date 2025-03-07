@@ -5,7 +5,7 @@ import { transmogrify } from '../transmogrify';
 import type { Program as EsProgram } from 'estree';
 
 const COMPILED_CMP = `
-    async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
+    async function* __lwcTmpl(props, attrs, slottedContent, Cmp, instance) {
       yield "<p";
       yield stylesheetScopeTokenClass;
       yield ">Hello</p>";
@@ -78,10 +78,10 @@ describe('transmogrify', () => {
             expect(COMPILED_CMP_SYNC).toContain('$$emit(">")');
         });
 
-        test('tmpl is transformed into sync mode', () => {
-            expect(COMPILED_CMP_SYNC).not.toContain('async function* tmpl');
-            expect(COMPILED_CMP_SYNC).not.toContain('async function tmpl');
-            expect(COMPILED_CMP_SYNC).toContain('function tmpl($$emit');
+        test('__lwcTmpl is transformed into sync mode', () => {
+            expect(COMPILED_CMP_SYNC).not.toContain('async function* __lwcTmpl');
+            expect(COMPILED_CMP_SYNC).not.toContain('async function __lwcTmpl');
+            expect(COMPILED_CMP_SYNC).toContain('function __lwcTmpl($$emit');
 
             expect(COMPILED_CMP_SYNC).not.toContain('yield "<p"');
             expect(COMPILED_CMP_SYNC).toContain('$$emit("<p")');
@@ -114,9 +114,9 @@ describe('transmogrify', () => {
             expect(COMPILED_CMP_ASYNC).toContain('$$emit(">")');
         });
 
-        test('tmpl is transformed into async mode', () => {
-            expect(COMPILED_CMP_ASYNC).not.toContain('async function* tmpl');
-            expect(COMPILED_CMP_ASYNC).toContain('async function tmpl($$emit');
+        test('__lwcTmpl is transformed into async mode', () => {
+            expect(COMPILED_CMP_ASYNC).not.toContain('async function* __lwcTmpl');
+            expect(COMPILED_CMP_ASYNC).toContain('async function __lwcTmpl($$emit');
 
             expect(COMPILED_CMP_ASYNC).not.toContain('yield "<p"');
             expect(COMPILED_CMP_ASYNC).toContain('$$emit("<p")');

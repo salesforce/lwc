@@ -20,7 +20,7 @@ export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>
 
 const EMIT_IDENT = b.identifier('$$emit');
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
-const TMPL_FN_PATTERN = /tmpl($\d+)?/;
+const TMPL_FN_PATTERN = /__lwcTmpl($\d+)?/;
 const GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN =
     /(?:generateMarkup|generateSlottedContent)($\d+)?/;
 
@@ -152,7 +152,7 @@ const visitors: Visitors = {
  * Is compiled into the following JavaScript, intended for execution during SSR & stripped down
  * for the purposes of this example:
  *
- *   async function* tmpl(props, attrs, slottedContent, Cmp, instance) {
+ *   async function* __lwcTmpl(props, attrs, slottedContent, Cmp, instance) {
  *       yield '<div>foobar</div>';
  *       const childProps = {};
  *       const childAttrs = {};
@@ -161,7 +161,7 @@ const visitors: Visitors = {
  *
  * When transmogrified in async-mode, the above generated template function becomes the following:
  *
- *   async function tmpl($$emit, props, attrs, slottedContent, Cmp, instance) {
+ *   async function __lwcTmpl($$emit, props, attrs, slottedContent, Cmp, instance) {
  *       $$emit('<div>foobar</div>');
  *       const childProps = {};
  *       const childAttrs = {};
@@ -170,7 +170,7 @@ const visitors: Visitors = {
  *
  * When transmogrified in sync-mode, the template function becomes the following:
  *
- *   function tmpl($$emit, props, attrs, slottedContent, Cmp, instance) {
+ *   function __lwcTmpl($$emit, props, attrs, slottedContent, Cmp, instance) {
  *       $$emit('<div>foobar</div>');
  *       const childProps = {};
  *       const childAttrs = {};
