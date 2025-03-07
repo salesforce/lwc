@@ -26,7 +26,7 @@ const bGenerateMarkup = esTemplate`
         configurable: false,
         enumerable: false,
         writable: false,
-        value: async function* generateMarkup(
+        value: async function* __lwcGenerateMarkup(
             // The $$emit function is magically inserted here
             tagName, 
             props, 
@@ -139,7 +139,7 @@ export function addGenerateMarkupFunction(
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        const tmplVar = b.identifier('tmpl');
+        const tmplVar = b.identifier('__lwcTmpl');
         program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
         program.body.unshift(
             bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })

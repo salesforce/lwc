@@ -31,7 +31,7 @@ describe('component compilation', () => {
         `;
         const filename = path.resolve('component.js');
         const { code } = compileComponentForSSR(src, filename, {});
-        expect(code).toContain('import tmpl from "./component.html"');
+        expect(code).toContain('import __lwcTmpl from "./component.html"');
     });
     test('explicit templates imports do not use full file paths', () => {
         const src = `
@@ -59,7 +59,7 @@ describe('component compilation', () => {
         `;
         const filename = path.resolve('component.ts');
         const { code } = compileComponentForSSR(src, filename, {});
-        expect(code).toContain('import tmpl from "./component.html"');
+        expect(code).toContain('import __lwcTmpl from "./component.html"');
     });
 
     describe('wire decorator', () => {
