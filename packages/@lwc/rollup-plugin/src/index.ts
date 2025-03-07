@@ -391,4 +391,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 }
 
 // For backward compatibility with commonjs format
-module.exports = lwc;
+if (typeof module !== 'undefined') {
+    module.exports = lwc;
+}

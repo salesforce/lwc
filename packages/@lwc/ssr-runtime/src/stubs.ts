@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+/* v8 ignore start */
+
 // Stubs for all the un-implemented exports from @lwc/engine-server
 
 export function api(..._: unknown[]): never {
@@ -216,3 +218,5 @@ export const renderer = {
  */
 // A real stub, not a "not implemented" one! 😯
 export const hot = undefined;
+
+/* v8 ignore stop */
