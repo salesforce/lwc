@@ -51,6 +51,8 @@ const browsers = [
 
 const mode = process.env.MODE;
 
+const region = process.env.SAUCE_REGION || 'us';
+
 const username = process.env.SAUCE_USERNAME;
 if (!username) {
     throw new TypeError('Missing SAUCE_USERNAME environment variable');
@@ -105,6 +107,7 @@ function getCapabilities() {
 }
 
 exports.config = merge(baseConfig.config, {
+    region,
     user: username,
     key: accessKey,
 

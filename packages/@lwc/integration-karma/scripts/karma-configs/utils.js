@@ -13,6 +13,7 @@ const {
     SAUCE_ACCESS_KEY,
     SAUCE_TUNNEL_ID,
     SAUCE_USERNAME,
+    SAUCE_REGION,
 } = require('../shared/options');
 
 function getSauceSection({ suiteName, customData }) {
@@ -35,6 +36,7 @@ function getSauceSection({ suiteName, customData }) {
         username,
         accessKey,
         tunnelIdentifier: SAUCE_TUNNEL_ID,
+        region: SAUCE_REGION,
 
         build,
         testName,
