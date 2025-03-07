@@ -67,7 +67,7 @@ jobs:
             - name: Run unit tests
               run: yarn test:ci
             - name: Run unit tests in production mode
-              run: VITE_NODE_ENV=production yarn test:ci
+              run: yarn test:production --no-watch
             - name: Upload unit test coverage report
               uses: actions/upload-artifact@v4
               with:
