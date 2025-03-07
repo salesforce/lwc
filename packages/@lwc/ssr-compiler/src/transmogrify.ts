@@ -19,12 +19,11 @@ interface TransmogrificationState {
 export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>>[1];
 
 const EMIT_IDENT = b.identifier('$$emit');
+/** Function names that may be transmogrified. All should start with `__lwc`. */
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
-const TMPL_FN_PATTERN = /__lwcTmpl($\d+)?/;
-const GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN =
-    /(?:__lwcGenerateMarkup|__lwcGenerateSlottedContent)($\d+)?/;
+const TRANSMOGRIFY_TARGET = /^__lwc(GenerateMarkup|GenerateSlottedContent|Tmpl)(?:\$\d+)?$/;
 
-const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
+const isWithinFn = (nodePath: NodePath): boolean => {
     const { node } = nodePath;
     if (!node) {
         return false;
@@ -32,12 +31,12 @@ const isWithinFn = (pattern: RegExp, nodePath: NodePath): boolean => {
     if (
         (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') &&
         node.id &&
-        pattern.test(node.id.name)
+        TRANSMOGRIFY_TARGET.test(node.id.name)
     ) {
         return true;
     }
     if (nodePath.parentPath) {
-        return isWithinFn(pattern, nodePath.parentPath);
+        return isWithinFn(nodePath.parentPath);
     }
     return false;
 };
@@ -57,10 +56,7 @@ const visitors: Visitors = {
         // Component authors might conceivably use async generator functions in their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated async
         // generator functions from those that were written by the component author.
-        if (
-            !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path) &&
-            !isWithinFn(TMPL_FN_PATTERN, path)
-        ) {
+        if (!isWithinFn(path)) {
             return;
         }
         node.generator = false;
@@ -76,10 +72,7 @@ const visitors: Visitors = {
         // Component authors might conceivably use generator functions within their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated yield
         // expressions from those that were written by the component author.
-        if (
-            !isWithinFn(TMPL_FN_PATTERN, path) &&
-            !isWithinFn(GEN_MARKUP_OR_GEN_SLOTTED_CONTENT_PATTERN, path)
-        ) {
+        if (!isWithinFn(path)) {
             return;
         }
 
