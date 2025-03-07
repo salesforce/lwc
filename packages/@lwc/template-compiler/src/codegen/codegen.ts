@@ -62,6 +62,7 @@ import type {
     Attribute,
     KeyDirective,
     StaticChildNode,
+    OnDirective,
 } from '../shared/types';
 import type { APIVersion } from '@lwc/shared';
 import type { Node } from 'estree';
@@ -454,6 +455,25 @@ export default class CodeGen {
                 memoize(objectToAST(listenerObj, (k) => listenerObj[k].handler))
             );
         }
+    }
+
+    genDynamicEventListeners(onDirective: OnDirective) {
+        // Example Input : lwc:on={someObj}
+
+        // $cmp.someObj
+        const rawValue = this.bindExpression(onDirective.value);
+
+        // {__proto__: null, ...$cmp.someObj}
+        const clonedValue = t.objectExpression([
+            t.property(t.identifier('__proto__'), t.literal(null)),
+            t.spreadElement(rawValue),
+        ]);
+
+        const dynamicOnRawProperty = t.property(t.identifier('dynamicOnRaw'), rawValue);
+
+        const dynamicOnProperty = t.property(t.identifier('dynamicOn'), clonedValue);
+
+        return [dynamicOnRawProperty, dynamicOnProperty];
     }
 
     genRef(ref: RefDirective) {

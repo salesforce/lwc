@@ -1,0 +1,93 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 49,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 38,
+                "end": 49
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "a",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 27,
+                    "start": 15,
+                    "end": 37,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 23,
+                        "start": 15,
+                        "end": 33
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 23,
+                        "endLine": 2,
+                        "endColumn": 27,
+                        "start": 33,
+                        "end": 37
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [
+                    {
+                        "type": "Directive",
+                        "name": "On",
+                        "value": {
+                            "type": "Identifier",
+                            "start": 1,
+                            "end": 6,
+                            "name": "hello",
+                            "location": {
+                                "startLine": 2,
+                                "startColumn": 8,
+                                "endLine": 2,
+                                "endColumn": 22,
+                                "start": 18,
+                                "end": 32
+                            }
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 8,
+                            "endLine": 2,
+                            "endColumn": 22,
+                            "start": 18,
+                            "end": 32
+                        }
+                    }
+                ],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

@@ -58,6 +58,8 @@ export interface RollupLwcOptions {
     experimentalComplexExpressions?: boolean;
     /** @deprecated Spread operator is now always enabled. */
     enableLwcSpread?: boolean;
+    /** The configuration to pass to the `@lwc/template-compiler`. */
+    enableLwcOn?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
     disableSyntheticShadowSupport?: boolean;
     /** The API version to associate with the compiled module */
@@ -179,6 +181,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalDynamicComponent,
         experimentalDynamicDirective,
         enableDynamicComponents,
+        enableLwcOn,
         enableLightningWebSecurityTransforms,
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions,
@@ -363,6 +366,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 experimentalDynamicComponent,
                 experimentalDynamicDirective,
                 enableDynamicComponents,
+                enableLwcOn,
                 enableLightningWebSecurityTransforms,
                 // TODO [#3370]: remove experimental template expression flag
                 experimentalComplexExpressions,
