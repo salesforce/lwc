@@ -27,7 +27,7 @@ const COMPILED_CMP = `
       }
     }
     const __REFLECTED_PROPS__ = [];
-    async function* generateMarkup(tagName, props, attrs, slotted) {
+    async function* __lwcGenerateMarkup(tagName, props, attrs, slotted) {
       attrs = attrs ?? ({});
       const instance = new Basic({
         tagName: tagName.toUpperCase()
@@ -65,10 +65,10 @@ describe('transmogrify', () => {
     });
 
     describe('in sync mode', () => {
-        test('generateMarkup is transformed into sync mode', () => {
-            expect(COMPILED_CMP_SYNC).not.toContain('async function* generateMarkup');
-            expect(COMPILED_CMP_SYNC).not.toContain('async function generateMarkup');
-            expect(COMPILED_CMP_SYNC).toContain('function generateMarkup($$emit');
+        test('__lwcGenerateMarkup is transformed into sync mode', () => {
+            expect(COMPILED_CMP_SYNC).not.toContain('async function* __lwcGenerateMarkup');
+            expect(COMPILED_CMP_SYNC).not.toContain('async function __lwcGenerateMarkup');
+            expect(COMPILED_CMP_SYNC).toContain('function __lwcGenerateMarkup($$emit');
 
             expect(COMPILED_CMP_SYNC).not.toContain('yield* renderAttrs');
             expect(COMPILED_CMP_SYNC).toContain('renderAttrs($$emit');
@@ -102,9 +102,9 @@ describe('transmogrify', () => {
     });
 
     describe('in async mode', () => {
-        test('generateMarkup is transformed into async mode', () => {
-            expect(COMPILED_CMP_ASYNC).not.toContain('async function* generateMarkup');
-            expect(COMPILED_CMP_ASYNC).toContain('async function generateMarkup($$emit');
+        test('__lwcGenerateMarkup is transformed into async mode', () => {
+            expect(COMPILED_CMP_ASYNC).not.toContain('async function* __lwcGenerateMarkup');
+            expect(COMPILED_CMP_ASYNC).toContain('async function __lwcGenerateMarkup($$emit');
 
             expect(COMPILED_CMP_ASYNC).not.toContain('yield* renderAttrs');
             expect(COMPILED_CMP_ASYNC).toContain('renderAttrs($$emit');

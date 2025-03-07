@@ -26,7 +26,7 @@ const bGenerateMarkup = esTemplate`
         configurable: false,
         enumerable: false,
         writable: false,
-        value: async function* generateMarkup(
+        value: async function* __lwcGenerateMarkup(
             // The $$emit function is magically inserted here
             tagName, 
             props, 
