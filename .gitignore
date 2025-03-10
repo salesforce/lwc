@@ -9,6 +9,7 @@ coverage/
 .nx
 .nx-cache
 .eslintcache
+.codegenie
 
 lib/
 __benchmarks_results__/
