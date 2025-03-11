@@ -67,6 +67,7 @@
         "lint-staged": "^15.4.3",
         "magic-string": "^0.30.17",
         "nx": "20.4.4",
+        "pkg-pr-new": "^0.0.40",
         "prettier": "^3.5.1",
         "rollup": "^4.34.8",
         "terser": "^5.39.0",
