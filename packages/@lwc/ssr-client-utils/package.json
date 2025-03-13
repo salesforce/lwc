@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-client-utils",
-    "version": "8.16.0",
+    "version": "8.16.1",
     "description": "Client-side complement to @lwc/ssr-compiler",
     "keywords": [
         "lwc",
@@ -32,7 +32,8 @@
     "types": "dist/index.d.ts",
     "files": [
         "dist/**/*.js",
-        "dist/**/*.d.ts"
+        "dist/**/*.d.ts",
+        "register-lwc-style.js"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",

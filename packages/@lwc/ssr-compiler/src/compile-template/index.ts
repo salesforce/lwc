@@ -23,7 +23,7 @@ import type {
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
-    export default async function* tmpl(
+    export default async function* __lwcTmpl(
             // This is where $$emit comes from
             shadowSlottedContent,
             lightSlottedContent,

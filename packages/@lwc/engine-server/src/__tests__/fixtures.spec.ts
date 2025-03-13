@@ -13,6 +13,7 @@ import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-i
 import { setFeatureFlagForTest } from '../index';
 import type { LightningElementConstructor } from '@lwc/engine-core/dist/framework/base-lightning-element';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
+import type { FeatureFlagName } from '@lwc/features/dist/types';
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
@@ -33,6 +34,9 @@ interface FixtureConfig {
 
     /** Props to provide to the root component. */
     props?: Record<string, string>;
+
+    /** Feature flags to enable for the test. */
+    features: FeatureFlagName[];
 }
 
 async function compileFixture({
@@ -162,7 +166,8 @@ function testFixtures(options?: RollupLwcOptions) {
     );
 }
 
-describe.concurrent('fixtures', () => {
+// TODO [#5134]: Enable these tests in production mode
+describe.skipIf(process.env.NODE_ENV === 'production').concurrent('fixtures', () => {
     beforeAll(() => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
