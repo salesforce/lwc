@@ -30,9 +30,6 @@ export function parseFragment(..._: unknown[]): never {
 export function parseSVGFragment(..._: unknown[]): never {
     throw new Error('parseSVGFragment cannot be used in SSR context.');
 }
-export function readonly(..._: unknown[]): never {
-    throw new Error('readonly cannot be used in SSR context.');
-}
 export function registerComponent(..._: unknown[]): never {
     throw new Error('registerComponent cannot be used in SSR context.');
 }

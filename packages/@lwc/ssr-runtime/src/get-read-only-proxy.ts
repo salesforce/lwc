@@ -15,3 +15,14 @@ const reactiveMembrane = new ObservableMembrane();
 export function getReadOnlyProxy<T>(value: T): Readonly<T> {
     return reactiveMembrane.getReadOnlyProxy(value);
 }
+
+/**
+ * DEPRECATED: This function allows you to create a reactive readonly
+ * membrane around any object value.
+ * @param value any object
+ * @returns a readonly proxy of the live object
+ * @deprecated
+ */
+export function readonly<T>(value: T): Readonly<T> {
+    return reactiveMembrane.getReadOnlyProxy(value);
+}
