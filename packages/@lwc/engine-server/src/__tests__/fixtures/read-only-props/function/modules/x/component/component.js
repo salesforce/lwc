@@ -3,16 +3,16 @@ import { LightningElement, readonly } from 'lwc';
 export default class extends LightningElement {
     foo = { willSays: 'mobs 4eva' };
     readonlyFoo = readonly(this.foo);
-    wasReadonlyFooMutated = false;
+    wasProxyMutated = false;
 
     connectedCallback() {
-        this.foo.willSays = 'cancel all mobs';
-        // Mutating the proxy should fail.
-        const newValue = 'mobs must never change';
+        this.foo.mutated = true;
+
+        // Mutating the proxy shouldn't work.
         try {
-            this.readonlyFoo.willSays = newValue;
+            this.readonlyFoo.readonlyMutated = true;
         } catch (e) {
-            this.wasReadonlyFooMutated = this.readonlyFoo.willSays === newValue;
+            this.wasProxyMutated = !!this.readonlyFoo.readonlyMutated;
         }
     }
 }
