@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/synthetic-shadow",
-    "version": "8.16.1",
+    "version": "8.16.2",
     "description": "Synthetic Shadow Root for LWC",
     "keywords": [
         "lwc"
@@ -46,8 +46,8 @@
         }
     },
     "devDependencies": {
-        "@lwc/features": "8.16.1",
-        "@lwc/shared": "8.16.1"
+        "@lwc/features": "8.16.2",
+        "@lwc/shared": "8.16.2"
     },
     "lwc": {
         "modules": [
