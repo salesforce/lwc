@@ -7,6 +7,6 @@ export default class Wire extends LightningElement {
     wiredProp;
 
     get invocationSequence() {
-        return invocationSequence.map((invocation, i) => `${i + 1}. ${invocation}`).join(' ');
+        return invocationSequence.map((invocation, i) => `\n ${i + 1}. ${invocation}`).join('');
     }
 }

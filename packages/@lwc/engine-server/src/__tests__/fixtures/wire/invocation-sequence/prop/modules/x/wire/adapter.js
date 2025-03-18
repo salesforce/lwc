@@ -6,11 +6,11 @@ export class adapter {
     }
 
     connect() {
-        invocationSequence.push('connect');
+        invocationSequence.push('adaptor connect()');
     }
 
     update() {
-        invocationSequence.push('update');
+        invocationSequence.push('adaptor update()');
         this.dc(true);
     }
 
