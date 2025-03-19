@@ -1,7 +1,3 @@
 {
-    "entry": "x/parent",
-    "ssrFiles": {
-        "error": "error-v2.txt",
-        "expected": "expected-v2.html"
-    }
+    "entry": "x/parent"
 }

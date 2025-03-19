@@ -46,7 +46,6 @@ const bGenerateMarkup = esTemplate`
             });
 
             __establishContextfulRelationship(contextfulParent, instance);
-            ${/*connect wire*/ is.statement}
 
             instance[__SYMBOL__SET_INTERNALS](
                 props,
@@ -59,6 +58,7 @@ const bGenerateMarkup = esTemplate`
                 instance.connectedCallback();
                 __mutationTracker.disable(instance);
             }
+            ${/*connect wire*/ is.statement}
             // If a render() function is defined on the class or any of its superclasses, then that takes priority.
             // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
             // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
