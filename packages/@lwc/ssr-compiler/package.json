@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-compiler",
-    "version": "8.16.1",
+    "version": "8.16.3",
     "description": "Compile component for use during server-side rendering",
     "keywords": [
         "compiler",
@@ -48,18 +48,18 @@
         }
     },
     "dependencies": {
-        "@babel/types": "7.26.9",
-        "@lwc/shared": "8.16.1",
-        "@lwc/errors": "8.16.1",
-        "@lwc/template-compiler": "8.16.1",
-        "acorn": "8.14.0",
+        "@babel/types": "7.26.10",
+        "@lwc/errors": "8.16.3",
+        "@lwc/shared": "8.16.3",
+        "@lwc/template-compiler": "8.16.3",
+        "acorn": "8.14.1",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.8",
         "immer": "^10.1.1",
         "meriyah": "^5.0.0"
     },
     "devDependencies": {
-        "@lwc/babel-plugin-component": "8.16.1",
+        "@lwc/babel-plugin-component": "8.16.3",
         "@types/estree": "^1.0.6"
     }
 }
