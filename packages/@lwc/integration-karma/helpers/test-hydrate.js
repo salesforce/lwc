@@ -10,50 +10,15 @@ window.HydrateTest = (function (lwc, testUtils) {
         sanitizeHtmlContent: (content) => content,
     });
 
-    // As of this writing, Firefox does not support programmatic access to parsing DSD,
-    // i.e. `Document.parseHTMLUnsafe`
-    // See: https://developer.mozilla.org/en-US/docs/Web/API/Document/parseHTMLUnsafe_static
-    function testSupportsProgrammaticDSD() {
-        const html = '<div><template shadowrootmode="open"></template></div>';
-        try {
-            return !!Document.parseHTMLUnsafe(html).body.firstChild.shadowRoot;
-        } catch (_err) {
-            return false;
-        }
-    }
-
-    const browserSupportsProgrammaticDSD = testSupportsProgrammaticDSD();
-
     function parseStringToDom(html) {
-        if (browserSupportsProgrammaticDSD) {
-            return Document.parseHTMLUnsafe(html).body.firstChild;
-        } else {
-            return new DOMParser().parseFromString(html, 'text/html').body.firstChild;
-        }
-    }
-
-    function polyfillDeclarativeShadowDom(root) {
-        root.querySelectorAll('template[shadowrootmode]').forEach((template) => {
-            const mode = template.getAttribute('shadowrootmode');
-            const shadowRoot = template.parentNode.attachShadow({ mode });
-            shadowRoot.appendChild(template.content);
-            template.remove();
-
-            polyfillDeclarativeShadowDom(shadowRoot);
-        });
+        return Document.parseHTMLUnsafe(html).body.firstChild;
     }
 
     function appendTestTarget(ssrText) {
         const div = document.createElement('div');
-
         const testTarget = parseStringToDom(ssrText);
-        if (!browserSupportsProgrammaticDSD) {
-            polyfillDeclarativeShadowDom(testTarget);
-        }
         div.appendChild(testTarget);
-
         document.body.appendChild(div);
-
         return div;
     }
 
@@ -91,7 +56,5 @@ window.HydrateTest = (function (lwc, testUtils) {
         return testResult;
     }
 
-    return {
-        runTest,
-    };
+    return { runTest };
 })(window.LWC, window.TestUtils);
