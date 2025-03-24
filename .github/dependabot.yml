@@ -39,8 +39,6 @@ updates:
               patterns:
                   - 'webdriverio'
                   - '@wdio/*'
-              update-types:
-                  - 'major'
           prettier:
               patterns:
                   - 'prettier'
