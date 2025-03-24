@@ -27,7 +27,7 @@ export default tseslint.config(
 
     gitignore(),
     {
-        ignores: ['**/fixtures'],
+        ignores: ['packages/**/fixtures/**/*.js'],
     },
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
