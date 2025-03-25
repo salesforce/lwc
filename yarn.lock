@@ -2864,7 +2864,7 @@
     "@typescript-eslint/types" "8.28.0"
     eslint-visitor-keys "^4.2.0"
 
-"@vitest/coverage-v8@^3.0.8":
+"@vitest/coverage-v8@^3.0.9":
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@vitest/coverage-v8/-/coverage-v8-3.0.9.tgz#279f54b54e0096ce23fd10dba52087165899b654"
   integrity sha512-15OACZcBtQ34keIEn19JYTVuMFTlFrClclwWjHo/IRPg/8ELpkgNTl0o7WLP9WO9XGH6+tip9CPYtEOrIDJvBA==
@@ -2953,7 +2953,7 @@
   dependencies:
     tinyspy "^3.0.2"
 
-"@vitest/ui@^3.0.8":
+"@vitest/ui@^3.0.9":
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/@vitest/ui/-/ui-3.0.9.tgz#f617c67ef80cecac5271fedd92ee8c7dc5a248d7"
   integrity sha512-FpZD4aIv/qNpwkV3XbLV6xldWFHMgoNWAJEgg5GmpObmAOLAErpYjew9dDwXdYdKOS3iZRKdwI+P3JOJcYeUBg==
@@ -12168,7 +12168,7 @@ vite-node@3.0.9:
   optionalDependencies:
     fsevents "~2.3.3"
 
-vitest@^3.0.8:
+vitest@^3.0.9:
   version "3.0.9"
   resolved "https://registry.yarnpkg.com/vitest/-/vitest-3.0.9.tgz#8cf607d27dcaa12b9f21111f001a4e3e92511ba5"
   integrity sha512-BbcFDqNyBlfSpATmTtXOAOj71RNKDDvjBM/uPfnxxVGrG+FSH2RQIwgeEngTaTkuU/h0ScFvf+tRcKfYXzBybQ==
