@@ -190,7 +190,10 @@ const bCallWiredMethod = esTemplate`
 `<ExpressionStatement>;
 
 const bWireAdapterPlumbing = esTemplate`{
-    const wireInstance = new ${/*wire adapter constructor*/ is.expression}((newValue) => {
+    // Callable adapters are expressed as a function having an 'adapter' property, which
+    // is the actual wire constructor.
+    const AdapterCtor = ${/*wire adapter constructor*/ is.expression}?.adapter ?? ${/*wire adapter constructor*/ 0};
+    const wireInstance = new AdapterCtor((newValue) => {
         ${/*update the decorated property or call the decorated method*/ is.expressionStatement};
     });
     wireInstance.connect?.();
@@ -203,7 +206,7 @@ const bWireAdapterPlumbing = esTemplate`{
         // this preserves the behavior of the browser-side wire implementation as well as the
         // original SSR implementation.
         wireInstance.update(getLiveConfig(), undefined);
-        __connectContext(${/*wire adapter constructor*/ 0}, instance, (newContextValue) => {
+        __connectContext(AdapterCtor, instance, (newContextValue) => {
             wireInstance.update(getLiveConfig(), newContextValue);
         });
     }
