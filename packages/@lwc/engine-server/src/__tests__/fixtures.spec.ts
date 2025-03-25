@@ -10,7 +10,7 @@ import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
-import { setFeatureFlagForTest } from '../index';
+import { renderComponent, setFeatureFlagForTest } from '../index';
 import type { LightningElementConstructor } from '@lwc/engine-core/dist/framework/base-lightning-element';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
 import type { FeatureFlagName, FeatureFlagValue } from '@lwc/features/dist/types';
@@ -143,13 +143,6 @@ function testFixtures(options?: RollupLwcOptions) {
                 };
             }
 
-            // The LWC engine holds global state like the current VM index, which has an impact on
-            // the generated HTML IDs. So the engine has to be re-evaluated between tests.
-            // On top of this, the engine also checks if the component constructor is an instance of
-            // the LightningElement. Therefor the compiled module should also be evaluated in the
-            // same sandbox registry as the engine.
-            const lwcEngineServer = await import('../index');
-
             let result;
             let err;
             try {
@@ -160,9 +153,7 @@ function testFixtures(options?: RollupLwcOptions) {
                 const module: LightningElementConstructor = (await import(compiledFixturePath))
                     .default;
 
-                result = formatHTML(
-                    lwcEngineServer.renderComponent('fixture-test', module, config?.props ?? {})
-                );
+                result = formatHTML(renderComponent('fixture-test', module, config?.props ?? {}));
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
                     throw _err;
