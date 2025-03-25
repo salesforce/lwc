@@ -13,7 +13,7 @@ import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-i
 import { setFeatureFlagForTest } from '../index';
 import type { LightningElementConstructor } from '@lwc/engine-core/dist/framework/base-lightning-element';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
+import type { FeatureFlagName, FeatureFlagValue } from '@lwc/features/dist/types';
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
@@ -24,6 +24,22 @@ vi.mock('lwc', async () => {
     }
     return lwcEngineServer;
 });
+
+/**
+ * `setFeatureFlagForTest` is intentionally a no-op in production mode. We do not want to expose a
+ * utility that lets end users hijack feature flags in production, but we still need to do it
+ * ourselves in production mode tests, so this helper lives here.
+ */
+function setFeatureFlagForProductionTest(name: FeatureFlagName, value: FeatureFlagValue): void {
+    const original = process.env.NODE_ENV;
+    if (original === 'production') {
+        process.env.NODE_ENV = 'development';
+    }
+    setFeatureFlagForTest(name, value);
+    if (original === 'production') {
+        process.env.NODE_ENV = original;
+    }
+}
 
 interface FixtureConfig {
     /**
@@ -138,7 +154,7 @@ function testFixtures(options?: RollupLwcOptions) {
             let err;
             try {
                 config?.features?.forEach((flag) => {
-                    lwcEngineServer.setFeatureFlagForTest(flag, true);
+                    setFeatureFlagForProductionTest(flag, true);
                 });
 
                 const module: LightningElementConstructor = (await import(compiledFixturePath))
@@ -155,7 +171,7 @@ function testFixtures(options?: RollupLwcOptions) {
             }
 
             config?.features?.forEach((flag) => {
-                lwcEngineServer.setFeatureFlagForTest(flag, false);
+                setFeatureFlagForProductionTest(flag, false);
             });
 
             return {
@@ -166,16 +182,15 @@ function testFixtures(options?: RollupLwcOptions) {
     );
 }
 
-// TODO [#5134]: Enable these tests in production mode
-describe.skipIf(process.env.NODE_ENV === 'production').concurrent('fixtures', () => {
+describe.concurrent('fixtures', () => {
     beforeAll(() => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
-        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
+        setFeatureFlagForProductionTest('ENABLE_WIRE_SYNC_EMIT', true);
     });
 
     afterAll(() => {
-        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
+        setFeatureFlagForProductionTest('ENABLE_WIRE_SYNC_EMIT', false);
     });
 
     describe.concurrent('default', () => {
