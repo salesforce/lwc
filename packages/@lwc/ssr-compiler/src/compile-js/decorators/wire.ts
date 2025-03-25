@@ -192,7 +192,7 @@ const bCallWiredMethod = esTemplate`
 const bWireAdapterPlumbing = esTemplate`{
     // Callable adapters are expressed as a function having an 'adapter' property, which
     // is the actual wire constructor.
-    const AdapterCtor = ${/*wire adapter constructor*/ is.expression}.adapter ?? ${/*wire adapter constructor*/ 0};
+    const AdapterCtor = ${/*wire adapter constructor*/ is.expression}?.adapter ?? ${/*wire adapter constructor*/ 0};
     const wireInstance = new AdapterCtor((newValue) => {
         ${/*update the decorated property or call the decorated method*/ is.expressionStatement};
     });
