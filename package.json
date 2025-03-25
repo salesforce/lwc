@@ -100,7 +100,8 @@
             "semver": "Pinned to address security vulnerability"
         },
         "http-cache-semantics": "4.1.1",
-        "semver": "7.6.0"
+        "semver": "7.6.0",
+        "@types/estree": "1.0.7"
     },
     "dependencies": {}
 }
