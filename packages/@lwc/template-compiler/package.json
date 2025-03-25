@@ -54,7 +54,7 @@
     },
     "devDependencies": {
         "@parse5/tools": "^0.5.0",
-        "@types/estree": "1.0.6",
+        "@types/estree": "^1.0.7",
         "@types/he": "^1.2.3",
         "estree-walker": "~3.0.3",
         "parse5": "^7.2.1"

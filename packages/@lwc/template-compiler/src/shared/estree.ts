@@ -384,15 +384,13 @@ export function variableDeclaration(
 
 export function importDeclaration(
     specifiers: t.ImportDeclaration['specifiers'],
-    source: t.ImportDeclaration['source'],
-    config?: Partial<t.ImportDeclaration>
+    source: t.ImportDeclaration['source']
 ): t.ImportDeclaration {
     return {
         type: 'ImportDeclaration',
         specifiers,
         source,
         attributes: [],
-        ...config,
     };
 }
 
