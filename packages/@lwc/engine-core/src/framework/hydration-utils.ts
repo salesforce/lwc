@@ -6,7 +6,7 @@
  */
 import { ArrayPush, ArrayJoin, ArraySort, ArrayFrom, isNull, isUndefined } from '@lwc/shared';
 
-import { assertNotProd } from './utils';
+import { reportHydrationError } from './runtime-instrumentation';
 
 // Errors that occured during the hydration process
 let hydrationErrors: Array<HydrationError> = [];
@@ -26,11 +26,18 @@ interface HydrationError {
 
 export type Classes = Omit<Set<string>, 'add'>;
 
+/**
+ * When the framework is running in dev mode, hydration errors will be reported to the console. When
+ * running in prod mode, hydration errors will be reported through a global telemetry mechanism, if
+ * one is provided. If not provided, error reporting is a no-op.
+ */
+/* eslint-disable-next-line no-console */
+const hydrationLogger = process.env.NODE_ENV !== 'production' ? reportHydrationError : console.warn;
+
 /*
     Prints attributes as null or "value"
 */
 export function prettyPrintAttribute(attribute: string, value: any): string {
-    assertNotProd(); // this method should never leak to prod
     return `${attribute}=${isNull(value) || isUndefined(value) ? value : `"${value}"`}`;
 }
 
@@ -38,7 +45,6 @@ export function prettyPrintAttribute(attribute: string, value: any): string {
     Sorts and stringifies classes
 */
 export function prettyPrintClasses(classes: Classes) {
-    assertNotProd(); // this method should never leak to prod
     const value = JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(classes)), ' '));
     return `class=${value}`;
 }
@@ -48,7 +54,6 @@ export function prettyPrintClasses(classes: Classes) {
     queue them so they can be logged later against the mounted node.
 */
 export function queueHydrationError(type: string, serverRendered?: any, clientExpected?: any) {
-    assertNotProd(); // this method should never leak to prod
     ArrayPush.call(hydrationErrors, { type, serverRendered, clientExpected });
 }
 
@@ -56,7 +61,6 @@ export function queueHydrationError(type: string, serverRendered?: any, clientEx
     Flushes (logs) any queued errors after the source node has been mounted.
  */
 export function flushHydrationErrors(source?: Node | null) {
-    assertNotProd(); // this method should never leak to prod
     for (const hydrationError of hydrationErrors) {
         logHydrationWarning(
             `Hydration ${hydrationError.type} mismatch on:`,
@@ -72,7 +76,7 @@ export function flushHydrationErrors(source?: Node | null) {
 
 export function isTypeElement(node?: Node): node is Element {
     const isCorrectType = node?.nodeType === EnvNodeTypes.ELEMENT;
-    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+    if (!isCorrectType) {
         queueHydrationError('node', node);
     }
     return isCorrectType;
@@ -80,7 +84,7 @@ export function isTypeElement(node?: Node): node is Element {
 
 export function isTypeText(node?: Node): node is Text {
     const isCorrectType = node?.nodeType === EnvNodeTypes.TEXT;
-    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+    if (!isCorrectType) {
         queueHydrationError('node', node);
     }
     return isCorrectType;
@@ -88,7 +92,7 @@ export function isTypeText(node?: Node): node is Text {
 
 export function isTypeComment(node?: Node): node is Comment {
     const isCorrectType = node?.nodeType === EnvNodeTypes.COMMENT;
-    if (process.env.NODE_ENV !== 'production' && !isCorrectType) {
+    if (!isCorrectType) {
         queueHydrationError('node', node);
     }
     return isCorrectType;
@@ -99,7 +103,5 @@ export function isTypeComment(node?: Node): node is Comment {
     legacy bloat which would have meant more pathing.
 */
 export function logHydrationWarning(...args: any) {
-    assertNotProd(); // this method should never leak to prod
-    /* eslint-disable-next-line no-console */
-    console.warn('[LWC warn:', ...args);
+    hydrationLogger('[LWC warn:', ...args);
 }
