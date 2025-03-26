@@ -97,15 +97,13 @@ export function hydrateRoot(vm: VM) {
     runConnectedCallback(vm);
     hydrateVM(vm);
 
-    if (process.env.NODE_ENV !== 'production') {
-        /*
-            Errors are queued as they occur and then logged with the source element once it has been hydrated and mounted to the DOM. 
-            Means the element in the console matches what is on the page and the highlighting works properly when you hover over the elements in the console.
-        */
-        flushHydrationErrors(vm.renderRoot);
-        if (hasMismatch) {
-            logHydrationWarning('Hydration completed with errors.');
-        }
+    /*
+        Errors are queued as they occur and then logged with the source element once it has been hydrated and mounted to the DOM. 
+        Means the element in the console matches what is on the page and the highlighting works properly when you hover over the elements in the console.
+    */
+    flushHydrationErrors(vm.renderRoot);
+    if (hasMismatch) {
+        logHydrationWarning('Hydration completed with errors.');
     }
     logGlobalOperationEndWithVM(OperationId.GlobalSsrHydrate, vm);
 }
@@ -159,13 +157,11 @@ function hydrateNode(node: Node, vnode: VNode, renderer: RendererAPI): Node | nu
             break;
     }
 
-    if (process.env.NODE_ENV !== 'production') {
-        /*
-            Errors are queued as they occur and then logged with the source element once it has been hydrated and mounted to the DOM. 
-            Means the element in the console matches what is on the page and the highlighting works properly when you hover over the elements in the console.
-        */
-        flushHydrationErrors(hydratedNode);
-    }
+    /*
+        Errors are queued as they occur and then logged with the source element once it has been hydrated and mounted to the DOM. 
+        Means the element in the console matches what is on the page and the highlighting works properly when you hover over the elements in the console.
+    */
+    flushHydrationErrors(hydratedNode);
 
     return renderer.nextSibling(hydratedNode);
 }
@@ -214,12 +210,7 @@ function getValidationPredicate(
     const isValidArray = isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString);
     const conditionalOptOut = isValidArray ? new Set(optOutStaticProp) : undefined;
 
-    if (
-        process.env.NODE_ENV !== 'production' &&
-        !isUndefined(optOutStaticProp) &&
-        !isTrue(optOutStaticProp) &&
-        !isValidArray
-    ) {
+    if (!isUndefined(optOutStaticProp) && !isTrue(optOutStaticProp) && !isValidArray) {
         logHydrationWarning(
             '`validationOptOut` must be `true` or an array of attributes that should not be validated.'
         );
@@ -255,9 +246,7 @@ function updateTextContent(
     vnode: VText | VStaticPartText,
     renderer: RendererAPI
 ): Node | null {
-    if (process.env.NODE_ENV !== 'production') {
-        validateTextNodeEquality(node, vnode, renderer);
-    }
+    validateTextNodeEquality(node, vnode, renderer);
     const { setText } = renderer;
     setText(node, vnode.text ?? null);
     vnode.elm = node;
@@ -269,6 +258,9 @@ function hydrateComment(node: Node, vnode: VComment, renderer: RendererAPI): Nod
     if (!isTypeComment(node)) {
         return handleMismatch(node, vnode, renderer);
     }
+    // When running in production, we skip validation of comment nodes. This is partly because
+    // the content of those nodes is immaterial to the success of hydration, and partly because
+    // doing the check via DOM APIs is an unnecessary cost.
     if (process.env.NODE_ENV !== 'production') {
         const { getProperty } = renderer;
         const nodeValue = getProperty(node, NODE_VALUE_PROP);
@@ -356,7 +348,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
                     ...vnode.data,
                     props: cloneAndOmitKey(props, 'innerHTML'),
                 };
-            } else if (process.env.NODE_ENV !== 'production') {
+            } else {
                 queueHydrationError(
                     'innerHTML',
                     unwrappedServerInnerHTML,
@@ -452,10 +444,6 @@ function hydrateChildren(
     const { renderer } = owner;
     const { getChildNodes, cloneNode } = renderer;
 
-    const serverNodes =
-        process.env.NODE_ENV !== 'production'
-            ? Array.from(getChildNodes(parentNode), (node) => cloneNode(node, true))
-            : null;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
@@ -501,12 +489,11 @@ function hydrateChildren(
     }
 
     if (mismatchedChildren) {
+        const serverNodes = Array.from(getChildNodes(parentNode), (node) => cloneNode(node, true));
         hasMismatch = true;
         // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
-        if (process.env.NODE_ENV !== 'production') {
-            const clientNodes = ArrayMap.call(children, (c) => c?.elm);
-            queueHydrationError('child node', serverNodes, clientNodes);
-        }
+        const clientNodes = ArrayMap.call(children, (c) => c?.elm);
+        queueHydrationError('child node', serverNodes, clientNodes);
     }
 }
 
@@ -535,9 +522,7 @@ function isMatchingElement(
 ) {
     const { getProperty } = renderer;
     if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
-        if (process.env.NODE_ENV !== 'production') {
-            queueHydrationError('node', elm);
-        }
+        queueHydrationError('node', elm);
         return false;
     }
 
@@ -592,13 +577,11 @@ function validateAttrs(
         const { getAttribute } = renderer;
         const elmAttrValue = getAttribute(elm, attrName);
         if (!attributeValuesAreEqual(attrValue, elmAttrValue)) {
-            if (process.env.NODE_ENV !== 'production') {
-                queueHydrationError(
-                    'attribute',
-                    prettyPrintAttribute(attrName, elmAttrValue),
-                    prettyPrintAttribute(attrName, attrValue)
-                );
-            }
+            queueHydrationError(
+                'attribute',
+                prettyPrintAttribute(attrName, elmAttrValue),
+                prettyPrintAttribute(attrName, attrValue)
+            );
             nodesAreCompatible = false;
         }
     }
@@ -684,7 +667,7 @@ function validateClassAttr(
 
     const classesAreCompatible = checkClassesCompatibility(vnodeClasses, elmClasses);
 
-    if (process.env.NODE_ENV !== 'production' && !classesAreCompatible) {
+    if (!classesAreCompatible) {
         queueHydrationError(
             'attribute',
             prettyPrintClasses(elmClasses),
@@ -736,7 +719,7 @@ function validateStyleAttr(
         vnodeStyle = ArrayJoin.call(expectedStyle, ' ');
     }
 
-    if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {
+    if (!nodesAreCompatible) {
         queueHydrationError(
             'attribute',
             prettyPrintAttribute('style', elmStyle),
@@ -758,9 +741,7 @@ function areStaticElementsCompatible(
     let isCompatibleElements = true;
 
     if (getProperty(clientElement, 'tagName') !== getProperty(serverElement, 'tagName')) {
-        if (process.env.NODE_ENV !== 'production') {
-            queueHydrationError('node', serverElement);
-        }
+        queueHydrationError('node', serverElement);
         return false;
     }
 
@@ -777,13 +758,11 @@ function areStaticElementsCompatible(
             // Note if there are no parts then it is a fully static fragment.
             // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
             if (parts?.[0].partId !== 0) {
-                if (process.env.NODE_ENV !== 'production') {
-                    queueHydrationError(
-                        'attribute',
-                        prettyPrintAttribute(attrName, serverAttributeValue),
-                        prettyPrintAttribute(attrName, clientAttributeValue)
-                    );
-                }
+                queueHydrationError(
+                    'attribute',
+                    prettyPrintAttribute(attrName, serverAttributeValue),
+                    prettyPrintAttribute(attrName, clientAttributeValue)
+                );
                 isCompatibleElements = false;
             }
         }
