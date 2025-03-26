@@ -32,7 +32,7 @@ export type Classes = Omit<Set<string>, 'add'>;
  * one is provided. If not provided, error reporting is a no-op.
  */
 /* eslint-disable-next-line no-console */
-const hydrationLogger = process.env.NODE_ENV !== 'production' ? reportHydrationError : console.warn;
+const hydrationLogger = process.env.NODE_ENV === 'production' ? reportHydrationError : console.warn;
 
 /*
     Prints attributes as null or "value"
