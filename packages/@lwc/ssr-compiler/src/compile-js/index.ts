@@ -74,10 +74,12 @@ const visitors: Visitors = {
             return;
         }
         const source = path.node!.source!;
-        // 1. insert `import { load as __load } from '${loader}'` at top of program
-        importManager.add({ load: '__load' }, loader);
-        // 2. replace this import with `__load(${source})`
-        path.replaceWith(b.callExpression(b.identifier('__load'), [structuredClone(source)]));
+        // 1. insert `import { load as __lwcLoad } from '${loader}'` at top of program
+        importManager.add({ load: '__lwcLoad' }, loader);
+        // 2. replace this `import(source)` with `__lwcLoad(source)`
+        const load = b.identifier('__lwcLoad');
+        state.trustedLwcIdentifiers.add(load);
+        path.replaceWith(b.callExpression(load, [structuredClone(source)]));
     },
     ClassDeclaration(path, state) {
         const { node } = path;
@@ -246,9 +248,9 @@ const visitors: Visitors = {
             }
         },
     },
-    Identifier(path, _state) {
+    Identifier(path, state) {
         const { node } = path;
-        if (node?.name.startsWith('__lwc')) {
+        if (node?.name.startsWith('__lwc') && !state.trustedLwcIdentifiers.has(node)) {
             throw generateError(node, SsrCompilerErrors.RESERVED_IDENTIFIER_PREFIX);
         }
     },
@@ -286,6 +288,7 @@ export default function compileJS(
         wireAdapters: [],
         experimentalDynamicComponent: options.experimentalDynamicComponent,
         importManager: new ImportManager(),
+        trustedLwcIdentifiers: new WeakSet(),
     };
 
     traverse(ast, visitors, state);

@@ -58,4 +58,6 @@ export interface ComponentMetaState {
     experimentalDynamicComponent: ComponentTransformOptions['experimentalDynamicComponent'];
     /** imports to add to the top of the program after parsing */
     importManager: ImportManager;
+    /** identifiers starting with __lwc that we added */
+    trustedLwcIdentifiers: WeakSet<Identifier>;
 }
