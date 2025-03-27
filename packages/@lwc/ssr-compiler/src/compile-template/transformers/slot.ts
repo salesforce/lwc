@@ -66,7 +66,6 @@ const bConditionalSlot = esTemplateWithYield`
             // If we're in this else block, then the generator _must_ have yielded
             // something. It's impossible for a slottedContent["foo"] to exist
             // without the generator yielding at least a text node / element.
-            // FIXME: how does this work with comments and lwc:preserve-comments?
             ${/* slot fallback content */ is.statement}
         }
 
