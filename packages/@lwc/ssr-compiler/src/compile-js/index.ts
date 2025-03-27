@@ -81,42 +81,56 @@ const visitors: Visitors = {
         state.trustedLwcIdentifiers.add(load);
         path.replaceWith(b.callExpression(load, [structuredClone(source)]));
     },
-    ClassDeclaration(path, state) {
-        const { node } = path;
-        if (
-            node?.superClass &&
-            // export default class extends LightningElement {}
-            (is.exportDefaultDeclaration(path.parentPath) ||
-                // class Cmp extends LightningElement {}; export default Cmp
-                path.scope
-                    ?.getBinding(node.id.name)
-                    ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
-        ) {
-            // If it's a default-exported class with a superclass, then it's an LWC component!
-            state.isLWC = true;
-            if (node.id) {
-                state.lwcClassName = node.id.name;
-            } else {
-                node.id = b.identifier('DefaultComponentName');
-                state.lwcClassName = 'DefaultComponentName';
-            }
+    ClassDeclaration: {
+        enter(path, state) {
+            const { node } = path;
+            if (
+                node?.superClass &&
+                // export default class extends LightningElement {}
+                (is.exportDefaultDeclaration(path.parentPath) ||
+                    // class Cmp extends LightningElement {}; export default Cmp
+                    path.scope
+                        ?.getBinding(node.id.name)
+                        ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
+            ) {
+                // If it's a default-exported class with a superclass, then it's an LWC component!
+                state.isLWC = true;
+                state.currentComponent = node;
+                if (node.id) {
+                    state.lwcClassName = node.id.name;
+                } else {
+                    node.id = b.identifier('DefaultComponentName');
+                    state.lwcClassName = 'DefaultComponentName';
+                }
 
-            // There's no builder for comment nodes :\
-            const lwcVersionComment: EsComment = {
-                type: 'Block',
-                value: LWC_VERSION_COMMENT,
-            };
+                // There's no builder for comment nodes :\
+                const lwcVersionComment: EsComment = {
+                    type: 'Block',
+                    value: LWC_VERSION_COMMENT,
+                };
 
-            // Add LWC version comment to end of class body
-            const { body } = node;
-            if (body.trailingComments) {
-                body.trailingComments.push(lwcVersionComment);
-            } else {
-                body.trailingComments = [lwcVersionComment];
+                // Add LWC version comment to end of class body
+                const { body } = node;
+                if (body.trailingComments) {
+                    body.trailingComments.push(lwcVersionComment);
+                } else {
+                    body.trailingComments = [lwcVersionComment];
+                }
             }
-        }
+        },
+        leave(path, state) {
+            // Indicate that we're no longer traversing an LWC component
+            if (state.currentComponent && path.node === state.currentComponent) {
+                state.currentComponent = null;
+            }
+        },
     },
     PropertyDefinition(path, state) {
+        // Don't do anything unless we're in a component
+        if (!state.currentComponent) {
+            return;
+        }
+
         const node = path.node;
         if (!node?.key) {
             // Seems to occur for `@wire() [symbol];` -- not sure why
@@ -157,7 +171,7 @@ const visitors: Visitors = {
         }
         // If we mutate any class-methods that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
-        if (!state.isLWC) {
+        if (!state.currentComponent) {
             return;
         }
 
@@ -220,7 +234,7 @@ const visitors: Visitors = {
     Super(path, state) {
         // If we mutate any super calls that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
-        if (!state.isLWC) {
+        if (!state.currentComponent) {
             return;
         }
 
@@ -273,6 +287,7 @@ export default function compileJS(
 
     const state: ComponentMetaState = {
         isLWC: false,
+        currentComponent: null,
         hasConstructor: false,
         hasConnectedCallback: false,
         hadRenderedCallback: false,

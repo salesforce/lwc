@@ -9,6 +9,7 @@ import { type traverse } from 'estree-toolkit';
 import type { ImportManager } from '../imports';
 import type { ComponentTransformOptions } from '../shared';
 import type {
+    ClassDeclaration,
     Identifier,
     MemberExpression,
     MethodDefinition,
@@ -26,8 +27,10 @@ export interface WireAdapter {
 }
 
 export interface ComponentMetaState {
-    /** indicates whether the LightningElement subclass is found in the JS being traversed */
+    /** indicates whether a subclass of LightningElement is found in the JS being traversed */
     isLWC: boolean;
+    /** the class declaration currently being traversed, if it is an LWC component */
+    currentComponent: ClassDeclaration | null;
     /** indicates whether the LightningElement subclass includes a constructor method */
     hasConstructor: boolean;
     /** indicates whether the subclass has a connectedCallback method */
