@@ -22,6 +22,8 @@ declare const TestAdapterWithImperative: {
 declare const AnyAdapter: any;
 declare const InvalidAdapter: object;
 declare const DeepConfigAdapter: WireAdapterConstructor<DeepConfig, TestValue>;
+declare const someString: string;
+declare const someNumber: number;
 
 // @ts-expect-error bare decorator cannot be used
 wire(FakeWireAdapter, { config: 'config' })();
@@ -49,6 +51,8 @@ export class PropertyDecorators extends LightningElement {
     nestedReactive?: TestValue;
     @wire(TestAdapter, testConfig)
     configVariable?: TestValue;
+    @wire(TestAdapter, { config: someString })
+    configValueVariable?: TestValue;
     // Valid - as const
     @wire(TestAdapter, { config: 'config' } as const)
     basicAsConst?: TestValue;
@@ -85,30 +89,54 @@ export class PropertyDecorators extends LightningElement {
     tooManyWireParams?: TestValue;
     // @ts-expect-error Bad config type
     @wire(TestAdapter, { bad: 'value' })
-    badConfig?: TestValue;
+    badConfigType?: TestValue;
+    // @ts-expect-error Really bad config type
+    @wire(TestAdapter, 'this should definitely not work')
+    reallyBadConfigType?: TestValue;
+    // @ts-expect-error Bad config value type
+    @wire(TestAdapter, { config: someNumber })
+    badConfigValue?: TestValue;
     // @ts-expect-error Bad prop type
     @wire(TestAdapter, { config: 'config' })
     badPropType?: { bad: 'value' };
     // @ts-expect-error Prop must be optional or assigned in constructor
     @wire(TestAdapter, { config: 'config' }) notOptional: TestValue;
     // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    @wire(TestAdapter, { config: '$nonexistentProp' })
     nonExistentReactiveProp?: TestValue;
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    nonExistentReactivePropAsConst?: TestValue;
+    // @ts-expect-error Referenced reactive prop is the wrong type
+    @wire(TestAdapter, { config: '$number' })
+    numberReactiveProp?: TestValue;
     // @ts-expect-error Referenced reactive prop is the wrong type
     @wire(TestAdapter, { config: '$number' } as const)
-    numberReactiveProp?: TestValue;
+    numberReactivePropAsConst?: TestValue;
     // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapter, { config: '$nested.nonexistent' } as const)
+    @wire(TestAdapter, { config: '$nested.nonexistent' })
     nonexistentNestedReactiveProp?: TestValue;
     // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapter, { config: '$nested.invalid' } as const)
+    @wire(TestAdapter, { config: '$nested.nonexistent' } as const)
+    nonexistentNestedReactivePropAsConst?: TestValue;
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapter, { config: '$nested.invalid' })
     invalidNestedReactiveProp?: TestValue;
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapter, { config: '$nested.invalid' } as const)
+    invalidNestedReactivePropAsConst?: TestValue;
+    // @ts-expect-error Incorrect non-reactive string literal type
+    @wire(TestAdapter, { config: 'not reactive' })
+    nonReactiveStringLiteral?: TestValue;
     // @ts-expect-error Incorrect non-reactive string literal type
     @wire(TestAdapter, { config: 'not reactive' } as const)
-    nonReactiveStringLiteral?: TestValue;
+    nonReactiveStringLiteralAsConst?: TestValue;
+    // @ts-expect-error Nested props are not reactive - only top level
+    @wire(DeepConfigAdapter, { deep: { config: '$number' } })
+    deepReactive?: TestValue;
     // @ts-expect-error Nested props are not reactive - only top level
     @wire(DeepConfigAdapter, { deep: { config: '$number' } } as const)
-    deepReactive?: TestValue;
+    deepReactiveAsConst?: TestValue;
     // @ts-expect-error Looks like a method, but it's actually a prop
     @wire(TestAdapter, { config: 'config' })
     propValueIsMethod = function (this: PropertyDecorators, _: TestValue): void {};
@@ -118,13 +146,6 @@ export class PropertyDecorators extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapter)
     noConfig?: TestValue;
-    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
-    // the component's props, so we must accept all string props, even if they're incorrect.
-    // We could technically be strict, and enforce that all configs objects use `as const`, but very
-    // few projects currently use it (there is no need) and the error reported is not simple to
-    // understand.
-    @wire(TestAdapter, { config: 'incorrect' })
-    wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
     @wire(TestAdapter, { config: 'config' })
     never?: never;
@@ -254,23 +275,41 @@ export class MethodDecorators extends LightningElement {
     @wire(TestAdapter, { config: 'config' })
     badParamType(_: { bad: 'value' }): void {}
     // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    @wire(TestAdapter, { config: '$nonexistentProp' })
     nonExistentReactiveProp(_: TestValue): void {}
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    nonExistentReactivePropAsConst(_: TestValue): void {}
+    // @ts-expect-error Referenced reactive prop is the wrong type
+    @wire(TestAdapter, { config: '$number' })
+    numberReactiveProp(_: TestValue): void {}
     // @ts-expect-error Referenced reactive prop is the wrong type
     @wire(TestAdapter, { config: '$number' } as const)
-    numberReactiveProp(_: TestValue): void {}
+    numberReactivePropAsConst(_: TestValue): void {}
     // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapter, { config: '$nested.nonexistent' } as const)
+    @wire(TestAdapter, { config: '$nested.nonexistent' })
     nonexistentNestedReactiveProp(_: TestValue): void {}
     // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapter, { config: '$nested.invalid' } as const)
+    @wire(TestAdapter, { config: '$nested.nonexistent' } as const)
+    nonexistentNestedReactivePropAsConst(_: TestValue): void {}
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapter, { config: '$nested.invalid' })
     invalidNestedReactiveProp(_: TestValue): void {}
+    // @ts-expect-error Referenced nested reactive prop does not exist
+    @wire(TestAdapter, { config: '$nested.invalid' } as const)
+    invalidNestedReactivePropAsConst(_: TestValue): void {}
+    // @ts-expect-error Incorrect non-reactive string literal type
+    @wire(TestAdapter, { config: 'not reactive' })
+    nonReactiveStringLiteral(_: TestValue): void {}
     // @ts-expect-error Incorrect non-reactive string literal type
     @wire(TestAdapter, { config: 'not reactive' } as const)
-    nonReactiveStringLiteral(_: TestValue): void {}
+    nonReactiveStringLiteralAsConst(_: TestValue): void {}
+    // @ts-expect-error Nested props are not reactive - only top level
+    @wire(DeepConfigAdapter, { deep: { config: '$number' } })
+    deepReactive(_: TestValue): void {}
     // @ts-expect-error Nested props are not reactive - only top level
     @wire(DeepConfigAdapter, { deep: { config: '$number' } } as const)
-    deepReactive(_: TestValue): void {}
+    deepReactiveAsConst(_: TestValue): void {}
     // @ts-expect-error Param type looks like decorated method (validating type inference workaround)
     @wire(TestAdapter, { config: 'config' })
     paramIsMethod(_: (inner: TestValue) => void) {}
@@ -280,12 +319,6 @@ export class MethodDecorators extends LightningElement {
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapter)
     noConfig(_: TestValue): void {}
-    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
-    // the component's props, so we must accept all string props, even if they're incorrect.
-    // We could technically be strict, and enforce that all configs objects use `as const`, but very
-    // few projects currently use it (there is no need) and the error reported is not simple to
-    // understand.
-    @wire(TestAdapter, { config: 'incorrect' })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapter, { config: 'config' })
@@ -586,6 +619,8 @@ export class Setter extends LightningElement {
     // @ts-expect-error Bad value type
     @wire(TestAdapter, { config: 'config' })
     set badValueType(_: { bad: 'value' }) {}
+    // @ts-expect-error Referenced reactive prop does not exist
+    @wire(TestAdapter, { config: '$nonexistentProp' })
     // @ts-expect-error Referenced reactive prop does not exist
     @wire(TestAdapter, { config: '$nonexistentProp' } as const)
     set nonExistentReactiveProp(_: TestValue) {}
