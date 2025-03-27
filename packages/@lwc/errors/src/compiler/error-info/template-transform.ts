@@ -947,4 +947,36 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
+
+    INVALID_LWC_ON_ELEMENT: {
+        code: 1203,
+        message:
+            'Invalid lwc:on usage on element "{0}". The directive can\'t be used on a template element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_ON_LITERAL_PROP: {
+        code: 1204,
+        message:
+            'Invalid lwc:on usage on element "{0}". The directive binding must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_ON_WITH_DECLARATIVE_LISTENERS: {
+        code: 1205,
+        message:
+            'Invalid lwc:on usage on element "{0}". It is not permitted to use declarative event listeners alongside lwc:on',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_ON_OPTS: {
+        code: 1206,
+        message:
+            'Invalid lwc:on usage. The `lwc:on` directive must be enabled in order to use this feature.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };
