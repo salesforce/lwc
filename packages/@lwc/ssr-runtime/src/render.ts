@@ -193,24 +193,47 @@ interface ComponentWithGenerateMarkup extends LightningElementConstructor {
 
 export class RenderContext {
     styleDedupeIsEnabled: boolean;
-    stylesheetToId = new WeakMap<Stylesheet, string>();
     styleDedupePrefix: string;
+    stylesheetToId = new WeakMap<Stylesheet, string>();
     nextId = 0;
 
-    constructor(styleDedupePrefix: string, styleDedupeIsEnabled: boolean) {
-        this.styleDedupeIsEnabled = styleDedupeIsEnabled;
-        this.styleDedupePrefix = styleDedupePrefix;
+    constructor(styleDedupe: string | boolean) {
+        if (styleDedupe || styleDedupe === '') {
+            this.styleDedupePrefix = typeof styleDedupe === 'string' ? styleDedupe : '';
+            this.styleDedupeIsEnabled = true;
+        } else {
+            this.styleDedupePrefix = '';
+            this.styleDedupeIsEnabled = false;
+        }
     }
 }
 
+/**
+ * Create a string representing an LWC component for server-side rendering.
+ * @param tagName The HTML tag name of the component
+ * @param Component The `LightningElement` component constructor
+ * @param props HTML attributes to provide for the root component
+ * @param styleDedupe Provide a string key or `true` to enable style deduping via the `<lwc-style>`
+ * helper. The key is used to avoid collisions of global IDs.
+ * @param mode SSR render mode. Can be 'sync', 'async' or 'asyncYield'. Must match the render mode
+ * used to compile your component.
+ * @returns String representation of the component
+ */
 export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
-    styleDedupePrefix = '',
-    styleDedupeIsEnabled = false,
+    styleDedupe: string | boolean = false,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
+    // TODO [#5309]: Remove this warning after a single release
+    if (process.env.NODE_ENV !== 'production') {
+        if (arguments.length === 6 || !['sync', 'async', 'asyncYield'].includes(mode)) {
+            throw new Error(
+                "The signature for @lwc/ssr-runtime's `renderComponent` has changed. There is now only one parameter for style dedupe."
+            );
+        }
+    }
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);
     }
@@ -222,7 +245,7 @@ export async function serverSideRenderComponent(
         markup += segment;
     };
 
-    emit.cxt = new RenderContext(styleDedupePrefix, styleDedupeIsEnabled);
+    emit.cxt = new RenderContext(styleDedupe);
 
     if (!generateMarkup) {
         // If a non-component is accidentally provided, render an empty template
