@@ -79,8 +79,7 @@ const bAddSlottedContent = esTemplate`
     addSlottedContent(${/* slot name */ is.expression} ?? "", async function* __lwcGenerateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
     }, slotAttributeValue) {
-        // FIXME: make validation work again  
-        ${/* slot content */ false}
+        ${/* slot content */ is.statement}
     }, ${/* content map */ is.identifier});
 `<EsCallExpression>;
 
