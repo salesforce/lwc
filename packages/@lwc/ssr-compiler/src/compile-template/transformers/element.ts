@@ -60,6 +60,12 @@ const bYieldDynamicValue = esTemplateWithYield`
             attrValue = shouldNormalize ? 0 : attrValue;
         }
 
+        // Backwards compatibility with historical patchStyleAttribute() behavior:
+        // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
+        if (attrName === 'style' && (typeof attrValue !== 'string' || attrValue === '')) {
+            attrValue = undefined;
+        }
+
         if (attrValue !== undefined && attrValue !== null) {
             yield ' ' + attrName;
 
@@ -75,9 +81,17 @@ const bYieldClassDynamicValue = esTemplateWithYield`
         const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
         const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
 
+        // Concatenate the scope token with the class attribute value as necessary.
+        // If either is missing, render the other alone.
+        let combinedValue = shouldRenderScopeToken ? stylesheetScopeToken : '';
         if (attrValue) {
-            const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
-            yield \` class="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
+            if (combinedValue) {
+                combinedValue += ' ';
+            }
+            combinedValue += htmlEscape(String(attrValue), true);
+        }
+        if (combinedValue) {
+            yield \` class="\${combinedValue}"\`;
         }
     }
 `<EsBlockStatement>;
@@ -105,6 +119,16 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
         yield \` class="\${stylesheetScopeToken}"\`;
     }
 `<EsIfStatement>;
+
+/* 
+    If `slotAttributeValue` is set, it references a slot that does not exist, and the `slot` attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
+    See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+*/
+const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
+    if (slotAttributeValue) {
+        yield \` slot="\${slotAttributeValue}"\`; 
+    }   
+`<EsBlockStatement>;
 
 const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
@@ -249,6 +273,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        bConditionallyYieldDanglingSlotName(),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,

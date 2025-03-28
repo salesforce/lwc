@@ -12,6 +12,8 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import gitignore from 'eslint-config-flat-gitignore';
 import vitest from '@vitest/eslint-plugin';
+import * as espree from 'espree';
+
 import { PUBLIC_PACKAGES as publicPackageData } from './scripts/shared/packages.mjs';
 // convert filepath to eslint glob
 const PUBLIC_PACKAGES = publicPackageData.map(({ path }) => `${path}/**`);
@@ -27,7 +29,7 @@ export default tseslint.config(
 
     gitignore(),
     {
-        ignores: ['**/fixtures'],
+        ignores: ['packages/**/fixtures/**/*.js'],
     },
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
@@ -48,14 +50,7 @@ export default tseslint.config(
             },
 
             parserOptions: {
-                projectService: {
-                    allowDefaultProject: [
-                        // I'm not sure why these files aren't picked up... :\
-                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-code.ts',
-                        'packages/@lwc/module-resolver/scripts/test/matchers/to-throw-error-with-type.ts',
-                        'packages/@lwc/module-resolver/scripts/test/setup-test.ts',
-                    ],
-                },
+                projectService: {},
             },
         },
 
@@ -242,6 +237,19 @@ export default tseslint.config(
             'vitest/valid-expect-in-promise': 'error',
             'vitest/no-conditional-tests': 'error',
             'vitest/no-done-callback': 'error',
+            // Note that vitest's "no focused tests" rules do not cover `fit`/`fdescribe`
+            // https://github.com/salesforce/lwc/issues/5106
+            'no-restricted-globals': [
+                'error',
+                {
+                    name: 'fdescribe',
+                    message: 'Do not commit focused tests. Use `describe` instead.',
+                },
+                {
+                    name: 'fit',
+                    message: 'Do not commit focused tests. Use `it` instead.',
+                },
+            ],
         },
     },
     {
@@ -397,18 +405,35 @@ export default tseslint.config(
 
     {
         // These are empty files used to help debug test fixtures
-        files: ['**/.only'],
+        files: ['**/.only', '**/.skip'],
         plugins: { '@lwc/lwc-internal': lwcInternal },
+        languageOptions: {
+            // Using the default eslint parser because typescript-eslint doesn't
+            // seem to correctly support `extraFileExtensions`
+            parser: espree,
+            parserOptions: {
+                extraFileExtensions: ['only', 'skip'],
+            },
+        },
         rules: {
             '@lwc/lwc-internal/forbidden-filename': 'error',
+            // Disable all TS rules because they complain about the parser being espree
+            ...Object.fromEntries(
+                tseslint.configs.all
+                    .flatMap((cfg) => Object.keys(cfg.rules ?? {}))
+                    .map((rule) => [rule, 'off'])
+            ),
         },
     },
     {
-        // These are empty files used to help debug test fixtures
         files: ['**/.skip'],
-        plugins: { '@lwc/lwc-internal': lwcInternal },
         rules: {
-            '@lwc/lwc-internal/forbidden-filename': 'off',
+            // We want to avoid accidentally committing .skip files, but sometimes there are
+            // legitimate reasons to do so. So we complain when trying to commit, but not any
+            // other time.
+            '@lwc/lwc-internal/forbidden-filename':
+                // eslint-disable-next-line no-undef
+                process.env.npm_lifecycle_event === 'lint-staged' ? 'error' : 'off',
         },
     }
 );

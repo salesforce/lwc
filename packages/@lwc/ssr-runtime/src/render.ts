@@ -1,17 +1,77 @@
 /*
- * Copyright (c) 2024, salesforce.com, inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { getOwnPropertyNames, isNull, isString, isUndefined, DEFAULT_SSR_MODE } from '@lwc/shared';
+import {
+    getOwnPropertyNames,
+    isNull,
+    isString,
+    isUndefined,
+    DEFAULT_SSR_MODE,
+    htmlEscape,
+    type Stylesheet,
+} from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
+import type { CompilationMode } from '@lwc/shared';
 import type { LightningElement, LightningElementConstructor } from './lightning-element';
 import type { Attributes, Properties } from './types';
 
-const escapeAttrVal = (attrValue: string) =>
-    attrValue.replaceAll('&', '&amp;').replaceAll('"', '&quot;');
+/** Parameters used by all `generateMarkup` variants that don't get transmogrified. */
+type BaseGenerateMarkupParams = readonly [
+    tagName: string,
+    props: Properties | null,
+    attrs: Attributes | null,
+    // Not always null when invoked internally, but should always be
+    // null when invoked by ssr-runtime
+    parent: LightningElement | null,
+    scopeToken: string | null,
+    contextfulParent: LightningElement | null,
+];
+
+/** Text emitter used by transmogrified formats. */
+type Emit = (str: string) => void;
+
+/** Slotted content function used by `asyncYield` mode. */
+type SlottedContentGenerator = (
+    instance: LightningElement
+) => AsyncGenerator<string, void, unknown>;
+/** Slotted content function used by `sync` and `async` modes. */
+type SlottedContentEmitter = ($$emit: Emit, instance: LightningElement) => void;
+
+/** Slotted content map used by `asyncYield` mode. */
+type SlottedContentGeneratorMap = Record<number | string, SlottedContentGenerator[]>;
+/** Slotted content map used by `sync` and `async` modes. */
+type SlottedContentEmitterMap = Record<number | string, SlottedContentEmitter[]>;
+
+/** `generateMarkup` parameters used by `asyncYield` mode. */
+type GenerateMarkupGeneratorParams = readonly [
+    ...BaseGenerateMarkupParams,
+    shadowSlottedContent: SlottedContentGenerator | null,
+    lightSlottedContent: SlottedContentGeneratorMap | null,
+    scopedSlottedContent: SlottedContentGeneratorMap | null,
+];
+/** `generateMarkup` parameters used by `sync` and `async` modes. */
+type GenerateMarkupEmitterParams = readonly [
+    emit: Emit,
+    ...BaseGenerateMarkupParams,
+    shadowSlottedContent: SlottedContentEmitter | null,
+    lightSlottedContent: SlottedContentEmitterMap | null,
+    scopedSlottedContent: SlottedContentEmitterMap | null,
+];
+
+/** Signature for `asyncYield` compilation mode. */
+export type GenerateMarkupAsyncYield = (
+    ...args: GenerateMarkupGeneratorParams
+) => AsyncGenerator<string>;
+/** Signature for `async` compilation mode. */
+export type GenerateMarkupAsync = (...args: GenerateMarkupEmitterParams) => Promise<void>;
+/** Signature for `sync` compilation mode. */
+export type GenerateMarkupSync = (...args: GenerateMarkupEmitterParams) => void;
+
+type GenerateMarkupVariants = GenerateMarkupAsyncYield | GenerateMarkupAsync | GenerateMarkupSync;
 
 function renderAttrsPrivate(
     instance: LightningElement,
@@ -32,6 +92,14 @@ function renderAttrsPrivate(
 
     for (const attrName of getOwnPropertyNames(attrs)) {
         let attrValue = attrs[attrName];
+
+        // Backwards compatibility with historical patchStyleAttribute() behavior:
+        // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
+        if (attrName === 'style' && (!isString(attrValue) || attrValue === '')) {
+            // If the style attribute is invalid, we don't render it.
+            continue;
+        }
+
         if (isNull(attrValue) || isUndefined(attrValue)) {
             attrValue = '';
         } else if (!isString(attrValue)) {
@@ -50,7 +118,8 @@ function renderAttrsPrivate(
             }
         }
 
-        result += attrValue === '' ? ` ${attrName}` : ` ${attrName}="${escapeAttrVal(attrValue)}"`;
+        result +=
+            attrValue === '' ? ` ${attrName}` : ` ${attrName}="${htmlEscape(attrValue, true)}"`;
     }
 
     // If we didn't render any `class` attribute, render one for the scope token(s)
@@ -87,89 +156,84 @@ export function renderAttrsNoYield(
     emit(renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken));
 }
 
-export function* fallbackTmpl(
-    _props: unknown,
-    _attrs: unknown,
-    _shadowSlottedContent: unknown,
-    _lightSlottedContent: unknown,
+export async function* fallbackTmpl(
+    shadowSlottedContent: SlottedContentGenerator | null,
+    _lightSlottedContent: SlottedContentGeneratorMap | null,
+    _scopedSlottedContent: SlottedContentGeneratorMap | null,
     Cmp: LightningElementConstructor,
-    _instance: unknown
-) {
+    instance: LightningElement
+): AsyncGenerator<string> {
     if (Cmp.renderMode !== 'light') {
-        yield '<template shadowrootmode="open"></template>';
+        yield `<template shadowrootmode="open"></template>`;
+        if (shadowSlottedContent) {
+            yield* shadowSlottedContent(instance);
+        }
     }
 }
 
 export function fallbackTmplNoYield(
-    emit: (segment: string) => void,
-    _props: unknown,
-    _attrs: unknown,
-    _shadowSlottedContent: unknown,
-    _lightSlottedContent: unknown,
+    emit: Emit,
+    shadowSlottedContent: SlottedContentEmitter | null,
+    _lightSlottedContent: SlottedContentEmitterMap | null,
+    _scopedSlottedContent: SlottedContentEmitterMap | null,
     Cmp: LightningElementConstructor,
-    _instance: unknown
-) {
+    instance: LightningElement
+): void {
     if (Cmp.renderMode !== 'light') {
-        emit('<template shadowrootmode="open"></template>');
+        emit(`<template shadowrootmode="open"></template>`);
+        if (shadowSlottedContent) {
+            shadowSlottedContent(emit, instance);
+        }
     }
 }
 
-export type GenerateMarkupFn = (
-    tagName: string,
-    props: Properties | null,
-    attrs: Attributes | null,
-    shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
-    scopeToken: string | null,
-    contextfulParent: LightningElement | null
-) => AsyncGenerator<string>;
-
-export type GenerateMarkupFnAsyncNoGen = (
-    emit: (segment: string) => void,
-    tagName: string,
-    props: Properties | null,
-    attrs: Attributes | null,
-    shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
-    scopeToken: string | null,
-    contextfulParent: LightningElement | null
-) => Promise<void>;
-
-export type GenerateMarkupFnSyncNoGen = (
-    emit: (segment: string) => void,
-    tagName: string,
-    props: Properties | null,
-    attrs: Attributes | null,
-    shadowSlottedContent: AsyncGenerator<string> | null,
-    lightSlottedContent: Record<number | string, AsyncGenerator<string>> | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
-    scopeToken: string | null,
-    contextfulParent: LightningElement | null
-) => void;
-
-type GenerateMarkupFnVariants =
-    | GenerateMarkupFn
-    | GenerateMarkupFnAsyncNoGen
-    | GenerateMarkupFnSyncNoGen;
-
-interface ComponentWithGenerateMarkup {
-    [SYMBOL__GENERATE_MARKUP]: GenerateMarkupFnVariants;
+interface ComponentWithGenerateMarkup extends LightningElementConstructor {
+    [SYMBOL__GENERATE_MARKUP]?: GenerateMarkupVariants;
 }
 
+export class RenderContext {
+    styleDedupeIsEnabled: boolean;
+    styleDedupePrefix: string;
+    stylesheetToId = new WeakMap<Stylesheet, string>();
+    nextId = 0;
+
+    constructor(styleDedupe: string | boolean) {
+        if (styleDedupe || styleDedupe === '') {
+            this.styleDedupePrefix = typeof styleDedupe === 'string' ? styleDedupe : '';
+            this.styleDedupeIsEnabled = true;
+        } else {
+            this.styleDedupePrefix = '';
+            this.styleDedupeIsEnabled = false;
+        }
+    }
+}
+
+/**
+ * Create a string representing an LWC component for server-side rendering.
+ * @param tagName The HTML tag name of the component
+ * @param Component The `LightningElement` component constructor
+ * @param props HTML attributes to provide for the root component
+ * @param styleDedupe Provide a string key or `true` to enable style deduping via the `<lwc-style>`
+ * helper. The key is used to avoid collisions of global IDs.
+ * @param mode SSR render mode. Can be 'sync', 'async' or 'asyncYield'. Must match the render mode
+ * used to compile your component.
+ * @returns String representation of the component
+ */
 export async function serverSideRenderComponent(
     tagName: string,
     Component: ComponentWithGenerateMarkup,
     props: Properties = {},
-    mode: 'asyncYield' | 'async' | 'sync' = DEFAULT_SSR_MODE
+    styleDedupe: string | boolean = false,
+    mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
+    // TODO [#5309]: Remove this warning after a single release
+    if (process.env.NODE_ENV !== 'production') {
+        if (arguments.length === 6 || !['sync', 'async', 'asyncYield'].includes(mode)) {
+            throw new Error(
+                "The signature for @lwc/ssr-runtime's `renderComponent` has changed. There is now only one parameter for style dedupe."
+            );
+        }
+    }
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);
     }
@@ -181,10 +245,23 @@ export async function serverSideRenderComponent(
         markup += segment;
     };
 
+    emit.cxt = new RenderContext(styleDedupe);
+
+    if (!generateMarkup) {
+        // If a non-component is accidentally provided, render an empty template
+        emit(`<${tagName}>`);
+        // Using a false type assertion for the `instance` param is safe because it's only used
+        // if there's slotted content, which we are not providing
+        fallbackTmplNoYield(emit, null, null, null, Component, null as any);
+        emit(`</${tagName}>`);
+        return markup;
+    }
+
     if (mode === 'asyncYield') {
-        for await (const segment of (generateMarkup as GenerateMarkupFn)(
+        for await (const segment of (generateMarkup as GenerateMarkupAsyncYield)(
             tagName,
             props,
+            null,
             null,
             null,
             null,
@@ -195,10 +272,11 @@ export async function serverSideRenderComponent(
             markup += segment;
         }
     } else if (mode === 'async') {
-        await (generateMarkup as GenerateMarkupFnAsyncNoGen)(
+        await (generateMarkup as GenerateMarkupAsync)(
             emit,
             tagName,
             props,
+            null,
             null,
             null,
             null,
@@ -207,10 +285,11 @@ export async function serverSideRenderComponent(
             null
         );
     } else if (mode === 'sync') {
-        (generateMarkup as GenerateMarkupFnSyncNoGen)(
+        (generateMarkup as GenerateMarkupSync)(
             emit,
             tagName,
             props,
+            null,
             null,
             null,
             null,

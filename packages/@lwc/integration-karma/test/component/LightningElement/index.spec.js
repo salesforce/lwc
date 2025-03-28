@@ -5,6 +5,7 @@ import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
+import ReturningBad from 'x/returningBad';
 
 it('should throw when trying to invoke the constructor manually', () => {
     const func = () => {
@@ -78,4 +79,14 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
         /Throwing before calling super/
     );
     expect(() => document.body.removeChild(elm)).not.toThrow();
+});
+
+// TODO [W-17769475]: Restore this test when we can reliably detect Locker enabled
+xit('should fail when the constructor returns something other than an instance of itself', () => {
+    expect(() => {
+        createElement('x-returning-bad', { is: ReturningBad });
+    }).toThrowError(
+        TypeError,
+        'Invalid component constructor, the class should extend LightningElement.'
+    );
 });

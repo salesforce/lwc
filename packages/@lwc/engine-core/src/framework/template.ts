@@ -26,7 +26,12 @@ import api from './api';
 import { RenderMode, resetComponentRoot, runWithBoundaryProtection, ShadowMode } from './vm';
 import { assertNotProd, EmptyObject } from './utils';
 import { defaultEmptyTemplate, isTemplateRegistered } from './secure-template';
-import { createStylesheet, getStylesheetsContent, updateStylesheetToken } from './stylesheet';
+import {
+    createStylesheet,
+    getStylesheetsContent,
+    isValidScopeToken,
+    updateStylesheetToken,
+} from './stylesheet';
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { getMapFromClassName } from './modules/computed-class-attr';
@@ -64,14 +69,6 @@ export function getVMBeingRendered(): VM | null {
 }
 export function setVMBeingRendered(vm: VM | null) {
     vmBeingRendered = vm;
-}
-
-const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_.]+$/;
-
-// See W-16614556
-// TODO [#2826]: freeze the template object
-function isValidScopeToken(token: any) {
-    return isString(token) && VALID_SCOPE_TOKEN_REGEX.test(token);
 }
 
 function validateSlots(vm: VM) {
@@ -274,6 +271,7 @@ function buildParseFragmentFn(
             }
 
             // See W-16614556
+            // TODO [#2826]: freeze the template object
             if (
                 (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
                 (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))

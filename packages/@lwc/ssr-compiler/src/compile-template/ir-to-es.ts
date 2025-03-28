@@ -14,10 +14,11 @@ import { Component, LwcComponent } from './transformers/component';
 import { Element } from './transformers/element';
 import { ForEach } from './transformers/for-each';
 import { ForOf } from './transformers/for-of';
-import { If, IfBlock } from './transformers/if';
+import { LegacyIf } from './transformers/legacyIf';
 import { Slot } from './transformers/slot';
 import { Text } from './transformers/text';
 import { createNewContext } from './context';
+import { IfBlock } from './transformers/lwcIf';
 import type {
     ChildNode as IrChildNode,
     Node as IrNode,
@@ -53,7 +54,7 @@ const transformers: Transformers = {
     ExternalComponent: Element,
     ForEach,
     ForOf,
-    If,
+    If: LegacyIf,
     IfBlock,
     Root,
     Text,
@@ -66,14 +67,25 @@ const transformers: Transformers = {
     Lwc: LwcComponent,
 };
 
-export function irChildrenToEs(children: IrChildNode[], cxt: TransformerContext): EsStatement[] {
-    const result = children.flatMap((child, idx) => {
-        cxt.prevSibling = children[idx - 1];
-        cxt.nextSibling = children[idx + 1];
-        return irToEs(child, cxt);
-    });
-    cxt.prevSibling = undefined;
-    cxt.nextSibling = undefined;
+export function irChildrenToEs(
+    children: IrChildNode[],
+    cxt: TransformerContext,
+    cb?: (child: IrChildNode) => (() => void) | void
+): EsStatement[] {
+    const result: EsStatement[] = [];
+
+    for (let i = 0; i < children.length; i++) {
+        // must set the siblings inside the for loop due to nested children
+        cxt.siblings = children;
+        cxt.currentNodeIndex = i;
+        const cleanUp = cb?.(children[i]);
+        result.push(...irToEs(children[i], cxt));
+        cleanUp?.();
+    }
+    // reset the context
+    cxt.siblings = undefined;
+    cxt.currentNodeIndex = undefined;
+
     return result;
 }
 

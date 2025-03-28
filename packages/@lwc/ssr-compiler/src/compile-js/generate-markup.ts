@@ -8,86 +8,104 @@
 import { parse as pathParse } from 'node:path';
 import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
-import { isIdentOrRenderCall } from '../estree/validators';
 import { bImportDeclaration } from '../estree/builders';
-import { bWireAdaptersPlumbing } from './wire';
+import { bWireAdaptersPlumbing } from './decorators/wire';
 
-import type {
-    Program,
-    SimpleCallExpression,
-    Identifier,
-    MemberExpression,
-    Statement,
-    ExpressionStatement,
-    IfStatement,
-    FunctionDeclaration,
-} from 'estree';
+import type { Program, Statement, IfStatement } from 'estree';
 import type { ComponentMetaState } from './types';
 
-/** Node representing `<something>.render()`. */
-type RenderCallExpression = SimpleCallExpression & {
-    callee: MemberExpression & { property: Identifier & { name: 'render' } };
-};
-
 const bGenerateMarkup = esTemplate`
-    async function* generateMarkup(
+    // These variables may mix with component-authored variables, so should be reasonably unique
+    const __lwcSuperPublicProperties__ = Array.from(Object.getPrototypeOf(${/* Component class */ is.identifier})?.__lwcPublicProperties__?.values?.() ?? []);
+    const __lwcPublicProperties__ = new Set(${/*public properties*/ is.arrayExpression}.concat(__lwcSuperPublicProperties__));
+
+    Object.defineProperty(
+    ${/* component class */ 0},
+    __SYMBOL__GENERATE_MARKUP,
+    {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: async function* __lwcGenerateMarkup(
+            // The $$emit function is magically inserted here
             tagName, 
             props, 
-            attrs, 
-            shadowSlottedContent,
-            lightSlottedContent, 
+            attrs,
             parent, 
             scopeToken,
-            contextfulParent
-    ) {
-        tagName = tagName ?? ${/*component tag name*/ is.literal};
-        attrs = attrs ?? Object.create(null);
-        props = props ?? Object.create(null);
-        props = __filterProperties(
-            props,
-            ${/*public fields*/ is.arrayExpression},
-            ${/*private fields*/ is.arrayExpression},
-        );
-        const instance = new ${/* Component class */ is.identifier}({
-            tagName: tagName.toUpperCase(),
-        });
-
-        __establishContextfulRelationship(contextfulParent, instance);
-        ${/*connect wire*/ is.statement}
-
-        instance[__SYMBOL__SET_INTERNALS](props, attrs);
-        instance.isConnected = true;
-        if (instance.connectedCallback) {
-            __mutationTracker.enable(instance);
-            instance.connectedCallback();
-            __mutationTracker.disable(instance);
-        }
-        const tmplFn = ${isIdentOrRenderCall} ?? ${/*component class*/ 3}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
-        yield \`<\${tagName}\`;
-
-        const hostHasScopedStylesheets =
-            tmplFn.hasScopedStylesheets ||
-            hasScopedStaticStylesheets(${/*component class*/ 3});
-        const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
-
-        yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
-        yield '>';
-        yield* tmplFn(
-            props, 
-            attrs, 
+            contextfulParent,
             shadowSlottedContent,
             lightSlottedContent, 
-            ${/*component class*/ 3}, 
-            instance
-        );
-        yield \`</\${tagName}>\`;
-    }
-    ${/* component class */ 3}[__SYMBOL__GENERATE_MARKUP] = generateMarkup;
-`<[FunctionDeclaration, ExpressionStatement]>;
+            scopedSlottedContent,
+        ) {
+            tagName = tagName ?? ${/*component tag name*/ is.literal};
+            attrs = attrs ?? Object.create(null);
+            props = props ?? Object.create(null);
+            const instance = new ${/* Component class */ 0}({
+                tagName: tagName.toUpperCase(),
+            });
+
+            __establishContextfulRelationship(contextfulParent, instance);
+
+            instance[__SYMBOL__SET_INTERNALS](
+                props,
+                attrs,
+                __lwcPublicProperties__
+            );
+            instance.isConnected = true;
+            if (instance.connectedCallback) {
+                __mutationTracker.enable(instance);
+                instance.connectedCallback();
+                __mutationTracker.disable(instance);
+            }
+            ${/*connect wire*/ is.statement}
+            // If a render() function is defined on the class or any of its superclasses, then that takes priority.
+            // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
+            // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
+            const tmplFn = instance.render?.() ?? ${/*component class*/ 0}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
+            yield \`<\${tagName}\`;
+
+            const hostHasScopedStylesheets =
+                tmplFn.hasScopedStylesheets ||
+                hasScopedStaticStylesheets(${/*component class*/ 0});
+            const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
+
+            yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
+            yield '>';
+            yield* tmplFn(
+                shadowSlottedContent,
+                lightSlottedContent,
+                scopedSlottedContent,
+                ${/*component class*/ 0},
+                instance
+            );
+            yield \`</\${tagName}>\`;
+        }
+    });
+    Object.defineProperty(
+        ${/* component class */ 0},
+        '__lwcPublicProperties__',
+        {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: __lwcPublicProperties__
+        }
+    );
+`<[Statement]>;
 
 const bExposeTemplate = esTemplate`
     if (${/*template*/ is.identifier}) {
-        ${/* component class */ is.identifier}[__SYMBOL__DEFAULT_TEMPLATE] = ${/*template*/ 0}
+        Object.defineProperty(
+            ${/* component class */ is.identifier},
+            __SYMBOL__DEFAULT_TEMPLATE,
+            {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: ${/*template*/ 0}
+            }
+        );
     }
 `<IfStatement>;
 
@@ -109,7 +127,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { hasRenderMethod, privateFields, publicFields, tmplExplicitImports } = state;
+    const { publicProperties, tmplExplicitImports } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -117,17 +135,11 @@ export function addGenerateMarkupFunction(
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
-    const tmplVar = b.identifier('tmpl');
-    const renderCall = hasRenderMethod
-        ? (b.callExpression(
-              b.memberExpression(b.identifier('instance'), b.identifier('render')),
-              []
-          ) as RenderCallExpression)
-        : tmplVar;
 
     let exposeTemplateBlock: IfStatement | null = null;
     if (!tmplExplicitImports) {
         const defaultTmplPath = `./${pathParse(filename).name}.html`;
+        const tmplVar = b.identifier('__lwcTmpl');
         program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
         program.body.unshift(
             bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
@@ -145,7 +157,6 @@ export function addGenerateMarkupFunction(
     program.body.unshift(
         bImportDeclaration({
             fallbackTmpl: '__fallbackTmpl',
-            filterProperties: '__filterProperties',
             hasScopedStaticStylesheets: undefined,
             mutationTracker: '__mutationTracker',
             renderAttrs: '__renderAttrs',
@@ -156,12 +167,10 @@ export function addGenerateMarkupFunction(
     );
     program.body.push(
         ...bGenerateMarkup(
-            defaultTagName,
-            b.arrayExpression(publicFields.map(b.literal)),
-            b.arrayExpression(privateFields.map(b.literal)),
             classIdentifier,
-            connectWireAdapterCode,
-            renderCall
+            b.arrayExpression([...publicProperties.keys()].map(b.literal)),
+            defaultTagName,
+            connectWireAdapterCode
         )
     );
 

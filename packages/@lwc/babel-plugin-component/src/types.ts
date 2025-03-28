@@ -17,8 +17,8 @@ export interface LwcBabelPluginOptions {
         loader?: string;
         strictSpecifier?: boolean;
     };
-    namespace?: string;
-    name?: string;
+    namespace: string;
+    name: string;
     instrumentation?: InstrumentationObject;
     apiVersion?: number;
 }

@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/engine-dom",
-    "version": "8.12.0",
+    "version": "8.16.4",
     "description": "Renders LWC components in a DOM environment.",
     "keywords": [
         "lwc"
@@ -32,7 +32,8 @@
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
@@ -48,9 +49,9 @@
         }
     },
     "devDependencies": {
-        "@lwc/engine-core": "8.12.0",
-        "@lwc/shared": "8.12.0",
-        "@lwc/features": "8.12.0"
+        "@lwc/engine-core": "8.16.4",
+        "@lwc/shared": "8.16.4",
+        "@lwc/features": "8.16.4"
     },
     "lwc": {
         "modules": [

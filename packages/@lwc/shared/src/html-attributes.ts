@@ -116,6 +116,22 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
     ['htmlFor', 'for'],
 ]);
 
+// Global properties that this framework currently reflects. For CSR, the native
+// descriptors for these properties are added from HTMLElement.prototype to
+// LightningElement.prototype. For SSR, in order to match CSR behavior, this
+// list is used to determine which attributes to reflect.
+export const REFLECTIVE_GLOBAL_PROPERTY_SET = /*@__PURE__@*/ new Set([
+    'accessKey',
+    'dir',
+    'draggable',
+    'hidden',
+    'id',
+    'lang',
+    'spellcheck',
+    'tabIndex',
+    'title',
+]);
+
 /**
  * Map associating previously transformed HTML property into HTML attribute.
  */
@@ -178,3 +194,26 @@ export function kebabCaseToCamelCase(attrName: string): string {
 
     return result;
 }
+
+/**
+ * This set is for attributes that have a camel cased property name
+ * For example, div.tabIndex.
+ * We do not want users to define `@api` properties with these names
+ * Because the template will never call them. It'll always call the camel
+ * cased version.
+ */
+export const AMBIGUOUS_PROP_SET = /*@__PURE__@*/ new Map([
+    ['bgcolor', 'bgColor'],
+    ['accesskey', 'accessKey'],
+    ['contenteditable', 'contentEditable'],
+    ['tabindex', 'tabIndex'],
+    ['maxlength', 'maxLength'],
+    ['maxvalue', 'maxValue'],
+]);
+
+/**
+ * This set is for attributes that can never be defined
+ * by users on their components.
+ * We throw for these.
+ */
+export const DISALLOWED_PROP_SET = /*@__PURE__@*/ new Set(['is', 'class', 'slot', 'style']);

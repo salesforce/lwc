@@ -48,7 +48,21 @@ describe('compiler version mismatch', () => {
         });
 
         afterEach(() => {
+            process.env.SKIP_LWC_VERSION_MISMATCH_CHECK = 'false';
             detachReportingControlDispatcher();
+        });
+
+        it('skip warning during local dev', () => {
+            process.env.SKIP_LWC_VERSION_MISMATCH_CHECK = 'true';
+            function tmpl() {
+                return [];
+                /*LWC compiler v123.456.789*/
+            }
+
+            expect(() => {
+                registerTemplate(tmpl);
+            }).not.toLogErrorDev(new RegExp(`LWC WARNING:`));
+            expect(dispatcher).not.toHaveBeenCalled();
         });
 
         it('template', () => {

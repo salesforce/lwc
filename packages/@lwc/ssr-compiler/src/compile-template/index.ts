@@ -8,30 +8,36 @@
 import { generate } from 'astring';
 import { is, builders as b } from 'estree-toolkit';
 import { parse, type Config as TemplateCompilerConfig } from '@lwc/template-compiler';
-import { DiagnosticLevel } from '@lwc/errors';
+import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
+import { produce } from 'immer';
 import { esTemplate } from '../estemplate';
 import { getStylesheetImports } from '../compile-js/stylesheets';
 import { addScopeTokenDeclarations } from '../compile-js/stylesheet-scope-token';
 import { transmogrify } from '../transmogrify';
 import { optimizeAdjacentYieldStmts } from './shared';
 import { templateIrToEsTree } from './ir-to-es';
-import type { ExportDefaultDeclaration as EsExportDefaultDeclaration } from 'estree';
-import type { CompilationMode } from '@lwc/shared';
+import type {
+    ExportDefaultDeclaration as EsExportDefaultDeclaration,
+    FunctionDeclaration,
+} from 'estree';
 
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
-    export default async function* tmpl(
-            props, 
-            attrs, 
+    export default async function* __lwcTmpl(
+            // This is where $$emit comes from
             shadowSlottedContent,
-            lightSlottedContent, 
-            Cmp, 
+            lightSlottedContent,
+            scopedSlottedContent,
+            Cmp,
             instance
     ) {
         // Deliberately using let so we can mutate as many times as we want in the same scope.
         // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
         let textContentBuffer = '';
         let didBufferTextContent = false;
+
+        // This will get overridden but requires initialization.
+        const slotAttributeValue = null;
 
         // Establishes a contextual relationship between two components for ContextProviders.
         // This variable will typically get overridden (shadowed) within slotted content.
@@ -45,6 +51,7 @@ const bExportTemplate = esTemplate`
         const { stylesheets: staticStylesheets } = Cmp;
         if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
             yield renderStylesheets(
+                $$emit,
                 defaultStylesheets, 
                 defaultScopedStylesheets, 
                 staticStylesheets,
@@ -65,7 +72,7 @@ const bExportTemplate = esTemplate`
             }
         }
     }
-`<EsExportDefaultDeclaration>;
+`<EsExportDefaultDeclaration & { declaration: FunctionDeclaration }>;
 
 export default function compileTemplate(
     src: string,
@@ -91,19 +98,15 @@ export default function compileTemplate(
         experimentalDynamicDirective: options.experimentalDynamicDirective,
     });
     if (!root || warnings.length) {
-        let fatal = !root;
         for (const warning of warnings) {
             // eslint-disable-next-line no-console
             console.error('Cannot compile:', warning.message);
-            if (
-                warning.level === DiagnosticLevel.Fatal ||
-                warning.level === DiagnosticLevel.Error
-            ) {
-                fatal = true;
-            }
         }
-        // || !root is just used here to make TypeScript happy
-        if (fatal || !root) {
+        // The legacy SSR implementation would not bail from compilation even if a
+        // DiagnosticLevel.Fatal error was encountered. It would only fail if the
+        // template parser failed to return a root node. That behavior is duplicated
+        // here.
+        if (!root) {
             throw new Error('Template compilation failure; see warnings in the console.');
         }
     }
@@ -113,7 +116,7 @@ export default function compileTemplate(
     )?.value?.value;
     const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root!, {
+    const { addImport, getImports, statements } = templateIrToEsTree(root, {
         preserveComments,
         experimentalComplexExpressions,
     });
@@ -122,8 +125,19 @@ export default function compileTemplate(
         addImport(imports, source);
     }
 
-    const moduleBody = [...getImports(), bExportTemplate(optimizeAdjacentYieldStmts(statements))];
-    let program = b.program(moduleBody, 'module');
+    let tmplDecl = bExportTemplate(optimizeAdjacentYieldStmts(statements));
+    // Ideally, we'd just do ${LWC_VERSION_COMMENT} in the code template,
+    // but placeholders have a special meaning for `esTemplate`.
+    tmplDecl = produce(tmplDecl, (draft) => {
+        draft.declaration.body.trailingComments = [
+            {
+                type: 'Block',
+                value: LWC_VERSION_COMMENT,
+            },
+        ];
+    });
+
+    let program = b.program([...getImports(), tmplDecl], 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
@@ -132,6 +146,9 @@ export default function compileTemplate(
     }
 
     return {
-        code: generate(program, {}),
+        code: generate(program, {
+            // The generated AST doesn't have comments; this just preserves the LWC version comment
+            comments: true,
+        }),
     };
 }

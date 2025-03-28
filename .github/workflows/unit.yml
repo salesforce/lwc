@@ -53,7 +53,7 @@ jobs:
             - name: Check licenses are up to date
               run: node ./scripts/tasks/generate-license-files.js --test
             - name: Verify @lwc/shared is tree-shakable
-              run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+              run: node ./scripts/tasks/verify-treeshakable.mjs ./packages/@lwc/shared/dist/index.js
             - name: Verify that dependencies are declared
               run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
             - name: Check formatting
@@ -66,9 +66,8 @@ jobs:
               run: yarn test:types
             - name: Run unit tests
               run: yarn test:ci
-            # TODO [#4815]: enable all SSR v2 tests
-            - name: Run experimental SSR fixture tests
-              run: TEST_SSR_COMPILER=1 yarn test packages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts
+            - name: Run unit tests in production mode
+              run: yarn test:production --no-watch
             - name: Upload unit test coverage report
               uses: actions/upload-artifact@v4
               with:

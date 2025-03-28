@@ -8,6 +8,7 @@ import { isArray } from '@lwc/shared';
 import { validateStyleTextContents } from './validate-style-text-contents';
 import type { LightningElementConstructor } from './lightning-element';
 import type { Stylesheets, Stylesheet } from '@lwc/shared';
+import type { RenderContext } from './render';
 
 type ForgivingStylesheets =
     | Stylesheets
@@ -15,6 +16,10 @@ type ForgivingStylesheets =
     | undefined
     | null
     | Array<Stylesheets | undefined | null>;
+
+type EmitFn = ((strSegment: string) => void) & {
+    cxt: RenderContext;
+};
 
 // Traverse in the same order as `flattenStylesheets` but without creating unnecessary additional arrays
 function traverseStylesheets(
@@ -39,6 +44,10 @@ export function hasScopedStaticStylesheets(Component: LightningElementConstructo
 }
 
 export function renderStylesheets(
+    // FIXME: the `emit` function does not exist in the SSR's compiler's yield mode. If we
+    // are going to use it to transport the RenderContext down the call stack, we'll need to figure out
+    // how to make htat work in yield mode.
+    emit: EmitFn,
     defaultStylesheets: ForgivingStylesheets,
     defaultScopedStylesheets: ForgivingStylesheets,
     staticStylesheets: ForgivingStylesheets,
@@ -57,12 +66,25 @@ export function renderStylesheets(
         const token = scoped ? scopeToken : undefined;
         const useActualHostSelector = !scoped || renderMode !== 'light';
         const useNativeDirPseudoclass = true;
+        const { styleDedupeIsEnabled, stylesheetToId, styleDedupePrefix } = emit.cxt;
 
-        const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-        validateStyleTextContents(styleContents);
+        if (!styleDedupeIsEnabled) {
+            const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+            validateStyleTextContents(styleContents);
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
+        } else if (stylesheetToId.has(stylesheet)) {
+            const styleId = stylesheetToId.get(stylesheet);
+            result += `<lwc-style style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
+        } else {
+            const styleId = emit.cxt.nextId++;
+            stylesheetToId.set(stylesheet, styleId.toString());
+            const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+            validateStyleTextContents(styleContents);
 
-        // TODO [#2869]: `<style>`s should not have scope token classes
-        result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
+            // TODO [#2869]: `<style>`s should not have scope token classes
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style-${styleDedupePrefix}-${styleId}" type="text/css">${styleContents}</style>`;
+            result += `<lwc-style style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
+        }
     };
 
     traverseStylesheets(defaultStylesheets, renderStylesheet);

@@ -10,6 +10,7 @@ import TimingParent from 'timing/parent';
 import TimingParentLight from 'timing/parentLight';
 import ReorderingList from 'reordering/list';
 import ReorderingListLight from 'reordering/listLight';
+import Details from 'x/details';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -420,5 +421,18 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
         expect(disconnected).toBe(true); // received synchronously
         expect(globalConnected).toBe(true);
         expect(globalDisconnected).toBe(false); // never received due to disconnection
+    });
+});
+
+describe('attributeChangedCallback', () => {
+    it('W-17420330 - only fires for registered component', async () => {
+        const root = createElement('x-details', { is: Details });
+        document.body.appendChild(root);
+        await Promise.resolve();
+
+        const details = root.shadowRoot.querySelector('details');
+        const cb = Details.CustomElementConstructor.prototype.attributeChangedCallback;
+        cb.call(details, 'open', '', 'open');
+        expect(details.getAttribute('open')).toBeNull();
     });
 });

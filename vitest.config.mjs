@@ -22,6 +22,8 @@ export default defineConfig({
                 '**/packages/@lwc/engine-dom/**',
                 '**/packages/@lwc/engine-core/**',
                 '**/packages/@lwc/synthetic-shadow/**',
+                // TODO [#5272]: add tests
+                '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages
                 '**/packages/@lwc/integration-karma/**',
                 '**/packages/@lwc/integration-tests/**',
@@ -29,17 +31,24 @@ export default defineConfig({
                 '**/packages/@lwc/perf-benchmarks-components/**',
                 '**/packages/@lwc/perf-benchmarks/**',
                 '**/playground/**',
-                // These are not production-ready yet
-                '**/packages/@lwc/ssr-compiler/**',
-                '**/packages/@lwc/ssr-runtime/**',
                 // This just re-exports other packages
                 '**/packages/lwc/**',
             ],
             thresholds: {
-                branches: 95,
-                functions: 95,
-                lines: 95,
-                statements: 95,
+                // SSR compiler/runtime is relatively newer, so has lower thresholds for now
+                '**/packages/@lwc/ssr-*/**': {
+                    branches: 90,
+                    functions: 90,
+                    lines: 90,
+                    statements: 90,
+                },
+
+                '!**/packages/@lwc/ssr-*/**': {
+                    branches: 95,
+                    functions: 95,
+                    lines: 95,
+                    statements: 95,
+                },
             },
             reporter: [
                 'clover',

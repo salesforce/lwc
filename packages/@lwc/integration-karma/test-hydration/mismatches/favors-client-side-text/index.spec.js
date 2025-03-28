@@ -17,12 +17,20 @@ export default {
         expect(p).toBe(snapshots.p);
         expect(p.firstChild).toBe(snapshots.text);
         expect(p.textContent).toBe('bye!');
-
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
-            error: [],
-            warn: [
-                'Hydration mismatch: text values do not match, will recover from the difference',
-            ],
-        });
+        if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
+                error: [],
+                warn: [
+                    'Hydration text content mismatch on: #text - rendered on server: hello! - expected on client: bye!',
+                ],
+            });
+        } else {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
+                error: [],
+                warn: [
+                    'Hydration text content mismatch on: <p> - rendered on server: hello! - expected on client: bye!',
+                ],
+            });
+        }
     },
 };

@@ -150,7 +150,10 @@ export function HTMLBridgeElementFactory(
     const descriptors: PropertyDescriptorMap = create(null);
 
     // present a hint message so that developers are aware that they have not decorated property with @api
-    if (process.env.NODE_ENV !== 'production') {
+    // Note that we also don't do this in SSR because we cannot sniff for what props are declared on
+    // HTMLElementPrototype, and it seems not worth it to have these dev-only warnings there, since
+    // an `in` check could mistakenly assume that a prop is declared on a LightningElement prototype.
+    if (process.env.NODE_ENV !== 'production' && process.env.IS_BROWSER) {
         // TODO [#3761]: enable for components that don't extend from LightningElement
         if (!isUndefined(proto) && !isNull(proto) && !hasCustomSuperClass) {
             const nonPublicPropertiesToWarnOn = new Set(

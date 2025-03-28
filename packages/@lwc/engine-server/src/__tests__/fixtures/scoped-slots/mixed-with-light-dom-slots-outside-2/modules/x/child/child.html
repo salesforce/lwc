@@ -1,0 +1,8 @@
+<template lwc:render-mode="light">
+    <div>
+        <slot lwc:slot-bind={item}>Fallback slot content</slot>
+        <slot lwc:slot-bind={item} name="slot1">Fallback slot content 1</slot>
+        <slot lwc:slot-bind={item} name="slot2">Fallback slot content 2</slot>
+        <slot lwc:slot-bind={item} name="slot3">Fallback slot content 3</slot>
+    </div>
+</template>

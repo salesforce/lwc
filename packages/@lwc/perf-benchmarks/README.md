@@ -14,12 +14,24 @@ Then run the benchmarks:
 yarn test:performance
 ```
 
+Individual benchmark results are saved in `*.tachometer.results.json` files. A summary table is printed to console and saved as `results.md` and `results.html`.
+
+To recreate the summary tables without re-running the full test suite, ensure the JSON files exist do:
+
+```shell
+cd packages/@lwc/perf-benchmarks
+yarn test:format
+```
+
 To run an individual benchmark, do:
 
 ```shell
 cd packages/@lwc/perf-benchmarks
-../../../node_modules/.bin/tach --config dist/__benchmarks__/path/to/tachometer.json
+yarn tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
+
+> [!TIP]
+> Running all of the benchmarks will take multiple hours. Let it run overnight!
 
 ## Manual testing
 
@@ -27,7 +39,7 @@ When the benchmark is not working, the best way to debug it locally is to load i
 
 ```shell
 cd packages/@lwc/perf-benchmarks
-../../../node_modules/.bin/tach --manual --config dist/__benchmarks__/path/to/tachometer.json
+yarn tach --manual --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
 This will print out the URLs you can use to test manually.
@@ -84,3 +96,6 @@ This package also supports [Best](https://bestjs.dev) as a benchmark runner. To 
 Or for CI:
 
     yarn test:performance:best:ci
+
+> [!TIP]
+> Best tests only take a few dozen minutes. Take a break!

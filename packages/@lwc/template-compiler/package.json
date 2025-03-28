@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/template-compiler",
-    "version": "8.12.0",
+    "version": "8.16.4",
     "description": "Template compiler package",
     "keywords": [
         "lwc"
@@ -32,7 +32,8 @@
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
@@ -48,9 +49,9 @@
         }
     },
     "dependencies": {
-        "@lwc/errors": "8.12.0",
-        "@lwc/shared": "8.12.0",
-        "acorn": "~8.14.0",
+        "@lwc/errors": "8.16.4",
+        "@lwc/shared": "8.16.4",
+        "acorn": "~8.14.1",
         "astring": "~1.9.0",
         "he": "~1.2.0"
     },

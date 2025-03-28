@@ -9,20 +9,41 @@ import { generate } from 'astring';
 import { traverse, builders as b, is } from 'estree-toolkit';
 import { parseModule } from 'meriyah';
 
+import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
+import { LWCClassErrors, SsrCompilerErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
-import { replaceLwcImport } from './lwc-import';
+import { ImportManager } from '../imports';
+import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
-import { catalogWireAdapters } from './wire';
+import { catalogWireAdapters, isWireDecorator } from './decorators/wire';
+import { validateApiProperty, validateApiMethod } from './decorators/api/validate';
+import { isApiDecorator } from './decorators/api';
 
 import { removeDecoratorImport } from './remove-decorator-import';
-import type { Identifier as EsIdentifier, Program as EsProgram } from 'estree';
-import type { Visitors, ComponentMetaState } from './types';
-import type { CompilationMode } from '@lwc/shared';
+
+import { type Visitors, type ComponentMetaState } from './types';
+import { validateUniqueDecorator } from './decorators';
+import { generateError } from './errors';
+import type { ComponentTransformOptions } from '../shared';
+import type {
+    Identifier as EsIdentifier,
+    Program as EsProgram,
+    PropertyDefinition as EsPropertyDefinition,
+    MethodDefinition as EsMethodDefinition,
+    Identifier,
+    Comment as EsComment,
+} from 'estree';
 
 const visitors: Visitors = {
     $: { scope: true },
+    ExportNamedDeclaration(path) {
+        replaceNamedLwcExport(path);
+    },
+    ExportAllDeclaration(path) {
+        replaceAllLwcExport(path);
+    },
     ImportDeclaration(path, state) {
         if (!path.node || !path.node.source.value || typeof path.node.source.value !== 'string') {
             return;
@@ -33,54 +54,102 @@ const visitors: Visitors = {
         catalogAndReplaceStyleImports(path, state);
         removeDecoratorImport(path);
     },
-    ImportExpression(path) {
-        return path.replaceWith(
-            b.callExpression(
-                b.memberExpression(b.identifier('Promise'), b.identifier('resolve')),
-                []
-            )
-        );
-    },
-    ClassDeclaration(path, state) {
-        const { node } = path;
-        if (
-            node?.superClass &&
-            // export default class extends LightningElement {}
-            (is.exportDefaultDeclaration(path.parentPath) ||
-                // class Cmp extends LightningElement {}; export default Cmp
-                path.scope
-                    ?.getBinding(node.id.name)
-                    ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
-        ) {
-            // If it's a default-exported class with a superclass, then it's an LWC component!
-            state.isLWC = true;
-            if (node.id) {
-                state.lwcClassName = node.id.name;
-            } else {
-                node.id = b.identifier('DefaultComponentName');
-                state.lwcClassName = 'DefaultComponentName';
+    ImportExpression(path, state) {
+        const { experimentalDynamicComponent, importManager } = state;
+        if (!experimentalDynamicComponent) {
+            // if no `experimentalDynamicComponent` config, then leave dynamic `import()`s as-is
+            return;
+        }
+        if (experimentalDynamicComponent.strictSpecifier) {
+            if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
+                throw generateError(
+                    path.node!,
+                    LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT
+                );
             }
         }
+        const loader = experimentalDynamicComponent.loader;
+        if (!loader) {
+            // if no `loader` defined, then leave dynamic `import()`s as-is
+            return;
+        }
+        const source = path.node!.source!;
+        // 1. insert `import { load as __lwcLoad } from '${loader}'` at top of program
+        importManager.add({ load: '__lwcLoad' }, loader);
+        // 2. replace this `import(source)` with `__lwcLoad(source)`
+        const load = b.identifier('__lwcLoad');
+        state.trustedLwcIdentifiers.add(load);
+        path.replaceWith(b.callExpression(load, [structuredClone(source)]));
+    },
+    ClassDeclaration: {
+        enter(path, state) {
+            const { node } = path;
+            if (
+                node?.superClass &&
+                // export default class extends LightningElement {}
+                (is.exportDefaultDeclaration(path.parentPath) ||
+                    // class Cmp extends LightningElement {}; export default Cmp
+                    path.scope
+                        ?.getBinding(node.id.name)
+                        ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
+            ) {
+                // If it's a default-exported class with a superclass, then it's an LWC component!
+                state.isLWC = true;
+                state.currentComponent = node;
+                if (node.id) {
+                    state.lwcClassName = node.id.name;
+                } else {
+                    node.id = b.identifier('DefaultComponentName');
+                    state.lwcClassName = 'DefaultComponentName';
+                }
+
+                // There's no builder for comment nodes :\
+                const lwcVersionComment: EsComment = {
+                    type: 'Block',
+                    value: LWC_VERSION_COMMENT,
+                };
+
+                // Add LWC version comment to end of class body
+                const { body } = node;
+                if (body.trailingComments) {
+                    body.trailingComments.push(lwcVersionComment);
+                } else {
+                    body.trailingComments = [lwcVersionComment];
+                }
+            }
+        },
+        leave(path, state) {
+            // Indicate that we're no longer traversing an LWC component
+            if (state.currentComponent && path.node === state.currentComponent) {
+                state.currentComponent = null;
+            }
+        },
     },
     PropertyDefinition(path, state) {
+        // Don't do anything unless we're in a component
+        if (!state.currentComponent) {
+            return;
+        }
+
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!node?.key) {
+            // Seems to occur for `@wire() [symbol];` -- not sure why
+            throw new Error('Unknown state: property definition has no key');
+        }
+        if (!isKeyIdentifier(node)) {
             return;
         }
 
         const { decorators } = node;
-        const decoratedExpression = decorators?.[0]?.expression;
-        if (is.identifier(decoratedExpression) && decoratedExpression.name === 'api') {
-            state.publicFields.push(node.key.name);
-        } else if (
-            is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
-        ) {
+        validateUniqueDecorator(decorators);
+        if (isApiDecorator(decorators[0])) {
+            validateApiProperty(node, state);
+            state.publicProperties.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
             catalogWireAdapters(path, state);
-            state.privateFields.push(node.key.name);
+            state.privateProperties.add(node.key.name);
         } else {
-            state.privateFields.push(node.key.name);
+            state.privateProperties.add(node.key.name);
         }
 
         if (
@@ -97,27 +166,29 @@ const visitors: Visitors = {
     },
     MethodDefinition(path, state) {
         const node = path.node;
-        if (!is.identifier(node?.key)) {
+        if (!isKeyIdentifier(node)) {
             return;
         }
-
         // If we mutate any class-methods that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
-        if (!state.isLWC) {
+        if (!state.currentComponent) {
             return;
         }
 
         const { decorators } = node;
-        // The real type is a subset of `Expression`, which doesn't work with the `is` validators
-        const decoratedExpression = decorators?.[0]?.expression;
-        if (
-            is.callExpression(decoratedExpression) &&
-            is.identifier(decoratedExpression.callee) &&
-            decoratedExpression.callee.name === 'wire'
-        ) {
+        validateUniqueDecorator(decorators);
+        if (isApiDecorator(decorators[0])) {
+            validateApiMethod(node, state);
+            state.publicProperties.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
+            if (node.computed) {
+                // TODO [W-17758410]: implement
+                throw new Error('@wire cannot be used on computed properties in SSR context.');
+            }
+            const isRealMethod = node.kind === 'method';
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (node.kind === 'get' || node.kind === 'set') {
+            if (!isRealMethod) {
                 const methodAsProp = b.propertyDefinition(
                     structuredClone(node.key),
                     null,
@@ -137,13 +208,14 @@ const visitors: Visitors = {
 
         switch (node.key.name) {
             case 'constructor':
-                node.value.params = [b.identifier('propsAvailableAtConstruction')];
+                // add our own custom arg after any pre-existing constructor args
+                node.value.params = [
+                    ...structuredClone(node.value.params),
+                    b.identifier('propsAvailableAtConstruction'),
+                ];
                 break;
             case 'connectedCallback':
                 state.hasConnectedCallback = true;
-                break;
-            case 'render':
-                state.hasRenderMethod = true;
                 break;
             case 'renderedCallback':
                 state.hadRenderedCallback = true;
@@ -159,7 +231,13 @@ const visitors: Visitors = {
                 break;
         }
     },
-    Super(path, _state) {
+    Super(path, state) {
+        // If we mutate any super calls that are piped through this compiler, then we'll be
+        // inadvertently mutating things like Wire adapters.
+        if (!state.currentComponent) {
+            return;
+        }
+
         const parentFn = path.getFunctionParent();
         if (
             parentFn &&
@@ -168,7 +246,26 @@ const visitors: Visitors = {
             path.parentPath &&
             path.parentPath.node?.type === 'CallExpression'
         ) {
-            path.parentPath.node.arguments = [b.identifier('propsAvailableAtConstruction')];
+            // add our own custom arg after any pre-existing super() args
+            path.parentPath.node.arguments = [
+                ...structuredClone(path.parentPath.node.arguments),
+                b.identifier('propsAvailableAtConstruction'),
+            ];
+        }
+    },
+    Program: {
+        leave(path, state) {
+            // After parsing the whole tree, insert needed imports
+            const importDeclarations = state.importManager.getImportDeclarations();
+            if (importDeclarations.length > 0) {
+                path.node?.body.unshift(...importDeclarations);
+            }
+        },
+    },
+    Identifier(path, state) {
+        const { node } = path;
+        if (node?.name.startsWith('__lwc') && !state.trustedLwcIdentifiers.has(node)) {
+            throw generateError(node, SsrCompilerErrors.RESERVED_IDENTIFIER_PREFIX);
         }
     },
 };
@@ -177,18 +274,22 @@ export default function compileJS(
     src: string,
     filename: string,
     tagName: string,
+    options: ComponentTransformOptions,
     compilationMode: CompilationMode
 ) {
     let ast = parseModule(src, {
         module: true,
         next: true,
+        loc: true,
+        source: filename,
+        ranges: true,
     }) as EsProgram;
 
     const state: ComponentMetaState = {
         isLWC: false,
+        currentComponent: null,
         hasConstructor: false,
         hasConnectedCallback: false,
-        hasRenderMethod: false,
         hadRenderedCallback: false,
         hadDisconnectedCallback: false,
         hadErrorCallback: false,
@@ -197,9 +298,12 @@ export default function compileJS(
         tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
-        publicFields: [],
-        privateFields: [],
+        publicProperties: new Map(),
+        privateProperties: new Set(),
         wireAdapters: [],
+        experimentalDynamicComponent: options.experimentalDynamicComponent,
+        importManager: new ImportManager(),
+        trustedLwcIdentifiers: new WeakSet(),
     };
 
     traverse(ast, visitors, state);
@@ -220,6 +324,16 @@ export default function compileJS(
     }
 
     return {
-        code: generate(ast, {}),
+        code: generate(ast, {
+            // The AST generated by meriyah doesn't seem to include comments,
+            // so this just preserves the LWC version comment we added
+            comments: true,
+        }),
     };
+}
+
+function isKeyIdentifier<T extends EsPropertyDefinition | EsMethodDefinition>(
+    node: T | undefined | null
+): node is T & { key: Identifier } {
+    return is.identifier(node?.key);
 }

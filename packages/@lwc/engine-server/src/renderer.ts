@@ -10,10 +10,10 @@ import {
     isAriaAttribute,
     isBooleanAttribute,
     isFunction,
-    isGlobalHtmlAttribute,
     isNull,
     isUndefined,
     noop,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
     StringToLowerCase,
 } from '@lwc/shared';
 
@@ -157,13 +157,13 @@ function attachShadow(element: E, config: ShadowRootInit) {
     return element[HostShadowRootKey] as any;
 }
 
-function getProperty(node: N, key: string) {
-    if (key in node) {
-        return (node as any)[key];
+function getProperty(node: N, propName: string) {
+    if (propName in node) {
+        return (node as any)[propName];
     }
 
     if (node[HostTypeKey] === HostNodeType.Element) {
-        const attrName = htmlPropertyToAttribute(key);
+        const attrName = htmlPropertyToAttribute(propName);
 
         // Handle all the boolean properties.
         if (isBooleanAttribute(attrName, node.tagName)) {
@@ -171,32 +171,32 @@ function getProperty(node: N, key: string) {
         }
 
         // Handle global html attributes and AOM.
-        if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
+        if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) {
             return getAttribute(node, attrName);
         }
 
         // Handle special elements live bindings. The checked property is already handled above
         // in the boolean case.
-        if (node.tagName === 'input' && key === 'value') {
+        if (node.tagName === 'input' && propName === 'value') {
             return getAttribute(node, 'value') ?? '';
         }
     }
 
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
-        console.error(`Unexpected "${key}" property access from the renderer`);
+        console.error(`Unexpected "${propName}" property access from the renderer`);
     }
 }
 
-function setProperty(node: N, key: string, value: any): void {
-    if (key in node) {
-        return ((node as any)[key] = value);
+function setProperty(node: N, propName: string, value: any): void {
+    if (propName in node) {
+        return ((node as any)[propName] = value);
     }
 
     if (node[HostTypeKey] === HostNodeType.Element) {
-        const attrName = htmlPropertyToAttribute(key);
+        const attrName = htmlPropertyToAttribute(propName);
 
-        if (key === 'innerHTML') {
+        if (propName === 'innerHTML') {
             node[HostChildrenKey] = [
                 {
                     [HostTypeKey]: HostNodeType.Raw,
@@ -227,15 +227,24 @@ function setProperty(node: N, key: string, value: any): void {
                 : removeAttribute(node, attrName);
         }
 
-        // Handle global html attributes and AOM.
-        if (isGlobalHtmlAttribute(attrName) || isAriaAttribute(attrName)) {
+        if (isAriaAttribute(attrName)) {
+            // TODO [#3284]: According to the spec, IDL nullable type values
+            // (null and undefined) should remove the attribute; however, we
+            // only do so in the case of null for historical reasons.
+            return isNull(value)
+                ? removeAttribute(node, attrName)
+                : setAttribute(node, attrName, value);
+        } else if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
+            // Handle global html attributes and AOM.
             return setAttribute(node, attrName, value);
         }
     }
 
     if (process.env.NODE_ENV !== 'production') {
         // eslint-disable-next-line no-console
-        console.error(`Unexpected attempt to set "${key}=${value}" property from the renderer`);
+        console.error(
+            `Unexpected attempt to set "${propName}=${value}" property from the renderer`
+        );
     }
 }
 

@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/babel-plugin-component",
-    "version": "8.12.0",
+    "version": "8.16.4",
     "description": "Babel plugin to transform a LWC module",
     "keywords": [
         "lwc"
@@ -32,7 +32,8 @@
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
-        "dist"
+        "dist/**/*.js",
+        "dist/**/*.d.ts"
     ],
     "scripts": {
         "build": "rollup --config ../../../scripts/rollup/rollup.config.js",
@@ -49,8 +50,8 @@
     },
     "dependencies": {
         "@babel/helper-module-imports": "7.25.9",
-        "@lwc/errors": "8.12.0",
-        "@lwc/shared": "8.12.0",
+        "@lwc/errors": "8.16.4",
+        "@lwc/shared": "8.16.4",
         "line-column": "~1.0.2"
     },
     "devDependencies": {

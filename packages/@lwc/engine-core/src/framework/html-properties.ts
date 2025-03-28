@@ -5,16 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    AriaPropNameToAttrNameMap,
     create,
     forEach,
     getPropertyDescriptor,
     isUndefined,
     keys,
-    AriaPropNameToAttrNameMap,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';
 
 import { HTMLElementPrototype } from './html-element';
-import { defaultDefHTMLPropertyNames } from './attributes';
 
 /**
  * This is a descriptor map that contains
@@ -32,7 +32,8 @@ forEach.call(keys(AriaPropNameToAttrNameMap), (propName: string) => {
         HTMLElementOriginalDescriptors[propName] = descriptor;
     }
 });
-forEach.call(defaultDefHTMLPropertyNames, (propName) => {
+
+for (const propName of REFLECTIVE_GLOBAL_PROPERTY_SET) {
     // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
     // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
     // this category, so, better to be sure.
@@ -40,4 +41,4 @@ forEach.call(defaultDefHTMLPropertyNames, (propName) => {
     if (!isUndefined(descriptor)) {
         HTMLElementOriginalDescriptors[propName] = descriptor;
     }
-});
+}

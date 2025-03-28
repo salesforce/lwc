@@ -13,7 +13,6 @@ branches:
                 - MobilePlatform/lsdk-modules
                 - MobilePlatform/lwr-lightning-platform
                 - MobilePlatform/ui-fsm-components
-                - Skilling-and-Enablement/ui-external-enablement
                 - automation-platform/ui-externalservices-builder-components
                 - communities/microsite-template-marketing
                 - communities/shared-experience-components
@@ -26,7 +25,9 @@ branches:
                 - salesforce-experience-platform-emu/lwr-everywhere
                 - salesforce-experience-platform-emu/lwr-recipes
                 - salesforce/lwc-test
-                - salesforce/o11y-sample-app
+                # Using old major versions; tests in PRs will always fail
+                # - salesforce/o11y-sample-app
+                # - Skilling-and-Enablement/ui-external-enablement
     release:
         pull-request:
             <<: *branch-definition

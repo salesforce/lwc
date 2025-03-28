@@ -9,40 +9,42 @@ import path from 'node:path';
 import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { testFixtureDir, formatHTML } from '@lwc/test-utils-lwc-internals';
+import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
 import { setFeatureFlagForTest } from '../index';
+import type { LightningElementConstructor } from '@lwc/engine-core/dist/framework/base-lightning-element';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
-import type * as lwc from '../index';
-
-interface FixtureModule {
-    tagName: string;
-    default: typeof lwc.LightningElement;
-    props?: { [key: string]: any };
-    features?: any[];
-}
-
-vi.setConfig({ testTimeout: 10_000 /* 10 seconds */ });
+import type { FeatureFlagName } from '@lwc/features/dist/types';
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
     try {
-        lwcEngineServer.setHooks({
-            sanitizeHtmlContent(content: unknown) {
-                return content as string;
-            },
-        });
+        lwcEngineServer.setHooks({ sanitizeHtmlContent: String });
     } catch (_err) {
         // Ignore error if the hook is already overridden
     }
     return lwcEngineServer;
 });
 
+interface FixtureConfig {
+    /**
+     * Component name that serves as the entrypoint / root component of the fixture.
+     * @example x/test
+     */
+    entry: string;
+
+    /** Props to provide to the root component. */
+    props?: Record<string, string>;
+
+    /** Feature flags to enable for the test. */
+    features: FeatureFlagName[];
+}
+
 async function compileFixture({
-    input,
+    entry,
     dirname,
     options,
 }: {
-    input: string;
+    entry: string;
     dirname: string;
     options?: RollupLwcOptions;
 }) {
@@ -52,11 +54,13 @@ async function compileFixture({
             .join('-') || 'default';
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, `./dist/compiled-${optionsAsString}.js`);
+    const input = 'virtual/fixture/test.js';
 
     const bundle = await rollup({
         input,
-        external: ['lwc', 'vitest'],
+        external: ['lwc', '@lwc/ssr-runtime', 'vitest'],
         plugins: [
+            pluginVirtual(`export { default } from "${entry}";`, input),
             lwcRollupPlugin({
                 enableDynamicComponents: true,
                 experimentalDynamicComponent: {
@@ -99,23 +103,24 @@ async function compileFixture({
 }
 
 function testFixtures(options?: RollupLwcOptions) {
-    testFixtureDir(
+    testFixtureDir<FixtureConfig>(
         {
             root: path.resolve(__dirname, 'fixtures'),
-            pattern: '**/index.js',
+            ssrVersion: 1,
+            pattern: '**/config.json',
         },
-        async ({ filename, dirname, config }) => {
+        async ({ dirname, config }) => {
             let compiledFixturePath;
 
             try {
                 compiledFixturePath = await compileFixture({
-                    input: filename,
+                    entry: config!.entry,
                     dirname,
                     options,
                 });
             } catch (err: any) {
                 // Filter out the stacktrace, just include the LWC error message
-                const message = err?.message?.match(/(LWC\d+[^\n]+)/)?.[1];
+                const message = err?.message?.match(/(LWC\d+[^\n]+)/)?.[1] ?? err.message;
                 return {
                     'expected.html': '',
                     'error.txt': message,
@@ -128,32 +133,29 @@ function testFixtures(options?: RollupLwcOptions) {
             // the LightningElement. Therefor the compiled module should also be evaluated in the
             // same sandbox registry as the engine.
             const lwcEngineServer = await import('../index');
-            const module = (await import(compiledFixturePath)) as FixtureModule;
-
-            const features = module!.features ?? [];
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, true);
-            });
 
             let result;
             let err;
             try {
+                config?.features?.forEach((flag) => {
+                    lwcEngineServer.setFeatureFlagForTest(flag, true);
+                });
+
+                const module: LightningElementConstructor = (await import(compiledFixturePath))
+                    .default;
+
                 result = formatHTML(
-                    lwcEngineServer!.renderComponent(
-                        module!.tagName,
-                        module!.default,
-                        config?.props ?? {}
-                    )
+                    lwcEngineServer.renderComponent('fixture-test', module, config?.props ?? {})
                 );
             } catch (_err: any) {
-                if (_err.name === 'AssertionError') {
+                if (_err?.name === 'AssertionError') {
                     throw _err;
                 }
-                err = _err.message;
+                err = _err?.message || 'An empty error occurred?!';
             }
 
-            features.forEach((flag) => {
-                lwcEngineServer!.setFeatureFlagForTest(flag, false);
+            config?.features?.forEach((flag) => {
+                lwcEngineServer.setFeatureFlagForTest(flag, false);
             });
 
             return {
@@ -164,7 +166,8 @@ function testFixtures(options?: RollupLwcOptions) {
     );
 }
 
-describe.concurrent('fixtures', () => {
+// TODO [#5134]: Enable these tests in production mode
+describe.skipIf(process.env.NODE_ENV === 'production').concurrent('fixtures', () => {
     beforeAll(() => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.

@@ -1,0 +1,28 @@
+<fixture-test>
+  <template shadowrootmode="open">
+    <x-inner>
+      <template shadowrootmode="open">
+        <slot name="foo">
+          fallback for foo
+        </slot>
+      </template>
+      z
+      <div>
+        1
+        <div slot="foo">
+          2
+        </div>
+        3
+        <!---->
+        4
+        <div slot="foo">
+          5
+        </div>
+        6
+        <!---->
+        7
+      </div>
+      8
+    </x-inner>
+  </template>
+</fixture-test>

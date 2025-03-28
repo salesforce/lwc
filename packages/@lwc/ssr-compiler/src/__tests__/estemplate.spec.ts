@@ -8,6 +8,7 @@
 import { is, builders as b } from 'estree-toolkit';
 import { describe, test, expect } from 'vitest';
 import { esTemplate, esTemplateWithYield } from '../estemplate';
+import type { ClassDeclaration, FunctionDeclaration } from 'estree';
 
 if (process.env.NODE_ENV !== 'production') {
     // vitest seems to bypass the modifications we do in src/estree/validators.ts 🤷
@@ -33,7 +34,7 @@ describe.each(
         test('when attempting to replace unreplaceable code constructs', () => {
             // Someone might try to create a template where 'class' or 'function'
             // is provided as an argument to the ES template.
-            const isFunctionOrClass = (node: any) =>
+            const isFunctionOrClass = (node: any): node is FunctionDeclaration | ClassDeclaration =>
                 is.functionDeclaration(node) || is.classDeclaration(node);
             const createTemplate = () => topLevelFn`
                     ${isFunctionOrClass} classOrFunctionDecl {}
@@ -60,7 +61,7 @@ describe.each(
                 `;
             const doReplacement = () => tmpl(b.literal('I am not an identifier') as any);
             expect(doReplacement).toThrow(
-                'Validation failed for templated node. Expected type identifier, but received Literal.'
+                /^Validation failed for templated node\. Expected type .+?, but received Literal\.$/
             );
         });
     });

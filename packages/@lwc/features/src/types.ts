@@ -75,6 +75,17 @@ export interface FeatureFlagMap {
      * native shadow mode.
      */
     DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
+
+    /**
+     * If true, the contents of stylesheet scope tokens are not validated.
+     */
+    DISABLE_SCOPE_TOKEN_VALIDATION: FeatureFlagValue;
+
+    /**
+     * If true, then lightning legacy locker is supported, otherwise lightning legacy locker will not function
+     * properly.
+     */
+    LEGACY_LOCKER_ENABLED: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

@@ -34,12 +34,19 @@ export interface RollupLwcOptions {
     sourcemap?: boolean | 'inline';
     /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
+    /**
+     * Default modules passed to the `@lwc/module-resolver`.
+     * If unspecified, defaults to `["@lwc/engine-dom", "@lwc/synthetic-shadow", "@lwc/wire-service"]`.
+     */
+    defaultModules?: ModuleRecord[];
     /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
     stylesheetConfig?: StylesheetConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
+    // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
     /** The configuration to pass to `@lwc/compiler`. */
     experimentalDynamicComponent?: DynamicImportConfig;
+    // TODO [#3331]: deprecate and remove lwc:dynamic
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalDynamicDirective?: boolean;
     /** The configuration to pass to `@lwc/template-compiler`. */
@@ -61,17 +68,17 @@ export interface RollupLwcOptions {
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
 
-const DEFAULT_MODULES = [
-    { npm: '@lwc/engine-dom' },
-    { npm: '@lwc/synthetic-shadow' },
-    { npm: '@lwc/wire-service' },
-];
-
 const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
+
+const DEFAULT_MODULES = [
+    { npm: '@lwc/engine-dom' },
+    { npm: '@lwc/synthetic-shadow' },
+    { npm: '@lwc/wire-service' },
+];
 
 function isImplicitHTMLImport(importee: string, importer: string, importerExt: string): boolean {
     return (
@@ -162,6 +169,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
     let { rootDir, modules = [] } = pluginOptions;
+
     const {
         targetSSR,
         ssrMode,
@@ -176,11 +184,13 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
         apiVersion,
+        defaultModules = DEFAULT_MODULES,
     } = pluginOptions;
 
     return {
         name: PLUGIN_NAME,
-
+        // The version from the package.json is inlined by the build script
+        version: process.env.LWC_VERSION,
         buildStart({ input }) {
             if (rootDir === undefined) {
                 if (Array.isArray(input)) {
@@ -202,7 +212,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 rootDir = path.resolve(rootDir);
             }
 
-            modules = [...modules, ...DEFAULT_MODULES, { dir: rootDir }];
+            modules = [...modules, ...defaultModules, { dir: rootDir }];
         },
 
         resolveId(importee, importer) {
@@ -328,7 +338,20 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
-                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
+                // Note we do not need to use path.sep here because this filename contains
+                // a '/' regardless of Windows vs Unix, since it comes from the Rollup `id`
+                specifier?.split('/') ?? path.dirname(filename).split('/').slice(-2);
+
+            /* v8 ignore next */
+            if (!namespace || !name) {
+                // TODO [#4824]: Make this an error rather than a warning
+                this.warn(
+                    'The component namespace and name could not be determined from the specifier ' +
+                        JSON.stringify(specifier) +
+                        ' or filename ' +
+                        JSON.stringify(filename)
+                );
+            }
 
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
@@ -347,10 +370,12 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 scopedStyles: scoped,
                 disableSyntheticShadowSupport,
                 apiVersion: apiVersionToUse,
-                // Only pass this in if it's actually specified – otherwise unspecified becomes undefined becomes false
-                ...('enableStaticContentOptimization' in pluginOptions && {
-                    enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
-                }),
+                enableStaticContentOptimization:
+                    // {enableStaticContentOptimization:undefined} behaves like `false`
+                    // but {} (prop unspecified) behaves like `true`
+                    'enableStaticContentOptimization' in pluginOptions
+                        ? pluginOptions.enableStaticContentOptimization
+                        : true,
                 targetSSR,
                 ssrMode,
             });
@@ -368,4 +393,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 }
 
 // For backward compatibility with commonjs format
-module.exports = lwc;
+if (typeof module !== 'undefined') {
+    module.exports = lwc;
+}

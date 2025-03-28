@@ -1,4 +1,5 @@
 {
+    "entry": "x/computed",
     "props": {
         "a": 7,
         "b": 3

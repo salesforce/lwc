@@ -13,6 +13,7 @@ import { irChildrenToEs, irToEs } from '../../ir-to-es';
 import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
 import { isNullableOf } from '../../../estree/validators';
+import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
 import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
@@ -37,7 +38,7 @@ import type { TransformerContext } from '../../types';
 
 const bGenerateSlottedContent = esTemplateWithYield`
         const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
-            ? async function* generateSlottedContent(contextfulParent) {
+            ? async function* __lwcGenerateSlottedContent(contextfulParent) {
                 // The 'contextfulParent' variable is shadowed here so that a contextful relationship
                 // is established between components rendered in slotted content & the "parent"
                 // component that contains the <slot>.
@@ -52,12 +53,18 @@ const bGenerateSlottedContent = esTemplateWithYield`
             // Avoid creating the object unnecessarily
             : null;
         
-        function addLightContent(name, fn) {
-            let contentList = lightSlottedContentMap[name];
+        // The containing slot treats scoped slotted content differently.
+        const scopedSlottedContentMap = ${/* hasScopedSlottedContent */ is.literal} 
+            ? Object.create(null)
+            // Avoid creating the object unnecessarily
+            : null;
+
+        function addSlottedContent(name, fn, contentMap) {
+            let contentList = contentMap[name];
             if (contentList) {
                 contentList.push(fn);
             } else {
-                lightSlottedContentMap[name] = [fn];
+                contentMap[name] = [fn];
             }
         }
 
@@ -65,17 +72,33 @@ const bGenerateSlottedContent = esTemplateWithYield`
         ${/* scoped slot addLightContent statements */ is.expressionStatement}
 `<EsStatement[]>;
 
-// Note that this function name (`generateSlottedContent`) does not need to be scoped even though
+// Note that this function name (`__lwcGenerateSlottedContent`) does not need to be scoped even though
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
-const bAddLightContent = esTemplate`
-    addLightContent(${/* slot name */ is.expression} ?? "", async function* generateSlottedContent(contextfulParent, ${
+const bAddSlottedContent = esTemplate`
+    addSlottedContent(${/* slot name */ is.expression} ?? "", async function* __lwcGenerateSlottedContent(contextfulParent, ${
         /* scoped slot data variable */ isNullableOf(is.identifier)
-    }) {
-        // FIXME: make validation work again  
-        ${/* slot content */ false}
-    });
+    }, slotAttributeValue) {
+        ${/* slot content */ is.statement}
+    }, ${/* content map */ is.identifier});
 `<EsCallExpression>;
+
+function getShadowSlottedContent(slottableChildren: IrChildNode[], cxt: TransformerContext) {
+    return optimizeAdjacentYieldStmts(
+        irChildrenToEs(slottableChildren, cxt, (child) => {
+            const { isSlotted } = cxt;
+
+            if (child.type === 'ExternalComponent' || child.type === 'Element') {
+                cxt.isSlotted = false;
+            }
+
+            // cleanup function
+            return () => {
+                cxt.isSlotted = isSlotted;
+            };
+        })
+    );
+}
 
 // Light DOM slots are a bit complex because of needing to handle slots _not_ at the top level
 // At the non-top level, it matters what the ancestors are. These are relevant to slots:
@@ -130,12 +153,27 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                 leaf.attributes = leaf.attributes.filter((attr) => attr.name !== 'slot');
             }
         });
+        const { isSlotted: originalIsSlotted } = cxt;
+        cxt.isSlotted = ancestorIndices.length > 1 || clone.type === 'Slot';
         const slotContent = irToEs(clone, cxt);
-        results.push(b.expressionStatement(bAddLightContent(slotName, null, slotContent)));
+        cxt.isSlotted = originalIsSlotted;
+        results.push(
+            b.expressionStatement(
+                bAddSlottedContent(
+                    slotName,
+                    null,
+                    slotContent,
+                    b.identifier('lightSlottedContentMap')
+                )
+            )
+        );
     };
 
     const traverse = (nodes: IrChildNode[], ancestorIndices: number[]) => {
         for (let i = 0; i < nodes.length; i++) {
+            // must set the siblings inside the for loop due to nested children
+            cxt.siblings = nodes;
+            cxt.currentNodeIndex = i;
             const node = nodes[i];
             switch (node.type) {
                 // SlottableAncestorIrType
@@ -155,11 +193,21 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
                     // '' is the default slot name. Text nodes are always slotted into the default slot
                     const slotName =
                         node.type === 'Text' ? b.literal('') : bAttributeValue(node, 'slot');
+
+                    // For concatenated adjacent text nodes, for any but the final text node, we
+                    // should skip them and let the final text node take care of rendering its siblings
+                    if (node.type === 'Text' && !isLastConcatenatedNode(cxt)) {
+                        continue;
+                    }
+
                     addLightDomSlotContent(slotName, [...ancestorIndices, i]);
                     break;
                 }
             }
         }
+        // reset the context
+        cxt.siblings = undefined;
+        cxt.currentNodeIndex = undefined;
     };
 
     traverse(rootNodes, []);
@@ -180,7 +228,7 @@ export function getSlottedContent(
         (child) => child.type === 'ScopedSlotFragment'
     ) as IrScopedSlotFragment[];
 
-    const shadowSlotContent = optimizeAdjacentYieldStmts(irChildrenToEs(slottableChildren, cxt));
+    const shadowSlotContent = getShadowSlottedContent(slottableChildren, cxt);
 
     const lightSlotContent = getLightSlottedContent(slottableChildren, cxt);
 
@@ -195,23 +243,27 @@ export function getSlottedContent(
 
         // TODO [#4768]: what if the bound variable is `generateMarkup` or some framework-specific identifier?
         const addLightContentExpr = b.expressionStatement(
-            bAddLightContent(slotName, boundVariable, irChildrenToEs(child.children, cxt))
+            bAddSlottedContent(
+                slotName,
+                boundVariable,
+                irChildrenToEs(child.children, cxt),
+                b.identifier('scopedSlottedContentMap')
+            )
         );
         cxt.popLocalVars();
         return addLightContentExpr;
     });
 
     const hasShadowSlottedContent = b.literal(shadowSlotContent.length > 0);
-    const hasLightSlottedContent = b.literal(
-        lightSlotContent.length > 0 || scopedSlotContent.length > 0
-    );
-
+    const hasLightSlottedContent = b.literal(lightSlotContent.length > 0);
+    const hasScopedSlottedContent = b.literal(scopedSlotContent.length > 0);
     cxt.isSlotted = isSlotted;
 
     return bGenerateSlottedContent(
         hasShadowSlottedContent,
         shadowSlotContent,
         hasLightSlottedContent,
+        hasScopedSlottedContent,
         lightSlotContent,
         scopedSlotContent
     );

@@ -23,29 +23,37 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
             throw new Error(\`Invalid constructor: "\${String(Ctor)}" is not a LightningElement constructor.\`)
         }
-        const childProps = __getReadOnlyProxy(${/* child props */ is.objectExpression});
+        const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
+        /* 
+            If 'slotAttributeValue' is set, it references a slot that does not exist, and the 'slot' attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
+            See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+        */
+        if (slotAttributeValue) {
+            childAttrs.slot = slotAttributeValue;
+        }
         ${
             /*
                 Slotted content is inserted here.
                 Note that the slotted content will be stored in variables named 
-                `shadowSlottedContent`/`lightSlottedContentMap` which are used below 
+                `shadowSlottedContent`/`lightSlottedContentMap / scopedSlottedContentMap` which are used below 
                 when the child's generateMarkup function is invoked.
             */
             is.statement
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
-
+        
         yield* Ctor[__SYMBOL__GENERATE_MARKUP](
             null, 
             childProps,
             childAttrs,
-            shadowSlottedContent,
-            lightSlottedContentMap,
             instance,
             scopeToken,
-            contextfulParent
+            contextfulParent,
+            shadowSlottedContent,
+            lightSlottedContentMap,
+            scopedSlottedContentMap
         );
     }
 `<EsStatement[]>;
@@ -56,11 +64,9 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
     const lwcIs = directives.find((directive) => directive.name === 'Is');
     if (!isUndefined(lwcIs)) {
         cxt.import({
-            getReadOnlyProxy: '__getReadOnlyProxy',
             LightningElement: undefined,
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
         });
-
         return bYieldFromDynamicComponentConstructorGenerator(
             // The template compiler has validation to prevent lwcIs.value from being a literal
             expressionIrToEs(lwcIs.value as IrExpression, cxt),

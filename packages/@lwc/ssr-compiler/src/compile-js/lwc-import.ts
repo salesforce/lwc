@@ -7,7 +7,7 @@
 
 import { builders as b } from 'estree-toolkit';
 
-import type { ImportDeclaration } from 'estree';
+import type { ImportDeclaration, ExportNamedDeclaration, ExportAllDeclaration } from 'estree';
 import type { NodePath } from 'estree-toolkit';
 import type { ComponentMetaState } from './types';
 
@@ -18,7 +18,7 @@ import type { ComponentMetaState } from './types';
  *  2. it makes note of the local var name associated with the `LightningElement` import
  */
 export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: ComponentMetaState) {
-    if (!path.node || path.node.source.value !== 'lwc') {
+    if (!path.node || !isLwcSource(path)) {
         return;
     }
 
@@ -33,5 +33,46 @@ export function replaceLwcImport(path: NodePath<ImportDeclaration>, state: Compo
         }
     }
 
-    path.replaceWith(b.importDeclaration(path.node.specifiers, b.literal('@lwc/ssr-runtime')));
+    path.replaceWith(
+        b.importDeclaration(structuredClone(path.node.specifiers), b.literal('@lwc/ssr-runtime'))
+    );
+}
+
+/**
+ * This handles lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
+ */
+export function replaceNamedLwcExport(path: NodePath<ExportNamedDeclaration>) {
+    if (!path.node || !isLwcSource(path)) {
+        return;
+    }
+
+    path.replaceWith(
+        b.exportNamedDeclaration(
+            structuredClone(path.node.declaration),
+            structuredClone(path.node.specifiers),
+            b.literal('@lwc/ssr-runtime')
+        )
+    );
+}
+
+/**
+ * This handles all lwc barrel exports by replacing "lwc" with "@lwc/ssr-runtime"
+ */
+export function replaceAllLwcExport(path: NodePath<ExportAllDeclaration>) {
+    if (!path.node || !isLwcSource(path)) {
+        return;
+    }
+
+    path.replaceWith(
+        b.exportAllDeclaration(b.literal('@lwc/ssr-runtime'), structuredClone(path.node.exported))
+    );
+}
+
+/**
+ * Utility to determine if a node source is 'lwc'
+ */
+function isLwcSource(
+    path: NodePath<ExportAllDeclaration | ExportNamedDeclaration | ImportDeclaration>
+): boolean {
+    return path.node?.source?.value === 'lwc';
 }
