@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-runtime",
-    "version": "8.16.4",
+    "version": "minor",
     "description": "Runtime complement to @lwc/ssr-compiler",
     "keywords": [
         "lwc",
@@ -48,8 +48,8 @@
         }
     },
     "devDependencies": {
-        "@lwc/shared": "8.16.4",
-        "@lwc/engine-core": "8.16.4",
+        "@lwc/shared": "minor",
+        "@lwc/engine-core": "minor",
         "observable-membrane": "2.0.0"
     }
 }

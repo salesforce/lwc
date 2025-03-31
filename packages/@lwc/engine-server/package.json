@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/engine-server",
-    "version": "8.16.4",
+    "version": "minor",
     "description": "Renders LWC components in a server environment.",
     "keywords": [
         "lwc"
@@ -46,10 +46,10 @@
         }
     },
     "devDependencies": {
-        "@lwc/engine-core": "8.16.4",
-        "@lwc/rollup-plugin": "8.16.4",
-        "@lwc/shared": "8.16.4",
-        "@lwc/features": "8.16.4",
+        "@lwc/engine-core": "minor",
+        "@lwc/rollup-plugin": "minor",
+        "@lwc/shared": "minor",
+        "@lwc/features": "minor",
         "@rollup/plugin-virtual": "^3.0.2",
         "parse5": "^7.2.1"
     }

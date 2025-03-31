@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "8.16.4",
+    "version": "minor",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
@@ -15,11 +15,11 @@
         "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "8.16.4",
-        "@lwc/engine-server": "8.16.4",
-        "@lwc/perf-benchmarks-components": "8.16.4",
-        "@lwc/ssr-runtime": "8.16.4",
-        "@lwc/synthetic-shadow": "8.16.4"
+        "@lwc/engine-dom": "minor",
+        "@lwc/engine-server": "minor",
+        "@lwc/perf-benchmarks-components": "minor",
+        "@lwc/ssr-runtime": "minor",
+        "@lwc/synthetic-shadow": "minor"
     },
     "devDependencies": {
         "@best/cli": "^14.0.0",
