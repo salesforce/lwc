@@ -4,7 +4,7 @@ import Properties from 'x/properties';
 import SideEffect from 'x/sideEffect';
 import NonObservable from 'x/nonObservable';
 import SetTrackedValueToNull from 'x/setTrackedValueToNull';
-
+import StaticProperty from 'x/staticProperty';
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 it('rerenders the component when a track property is updated - literal', () => {
@@ -29,6 +29,11 @@ it('rerenders the component when a track property is updated - object', () => {
     return Promise.resolve().then(() => {
         expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
     });
+});
+
+it("doesn't work for decorated static props", () => {
+    const elm = createElement('x-static-property', { is: StaticProperty });
+    expect(() => elm.increment()).toThrowError(/Cannot read properties of undefined/);
 });
 
 describe('restrictions', () => {
