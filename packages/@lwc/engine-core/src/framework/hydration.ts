@@ -368,7 +368,12 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
 
     patchElementPropsAndAttrsAndRefs(vnode, renderer);
 
-    if (!isDomManual) {
+    // When <lwc-style> tags are initially encountered at the time of HTML parse, the <lwc-style> tag is
+    // replaced with an empty <style> tag. Additionally, the styles are attached to the shadow root as a
+    // constructed stylesheet at the same time. So, the shadow will be styled correctly and the only
+    // difference between what's in the DOM and what's in the VDOM is the string content inside the
+    // <style> tag. We can simply ignore that during hyration.
+    if (!isDomManual && vnode.elm.tagName !== 'STYLE') {
         const { getFirstChild } = renderer;
         hydrateChildren(getFirstChild(elm), vnode.children, elm, owner, false);
     }

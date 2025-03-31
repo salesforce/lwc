@@ -8,10 +8,13 @@
 import fs, { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { AssertionError } from 'node:assert';
-import { test } from 'vitest';
+import { test, chai } from 'vitest';
 import * as glob from 'glob';
+import { HtmlSnapshotPlugin } from './html-snapshot-matcher';
 
 const { globSync } = glob;
+
+chai.use(HtmlSnapshotPlugin);
 
 type TestFixtureOutput = { [filename: string]: unknown };
 
@@ -83,6 +86,7 @@ export function testFixtureDir<T>(
     config: {
         pattern: string;
         root: string;
+        ssrVersion: number;
         expectedFailures?: Set<string>;
     },
     testFn: (options: {
@@ -100,7 +104,7 @@ export function testFixtureDir<T>(
         throw new TypeError(`Expected second argument to be a function`);
     }
 
-    const { pattern, root } = config;
+    const { pattern, root, ssrVersion } = config;
     if (!pattern || !root) {
         throw new TypeError(`Expected a "root" and a "pattern" config to be specified`);
     }
@@ -140,7 +144,15 @@ export function testFixtureDir<T>(
             for (const [outputName, content] of outputsList) {
                 const outputPath = path.resolve(dirname, outputName);
                 try {
-                    await expect(content ?? '').toMatchFileSnapshot(outputPath);
+                    // SSRv2 is now the source of truth for SSR behavior. However, there are small
+                    // intentional divergences between SSRv2 and SSRv1 rendering behavior. As such,
+                    // The fixtures on-disk need to be transformed prior to comparison with SSRv1
+                    // output. The only way to accomplish this was with a custom Chai matcher.
+                    if (ssrVersion === 1 && outputName.endsWith('.html')) {
+                        await expect(content ?? '').toMatchHtmlSnapshot(outputPath, expect);
+                    } else {
+                        await expect(content ?? '').toMatchFileSnapshot(outputPath);
+                    }
                 } catch (err) {
                     if (typeof err === 'object' && err !== null) {
                         // Hide unhelpful noise in the stack trace

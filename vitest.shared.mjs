@@ -1,9 +1,14 @@
 import inspector from 'node:inspector';
+import process from 'node:process';
 import { defineConfig } from 'vitest/config';
 import pkg from './package.json';
-
 export default defineConfig({
     test: {
+        // We can't set `NODE_ENV` directly (i.e. `NODE_ENV=production yarn test`), because some packages
+        // set their env to jsdom, and NODE_ENV=production + jsdom causes `node:` imports to break
+        env: {
+            NODE_ENV: process.env.VITE_NODE_ENV,
+        },
         // Don't time out if we detect a debugger attached
         testTimeout: inspector.url()
             ? // Largest allowed delay, see https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout#maximum_delay_value
@@ -28,6 +33,7 @@ export default defineConfig({
                 'rollup-plugin',
                 'shared',
                 'signals',
+                'ssr-client-utils',
                 'ssr-compiler',
                 'ssr-runtime',
                 'style-compiler',
