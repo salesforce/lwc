@@ -11,7 +11,7 @@ import Methods from 'x/methods';
 import Inheritance from 'x/inheritance';
 import NullInitialValue from 'x/nullInitialValue';
 import ExtendsMixin from 'x/extendsMixin';
-
+import StaticProperty from 'x/staticProperty';
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 import NoSetter from 'x/noSetter';
 
@@ -60,6 +60,15 @@ describe('properties', () => {
                 cmp.publicProp.x = 1;
             });
         }).toThrowError();
+    });
+
+    it("probably shouldn't work on a static prop, but it does", () => {
+        const elm = createElement('x-static-property', { is: StaticProperty });
+        expect(StaticProperty.staticProperty).toBe('wot');
+        expect(elm.staticProperty).toBe(undefined);
+        elm.staticProperty = 'weird';
+        expect(StaticProperty.staticProperty).toBe('wot');
+        expect(elm.staticProperty).toBe('weird');
     });
 });
 
