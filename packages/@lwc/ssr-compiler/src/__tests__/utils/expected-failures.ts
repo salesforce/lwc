@@ -10,5 +10,6 @@
 export const expectedFailures = new Set([
     'scope-token/config.json',
     'scope-token-extended/config.json',
-    'empty-render/config.json',
+    'render-undefined/config.json',
+    'render-bad-value/config.json',
 ]);
