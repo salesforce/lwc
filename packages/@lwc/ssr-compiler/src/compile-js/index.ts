@@ -14,7 +14,6 @@ import { LWCClassErrors, SsrCompilerErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
-import { catalogTmplImport } from './catalog-tmpls';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
 import { catalogWireAdapters, isWireDecorator } from './decorators/wire';
@@ -50,7 +49,6 @@ const visitors: Visitors = {
         }
 
         replaceLwcImport(path, state);
-        catalogTmplImport(path, state);
         catalogAndReplaceStyleImports(path, state);
         removeDecoratorImport(path);
     },
@@ -295,7 +293,6 @@ export default function compileJS(
         hadErrorCallback: false,
         lightningElementIdentifier: null,
         lwcClassName: null,
-        tmplExplicitImports: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
         publicProperties: new Map(),
