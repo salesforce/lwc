@@ -29,10 +29,6 @@ git switch -c "$BRANCH" "$VERSION_SHA"
 git push origin HEAD
 
 if which gh 2>/dev/null 1>/dev/null; then
-  # Use GitHub CLI to create a PR and wait for CI checks to pass
-  gh pr create -t "chore: release $VERSION" -B "$RELEASE_BRANCH" -b ''
-  gh pr checks --fail-fast --watch
-
   # Usage: wait_until state CLOSED 10
   function wait_until() {
     while [ "$(gh pr view "$BRANCH" --json "$1" --jq ".$1")" != "$2" ]; do
@@ -40,11 +36,14 @@ if which gh 2>/dev/null 1>/dev/null; then
     done
   }
 
-
-  # Done locally, can clean up
+  # Use GitHub CLI to create a PR and wait for CI checks to pass
+  gh pr create -t "chore: release $VERSION" -B "$RELEASE_BRANCH" -b ''
+  # Clean up locally
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
 
+  # Wait for CI to complete
+  gh pr checks --fail-fast --watch "$BRANCH"
   # Also wait for approvals, if needed
   if [ "$(gh pr view "$BRANCH" --json reviewDecision -q .reviewDecision)" != 'APPROVED' ]; then
     echo 'Release cannot continue without approval.'
