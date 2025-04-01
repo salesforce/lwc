@@ -171,7 +171,6 @@ export function catalogWireAdapters(
             }
         });
     } else {
-        // FIXME: for `@wire(Adapter), does engine-server use `undefined` or `{}` for config?
         reactiveConfig = b.objectExpression([]); // empty object
     }
 

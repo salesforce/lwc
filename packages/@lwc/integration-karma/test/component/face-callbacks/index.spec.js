@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from 'test-utils';
 
-import Container from 'face/container';
-import FormAssociated from 'face/formAssociated';
-import NotFormAssociated from 'face/notFormAssociated';
-import LightDomFormAssociated from 'face/lightDomFormAssociated';
-import LightDomNotFormAssociated from 'face/lightDomNotFormAssociated';
+import Container from 'x/container';
+import FormAssociated from 'x/formAssociated';
+import NotFormAssociated from 'x/notFormAssociated';
+import LightDomFormAssociated from 'x/lightDomFormAssociated';
+import LightDomNotFormAssociated from 'x/lightDomNotFormAssociated';
 
 const createFormElement = () => {
     const container = createElement('face-container', { is: Container });

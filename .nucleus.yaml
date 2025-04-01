@@ -17,7 +17,8 @@ branches:
                 - communities/microsite-template-marketing
                 - communities/shared-experience-components
                 - communities/ui-commerce-components
-                - communities/webruntime
+                # TODO: re-enable after release
+                # - communities/webruntime
                 - lds/lds-plugins
                 - salesforce-experience-platform-emu/komaci
                 - salesforce-experience-platform-emu/locker-pentest-app
