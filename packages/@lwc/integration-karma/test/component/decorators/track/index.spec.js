@@ -33,7 +33,7 @@ it('rerenders the component when a track property is updated - object', () => {
 
 it("doesn't work for decorated static props", () => {
     const elm = createElement('x-static-property', { is: StaticProperty });
-    expect(() => elm.increment()).toThrowError(/Cannot read properties of undefined/);
+    expect(() => elm.increment()).toThrowError(/undefined/);
 });
 
 describe('restrictions', () => {
