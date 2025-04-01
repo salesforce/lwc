@@ -48,18 +48,18 @@
         }
     },
     "dependencies": {
-        "@babel/types": "7.26.10",
+        "@babel/types": "7.27.0",
         "@lwc/errors": "8.17.0",
         "@lwc/shared": "8.17.0",
         "@lwc/template-compiler": "8.17.0",
         "acorn": "8.14.1",
         "astring": "^1.9.0",
-        "estree-toolkit": "^1.7.8",
+        "estree-toolkit": "^1.7.10",
         "immer": "^10.1.1",
         "meriyah": "^5.0.0"
     },
     "devDependencies": {
         "@lwc/babel-plugin-component": "8.17.0",
-        "@types/estree": "^1.0.6"
+        "@types/estree": "^1.0.7"
     }
 }
