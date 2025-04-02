@@ -82,18 +82,18 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
 });
 
 it('should fail when the constructor returns something other than LightningElement when DISABLE_LIGHTNING_CONSTRUCTOR_CHECK is true', () => {
-    setFeatureFlagForTest('DISABLE_LIGHTNING_CONSTRUCTOR_CHECK', true);
     expect(() => {
         createElement('x-returning-bad', { is: ReturningBad });
     }).toThrowError(
         TypeError,
         'Invalid component constructor, the class should extend LightningElement.'
     );
-    setFeatureFlagForTest('DISABLE_LIGHTNING_CONSTRUCTOR_CHECK', false);
 });
 
 it('should succeed when the constructor returns something other than LightningElement when DISABLE_LIGHTNING_CONSTRUCTOR_CHECK is falsy', () => {
+    setFeatureFlagForTest('DISABLE_LIGHTNING_CONSTRUCTOR_CHECK', true);
     expect(() => {
         createElement('x-returning-bad', { is: ReturningBad });
     }).not.toThrow();
+    setFeatureFlagForTest('DISABLE_LIGHTNING_CONSTRUCTOR_CHECK', false);
 });
