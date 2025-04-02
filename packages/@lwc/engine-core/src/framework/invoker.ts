@@ -11,7 +11,7 @@ import { addErrorComponentStack } from '../shared/error';
 import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered } from './template';
 import { runWithBoundaryProtection } from './vm';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
-import type { LightningElement } from './base-lightning-element';
+import { LightningElement } from './base-lightning-element';
 import type { Template } from './template';
 import type { VM } from './vm';
 import type { LightningElementConstructor } from './base-lightning-element';
