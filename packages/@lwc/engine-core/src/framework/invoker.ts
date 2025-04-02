@@ -54,16 +54,19 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // job
         const result = new Ctor();
 
-        // Check indirectly if the constructor result is an instance of LightningElement. Using
-        // the "instanceof" operator would not work here since Locker Service provides its own
-        // implementation of LightningElement, so we indirectly check if the base constructor is
-        // invoked by accessing the component on the vm.
+        // Check indirectly if the constructor result is an instance of LightningElement.
+        // When Locker is enabled, the "instanceof" operator would not work since Locker Service
+        // provides its own implementation of LightningElement, so we indirectly check
+        // if the base constructor is invoked by accessing the component on the vm.
+        // When the ENABLE_LIGHTNING_CONSTRUCTOR_CHECK gate is true and LEGACY_LOCKER_ENABLED is false,
+        // then the instanceof LightningElement can be used.
+        const useLegacyConstructorCheck =
+            !lwcRuntimeFlags.ENABLE_LIGHTNING_CONSTRUCTOR_CHECK ||
+            lwcRuntimeFlags.LEGACY_LOCKER_ENABLED;
 
-        // TODO [W-17769475]: Restore this fix when we can reliably detect Locker enabled
-        // const isInvalidConstructor = lwcRuntimeFlags.LEGACY_LOCKER_ENABLED
-        //     ? vmBeingConstructed.component !== result
-        //     : !(result instanceof LightningElement);
-        const isInvalidConstructor = vmBeingConstructed.component !== result;
+        const isInvalidConstructor = useLegacyConstructorCheck
+            ? vmBeingConstructed.component !== result
+            : !(result instanceof LightningElement);
 
         if (isInvalidConstructor) {
             throw new TypeError(

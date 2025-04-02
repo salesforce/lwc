@@ -1,4 +1,4 @@
-import { LightningElement, createElement } from 'lwc';
+import { LightningElement, createElement, setFeatureFlagForTest } from 'lwc';
 
 import NotInvokingSuper from 'x/notInvokingSuper';
 import NotReturningThis from 'x/notReturningThis';
@@ -81,12 +81,19 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });
 
-// TODO [W-17769475]: Restore this test when we can reliably detect Locker enabled
-xit('should fail when the constructor returns something other than an instance of itself', () => {
+it('should fail when the constructor returns something other than LightningElement when ENABLE_LIGHTNING_CONSTRUCTOR_CHECK is true', () => {
+    setFeatureFlagForTest('ENABLE_LIGHTNING_CONSTRUCTOR_CHECK', true);
     expect(() => {
         createElement('x-returning-bad', { is: ReturningBad });
     }).toThrowError(
         TypeError,
         'Invalid component constructor, the class should extend LightningElement.'
     );
+    setFeatureFlagForTest('ENABLE_LIGHTNING_CONSTRUCTOR_CHECK', false);
+});
+
+it('should succeed when the constructor returns something other than LightningElement when ENABLE_LIGHTNING_CONSTRUCTOR_CHECK is falsy', () => {
+    expect(() => {
+        createElement('x-returning-bad', { is: ReturningBad });
+    }).not.toThrow();
 });
