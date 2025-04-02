@@ -8,8 +8,6 @@
 // We should slowly drive down these test failures or at least document where we expect the failures
 // TODO [#4815]: enable all SSR v2 tests
 export const expectedFailures = new Set([
-    'scope-token/config.json',
-    'scope-token-extended/config.json',
     'render-undefined/config.json',
     'render-bad-value/config.json',
 ]);
