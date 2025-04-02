@@ -61,7 +61,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // When the DISABLE_LIGHTNING_CONSTRUCTOR_CHECK gate is true and LEGACY_LOCKER_ENABLED is false,
         // then the instanceof LightningElement can be used.
         const useLegacyConstructorCheck =
-            lwcRuntimeFlags.DISABLE_LIGHTNING_CONSTRUCTOR_CHECK &&
+            lwcRuntimeFlags.DISABLE_LIGHTNING_CONSTRUCTOR_CHECK ||
             lwcRuntimeFlags.LEGACY_LOCKER_ENABLED;
 
         const isInvalidConstructor = useLegacyConstructorCheck
