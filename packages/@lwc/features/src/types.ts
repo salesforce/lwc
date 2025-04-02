@@ -91,7 +91,7 @@ export interface FeatureFlagMap {
      * If true, then the legacy constructor check is only used if
      * LEGACY_LOCKER_ENABLED is true.
      */
-    ENABLE_LIGHTNING_CONSTRUCTOR_CHECK: FeatureFlagValue;
+    DISABLE_LIGHTNING_CONSTRUCTOR_CHECK: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

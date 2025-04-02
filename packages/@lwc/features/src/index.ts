@@ -22,7 +22,7 @@ const features: FeatureFlagMap = {
     DISABLE_SYNTHETIC_SHADOW: null,
     DISABLE_SCOPE_TOKEN_VALIDATION: null,
     LEGACY_LOCKER_ENABLED: null,
-    ENABLE_LIGHTNING_CONSTRUCTOR_CHECK: null,
+    DISABLE_LIGHTNING_CONSTRUCTOR_CHECK: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
