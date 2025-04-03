@@ -884,6 +884,7 @@ const LWC_DIRECTIVE_PROCESSORS = [
     applyLwcInnerHtmlDirective,
     applyRefDirective,
     applyLwcSpreadDirective,
+    applyLwcOnDirective,
     applyLwcSlotBindDirective,
 ];
 
@@ -970,6 +971,38 @@ function applyLwcSpreadDirective(
     }
 
     element.directives.push(ast.spreadDirective(lwcSpreadAttr, lwcSpread.location));
+}
+
+function applyLwcOnDirective(
+    ctx: ParserCtx,
+    parsedAttr: ParsedAttribute,
+    element: BaseElement
+): void {
+    const { name: tag } = element;
+
+    const lwcOn = parsedAttr.pick(ElementDirectiveName.On);
+    if (!lwcOn) {
+        return;
+    }
+
+    if (!ctx.config.enableLwcOn) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_OPTS, element);
+    }
+
+    const { value: lwcOnValue } = lwcOn;
+    if (!ast.isExpression(lwcOnValue)) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_LITERAL_PROP, element, [`<${tag}>`]);
+    }
+
+    // At this point element.listeners stores declarative event listeners (e.g., `onfoo`)
+    // `lwc:on` directive cannot be used together with declarative event listeners.
+    if (element.listeners.length) {
+        ctx.throwOnNode(ParserDiagnostics.INVALID_LWC_ON_WITH_DECLARATIVE_LISTENERS, element, [
+            `<${tag}>`,
+        ]);
+    }
+
+    element.directives.push(ast.OnDirective(lwcOnValue, lwcOn.location));
 }
 
 function applyLwcExternalDirective(
@@ -1643,6 +1676,13 @@ function validateTemplate(
 
     if (parsedAttr.get(ElementDirectiveName.Is)) {
         ctx.throwAtLocation(ParserDiagnostics.LWC_IS_INVALID_ELEMENT, location, ['<template>']);
+    }
+
+    if (parsedAttr.get(ElementDirectiveName.On)) {
+        if (!ctx.config.enableLwcOn) {
+            ctx.throwAtLocation(ParserDiagnostics.INVALID_LWC_ON_OPTS, location, ['<template>']);
+        }
+        ctx.throwAtLocation(ParserDiagnostics.INVALID_LWC_ON_ELEMENT, location, ['<template>']);
     }
 
     // At this point in the parsing all supported attributes from a non root template element
