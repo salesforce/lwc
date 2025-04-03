@@ -391,6 +391,7 @@ export function importDeclaration(
         type: 'ImportDeclaration',
         specifiers,
         source,
+        attributes: [],
         ...config,
     };
 }

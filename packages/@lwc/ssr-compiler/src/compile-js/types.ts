@@ -18,7 +18,7 @@ import type {
     PropertyDefinition,
 } from 'estree';
 
-export type Visitors = Parameters<typeof traverse<Node, ComponentMetaState>>[1];
+export type Visitors = Parameters<typeof traverse<Node, ComponentMetaState, never>>[1];
 
 export interface WireAdapter {
     adapterId: Identifier | MemberExpression;
