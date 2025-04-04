@@ -45,8 +45,6 @@ export interface ComponentMetaState {
     lightningElementIdentifier: string | null;
     /** the class name of the subclass */
     lwcClassName: string | null;
-    /** ties local variable names to explicitly-imported HTML templates */
-    tmplExplicitImports: Map<string, string> | null;
     /** ties local variable names to explicitly-imported CSS files */
     cssExplicitImports: Map<string, string> | null;
     /** the set of variable names associated with explicitly imported CSS files */
