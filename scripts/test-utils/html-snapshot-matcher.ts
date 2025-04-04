@@ -19,6 +19,7 @@
  */
 
 import * as fs from 'node:fs/promises';
+import { AssertionError } from 'node:assert';
 import { equals, type Assertion, type ChaiPlugin, type ExpectStatic } from '@vitest/expect';
 import { swapLwcStyleForStyleTag } from './swap-lwc-style-for-style';
 
@@ -29,18 +30,11 @@ function createMismatchError<T = unknown>(
     expected: T
 ) {
     // TODO [W-17971915]: clean this up, potentially using AssertionError
-    const error = new Error(message);
-    Object.defineProperty(error, 'actual', {
-        value: actual,
-        enumerable: true,
-        configurable: true,
-        writable: true,
-    });
-    Object.defineProperty(error, 'expected', {
-        value: expected,
-        enumerable: true,
-        configurable: true,
-        writable: true,
+    // DONE
+    const error = new AssertionError({
+        message,
+        actual,
+        expected,
     });
     Object.defineProperty(error, 'diffOptions', { value: { expand } });
     return error;
@@ -70,7 +64,7 @@ export const HtmlSnapshotPlugin: ChaiPlugin = (chai, utils) => {
         async function (this: Assertion, htmlFilePath: string, expect: ExpectStatic) {
             utils.flag(this, '_name', 'toMatchHtmlSnapshot');
 
-            const expectedHtml = utils.flag(this, 'object');
+            const actualHtml = utils.flag(this, 'object');
             const isNot = utils.flag(this, 'negate');
             if (isNot) {
                 throw new Error('toMatchHtmlSnapshot cannot be used with "not"');
@@ -78,22 +72,24 @@ export const HtmlSnapshotPlugin: ChaiPlugin = (chai, utils) => {
 
             // Leverage the built-in mechanism to write new fixtures to disk.
             if (!(await fileExists(htmlFilePath))) {
-                return await expect(expectedHtml).toMatchFileSnapshot(htmlFilePath);
+                return await expect(actualHtml).toMatchFileSnapshot(htmlFilePath);
             }
 
-            const actualHtml = await fs.readFile(htmlFilePath, 'utf8');
-            const actualHtmlCompatWithSSRv1 = swapLwcStyleForStyleTag(actualHtml);
+            const expectedHtmlRaw = await fs.readFile(htmlFilePath, 'utf8');
+            // SSR v2 uses <lwc-style> elements, but SSR v1 only uses <style>, so we have to
+            // normalize the output in order to reuse the same snapshots for both packages
+            const expectedHtmlNormalized = swapLwcStyleForStyleTag(expectedHtmlRaw);
 
             // This isn't strictly necessary because we await the assertion in `test-fixture-dir.ts`.
             // However, it mimics the behavior exhibited by `toMatchFileSnapshot` such that, if the
             // assertion were not awaited, any failed assertions would be queued up and reported
             // asynchronously after the test completed.
-            if (!equals(actualHtmlCompatWithSSRv1, expectedHtml)) {
+            if (!equals(expectedHtmlNormalized, actualHtml)) {
                 throw createMismatchError(
                     'HTML snapshot mismatch',
                     true,
-                    actualHtmlCompatWithSSRv1,
-                    expectedHtml
+                    actualHtml,
+                    expectedHtmlNormalized
                 );
             }
         }
