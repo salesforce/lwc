@@ -1,0 +1,10 @@
+<template lwc:render-mode="light">
+    <p class="connected">{lwcRuntimeFlagsConnected}</p>
+    <p class="wired">{lwcRuntimeFlagsWiredConnected}:{configWiredConnected}</p>
+    <template lwc:if={isHydrated}>
+        <p class="hydrated client">{lwcRuntimeFlagsWiredRendered}:{configWiredRendered}</p>
+    </template>
+    <template lwc:else>
+        <p class="hydrated server">false</p>
+    </template>
+</template>
