@@ -16,7 +16,7 @@ interface TransmogrificationState {
     mode: TransmogrificationMode;
 }
 
-export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState>>[1];
+export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState, never>>[1];
 
 const EMIT_IDENT = b.identifier('$$emit');
 /** Function names that may be transmogrified. All should start with `__lwc`. */
