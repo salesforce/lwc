@@ -106,6 +106,9 @@ for (const dir of globSync('./packages/@lwc/*')) {
         bugs: { url: 'https://github.com/salesforce/lwc/issues' },
         license: 'MIT',
         publishConfig: { access: 'public' },
+        engines: {
+            node: '>=20.9.0',
+        },
         // Use the same volta config in every subdirectory so that we always get the same node/yarn versions
         // See: https://docs.volta.sh/advanced/workspaces
         volta: {
