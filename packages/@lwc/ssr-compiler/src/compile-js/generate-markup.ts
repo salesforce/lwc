@@ -52,13 +52,13 @@ const bGenerateMarkup = esTemplate`
                 attrs,
                 __lwcPublicProperties__
             );
+            ${/*connect wire*/ is.statement}
             instance.isConnected = true;
             if (instance.connectedCallback) {
                 __mutationTracker.enable(instance);
                 instance.connectedCallback();
                 __mutationTracker.disable(instance);
             }
-            ${/*connect wire*/ is.statement}
             // If a render() function is defined on the class or any of its superclasses, then that takes priority.
             // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
             // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
@@ -127,7 +127,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { publicProperties, tmplExplicitImports } = state;
+    const { publicProperties } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -137,15 +137,13 @@ export function addGenerateMarkupFunction(
     const classIdentifier = b.identifier(state.lwcClassName!);
 
     let exposeTemplateBlock: IfStatement | null = null;
-    if (!tmplExplicitImports) {
-        const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        const tmplVar = b.identifier('__lwcTmpl');
-        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
-        program.body.unshift(
-            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
-        );
-        exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
-    }
+    const defaultTmplPath = `./${pathParse(filename).name}.html`;
+    const tmplVar = b.identifier('__lwcTmpl');
+    program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
+    program.body.unshift(
+        bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
+    );
+    exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
     let connectWireAdapterCode: Statement[] = [];

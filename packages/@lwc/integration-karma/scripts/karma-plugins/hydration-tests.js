@@ -147,7 +147,13 @@ async function getSsrCode(moduleCode, testConfig, filename) {
         ${testConfig};
         config = config || {};
         ${moduleCode};
-        moduleOutput = LWC.renderComponent('x-${COMPONENT_UNDER_TEST}-${guid++}', Main, config.props || {}, 'sync');`,
+        moduleOutput = LWC.renderComponent(
+            'x-${COMPONENT_UNDER_TEST}-${guid++}',
+            Main,
+            config.props || {},
+            false,
+            'sync'
+        );`,
         { filename }
     );
 
