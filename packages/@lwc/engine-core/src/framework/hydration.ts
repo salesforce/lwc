@@ -327,9 +327,20 @@ function hydrateFragment(elm: Node, vnode: VFragment, renderer: RendererAPI): No
     return (vnode.elm = children[children.length - 1]!.elm as Node);
 }
 
+function shouldSkipHydration(elm: Element) {
+    if (elm.hasAttribute('data-lwc-skip-hydrate')) {
+        return true;
+    }
+    return false;
+}
+
 function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node | null {
     if (!isTypeElement(elm) || !isMatchingElement(vnode, elm, renderer)) {
         return handleMismatch(elm, vnode, renderer);
+    }
+
+    if (shouldSkipHydration(elm)) {
+        return elm;
     }
 
     vnode.elm = elm;
@@ -381,6 +392,12 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
     return elm;
 }
 
+function associateAndDefineCustomElement(ctor: any, elm: Node, renderer: RendererAPI) {
+    const { defineCustomElement, getTagName } = renderer;
+    const isFormAssociated = shouldBeFormAssociated(ctor);
+    defineCustomElement(StringToLowerCase.call(getTagName(elm)), isFormAssociated);
+}
+
 function hydrateCustomElement(
     elm: Node,
     vnode: VCustomElement,
@@ -402,10 +419,13 @@ function hydrateCustomElement(
         return handleMismatch(elm, vnode, renderer);
     }
 
+    if (shouldSkipHydration(elm)) {
+        associateAndDefineCustomElement(vnode.ctor, elm, renderer);
+        return elm;
+    }
+
     const { sel, mode, ctor, owner } = vnode;
-    const { defineCustomElement, getTagName } = renderer;
-    const isFormAssociated = shouldBeFormAssociated(ctor);
-    defineCustomElement(StringToLowerCase.call(getTagName(elm)), isFormAssociated);
+    associateAndDefineCustomElement(ctor, elm, renderer);
 
     const vm = createVM(elm, ctor, renderer, {
         mode,
