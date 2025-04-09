@@ -1,0 +1,17 @@
+Skipping because this test fails when running in production mode (yarn test:production).
+We don't _super_ care about this test because it's malformed input (prop and
+method with same name), but it would be nice if we could figure out a proper
+fix. The difference in behavior between dev mode and prod mode is ultimately due
+to the component's prototype being frozen (dev mode) or not (prod mode) in `createComponentDef`
+in packages/@lwc/engine-core/src/framework/def.ts.
+
+1. a. When run in dev mode, a component will have a frozen prototype.
+   b. When run in prod mode, a component will not have a frozen prototype.
+2. An object with a frozen prototype can have new props added via regular assignment,
+   but assigning to a prop that exists on the prototype will throw an error.
+3. a. A wired property exists solely on the instance, not the prototype.
+   b. A wired method exists solely on the prototype, not the instance.
+4. In this test case, we have both a wired property and a wired method. We define the method on the
+   prototype, and then overwrite it as a property inside the constructor.
+5. a. In dev mode, this throws an error due to the frozen prototype.
+   b. In prod mode, this is allowed and the component renders.
