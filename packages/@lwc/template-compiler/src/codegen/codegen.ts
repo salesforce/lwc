@@ -66,13 +66,6 @@ import type {
 import type { APIVersion } from '@lwc/shared';
 import type { Node } from 'estree';
 
-// structuredClone is only available in Node 17+
-// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
-const doStructuredClone =
-    typeof structuredClone === 'function'
-        ? structuredClone
-        : (obj: any) => JSON.parse(JSON.stringify(obj));
-
 type RenderPrimitive =
     | 'iterator'
     | 'flatten'
@@ -629,7 +622,7 @@ export default class CodeGen {
         if (this.state.config.experimentalComplexExpressions) {
             // Cloning here is necessary because `this.replace()` is destructive, and we might use the
             // node later during static content optimization
-            expression = doStructuredClone(expression);
+            expression = structuredClone(expression);
             return bindComplexExpression(expression as ComplexExpression, this);
         }
 
@@ -639,7 +632,7 @@ export default class CodeGen {
 
         // Cloning here is necessary because `this.replace()` is destructive, and we might use the
         // node later during static content optimization
-        expression = doStructuredClone(expression);
+        expression = structuredClone(expression);
         // TODO [#3370]: when the template expression flag is removed, the
         // ComplexExpression type should be redefined as an ESTree Node. Doing
         // so when the flag is still in place results in a cascade of required
