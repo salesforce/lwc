@@ -1,3 +1,4 @@
+/*
 Skipping because this test fails when running in production mode (yarn test:production).
 We don't _super_ care about this test because it's malformed input (prop and
 method with same name), but it would be nice if we could figure out a proper
@@ -15,3 +16,4 @@ in packages/@lwc/engine-core/src/framework/def.ts.
    prototype, and then overwrite it as a property inside the constructor.
 5. a. In dev mode, this throws an error due to the frozen prototype.
    b. In prod mode, this is allowed and the component renders.
+*/
