@@ -37,10 +37,12 @@ if which gh 2>/dev/null 1>/dev/null; then
   gh pr merge --auto --squash --delete-branch
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
-  if ! gh pr checks --fail-fast --watch "$BRANCH"; then
-    echo 'CI failed. Cannot continue with release.'
-    exit 1
-  fi
+  
+  ./wait-for-pr.sh "$BRANCH"
+  while [ "$(gh pr view "$BRANCH" --json state -q .state)" != 'MERGED' ]; do
+    sleep 3 # Wait for GitHub to auto-merge the PR
+  done
+
 else
   # Clean up and prompt for manual branch creation
   git switch "$BASE_BRANCH"

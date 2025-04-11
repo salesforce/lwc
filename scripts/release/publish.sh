@@ -36,23 +36,14 @@ if which gh >/dev/null; then
   git branch -D "$BRANCH"
 
   # Wait for CI to complete
+  ./wait-for-pr.sh "$BRANCH"
   if ! gh pr checks --fail-fast --watch; then
     echo 'CI failed. Cannot continue with release.'
     gh pr view "$BRANCH" --web
     exit 1
   fi
 
-  # Also wait for approvals, if needed
-  if [ "$(gh pr view "$BRANCH" --json reviewDecision -q .reviewDecision)" != 'APPROVED' ]; then
-    echo 'Release cannot continue without approval.'
-    while [ "$(gh pr view "$BRANCH" --json reviewDecision --jq .reviewDecision)" != 'APPROVED' ]; do
-      sleep 30
-    done
-    echo 'PR approved! Continuing...'
-  else
-    sleep 10 # Give nucleus time to start the release job
-  fi
-
+  sleep 10 # Give nucleus time to start the release job
   RELEASE_JOB=$(gh pr checks "$BRANCH" --json name,link -q '.[]|select(.name=="continuous-integration/nucleus/release").link')
   echo "Nucleus release started: $RELEASE_JOB"
 
