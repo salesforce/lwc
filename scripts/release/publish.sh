@@ -21,21 +21,14 @@ git switch "$BASE_BRANCH"
 git pull
 # The last commit that changed the root package.json version
 # (in case new commits were merged onto the base branch since then that aren't ready for release)
-VERSION_SHA=$(git blame -- package.json | grep '"version"' | cut -d' ' -f1)
+VERSION_SHA=$(git blame -- package.json | grep '"version":' | cut -d' ' -f1)
 VERSION=$(jq -r .version package.json)
 
 # Create a new branch with the changes to release
 git switch -c "$BRANCH" "$VERSION_SHA"
 git push origin HEAD
 
-if which gh 2>/dev/null 1>/dev/null; then
-  # Usage: wait_until state CLOSED 10
-  function wait_until() {
-    while [ "$(gh pr view "$BRANCH" --json "$1" --jq ".$1")" != "$2" ]; do
-      sleep "$3"
-    done
-  }
-
+if which gh >/dev/null; then
   # Use GitHub CLI to create a PR and wait for CI checks to pass
   gh pr create -t "chore: release $VERSION" -B "$RELEASE_BRANCH" -b ''
   # Clean up locally
@@ -43,11 +36,18 @@ if which gh 2>/dev/null 1>/dev/null; then
   git branch -D "$BRANCH"
 
   # Wait for CI to complete
-  gh pr checks --fail-fast --watch "$BRANCH"
+  if ! gh pr checks --fail-fast --watch; then
+    echo 'CI failed. Cannot continue with release.'
+    gh pr view "$BRANCH" --web
+    exit 1
+  fi
+
   # Also wait for approvals, if needed
   if [ "$(gh pr view "$BRANCH" --json reviewDecision -q .reviewDecision)" != 'APPROVED' ]; then
     echo 'Release cannot continue without approval.'
-    wait_until reviewDecision APPROVED 30
+    while [ "$(gh pr view "$BRANCH" --json reviewDecision --jq .reviewDecision)" != 'APPROVED' ]; do
+      sleep 30
+    done
     echo 'PR approved! Continuing...'
   else
     sleep 10 # Give nucleus time to start the release job
@@ -63,10 +63,6 @@ if which gh 2>/dev/null 1>/dev/null; then
     sleep 15
   done
   gh release view "v$VERSION" --web
-
-  # Cleanup
-  git switch "$BASE_BRANCH"
-  git branch -D "$BRANCH"
 else
   # GitHub CLI not installed - clean up and prompt for manual branch creation
   git switch "$BASE_BRANCH"

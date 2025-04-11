@@ -35,11 +35,14 @@ if which gh 2>/dev/null 1>/dev/null; then
   # Use GitHub CLI to create a PR and wait for it to be merged before exiting
   gh pr create -t "$VERSION_BUMP_MESSAGE" -b ''
   gh pr merge --auto --squash --delete-branch
-  git switch "$BASE_BRANCH" # Change branch now so --delete-branch works locally
-  gh pr checks --fail-fast --watch "$BRANCH"
+  git switch "$BASE_BRANCH"
+  git branch -D "$BRANCH"
+  if ! gh pr checks --fail-fast --watch "$BRANCH"; then
+    echo 'CI failed. Cannot continue with release.'
+    exit 1
+  fi
 else
   # Clean up and prompt for manual branch creation
   git switch "$BASE_BRANCH"
-  git branch -D "$BRANCH"
   echo "Open a PR: https://github.com/salesforce/lwc/pull/new/$BRANCH"
 fi
