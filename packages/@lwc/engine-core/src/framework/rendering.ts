@@ -53,6 +53,7 @@ import { patchProps } from './modules/props';
 import { patchClassAttribute } from './modules/computed-class-attr';
 import { patchStyleAttribute } from './modules/computed-style-attr';
 import { applyEventListeners } from './modules/events';
+import { patchDynamicEventListeners } from './modules/dynamic-events';
 import { applyStaticClassAttribute } from './modules/static-class-attr';
 import { applyStaticStyleAttribute } from './modules/static-style-attr';
 import { applyRefs } from './modules/refs';
@@ -586,6 +587,7 @@ function patchElementPropsAndAttrsAndRefs(
     }
 
     const { owner } = vnode;
+    patchDynamicEventListeners(oldVnode, vnode, renderer, owner);
     // Attrs need to be applied to element before props IE11 will wipe out value on radio inputs if
     // value is set before type=radio.
     patchClassAttribute(oldVnode, vnode, renderer);
