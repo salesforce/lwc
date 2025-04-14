@@ -7,7 +7,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const readline = require('node:readline');
+const semver = require('semver');
 const { globSync } = require('glob');
+
+const rootPath = path.resolve(__dirname, '../../');
+const rootPackageJsonPath = `${rootPath}/package.json`;
+const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
 
 (async () => {
     const newVersion = process.argv[2] || (await promptVersion());
@@ -24,7 +29,17 @@ async function promptVersion() {
         const answer = await new Promise((resolve) =>
             rl.question('Enter a new LWC version: ', resolve)
         );
-        return answer;
+        const exact = semver.valid(answer);
+        if (exact) {
+            // answer is a semver version
+            return exact;
+        }
+        const incremented = semver.inc(rootPackageJson.version, answer);
+        if (incremented) {
+            // answer is a semver release type (major/minor/etc.)
+            return incremented;
+        }
+        throw new Error(`Invalid release version: ${answer}`);
     } catch (error) {
         console.error(error);
         process.exit(1);
@@ -71,9 +86,6 @@ function updatePackages(newVersion) {
 }
 
 function getPackagesToUpdate() {
-    const rootPath = path.resolve(__dirname, '../../');
-    const rootPackageJsonPath = `${rootPath}/package.json`;
-    const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
     const packagesToUpdate = [];
 
     const workspacePkgs = rootPackageJson.workspaces.reduce(
