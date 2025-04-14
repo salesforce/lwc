@@ -31,8 +31,9 @@
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
         "test:types": "nx test @lwc/integration-types",
-        "release:version": "node ./scripts/release/version.js",
-        "release:publish": "nx release publish --registry https://registry.npmjs.org"
+        "release:version": "./scripts/release/version.sh",
+        "release:publish": "./scripts/release/publish.sh",
+        "release:publish:canary": "nx release publish --registry https://registry.npmjs.org"
     },
     "devDependencies": {
         "@commitlint/cli": "^19.8.0",
