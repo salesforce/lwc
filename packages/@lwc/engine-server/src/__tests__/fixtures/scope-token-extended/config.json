@@ -1,4 +1,7 @@
 {
     "entry": "x/component",
-    "features": ["DISABLE_SCOPE_TOKEN_VALIDATION"]
+    "features": ["DISABLE_SCOPE_TOKEN_VALIDATION"],
+    "ssrFiles": {
+        "expected": "expected-ssr.html"
+    }
 }

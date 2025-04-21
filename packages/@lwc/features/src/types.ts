@@ -86,6 +86,13 @@ export interface FeatureFlagMap {
      * properly.
      */
     LEGACY_LOCKER_ENABLED: FeatureFlagValue;
+
+    /**
+     * A manual override for `LEGACY_LOCKER_ENABLED`; should not be used if that flag is correctly set.
+     * If true, behave as if legacy Locker is enabled.
+     * If false or unset, then the value of the `LEGACY_LOCKER_ENABLED` flag is used.
+     */
+    DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

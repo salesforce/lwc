@@ -26,7 +26,8 @@ const bGenerateMarkup = esTemplate`
         configurable: false,
         enumerable: false,
         writable: false,
-        value: async function* generateMarkup(
+        value: async function* __lwcGenerateMarkup(
+            // The $$emit function is magically inserted here
             tagName, 
             props, 
             attrs,
@@ -45,13 +46,13 @@ const bGenerateMarkup = esTemplate`
             });
 
             __establishContextfulRelationship(contextfulParent, instance);
-            ${/*connect wire*/ is.statement}
 
             instance[__SYMBOL__SET_INTERNALS](
                 props,
                 attrs,
                 __lwcPublicProperties__
             );
+            ${/*connect wire*/ is.statement}
             instance.isConnected = true;
             if (instance.connectedCallback) {
                 __mutationTracker.enable(instance);
@@ -126,7 +127,7 @@ export function addGenerateMarkupFunction(
     tagName: string,
     filename: string
 ) {
-    const { publicProperties, tmplExplicitImports } = state;
+    const { publicProperties } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
@@ -136,15 +137,13 @@ export function addGenerateMarkupFunction(
     const classIdentifier = b.identifier(state.lwcClassName!);
 
     let exposeTemplateBlock: IfStatement | null = null;
-    if (!tmplExplicitImports) {
-        const defaultTmplPath = `./${pathParse(filename).name}.html`;
-        const tmplVar = b.identifier('tmpl');
-        program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
-        program.body.unshift(
-            bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
-        );
-        exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
-    }
+    const defaultTmplPath = `./${pathParse(filename).name}.html`;
+    const tmplVar = b.identifier('__lwcTmpl');
+    program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
+    program.body.unshift(
+        bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
+    );
+    exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
     let connectWireAdapterCode: Statement[] = [];

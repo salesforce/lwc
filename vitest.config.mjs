@@ -22,6 +22,8 @@ export default defineConfig({
                 '**/packages/@lwc/engine-dom/**',
                 '**/packages/@lwc/engine-core/**',
                 '**/packages/@lwc/synthetic-shadow/**',
+                // TODO [#5272]: add tests
+                '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages
                 '**/packages/@lwc/integration-karma/**',
                 '**/packages/@lwc/integration-tests/**',
@@ -36,9 +38,9 @@ export default defineConfig({
                 // SSR compiler/runtime is relatively newer, so has lower thresholds for now
                 '**/packages/@lwc/ssr-*/**': {
                     branches: 90,
-                    functions: 60,
-                    lines: 85,
-                    statements: 85,
+                    functions: 90,
+                    lines: 90,
+                    statements: 90,
                 },
 
                 '!**/packages/@lwc/ssr-*/**': {

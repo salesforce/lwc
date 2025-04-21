@@ -1,7 +1,6 @@
 {
     "entry": "x/inner",
     "ssrFiles": {
-        "error": "error-ssr.txt",
         "expected": "expected-ssr.html"
     }
 }

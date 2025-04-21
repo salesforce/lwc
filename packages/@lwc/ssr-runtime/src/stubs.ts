@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+/* v8 ignore start */
+
 // Stubs for all the un-implemented exports from @lwc/engine-server
 
 export function api(..._: unknown[]): never {
@@ -27,9 +29,6 @@ export function parseFragment(..._: unknown[]): never {
 }
 export function parseSVGFragment(..._: unknown[]): never {
     throw new Error('parseSVGFragment cannot be used in SSR context.');
-}
-export function readonly(..._: unknown[]): never {
-    throw new Error('readonly cannot be used in SSR context.');
 }
 export function registerComponent(..._: unknown[]): never {
     throw new Error('registerComponent cannot be used in SSR context.');
@@ -216,3 +215,5 @@ export const renderer = {
  */
 // A real stub, not a "not implemented" one! 😯
 export const hot = undefined;
+
+/* v8 ignore stop */
