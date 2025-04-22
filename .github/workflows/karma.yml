@@ -46,7 +46,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v3
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -87,7 +87,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v3
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -128,7 +128,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v3
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
@@ -171,7 +171,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v3
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
