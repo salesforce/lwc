@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction, isNull, isObject, isTrustedSignal } from '@lwc/shared';
+import { isNull, isObject, isTrustedSignal } from '@lwc/shared';
 import { ReactiveObserver, valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
-import { safeHasProp } from './utils';
 import type { Signal } from '@lwc/signals';
 import type { JobFunction, CallbackFunction } from '../libs/mutation-tracker';
 import type { VM } from './vm';
@@ -42,9 +41,6 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
         isObject(target) &&
         !isNull(target) &&
-        safeHasProp(target, 'value') &&
-        safeHasProp(target, 'subscribe') &&
-        isFunction(target.subscribe) &&
         isTrustedSignal(target) &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
