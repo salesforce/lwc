@@ -10,7 +10,7 @@
         "hydration:sauce:engine-server": "ENGINE_SERVER=true karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "hydration:sauce:ci:engine-server": "ENGINE_SERVER=true ../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "hydration:start": "KARMA_MODE=watch karma start ./scripts/karma-configs/hydration/local.js",
-        "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run --browsers ChromeHeadless",
+        "hydration:test": "karma start ./scripts/karma-configs/hydration/local.js --single-run",
         "hydration:sauce": "karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "hydration:sauce:ci": "../../../scripts/ci/retry.sh karma start ./scripts/karma-configs/hydration/sauce.js --single-run",
         "sauce": "karma start ./scripts/karma-configs/test/sauce.js --single-run",
