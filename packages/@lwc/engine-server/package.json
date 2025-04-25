@@ -51,6 +51,6 @@
         "@lwc/shared": "8.18.1",
         "@lwc/features": "8.18.1",
         "@rollup/plugin-virtual": "^3.0.2",
-        "parse5": "^7.2.1"
+        "parse5": "^7.3.0"
     }
 }
