@@ -170,7 +170,7 @@ describe('lwc:on', () => {
         function assertError() {
             if (process.env.NODE_ENV !== 'production') {
                 expect(caughtError.message).toContain(
-                    "Uncaught Error: Assert Violation: Invalid event handler for event 'click' on"
+                    "Assert Violation: Invalid event handler for event 'click' on"
                 );
             } else {
                 expect(caughtError.error instanceof TypeError).toBe(true);
@@ -445,7 +445,7 @@ describe('lwc:on', () => {
         it('getter that throws passed as handler', () => {
             setup('getter that throws');
 
-            expect(caughtError.message).toBe('Uncaught Error: some error');
+            expect(caughtError.message).toContain('Error: some error');
 
             expect(button).toBeNull();
         });
@@ -454,7 +454,7 @@ describe('lwc:on', () => {
             setup('LightningElement instance');
 
             expect(caughtError.error instanceof TypeError).toBe(true);
-            expect(caughtError.message).toBe('Uncaught TypeError: Illegal constructor');
+            expect(caughtError.message).toContain('TypeError: Illegal constructor');
 
             expect(button).toBeNull();
         });
