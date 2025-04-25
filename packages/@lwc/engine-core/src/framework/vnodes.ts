@@ -153,6 +153,8 @@ export interface VNodeData {
     readonly styleDecls?: ReadonlyArray<[string, string, boolean]>;
     readonly context?: Readonly<Record<string, Readonly<Record<string, any>>>>;
     readonly on?: Readonly<Record<string, (event: Event) => any>>;
+    readonly dynamicOn?: Readonly<Record<string, (event: Event) => any>>; // clone of object passed to lwc:on, used to patch event listeners
+    readonly dynamicOnRaw?: Readonly<Record<string, (event: Event) => any>>; // object passed to lwc:on, used to verify whether object reference has changed
     readonly svg?: boolean;
     readonly renderer?: RendererAPI;
 }

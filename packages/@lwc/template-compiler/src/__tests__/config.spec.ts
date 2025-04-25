@@ -29,35 +29,36 @@ describe('customRendererConfig normalization', () => {
         normalizedConfig.apiVersion = -1; // avoid testing in inline snapshot so that vitest can easily update it
 
         expect(normalizedConfig).toMatchInlineSnapshot(`
-            {
-              "apiVersion": -1,
-              "customRendererConfig": {
-                "directives": [],
-                "elements": [
-                  {
-                    "attributes": undefined,
-                    "namespace": undefined,
-                    "tagName": "div",
-                  },
-                  {
-                    "attributes": [
-                      "style",
-                    ],
-                    "namespace": undefined,
-                    "tagName": "span",
-                  },
-                ],
-              },
-              "disableSyntheticShadowSupport": false,
-              "enableDynamicComponents": false,
-              "enableLwcSpread": true,
-              "enableStaticContentOptimization": true,
-              "experimentalComplexExpressions": false,
-              "experimentalComputedMemberExpression": false,
-              "experimentalDynamicDirective": false,
-              "instrumentation": undefined,
-              "preserveHtmlComments": false,
-            }
+          {
+            "apiVersion": -1,
+            "customRendererConfig": {
+              "directives": [],
+              "elements": [
+                {
+                  "attributes": undefined,
+                  "namespace": undefined,
+                  "tagName": "div",
+                },
+                {
+                  "attributes": [
+                    "style",
+                  ],
+                  "namespace": undefined,
+                  "tagName": "span",
+                },
+              ],
+            },
+            "disableSyntheticShadowSupport": false,
+            "enableDynamicComponents": false,
+            "enableLwcOn": false,
+            "enableLwcSpread": true,
+            "enableStaticContentOptimization": true,
+            "experimentalComplexExpressions": false,
+            "experimentalComputedMemberExpression": false,
+            "experimentalDynamicDirective": false,
+            "instrumentation": undefined,
+            "preserveHtmlComments": false,
+          }
         `);
     });
 
