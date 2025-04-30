@@ -54,7 +54,7 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
-import { type ContextProvidedCallback, ContextRequestEvent } from './context';
+import { type ContextProvidedCallback, ContextRequestEvent, type ContextRuntimeAdapter } from './context';
 
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
@@ -753,7 +753,6 @@ export function runConnectedCallback(vm: VM) {
 }
 
 function setupContext(vm: VM) {
-    debugger;
     const contextKeys = getContextKeys();
 
     if (isUndefined(contextKeys)) {
@@ -774,14 +773,13 @@ function setupContext(vm: VM) {
 
     let isProvidingContext = false;
     const providedContextVarieties = new Map<unknown, Signal<unknown>>();
-    const contextRuntimeAdapter = {
+    const contextRuntimeAdapter: ContextRuntimeAdapter<LightningElement> = {
         isServerSide: false,
         component,
         provideContext<T extends object>(
             contextVariety: T,
             providedContextSignal: Signal<unknown>
         ): void {
-            debugger;
             if (!isProvidingContext) {
                 isProvidingContext = true;
 
