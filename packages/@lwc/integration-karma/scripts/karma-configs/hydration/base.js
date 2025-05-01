@@ -27,7 +27,6 @@ const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 const TEST_HYDRATE = require.resolve('../../../helpers/test-hydrate');
-const TEST_STATE = require.resolve('../../../helpers/test-state');
 
 const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE];
 
@@ -44,7 +43,6 @@ function getFiles() {
         createPattern(TEST_SETUP),
         createPattern(TEST_UTILS),
         createPattern(TEST_HYDRATE),
-        createPattern(TEST_STATE),
     ];
 
     // check if a .only file exists

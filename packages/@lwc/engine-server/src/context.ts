@@ -26,7 +26,7 @@ export function createContextProvider(adapter: WireAdapterConstructor) {
     return createContextProviderWithRegister(adapter, registerContextProvider);
 }
 
-function registerContextProvider(
+export function registerContextProvider(
     elm: HostElement | LightningElement,
     adapterContextToken: string,
     onContextSubscription: WireContextSubscriptionCallback
@@ -57,10 +57,10 @@ export function registerContextConsumer(
             const subscribeToProvider =
                 currentNode[HostContextProvidersKey].get(adapterContextToken);
             if (!isUndefined(subscribeToProvider)) {
-                subscribeToProvider(subscriptionPayload);
-                // If we find a provider, we shouldn't continue traversing
-                // looking for another provider.
-                break;
+                // If context subscription is successful, top traversing to find a provider
+                if (subscribeToProvider(subscriptionPayload) !== false) {
+                    break;
+                }
             }
         }
 

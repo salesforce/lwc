@@ -51,6 +51,10 @@ export function logError(message: string, vm?: VM) {
     log('error', message, vm, false);
 }
 
+export function logErrorOnce(message: string, vm?: VM) {
+    log('error', message, vm, true);
+}
+
 export function logWarn(message: string, vm?: VM) {
     log('warn', message, vm, false);
 }

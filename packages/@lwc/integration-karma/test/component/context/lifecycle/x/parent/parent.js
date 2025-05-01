@@ -1,13 +1,8 @@
-import { LightningElement, api } from 'lwc';
-import parentContextFactory from 'x/parentContext';
+import { parentContextFactory, anotherParentContextFactory } from 'x/parentContext';
+import Base from 'x/base';
+import { api } from 'lwc';
 
-export default class Parent extends LightningElement {
+export default class ContextParent extends Base {
     @api context = parentContextFactory('parent provided value');
-    @api disconnect;
-
-    disconnectedCallback() {
-        if (this.disconnect) {
-            this.disconnect(this);
-        }
-    }
+    @api anotherContext = anotherParentContextFactory('another parent provided value');
 }

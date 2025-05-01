@@ -28,7 +28,7 @@ import {
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logWarnOnce } from '../shared/logger';
+import { logError, logErrorOnce, logWarnOnce } from '../shared/logger';
 
 import {
     renderComponent,
@@ -54,7 +54,6 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
-import { type ContextProvidedCallback, ContextRequestEvent, type ContextRuntimeAdapter } from './context';
 
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
@@ -68,6 +67,11 @@ import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
 import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
 import type { Signal } from '@lwc/signals';
+import type {
+    ContextProvidedCallback,
+    ContextRuntimeAdapter,
+    ContextVarieties,
+} from './wiring/types';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -759,7 +763,7 @@ function setupContext(vm: VM) {
         return;
     }
 
-    const { connectContext, contextEventKey } = contextKeys;
+    const { connectContext } = contextKeys;
     const { component, renderer } = vm;
     const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulFieldsOrProps = ArrayFilter.call(
@@ -772,9 +776,9 @@ function setupContext(vm: VM) {
     }
 
     let isProvidingContext = false;
-    const providedContextVarieties = new Map<unknown, Signal<unknown>>();
+    const providedContextVarieties: ContextVarieties = new Map();
+
     const contextRuntimeAdapter: ContextRuntimeAdapter<LightningElement> = {
-        isServerSide: false,
         component,
         provideContext<T extends object>(
             contextVariety: T,
@@ -782,45 +786,32 @@ function setupContext(vm: VM) {
         ): void {
             if (!isProvidingContext) {
                 isProvidingContext = true;
-
-                renderer.addEventListener(component, ContextEventName, (event: any) => {
-                    if (
-                        event.detail.key === contextEventKey &&
-                        providedContextVarieties.has(event.detail.contextVariety)
-                    ) {
-                        event.stopImmediatePropagation();
-                        const providedContextSignal = providedContextVarieties.get(
-                            event.detail.contextVariety
-                        );
-                        event.detail.callback(providedContextSignal);
-                    }
+                renderer.registerContextProvider(component, ContextEventName, (payload) => {
+                    return payload.setNewContext(providedContextVarieties);
                 });
             }
-
-            let multipleContextWarningShown = false;
-
             if (providedContextVarieties.has(contextVariety)) {
-                if (!multipleContextWarningShown) {
-                    multipleContextWarningShown = true;
-                    logError(
-                        'Multiple contexts of the same variety were provided. Only the first context will be used.'
-                    );
-                }
+                logErrorOnce(
+                    'Multiple contexts of the same variety were provided. Only the first context will be used.'
+                );
                 return;
             }
-
             providedContextVarieties.set(contextVariety, providedContextSignal);
         },
         consumeContext<T extends object>(
             contextVariety: T,
             contextProvidedCallback: ContextProvidedCallback
         ): void {
-            const event = new ContextRequestEvent({
-                contextVariety,
-                callback: contextProvidedCallback,
+            renderer.registerContextConsumer(component, ContextEventName, {
+                setNewContext: (contextVarieties: ContextVarieties) => {
+                    // If current context does not have the requested variety,
+                    // return false to continue traversing
+                    if (!contextVarieties.has(contextVariety)) {
+                        return false;
+                    }
+                    contextProvidedCallback(contextVarieties.get(contextVariety));
+                },
             });
-
-            renderer.dispatchEvent(component, event);
         },
     };
 

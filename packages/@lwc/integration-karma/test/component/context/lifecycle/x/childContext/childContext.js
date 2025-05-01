@@ -1,4 +1,5 @@
-import { defineContext } from 'test-state';
-import parentContextFactory from 'x/parentContext';
+import { defineContext } from 'test-utils';
+import { parentContextFactory, anotherParentContextFactory } from 'x/parentContext';
 
-export default defineContext(parentContextFactory);
+export const childContextFactory = defineContext(parentContextFactory);
+export const anotherChildContextFactory = defineContext(anotherParentContextFactory);

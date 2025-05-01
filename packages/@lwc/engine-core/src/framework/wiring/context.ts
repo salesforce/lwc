@@ -54,7 +54,7 @@ export function createContextProviderWithRegister(
                         consumerDisconnectedCallback(consumer);
                     }
                 };
-                setDisconnectedCallback(disconnectCallback);
+                setDisconnectedCallback?.(disconnectCallback);
 
                 consumerConnectedCallback(consumer);
             }

@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import type { Signal } from '@lwc/signals';
 import type { LightningElement } from '../base-lightning-element';
 import type { HostElement } from '../renderer';
 
@@ -61,11 +62,11 @@ export interface WireDebugInfo {
 
 export type WireContextSubscriptionCallback = (
     subscriptionPayload: WireContextSubscriptionPayload
-) => void;
+) => boolean | void;
 
 export interface WireContextSubscriptionPayload {
-    setNewContext(newContext: ContextValue): void;
-    setDisconnectedCallback(disconnectCallback: () => void): void;
+    setNewContext(newContext: ContextValue): boolean | void;
+    setDisconnectedCallback?(disconnectCallback: () => void): void;
 }
 
 export interface ContextConsumer {
@@ -81,6 +82,23 @@ export type ContextProvider = (
     elmOrComponent: EventTarget,
     options: ContextProviderOptions
 ) => void;
+
+export type ContextProvidedCallback = (contextSignal?: Signal<unknown>) => void;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export interface ContextRuntimeAdapter<T extends object> {
+    component: object;
+    provideContext<T extends object>(
+        contextVariety: T,
+        providedContextSignal: Signal<unknown>
+    ): void;
+    consumeContext<T extends object>(
+        contextVariety: T,
+        contextProvidedCallback: ContextProvidedCallback
+    ): void;
+}
+
+export type ContextVarieties = Map<unknown, Signal<unknown>>;
 
 export type RegisterContextProviderFn = (
     element: HostElement,

@@ -1,7 +1,8 @@
-import { LightningElement, api } from 'lwc';
-import { defineContext } from 'test-state';
-import childContextFactory from 'x/childContext';
+import { api } from 'lwc';
+import Base from 'x/base';
+import { defineContext } from 'test-utils';
+import { childContextFactory } from 'x/childContext';
 
-export default class Grandchild extends LightningElement {
-    @api context = defineContext(childContextFactory)(); 
+export default class Grandchild extends Base {
+    @api context = defineContext(childContextFactory)();
 }
