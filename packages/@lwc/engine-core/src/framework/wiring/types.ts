@@ -62,10 +62,10 @@ export interface WireDebugInfo {
 
 export type WireContextSubscriptionCallback = (
     subscriptionPayload: WireContextSubscriptionPayload
-) => boolean | void;
+) => boolean;
 
 export interface WireContextSubscriptionPayload {
-    setNewContext(newContext: ContextValue): boolean | void;
+    setNewContext(newContext: ContextValue): boolean;
     setDisconnectedCallback?(disconnectCallback: () => void): void;
 }
 

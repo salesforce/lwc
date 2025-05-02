@@ -804,12 +804,13 @@ function setupContext(vm: VM) {
         ): void {
             renderer.registerContextConsumer(component, ContextEventName, {
                 setNewContext: (contextVarieties: ContextVarieties) => {
-                    // If current context does not have the requested variety,
-                    // return false to continue traversing
-                    if (!contextVarieties.has(contextVariety)) {
-                        return false;
+                    if (contextVarieties.has(contextVariety)) {
+                        contextProvidedCallback(contextVarieties.get(contextVariety));
+                        return true;
                     }
-                    contextProvidedCallback(contextVarieties.get(contextVariety));
+                    // Return false as context has not been found/consumed
+                    // and the consumer should continue traversing the context tree
+                    return false;
                 },
             });
         },

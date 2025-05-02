@@ -21,7 +21,6 @@ describe('context', () => {
         const mockContextKeys = {
             connectContext: Symbol('connect'),
             disconnectContext: Symbol('disconnect'),
-            contextEventKey: Symbol('event'),
         };
 
         setContextKeys(mockContextKeys);
@@ -30,20 +29,17 @@ describe('context', () => {
         expect(retrievedKeys).toBe(mockContextKeys);
         expect(retrievedKeys.connectContext).toBe(mockContextKeys.connectContext);
         expect(retrievedKeys.disconnectContext).toBe(mockContextKeys.disconnectContext);
-        expect(retrievedKeys.contextEventKey).toBe(mockContextKeys.contextEventKey);
     });
 
     it('should throw when attempting to set context keys multiple times', () => {
         const mockContextKeys1 = {
             connectContext: Symbol('connect1'),
             disconnectContext: Symbol('disconnect1'),
-            contextEventKey: Symbol('event1'),
         };
 
         const mockContextKeys2 = {
             connectContext: Symbol('connect2'),
             disconnectContext: Symbol('disconnect2'),
-            contextEventKey: Symbol('event2'),
         };
 
         setContextKeys(mockContextKeys1);

@@ -57,8 +57,8 @@ export function registerContextConsumer(
             const subscribeToProvider =
                 currentNode[HostContextProvidersKey].get(adapterContextToken);
             if (!isUndefined(subscribeToProvider)) {
-                // If context subscription is successful, top traversing to find a provider
-                if (subscribeToProvider(subscriptionPayload) !== false) {
+                // If context subscription is successful, stop traversing to locate a provider
+                if (subscribeToProvider(subscriptionPayload)) {
                     break;
                 }
             }

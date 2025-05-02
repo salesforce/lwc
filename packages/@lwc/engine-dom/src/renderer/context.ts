@@ -16,7 +16,7 @@ import type {
 
 export class WireContextSubscriptionEvent extends CustomEvent<undefined> {
     // These are initialized on the constructor via defineProperties.
-    public readonly setNewContext!: (newContext: WireContextValue) => false | void;
+    public readonly setNewContext!: (newContext: WireContextValue) => boolean;
     public readonly setDisconnectedCallback?: (disconnectCallback: () => void) => void;
 
     constructor(
@@ -62,7 +62,7 @@ export function registerContextProvider(
             onContextSubscription({
                 setNewContext,
                 setDisconnectedCallback,
-            }) !== false
+            })
         ) {
             evt.stopImmediatePropagation();
         }

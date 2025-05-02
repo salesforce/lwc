@@ -9,7 +9,6 @@ import { isFalse } from './assert';
 export type ContextKeys = {
     connectContext: symbol;
     disconnectContext: symbol;
-    contextEventKey: symbol;
 };
 
 let contextKeys: ContextKeys;

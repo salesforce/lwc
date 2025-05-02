@@ -722,12 +722,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
 
     const connectContext = Symbol('connectContext');
     const disconnectContext = Symbol('disconnectContext');
-    const contextEventKey = Symbol('contextEventKey');
 
     const contextKeys = {
         connectContext,
         disconnectContext,
-        contextEventKey,
     };
 
     lwc.setContextKeys(contextKeys);
