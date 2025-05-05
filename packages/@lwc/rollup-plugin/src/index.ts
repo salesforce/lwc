@@ -9,7 +9,7 @@ import path from 'path';
 import { URLSearchParams } from 'url';
 
 import pluginUtils from '@rollup/pluginutils';
-import { transformSync } from '@lwc/compiler';
+import { transformSync } from '@lwc/compiler-ts';
 import { resolveModule, RegistryType } from '@lwc/module-resolver';
 import { getAPIVersionFromNumber } from '@lwc/shared';
 import type { Plugin, SourceMapInput, RollupLog } from 'rollup';
