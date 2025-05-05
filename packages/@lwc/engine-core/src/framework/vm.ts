@@ -803,9 +803,9 @@ function setupContext(vm: VM) {
             contextProvidedCallback: ContextProvidedCallback
         ): void {
             renderer.registerContextConsumer(component, ContextEventName, {
-                setNewContext: (contextVarieties: ContextVarieties) => {
-                    if (contextVarieties.has(contextVariety)) {
-                        contextProvidedCallback(contextVarieties.get(contextVariety));
+                setNewContext: (providerContextVarieties: ContextVarieties) => {
+                    if (providerContextVarieties.has(contextVariety)) {
+                        contextProvidedCallback(providerContextVarieties.get(contextVariety));
                         return true;
                     }
                     // Return false as context has not been found/consumed

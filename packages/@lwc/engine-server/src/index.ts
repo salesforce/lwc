@@ -23,6 +23,7 @@ export {
     freezeTemplate,
     registerComponent,
     registerDecorators,
+    setContextKeys,
     sanitizeAttribute,
     setHooks,
     getComponentDef,
