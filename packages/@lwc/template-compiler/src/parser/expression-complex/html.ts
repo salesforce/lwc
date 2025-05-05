@@ -279,7 +279,7 @@ class TemplateHtmlParser extends Parser<DefaultTreeAdapterMap> {
     // that, we create a new text node for the template expression rather than
     // allowing the concatenation to proceed.
     _insertCharacters(token: Token.CharacterToken) {
-        const parentNode = this.openElements.current!;
+        const parentNode = this.openElements.current;
         const previousPeer = parentNode.childNodes.at(-1);
         const html = this.tokenizer.preprocessor.html;
         if (
