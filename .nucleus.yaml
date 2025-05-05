@@ -38,9 +38,6 @@ branches:
     spring25:
         pull-request:
             <<: *branch-definition
-    summer25:
-        pull-request:
-            <<: *branch-definition
 jobs:
     build-and-test:
         memory-limit: 16
@@ -73,4 +70,4 @@ steps:
     npm-publish-release:
         params:
             access: public
-            tag: summer25 # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
+            tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
