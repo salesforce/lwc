@@ -106,7 +106,7 @@ if (process.env.NODE_ENV !== 'production') {
  * just the public properties.
  */
 type ComponentClassProperties<T> = T extends {
-    __lwc_public_property_types__?: infer Props extends object;
+    readonly __lwc_public_property_types__?: infer Props extends object;
 }
     ? Props
     : Omit<T, keyof LightningElement>;
