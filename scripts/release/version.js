@@ -15,36 +15,42 @@ const rootPackageJsonPath = `${rootPath}/package.json`;
 const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
 
 (async () => {
-    const newVersion = process.argv[2] || (await promptVersion());
-    updatePackages(newVersion);
+    const rawVersion = await getVersion();
+    const parsedVersion = await parseVersion(rawVersion);
+    updatePackages(parsedVersion);
 })().catch(console.error);
 
-async function promptVersion() {
+async function getVersion() {
+    if (process.argv[2]) {
+        return process.argv[2];
+    }
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout,
     });
+    const answer = await new Promise((resolve) =>
+        rl.question('Enter a new LWC version: ', resolve)
+    );
+    rl.close();
+    return answer;
+}
 
+async function parseVersion(rawVersion) {
     try {
-        const answer = await new Promise((resolve) =>
-            rl.question('Enter a new LWC version: ', resolve)
-        );
-        const exact = semver.valid(answer);
+        const exact = semver.valid(rawVersion);
         if (exact) {
             // answer is a semver version
             return exact;
         }
-        const incremented = semver.inc(rootPackageJson.version, answer);
+        const incremented = semver.inc(rootPackageJson.version, rawVersion);
         if (incremented) {
             // answer is a semver release type (major/minor/etc.)
             return incremented;
         }
-        throw new Error(`Invalid release version: ${answer}`);
+        throw new Error(`Invalid release version: ${rawVersion}`);
     } catch (error) {
         console.error(error);
         process.exit(1);
-    } finally {
-        rl.close();
     }
 }
 
