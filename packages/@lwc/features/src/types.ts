@@ -92,7 +92,7 @@ export interface FeatureFlagMap {
      * If true, behave as if legacy Locker is enabled.
      * If false or unset, then the value of the `LEGACY_LOCKER_ENABLED` flag is used.
      */
-    ENABLE_LEGACY_VALIDATION: FeatureFlagValue;
+    DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

@@ -58,6 +58,7 @@ function createPreprocessor(config, emitter, logger) {
                     strict: true,
                 },
                 enableDynamicComponents: true,
+                enableLwcOn: true,
                 experimentalComplexExpressions,
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
                 disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,

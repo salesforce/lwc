@@ -14,8 +14,8 @@ module.exports = (config) => {
     config.set({
         reporters: [...config.reporters, 'progress'],
 
-        browsers: ['Chrome'],
+        browsers: ['ChromeHeadless', 'FirefoxHeadless'],
 
-        plugins: [...config.plugins, 'karma-chrome-launcher'],
+        plugins: [...config.plugins, 'karma-chrome-launcher', 'karma-firefox-launcher'],
     });
 };
