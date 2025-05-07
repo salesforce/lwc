@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/aria-reflection",
-    "version": "8.18.2",
+    "version": "minor",
     "description": "ARIA element reflection polyfill for strings",
     "keywords": [
         "aom",
