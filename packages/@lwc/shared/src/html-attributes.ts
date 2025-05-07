@@ -80,6 +80,7 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'lang',
     'nonce',
     'part',
+    'popover',
     'slot',
     'spellcheck',
     'style',
