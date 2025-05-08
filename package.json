@@ -88,11 +88,9 @@
         "packages/lwc",
         "playground"
     ],
-    "engines": {
-        "node": ">=10"
-    },
     "volta": {
-        "node": "20.18.1",
+        "//": "Earliest node version we support (via \"engines\" in package.json)",
+        "node": "20.9.0",
         "yarn": "1.22.22"
     },
     "resolutions": {
