@@ -23,13 +23,15 @@ export {
     freezeTemplate,
     registerComponent,
     registerDecorators,
-    setContextKeys,
     sanitizeAttribute,
     setHooks,
     getComponentDef,
     isComponentConstructor,
     parseFragment,
     parseFragment as parseSVGFragment,
+    setTrustedSignalSet,
+    setTrustedContextSet,
+    setContextKeys,
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------

@@ -32,6 +32,7 @@ export {
     parseSVGFragment,
     setContextKeys,
     setTrustedSignalSet,
+    setTrustedContextSet,
     swapComponent,
     swapStyle,
     swapTemplate,

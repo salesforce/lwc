@@ -5,17 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
     ArrayPush,
     ArraySlice,
     ArrayUnshift,
     assert,
     create,
-    ContextEventName,
     defineProperty,
-    getPrototypeOf,
     getOwnPropertyNames,
-    getContextKeys,
     isArray,
     isFalse,
     isFunction,
@@ -24,11 +20,10 @@ import {
     isTrue,
     isUndefined,
     flattenStylesheets,
-    keys,
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
-import { logError, logErrorOnce, logWarnOnce } from '../shared/logger';
+import { logError, logWarnOnce } from '../shared/logger';
 
 import {
     renderComponent,
@@ -54,7 +49,7 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
-
+import { connectContext, disconnectContext } from './modules/context';
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
 import type {
@@ -66,12 +61,6 @@ import type { ComponentDef } from './def';
 import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
 import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
-import type { Signal } from '@lwc/signals';
-import type {
-    ContextProvidedCallback,
-    ContextRuntimeAdapter,
-    ContextVarieties,
-} from './wiring/types';
 
 type ShadowRootMode = 'open' | 'closed';
 
@@ -713,7 +702,7 @@ export function runConnectedCallback(vm: VM) {
     }
 
     // Setup context before connected callback is executed
-    setupContext(vm);
+    connectContext(vm);
 
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
@@ -756,95 +745,6 @@ export function runConnectedCallback(vm: VM) {
     }
 }
 
-function setupContext(vm: VM) {
-    const contextKeys = getContextKeys();
-
-    if (isUndefined(contextKeys)) {
-        return;
-    }
-
-    const { connectContext } = contextKeys;
-    const { component, renderer } = vm;
-    const enumerableKeys = keys(getPrototypeOf(component));
-    const contextfulFieldsOrProps = ArrayFilter.call(
-        enumerableKeys,
-        (propName) => (component as any)[propName]?.[connectContext]
-    );
-
-    if (contextfulFieldsOrProps.length === 0) {
-        return;
-    }
-
-    let isProvidingContext = false;
-    const providedContextVarieties: ContextVarieties = new Map();
-
-    const contextRuntimeAdapter: ContextRuntimeAdapter<LightningElement> = {
-        component,
-        provideContext<T extends object>(
-            contextVariety: T,
-            providedContextSignal: Signal<unknown>
-        ): void {
-            if (!isProvidingContext) {
-                isProvidingContext = true;
-                renderer.registerContextProvider(component, ContextEventName, (payload) => {
-                    return payload.setNewContext(providedContextVarieties);
-                });
-            }
-            if (providedContextVarieties.has(contextVariety)) {
-                logErrorOnce(
-                    'Multiple contexts of the same variety were provided. Only the first context will be used.'
-                );
-                return;
-            }
-            providedContextVarieties.set(contextVariety, providedContextSignal);
-        },
-        consumeContext<T extends object>(
-            contextVariety: T,
-            contextProvidedCallback: ContextProvidedCallback
-        ): void {
-            renderer.registerContextConsumer(component, ContextEventName, {
-                setNewContext: (providerContextVarieties: ContextVarieties) => {
-                    if (providerContextVarieties.has(contextVariety)) {
-                        contextProvidedCallback(providerContextVarieties.get(contextVariety));
-                        return true;
-                    }
-                    // Return false as context has not been found/consumed
-                    // and the consumer should continue traversing the context tree
-                    return false;
-                },
-            });
-        },
-    };
-
-    // Calls the connectContext method on the component for each contextful field or property
-    for (const contextfulFieldsOrProp of contextfulFieldsOrProps) {
-        (component as any)[contextfulFieldsOrProp][connectContext](contextRuntimeAdapter);
-    }
-}
-
-function cleanupContext(vm: VM) {
-    const contextKeys = getContextKeys();
-
-    if (!contextKeys) {
-        return;
-    }
-
-    const { disconnectContext } = contextKeys;
-    const { component } = vm;
-    const enumerableKeys = keys(getPrototypeOf(component));
-    const contextfulFieldsOrProps = enumerableKeys.filter(
-        (propName) => (component as any)[propName]?.[disconnectContext]
-    );
-
-    if (contextfulFieldsOrProps.length === 0) {
-        return;
-    }
-
-    for (const contextfulField of contextfulFieldsOrProps) {
-        (component as any)[contextfulField][disconnectContext](component);
-    }
-}
-
 function hasWireAdapters(vm: VM): boolean {
     return getOwnPropertyNames(vm.def.wire).length > 0;
 }
@@ -853,7 +753,7 @@ function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
-    cleanupContext(vm);
+    disconnectContext(vm);
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,
         // it will be re-rendered because we are disconnecting the reactivity

@@ -57,6 +57,8 @@ export function createContextProviderWithRegister(
                 setDisconnectedCallback?.(disconnectCallback);
 
                 consumerConnectedCallback(consumer);
+                // Return true as the context is always consumed here and the consumer should
+                // stop bubbling.
                 return true;
             }
         );
@@ -92,6 +94,8 @@ export function createContextWatcher(
                 // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
                 // TODO: dev-mode validation of config based on the adapter.contextSchema
                 callbackWhenContextIsReady(newContext);
+                // Return true as the context is always consumed here and the consumer should
+                // stop bubbling.
                 return true;
             },
             setDisconnectedCallback(disconnectCallback: () => void) {

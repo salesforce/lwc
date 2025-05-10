@@ -720,42 +720,6 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         signalValidator.add(signal);
     }
 
-    const connectContext = Symbol('connectContext');
-    const disconnectContext = Symbol('disconnectContext');
-
-    const contextKeys = {
-        connectContext,
-        disconnectContext,
-    };
-
-    lwc.setContextKeys(contextKeys);
-
-    const defineContext = (fromContext) => {
-        const contextDefinition = (initialValue) => {
-            class MockContextSignal {
-                disconnectContextCalled = false;
-
-                constructor(initialValue) {
-                    this.value = initialValue;
-                }
-                [connectContext](runtimeAdapter) {
-                    runtimeAdapter.provideContext(contextDefinition, this);
-                    if (fromContext) {
-                        runtimeAdapter.consumeContext(
-                            fromContext,
-                            (providedContextSignal) => (this.value = providedContextSignal.value)
-                        );
-                    }
-                }
-                [disconnectContext]() {
-                    this.disconnectContextCalled = true;
-                }
-            }
-            return new MockContextSignal(initialValue);
-        };
-        return contextDefinition;
-    };
-
     return {
         clearRegister,
         extractDataIds,
@@ -784,6 +748,5 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         addTrustedSignal,
         expectEquivalentDOM,
         ...apiFeatures,
-        defineContext,
     };
 })(LWC, jasmine, beforeAll);
