@@ -59,13 +59,15 @@ export interface WireDebugInfo {
     wasDataProvisionedForConfig: boolean;
 }
 
+export type ShouldContinueBubbling = boolean;
+
 export type WireContextSubscriptionCallback = (
     subscriptionPayload: WireContextSubscriptionPayload
-) => void;
+) => ShouldContinueBubbling;
 
 export interface WireContextSubscriptionPayload {
-    setNewContext(newContext: ContextValue): void;
-    setDisconnectedCallback(disconnectCallback: () => void): void;
+    setNewContext(newContext: ContextValue): ShouldContinueBubbling;
+    setDisconnectedCallback?(disconnectCallback: () => void): void;
 }
 
 export interface ContextConsumer {

@@ -103,7 +103,7 @@ async function getCompiledModule(dirName, compileForSSR) {
     return { code, watchFiles };
 }
 
-function throwOnUnexpectedConsoleCalls(runnable) {
+function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
     // The console is shared between the VM and the main realm. Here we ensure that known warnings
     // are ignored and any others cause an explicit error.
     const methods = ['error', 'warn', 'log', 'info'];
@@ -118,9 +118,13 @@ function throwOnUnexpectedConsoleCalls(runnable) {
                 /Cannot set property "(inner|outer)HTML"/.test(error?.message)
             ) {
                 return;
+            } else if (
+                expectedConsoleCalls[method]?.some((matcher) => error.message.includes(matcher))
+            ) {
+                return;
             }
 
-            throw new Error(`Unexpected console.${method} call: ${error}`);
+            throw new Error('Unexpected console.' + method + ' call: ' + error);
         };
     }
     try {
@@ -142,25 +146,34 @@ function throwOnUnexpectedConsoleCalls(runnable) {
  * in client-side tests.
  */
 async function getSsrCode(moduleCode, testConfig, filename) {
+    // Create a temporary module to evaluate the bundled code and extract the expected console calls
+    const configModule = new vm.Script(testConfig);
+    const configContext = { config: {} };
+    vm.createContext(configContext);
+    configModule.runInContext(configContext);
+    const { expectedSSRConsoleCalls } = configContext.config;
+
     const script = new vm.Script(
         `
-        ${testConfig};
-        config = config || {};
-        ${moduleCode};
-        moduleOutput = LWC.renderComponent(
-            'x-${COMPONENT_UNDER_TEST}-${guid++}',
-            Main,
-            config.props || {},
-            false,
-            'sync'
-        );`,
+            ${testConfig};
+            config = config || {};
+            ${moduleCode};
+            moduleOutput = LWC.renderComponent(
+                'x-${COMPONENT_UNDER_TEST}-${guid++}',
+                Main,
+                config.props || {},
+                false,
+                'sync'
+            );
+        `,
         { filename }
     );
 
     throwOnUnexpectedConsoleCalls(() => {
         vm.createContext(context);
         script.runInContext(context);
-    });
+    }, expectedSSRConsoleCalls);
+
     return context.moduleOutput;
 }
 

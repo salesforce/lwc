@@ -35,7 +35,7 @@ import {
     startTrackingMutations,
     stopTrackingMutations,
 } from './utils/mutation-tracking';
-import { registerContextConsumer } from './context';
+import { registerContextConsumer, registerContextProvider } from './context';
 import type { HostNode, HostElement, HostAttribute, HostChildNode } from './types';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
@@ -509,6 +509,7 @@ export const renderer = {
     insertStylesheet,
     assertInstanceOfHTMLElement,
     ownerDocument,
+    registerContextProvider,
     registerContextConsumer,
     attachInternals,
     defineCustomElement: getUpgradableElement,
