@@ -53,6 +53,8 @@ describe('context', () => {
         expect(() => {
             setContextKeys(mockContextKeys2);
         }).toThrow('`setContextKeys` cannot be called more than once');
+
+        expect(getContextKeys()).toBe(mockContextKeys1);
     });
 
     it('should return undefined when getting context keys before setting them', () => {
