@@ -66,6 +66,15 @@ export function unwrap(..._: unknown[]): never {
 export function wire(..._: unknown[]): never {
     throw new Error('@wire cannot be used in SSR context.');
 }
+export function setContextKeys(..._: unknown[]): never {
+    throw new Error('@setContextKeys cannot be used in SSR context.');
+}
+export function setTrustedContextSet(..._: unknown[]): never {
+    throw new Error('setTrustedContextSet cannot be used in SSR context.');
+}
+export function setTrustedSignalSet(..._: unknown[]): never {
+    throw new Error('@setTrustedSignalSet cannot be used in SSR context.');
+}
 
 export const renderer = {
     isSyntheticShadowDefined: false,
