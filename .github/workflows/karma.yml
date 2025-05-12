@@ -46,11 +46,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v2
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
             - run: yarn sauce:ci
             - run: DISABLE_SYNTHETIC=1 yarn sauce:ci
@@ -86,11 +87,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v2
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
             - run: API_VERSION=58 yarn sauce:ci
             - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn sauce:ci
@@ -126,11 +128,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v2
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
             - run: API_VERSION=61 yarn sauce:ci
             - run: API_VERSION=61 DISABLE_SYNTHETIC=1 yarn sauce:ci
@@ -168,11 +171,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - uses: saucelabs/sauce-connect-action@v2
+            - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn sauce:ci
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn sauce:ci

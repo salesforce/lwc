@@ -38,6 +38,9 @@ branches:
     spring25:
         pull-request:
             <<: *branch-definition
+    summer25:
+        pull-request:
+            <<: *branch-definition
 jobs:
     build-and-test:
         memory-limit: 16

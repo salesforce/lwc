@@ -1,0 +1,5 @@
+<template>
+    <template for:each={someArray} for:item="item">
+        <x-foo key={item.key} lwc:on={item.hello}></x-foo>
+    </template>
+</template>

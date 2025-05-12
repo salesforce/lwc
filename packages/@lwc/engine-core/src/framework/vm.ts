@@ -136,6 +136,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** References to elements rendered using lwc:ref (template refs) */
     refVNodes: RefVNodes | null;
+    /** event listeners added to elements corresponding to functions provided by lwc:on */
+    attachedEventListeners: WeakMap<Element, Record<string, EventListener | undefined>>;
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
@@ -345,6 +347,7 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         refVNodes: null,
+        attachedEventListeners: new WeakMap(),
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,

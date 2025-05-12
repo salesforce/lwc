@@ -78,6 +78,11 @@ export interface Config {
     enableLwcSpread?: boolean;
 
     /**
+     * When true, enables `lwc:on` directive.
+     */
+    enableLwcOn?: boolean;
+
+    /**
      * Config to use to collect metrics and logs
      */
     instrumentation?: InstrumentationObject;
@@ -99,6 +104,7 @@ const AVAILABLE_OPTION_NAMES = new Set([
     'apiVersion',
     'customRendererConfig',
     'enableLwcSpread',
+    'enableLwcOn',
     'enableStaticContentOptimization',
     // TODO [#3370]: remove experimental template expression flag
     'experimentalComplexExpressions',
@@ -176,6 +182,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
         enableLwcSpread: true,
+        enableLwcOn: false,
         disableSyntheticShadowSupport: false,
         ...config,
         apiVersion, // overrides the config apiVersion
