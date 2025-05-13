@@ -713,10 +713,13 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         TEMPLATE_CLASS_NAME_OBJECT_BINDING: process.env.API_VERSION >= 62,
     };
 
-    const signalValidator = new WeakSet();
-    lwc.setTrustedSignalSet(signalValidator);
+    let signalValidator;
 
     function addTrustedSignal(signal) {
+        if (!signalValidator) {
+            signalValidator = new WeakSet();
+            lwc.setTrustedSignalSet(signalValidator);
+        }
         signalValidator.add(signal);
     }
 
