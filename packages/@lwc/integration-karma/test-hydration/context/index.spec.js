@@ -36,7 +36,7 @@ export default {
         assertContextDisconnected(target, snapshot);
 
         // Expect an error as one context was generated twice.
-        // Context values are expected to be rendered (there should be no hydration warnings)
+        // Expect server/client context output parity (no hydration warnings)
         TestUtils.expectConsoleCalls(consoleCalls, {
             error: [
                 'Multiple contexts of the same variety were provided. Only the first context will be used.',
@@ -68,15 +68,18 @@ function assertContextShadowed(snapshot) {
 
     expect(childOfFirstParentContext.providedContextSignal)
         .withContext(
-            `${snapshot.components.childOfFirstParent.tagName} should have been provided with the parent's context and not that of the grandparent`
+            `Child should have been provided with the parent context and not that of the grandparent (grandparent context was shadowed)`
         )
         .toBe(firstParentContext);
 
     expect(firstParentContext.providedContextSignal)
-        .withContext(
-            `${snapshot.components.firstParent.tagName} should have been provided with the parent's context and not that of the grandparent`
-        )
+        .withContext(`Parent should have been provided with grandparent context`)
         .toBe(grandparentContext);
+
+    // For good measure
+    expect(grandparentContext)
+        .withContext(`Grandparent context should not be the same as the parent context`)
+        .not.toBe(firstParentContext);
 }
 
 function assertContextDisconnected(target, snapshot) {
