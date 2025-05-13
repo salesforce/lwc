@@ -7,40 +7,13 @@ const trustedContext = new WeakSet();
 setTrustedContextSet(trustedContext);
 setContextKeys({ connectContext, disconnectContext });
 
-class MockSignal {
-    subscribers = new Set();
-
-    constructor(initialValue) {
-        this._value = initialValue;
-    }
-
-    set value(newValue) {
-        this._value = newValue;
-        this.notify();
-    }
-
-    get value() {
-        return this._value;
-    }
-
-    subscribe(onUpdate) {
-        this.subscribers.add(onUpdate);
-    }
-
-    notify() {
-        for (const subscriber of this.subscribers) {
-            subscriber(this.value);
-        }
-    }
-}
-
 class MockContextSignal {
-    disconnectContextCalled = false;
     connectProvidedComponent;
     disconnectProvidedComponent;
+    providedContextSignal;
 
     constructor(initialValue, contextDefinition, fromContext) {
-        this.value = new MockSignal(initialValue);
+        this.value = initialValue;
         this.contextDefinition = contextDefinition;
         this.fromContext = fromContext;
         trustedContext.add(this);
@@ -52,17 +25,13 @@ class MockContextSignal {
 
         if (this.fromContext) {
             runtimeAdapter.consumeContext(this.fromContext, (providedContextSignal) => {
-                this.value.value = providedContextSignal.value.value;
-                // Simple subscription is required to validate shadowed context
-                providedContextSignal.value.subscribe(
-                    (updatedValue) => (this.value.value = updatedValue)
-                );
+                this.providedContextSignal = providedContextSignal;
+                this.value = providedContextSignal.value;
             });
         }
     }
     [disconnectContext](component) {
         this.disconnectProvidedComponent = component;
-        this.disconnectContextCalled = true;
     }
 }
 

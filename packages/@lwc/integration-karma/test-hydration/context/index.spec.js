@@ -61,35 +61,32 @@ function assertCorrectContext(snapshot) {
 }
 
 function assertContextShadowed(snapshot) {
-    // Change the parents context value and then check to make sure the grandparents value has been shadowed
-    snapshot.components.firstParent.context.value.value = 'shadow value';
+    const grandparentContext = snapshot.components.grandparent.context;
+    const firstParentContext = snapshot.components.firstParent.context;
+    const childOfFirstParentContext = snapshot.components.childOfFirstParent.context;
 
-    Object.entries(snapshot.components).forEach(([key, component]) => {
-        if (key === 'firstParent' || key === 'childOfFirstParent') {
-            expect(component.context.value.value)
-                .withContext(`${component.tagName} should have the correct context after shadowing`)
-                .toBe('shadow value');
-        } else {
-            expect(component.context.value.value)
-                .withContext(`${component.tagName} should have the initial context after shadowing`)
-                .toBe('grandparent provided value');
-        }
-    });
+    expect(childOfFirstParentContext.providedContextSignal)
+        .withContext(
+            `${snapshot.components.childOfFirstParent.tagName} should have been provided with the parent's context and not that of the grandparent`
+        )
+        .toBe(firstParentContext);
+
+    expect(firstParentContext.providedContextSignal)
+        .withContext(
+            `${snapshot.components.firstParent.tagName} should have been provided with the parent's context and not that of the grandparent`
+        )
+        .toBe(grandparentContext);
 }
 
 function assertContextDisconnected(target, snapshot) {
     Object.values(snapshot.components).forEach(
         (component) =>
             (component.disconnect = () => {
-                expect(component.context.disconnectContextCalled)
-                    .withContext(`${component.tagName} should have disconnected the context`)
-                    .toBeTrue();
-
-                expect(component.context.disconnectProvidedComponent)
+                expect(component.context.disconnectProvidedComponent.hostElement)
                     .withContext(
                         `The context of ${component.tagName} should have been disconnected with the correct component`
                     )
-                    .toBe(component.context.connectProvidedComponent);
+                    .toBe(component);
             })
     );
     target.showTree = false;
