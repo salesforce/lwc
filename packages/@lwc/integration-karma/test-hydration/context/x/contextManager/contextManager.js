@@ -36,6 +36,8 @@ class MockSignal {
 
 class MockContextSignal {
     disconnectContextCalled = false;
+    connectProvidedComponent;
+    disconnectProvidedComponent;
 
     constructor(initialValue, contextDefinition, fromContext) {
         this.value = new MockSignal(initialValue);
@@ -44,17 +46,22 @@ class MockContextSignal {
         trustedContext.add(this);
     }
     [connectContext](runtimeAdapter) {
+        this.connectProvidedComponent = runtimeAdapter.component;
+
         runtimeAdapter.provideContext(this.contextDefinition, this);
+
         if (this.fromContext) {
             runtimeAdapter.consumeContext(this.fromContext, (providedContextSignal) => {
                 this.value.value = providedContextSignal.value.value;
+                // Simple subscription is required to validate shadowed context
                 providedContextSignal.value.subscribe(
                     (updatedValue) => (this.value.value = updatedValue)
                 );
             });
         }
     }
-    [disconnectContext]() {
+    [disconnectContext](component) {
+        this.disconnectProvidedComponent = component;
         this.disconnectContextCalled = true;
     }
 }

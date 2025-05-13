@@ -22,26 +22,28 @@ import type { ShouldContinueBubbling } from '../wiring/types';
 type ContextProvidedCallback = (contextSignal?: Signal<unknown>) => void;
 type ContextVarieties = Map<unknown, Signal<unknown>>;
 
-class ContextConnector<T extends object> {
-    component: T;
+class ContextConnector<C extends object> {
+    component: C;
     #renderer: RendererAPI;
     #providedContextVarieties: ContextVarieties;
+    #elm: HTMLElement;
 
-    constructor(component: T, providedContextVarieties: ContextVarieties, renderer: RendererAPI) {
+    constructor(vm: VM, component: C, providedContextVarieties: ContextVarieties) {
         this.component = component;
-        this.#renderer = renderer;
+        this.#renderer = vm.renderer;
+        this.#elm = vm.elm;
         this.#providedContextVarieties = providedContextVarieties;
     }
 
-    provideContext<T extends object>(
-        contextVariety: T,
+    provideContext<V extends object>(
+        contextVariety: V,
         providedContextSignal: Signal<unknown>
     ): void {
         // registerContextProvider is called one time when the component is first provided context.
         // The component is then listening for consumers to consume the provided context.
         if (this.#providedContextVarieties.size === 0) {
             this.#renderer.registerContextProvider(
-                this.component,
+                this.#elm,
                 ContextEventName,
                 (payload): ShouldContinueBubbling => {
                     // This callback is invoked when the provided context is consumed somewhere down
@@ -60,11 +62,11 @@ class ContextConnector<T extends object> {
         this.#providedContextVarieties.set(contextVariety, providedContextSignal);
     }
 
-    consumeContext<T extends object>(
-        contextVariety: T,
+    consumeContext<V extends object>(
+        contextVariety: V,
         contextProvidedCallback: ContextProvidedCallback
     ): void {
-        this.#renderer.registerContextConsumer(this.component, ContextEventName, {
+        this.#renderer.registerContextConsumer(this.#elm, ContextEventName, {
             setNewContext: (providerContextVarieties: ContextVarieties): ShouldContinueBubbling => {
                 // If the provider has the specified context variety, then it is consumed
                 // and true is called to stop bubbling.
@@ -88,22 +90,22 @@ export function connectContext(vm: VM) {
     }
 
     const { connectContext } = contextKeys;
-    const { renderer, elm, component } = vm;
+    const { component } = vm;
 
     const enumerableKeys = keys(getPrototypeOf(component));
-    const contextfulFieldsOrProps = ArrayFilter.call(enumerableKeys, (propName) =>
-        isTrustedContext((component as any)[propName])
+    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+        isTrustedContext((component as any)[enumerableKey])
     );
 
-    if (contextfulFieldsOrProps.length === 0) {
+    if (contextfulKeys.length === 0) {
         return;
     }
 
     const providedContextVarieties: ContextVarieties = new Map();
 
-    for (let i = 0; i < contextfulFieldsOrProps.length; i++) {
-        (component as any)[contextfulFieldsOrProps[i]][connectContext](
-            new ContextConnector(elm, providedContextVarieties, renderer)
+    for (let i = 0; i < contextfulKeys.length; i++) {
+        (component as any)[contextfulKeys[i]][connectContext](
+            new ContextConnector(vm, component, providedContextVarieties)
         );
     }
 }
@@ -119,15 +121,15 @@ export function disconnectContext(vm: VM) {
     const { component } = vm;
 
     const enumerableKeys = keys(getPrototypeOf(component));
-    const contextfulFieldsOrProps = ArrayFilter.call(enumerableKeys, (propName) =>
-        isTrustedContext((component as any)[propName])
+    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+        isTrustedContext((component as any)[enumerableKey])
     );
 
-    if (contextfulFieldsOrProps.length === 0) {
+    if (contextfulKeys.length === 0) {
         return;
     }
 
-    for (let i = 0; i < contextfulFieldsOrProps.length; i++) {
-        (component as any)[contextfulFieldsOrProps[i]][disconnectContext](component);
+    for (let i = 0; i < contextfulKeys.length; i++) {
+        (component as any)[contextfulKeys[i]][disconnectContext](component);
     }
 }
