@@ -29,13 +29,14 @@ export default {
         // Assert context is provided by the grandparent and consumed correctly by all children
         assertCorrectContext(snapshot);
 
-        // Assert context is shadowed when changed
+        // Assert context is shadowed when consumed in a chain
         assertContextShadowed(snapshot);
 
         // Assert context is disconnected when components are removed
         assertContextDisconnected(target, snapshot);
 
-        // Expect an error as one context was generated twice. Expect no hydration warnings.
+        // Expect an error as one context was generated twice.
+        // Context values are expected to be rendered (there should be no hydration warnings)
         TestUtils.expectConsoleCalls(consoleCalls, {
             error: [
                 'Multiple contexts of the same variety were provided. Only the first context will be used.',

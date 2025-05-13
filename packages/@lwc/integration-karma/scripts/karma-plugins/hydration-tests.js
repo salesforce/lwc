@@ -124,7 +124,7 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
                 return;
             }
 
-            throw new Error('Unexpected console.' + method + ' call: ' + error);
+            throw new Error(`Unexpected console.${method} call: ${error}`);
         };
     }
     try {

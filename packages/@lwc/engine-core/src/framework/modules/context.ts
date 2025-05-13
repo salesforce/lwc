@@ -69,7 +69,7 @@ class ContextConnector<C extends object> {
         this.#renderer.registerContextConsumer(this.#elm, ContextEventName, {
             setNewContext: (providerContextVarieties: ContextVarieties): ShouldContinueBubbling => {
                 // If the provider has the specified context variety, then it is consumed
-                // and true is called to stop bubbling.
+                // and true is returned to stop bubbling.
                 if (providerContextVarieties.has(contextVariety)) {
                     contextProvidedCallback(providerContextVarieties.get(contextVariety));
                     return true;
