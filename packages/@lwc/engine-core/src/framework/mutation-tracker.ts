@@ -42,6 +42,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         isObject(target) &&
         !isNull(target) &&
         isTrustedSignal(target) &&
+        process.env.IS_BROWSER &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()
     ) {

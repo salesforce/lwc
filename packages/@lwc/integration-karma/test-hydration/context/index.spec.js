@@ -1,11 +1,13 @@
 export default {
     // server is expected to generate the same console error as the client
     expectedSSRConsoleCalls: {
-        error: [
+        error: [],
+        warn: [
+            'Attempted to connect to trusted context but received the following error',
             'Multiple contexts of the same variety were provided. Only the first context will be used.',
         ],
-        warn: [],
     },
+    requiredFeatureFlags: ['ENABLE_EXPERIMENTAL_SIGNALS'],
     snapshot(target) {
         const grandparent = target.shadowRoot.querySelector('x-grandparent');
         const detachedChild = target.shadowRoot.querySelector('x-child');
@@ -36,12 +38,14 @@ export default {
         assertContextDisconnected(target, snapshot);
 
         // Expect an error as one context was generated twice.
+        // Expect an error as one context was malformed (did not define connectContext or disconnectContext methods).
         // Expect server/client context output parity (no hydration warnings)
         TestUtils.expectConsoleCalls(consoleCalls, {
-            error: [
+            error: [],
+            warn: [
+                'Attempted to connect to trusted context but received the following error',
                 'Multiple contexts of the same variety were provided. Only the first context will be used.',
             ],
-            warn: [],
         });
     },
 };
@@ -52,7 +56,7 @@ function assertCorrectContext(snapshot) {
             .withContext(`${component.tagName} should have the correct context`)
             .toBe('grandparent provided value, another grandparent provided value');
 
-        expect(component.context.connectProvidedComponent.hostElement)
+        expect(component.context.connectProvidedComponent?.hostElement)
             .withContext(
                 `The context of ${component.tagName} should have been connected with the correct component`
             )
@@ -86,7 +90,7 @@ function assertContextDisconnected(target, snapshot) {
     Object.values(snapshot.components).forEach(
         (component) =>
             (component.disconnect = () => {
-                expect(component.context.disconnectProvidedComponent.hostElement)
+                expect(component.context.disconnectProvidedComponent?.hostElement)
                     .withContext(
                         `The context of ${component.tagName} should have been disconnected with the correct component`
                     )

@@ -12,17 +12,18 @@ import {
     ArrayFilter,
     ContextEventName,
     isTrustedContext,
+    type ContextProvidedCallback,
+    type ContextConnector as IContextConnector,
 } from '@lwc/shared';
 import { type VM } from '../vm';
-import { logErrorOnce } from '../../shared/logger';
+import { logWarnOnce } from '../../shared/logger';
 import type { Signal } from '@lwc/signals';
 import type { RendererAPI } from '../renderer';
 import type { ShouldContinueBubbling } from '../wiring/types';
 
-type ContextProvidedCallback = (contextSignal?: Signal<unknown>) => void;
 type ContextVarieties = Map<unknown, Signal<unknown>>;
 
-class ContextConnector<C extends object> {
+class ContextConnector<C extends object> implements IContextConnector<C> {
     component: C;
     #renderer: RendererAPI;
     #providedContextVarieties: ContextVarieties;
@@ -54,7 +55,7 @@ class ContextConnector<C extends object> {
         }
 
         if (this.#providedContextVarieties.has(contextVariety)) {
-            logErrorOnce(
+            logWarnOnce(
                 'Multiple contexts of the same variety were provided. Only the first context will be used.'
             );
             return;
@@ -103,9 +104,17 @@ export function connectContext(vm: VM) {
 
     const providedContextVarieties: ContextVarieties = new Map();
 
-    for (let i = 0; i < contextfulKeys.length; i++) {
-        (component as any)[contextfulKeys[i]][connectContext](
-            new ContextConnector(vm, component, providedContextVarieties)
+    try {
+        for (let i = 0; i < contextfulKeys.length; i++) {
+            (component as any)[contextfulKeys[i]][connectContext](
+                new ContextConnector(vm, component, providedContextVarieties)
+            );
+        }
+    } catch (err: any) {
+        logWarnOnce(
+            `Attempted to connect to trusted context but received the following error: ${
+                err.message
+            }`
         );
     }
 }
@@ -129,7 +138,15 @@ export function disconnectContext(vm: VM) {
         return;
     }
 
-    for (let i = 0; i < contextfulKeys.length; i++) {
-        (component as any)[contextfulKeys[i]][disconnectContext](component);
+    try {
+        for (let i = 0; i < contextfulKeys.length; i++) {
+            (component as any)[contextfulKeys[i]][disconnectContext](component);
+        }
+    } catch (err: any) {
+        logWarnOnce(
+            `Attempted to disconnect from trusted context but received the following error: ${
+                err.message
+            }`
+        );
     }
 }

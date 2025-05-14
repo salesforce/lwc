@@ -25,17 +25,16 @@ describe('isomorphic package exports', () => {
             'hydrateComponent',
             'isNodeFromTemplate',
             'rendererFactory',
+            'setTrustedSignalSet',
         ]);
     });
 
     test('ssr-runtime is a superset of engine-server', () => {
         const baseExports = new Set(Object.keys(engineServer));
         const superExports = new Set(Object.keys(ssrRuntime));
-
         for (const exp of superExports) {
             baseExports.delete(exp);
         }
-
         expect(Array.from(baseExports)).toEqual([
             // Exports that intentionally only exist in @lwc/engine-server
             'default', // artifact of interop support

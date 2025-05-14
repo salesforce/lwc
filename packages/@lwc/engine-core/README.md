@@ -121,3 +121,20 @@ This experimental API enables the removal of an object's observable membrane pro
 This experimental API enables the addition of a signal as a trusted signal. If the [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature is enabled, any signal value change will trigger a re-render.
 
 If `setTrustedSignalSet` is called more than once, it will throw an error. If it is never called, then no trusted signal validation will be performed. The same `setTrustedSignalSet` API must be called on both `@lwc/engine-dom` and `@lwc/signals`.
+
+### setTrustedContextSet()
+
+This experimental API enables the addition of context as trusted context. If the [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature is enabled
+and context has been added to this set, the context object's connectContext and disconnectContext symbols will be called with a ContextConnector when the associated component is connected and disconnected.
+
+If `setTrustedContextSet` is called more than once, it will throw an error. If it is never called, then context will not be connected.
+
+### ContextConnector
+
+The context manager `connectContext` and `disconnectContext` symbols are called with this object when contextful components are connected and disconnected. The ContextConnector exposes `provideContext` and `consumeContext`,
+enabling the provision/consumption of a contextful Signal of a specified variety for the associated component.
+
+### setContextKeys
+
+Enables a state manager context implementation to provide LWC with context Symbols, namely `connectContext` and `disconnectContext`. These symbols would then be defined on any context manager implementation, and will be called
+with a ContextConnector object when contextful components are connected and disconnected.

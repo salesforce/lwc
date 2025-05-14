@@ -15,6 +15,19 @@ export type ContextKeys = {
     disconnectContext: symbol;
 };
 
+export type ContextProvidedCallback = (contextSignal?: object) => void;
+
+export interface ContextConnector<C extends object> {
+    component: C;
+
+    provideContext<V extends object>(contextVariety: V, providedContextSignal: object): void;
+
+    consumeContext<V extends object>(
+        contextVariety: V,
+        contextProvidedCallback: ContextProvidedCallback
+    ): void;
+}
+
 let contextKeys: ContextKeys;
 
 export function setContextKeys(config: ContextKeys) {

@@ -72,9 +72,6 @@ export function setContextKeys(..._: unknown[]): never {
 export function setTrustedContextSet(..._: unknown[]): never {
     throw new Error('setTrustedContextSet cannot be used in SSR context.');
 }
-export function setTrustedSignalSet(..._: unknown[]): never {
-    throw new Error('@setTrustedSignalSet cannot be used in SSR context.');
-}
 
 export const renderer = {
     isSyntheticShadowDefined: false,
