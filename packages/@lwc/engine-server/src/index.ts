@@ -29,6 +29,8 @@ export {
     isComponentConstructor,
     parseFragment,
     parseFragment as parseSVGFragment,
+    setTrustedContextSet,
+    setContextKeys,
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------
