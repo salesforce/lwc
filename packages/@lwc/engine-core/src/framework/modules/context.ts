@@ -13,7 +13,7 @@ import {
     ContextEventName,
     isTrustedContext,
     type ContextProvidedCallback,
-    type ContextConnector as IContextConnector,
+    type ContextBinding as IContextBinding,
 } from '@lwc/shared';
 import { type VM } from '../vm';
 import { logWarnOnce } from '../../shared/logger';
@@ -23,7 +23,7 @@ import type { ShouldContinueBubbling } from '../wiring/types';
 
 type ContextVarieties = Map<unknown, Signal<unknown>>;
 
-class ContextConnector<C extends object> implements IContextConnector<C> {
+class ContextBinding<C extends object> implements IContextBinding<C> {
     component: C;
     #renderer: RendererAPI;
     #providedContextVarieties: ContextVarieties;
@@ -34,26 +34,23 @@ class ContextConnector<C extends object> implements IContextConnector<C> {
         this.#renderer = vm.renderer;
         this.#elm = vm.elm;
         this.#providedContextVarieties = providedContextVarieties;
+
+        // Register the component as a context provider.
+        this.#renderer.registerContextProvider(
+            this.#elm,
+            ContextEventName,
+            (contextConsumer): ShouldContinueBubbling => {
+                // This callback is invoked when the provided context is consumed somewhere down
+                // in the component's subtree.
+                return contextConsumer.setNewContext(this.#providedContextVarieties);
+            }
+        );
     }
 
     provideContext<V extends object>(
         contextVariety: V,
         providedContextSignal: Signal<unknown>
     ): void {
-        // registerContextProvider is called one time when the component is first provided context.
-        // The component is then listening for consumers to consume the provided context.
-        if (this.#providedContextVarieties.size === 0) {
-            this.#renderer.registerContextProvider(
-                this.#elm,
-                ContextEventName,
-                (payload): ShouldContinueBubbling => {
-                    // This callback is invoked when the provided context is consumed somewhere down
-                    // in the component's subtree.
-                    return payload.setNewContext(this.#providedContextVarieties);
-                }
-            );
-        }
-
         if (this.#providedContextVarieties.has(contextVariety)) {
             logWarnOnce(
                 'Multiple contexts of the same variety were provided. Only the first context will be used.'
@@ -107,7 +104,7 @@ export function connectContext(vm: VM) {
     try {
         for (let i = 0; i < contextfulKeys.length; i++) {
             (component as any)[contextfulKeys[i]][connectContext](
-                new ContextConnector(vm, component, providedContextVarieties)
+                new ContextBinding(vm, component, providedContextVarieties)
             );
         }
     } catch (err: any) {

@@ -17,7 +17,7 @@ export type ContextKeys = {
 
 export type ContextProvidedCallback = (contextSignal?: object) => void;
 
-export interface ContextConnector<C extends object> {
+export interface ContextBinding<C extends object> {
     component: C;
 
     provideContext<V extends object>(contextVariety: V, providedContextSignal: object): void;
