@@ -14,11 +14,13 @@ import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
 import { isNullableOf } from '../../../estree/validators';
 import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
-import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
+    CallExpression as EsCallExpression,
+    Expression as EsExpression,
     Statement as EsStatement,
     ExpressionStatement as EsExpressionStatement,
+    VariableDeclaration as EsVariableDeclaration,
 } from 'estree';
 import type {
     ChildNode as IrChildNode,
@@ -36,40 +38,31 @@ import type {
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
+const bGenerateShadowSlottedContent = esTemplateWithYield`
+    const shadowSlottedContent = async function* __lwcGenerateSlottedContent(contextfulParent) {
+        // The 'contextfulParent' variable is shadowed here so that a contextful relationship
+        // is established between components rendered in slotted content & the "parent"
+        // component that contains the <slot>.
+        ${/* shadow slot content */ is.statement}
+    };
+`<EsVariableDeclaration>;
+const bNullishGenerateShadowSlottedContent = esTemplateWithYield`
+    const shadowSlottedContent = null;
+`<EsVariableDeclaration>;
+
+const bContentMap = esTemplateWithYield`
+    const ${/* name of the content map */ is.identifier} = Object.create(null);
+`<EsVariableDeclaration>;
+const bNullishContentMap = esTemplateWithYield`
+    const ${/* name of the content map */ is.identifier} = null;
+`<EsVariableDeclaration>;
+
 const bGenerateSlottedContent = esTemplateWithYield`
-        const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
-            ? async function* __lwcGenerateSlottedContent(contextfulParent) {
-                // The 'contextfulParent' variable is shadowed here so that a contextful relationship
-                // is established between components rendered in slotted content & the "parent"
-                // component that contains the <slot>.
-
-                ${/* shadow slot content */ is.statement}
-            } 
-            // Avoid creating the object unnecessarily
-            : null;
-
-        const lightSlottedContentMap = ${/* hasLightSlottedContent */ is.literal} 
-            ? Object.create(null)
-            // Avoid creating the object unnecessarily
-            : null;
-        
-        // The containing slot treats scoped slotted content differently.
-        const scopedSlottedContentMap = ${/* hasScopedSlottedContent */ is.literal} 
-            ? Object.create(null)
-            // Avoid creating the object unnecessarily
-            : null;
-
-        function addSlottedContent(name, fn, contentMap) {
-            let contentList = contentMap[name];
-            if (contentList) {
-                contentList.push(fn);
-            } else {
-                contentMap[name] = [fn];
-            }
-        }
-
-        ${/* light DOM addLightContent statements */ is.expressionStatement}
-        ${/* scoped slot addLightContent statements */ is.expressionStatement}
+    ${/* const shadowSlottedContent = ... */ is.variableDeclaration}
+    ${/* const lightSlottedContentMap */ is.variableDeclaration}
+    ${/* const scopedSlottedContentMap */ is.variableDeclaration}
+    ${/* light DOM addLightContent statements */ is.expressionStatement}
+    ${/* scoped slot addLightContent statements */ is.expressionStatement}
 `<EsStatement[]>;
 
 // Note that this function name (`__lwcGenerateSlottedContent`) does not need to be scoped even though
@@ -254,16 +247,29 @@ export function getSlottedContent(
         return addLightContentExpr;
     });
 
-    const hasShadowSlottedContent = b.literal(shadowSlotContent.length > 0);
-    const hasLightSlottedContent = b.literal(lightSlotContent.length > 0);
-    const hasScopedSlottedContent = b.literal(scopedSlotContent.length > 0);
+    const hasShadowSlottedContent = shadowSlotContent.length > 0;
+    const hasLightSlottedContent = lightSlotContent.length > 0;
+    const hasScopedSlottedContent = scopedSlotContent.length > 0;
     cxt.isSlotted = isSlotted;
 
+    if (hasShadowSlottedContent || hasLightSlottedContent || hasScopedSlottedContent) {
+        cxt.import('addSlottedContent');
+    }
+
+    const shadowSlottedContentFn = hasShadowSlottedContent
+        ? bGenerateShadowSlottedContent(shadowSlotContent)
+        : bNullishGenerateShadowSlottedContent();
+    const lightSlottedContentMap = hasLightSlottedContent
+        ? bContentMap(b.identifier('lightSlottedContentMap'))
+        : bNullishContentMap(b.identifier('lightSlottedContentMap'));
+    const scopedSlottedContentMap = hasScopedSlottedContent
+        ? bContentMap(b.identifier('scopedSlottedContentMap'))
+        : bNullishContentMap(b.identifier('scopedSlottedContentMap'));
+
     return bGenerateSlottedContent(
-        hasShadowSlottedContent,
-        shadowSlotContent,
-        hasLightSlottedContent,
-        hasScopedSlottedContent,
+        shadowSlottedContentFn,
+        lightSlottedContentMap,
+        scopedSlottedContentMap,
         lightSlotContent,
         scopedSlotContent
     );
