@@ -49,6 +49,7 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import { connectContext, disconnectContext } from './modules/context';
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
 import type {
@@ -702,6 +703,12 @@ export function runConnectedCallback(vm: VM) {
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
     }
+
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        // Setup context before connected callback is executed
+        connectContext(vm);
+    }
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         logOperationStart(OperationId.ConnectedCallback, vm);
@@ -751,6 +758,11 @@ function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
+
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        disconnectContext(vm);
+    }
+
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,
         // it will be re-rendered because we are disconnecting the reactivity

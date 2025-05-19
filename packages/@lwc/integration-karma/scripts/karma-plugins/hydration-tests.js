@@ -11,16 +11,16 @@ const fs = require('node:fs/promises');
 const { format } = require('node:util');
 const { rollup } = require('rollup');
 const lwcRollupPlugin = require('@lwc/rollup-plugin');
-const ssr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-runtime');
+const lwcSsr = ENGINE_SERVER ? require('@lwc/engine-server') : require('@lwc/ssr-runtime');
 const { DISABLE_STATIC_CONTENT_OPTIMIZATION } = require('../shared/options');
 const Watcher = require('./Watcher');
 
 const context = {
-    LWC: ssr,
+    LWC: lwcSsr,
     moduleOutput: null,
 };
 
-ssr.setHooks({
+lwcSsr.setHooks({
     sanitizeHtmlContent(content) {
         return content;
     },
@@ -103,7 +103,7 @@ async function getCompiledModule(dirName, compileForSSR) {
     return { code, watchFiles };
 }
 
-function throwOnUnexpectedConsoleCalls(runnable) {
+function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
     // The console is shared between the VM and the main realm. Here we ensure that known warnings
     // are ignored and any others cause an explicit error.
     const methods = ['error', 'warn', 'log', 'info'];
@@ -116,6 +116,10 @@ function throwOnUnexpectedConsoleCalls(runnable) {
                 // This is a false positive due to RegExp.prototype.test
                 // eslint-disable-next-line vitest/no-conditional-tests
                 /Cannot set property "(inner|outer)HTML"/.test(error?.message)
+            ) {
+                return;
+            } else if (
+                expectedConsoleCalls[method]?.some((matcher) => error.message.includes(matcher))
             ) {
                 return;
             }
@@ -141,26 +145,28 @@ function throwOnUnexpectedConsoleCalls(runnable) {
  * So, script runs, generates markup, & we get that markup out and return it to Karma for use
  * in client-side tests.
  */
-async function getSsrCode(moduleCode, testConfig, filename) {
+async function getSsrCode(moduleCode, testConfig, filename, expectedSSRConsoleCalls) {
     const script = new vm.Script(
         `
-        ${testConfig};
-        config = config || {};
-        ${moduleCode};
-        moduleOutput = LWC.renderComponent(
-            'x-${COMPONENT_UNDER_TEST}-${guid++}',
-            Main,
-            config.props || {},
-            false,
-            'sync'
-        );`,
+            ${testConfig};
+            config = config || {};
+            ${moduleCode};
+            moduleOutput = LWC.renderComponent(
+                'x-${COMPONENT_UNDER_TEST}-${guid++}',
+                Main,
+                config.props || {},
+                false,
+                'sync'
+            );
+        `,
         { filename }
     );
 
     throwOnUnexpectedConsoleCalls(() => {
         vm.createContext(context);
         script.runInContext(context);
-    });
+    }, expectedSSRConsoleCalls);
+
     return context.moduleOutput;
 }
 
@@ -208,10 +214,22 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
         // Wrap all the tests into a describe block with the file stricture name
         const describeTitle = path.relative(basePath, suiteDir).split(path.sep).join(' ');
 
-        try {
-            const { code: testCode, watchFiles: testWatchFiles } =
-                await getTestModuleCode(filePath);
+        const { code: testCode, watchFiles: testWatchFiles } = await getTestModuleCode(filePath);
 
+        // Create a temporary module to evaluate the bundled code and extract config properties for test configuration
+        const configModule = new vm.Script(testCode);
+        const configContext = { config: {} };
+        vm.createContext(configContext);
+        configModule.runInContext(configContext);
+        const { expectedSSRConsoleCalls, requiredFeatureFlags } = configContext.config;
+
+        if (requiredFeatureFlags) {
+            requiredFeatureFlags.forEach((featureFlag) => {
+                lwcSsr.setFeatureFlagForTest(featureFlag, true);
+            });
+        }
+
+        try {
             // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
             const onlyFileExists = await existsUp(suiteDir, '.only');
 
@@ -228,7 +246,8 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                 ssrOutput = await getSsrCode(
                     componentDefCSR,
                     testCode,
-                    path.join(suiteDir, 'ssr.js')
+                    path.join(suiteDir, 'ssr.js'),
+                    expectedSSRConsoleCalls
                 );
             } else {
                 // ssr-compiler has it's own def
@@ -241,7 +260,8 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                 ssrOutput = await getSsrCode(
                     componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true'),
                     testCode,
-                    path.join(suiteDir, 'ssr.js')
+                    path.join(suiteDir, 'ssr.js'),
+                    expectedSSRConsoleCalls
                 );
             }
 
@@ -258,6 +278,12 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             const location = path.relative(basePath, filePath);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
             done(error, null);
+        } finally {
+            if (requiredFeatureFlags) {
+                requiredFeatureFlags.forEach((featureFlag) => {
+                    lwcSsr.setFeatureFlagForTest(featureFlag, false);
+                });
+            }
         }
     };
 }
