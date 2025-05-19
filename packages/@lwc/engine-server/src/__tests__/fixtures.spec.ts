@@ -10,10 +10,10 @@ import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
-import { setFeatureFlagForTest } from '../index';
+import { renderComponent, setFeatureFlagForTest } from '../index';
 import type { LightningElementConstructor } from '@lwc/engine-core/dist/framework/base-lightning-element';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
-import type { FeatureFlagName } from '@lwc/features/dist/types';
+import type { FeatureFlagName, FeatureFlagValue } from '@lwc/features/dist/types';
 
 vi.mock('lwc', async () => {
     const lwcEngineServer = await import('../index');
@@ -24,6 +24,22 @@ vi.mock('lwc', async () => {
     }
     return lwcEngineServer;
 });
+
+/**
+ * `setFeatureFlagForTest` is intentionally a no-op in production mode. We do not want to expose a
+ * utility that lets end users hijack feature flags in production, but we still need to do it
+ * ourselves in production mode tests, so this helper lives here.
+ */
+function setFeatureFlagForProductionTest(name: FeatureFlagName, value: FeatureFlagValue): void {
+    const original = process.env.NODE_ENV;
+    if (original === 'production') {
+        process.env.NODE_ENV = 'development';
+    }
+    setFeatureFlagForTest(name, value);
+    if (original === 'production') {
+        process.env.NODE_ENV = original;
+    }
+}
 
 interface FixtureConfig {
     /**
@@ -127,26 +143,17 @@ function testFixtures(options?: RollupLwcOptions) {
                 };
             }
 
-            // The LWC engine holds global state like the current VM index, which has an impact on
-            // the generated HTML IDs. So the engine has to be re-evaluated between tests.
-            // On top of this, the engine also checks if the component constructor is an instance of
-            // the LightningElement. Therefor the compiled module should also be evaluated in the
-            // same sandbox registry as the engine.
-            const lwcEngineServer = await import('../index');
-
             let result;
             let err;
             try {
                 config?.features?.forEach((flag) => {
-                    lwcEngineServer.setFeatureFlagForTest(flag, true);
+                    setFeatureFlagForProductionTest(flag, true);
                 });
 
                 const module: LightningElementConstructor = (await import(compiledFixturePath))
                     .default;
 
-                result = formatHTML(
-                    lwcEngineServer.renderComponent('fixture-test', module, config?.props ?? {})
-                );
+                result = formatHTML(renderComponent('fixture-test', module, config?.props ?? {}));
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
                     throw _err;
@@ -155,7 +162,7 @@ function testFixtures(options?: RollupLwcOptions) {
             }
 
             config?.features?.forEach((flag) => {
-                lwcEngineServer.setFeatureFlagForTest(flag, false);
+                setFeatureFlagForProductionTest(flag, false);
             });
 
             return {
@@ -166,16 +173,15 @@ function testFixtures(options?: RollupLwcOptions) {
     );
 }
 
-// TODO [#5134]: Enable these tests in production mode
-describe.skipIf(process.env.NODE_ENV === 'production').concurrent('fixtures', () => {
+describe.concurrent('fixtures', () => {
     beforeAll(() => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
-        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', true);
+        setFeatureFlagForProductionTest('ENABLE_WIRE_SYNC_EMIT', true);
     });
 
     afterAll(() => {
-        setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
+        setFeatureFlagForProductionTest('ENABLE_WIRE_SYNC_EMIT', false);
     });
 
     describe.concurrent('default', () => {

@@ -22,6 +22,6 @@ describe('Delegates focus', () => {
         await browser.keys(['Tab']); // tab over integration-child
 
         const active = await browser.activeElementShadowDeep();
-        assert.strictEqual(await active.getTagName(), 'span');
+        assert.strictEqual(await active.getTagName(), 'span'); // flaky
     });
 });

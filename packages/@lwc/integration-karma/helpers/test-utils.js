@@ -470,6 +470,10 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         }
     }
 
+    function setFeatureFlagForTest(featureFlag, value) {
+        LWC.setFeatureFlagForTest(featureFlag, value);
+    }
+
     // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
     const ariaPropertiesMapping = {
         ariaAutoComplete: 'aria-autocomplete',
@@ -747,6 +751,7 @@ window.TestUtils = (function (lwc, jasmine, beforeAll) {
         catchUnhandledRejectionsAndErrors,
         addTrustedSignal,
         expectEquivalentDOM,
+        setFeatureFlagForTest,
         ...apiFeatures,
     };
 })(LWC, jasmine, beforeAll);

@@ -58,10 +58,10 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // When Locker is enabled, the "instanceof" operator would not work since Locker Service
         // provides its own implementation of LightningElement, so we indirectly check
         // if the base constructor is invoked by accessing the component on the vm.
-        // When the ENABLE_LOCKER_VALIDATION gate is true and LEGACY_LOCKER_ENABLED is false,
+        // When the DISABLE_LOCKER_VALIDATION gate is false or LEGACY_LOCKER_ENABLED is false,
         // then the instanceof LightningElement can be used.
         const useLegacyConstructorCheck =
-            lwcRuntimeFlags.ENABLE_LEGACY_VALIDATION || lwcRuntimeFlags.LEGACY_LOCKER_ENABLED;
+            !lwcRuntimeFlags.DISABLE_LEGACY_VALIDATION || lwcRuntimeFlags.LEGACY_LOCKER_ENABLED;
 
         const isInvalidConstructor = useLegacyConstructorCheck
             ? vmBeingConstructed.component !== result
