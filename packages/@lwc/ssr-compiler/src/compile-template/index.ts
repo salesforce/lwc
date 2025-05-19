@@ -89,6 +89,7 @@ export default function compileTemplate(
         experimentalComputedMemberExpression: options.experimentalComputedMemberExpression,
         experimentalComplexExpressions: options.experimentalComplexExpressions,
         enableDynamicComponents: options.enableDynamicComponents,
+        enableLwcOn: options.enableLwcOn,
         preserveHtmlComments: options.preserveHtmlComments,
         enableStaticContentOptimization: options.enableStaticContentOptimization,
         instrumentation: options.instrumentation,
