@@ -32,6 +32,12 @@ export default async (ctx) => {
             enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
             disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
             apiVersion: API_VERSION,
+            modules: [
+                {
+                    // Assume `ctx.path` is a component file, e.g. modules/x/foo/foo.js
+                    dir: path.resolve(input, '../../..'),
+                },
+            ],
             ...options,
         });
     };
@@ -86,14 +92,6 @@ export default async (ctx) => {
         // TODO: Does web-test-runner use istanbul?
         // Sourcemaps don't work with Istanbul coverage
         sourcemap: process.env.COVERAGE ? false : 'inline',
-
-        // The engine and the test-utils is injected as UMD. This mapping defines how those modules can be
-        // referenced from the window object.
-        globals: {
-            lwc: 'LWC',
-            'wire-service': 'WireService',
-            'test-utils': 'TestUtils',
-        },
     });
 
     const { code } = output[0];

@@ -1,9 +1,13 @@
-import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 // This import ensures that the global `Mocha` object is present for mutation.
 /* global Mocha:writable */
 import '@web/test-runner-mocha';
+
+import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
 import * as LWC from 'lwc';
+debugger;
+import { registerCustomMatchers } from './matchers.mjs';
+// import * as customMatchers from './matchers.mjs';
 
 // allows using expect.extend instead of chai.use to extend plugins
 chai.use(JestExtend);
@@ -11,9 +15,11 @@ chai.use(JestExtend);
 chai.use(JestChaiExpect);
 // adds asymmetric matchers like stringContaining, objectContaining
 chai.use(JestAsymmetricMatchers);
-// expose so we don't need to import `expect` in every test file
-// globalThis.expect = chai.expect;
+// add our custom matchers
+chai.use(registerCustomMatchers);
 
+// expose so we don't need to import `expect` in every test file
+globalThis.expect = chai.expect;
 // Expose globals for karma compat
 globalThis.LWC = LWC;
 // globalThis.jasmine = await import('vitest');

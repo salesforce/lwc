@@ -1,11 +1,7 @@
 import path from 'node:path';
-import rollupPluginLwc from '@lwc/rollup-plugin';
 import { fromRollup } from '@web/dev-server-rollup';
 import rollupPluginCommonjs from '@rollup/plugin-commonjs';
 import customRollup from './helpers/lwc.mjs';
-
-const lwc = fromRollup(rollupPluginLwc);
-void lwc;
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
@@ -17,33 +13,37 @@ export default {
             resolveImport({ source, context }) {
                 if (source === 'test-utils') {
                     return '/helpers/wtr-utils.mjs';
+                } else if (source === 'wire-service') {
+                    return '@lwc/wire-service';
                 }
                 try {
                     // If it can be resolved, we don't need to do anything
                     import.meta.resolve(source);
                 } catch (_) {
                     // If it can't be resolved, it's probably an LWC component
-                    // If we're in a .spec.js file, we know that the relevant components will
-                    // be in sibling directories of that file
-                    const spec = context.path;
-                    if (
-                        !spec.endsWith('.spec.js') ||
-                        source.startsWith('./') ||
-                        source.startsWith('../')
-                    ) {
-                        // throw new Error(`Cannot resolve import "${source}" (loaded from ${spec}).`);
-                    }
+                    const file = context.path;
                     const sourceParts = source.split('/');
-                    if (sourceParts.length === 1) {
-                        // throw new Error('TODO: non-component');
-                    } else if (sourceParts.length === 2) {
+                    if (sourceParts.length === 2) {
+                        // If we're in a .spec.js file, we know that the relevant components will
+                        // be in sibling directories of that file
                         const [ns, cmp] = sourceParts;
-                        const resolved = path.join(path.dirname(spec), ns, cmp, `${cmp}.js`);
-                        return resolved + '?lwc=1';
-                    } else {
-                        // throw new Error(
-                        //     `Cannot resolve import with subpath "${source}" (loaded from ${spec}).`
-                        // );
+                        if (file.endsWith('.spec.js')) {
+                            const resolved = path.join(path.dirname(file), ns, cmp, `${cmp}.js`);
+                            return resolved + '?lwc=1';
+                        } else {
+                            // Otherwise we're in another component, e.g. importing x/foo from x/bar
+                            const fileParts = file.split(path.sep);
+                            const nsIndex = fileParts.indexOf(ns);
+                            if (nsIndex === -1) {
+                                throw new Error('Unimplemented: cross-namespace components');
+                            }
+                            const resolved = path.join(
+                                ...fileParts.slice(0, nsIndex + 1),
+                                cmp,
+                                `${cmp}.js`
+                            );
+                            return `/${resolved}?lwc=1`;
+                        }
                     }
                 }
             },
