@@ -6,7 +6,7 @@
  */
 
 import { ImportManager } from '../imports';
-import type { ImportDeclaration as EsImportDeclaration } from 'estree';
+import type { ImportDeclaration as EsImportDeclaration, Statement as EsStatement } from 'estree';
 import type { TemplateOpts, TransformerContext } from './types';
 
 export function createNewContext(templateOptions: TemplateOpts): {
@@ -34,6 +34,18 @@ export function createNewContext(templateOptions: TemplateOpts): {
         return false;
     };
 
+    const hoistedStatements: EsStatement[] = [];
+    const previouslyHoistedStatementKeys = new Set<unknown>();
+    const hoist = (stmt: EsStatement, optionalDedupeKey?: unknown) => {
+        if (optionalDedupeKey) {
+            if (previouslyHoistedStatementKeys.has(optionalDedupeKey)) {
+                return;
+            }
+            previouslyHoistedStatementKeys.add(optionalDedupeKey);
+        }
+        hoistedStatements.push(stmt);
+    };
+
     return {
         getImports: () => importManager.getImportDeclarations(),
         cxt: {
@@ -41,6 +53,8 @@ export function createNewContext(templateOptions: TemplateOpts): {
             popLocalVars,
             isLocalVar,
             templateOptions,
+            hoist,
+            hoistedStatements,
             import: importManager.add.bind(importManager),
             siblings: undefined,
             currentNodeIndex: undefined,

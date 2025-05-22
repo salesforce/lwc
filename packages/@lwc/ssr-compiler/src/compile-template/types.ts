@@ -21,6 +21,8 @@ export interface TransformerContext {
     siblings: IrNode[] | undefined;
     currentNodeIndex: number | undefined;
     isSlotted?: boolean;
+    hoistedStatements: EsStatement[];
+    hoist: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
     import: (
         imports: string | string[] | Record<string, string | undefined>,
         source?: string

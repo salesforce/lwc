@@ -116,7 +116,7 @@ export default function compileTemplate(
     )?.value?.value;
     const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root, {
+    const { addImport, getImports, statements, cxt } = templateIrToEsTree(root, {
         preserveComments,
         experimentalComplexExpressions,
     });
@@ -137,7 +137,7 @@ export default function compileTemplate(
         ];
     });
 
-    let program = b.program([...getImports(), tmplDecl], 'module');
+    let program = b.program([...getImports(), ...cxt.hoistedStatements, tmplDecl], 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 
