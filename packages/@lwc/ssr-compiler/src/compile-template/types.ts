@@ -13,6 +13,14 @@ export type Transformer<T extends IrNode = IrNode> = (
     cxt: TransformerContext
 ) => EsStatement[];
 
+export interface SlotMetadataContext {
+    shadow: {
+        isDuplicate: (uniqueNodeId: string) => boolean;
+        register: (uniqueNodeId: string, kebabCmpName: string) => string;
+        getFnName: (uniqueNodeId: string) => string | null;
+    };
+}
+
 export interface TransformerContext {
     pushLocalVars: (vars: string[]) => void;
     popLocalVars: () => void;
@@ -23,6 +31,7 @@ export interface TransformerContext {
     isSlotted?: boolean;
     hoistedStatements: EsStatement[];
     hoist: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
+    slots: SlotMetadataContext;
     import: (
         imports: string | string[] | Record<string, string | undefined>,
         source?: string

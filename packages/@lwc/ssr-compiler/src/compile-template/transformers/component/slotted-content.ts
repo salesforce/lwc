@@ -44,7 +44,7 @@ const slotAttributeValueAssignment =
     esTemplate`const slotAttributeValue = null;`<EsVariableDeclaration>();
 
 const bGenerateShadowSlottedContent = esTemplateWithYield`
-    async function* ${/* function name */ is.identifier}(contextfulParent) {
+    async function* ${/* function name */ is.identifier}(contextfulParent, Cmp) {
         // The 'contextfulParent' variable is shadowed here so that a contextful relationship
         // is established between components rendered in slotted content & the "parent"
         // component that contains the <slot>.
@@ -221,11 +221,6 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
     return results;
 }
 
-// gonna have to attach this to compilation context so that we don't have collisions
-// when multiple compilations happen in the same process
-const slotToShadowSlotFnName = new Map<string, string>();
-let fnNameUniqueId = 0;
-
 export function getSlottedContent(
     node: IrLwcComponent | IrComponent,
     cxt: TransformerContext
@@ -275,14 +270,12 @@ export function getSlottedContent(
         cxt.import('addSlottedContent');
     }
 
-    const kebabCmpName = kebabCaseToCamelCase(node.name);
     const uniqueNodeId = `${node.name}:${node.location.start}:${node.location.end}`;
 
-    if (hasShadowSlottedContent && !slotToShadowSlotFnName.has(uniqueNodeId)) {
+    if (hasShadowSlottedContent && !cxt.slots.shadow.isDuplicate(uniqueNodeId)) {
         cxt.hoist(slotAttributeValueAssignment, slotAttributeValueAssignment);
-
-        const shadowSlotContentFnName = `__lwcGenerateShadowSlottedContent_${kebabCmpName}_${fnNameUniqueId++}`;
-        slotToShadowSlotFnName.set(uniqueNodeId, shadowSlotContentFnName);
+        const kebabCmpName = kebabCaseToCamelCase(node.name);
+        const shadowSlotContentFnName = cxt.slots.shadow.register(uniqueNodeId, kebabCmpName);
         const shadowSlottedContentFn = bGenerateShadowSlottedContent(
             b.identifier(shadowSlotContentFnName),
             shadowSlotContent
@@ -291,7 +284,7 @@ export function getSlottedContent(
     }
 
     const shadowSlottedContentFn = hasShadowSlottedContent
-        ? bGenerateShadowSlottedContentRef(b.identifier(slotToShadowSlotFnName.get(uniqueNodeId)!))
+        ? bGenerateShadowSlottedContentRef(b.identifier(cxt.slots.shadow.getFnName(uniqueNodeId)!))
         : bNullishGenerateShadowSlottedContent();
     const lightSlottedContentMap = hasLightSlottedContent
         ? bContentMap(b.identifier('lightSlottedContentMap'))

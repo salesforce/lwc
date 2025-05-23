@@ -46,6 +46,28 @@ export function createNewContext(templateOptions: TemplateOpts): {
         hoistedStatements.push(stmt);
     };
 
+    const shadowSlotToFnName = new Map<string, string>();
+    let fnNameUniqueId = 0;
+
+    const slots = {
+        shadow: {
+            isDuplicate(uniqueNodeId: string) {
+                return shadowSlotToFnName.has(uniqueNodeId);
+            },
+            register(uniqueNodeId: string, kebabCmpName: string) {
+                if (slots.shadow.isDuplicate(uniqueNodeId)) {
+                    return shadowSlotToFnName.get(uniqueNodeId)!;
+                }
+                const shadowSlotContentFnName = `__lwcGenerateShadowSlottedContent_${kebabCmpName}_${fnNameUniqueId++}`;
+                shadowSlotToFnName.set(uniqueNodeId, shadowSlotContentFnName);
+                return shadowSlotContentFnName;
+            },
+            getFnName(uniqueNodeId: string) {
+                return shadowSlotToFnName.get(uniqueNodeId) ?? null;
+            },
+        },
+    };
+
     return {
         getImports: () => importManager.getImportDeclarations(),
         cxt: {
@@ -55,6 +77,7 @@ export function createNewContext(templateOptions: TemplateOpts): {
             templateOptions,
             hoist,
             hoistedStatements,
+            slots,
             import: importManager.add.bind(importManager),
             siblings: undefined,
             currentNodeIndex: undefined,
