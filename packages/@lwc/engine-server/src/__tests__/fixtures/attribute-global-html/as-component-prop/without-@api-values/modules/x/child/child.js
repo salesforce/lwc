@@ -74,7 +74,7 @@ export default class extends LightningElement {
     hidden = 'child-value';
     id = 'child-value';
     input = 'child-value';
-    inputmode = 'child-value';
+    inputMode = 'child-value';
     ismap = 'child-value';
     itemid = 'child-value';
     itemprop = 'child-value';

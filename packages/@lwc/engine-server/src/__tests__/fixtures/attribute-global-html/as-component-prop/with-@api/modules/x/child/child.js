@@ -74,7 +74,7 @@ export default class extends LightningElement {
     @api hidden;
     @api id;
     @api input;
-    @api inputmode;
+    @api inputMode;
     @api ismap;
     @api itemid;
     @api itemprop;
