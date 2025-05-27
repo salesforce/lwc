@@ -43,8 +43,12 @@ import type { TransformerContext } from '../../types';
 const slotAttributeValueAssignment =
     esTemplate`const slotAttributeValue = null;`<EsVariableDeclaration>();
 
+// Toodles: rather than hoising this function to the top of the module, maybe it should be
+//       hoisted to the top of the template function. Many things would still be in
+//       scope that way, and it might not be quite so brittle. And it would still allow
+//       to dedupe the bullshit
 const bGenerateShadowSlottedContent = esTemplateWithYield`
-    async function* ${/* function name */ is.identifier}(contextfulParent, Cmp) {
+    async function* ${/* function name */ is.identifier}(contextfulParent, Cmp, instance) {
         // The 'contextfulParent' variable is shadowed here so that a contextful relationship
         // is established between components rendered in slotted content & the "parent"
         // component that contains the <slot>.
