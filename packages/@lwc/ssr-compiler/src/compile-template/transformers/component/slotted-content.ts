@@ -274,6 +274,10 @@ export function getSlottedContent(
         cxt.import('addSlottedContent');
     }
 
+    // Elsewhere, nodes and their subtrees are cloned. This design decision means that
+    // the node objects themselves cannot be used as unique identifiers (e.g. as keys
+    // in a map). However, in a given template, the location information does uniquely
+    // identify a given node.
     const uniqueNodeId = `${node.name}:${node.location.start}:${node.location.end}`;
 
     if (hasShadowSlottedContent && !cxt.slots.shadow.isDuplicate(uniqueNodeId)) {
