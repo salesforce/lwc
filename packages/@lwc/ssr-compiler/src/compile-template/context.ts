@@ -34,16 +34,32 @@ export function createNewContext(templateOptions: TemplateOpts): {
         return false;
     };
 
-    const hoistedStatements: EsStatement[] = [];
-    const previouslyHoistedStatementKeys = new Set<unknown>();
-    const hoist = (stmt: EsStatement, optionalDedupeKey?: unknown) => {
-        if (optionalDedupeKey) {
-            if (previouslyHoistedStatementKeys.has(optionalDedupeKey)) {
-                return;
+    const hoistedStatements = {
+        module: [] as EsStatement[],
+        templateFn: [] as EsStatement[],
+    };
+    const previouslyHoistedStatementKeysMod = new Set<unknown>();
+    const previouslyHoistedStatementKeysTmpl = new Set<unknown>();
+
+    const hoist = {
+        module(stmt: EsStatement, optionalDedupeKey?: unknown) {
+            if (optionalDedupeKey) {
+                if (previouslyHoistedStatementKeysMod.has(optionalDedupeKey)) {
+                    return;
+                }
+                previouslyHoistedStatementKeysMod.add(optionalDedupeKey);
             }
-            previouslyHoistedStatementKeys.add(optionalDedupeKey);
-        }
-        hoistedStatements.push(stmt);
+            hoistedStatements.module.push(stmt);
+        },
+        templateFn(stmt: EsStatement, optionalDedupeKey?: unknown) {
+            if (optionalDedupeKey) {
+                if (previouslyHoistedStatementKeysTmpl.has(optionalDedupeKey)) {
+                    return;
+                }
+                previouslyHoistedStatementKeysTmpl.add(optionalDedupeKey);
+            }
+            hoistedStatements.templateFn.push(stmt);
+        },
     };
 
     const shadowSlotToFnName = new Map<string, string>();

@@ -68,7 +68,7 @@ const bExportTemplate = esTemplate`
             if (shadowSlottedContent) {
                 // instance must be passed in; this is used to establish the contextful relationship
                 // between context provider (aka parent component) and context consumer (aka slotted content)
-                yield* shadowSlottedContent(contextfulParent, Cmp, instance);
+                yield* shadowSlottedContent(contextfulParent);
             }
         }
     }
@@ -125,7 +125,9 @@ export default function compileTemplate(
         addImport(imports, source);
     }
 
-    let tmplDecl = bExportTemplate(optimizeAdjacentYieldStmts(statements));
+    let tmplDecl = bExportTemplate(
+        optimizeAdjacentYieldStmts([...cxt.hoistedStatements.templateFn, ...statements])
+    );
     // Ideally, we'd just do ${LWC_VERSION_COMMENT} in the code template,
     // but placeholders have a special meaning for `esTemplate`.
     tmplDecl = produce(tmplDecl, (draft) => {
@@ -137,7 +139,7 @@ export default function compileTemplate(
         ];
     });
 
-    let program = b.program([...getImports(), ...cxt.hoistedStatements, tmplDecl], 'module');
+    let program = b.program([...getImports(), ...cxt.hoistedStatements.module, tmplDecl], 'module');
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 

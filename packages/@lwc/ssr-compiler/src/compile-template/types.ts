@@ -29,8 +29,14 @@ export interface TransformerContext {
     siblings: IrNode[] | undefined;
     currentNodeIndex: number | undefined;
     isSlotted?: boolean;
-    hoistedStatements: EsStatement[];
-    hoist: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
+    hoistedStatements: {
+        module: EsStatement[];
+        templateFn: EsStatement[];
+    };
+    hoist: {
+        module: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
+        templateFn: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
+    };
     slots: SlotMetadataContext;
     import: (
         imports: string | string[] | Record<string, string | undefined>,

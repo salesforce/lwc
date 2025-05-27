@@ -40,15 +40,15 @@ import type {
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
-const slotAttributeValueAssignment =
-    esTemplate`const slotAttributeValue = null;`<EsVariableDeclaration>();
+// const slotAttributeValueAssignment =
+//     esTemplate`const slotAttributeValue = null;`<EsVariableDeclaration>();
 
 // Toodles: rather than hoising this function to the top of the module, maybe it should be
 //       hoisted to the top of the template function. Many things would still be in
 //       scope that way, and it might not be quite so brittle. And it would still allow
 //       to dedupe the bullshit
 const bGenerateShadowSlottedContent = esTemplateWithYield`
-    async function* ${/* function name */ is.identifier}(contextfulParent, Cmp, instance) {
+    async function* ${/* function name */ is.identifier}(contextfulParent) {
         // The 'contextfulParent' variable is shadowed here so that a contextful relationship
         // is established between components rendered in slotted content & the "parent"
         // component that contains the <slot>.
@@ -276,19 +276,19 @@ export function getSlottedContent(
 
     // Elsewhere, nodes and their subtrees are cloned. This design decision means that
     // the node objects themselves cannot be used as unique identifiers (e.g. as keys
-    // in a map). However, in a given template, the location information does uniquely
-    // identify a given node.
+    // in a map). However, for a given template, a node's location information does
+    // uniquely identify that node.
     const uniqueNodeId = `${node.name}:${node.location.start}:${node.location.end}`;
 
     if (hasShadowSlottedContent && !cxt.slots.shadow.isDuplicate(uniqueNodeId)) {
-        cxt.hoist(slotAttributeValueAssignment, slotAttributeValueAssignment);
+        // cxt.hoist.templateFn(slotAttributeValueAssignment, slotAttributeValueAssignment);
         const kebabCmpName = kebabCaseToCamelCase(node.name);
         const shadowSlotContentFnName = cxt.slots.shadow.register(uniqueNodeId, kebabCmpName);
         const shadowSlottedContentFn = bGenerateShadowSlottedContent(
             b.identifier(shadowSlotContentFnName),
             shadowSlotContent
         );
-        cxt.hoist(shadowSlottedContentFn, node);
+        cxt.hoist.templateFn(shadowSlottedContentFn, node);
     }
 
     const shadowSlottedContentFn = hasShadowSlottedContent
