@@ -25,6 +25,7 @@ export interface TransformerContext {
     pushLocalVars: (vars: string[]) => void;
     popLocalVars: () => void;
     isLocalVar: (varName: string | null | undefined) => boolean;
+    getLocalVars: () => string[];
     templateOptions: TemplateOpts;
     siblings: IrNode[] | undefined;
     currentNodeIndex: number | undefined;

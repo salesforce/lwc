@@ -33,6 +33,7 @@ export function createNewContext(templateOptions: TemplateOpts): {
         }
         return false;
     };
+    const getLocalVars = () => localVarStack.flatMap((stackFrameVars) => [...stackFrameVars]);
 
     const hoistedStatements = {
         module: [] as EsStatement[],
@@ -90,6 +91,7 @@ export function createNewContext(templateOptions: TemplateOpts): {
             pushLocalVars,
             popLocalVars,
             isLocalVar,
+            getLocalVars,
             templateOptions,
             hoist,
             hoistedStatements,

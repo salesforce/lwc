@@ -21,7 +21,6 @@ import type {
     Expression as EsExpression,
     Statement as EsStatement,
     ExpressionStatement as EsExpressionStatement,
-    FunctionDeclaration as EsFunctionDeclaration,
     VariableDeclaration as EsVariableDeclaration,
 } from 'estree';
 import type {
@@ -40,23 +39,16 @@ import type {
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
-// const slotAttributeValueAssignment =
-//     esTemplate`const slotAttributeValue = null;`<EsVariableDeclaration>();
-
-// Toodles: rather than hoising this function to the top of the module, maybe it should be
-//       hoisted to the top of the template function. Many things would still be in
-//       scope that way, and it might not be quite so brittle. And it would still allow
-//       to dedupe the bullshit
 const bGenerateShadowSlottedContent = esTemplateWithYield`
-    async function* ${/* function name */ is.identifier}(contextfulParent) {
+    const ${/* function name */ is.identifier} = (${/* local vars */ is.identifier}) => async function* ${/* function name */ 0}(contextfulParent) {
         // The 'contextfulParent' variable is shadowed here so that a contextful relationship
         // is established between components rendered in slotted content & the "parent"
         // component that contains the <slot>.
         ${/* shadow slot content */ is.statement}
-    }
-`<EsFunctionDeclaration>;
+    };
+`<EsVariableDeclaration>;
 const bGenerateShadowSlottedContentRef = esTemplateWithYield`
-    const shadowSlottedContent = ${/* reference to hoisted fn */ is.identifier};
+    const shadowSlottedContent = ${/* reference to hoisted fn */ is.identifier}(${/* local vars */ is.identifier});
 `<EsVariableDeclaration>;
 const bNullishGenerateShadowSlottedContent = esTemplateWithYield`
     const shadowSlottedContent = null;
@@ -280,6 +272,9 @@ export function getSlottedContent(
     // uniquely identify that node.
     const uniqueNodeId = `${node.name}:${node.location.start}:${node.location.end}`;
 
+    const localVars = cxt.getLocalVars();
+    const localVarIds = localVars.map(b.identifier);
+
     if (hasShadowSlottedContent && !cxt.slots.shadow.isDuplicate(uniqueNodeId)) {
         // Colon characters in <lwc:component> element name will result in an invalid
         // JavaScript identifier if not otherwise accounted for.
@@ -287,13 +282,20 @@ export function getSlottedContent(
         const shadowSlotContentFnName = cxt.slots.shadow.register(uniqueNodeId, kebabCmpName);
         const shadowSlottedContentFn = bGenerateShadowSlottedContent(
             b.identifier(shadowSlotContentFnName),
+            // If the slot-fn were defined here instead of hoisted to the top of the module,
+            // the local variables (e.g. from for:each) would be closed-over. When hoisted,
+            // however, we need to curry these variables.
+            localVarIds,
             shadowSlotContent
         );
         cxt.hoist.templateFn(shadowSlottedContentFn, node);
     }
 
     const shadowSlottedContentFn = hasShadowSlottedContent
-        ? bGenerateShadowSlottedContentRef(b.identifier(cxt.slots.shadow.getFnName(uniqueNodeId)!))
+        ? bGenerateShadowSlottedContentRef(
+              b.identifier(cxt.slots.shadow.getFnName(uniqueNodeId)!),
+              localVarIds
+          )
         : bNullishGenerateShadowSlottedContent();
     const lightSlottedContentMap = hasLightSlottedContent
         ? bContentMap(b.identifier('lightSlottedContentMap'))
