@@ -281,8 +281,9 @@ export function getSlottedContent(
     const uniqueNodeId = `${node.name}:${node.location.start}:${node.location.end}`;
 
     if (hasShadowSlottedContent && !cxt.slots.shadow.isDuplicate(uniqueNodeId)) {
-        // cxt.hoist.templateFn(slotAttributeValueAssignment, slotAttributeValueAssignment);
-        const kebabCmpName = kebabCaseToCamelCase(node.name);
+        // Colon characters in <lwc:component> element name will result in an invalid
+        // JavaScript identifier if not otherwise accounted for.
+        const kebabCmpName = kebabCaseToCamelCase(node.name).replace(':', '_');
         const shadowSlotContentFnName = cxt.slots.shadow.register(uniqueNodeId, kebabCmpName);
         const shadowSlottedContentFn = bGenerateShadowSlottedContent(
             b.identifier(shadowSlotContentFnName),
