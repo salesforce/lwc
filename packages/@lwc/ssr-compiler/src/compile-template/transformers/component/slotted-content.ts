@@ -39,6 +39,10 @@ import type {
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
+// This function will be defined once and hoisted to the top of the template function. It'll be
+// referenced deeper in the call stack where the function is called or passed as a parameter.
+// It is a higher-order function that curries local variables that may be referenced by the
+// shadow slot content.
 const bGenerateShadowSlottedContent = esTemplateWithYield`
     const ${/* function name */ is.identifier} = (${/* local vars */ is.identifier}) => async function* ${/* function name */ 0}(contextfulParent) {
         // The 'contextfulParent' variable is shadowed here so that a contextful relationship
@@ -47,6 +51,9 @@ const bGenerateShadowSlottedContent = esTemplateWithYield`
         ${/* shadow slot content */ is.statement}
     };
 `<EsVariableDeclaration>;
+// By passing in the set of local variables (which correspond 1:1 to the variables expected by
+// the referenced function), `shadowSlottedContent` will be curried function that can generate
+// shadow-slotted content.
 const bGenerateShadowSlottedContentRef = esTemplateWithYield`
     const shadowSlottedContent = ${/* reference to hoisted fn */ is.identifier}(${/* local vars */ is.identifier});
 `<EsVariableDeclaration>;
@@ -54,10 +61,10 @@ const bNullishGenerateShadowSlottedContent = esTemplateWithYield`
     const shadowSlottedContent = null;
 `<EsVariableDeclaration>;
 
-const bContentMap = esTemplateWithYield`
+const blightSlottedContentMap = esTemplateWithYield`
     const ${/* name of the content map */ is.identifier} = Object.create(null);
 `<EsVariableDeclaration>;
-const bNullishContentMap = esTemplateWithYield`
+const bNullishLightSlottedContentMap = esTemplateWithYield`
     const ${/* name of the content map */ is.identifier} = null;
 `<EsVariableDeclaration>;
 
@@ -298,11 +305,11 @@ export function getSlottedContent(
           )
         : bNullishGenerateShadowSlottedContent();
     const lightSlottedContentMap = hasLightSlottedContent
-        ? bContentMap(b.identifier('lightSlottedContentMap'))
-        : bNullishContentMap(b.identifier('lightSlottedContentMap'));
+        ? blightSlottedContentMap(b.identifier('lightSlottedContentMap'))
+        : bNullishLightSlottedContentMap(b.identifier('lightSlottedContentMap'));
     const scopedSlottedContentMap = hasScopedSlottedContent
-        ? bContentMap(b.identifier('scopedSlottedContentMap'))
-        : bNullishContentMap(b.identifier('scopedSlottedContentMap'));
+        ? blightSlottedContentMap(b.identifier('scopedSlottedContentMap'))
+        : bNullishLightSlottedContentMap(b.identifier('scopedSlottedContentMap'));
 
     return bGenerateSlottedContent(
         shadowSlottedContentFn,

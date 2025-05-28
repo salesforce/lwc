@@ -43,6 +43,8 @@ export function createNewContext(templateOptions: TemplateOpts): {
     const previouslyHoistedStatementKeysTmpl = new Set<unknown>();
 
     const hoist = {
+        // Anything added here will be inserted at the top of the compiled template's
+        // JS module.
         module(stmt: EsStatement, optionalDedupeKey?: unknown) {
             if (optionalDedupeKey) {
                 if (previouslyHoistedStatementKeysMod.has(optionalDedupeKey)) {
@@ -52,6 +54,8 @@ export function createNewContext(templateOptions: TemplateOpts): {
             }
             hoistedStatements.module.push(stmt);
         },
+        // Anything added here will be inserted at the top of the JavaScript function
+        // corresponding to the template (typically named `__lwcTmpl`).
         templateFn(stmt: EsStatement, optionalDedupeKey?: unknown) {
             if (optionalDedupeKey) {
                 if (previouslyHoistedStatementKeysTmpl.has(optionalDedupeKey)) {
@@ -66,6 +70,10 @@ export function createNewContext(templateOptions: TemplateOpts): {
     const shadowSlotToFnName = new Map<string, string>();
     let fnNameUniqueId = 0;
 
+    // At present, we only track shadow-slotted content. This is because the functions
+    // corresponding to shadow-slotted content are deduped and hoisted to the top of
+    // the template function, whereas light-dom-slotted content is inlined. It may be
+    // desirable to also track light-dom-slotted content at some future point in time.
     const slots = {
         shadow: {
             isDuplicate(uniqueNodeId: string) {
