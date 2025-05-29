@@ -1,7 +1,4 @@
 // This import ensures that the global `Mocha` object is present for mutation.
-/* global Mocha:writable */
-import '@web/test-runner-mocha';
-
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
 import * as LWC from 'lwc';
@@ -23,10 +20,36 @@ globalThis.LWC = LWC;
 // globalThis.jasmine = await import('vitest');
 // globalThis.beforeAll = globalThis.jasmine.beforeAll;
 
-// The following (`runIf`, `skipIf`, etc.) are based on Vite's APIs: https://vitest.dev/api/
-// This allows us to use the vitest/no-conditional-tests ESLint rule and get the same total # of tests for
-// every variant of a test run (e.g. `DISABLE_SYNTHETIC=1`, `NODE_ENV_FOR_TEST=production`, etc.)
-Mocha.describe.runIf = (condition) => (condition ? Mocha.describe : Mocha.xdescribe);
-Mocha.describe.skipIf = (condition) => (condition ? Mocha.xdescribe : Mocha.describe);
-Mocha.it.runIf = (condition) => (condition ? Mocha.it : Mocha.xit);
-Mocha.it.skipIf = (condition) => (condition ? Mocha.xit : Mocha.it);
+/**
+ * `@web/test-runner-mocha`'s autorun.js file inlines its own copy of mocha, and there's no direct
+ * way to modify the globals before the tests are executed. As a workaround, we predefine setters
+ * that modify the provided values when they get set by the autorun script.
+ * @param {string} name Global variable name
+ * @param {Function} replacer Function that takes the original value and returns a modified one
+ */
+function hijackGlobal(name, replacer) {
+    Object.defineProperty(globalThis, name, {
+        configurable: true,
+        enumerable: true,
+        set(original) {
+            Object.defineProperty(globalThis, name, {
+                configurable: true,
+                enumerable: true,
+                writable: true,
+                value: replacer(original),
+            });
+        },
+    });
+}
+
+hijackGlobal('describe', (describe) => {
+    describe.runIf = (condition) => (condition ? globalThis.describe : globalThis.xdescribe);
+    describe.skipIf = (condition) => (condition ? globalThis.xdescribe : globalThis.describe);
+    return describe;
+});
+
+hijackGlobal('it', (it) => {
+    it.runIf = (condition) => (condition ? globalThis.it : globalThis.xit);
+    it.skipIf = (condition) => (condition ? globalThis.xit : globalThis.it);
+    return it;
+});
