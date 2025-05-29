@@ -1,5 +1,4 @@
 import { spyConsole } from './wtr-utils.mjs';
-debugger;
 
 function pass() {
     return {

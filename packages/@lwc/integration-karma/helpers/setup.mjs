@@ -5,9 +5,7 @@ import '@web/test-runner-mocha';
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
 import * as LWC from 'lwc';
-debugger;
 import { registerCustomMatchers } from './matchers.mjs';
-// import * as customMatchers from './matchers.mjs';
 
 // allows using expect.extend instead of chai.use to extend plugins
 chai.use(JestExtend);
