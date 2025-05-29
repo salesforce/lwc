@@ -22,6 +22,14 @@ window.HydrateTest = (function (lwc, testUtils) {
         return div;
     }
 
+    function setFeatureFlags(requiredFeatureFlags, value) {
+        if (requiredFeatureFlags) {
+            requiredFeatureFlags.forEach((featureFlag) => {
+                lwc.setFeatureFlagForTest(featureFlag, value);
+            });
+        }
+    }
+
     function runTest(ssrRendered, Component, testConfig) {
         const container = appendTestTarget(ssrRendered);
         const selector = container.firstChild.tagName.toLowerCase();
@@ -29,6 +37,7 @@ window.HydrateTest = (function (lwc, testUtils) {
 
         let testResult;
         const consoleSpy = testUtils.spyConsole();
+        setFeatureFlags(testConfig.requiredFeatureFlags, true);
 
         if (testConfig.test) {
             const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
