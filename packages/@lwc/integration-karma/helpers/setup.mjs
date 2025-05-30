@@ -2,6 +2,7 @@
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
 import * as LWC from 'lwc';
+import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers.mjs';
 
 // allows using expect.extend instead of chai.use to extend plugins
@@ -17,8 +18,17 @@ chai.use(registerCustomMatchers);
 globalThis.expect = chai.expect;
 // Expose globals for karma compat
 globalThis.LWC = LWC;
-// globalThis.jasmine = await import('vitest');
-// globalThis.beforeAll = globalThis.jasmine.beforeAll;
+globalThis.spyOn = spyOn;
+globalThis.jasmine = {
+    any: () => {
+        throw new Error(`TODO: jasmine.any`);
+    },
+    arrayWithExactContents: () => {
+        throw new Error('TODO: jasmine.arrayWithExactContents');
+    },
+    createSpy: (name, impl) => fn(impl),
+    objectContaining: expect.objectContaining,
+};
 
 /**
  * `@web/test-runner-mocha`'s autorun.js file inlines its own copy of mocha, and there's no direct
@@ -36,7 +46,7 @@ function hijackGlobal(name, replacer) {
                 configurable: true,
                 enumerable: true,
                 writable: true,
-                value: replacer(original),
+                value: replacer(original) ?? original,
             });
         },
     });
@@ -45,11 +55,19 @@ function hijackGlobal(name, replacer) {
 hijackGlobal('describe', (describe) => {
     describe.runIf = (condition) => (condition ? globalThis.describe : globalThis.xdescribe);
     describe.skipIf = (condition) => (condition ? globalThis.xdescribe : globalThis.describe);
-    return describe;
 });
 
 hijackGlobal('it', (it) => {
     it.runIf = (condition) => (condition ? globalThis.it : globalThis.xit);
     it.skipIf = (condition) => (condition ? globalThis.xit : globalThis.it);
-    return it;
+});
+
+hijackGlobal('before', (before) => {
+    // Expose as an alias for migration
+    globalThis.beforeAll = before;
+});
+
+hijackGlobal('after', (after) => {
+    // Expose as an alias for migration
+    globalThis.afterAll = after;
 });
