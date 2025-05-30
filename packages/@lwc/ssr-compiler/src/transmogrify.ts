@@ -21,7 +21,7 @@ export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState,
 const EMIT_IDENT = b.identifier('$$emit');
 /** Function names that may be transmogrified. All should start with `__lwc`. */
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
-const TRANSMOGRIFY_TARGET = /^__lwc(GenerateMarkup|GenerateSlottedContent|Tmpl)(?:\$\d+)?$/;
+const TRANSMOGRIFY_TARGET = /^__lwc(Generate|Tmpl).*$/;
 
 const isWithinFn = (nodePath: NodePath): boolean => {
     const { node } = nodePath;

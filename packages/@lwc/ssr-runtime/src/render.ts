@@ -187,6 +187,19 @@ export function fallbackTmplNoYield(
     }
 }
 
+export function addSlottedContent(
+    name: string,
+    fn: unknown,
+    contentMap: Record<string, unknown[]>
+) {
+    const contentList = contentMap[name];
+    if (contentList) {
+        contentList.push(fn);
+    } else {
+        contentMap[name] = [fn];
+    }
+}
+
 interface ComponentWithGenerateMarkup extends LightningElementConstructor {
     [SYMBOL__GENERATE_MARKUP]?: GenerateMarkupVariants;
 }

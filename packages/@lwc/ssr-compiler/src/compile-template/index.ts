@@ -117,7 +117,7 @@ export default function compileTemplate(
     )?.value?.value;
     const experimentalComplexExpressions = Boolean(options.experimentalComplexExpressions);
 
-    const { addImport, getImports, statements } = templateIrToEsTree(root, {
+    const { addImport, getImports, statements, cxt } = templateIrToEsTree(root, {
         preserveComments,
         experimentalComplexExpressions,
     });
@@ -126,7 +126,16 @@ export default function compileTemplate(
         addImport(imports, source);
     }
 
-    let tmplDecl = bExportTemplate(optimizeAdjacentYieldStmts(statements));
+    let tmplDecl = bExportTemplate(
+        optimizeAdjacentYieldStmts([
+            // Deep in the compiler, we may choose to hoist statements and declarations
+            // to the top of the template function. After `templateIrToEsTree`, these
+            // hoisted statements/declarations are prepended to the template function's
+            // body.
+            ...cxt.hoistedStatements.templateFn,
+            ...statements,
+        ])
+    );
     // Ideally, we'd just do ${LWC_VERSION_COMMENT} in the code template,
     // but placeholders have a special meaning for `esTemplate`.
     tmplDecl = produce(tmplDecl, (draft) => {
@@ -138,7 +147,18 @@ export default function compileTemplate(
         ];
     });
 
-    let program = b.program([...getImports(), tmplDecl], 'module');
+    let program = b.program(
+        [
+            // All import declarations come first...
+            ...getImports(),
+            // ... followed by any statements or declarations that need to be hoisted
+            // to the top of the module scope...
+            ...cxt.hoistedStatements.module,
+            // ... followed by the template function declaration itself.
+            tmplDecl,
+        ],
+        'module'
+    );
 
     addScopeTokenDeclarations(program, filename, options.namespace, options.name);
 

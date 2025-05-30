@@ -31,6 +31,7 @@ export {
     GenerateMarkupAsyncYield,
     renderAttrs,
     renderAttrsNoYield,
+    addSlottedContent,
     serverSideRenderComponent,
     // renderComponent is an alias for serverSideRenderComponent
     serverSideRenderComponent as renderComponent,

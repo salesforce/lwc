@@ -110,5 +110,6 @@ export function templateIrToEsTree(node: IrNode, contextOpts: TemplateOpts) {
         addImport: cxt.import,
         getImports,
         statements,
+        cxt,
     };
 }
