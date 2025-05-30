@@ -71,6 +71,7 @@ async function getCompiledModule(dirName, compileForSSR) {
                     strict: true,
                 },
                 enableDynamicComponents: true,
+                enableLwcOn: true,
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
                 experimentalDynamicDirective: true,
             }),
