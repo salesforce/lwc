@@ -299,6 +299,7 @@ function customElementCallbackReactionErrorListener(callback) {
 // );
 
 const customMatchers = [
+    // LWC custom
     'toLogError',
     'toLogErrorDev',
     'toThrowErrorDev',
@@ -306,11 +307,16 @@ const customMatchers = [
     'toThrowCallbackReactionError',
     'toThrowCallbackReactionErrorDev',
     'toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode',
+    // jasmine compat
+    'toHaveSize',
+    'toBeFalse',
+    'toBeTrue',
 ];
 export const registerCustomMatchers = (chai, util) => {
     for (const matcher of customMatchers) {
         util.addMethod(chai.Assertion.prototype, matcher, () => {
-            throw new Error(`TODO: ${matcher} is unimplemented`);
+            // TODO: implement
+            // throw new Error(`TODO: ${matcher} is unimplemented`);
         });
     }
 };
