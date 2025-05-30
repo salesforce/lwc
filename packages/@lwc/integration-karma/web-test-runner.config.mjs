@@ -29,7 +29,7 @@ export default {
                         // be in sibling directories of that file
                         const [ns, cmp] = sourceParts;
                         if (file.endsWith('.spec.js')) {
-                            const resolved = path.join(path.dirname(file), ns, cmp, `${cmp}.js`);
+                            const resolved = path.join(path.dirname(file), ns, cmp, `${cmp}`);
                             return resolved + '?lwc=1';
                         } else {
                             // Otherwise we're in another component, e.g. importing x/foo from x/bar
@@ -41,7 +41,7 @@ export default {
                             const resolved = path.join(
                                 ...fileParts.slice(0, nsIndex + 1),
                                 cmp,
-                                `${cmp}.js`
+                                `${cmp}`
                             );
                             return `/${resolved}?lwc=1`;
                         }
@@ -50,7 +50,10 @@ export default {
             },
             async serve(ctx) {
                 if (ctx.query.lwc) {
-                    return customRollup(ctx);
+                    return {
+                        body: await customRollup(ctx),
+                        type: 'application/javascript',
+                    };
                 }
             },
         },
