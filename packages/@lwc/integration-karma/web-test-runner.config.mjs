@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { fromRollup } from '@web/dev-server-rollup';
 import rollupPluginCommonjs from '@rollup/plugin-commonjs';
+import { LWC_VERSION } from '@lwc/shared';
 import customRollup from './helpers/lwc.mjs';
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
@@ -63,6 +64,7 @@ export default {
             globalThis.process = {
                 env: {
                     NODE_ENV: 'test-karma-lwc',
+                    LWC_VERSION: '${LWC_VERSION}'
                 },
             };
             </script>
