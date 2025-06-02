@@ -39,18 +39,18 @@ export function createNewContext(templateOptions: TemplateOpts): {
         module: [] as EsStatement[],
         templateFn: [] as EsStatement[],
     };
-    const previouslyHoistedStatementKeysMod = new Set<unknown>();
-    const previouslyHoistedStatementKeysTmpl = new Set<unknown>();
+    const hoistedModuleDedupe = new Set<unknown>();
+    const hoistedTemplateDedupe = new Set<unknown>();
 
     const hoist = {
         // Anything added here will be inserted at the top of the compiled template's
         // JS module.
         module(stmt: EsStatement, optionalDedupeKey?: unknown) {
             if (optionalDedupeKey) {
-                if (previouslyHoistedStatementKeysMod.has(optionalDedupeKey)) {
+                if (hoistedModuleDedupe.has(optionalDedupeKey)) {
                     return;
                 }
-                previouslyHoistedStatementKeysMod.add(optionalDedupeKey);
+                hoistedModuleDedupe.add(optionalDedupeKey);
             }
             hoistedStatements.module.push(stmt);
         },
@@ -58,10 +58,10 @@ export function createNewContext(templateOptions: TemplateOpts): {
         // corresponding to the template (typically named `__lwcTmpl`).
         templateFn(stmt: EsStatement, optionalDedupeKey?: unknown) {
             if (optionalDedupeKey) {
-                if (previouslyHoistedStatementKeysTmpl.has(optionalDedupeKey)) {
+                if (hoistedTemplateDedupe.has(optionalDedupeKey)) {
                     return;
                 }
-                previouslyHoistedStatementKeysTmpl.add(optionalDedupeKey);
+                hoistedTemplateDedupe.add(optionalDedupeKey);
             }
             hoistedStatements.templateFn.push(stmt);
         },
