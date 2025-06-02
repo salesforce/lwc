@@ -66,12 +66,10 @@ export default async (ctx) => {
         },
     };
 
-    const plugins = [customLwcRollupPlugin];
-
     const bundle = await rollup({
         input,
-        plugins,
         cache,
+        plugins: [customLwcRollupPlugin],
 
         // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
         // globally in the page before running the tests.
