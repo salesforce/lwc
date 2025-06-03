@@ -7,6 +7,7 @@
 
 import { produce } from 'immer';
 import { builders as b, is } from 'estree-toolkit';
+import { kebabCaseToCamelCase } from '@lwc/shared';
 import { bAttributeValue, optimizeAdjacentYieldStmts } from '../../shared';
 import { esTemplate, esTemplateWithYield } from '../../../estemplate';
 import { irChildrenToEs, irToEs } from '../../ir-to-es';
@@ -14,11 +15,13 @@ import { isLiteral } from '../../shared';
 import { expressionIrToEs } from '../../expression';
 import { isNullableOf } from '../../../estree/validators';
 import { isLastConcatenatedNode } from '../../adjacent-text-nodes';
-import type { CallExpression as EsCallExpression, Expression as EsExpression } from 'estree';
 
 import type {
+    CallExpression as EsCallExpression,
+    Expression as EsExpression,
     Statement as EsStatement,
     ExpressionStatement as EsExpressionStatement,
+    VariableDeclaration as EsVariableDeclaration,
 } from 'estree';
 import type {
     ChildNode as IrChildNode,
@@ -36,51 +39,58 @@ import type {
 } from '@lwc/template-compiler';
 import type { TransformerContext } from '../../types';
 
+// This function will be defined once and hoisted to the top of the template function. It'll be
+// referenced deeper in the call stack where the function is called or passed as a parameter.
+// It is a higher-order function that curries local variables that may be referenced by the
+// shadow slot content.
+const bGenerateShadowSlottedContent = esTemplateWithYield`
+    const ${/* function name */ is.identifier} = (${/* local vars */ is.identifier}) => async function* ${/* function name */ 0}(contextfulParent) {
+        // The 'contextfulParent' variable is shadowed here so that a contextful relationship
+        // is established between components rendered in slotted content & the "parent"
+        // component that contains the <slot>.
+        ${/* shadow slot content */ is.statement}
+    };
+`<EsVariableDeclaration>;
+// By passing in the set of local variables (which correspond 1:1 to the variables expected by
+// the referenced function), `shadowSlottedContent` will be curried function that can generate
+// shadow-slotted content.
+const bGenerateShadowSlottedContentRef = esTemplateWithYield`
+    const shadowSlottedContent = ${/* reference to hoisted fn */ is.identifier}(${/* local vars */ is.identifier});
+`<EsVariableDeclaration>;
+const bNullishGenerateShadowSlottedContent = esTemplateWithYield`
+    const shadowSlottedContent = null;
+`<EsVariableDeclaration>;
+
+const blightSlottedContentMap = esTemplateWithYield`
+    const ${/* name of the content map */ is.identifier} = Object.create(null);
+`<EsVariableDeclaration>;
+const bNullishLightSlottedContentMap = esTemplateWithYield`
+    const ${/* name of the content map */ is.identifier} = null;
+`<EsVariableDeclaration>;
+
 const bGenerateSlottedContent = esTemplateWithYield`
-        const shadowSlottedContent = ${/* hasShadowSlottedContent */ is.literal}
-            ? async function* __lwcGenerateSlottedContent(contextfulParent) {
-                // The 'contextfulParent' variable is shadowed here so that a contextful relationship
-                // is established between components rendered in slotted content & the "parent"
-                // component that contains the <slot>.
-
-                ${/* shadow slot content */ is.statement}
-            } 
-            // Avoid creating the object unnecessarily
-            : null;
-
-        const lightSlottedContentMap = ${/* hasLightSlottedContent */ is.literal} 
-            ? Object.create(null)
-            // Avoid creating the object unnecessarily
-            : null;
-        
-        // The containing slot treats scoped slotted content differently.
-        const scopedSlottedContentMap = ${/* hasScopedSlottedContent */ is.literal} 
-            ? Object.create(null)
-            // Avoid creating the object unnecessarily
-            : null;
-
-        function addSlottedContent(name, fn, contentMap) {
-            let contentList = contentMap[name];
-            if (contentList) {
-                contentList.push(fn);
-            } else {
-                contentMap[name] = [fn];
-            }
-        }
-
-        ${/* light DOM addLightContent statements */ is.expressionStatement}
-        ${/* scoped slot addLightContent statements */ is.expressionStatement}
+    ${/* const shadowSlottedContent = ... */ is.variableDeclaration}
+    ${/* const lightSlottedContentMap */ is.variableDeclaration}
+    ${/* const scopedSlottedContentMap */ is.variableDeclaration}
+    ${/* light DOM addLightContent statements */ is.expressionStatement}
+    ${/* scoped slot addLightContent statements */ is.expressionStatement}
 `<EsStatement[]>;
 
 // Note that this function name (`__lwcGenerateSlottedContent`) does not need to be scoped even though
 // it may be repeated multiple times in the same scope, because it's a function _expression_ rather
 // than a function _declaration_, so it isn't available to be referenced anywhere.
 const bAddSlottedContent = esTemplate`
-    addSlottedContent(${/* slot name */ is.expression} ?? "", async function* __lwcGenerateSlottedContent(contextfulParent, ${
-        /* scoped slot data variable */ isNullableOf(is.identifier)
-    }, slotAttributeValue) {
-        ${/* slot content */ is.statement}
-    }, ${/* content map */ is.identifier});
+    addSlottedContent(
+        ${/* slot name */ is.expression} ?? "",
+        async function* __lwcGenerateSlottedContent(
+            contextfulParent,
+            ${/* scoped slot data variable */ isNullableOf(is.identifier)},
+            slotAttributeValue)
+        {
+            ${/* slot content */ is.statement}
+        },
+        ${/* content map */ is.identifier}
+    );
 `<EsCallExpression>;
 
 function getShadowSlottedContent(slottableChildren: IrChildNode[], cxt: TransformerContext) {
@@ -155,7 +165,7 @@ function getLightSlottedContent(rootNodes: IrChildNode[], cxt: TransformerContex
         });
         const { isSlotted: originalIsSlotted } = cxt;
         cxt.isSlotted = ancestorIndices.length > 1 || clone.type === 'Slot';
-        const slotContent = irToEs(clone, cxt);
+        const slotContent = optimizeAdjacentYieldStmts(irToEs(clone, cxt));
         cxt.isSlotted = originalIsSlotted;
         results.push(
             b.expressionStatement(
@@ -246,7 +256,7 @@ export function getSlottedContent(
             bAddSlottedContent(
                 slotName,
                 boundVariable,
-                irChildrenToEs(child.children, cxt),
+                optimizeAdjacentYieldStmts(irChildrenToEs(child.children, cxt)),
                 b.identifier('scopedSlottedContentMap')
             )
         );
@@ -254,16 +264,57 @@ export function getSlottedContent(
         return addLightContentExpr;
     });
 
-    const hasShadowSlottedContent = b.literal(shadowSlotContent.length > 0);
-    const hasLightSlottedContent = b.literal(lightSlotContent.length > 0);
-    const hasScopedSlottedContent = b.literal(scopedSlotContent.length > 0);
+    const hasShadowSlottedContent = shadowSlotContent.length > 0;
+    const hasLightSlottedContent = lightSlotContent.length > 0;
+    const hasScopedSlottedContent = scopedSlotContent.length > 0;
     cxt.isSlotted = isSlotted;
 
+    if (hasShadowSlottedContent || hasLightSlottedContent || hasScopedSlottedContent) {
+        cxt.import('addSlottedContent');
+    }
+
+    // Elsewhere, nodes and their subtrees are cloned. This design decision means that
+    // the node objects themselves cannot be used as unique identifiers (e.g. as keys
+    // in a map). However, for a given template, a node's location information does
+    // uniquely identify that node.
+    const uniqueNodeId = `${node.name}:${node.location.start}:${node.location.end}`;
+
+    const localVars = cxt.getLocalVars();
+    const localVarIds = localVars.map(b.identifier);
+
+    if (hasShadowSlottedContent && !cxt.slots.shadow.isDuplicate(uniqueNodeId)) {
+        // Colon characters in <lwc:component> element name will result in an invalid
+        // JavaScript identifier if not otherwise accounted for.
+        const kebabCmpName = kebabCaseToCamelCase(node.name).replace(':', '_');
+        const shadowSlotContentFnName = cxt.slots.shadow.register(uniqueNodeId, kebabCmpName);
+        const shadowSlottedContentFn = bGenerateShadowSlottedContent(
+            b.identifier(shadowSlotContentFnName),
+            // If the slot-fn were defined here instead of hoisted to the top of the module,
+            // the local variables (e.g. from for:each) would be closed-over. When hoisted,
+            // however, we need to curry these variables.
+            localVarIds,
+            shadowSlotContent
+        );
+        cxt.hoist.templateFn(shadowSlottedContentFn, node);
+    }
+
+    const shadowSlottedContentFn = hasShadowSlottedContent
+        ? bGenerateShadowSlottedContentRef(
+              b.identifier(cxt.slots.shadow.getFnName(uniqueNodeId)!),
+              localVarIds
+          )
+        : bNullishGenerateShadowSlottedContent();
+    const lightSlottedContentMap = hasLightSlottedContent
+        ? blightSlottedContentMap(b.identifier('lightSlottedContentMap'))
+        : bNullishLightSlottedContentMap(b.identifier('lightSlottedContentMap'));
+    const scopedSlottedContentMap = hasScopedSlottedContent
+        ? blightSlottedContentMap(b.identifier('scopedSlottedContentMap'))
+        : bNullishLightSlottedContentMap(b.identifier('scopedSlottedContentMap'));
+
     return bGenerateSlottedContent(
-        hasShadowSlottedContent,
-        shadowSlotContent,
-        hasLightSlottedContent,
-        hasScopedSlottedContent,
+        shadowSlottedContentFn,
+        lightSlottedContentMap,
+        scopedSlottedContentMap,
         lightSlotContent,
         scopedSlotContent
     );
