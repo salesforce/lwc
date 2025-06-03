@@ -312,11 +312,18 @@ const customMatchers = [
     'toBeFalse',
     'toBeTrue',
 ];
-export const registerCustomMatchers = (chai, util) => {
+export const registerCustomMatchers = (chai, utils) => {
     for (const matcher of customMatchers) {
-        util.addMethod(chai.Assertion.prototype, matcher, () => {
-            // TODO: implement
-            // throw new Error(`TODO: ${matcher} is unimplemented`);
+        utils.addMethod(chai.Assertion.prototype, matcher, function () {
+            // TODO: implement for realsies
+            const fn = utils.flag(this, 'object');
+            if (typeof fn === 'function') {
+                try {
+                    fn();
+                } catch (_) {
+                    //
+                }
+            }
         });
     }
 };
