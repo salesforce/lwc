@@ -128,6 +128,7 @@ export const REFLECTIVE_GLOBAL_PROPERTY_SET = /*@__PURE__@*/ new Set([
     'draggable',
     'hidden',
     'id',
+    'inputMode',
     'lang',
     'spellcheck',
     'tabIndex',
