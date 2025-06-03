@@ -26,7 +26,19 @@ globalThis.jasmine = {
     arrayWithExactContents: () => {
         throw new Error('TODO: jasmine.arrayWithExactContents');
     },
-    createSpy: (name, impl) => fn(impl),
+    createSpy: (name, impl) => {
+        const spy = fn(impl);
+        // Bridge for jasmine
+        spy.calls = {
+            count() {
+                return spy.mock.calls.length;
+            },
+            reset() {
+                spy.mockReset();
+            },
+        };
+        return spy;
+    },
     objectContaining: expect.objectContaining,
 };
 
