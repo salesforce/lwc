@@ -109,6 +109,7 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
     ['crossOrigin', 'crossorigin'],
     ['dateTime', 'datetime'],
     ['formAction', 'formaction'],
+    ['inputMode', 'inputmode'],
     ['isMap', 'ismap'],
     ['maxLength', 'maxlength'],
     ['minLength', 'minlength'],
