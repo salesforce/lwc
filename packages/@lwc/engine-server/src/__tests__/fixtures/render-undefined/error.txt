@@ -1,1 +1,0 @@
-Invalid template returned by the render() method on fixture-test. It must return an imported template (e.g.: `import html from "./HelloWorld.html"`), instead, it has returned: undefined.
