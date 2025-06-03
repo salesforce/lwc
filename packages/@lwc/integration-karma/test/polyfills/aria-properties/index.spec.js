@@ -40,7 +40,7 @@ function testAriaProperty(property, attribute, suite = describe) {
 
         function expectGetterReportIfNonStandard() {
             if (nonStandardAriaProperties.includes(property)) {
-                expect(dispatcher.calls.allArgs()).toEqual([
+                expect(dispatcher.mock.calls).toEqual([
                     [
                         'NonStandardAriaReflection',
                         {
@@ -58,7 +58,7 @@ function testAriaProperty(property, attribute, suite = describe) {
 
         function expectSetterReportIfNonStandard(setValueType) {
             if (nonStandardAriaProperties.includes(property)) {
-                expect(dispatcher.calls.allArgs()).toEqual([
+                expect(dispatcher.mock.calls).toEqual([
                     [
                         'NonStandardAriaReflection',
                         {

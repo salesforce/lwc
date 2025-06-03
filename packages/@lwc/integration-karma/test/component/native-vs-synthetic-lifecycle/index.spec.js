@@ -22,7 +22,7 @@ const expectLogs = (regexes) => {
     if (process.env.NODE_ENV === 'production') {
         expect(logger).not.toHaveBeenCalled();
     } else {
-        const args = logger.calls.allArgs();
+        const args = logger.mock.calls;
         expect(args.length).toBe(regexes.length);
         for (let i = 0; i < args.length; i++) {
             expect(args[i][0]).toMatch(regexes[i]);
@@ -43,7 +43,7 @@ describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
             expectLogs([
                 /Element <x-component> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-component' }],
             ]);
         });
@@ -58,7 +58,7 @@ describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
                 /Element <x-parent> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
                 /Element <x-child> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-parent' }],
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-child' }],
             ]);
@@ -102,7 +102,7 @@ describe.skipIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
             expectLogs([
                 /Element <x-logs-when-connected> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-logs-when-connected' }],
             ]);
         });

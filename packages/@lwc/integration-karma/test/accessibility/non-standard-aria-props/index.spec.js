@@ -66,7 +66,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
                                 elm.getPropOnElement(prop);
                             }).toLogWarningDev(inComponentWarning);
 
-                            expect(dispatcher.calls.allArgs()).toEqual([
+                            expect(dispatcher.mock.calls).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {
@@ -97,7 +97,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
                                 return unused; // remove lint warning
                             }).toLogWarningDev(outsideComponentWarning);
 
-                            expect(dispatcher.calls.allArgs()).toEqual([
+                            expect(dispatcher.mock.calls).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {

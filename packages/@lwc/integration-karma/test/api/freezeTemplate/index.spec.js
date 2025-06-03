@@ -30,7 +30,7 @@ describe('freezeTemplate', () => {
         );
 
         expect(template.stylesheetToken).toEqual('newToken');
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheetToken' }],
         ]);
     });
@@ -60,7 +60,7 @@ describe('freezeTemplate', () => {
             hostAttribute: 'newToken-host',
             shadowAttribute: 'newToken',
         });
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheetTokens' }],
         ]);
     });
@@ -85,7 +85,7 @@ describe('freezeTemplate', () => {
 
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(newStylesheet);
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
@@ -122,7 +122,7 @@ describe('freezeTemplate', () => {
 
         expect(template.stylesheets.length).toEqual(1);
         expect(template.stylesheets[0]).toBe(stylesheet);
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
             ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
@@ -143,7 +143,7 @@ describe('freezeTemplate', () => {
         }).toLogWarningDev(
             /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['TemplateMutation', { propertyName: 'stylesheets' }],
         ]);
     });
@@ -164,9 +164,7 @@ describe('freezeTemplate', () => {
         );
 
         expect(template.slots).toBe(newSlots);
-        expect(dispatcher.calls.allArgs()).toEqual([
-            ['TemplateMutation', { propertyName: 'slots' }],
-        ]);
+        expect(dispatcher.mock.calls).toEqual([['TemplateMutation', { propertyName: 'slots' }]]);
     });
 
     it('should warn when setting tmpl.renderMOde', () => {
@@ -183,7 +181,7 @@ describe('freezeTemplate', () => {
         );
 
         expect(template.renderMode).toBe(undefined);
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['TemplateMutation', { propertyName: 'renderMode' }],
         ]);
     });
@@ -200,7 +198,7 @@ describe('freezeTemplate', () => {
         }).toLogWarningDev(
             /Mutating the "\$scoped\$" property on a stylesheet is deprecated and will be removed in a future version of LWC\./
         );
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             ['StylesheetMutation', { propertyName: '$scoped$' }],
         ]);
     });

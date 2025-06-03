@@ -100,14 +100,14 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                     expect(() => {
                         elm.linkUsingAriaLabelledBy();
                     }).toLogWarningDev(expectedMessages);
-                    expect(dispatcher.calls.allArgs()).toEqual(getExpectedDispatcherCalls(true));
+                    expect(dispatcher.mock.calls).toEqual(getExpectedDispatcherCalls(true));
                 });
 
                 it('setting id', () => {
                     expect(() => {
                         elm.linkUsingId();
                     }).toLogWarningDev(expectedMessages);
-                    expect(dispatcher.calls.allArgs()).toEqual(getExpectedDispatcherCalls(false));
+                    expect(dispatcher.mock.calls).toEqual(getExpectedDispatcherCalls(false));
                 });
 
                 it('linking to an element in global light DOM', () => {
@@ -117,7 +117,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                     expect(() => {
                         sourceElm.setAriaLabelledBy('foo');
                     }).toLogWarningDev(expectedMessages);
-                    expect(dispatcher.calls.allArgs()).toEqual(getExpectedDispatcherCalls(true));
+                    expect(dispatcher.mock.calls).toEqual(getExpectedDispatcherCalls(true));
                 });
 
                 it('linking from an element in global light DOM', () => {
@@ -128,7 +128,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                     expect(() => {
                         targetElm.setId('foo');
                     }).toLogWarningDev(expectedMessageForCrossRootWithTargetAsVM);
-                    expect(dispatcher.calls.allArgs()).toEqual([
+                    expect(dispatcher.mock.calls).toEqual([
                         [
                             'CrossRootAriaInSyntheticShadow',
                             {
@@ -151,7 +151,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                         });
 
                         if (usePropertyAccess) {
-                            expect(dispatcher.calls.allArgs()).toEqual([
+                            expect(dispatcher.mock.calls).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {
@@ -174,7 +174,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                     });
 
                     if (usePropertyAccess) {
-                        expect(dispatcher.calls.allArgs()).toEqual([
+                        expect(dispatcher.mock.calls).toEqual([
                             [
                                 'NonStandardAriaReflection',
                                 {
@@ -203,9 +203,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                             expect(() => {
                                 elm.linkUsingBoth(options);
                             }).toLogWarningDev(expectedMessages);
-                            expect(dispatcher.calls.allArgs()).toEqual(
-                                getExpectedDispatcherCalls(true)
-                            );
+                            expect(dispatcher.mock.calls).toEqual(getExpectedDispatcherCalls(true));
                         });
 
                         it('linking multiple targets', () => {
@@ -216,7 +214,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                                 expectedMessageForCrossRootForSecondTarget,
                             ]);
 
-                            expect(dispatcher.calls.allArgs()).toEqual([
+                            expect(dispatcher.mock.calls).toEqual([
                                 ...getExpectedDispatcherCalls(true),
                                 [
                                     'CrossRootAriaInSyntheticShadow',
@@ -246,7 +244,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
         }).toLogWarningDev(expectedMessageForCrossRoot);
 
         // dispatcher is still called twice
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             [
                 'CrossRootAriaInSyntheticShadow',
                 {
