@@ -40,6 +40,11 @@ export default {
                     return await customRollup(ctx);
                 }
             },
+            async transform(ctx) {
+                if (ctx.type === 'application/javascript') {
+                    return ctx.body.replace(/process\.env\.NODE_ENV === 'test-karma-lwc'/g, 'true');
+                }
+            },
         },
     ],
     testRunnerHtml: (testFramework) =>
