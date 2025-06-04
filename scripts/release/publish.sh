@@ -36,6 +36,7 @@ if which gh >/dev/null; then
   git branch -D "$BRANCH"
 
   # Wait for CI to complete
+  sleep 3 # Give GitHub time to kick off CI
   . "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
   if ! gh pr checks --fail-fast --watch; then
     echo 'CI failed. Cannot continue with release.'
