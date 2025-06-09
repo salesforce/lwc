@@ -1,0 +1,10 @@
+<template>
+    <template if:true={state.error}>
+        <div class='slot-alternative'>slot alternative view</div>
+    </template>
+    <template if:false={state.error}>
+        <x-child-slot-host>
+            <x-child-slot-throw slot="offender"></x-child-slot-throw>
+        </x-child-slot-host>
+    </template>
+</template>

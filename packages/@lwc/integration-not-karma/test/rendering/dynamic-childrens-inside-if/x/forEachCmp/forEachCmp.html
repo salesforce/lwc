@@ -1,0 +1,11 @@
+<template>
+    <button onclick={toggleSection}>toggle section</button>
+
+    <div>
+        <template if:true={sectionOpen}>
+            <template for:each={items} for:item="item">
+                <div key={item.id}>{item.name}</div>
+            </template>
+        </template>
+    </div>
+</template>

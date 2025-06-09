@@ -98,7 +98,7 @@ describe('Locker hooks', () => {
 
             expect(hooks.callHook).toHaveBeenCalledTimes(4);
 
-            const invokedMethods = hooks.callHook.mock.calls.map(([_, method]) => method.name);
+            const invokedMethods = hooks.callHook.calls.allArgs().map(([_, method]) => method.name);
             expect(invokedMethods).toEqual([
                 'connectedCallback',
                 'render',

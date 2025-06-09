@@ -1,0 +1,8 @@
+<template>
+    <template if:true={state.error}>
+        <div class='render-alternative'>render alternative view</div>
+    </template>
+    <template if:false={state.error}>
+        <div><x-child-render-throw></x-child-render-throw></div>
+    </template>
+</template>

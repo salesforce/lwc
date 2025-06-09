@@ -1,0 +1,4 @@
+.unused-class,
+::after {
+    color: red;
+}

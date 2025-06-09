@@ -1,0 +1,17 @@
+<template>
+    <!-- A few cases:
+      - custom: camel-case-prop
+      - not a prop: not-a-prop
+      - irregular HTML prop/attr IDL mappings: tabindex -> tabIndex
+      - standard ARIA attr: aria-label
+      - potentially nonstandard LWC-specific ARIA attr: aria-labelledby (LWC uses ariaLabelledBy prop)
+    -->
+    <ce-with-camel-case-property
+            lwc:external
+            camel-case-prop={prop}
+            not-a-prop={prop}
+            tabindex={prop}
+            aria-label={prop}
+            aria-labelledby={prop}
+    ></ce-with-camel-case-property>
+</template>

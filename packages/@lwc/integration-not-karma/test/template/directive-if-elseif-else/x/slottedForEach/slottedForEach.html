@@ -1,0 +1,15 @@
+<template>
+    <x-child-with-slot>
+        <div>H</div>
+        <template lwc:if={showList}>
+            <span>h</span>
+            <template for:each={items} for:item="item">
+                <template lwc:if={item.show}>
+                    <div key={item.value}>{item.value}</div>
+                </template>
+            </template>
+            <span>f</span>
+        </template>
+        <div>F</div>
+    </x-child-with-slot>
+</template>

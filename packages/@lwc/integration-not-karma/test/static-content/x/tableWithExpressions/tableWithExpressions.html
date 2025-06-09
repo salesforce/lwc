@@ -1,0 +1,11 @@
+<template>
+    <table>
+        <tbody>
+            <template for:each={rows} for:item="row">
+                <tr key={row.id}>
+                    <td class={row.class} style={row.style} data-id={row.id}>{row.value}</td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+</template>
