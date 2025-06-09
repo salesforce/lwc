@@ -38,6 +38,7 @@ if which gh 2>/dev/null 1>/dev/null; then
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
   
+  sleep 3 # Give GitHub time to start CI before we check it
   . "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
   while [ "$(gh pr view "$BRANCH" --json state -q .state)" != 'MERGED' ]; do
     sleep 3 # Wait for GitHub to auto-merge the PR

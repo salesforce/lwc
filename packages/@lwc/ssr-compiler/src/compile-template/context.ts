@@ -6,7 +6,7 @@
  */
 
 import { ImportManager } from '../imports';
-import type { ImportDeclaration as EsImportDeclaration } from 'estree';
+import type { ImportDeclaration as EsImportDeclaration, Statement as EsStatement } from 'estree';
 import type { TemplateOpts, TransformerContext } from './types';
 
 export function createNewContext(templateOptions: TemplateOpts): {
@@ -33,6 +33,65 @@ export function createNewContext(templateOptions: TemplateOpts): {
         }
         return false;
     };
+    const getLocalVars = () => localVarStack.flatMap((varsSet) => Array.from(varsSet));
+
+    const hoistedStatements = {
+        module: [] as EsStatement[],
+        templateFn: [] as EsStatement[],
+    };
+    const hoistedModuleDedupe = new Set<unknown>();
+    const hoistedTemplateDedupe = new Set<unknown>();
+
+    const hoist = {
+        // Anything added here will be inserted at the top of the compiled template's
+        // JS module.
+        module(stmt: EsStatement, optionalDedupeKey?: unknown) {
+            if (optionalDedupeKey) {
+                if (hoistedModuleDedupe.has(optionalDedupeKey)) {
+                    return;
+                }
+                hoistedModuleDedupe.add(optionalDedupeKey);
+            }
+            hoistedStatements.module.push(stmt);
+        },
+        // Anything added here will be inserted at the top of the JavaScript function
+        // corresponding to the template (typically named `__lwcTmpl`).
+        templateFn(stmt: EsStatement, optionalDedupeKey?: unknown) {
+            if (optionalDedupeKey) {
+                if (hoistedTemplateDedupe.has(optionalDedupeKey)) {
+                    return;
+                }
+                hoistedTemplateDedupe.add(optionalDedupeKey);
+            }
+            hoistedStatements.templateFn.push(stmt);
+        },
+    };
+
+    const shadowSlotToFnName = new Map<string, string>();
+    let fnNameUniqueId = 0;
+
+    // At present, we only track shadow-slotted content. This is because the functions
+    // corresponding to shadow-slotted content are deduped and hoisted to the top of
+    // the template function, whereas light-dom-slotted content is inlined. It may be
+    // desirable to also track light-dom-slotted content at some future point in time.
+    const slots = {
+        shadow: {
+            isDuplicate(uniqueNodeId: string) {
+                return shadowSlotToFnName.has(uniqueNodeId);
+            },
+            register(uniqueNodeId: string, kebabCmpName: string) {
+                if (slots.shadow.isDuplicate(uniqueNodeId)) {
+                    return shadowSlotToFnName.get(uniqueNodeId)!;
+                }
+                const shadowSlotContentFnName = `__lwcGenerateShadowSlottedContent_${kebabCmpName}_${fnNameUniqueId++}`;
+                shadowSlotToFnName.set(uniqueNodeId, shadowSlotContentFnName);
+                return shadowSlotContentFnName;
+            },
+            getFnName(uniqueNodeId: string) {
+                return shadowSlotToFnName.get(uniqueNodeId) ?? null;
+            },
+        },
+    };
 
     return {
         getImports: () => importManager.getImportDeclarations(),
@@ -40,7 +99,11 @@ export function createNewContext(templateOptions: TemplateOpts): {
             pushLocalVars,
             popLocalVars,
             isLocalVar,
+            getLocalVars,
             templateOptions,
+            hoist,
+            hoistedStatements,
+            slots,
             import: importManager.add.bind(importManager),
             siblings: undefined,
             currentNodeIndex: undefined,

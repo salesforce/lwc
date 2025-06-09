@@ -79,6 +79,7 @@ async function compileFixture({
             pluginVirtual(`export { default } from "${entry}";`, input),
             lwcRollupPlugin({
                 enableDynamicComponents: true,
+                enableLwcOn: true,
                 experimentalDynamicComponent: {
                     loader: path.join(__dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,

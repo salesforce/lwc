@@ -65,6 +65,7 @@ async function compileFixture({ entry, dirname }: { entry: string; dirname: stri
                 targetSSR: true,
                 ssrMode: SSR_MODE,
                 enableDynamicComponents: true,
+                enableLwcOn: true,
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
                 modules: [{ dir: modulesDir }],
