@@ -15,7 +15,7 @@
     "devDependencies": {
         "@rollup/plugin-replace": "^6.0.2",
         "@rollup/plugin-typescript": "^12.1.2",
-        "rollup": "^4.40.0",
+        "rollup": "^4.43.0",
         "rollup-plugin-livereload": "^2.0.5",
         "rollup-plugin-serve": "^3.0.0"
     }
