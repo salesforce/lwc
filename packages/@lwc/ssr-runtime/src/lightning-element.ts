@@ -29,8 +29,9 @@ import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
 import { getReadOnlyProxy } from './get-read-only-proxy';
+import { connectContext } from './context';
 import type { Attributes, Properties } from './types';
-import type { Stylesheets } from '@lwc/shared';
+import type { Stylesheets, ContextVarieties } from '@lwc/shared';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
@@ -46,6 +47,7 @@ interface PropsAvailableAtConstruction {
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
+export const SYMBOL__CONTEXT_VARIETIES = Symbol('context-varieties');
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
@@ -73,6 +75,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     #props!: Properties;
     #attrs!: Attributes;
     #classList: ClassList | null = null;
+    [SYMBOL__CONTEXT_VARIETIES]: ContextVarieties;
 
     constructor(propsAvailableAtConstruction: PropsAvailableAtConstruction & Properties) {
         assign(this, propsAvailableAtConstruction);
@@ -81,6 +84,8 @@ export class LightningElement implements PropsAvailableAtConstruction {
     [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes, publicProperties: Set<string>) {
         this.#props = props;
         this.#attrs = attrs;
+        
+        connectContext(this, props);
 
         // Class should be set explicitly to avoid it being overridden by connectedCallback classList mutation.
         if (attrs.class) {
@@ -96,12 +101,13 @@ export class LightningElement implements PropsAvailableAtConstruction {
                 publicProperties.has(propName) ||
                 REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) ||
                 isAriaAttribute(attrName)
-            ) {
+            ) { 
                 // For props passed from parents to children, they are intended to be read-only
                 // to avoid a child mutating its parent's state
                 (this as any)[propName] = getReadOnlyProxy(props[propName]);
             }
         }
+
     }
 
     get className() {
