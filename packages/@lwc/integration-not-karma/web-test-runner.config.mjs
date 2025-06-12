@@ -4,6 +4,7 @@ import * as options from './helpers/options.mjs';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, Boolean(obj[k])]));
 
+/** `process.env` to inject into test environment. */
 const env = {
     ...pluck(options, [
         'API_VERSION',
@@ -135,10 +136,9 @@ export default {
           <body>
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
-            globalThis.lwcRuntimeFlags = ${JSON.stringify({
-                DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE:
-                    env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
-            })};
+            globalThis.lwcRuntimeFlags = ${JSON.stringify(
+                pluck(options, ['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'])
+            )};
             </script>
             <script type="module" src="./helpers/setup.mjs"></script>
             <script type="module" src="./helpers/wtr-utils.mjs"></script>
