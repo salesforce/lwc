@@ -1,8 +1,0 @@
-<template>
-    <template if:true={state.error}>
-        <div class='connected-callback-alternative'>connectedCallback alternative view</div>
-    </template>
-    <template if:false={state.error}>
-        <x-child-connected-throw></x-child-connected-throw>
-    </template>
-</template>
