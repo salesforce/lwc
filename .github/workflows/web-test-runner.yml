@@ -1,0 +1,67 @@
+name: Run Web Test Runner integration tests
+
+on:
+    push:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+    pull_request:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+
+env:
+    SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
+    SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
+    GITHUB_RUN_ID: ${{github.run_id}}
+    COVERAGE: '1'
+    NODE_VERSION: '20.18.1'
+
+jobs:
+    # Starting with the basics, just get tests running in CI
+    # TODO: add env var combos we use for Karma tests
+    # TODO: upload result artifacts
+    # TODO: make it saucy 🥫
+    run-wtr-tests-group-1:
+        runs-on: ubuntu-22.04
+        env:
+            SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-not-karma
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            # - uses: saucelabs/sauce-connect-action@v3.0.0
+            #   with:
+            #       username: ${{ secrets.SAUCE_USERNAME }}
+            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+            #       region: us
+
+            - run: yarn test
+
+    run-karma-tests:
+        runs-on: ubuntu-22.04
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-not-karma
+        needs:
+            - run-wtr-tests-group-1
