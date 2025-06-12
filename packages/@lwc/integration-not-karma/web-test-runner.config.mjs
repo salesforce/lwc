@@ -24,6 +24,8 @@ const env = {
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
     files: [
+        // Using ../integration-karma for now, rather than copying the tests here, because there are
+        // over 3000 test files and that makes the diff really annoying.
         '../integration-karma/test/**/*.spec.js',
         // Failing Karma tests that need to be migrated to WTR
         '!../integration-karma/test/custom-elements-registry/index.spec.js',
