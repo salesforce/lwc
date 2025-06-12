@@ -1,10 +1,12 @@
-import { HIGHEST_API_VERSION, LWC_VERSION } from '@lwc/shared';
+import { LWC_VERSION } from '@lwc/shared';
 import customRollup from './helpers/lwc.mjs';
+import * as options from './helpers/options.mjs';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, Boolean(obj[k])]));
 
 const env = {
-    ...pluck(process.env, [
+    ...pluck(options, [
+        'API_VERSION',
         'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
         'DISABLE_STATIC_CONTENT_OPTIMIZATION',
         'DISABLE_SYNTHETIC',
@@ -12,13 +14,10 @@ const env = {
         'ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION',
         'ENGINE_SERVER',
         'FORCE_NATIVE_SHADOW_MODE_FOR_TEST',
+        'NATIVE_SHADOW',
     ]),
-    API_VERSION: Number(process.env.API_VERSION) || HIGHEST_API_VERSION,
     LWC_VERSION,
-    NATIVE_SHADOW: Boolean(
-        process.env.DISABLE_SYNTHETIC || process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST
-    ),
-    NODE_ENV: process.env.NODE_ENV_FOR_TEST || 'development',
+    NODE_ENV: options.NODE_ENV_FOR_TEST || 'development',
 };
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
