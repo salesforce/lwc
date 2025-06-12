@@ -87,7 +87,7 @@ export default async (ctx) => {
 
     const { output } = await bundle.generate({
         format: 'esm',
-        // TODO: Does web-test-runner use istanbul?
+        // FIXME: Does web-test-runner use istanbul?
         // Sourcemaps don't work with Istanbul coverage
         sourcemap: process.env.COVERAGE ? false : 'inline',
     });
