@@ -125,6 +125,7 @@ export default {
             },
             async transform(ctx) {
                 if (ctx.type === 'application/javascript') {
+                    // FIXME: copy/paste Nolan's spiel about why we do this ugly thing
                     return ctx.body.replace(/process\.env\.NODE_ENV === 'test-karma-lwc'/g, 'true');
                 }
             },
