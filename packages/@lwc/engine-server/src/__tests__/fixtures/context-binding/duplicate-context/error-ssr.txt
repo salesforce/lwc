@@ -1,0 +1,1 @@
+Attempted to connect to trusted context but received the following error: Multiple contexts of the same variety were provided.

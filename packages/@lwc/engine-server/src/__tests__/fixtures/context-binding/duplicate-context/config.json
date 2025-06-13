@@ -1,0 +1,7 @@
+{
+    "entry": "x/main",
+    "ssrFiles": {
+        "error": "error-ssr.txt",
+        "expected": "expected-ssr.html"
+    }
+}
