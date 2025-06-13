@@ -10,6 +10,7 @@ import { vi, describe, beforeAll, afterAll } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
+import { setContextKeys, setTrustedContextSet } from '@lwc/shared';
 import { renderComponent, setFeatureFlagForTest } from '../index';
 import type { LightningElementConstructor } from '@lwc/engine-core/dist/framework/base-lightning-element';
 import type { RollupLwcOptions } from '@lwc/rollup-plugin';
@@ -179,10 +180,21 @@ describe.concurrent('fixtures', () => {
         // ENABLE_WIRE_SYNC_EMIT is used because this mimics the behavior for LWR in SSR mode. It's also more reasonable
         // for how both `engine-server` and `ssr-runtime` behave, which is to use sync rendering.
         setFeatureFlagForProductionTest('ENABLE_WIRE_SYNC_EMIT', true);
+        // Defining context keys and trusted context must be done once before related tests are ran.
+        const connectContext = Symbol('connectContext');
+        const disconnectContext = Symbol('disconnectContext');
+        const trustedContext = new WeakSet();
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setContextKeys({ connectContext, disconnectContext });
+        setTrustedContextSet(trustedContext);
+        (global as any).trustedContext = trustedContext;
+        (global as any).connectContext = connectContext;
+        (global as any).disconnectContext = disconnectContext;
     });
 
     afterAll(() => {
         setFeatureFlagForProductionTest('ENABLE_WIRE_SYNC_EMIT', false);
+        setFeatureFlagForProductionTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
     });
 
     describe.concurrent('default', () => {

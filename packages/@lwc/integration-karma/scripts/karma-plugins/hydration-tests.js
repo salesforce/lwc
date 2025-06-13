@@ -279,12 +279,6 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
             const location = path.relative(basePath, filePath);
             log.error('Error processing “%s”\n\n%s\n', location, error.stack || error.message);
             done(error, null);
-        } finally {
-            if (requiredFeatureFlags) {
-                requiredFeatureFlags.forEach((featureFlag) => {
-                    lwcSsr.setFeatureFlagForTest(featureFlag, false);
-                });
-            }
         }
     };
 }

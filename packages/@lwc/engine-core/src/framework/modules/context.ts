@@ -14,13 +14,14 @@ import {
     isTrustedContext,
     type ContextProvidedCallback,
     type ContextBinding as IContextBinding,
-    type ContextVarieties
 } from '@lwc/shared';
 import { type VM } from '../vm';
 import { logWarnOnce } from '../../shared/logger';
 import type { Signal } from '@lwc/signals';
 import type { RendererAPI } from '../renderer';
 import type { ShouldContinueBubbling } from '../wiring/types';
+
+type ContextVarieties = Map<unknown, Signal<unknown>>;
 
 class ContextBinding<C extends object> implements IContextBinding<C> {
     component: C;

@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { isFalse } from './assert';
-import type { Signal } from '@lwc/signals';
 
 export const ContextEventName = 'lightning:context-request';
 
@@ -17,8 +16,6 @@ export type ContextKeys = {
 };
 
 export type ContextProvidedCallback = (contextSignal?: object) => void;
-
-export type ContextVarieties = Map<unknown, Signal<unknown>>;
 
 export interface ContextBinding<C extends object> {
     component: C;

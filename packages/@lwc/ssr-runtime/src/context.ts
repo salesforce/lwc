@@ -4,12 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isTrustedContext, getContextKeys, isUndefined, keys } from "@lwc/shared";
-import { getContextfulStack } from "./wire";
-import { type LightningElement, SYMBOL__CONTEXT_VARIETIES } from "./lightning-element";
-import type { Signal } from "@lwc/signals";
-import type { ContextProvidedCallback, ContextBinding as IContextBinding } from '@lwc/shared';
-import type { Properties } from './types';
+import {
+    type ContextProvidedCallback,
+    type ContextBinding as IContextBinding,
+    isTrustedContext,
+    getContextKeys,
+    isUndefined,
+    keys,
+    ArrayFilter,
+} from '@lwc/shared';
+import { getContextfulStack } from './wire';
+import { type LightningElement, SYMBOL__CONTEXT_VARIETIES } from './lightning-element';
+import type { Signal } from '@lwc/signals';
 
 class ContextBinding<C extends LightningElement> implements IContextBinding<LightningElement> {
     component: C;
@@ -25,7 +31,7 @@ class ContextBinding<C extends LightningElement> implements IContextBinding<Ligh
         const contextVarieties = this.component[SYMBOL__CONTEXT_VARIETIES];
         if (contextVarieties.has(contextVariety)) {
             if (process.env.NODE_ENV !== 'production') {
-                throw new Error('Multiple contexts of the same variety were provided. Only the first context will be used.');
+                throw new Error('Multiple contexts of the same variety were provided.');
             }
             return;
         }
@@ -48,21 +54,35 @@ class ContextBinding<C extends LightningElement> implements IContextBinding<Ligh
     }
 }
 
-export function connectContext(le: LightningElement, props: Properties) {
+export function connectContext(le: LightningElement) {
     const contextKeys = getContextKeys();
+
     if (isUndefined(contextKeys)) {
         return;
     }
+
     const { connectContext } = contextKeys;
-    let hasTrustedContext = false;
-    for (const propName of keys(props)) {
-        const propValue = props[propName] as any;
-        if (isTrustedContext(propValue)) {
-            hasTrustedContext = true;
-            propValue[connectContext](new ContextBinding(le));
-        }
+
+    const enumerableKeys = keys(le);
+    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+        isTrustedContext((le as any)[enumerableKey])
+    );
+
+    if (contextfulKeys.length === 0) {
+        return;
     }
-    if (hasTrustedContext) {
-        le[SYMBOL__CONTEXT_VARIETIES] = new Map();
+
+    try {
+        for (let i = 0; i < contextfulKeys.length; i++) {
+            (le as any)[contextfulKeys[i]][connectContext](new ContextBinding(le));
+        }
+    } catch (err: any) {
+        if (process.env.NODE_ENV !== 'production') {
+            throw new Error(
+                `Attempted to connect to trusted context but received the following error: ${
+                    err.message
+                }`
+            );
+        }
     }
 }
