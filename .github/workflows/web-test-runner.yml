@@ -4,17 +4,9 @@ on:
     push:
         branches:
             - master
-            - release
-            - 'spring*'
-            - 'summer*'
-            - 'winter*'
     pull_request:
         branches:
             - master
-            - release
-            - 'spring*'
-            - 'summer*'
-            - 'winter*'
 
 env:
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
