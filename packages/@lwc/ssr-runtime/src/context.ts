@@ -30,7 +30,10 @@ class ContextBinding<C extends LightningElement> implements IContextBinding<Ligh
     ): void {
         const contextVarieties = this.component[SYMBOL__CONTEXT_VARIETIES];
         if (contextVarieties.has(contextVariety)) {
-            throw new Error('Multiple contexts of the same variety were provided.');
+            if (process.env.NODE_ENV !== 'production') {
+                throw new Error('Multiple contexts of the same variety were provided.');
+            }
+            return;
         }
         contextVarieties.set(contextVariety, providedContextSignal);
     }
@@ -74,10 +77,12 @@ export function connectContext(le: LightningElement) {
             (le as any)[contextfulKeys[i]][connectContext](new ContextBinding(le));
         }
     } catch (err: any) {
-        throw new Error(
-            `Attempted to connect to trusted context but received the following error: ${
-                err.message
-            }`
-        );
+        if (process.env.NODE_ENV !== 'production') {
+            throw new Error(
+                `Attempted to connect to trusted context but received the following error: ${
+                    err.message
+                }`
+            );
+        }
     }
 }
