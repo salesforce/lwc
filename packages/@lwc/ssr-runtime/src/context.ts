@@ -54,6 +54,8 @@ class ContextBinding<C extends LightningElement> implements IContextBinding<Ligh
     }
 }
 
+export { ContextBinding };
+
 export function connectContext(le: LightningElement) {
     const contextKeys = getContextKeys();
 
