@@ -14,7 +14,12 @@ export {
     sanitizeHtmlContent,
     normalizeClass,
     normalizeTabIndex,
+    setContextKeys,
+    setTrustedSignalSet,
+    setTrustedContextSet,
 } from '@lwc/shared';
+
+export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 
 export { ClassList } from './class-list';
 export {

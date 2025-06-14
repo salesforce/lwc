@@ -42,12 +42,6 @@ export function registerTemplate(..._: unknown[]): never {
 export function sanitizeAttribute(..._: unknown[]): never {
     throw new Error('sanitizeAttribute cannot be used in SSR context.');
 }
-export function setFeatureFlag(..._: unknown[]): never {
-    throw new Error('setFeatureFlag cannot be used in SSR context.');
-}
-export function setFeatureFlagForTest(..._: unknown[]): never {
-    throw new Error('setFeatureFlagForTest cannot be used in SSR context.');
-}
 export function swapComponent(..._: unknown[]): never {
     throw new Error('swapComponent cannot be used in SSR context.');
 }
@@ -65,12 +59,6 @@ export function unwrap(..._: unknown[]): never {
 }
 export function wire(..._: unknown[]): never {
     throw new Error('@wire cannot be used in SSR context.');
-}
-export function setContextKeys(..._: unknown[]): never {
-    throw new Error('@setContextKeys cannot be used in SSR context.');
-}
-export function setTrustedContextSet(..._: unknown[]): never {
-    throw new Error('setTrustedContextSet cannot be used in SSR context.');
 }
 
 export const renderer = {
