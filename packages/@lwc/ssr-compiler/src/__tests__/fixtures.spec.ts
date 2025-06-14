@@ -6,16 +6,14 @@
  */
 
 import path from 'node:path';
-import { vi, describe, beforeAll, afterAll } from 'vitest';
+import { vi, describe } from 'vitest';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
-import { serverSideRenderComponent, setFeatureFlagForTest } from '@lwc/ssr-runtime';
+import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import {
     DEFAULT_SSR_MODE,
     type CompilationMode,
-    setContextKeys,
-    setTrustedContextSet,
 } from '@lwc/shared';
 import { expectedFailures } from './utils/expected-failures';
 import type { LightningElementConstructor } from '@lwc/ssr-runtime';
@@ -97,21 +95,6 @@ async function compileFixture({ entry, dirname }: { entry: string; dirname: stri
 }
 
 describe.concurrent('fixtures', () => {
-    beforeAll(() => {
-        // Defining context keys and trusted context must be done once before related tests are ran.
-        const connectContext = Symbol('connectContext');
-        const disconnectContext = Symbol('disconnectContext');
-        const trustedContext = new WeakSet();
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
-        setContextKeys({ connectContext, disconnectContext });
-        setTrustedContextSet(trustedContext);
-        (global as any).trustedContext = trustedContext;
-        (global as any).connectContext = connectContext;
-        (global as any).disconnectContext = disconnectContext;
-    });
-    afterAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
-    });
     testFixtureDir<FixtureConfig>(
         {
             root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
