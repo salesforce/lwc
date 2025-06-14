@@ -26,6 +26,7 @@ export default defineConfig({
                 '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages
                 '**/packages/@lwc/integration-karma/**',
+                '**/packages/@lwc/integration-not-karma/**',
                 '**/packages/@lwc/integration-tests/**',
                 '**/packages/@lwc/integration-types/**',
                 '**/packages/@lwc/perf-benchmarks-components/**',
