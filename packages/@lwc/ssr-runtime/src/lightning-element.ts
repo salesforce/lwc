@@ -29,13 +29,16 @@ import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
 import { getReadOnlyProxy } from './get-read-only-proxy';
+import { connectContext } from './context';
 import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
+import type { Signal } from '@lwc/signals';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
 type EventListenerOptions = unknown;
 type ShadowRoot = unknown;
+type ContextVarieties = Map<unknown, Signal<unknown>>;
 
 export type LightningElementConstructor = typeof LightningElement;
 
@@ -46,6 +49,7 @@ interface PropsAvailableAtConstruction {
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
+export const SYMBOL__CONTEXT_VARIETIES = Symbol('context-varieties');
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
@@ -73,6 +77,7 @@ export class LightningElement implements PropsAvailableAtConstruction {
     #props!: Properties;
     #attrs!: Attributes;
     #classList: ClassList | null = null;
+    [SYMBOL__CONTEXT_VARIETIES]: ContextVarieties = new Map();
 
     constructor(propsAvailableAtConstruction: PropsAvailableAtConstruction & Properties) {
         assign(this, propsAvailableAtConstruction);
@@ -81,6 +86,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes, publicProperties: Set<string>) {
         this.#props = props;
         this.#attrs = attrs;
+
+        if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+            // Setup context before connected callback is executed
+            connectContext(this);
+        }
 
         // Class should be set explicitly to avoid it being overridden by connectedCallback classList mutation.
         if (attrs.class) {
