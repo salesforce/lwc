@@ -2275,12 +2275,12 @@
   resolved "https://registry.yarnpkg.com/@oxc-resolver/binding-win32-x64-msvc/-/binding-win32-x64-msvc-5.0.0.tgz#1575b4aaf6f46faf5b95003be2a5dfd8ea1e10e0"
   integrity sha512-ylppfPEg63NuRXOPNsXFlgyl37JrtRn0QMO26X3K3Ytp5HtLrMreQMGVtgr30e1l2YmAWqhvmKlCryOqzGPD/g==
 
-"@parse5/tools@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@parse5/tools/-/tools-0.5.0.tgz#9b5cafd8b5fedc3180823ea5938579216bbeb876"
-  integrity sha512-vyYK20atGm9Kwwk/vi5jTFxb7m67EG1PLTUN31+WAUsvgOThu/PjsZD57P6A1hAm2TunkzxSD9esnYv6gcWrdA==
+"@parse5/tools@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@parse5/tools/-/tools-0.6.0.tgz#9fb398bc8a3597892aadcc109a8ccad0a820ad06"
+  integrity sha512-T2mU5ZhgPHvwUdiXHweliSVt6mKPNIs3yOitW46LrhUzw/nfde6SaEjOWSXMtdiYKqyxszH2e3Uu/cAMzPi+vg==
   dependencies:
-    parse5 "^7.0.0"
+    parse5 "^7.3.0"
 
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
@@ -2963,12 +2963,12 @@
   dependencies:
     "@types/estree" "*"
 
-"@types/estree@*", "@types/estree@1.0.7", "@types/estree@>=1.0.7", "@types/estree@^1.0.0", "@types/estree@^1.0.6", "@types/estree@^1.0.7":
+"@types/estree@*", "@types/estree@1.0.7", "@types/estree@>=1.0.7", "@types/estree@^1.0.0", "@types/estree@^1.0.6":
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.7.tgz#4158d3105276773d5b7695cd4834b1722e4f37a8"
   integrity sha512-w28IoSUCJpidD/TGviZwwMJckNESJZXFu7NBZ5YJ4mEUnNraUn9Pm8HSZm/jDF1pDWYKspWE7oVphigUPRakIQ==
 
-"@types/estree@1.0.8":
+"@types/estree@1.0.8", "@types/estree@^1.0.8":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
@@ -6170,6 +6170,11 @@ entities@^4.2.0, entities@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/entities/-/entities-4.5.0.tgz#5d268ea5e7113ec74c4d033b79ea5a35a488fb48"
   integrity sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==
+
+entities@^6.0.0:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/entities/-/entities-6.0.1.tgz#c28c34a43379ca7f61d074130b2f5f7020a30694"
+  integrity sha512-aN97NXWF6AWBTahfVOIrB/NShkzi5H7F9r1s9mD3cDj4Ko5f2qhhVoYMibXF7GlLveb/D2ioWay8lxI97Ven3g==
 
 env-paths@^2.2.0, env-paths@^2.2.1:
   version "2.2.1"
@@ -10507,6 +10512,13 @@ parse5@^7.0.0, parse5@^7.1.2, parse5@^7.2.1:
   integrity sha512-BuBYQYlv1ckiPdQi/ohiivi9Sagc9JG+Ozs0r7b/0iK3sKmrb0b9FdWdBbOdx6hBCM/F9Ir82ofnBhtZOjCRPQ==
   dependencies:
     entities "^4.5.0"
+
+parse5@^7.3.0:
+  version "7.3.0"
+  resolved "https://registry.yarnpkg.com/parse5/-/parse5-7.3.0.tgz#d7e224fa72399c7a175099f45fc2ad024b05ec05"
+  integrity sha512-IInvU7fabl34qmi9gY8XOVxhYyMyuH2xUNpb2q8/Y+7552KlejkRvqvD19nMoUW/uQGGbqNpA6Tufu5FL5BZgw==
+  dependencies:
+    entities "^6.0.0"
 
 parseurl@^1.3.2, parseurl@~1.3.3:
   version "1.3.3"
