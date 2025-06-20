@@ -35,10 +35,6 @@ updates:
                   - '@rollup/*'
               update-types:
                   - 'major'
-          webdriverio:
-              patterns:
-                  - 'webdriverio'
-                  - '@wdio/*'
           prettier:
               patterns:
                   - 'prettier'
@@ -47,6 +43,22 @@ updates:
                   # Prettier can introduce formatting differences in minor versions,
                   # which causes formatting checks to fail in CI.
                   - 'minor'
+          webdriverio:
+              patterns:
+                  - 'webdriverio'
+                  - '@wdio/*'
+              update-types:
+                  - 'major'
+                  - 'minor'
+                  - 'patch'
+          vitest:
+              patterns:
+                  - 'vitest'
+                  - '@vitest/*'
+              update-types:
+                  - 'major'
+                  - 'minor'
+                  - 'patch'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:
