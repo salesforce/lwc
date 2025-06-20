@@ -19,7 +19,7 @@ import {
     isSvgUseHref,
 } from '../parser/attribute';
 import type { Attribute, BaseElement, ComplexExpression, Property } from '../shared/types';
-import type { Node } from 'estree';
+import type { Node } from 'estree-walker';
 import type CodeGen from './codegen';
 
 type VariableName = string;
@@ -79,7 +79,9 @@ export function bindComplexExpression(
                 !codeGen.isLocalIdentifier(node) &&
                 !expressionScopes.isScopedToExpression(node)
             ) {
-                this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
+                this.replace(
+                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node) as Node
+                );
             }
         },
     });

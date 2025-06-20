@@ -13,6 +13,7 @@ import { sourceLocation } from '../shared/ast';
 
 import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
 import { parseFragment } from './expression-complex';
+import type { DocumentFragment } from '@parse5/tools';
 import type ParserCtx from './parser';
 
 function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
@@ -36,7 +37,7 @@ function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
     }
 }
 
-export function parseHTML(ctx: ParserCtx, source: string) {
+export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
     const onParseError = (err: parse5.ParserError) => {
         const { code, ...location } = err;
 
