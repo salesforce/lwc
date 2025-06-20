@@ -15,7 +15,8 @@
         "lwc": "8.20.0",
         "rollup": "^4.40.0",
         "rollup-plugin-livereload": "^2.0.5",
-        "rollup-plugin-serve": "^3.0.0"
+        "rollup-plugin-serve": "^3.0.0",
+        "tslib": "^2.8.1"
     },
     "nx": {
         "targets": {
