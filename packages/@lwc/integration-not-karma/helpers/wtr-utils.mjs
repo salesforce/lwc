@@ -13,6 +13,18 @@ import {
     nonStandardAriaProperties,
 } from './aria.mjs';
 import { setHooks, getHooks } from './hooks.mjs';
+import {
+    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    ENABLE_THIS_DOT_HOST_ELEMENT,
+    ENABLE_THIS_DOT_STYLE,
+    IS_SYNTHETIC_SHADOW_LOADED,
+    LOWERCASE_SCOPE_TOKENS,
+    TEMPLATE_CLASS_NAME_OBJECT_BINDING,
+    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+} from './constants.mjs';
 
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
 // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
@@ -206,8 +218,6 @@ function getPropertyDescriptor(object, prop) {
     } while (object);
 }
 
-const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
-
 // Designed for hydration tests, this helper asserts certain error/warn console messages were logged
 function createExpectConsoleCallsFunc(devOnly) {
     return (consoleCalls, methods) => {
@@ -343,17 +353,6 @@ function expectEquivalentDOM(element, html) {
 
     expectEquivalent(element, fragment.body.firstChild);
 }
-
-// These values are based on the API versions in @lwc/shared/api-version
-const LOWERCASE_SCOPE_TOKENS = process.env.API_VERSION >= 59,
-    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS = process.env.API_VERSION >= 60,
-    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS = process.env.API_VERSION >= 60,
-    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION = process.env.API_VERSION >= 60,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE = process.env.API_VERSION >= 61,
-    USE_LIGHT_DOM_SLOT_FORWARDING = process.env.API_VERSION >= 61,
-    ENABLE_THIS_DOT_HOST_ELEMENT = process.env.API_VERSION >= 62,
-    ENABLE_THIS_DOT_STYLE = process.env.API_VERSION >= 62,
-    TEMPLATE_CLASS_NAME_OBJECT_BINDING = process.env.API_VERSION >= 62;
 
 const signalValidator = new WeakSet();
 LWC.setTrustedSignalSet(signalValidator);
