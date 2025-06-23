@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as LWC from 'lwc';
+import { setHooks, getHooks } from './hooks.mjs';
 
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
 // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
@@ -185,29 +186,6 @@ function isSyntheticShadowRootInstance(sr) {
 
 function isNativeShadowRootInstance(sr) {
     return Boolean(sr && !sr.synthetic);
-}
-
-// Providing overridable hooks for tests
-let sanitizeHtmlContentHook = function () {
-    throw new Error('sanitizeHtmlContent hook must be implemented.');
-};
-
-LWC.setHooks({
-    sanitizeHtmlContent: function (content) {
-        return sanitizeHtmlContentHook(content);
-    },
-});
-
-function getHooks() {
-    return {
-        sanitizeHtmlContent: sanitizeHtmlContentHook,
-    };
-}
-
-function setHooks(hooks) {
-    if (hooks.sanitizeHtmlContent) {
-        sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
-    }
 }
 
 // This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
