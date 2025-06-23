@@ -8,7 +8,8 @@
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { walk } from 'estree-walker';
 import * as t from '../../shared/estree';
-import type { BaseNode, Node } from 'estree';
+import type { BaseNode } from 'estree';
+import type { Node } from 'estree-walker';
 
 const ALWAYS_INVALID_TYPES = new Map(
     Object.entries({
