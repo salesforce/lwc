@@ -5,6 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as LWC from 'lwc';
+import {
+    ariaAttributes,
+    ariaProperties,
+    ariaPropertiesMapping,
+    nonPolyfilledAriaProperties,
+    nonStandardAriaProperties,
+} from './aria.mjs';
 import { setHooks, getHooks } from './hooks.mjs';
 
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
@@ -187,87 +194,6 @@ function isSyntheticShadowRootInstance(sr) {
 function isNativeShadowRootInstance(sr) {
     return Boolean(sr && !sr.synthetic);
 }
-
-// This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
-const ariaPropertiesMapping = {
-    ariaAutoComplete: 'aria-autocomplete',
-    ariaChecked: 'aria-checked',
-    ariaCurrent: 'aria-current',
-    ariaDisabled: 'aria-disabled',
-    ariaExpanded: 'aria-expanded',
-    ariaHasPopup: 'aria-haspopup',
-    ariaHidden: 'aria-hidden',
-    ariaInvalid: 'aria-invalid',
-    ariaLabel: 'aria-label',
-    ariaLevel: 'aria-level',
-    ariaMultiLine: 'aria-multiline',
-    ariaMultiSelectable: 'aria-multiselectable',
-    ariaOrientation: 'aria-orientation',
-    ariaPressed: 'aria-pressed',
-    ariaReadOnly: 'aria-readonly',
-    ariaRequired: 'aria-required',
-    ariaSelected: 'aria-selected',
-    ariaSort: 'aria-sort',
-    ariaValueMax: 'aria-valuemax',
-    ariaValueMin: 'aria-valuemin',
-    ariaValueNow: 'aria-valuenow',
-    ariaValueText: 'aria-valuetext',
-    ariaLive: 'aria-live',
-    ariaRelevant: 'aria-relevant',
-    ariaAtomic: 'aria-atomic',
-    ariaBusy: 'aria-busy',
-    ariaActiveDescendant: 'aria-activedescendant',
-    ariaControls: 'aria-controls',
-    ariaDescribedBy: 'aria-describedby',
-    ariaFlowTo: 'aria-flowto',
-    ariaLabelledBy: 'aria-labelledby',
-    ariaOwns: 'aria-owns',
-    ariaPosInSet: 'aria-posinset',
-    ariaSetSize: 'aria-setsize',
-    ariaColCount: 'aria-colcount',
-    ariaColSpan: 'aria-colspan',
-    ariaColIndex: 'aria-colindex',
-    ariaColIndexText: 'aria-colindextext',
-    ariaDescription: 'aria-description',
-    ariaDetails: 'aria-details',
-    ariaErrorMessage: 'aria-errormessage',
-    ariaKeyShortcuts: 'aria-keyshortcuts',
-    ariaModal: 'aria-modal',
-    ariaPlaceholder: 'aria-placeholder',
-    ariaRoleDescription: 'aria-roledescription',
-    ariaRowCount: 'aria-rowcount',
-    ariaRowIndex: 'aria-rowindex',
-    ariaRowIndexText: 'aria-rowindextext',
-    ariaRowSpan: 'aria-rowspan',
-    ariaBrailleLabel: 'aria-braillelabel',
-    ariaBrailleRoleDescription: 'aria-brailleroledescription',
-    role: 'role',
-};
-
-// See the README for @lwc/aria-reflection
-const nonStandardAriaProperties = [
-    'ariaActiveDescendant',
-    'ariaControls',
-    'ariaDescribedBy',
-    'ariaDetails',
-    'ariaErrorMessage',
-    'ariaFlowTo',
-    'ariaLabelledBy',
-    'ariaOwns',
-];
-
-// These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
-// prototypes in https://github.com/salesforce/lwc/pull/3702
-const nonPolyfilledAriaProperties = [
-    'ariaColIndexText',
-    'ariaBrailleLabel',
-    'ariaBrailleRoleDescription',
-    'ariaDescription',
-    'ariaRowIndexText',
-];
-
-const ariaProperties = Object.keys(ariaPropertiesMapping);
-const ariaAttributes = Object.values(ariaPropertiesMapping);
 
 // Keep traversing up the prototype chain until a property descriptor is found
 function getPropertyDescriptor(object, prop) {
