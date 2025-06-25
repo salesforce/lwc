@@ -111,14 +111,16 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
  * run in a separate JS runtime environment with its own global scope. The `context` object
  * (defined at the top of this file) is passed in as the global scope for that script. The script
  * runs, utilizing the `LWC` object that we've attached to the global scope, it sets a
- * new value (the rendered markup) to the globalThis.moduleOutput, which correspond to
- * context.moduleOutput in the hydration-test.js module scope.
+ * new value (the rendered markup) to `globalThis.moduleOutput`, which corresponds to
+ * `context.moduleOutput in this file's scope.
  *
- * So, script runs, generates markup, & we get that markup out and return it to Karma for use
+ * So, script runs, generates markup, & we get that markup out and return it for use
  * in client-side tests.
  */
 async function getSsrCode(moduleCode, testConfig, filename, expectedSSRConsoleCalls) {
     const script = new vm.Script(
+        // FIXME: Can these IIFEs be converted to ESM imports?
+        // No, vm.Script doesn't support that. But might be doable with experimental vm.Module
         `
             ${testConfig};
             config = config || {};
@@ -139,10 +141,10 @@ async function getSsrCode(moduleCode, testConfig, filename, expectedSSRConsoleCa
         script.runInContext(context);
     }, expectedSSRConsoleCalls);
 
-    return context.moduleOutput;
+    return await context.moduleOutput;
 }
 
-async function getTestModuleCode(input) {
+async function getTestConfig(input) {
     const bundle = await rollup({
         input,
         external: ['lwc', 'test-utils', '@test/loader'],
@@ -181,7 +183,7 @@ export default async function wrapHydrationTest(filePath /* .../index.spec.js */
     // Wrap all the tests into a describe block with the file stricture name
     const describeTitle = path.relative(ROOT_DIR, suiteDir).split(path.sep).join(' ');
 
-    const testCode = await getTestModuleCode(filePath);
+    const testCode = await getTestConfig(filePath);
 
     // Create a temporary module to evaluate the bundled code and extract config properties for test configuration
     const configModule = new vm.Script(testCode);
@@ -213,13 +215,12 @@ export default async function wrapHydrationTest(filePath /* .../index.spec.js */
         // FIXME: can we turn these IIFEs into ESM imports?
         return `
         import { runTest } from '/helpers/test-hydrate.js';
-        ${describeFn}(${JSON.stringify(describeTitle)}, () => {
+        import config from '/${filePath}?original=1';
+        ${describeFn}("${describeTitle}", () => {
             it('test', async () => {
-                const ssrRendered = ${JSON.stringify(ssrOutput)};
+                const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
                 // Component code, IIFE set as Main
                 ${componentDefCSR};
-                // Test config, IIFE set as config
-                ${testCode};
                 return await runTest(ssrRendered, Main, config);
             })
         });`;

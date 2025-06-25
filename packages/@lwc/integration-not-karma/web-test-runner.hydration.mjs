@@ -38,7 +38,12 @@ export default {
                 }
             },
             async serve(ctx) {
-                if (ctx.path.endsWith('.spec.js')) {
+                // Hydration test "index.spec.js" files are actually just config files.
+                // They don't directly define the tests. Instead, when we request the file,
+                // we wrap it with some boilerplate. That boilerplate must include the config
+                // file we originally requested, so the ?original query parameter is used
+                // to return the file unmodified.
+                if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
                     return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
                 }
             },
