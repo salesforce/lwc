@@ -1,10 +1,24 @@
-/*
- * Copyright (c) 2024, Salesforce, Inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
 import * as LWC from 'lwc';
+import {
+    ariaAttributes,
+    ariaProperties,
+    ariaPropertiesMapping,
+    nonPolyfilledAriaProperties,
+    nonStandardAriaProperties,
+} from './aria.mjs';
+import { setHooks, getHooks } from './hooks.mjs';
+import {
+    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    ENABLE_THIS_DOT_HOST_ELEMENT,
+    ENABLE_THIS_DOT_STYLE,
+    IS_SYNTHETIC_SHADOW_LOADED,
+    LOWERCASE_SCOPE_TOKENS,
+    TEMPLATE_CLASS_NAME_OBJECT_BINDING,
+    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+} from './constants.mjs';
 
 // TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
 // anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
@@ -187,110 +201,6 @@ function isNativeShadowRootInstance(sr) {
     return Boolean(sr && !sr.synthetic);
 }
 
-// Providing overridable hooks for tests
-let sanitizeHtmlContentHook = function () {
-    throw new Error('sanitizeHtmlContent hook must be implemented.');
-};
-
-LWC.setHooks({
-    sanitizeHtmlContent: function (content) {
-        return sanitizeHtmlContentHook(content);
-    },
-});
-
-function getHooks() {
-    return {
-        sanitizeHtmlContent: sanitizeHtmlContentHook,
-    };
-}
-
-function setHooks(hooks) {
-    if (hooks.sanitizeHtmlContent) {
-        sanitizeHtmlContentHook = hooks.sanitizeHtmlContent;
-    }
-}
-
-// This mapping should be kept up-to-date with the mapping in @lwc/shared -> aria.ts
-const ariaPropertiesMapping = {
-    ariaAutoComplete: 'aria-autocomplete',
-    ariaChecked: 'aria-checked',
-    ariaCurrent: 'aria-current',
-    ariaDisabled: 'aria-disabled',
-    ariaExpanded: 'aria-expanded',
-    ariaHasPopup: 'aria-haspopup',
-    ariaHidden: 'aria-hidden',
-    ariaInvalid: 'aria-invalid',
-    ariaLabel: 'aria-label',
-    ariaLevel: 'aria-level',
-    ariaMultiLine: 'aria-multiline',
-    ariaMultiSelectable: 'aria-multiselectable',
-    ariaOrientation: 'aria-orientation',
-    ariaPressed: 'aria-pressed',
-    ariaReadOnly: 'aria-readonly',
-    ariaRequired: 'aria-required',
-    ariaSelected: 'aria-selected',
-    ariaSort: 'aria-sort',
-    ariaValueMax: 'aria-valuemax',
-    ariaValueMin: 'aria-valuemin',
-    ariaValueNow: 'aria-valuenow',
-    ariaValueText: 'aria-valuetext',
-    ariaLive: 'aria-live',
-    ariaRelevant: 'aria-relevant',
-    ariaAtomic: 'aria-atomic',
-    ariaBusy: 'aria-busy',
-    ariaActiveDescendant: 'aria-activedescendant',
-    ariaControls: 'aria-controls',
-    ariaDescribedBy: 'aria-describedby',
-    ariaFlowTo: 'aria-flowto',
-    ariaLabelledBy: 'aria-labelledby',
-    ariaOwns: 'aria-owns',
-    ariaPosInSet: 'aria-posinset',
-    ariaSetSize: 'aria-setsize',
-    ariaColCount: 'aria-colcount',
-    ariaColSpan: 'aria-colspan',
-    ariaColIndex: 'aria-colindex',
-    ariaColIndexText: 'aria-colindextext',
-    ariaDescription: 'aria-description',
-    ariaDetails: 'aria-details',
-    ariaErrorMessage: 'aria-errormessage',
-    ariaKeyShortcuts: 'aria-keyshortcuts',
-    ariaModal: 'aria-modal',
-    ariaPlaceholder: 'aria-placeholder',
-    ariaRoleDescription: 'aria-roledescription',
-    ariaRowCount: 'aria-rowcount',
-    ariaRowIndex: 'aria-rowindex',
-    ariaRowIndexText: 'aria-rowindextext',
-    ariaRowSpan: 'aria-rowspan',
-    ariaBrailleLabel: 'aria-braillelabel',
-    ariaBrailleRoleDescription: 'aria-brailleroledescription',
-    role: 'role',
-};
-
-// See the README for @lwc/aria-reflection
-const nonStandardAriaProperties = [
-    'ariaActiveDescendant',
-    'ariaControls',
-    'ariaDescribedBy',
-    'ariaDetails',
-    'ariaErrorMessage',
-    'ariaFlowTo',
-    'ariaLabelledBy',
-    'ariaOwns',
-];
-
-// These properties are not included in the global polyfill, but were added to LightningElement/BridgeElement
-// prototypes in https://github.com/salesforce/lwc/pull/3702
-const nonPolyfilledAriaProperties = [
-    'ariaColIndexText',
-    'ariaBrailleLabel',
-    'ariaBrailleRoleDescription',
-    'ariaDescription',
-    'ariaRowIndexText',
-];
-
-const ariaProperties = Object.keys(ariaPropertiesMapping);
-const ariaAttributes = Object.values(ariaPropertiesMapping);
-
 // Keep traversing up the prototype chain until a property descriptor is found
 function getPropertyDescriptor(object, prop) {
     do {
@@ -301,8 +211,6 @@ function getPropertyDescriptor(object, prop) {
         object = Object.getPrototypeOf(object);
     } while (object);
 }
-
-const IS_SYNTHETIC_SHADOW_LOADED = !`${ShadowRoot}`.includes('[native code]');
 
 // Designed for hydration tests, this helper asserts certain error/warn console messages were logged
 function createExpectConsoleCallsFunc(devOnly) {
@@ -439,17 +347,6 @@ function expectEquivalentDOM(element, html) {
 
     expectEquivalent(element, fragment.body.firstChild);
 }
-
-// These values are based on the API versions in @lwc/shared/api-version
-const LOWERCASE_SCOPE_TOKENS = process.env.API_VERSION >= 59,
-    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS = process.env.API_VERSION >= 60,
-    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS = process.env.API_VERSION >= 60,
-    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION = process.env.API_VERSION >= 60,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE = process.env.API_VERSION >= 61,
-    USE_LIGHT_DOM_SLOT_FORWARDING = process.env.API_VERSION >= 61,
-    ENABLE_THIS_DOT_HOST_ELEMENT = process.env.API_VERSION >= 62,
-    ENABLE_THIS_DOT_STYLE = process.env.API_VERSION >= 62,
-    TEMPLATE_CLASS_NAME_OBJECT_BINDING = process.env.API_VERSION >= 62;
 
 const signalValidator = new WeakSet();
 LWC.setTrustedSignalSet(signalValidator);

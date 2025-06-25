@@ -18,7 +18,7 @@ const env = {
         'NATIVE_SHADOW',
     ]),
     LWC_VERSION,
-    NODE_ENV: options.NODE_ENV_FOR_TEST || 'development',
+    NODE_ENV: options.NODE_ENV_FOR_TEST,
 };
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {

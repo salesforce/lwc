@@ -3,66 +3,78 @@ import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 
 import {
-    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
     API_VERSION,
+    COVERAGE,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
+    DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
 } from './options.mjs';
 
-// Cache reused between each compilation to speed up the compilation time.
+/** Cache reused between each compilation to speed up the compilation time. */
 let cache;
 
-export default async (ctx) => {
-    const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
+const createRollupPlugin = (input, options) => {
     const suiteDir = path.dirname(input);
 
     // TODO [#3370]: remove experimental template expression flag
     const experimentalComplexExpressions = suiteDir.includes('template-expressions');
 
-    const createRollupPlugin = (options) => {
-        return lwcRollupPlugin({
-            // Sourcemaps don't work with Istanbul coverage
-            sourcemap: !process.env.COVERAGE,
-            experimentalDynamicComponent: {
-                loader: 'test-utils',
-                strict: true,
+    return lwcRollupPlugin({
+        // Sourcemaps don't work with Istanbul coverage
+        sourcemap: !process.env.COVERAGE,
+        experimentalDynamicComponent: {
+            loader: 'test-utils',
+            strict: true,
+        },
+        enableDynamicComponents: true,
+        enableLwcOn: true,
+        experimentalComplexExpressions,
+        enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
+        disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
+        apiVersion: API_VERSION,
+        modules: [
+            {
+                // Assume `ctx.path` is a component file, e.g. modules/x/foo/foo.js
+                dir: path.resolve(input, '../../..'),
             },
-            enableDynamicComponents: true,
-            enableLwcOn: true,
-            experimentalComplexExpressions,
-            enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
-            disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
-            apiVersion: API_VERSION,
-            modules: [
-                {
-                    // Assume `ctx.path` is a component file, e.g. modules/x/foo/foo.js
-                    dir: path.resolve(input, '../../..'),
-                },
-            ],
-            ...options,
-        });
-    };
+        ],
+        ...options,
+    });
+};
 
-    const defaultRollupPlugin = createRollupPlugin();
+export default async (ctx) => {
+    const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
+
+    const defaultRollupPlugin = createRollupPlugin(input);
 
     const customLwcRollupPlugin = {
         ...defaultRollupPlugin,
         transform(src, id) {
-            let rollupPluginToUse;
+            let transform;
 
             // Override the LWC Rollup plugin to specify different options based on file name patterns.
             // This allows us to alter the API version or other compiler props on a filename-only basis.
             const apiVersion = id.match(/useApiVersion(\d+)/)?.[1];
             const nativeOnly = /\.native-only\./.test(id);
             if (apiVersion) {
-                rollupPluginToUse = createRollupPlugin({
-                    apiVersion: parseInt(apiVersion, 10),
-                });
+                // The original Karma tests only ever had filename-based config for API version 60.
+                // Filename-based config is a pattern we want to move away from, so this transform
+                // only works for that version, so that we could simplify the logic here.
+                if (apiVersion !== '60') {
+                    throw new Error(
+                        'TODO: fully implement or remove support for filename-based API version'
+                    );
+                }
+                transform = createRollupPlugin(input, {
+                    apiVersion: 60,
+                }).transform;
             } else if (nativeOnly) {
-                rollupPluginToUse = createRollupPlugin({ disableSyntheticShadowSupport: true });
+                transform = createRollupPlugin(input, {
+                    disableSyntheticShadowSupport: true,
+                }).transform;
             } else {
-                rollupPluginToUse = defaultRollupPlugin;
+                transform = defaultRollupPlugin.transform;
             }
-            return rollupPluginToUse.transform.call(this, src, id);
+            return transform.call(this, src, id);
         },
     };
 
@@ -89,9 +101,8 @@ export default async (ctx) => {
         format: 'esm',
         // FIXME: Does web-test-runner use istanbul?
         // Sourcemaps don't work with Istanbul coverage
-        sourcemap: process.env.COVERAGE ? false : 'inline',
+        sourcemap: COVERAGE ? false : 'inline',
     });
 
-    const { code } = output[0];
-    return code;
+    return output[0].code;
 };
