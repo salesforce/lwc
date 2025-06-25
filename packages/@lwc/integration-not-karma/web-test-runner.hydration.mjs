@@ -68,7 +68,6 @@ export default {
             </script>
             <script type="module" src="./helpers/setup.mjs"></script>
             <script type="module" src="./helpers/wtr-utils.mjs"></script>
-            <script type="module" src="./helpers/test-hydrate.js"></script>
             <script type="module" src="${testFramework}"></script>
           </body>
         </html>`,
