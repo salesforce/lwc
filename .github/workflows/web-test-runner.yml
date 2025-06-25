@@ -49,6 +49,7 @@ jobs:
             #       region: us
 
             - run: yarn test
+            - run: yarn test:hydration
 
     run-karma-tests:
         runs-on: ubuntu-22.04
