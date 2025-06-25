@@ -25,6 +25,7 @@ export default {
     files: [
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test-hydration/**/*.spec.js',
+        '!test-hydration/light-dom/scoped-styles/replace-scoped-styles-with-dynamic-templates/index.spec.js',
     ],
     nodeResolve: true,
     rootDir: import.meta.dirname,

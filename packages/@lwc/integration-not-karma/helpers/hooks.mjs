@@ -5,7 +5,7 @@
 import { setHooks as lwcSetHooks } from 'lwc';
 
 let sanitizeHtmlContentHook = function shouldBeReplaced() {
-    throw new Error('sanitizeHtmlContent hook must be implemented.');
+    throw new Error('[TEST] sanitizeHtmlContent hook must be implemented.');
 };
 
 lwcSetHooks({
