@@ -17,7 +17,7 @@ export {
     setContextKeys,
     setTrustedSignalSet,
     setTrustedContextSet,
-    addTrustedContext,
+    addTrustedContext as __dangerous_do_not_use_addTrustedContext,
 } from '@lwc/shared';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';

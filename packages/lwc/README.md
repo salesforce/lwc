@@ -98,10 +98,6 @@ Not intended for external use. This experimental API enables the addition of con
 
 If `setTrustedContextSet` is called more than once, it will throw an error. If it is never called, then context will not be connected.
 
-### addTrustedContext()
-
-Not intended for external use. This experimental API adds trusted context that will be bound to an associated component lifecycle via `ContextBinding` for provision/consumption. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
-
 ### ContextBinding
 
 The context object's `connectContext` and `disconnectContext` methods are called with this object when contextful components are connected and disconnected. The ContextBinding exposes `provideContext` and `consumeContext`,
