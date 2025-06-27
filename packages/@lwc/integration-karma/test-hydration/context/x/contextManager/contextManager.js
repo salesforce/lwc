@@ -1,4 +1,4 @@
-import { setContextKeys, setTrustedContextSet } from 'lwc';
+import { setContextKeys, setTrustedContextSet, addTrustedContext } from 'lwc';
 
 const connectContext = Symbol('connectContext');
 const disconnectContext = Symbol('disconnectContext');
@@ -16,7 +16,7 @@ class MockContextSignal {
         this.value = initialValue;
         this.contextDefinition = contextDefinition;
         this.fromContext = fromContext;
-        trustedContext.add(this);
+        addTrustedContext(this);
     }
     [connectContext](runtimeAdapter) {
         this.connectProvidedComponent = runtimeAdapter.component;

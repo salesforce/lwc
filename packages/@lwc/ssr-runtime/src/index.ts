@@ -17,6 +17,7 @@ export {
     setContextKeys,
     setTrustedSignalSet,
     setTrustedContextSet,
+    addTrustedContext,
 } from '@lwc/shared';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
