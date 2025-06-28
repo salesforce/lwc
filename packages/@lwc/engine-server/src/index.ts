@@ -30,6 +30,7 @@ export {
     parseFragment,
     parseFragment as parseSVGFragment,
     setTrustedContextSet,
+    addTrustedContext as __dangerous_do_not_use_addTrustedContext,
     setContextKeys,
 } from '@lwc/engine-core';
 

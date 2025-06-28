@@ -33,6 +33,7 @@ export {
     setContextKeys,
     setTrustedSignalSet,
     setTrustedContextSet,
+    addTrustedContext as __dangerous_do_not_use_addTrustedContext,
     swapComponent,
     swapStyle,
     swapTemplate,
