@@ -48,7 +48,8 @@
     "devDependencies": {
         "@lwc/engine-core": "8.20.0",
         "@lwc/shared": "8.20.0",
-        "@lwc/features": "8.20.0"
+        "@lwc/features": "8.20.0",
+        "@lwc/signals": "8.20.0"
     },
     "lwc": {
         "modules": [

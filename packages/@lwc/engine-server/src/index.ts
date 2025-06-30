@@ -27,11 +27,13 @@ export {
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    isTrustedSignal,
     parseFragment,
     parseFragment as parseSVGFragment,
     setTrustedContextSet,
     addTrustedContext as __dangerous_do_not_use_addTrustedContext,
     setContextKeys,
+    SignalBaseClass,
 } from '@lwc/engine-core';
 
 // Engine-server public APIs -----------------------------------------------------------------------
