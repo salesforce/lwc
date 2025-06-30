@@ -49,7 +49,7 @@
         "@lwc/compiler": "8.20.0",
         "@lwc/module-resolver": "8.20.0",
         "@lwc/shared": "8.20.0",
-        "@rollup/pluginutils": "~5.1.4"
+        "@rollup/pluginutils": "~5.2.0"
     },
     "devDependencies": {
         "@lwc/errors": "8.20.0"
