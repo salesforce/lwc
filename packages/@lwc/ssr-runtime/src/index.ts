@@ -18,7 +18,10 @@ export {
     setTrustedSignalSet,
     setTrustedContextSet,
     addTrustedContext as __dangerous_do_not_use_addTrustedContext,
+    isTrustedSignal,
 } from '@lwc/shared';
+
+export { SignalBaseClass } from '@lwc/signals';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 

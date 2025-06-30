@@ -51,6 +51,7 @@
         "@lwc/shared": "8.20.0",
         "@lwc/engine-core": "8.20.0",
         "@lwc/features": "8.20.0",
+        "@lwc/signals": "8.20.0",
         "observable-membrane": "2.0.0"
     }
 }

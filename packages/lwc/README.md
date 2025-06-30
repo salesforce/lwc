@@ -88,6 +88,10 @@ This experimental API enables the addition of a signal as a trusted signal. If t
 
 If `setTrustedSignalSet` is called more than once, it will throw an error. If it is never called, then no trusted signal validation will be performed. The same `setTrustedSignalSet` API must be called on both `@lwc/engine-dom` and `@lwc/signals`.
 
+### isTrustedSignal()
+
+Not intended for external use. This experimental API enables the caller to determine if an object is a trusted signal. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
+
 ### setContextKeys
 
 Not intended for external use. Enables another library to establish contextful relationships via the LWC component tree. The `connectContext` and `disconnectContext` symbols that are provided are later used to identify methods that facilitate the establishment and dissolution of these contextful relationships. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
@@ -102,3 +106,7 @@ If `setTrustedContextSet` is called more than once, it will throw an error. If i
 
 The context object's `connectContext` and `disconnectContext` methods are called with this object when contextful components are connected and disconnected. The ContextBinding exposes `provideContext` and `consumeContext`,
 enabling the provision/consumption of a contextful Signal of a specified variety for the associated component. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
+
+### SignalBaseClass
+
+Not intended for external use. Signals that extend SignalBaseClass will be added to set of trusted signals. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.

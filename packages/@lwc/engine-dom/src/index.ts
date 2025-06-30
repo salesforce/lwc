@@ -28,6 +28,7 @@ export {
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    isTrustedSignal,
     parseFragment,
     parseSVGFragment,
     setContextKeys,
@@ -40,6 +41,7 @@ export {
     getComponentConstructor,
     __unstable__ProfilerControl,
     __unstable__ReportingControl,
+    SignalBaseClass,
 } from '@lwc/engine-core';
 
 // Engine-core public types ------------------------------------------------------------------------

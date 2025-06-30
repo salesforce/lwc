@@ -78,5 +78,8 @@ export {
     setTrustedSignalSet,
     setTrustedContextSet,
     addTrustedContext,
+    isTrustedSignal,
 } from '@lwc/shared';
 export type { Stylesheet, Stylesheets } from '@lwc/shared';
+
+export { SignalBaseClass } from '@lwc/signals';

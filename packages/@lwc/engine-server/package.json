@@ -50,6 +50,7 @@
         "@lwc/rollup-plugin": "8.20.0",
         "@lwc/shared": "8.20.0",
         "@lwc/features": "8.20.0",
+        "@lwc/signals": "8.20.0",
         "@rollup/plugin-virtual": "^3.0.2",
         "parse5": "^7.3.0"
     }
