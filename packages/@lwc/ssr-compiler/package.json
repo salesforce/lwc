@@ -52,7 +52,7 @@
         "@lwc/errors": "8.20.1",
         "@lwc/shared": "8.20.1",
         "@lwc/template-compiler": "8.20.1",
-        "acorn": "8.14.1",
+        "acorn": "8.15.0",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.13",
         "immer": "^10.1.1",
