@@ -112,8 +112,10 @@ function createTachometerJson(htmlFilename, benchmarkName, directoryHash, cpuThr
                                             // We want to recompile whatever benchmarks we've added with the
                                             // compiler code from tip-of-tree, but we also want Tachometer to serve
                                             // `@lwc/perf-benchmarks-components` itself.
-                                            'rm -fr ./packages/@lwc/perf-benchmarks-components/{src,scripts}',
-                                            `cp -R ${benchmarkComponentsDir}/{src,scripts} ./packages/@lwc/perf-benchmarks-components`,
+                                            'rm -fr ./packages/@lwc/perf-benchmarks-components/src',
+                                            'rm -fr ./packages/@lwc/perf-benchmarks-components/scripts',
+                                            `cp -R ${benchmarkComponentsDir}/src ./packages/@lwc/perf-benchmarks-components`,
+                                            `cp -R ${benchmarkComponentsDir}/scripts ./packages/@lwc/perf-benchmarks-components`,
                                             'yarn --frozen-lockfile',
                                             // bust the Tachometer cache in case these files change locally
                                             `echo '${directoryHash}'`,
