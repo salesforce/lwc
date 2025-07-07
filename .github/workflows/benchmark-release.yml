@@ -28,8 +28,8 @@ jobs:
             - name: Get Previous Release
               id: previous_release
               run: |
-                  # Parse current season and year
-                  [[ $release =~ ^(winter|spring|summer)([0-9]+)$ ]]
+                  # Parse current season and year from branch name
+                  [[ "$GITHUB_REF" =~ ^(winter|spring|summer)([0-9]+)$ ]]
                   season="${BASH_REMATCH[1]}"
                   year="${BASH_REMATCH[2]}"
 
