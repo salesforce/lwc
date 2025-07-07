@@ -28,17 +28,20 @@ export {
     setHooks,
     getComponentDef,
     isComponentConstructor,
+    isTrustedSignal,
     parseFragment,
     parseSVGFragment,
     setContextKeys,
     setTrustedSignalSet,
     setTrustedContextSet,
+    addTrustedContext as __dangerous_do_not_use_addTrustedContext,
     swapComponent,
     swapStyle,
     swapTemplate,
     getComponentConstructor,
     __unstable__ProfilerControl,
     __unstable__ReportingControl,
+    SignalBaseClass,
 } from '@lwc/engine-core';
 
 // Engine-core public types ------------------------------------------------------------------------

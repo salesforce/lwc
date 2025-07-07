@@ -73,5 +73,13 @@ export { default as wire } from './decorators/wire';
 export { readonly } from './readonly';
 
 export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
-export { setContextKeys, setTrustedSignalSet, setTrustedContextSet } from '@lwc/shared';
+export {
+    setContextKeys,
+    setTrustedSignalSet,
+    setTrustedContextSet,
+    addTrustedContext,
+    isTrustedSignal,
+} from '@lwc/shared';
 export type { Stylesheet, Stylesheets } from '@lwc/shared';
+
+export { SignalBaseClass } from '@lwc/signals';
