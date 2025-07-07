@@ -12399,7 +12399,7 @@ table@^6.0.7:
 
 tachometer@^0.7.2:
   version "0.7.2"
-  resolved "https://nexus-proxy.repo.local.sfdc.net/nexus/content/groups/npm-all/tachometer/-/tachometer-0.7.2.tgz#111c6b179f90399c9207cfa3cad41429cd1714cd"
+  resolved "https://registry.yarnpkg.com/tachometer/-/tachometer-0.7.2.tgz#111c6b179f90399c9207cfa3cad41429cd1714cd"
   integrity sha512-e9dtDyWuMFyomQxo16vzti6ymoJd3Dp2yGfKrhAiNzCkb2HiP6A0+SWtqE84hcO6tSKZF8eTFqrxM2uKbliJyQ==
   dependencies:
     ansi-escape-sequences "^6.0.1"
