@@ -22,14 +22,16 @@ jobs:
                   node-version: '20.18.1'
                   cache: 'yarn'
 
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
+            # - name: Install dependencies
+            #   run: yarn install --frozen-lockfile
 
             - name: Get Previous Release
               id: previous_release
               run: |
                   # Parse current season and year from branch name
+                  echo "GITHUB_REF: $GITHUB_REF"
                   [[ "$GITHUB_REF" =~ ^(winter|spring|summer)([0-9]+)$ ]]
+                  echo "BASH_REMATCH: $BASH_REMATCH"
                   season="${BASH_REMATCH[1]}"
                   year="${BASH_REMATCH[2]}"
 
