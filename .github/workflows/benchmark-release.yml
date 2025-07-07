@@ -1,0 +1,59 @@
+name: Run Perf benchmarks
+
+on:
+    push:
+        branches:
+            - winter*
+            - spring*
+            - summer*
+            - wjh/perf-ci # Just for testing
+
+jobs:
+    run-performance-tests:
+        # It is important to use this image so that we have a consistent IP address
+        runs-on: salesforce-Ubuntu
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20.18.1'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Get Previous Release
+              id: previous_release
+              run: |
+                  # Parse current season and year
+                  [[ $release =~ ^(winter|spring|summer)([0-9]+)$ ]]
+                  season="${BASH_REMATCH[1]}"
+                  year="${BASH_REMATCH[2]}"
+
+                  # Get previous season and year
+                  case $season in
+                      winter) PREVIOUS="summer$((year - 1))";;
+                      spring) PREVIOUS="winter$year";;
+                      summer) PREVIOUS="spring$year";;
+                      *)      PREVIOUS="master";; # Just for testing
+                  esac
+                  # Expose to GitHub Actions
+                  echo "branch=$PREVIOUS" >> "$GITHUB_OUTPUT"
+
+            - name: Build benchmarks
+              env:
+                  BENCHMARK_REF: ${{steps.previous_release.outputs.branch}}
+              run: yarn build:performance
+
+            - name: Run benchmarks
+              working-directory: ./packages/@lwc/perf-benchmarks
+              env:
+                  BENCHMARK_REF: ${{steps.previous_release.outputs.branch}}
+              run: yarn test:run
+
+            - name: Format results
+              working-directory: ./packages/@lwc/perf-benchmarks
+              run: yarn --silent test:format >> "$GITHUB_STEP_SUMMARY"
