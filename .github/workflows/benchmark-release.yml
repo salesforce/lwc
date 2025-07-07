@@ -57,7 +57,9 @@ jobs:
               working-directory: ./packages/@lwc/perf-benchmarks
               env:
                   BENCHMARK_REF: ${{steps.previous_release.outputs.branch}}
-              run: yarn test:run
+              run: |
+                  echo "Running benchmarks for $GITHUB_REF_NAME against $BENCHMARK_REF"
+                  yarn test:run
 
             - name: Format results
               working-directory: ./packages/@lwc/perf-benchmarks
