@@ -27,6 +27,7 @@ export default {
         'test/**/*.spec.js',
         // Failing Karma tests that need to be migrated to WTR
         '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
+        '!test/api/createElement/index.spec.js',
         '!test/api/CustomElementConstructor-getter/index.spec.js',
         '!test/api/freezeTemplate/index.spec.js',
         '!test/api/getComponentDef/index.spec.js',
@@ -68,6 +69,7 @@ export default {
         '!test/mixed-shadow-mode/composed-path/index.spec.js',
         '!test/mixed-shadow-mode/reporting/index.spec.js',
         '!test/mixed-shadow-mode/synthetic-behavior/index.spec.js',
+        '!test/mixed-shadow-mode/transitivity/index.spec.js',
         '!test/native-shadow/Event-methods/Event.composedPath.spec.js',
         '!test/polyfills/document-body-properties/index.spec.js',
         '!test/polyfills/document-properties/index.spec.js',
@@ -123,6 +125,7 @@ export default {
         '!test/wire/legacy-adapters/index.spec.js',
         '!test/wire/reactive-params.spec.js',
         '!test/wire/wirecontextevent-legacy/index.spec.js',
+        '!test/wire/wiring/index.spec.js',
     ],
     nodeResolve: true,
     rootDir: import.meta.dirname,
