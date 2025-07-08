@@ -20,6 +20,7 @@ import {
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
 } from './constants.mjs';
+import { addTrustedSignal } from './signals.mjs';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
@@ -309,13 +310,6 @@ function expectEquivalentDOM(element, html) {
     expect(fragment.body.childNodes.length).toBe(1); // only supports one top-level element
 
     expectEquivalent(element, fragment.body.firstChild);
-}
-
-const signalValidator = new WeakSet();
-LWC.setTrustedSignalSet(signalValidator);
-
-function addTrustedSignal(signal) {
-    signalValidator.add(signal);
 }
 
 export {
