@@ -7,6 +7,7 @@ import {
     nonStandardAriaProperties,
 } from './aria.mjs';
 import { setHooks, getHooks } from './hooks.mjs';
+import { spyConsole } from './console.mjs';
 import {
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
@@ -19,44 +20,6 @@ import {
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
 } from './constants.mjs';
-
-// TODO [#869]: Replace this custom spy with standard spyOn jasmine spy when logWarning doesn't use console.group
-// anymore. On IE11 console.group has a different behavior when the F12 inspector is attached to the page.
-function spyConsole() {
-    const originalConsole = window.console;
-    const calls = {
-        log: [],
-        warn: [],
-        error: [],
-        group: [],
-        groupEnd: [],
-    };
-
-    window.console = {
-        log: function () {
-            calls.log.push(Array.prototype.slice.call(arguments));
-        },
-        warn: function () {
-            calls.warn.push(Array.prototype.slice.call(arguments));
-        },
-        error: function () {
-            calls.error.push(Array.prototype.slice.call(arguments));
-        },
-        group: function () {
-            calls.group.push(Array.prototype.slice.call(arguments));
-        },
-        groupEnd: function () {
-            calls.groupEnd.push(Array.prototype.slice.call(arguments));
-        },
-    };
-
-    return {
-        calls: calls,
-        reset: function () {
-            window.console = originalConsole;
-        },
-    };
-}
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
