@@ -40,7 +40,7 @@ export const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
 
-export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST;
+export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST || 'development';
 
 export const GREP = process.env.GREP;
 
