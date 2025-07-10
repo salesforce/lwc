@@ -1,5 +1,5 @@
-import customRollup from '../helpers/lwc.mjs';
 import baseConfig from './base.mjs';
+import customRollup from './plugins/serve-integration.mjs';
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {

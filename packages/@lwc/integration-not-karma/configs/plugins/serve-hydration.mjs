@@ -3,10 +3,10 @@ import vm from 'node:vm';
 import fs from 'node:fs/promises';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from './options.mjs';
+import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.mjs';
 const lwcSsr = await (ENGINE_SERVER ? import('@lwc/engine-server') : import('@lwc/ssr-runtime'));
 
-const ROOT_DIR = path.join(import.meta.dirname, '..');
+const ROOT_DIR = path.join(import.meta.dirname, '../..');
 
 const context = {
     LWC: lwcSsr,

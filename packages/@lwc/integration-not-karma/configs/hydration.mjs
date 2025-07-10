@@ -1,7 +1,7 @@
 // Use native shadow by default in hydration tests; MUST be set before imports
 process.env.DISABLE_SYNTHETIC ??= 'true';
-import wrapHydrationTest from '../helpers/hydration-tests.mjs';
 import baseConfig from './base.mjs';
+import wrapHydrationTest from './plugins/serve-hydration.mjs';
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
