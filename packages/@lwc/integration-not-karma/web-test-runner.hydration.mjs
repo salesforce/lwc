@@ -33,7 +33,7 @@ export default {
         {
             resolveImport({ source }) {
                 if (source === 'test-utils') {
-                    return '/helpers/wtr-utils.mjs';
+                    return '/helpers/utils.mjs';
                 } else if (source === 'wire-service') {
                     return '@lwc/wire-service';
                 }
@@ -67,7 +67,6 @@ export default {
             )};
             </script>
             <script type="module" src="./helpers/setup.mjs"></script>
-            <script type="module" src="./helpers/wtr-utils.mjs"></script>
             <script type="module" src="${testFramework}"></script>
           </body>
         </html>`,

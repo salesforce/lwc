@@ -115,7 +115,7 @@ export default {
         {
             resolveImport({ source }) {
                 if (source === 'test-utils') {
-                    return '/helpers/wtr-utils.mjs';
+                    return '/helpers/utils.mjs';
                 } else if (source === 'wire-service') {
                     return '@lwc/wire-service';
                 }

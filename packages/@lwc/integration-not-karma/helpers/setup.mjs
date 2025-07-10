@@ -4,7 +4,7 @@ import * as chai from 'chai';
 import * as LWC from 'lwc';
 import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.mjs';
-import * as TestUtils from './wtr-utils.mjs';
+import * as TestUtils from './utils.mjs';
 
 // FIXME: As a relic of the Karma tests, some test files rely on
 window.TestUtils = TestUtils;

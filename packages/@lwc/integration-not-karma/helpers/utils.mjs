@@ -1,3 +1,6 @@
+/*
+ * An as yet uncategorized mishmash of helpers from
+ */
 import * as LWC from 'lwc';
 import {
     ariaAttributes,
