@@ -1,3 +1,5 @@
+// IMPORTANT: This file is used in both the node/setup environment and the browser/test environment
+
 import { HIGHEST_API_VERSION } from '@lwc/shared';
 
 // FIXME: Add jsdoc comments to each export explaining what it's used for
