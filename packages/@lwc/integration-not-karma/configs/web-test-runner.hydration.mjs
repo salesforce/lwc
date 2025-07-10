@@ -1,6 +1,7 @@
+import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import * as options from './helpers/options.mjs';
-import wrapHydrationTest from './helpers/hydration-tests.mjs';
+import * as options from '../helpers/options.mjs';
+import wrapHydrationTest from '../helpers/hydration-tests.mjs';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, Boolean(obj[k])]));
 
@@ -28,7 +29,7 @@ export default {
         '!test-hydration/light-dom/scoped-styles/replace-scoped-styles-with-dynamic-templates/index.spec.js',
     ],
     nodeResolve: true,
-    rootDir: import.meta.dirname,
+    rootDir: join(import.meta.dirname, '..'),
     plugins: [
         {
             resolveImport({ source }) {

@@ -1,6 +1,7 @@
+import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import customRollup from './helpers/lwc.mjs';
-import * as options from './helpers/options.mjs';
+import customRollup from '../helpers/lwc.mjs';
+import * as options from '../helpers/options.mjs';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, Boolean(obj[k])]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
@@ -110,7 +111,7 @@ export default {
         '!test/wire/wiring/index.spec.js',
     ],
     nodeResolve: true,
-    rootDir: import.meta.dirname,
+    rootDir: join(import.meta.dirname, '..'),
     plugins: [
         {
             resolveImport({ source }) {

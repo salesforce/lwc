@@ -4,8 +4,8 @@
     "version": "8.20.1",
     "scripts": {
         "start": "web-test-runner --manual",
-        "test": "web-test-runner",
-        "test:hydration": "web-test-runner --config web-test-runner.hydration.mjs"
+        "test": "web-test-runner --config configs/web-test-runner.config.mjs",
+        "test:hydration": "web-test-runner --config configs/web-test-runner.hydration.mjs"
     },
     "devDependencies": {
         "@lwc/compiler": "8.20.1",
