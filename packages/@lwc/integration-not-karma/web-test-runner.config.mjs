@@ -147,7 +147,6 @@ export default {
             ${maybeImport('@lwc/aria-reflection', options.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)}
             </script>
             <script type="module" src="./helpers/setup.mjs"></script>
-            <script type="module" src="./helpers/wtr-utils.mjs"></script>
             <script type="module" src="${testFramework}"></script>
           </body>
         </html>`,
