@@ -65,7 +65,6 @@ export default {
         '!test/wire/legacy-adapters/index.spec.js',
         '!test/wire/reactive-params.spec.js',
         '!test/wire/wirecontextevent-legacy/index.spec.js',
-        '!test/wire/wiring/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, testPlugin],
 };
