@@ -1,5 +1,5 @@
 import baseConfig from './base.mjs';
-import customRollup from './plugins/serve-integration.mjs';
+import testPlugin from './plugins/serve-integration.mjs';
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
@@ -90,14 +90,5 @@ export default {
         '!test/wire/wirecontextevent-legacy/index.spec.js',
         '!test/wire/wiring/index.spec.js',
     ],
-    plugins: [
-        ...baseConfig.plugins,
-        {
-            async serve(ctx) {
-                if (ctx.path.endsWith('.spec.js')) {
-                    return await customRollup(ctx);
-                }
-            },
-        },
-    ],
+    plugins: [...baseConfig.plugins, testPlugin],
 };

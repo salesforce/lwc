@@ -41,7 +41,7 @@ const createRollupPlugin = (input, options) => {
     });
 };
 
-export default async (ctx) => {
+const transform = async (ctx) => {
     const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
 
     const defaultRollupPlugin = createRollupPlugin(input);
@@ -105,4 +105,13 @@ export default async (ctx) => {
     });
 
     return output[0].code;
+};
+
+/** @type {import('@web/dev-server-core').Plugin} */
+export default {
+    async serve(ctx) {
+        if (ctx.path.endsWith('.spec.js')) {
+            return await transform(ctx);
+        }
+    },
 };
