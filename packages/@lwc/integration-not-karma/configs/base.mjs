@@ -2,7 +2,7 @@ import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import * as options from '../helpers/options.mjs';
 
-const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, Boolean(obj[k])]));
+const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
 
 /** `process.env` to inject into test environment. */
