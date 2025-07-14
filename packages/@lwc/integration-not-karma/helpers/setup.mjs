@@ -18,11 +18,34 @@ chai.use(JestAsymmetricMatchers);
 // add our custom matchers
 chai.use(registerCustomMatchers);
 
+/**
+ * Adds the jasmine interfaces we use in the Karma tests to a Vitest spy.
+ * Should ultimately be removed and tests updated to use Vitest spies.
+ * @param {import('@vitest/spy').MockInstance}
+ */
+function jasmineSpyAdapter(spy) {
+    Object.defineProperties(spy, {
+        and: { get: () => spy },
+        calls: { get: () => spy.mock.calls },
+        returnValue: { value: () => spy.mockReturnValue() },
+        // calling mockImplementation() with nothing restores the original
+        callThrough: { value: () => spy.mockImplementation() },
+    });
+
+    Object.assign(spy.mock.calls, {
+        allArgs: () => spy.mock.calls,
+        count: () => spy.mock.calls.length,
+        reset: () => spy.mockReset(),
+    });
+
+    return spy;
+}
+
 // expose so we don't need to import `expect` in every test file
 globalThis.expect = chai.expect;
 // Expose globals for karma compat
 globalThis.LWC = LWC;
-globalThis.spyOn = spyOn;
+globalThis.spyOn = (object, prop) => jasmineSpyAdapter(spyOn(object, prop));
 globalThis.jasmine = {
     any: () => {
         throw new Error(`TODO: jasmine.any`);
@@ -30,19 +53,7 @@ globalThis.jasmine = {
     arrayWithExactContents: () => {
         throw new Error('TODO: jasmine.arrayWithExactContents');
     },
-    createSpy: (name, impl) => {
-        const spy = fn(impl);
-        // Bridge for jasmine
-        spy.calls = {
-            count() {
-                return spy.mock.calls.length;
-            },
-            reset() {
-                spy.mockReset();
-            },
-        };
-        return spy;
-    },
+    createSpy: (name, impl) => jasmineSpyAdapter(fn(impl)),
     objectContaining: expect.objectContaining,
 };
 

@@ -7,15 +7,12 @@ export default {
     files: [
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
-        // Failing Karma tests that need to be migrated to WTR
         '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
         '!test/api/CustomElementConstructor-getter/index.spec.js',
         '!test/api/freezeTemplate/index.spec.js',
         '!test/api/getComponentDef/index.spec.js',
-        '!test/api/isNodeFromTemplate/index.spec.js',
         '!test/api/registerTemplate/index.spec.js',
         '!test/api/sanitizeAttribute/index.spec.js',
-        '!test/api/sanitizeHtmlContent/index.spec.js',
         '!test/component/face-callbacks/index.spec.js',
         '!test/component/LightningElement.addEventListener/index.spec.js',
         '!test/component/LightningElement.attachInternals/api/index.spec.js',
@@ -44,8 +41,6 @@ export default {
         '!test/rendering/iframe/index.spec.js',
         '!test/rendering/inner-outer-html/index.spec.js',
         '!test/rendering/legacy-stylesheet-api/index.spec.js',
-        // Flaky: passes when run alone, but hits timeouts when run with others
-        '!test/rendering/programmatic-stylesheets/index.spec.js',
         '!test/rendering/sanitize-stylesheet-token/index.spec.js',
         '!test/rendering/side-effects/index.spec.js',
         '!test/rendering/slotting/index.spec.js',
@@ -53,7 +48,6 @@ export default {
         '!test/rendering/version-mismatch/index.spec.js',
         '!test/shadow-dom/Element-properties/index.spec.js',
         '!test/shadow-dom/Event-properties/Event.target.spec.js',
-        '!test/shadow-dom/multiple-templates/index.spec.js',
         '!test/shadow-dom/Node-properties/Node.getRootNode.spec.js',
         '!test/shadow-dom/ShadowRoot.elementsFromPoint/index.spec.js',
         '!test/signal/protocol/index.spec.js',
@@ -61,11 +55,14 @@ export default {
         '!test/swapping/styles/index.spec.js',
         '!test/synthetic-shadow/dom-manual-sharing-nodes/index.spec.js',
         '!test/synthetic-shadow/element-api/element-api.spec.js',
-        '!test/synthetic-shadow/host-pseudo/index.spec.js',
-        // Flaky: sometimes passes, sometimes times out
-        '!test/synthetic-shadow/style-svg/index.spec.js',
         '!test/template/directive-for-each/index.spec.js',
         '!test/template/directive-lwc-render-mode/index.spec.js',
+
+        // Flaky tests that sometimes time out
+        '!test/rendering/programmatic-stylesheets/index.spec.js',
+        '!test/shadow-dom/multiple-templates/index.spec.js',
+        '!test/synthetic-shadow/host-pseudo/index.spec.js',
+        '!test/synthetic-shadow/style-svg/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, testPlugin],
 };
