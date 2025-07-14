@@ -62,9 +62,6 @@ export default {
         '!test/synthetic-shadow/host-pseudo/index.spec.js',
         '!test/template/directive-for-each/index.spec.js',
         '!test/template/directive-lwc-render-mode/index.spec.js',
-        '!test/wire/legacy-adapters/index.spec.js',
-        '!test/wire/reactive-params.spec.js',
-        '!test/wire/wirecontextevent-legacy/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, testPlugin],
 };

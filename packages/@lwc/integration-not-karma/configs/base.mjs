@@ -32,7 +32,8 @@ export default {
                 if (source === 'test-utils') {
                     return '/helpers/utils.mjs';
                 } else if (source === 'wire-service') {
-                    return '@lwc/wire-service';
+                    // `/__wds-outside-roout__/${depth}/` === '../'.repeat(depth)
+                    return '/__wds-outside-root__/1/wire-service/dist/index.js';
                 }
             },
             async transform(ctx) {
