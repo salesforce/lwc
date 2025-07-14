@@ -48,9 +48,7 @@ globalThis.expect = chai.expect;
 globalThis.LWC = LWC;
 globalThis.spyOn = (object, prop) => jasmineSpyAdapter(spyOn(object, prop));
 globalThis.jasmine = {
-    any: () => {
-        throw new Error(`TODO: jasmine.any`);
-    },
+    any: expect.any,
     arrayWithExactContents: () => {
         throw new Error('TODO: jasmine.arrayWithExactContents');
     },

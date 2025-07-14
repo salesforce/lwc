@@ -7,19 +7,13 @@ export default {
     files: [
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
-        '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
-        '!test/api/freezeTemplate/index.spec.js',
-        '!test/component/LightningElement.addEventListener/index.spec.js',
-        '!test/custom-elements-registry/index.spec.js',
         '!test/events/focus-event-related-target/index.spec.js',
-        '!test/integrations/locker/index.spec.js',
         '!test/light-dom/host-pseudo/index.spec.js',
         '!test/light-dom/multiple-templates/index.spec.js',
         '!test/light-dom/scoped-slot/if-block/index.spec.js',
         '!test/light-dom/scoped-styles/index.spec.js',
         '!test/light-dom/style-global/index.spec.js',
         '!test/misc/clean-dom/index.spec.js',
-        '!test/mixed-shadow-mode/composed-path/index.spec.js',
         '!test/polyfills/document-body-properties/index.spec.js',
         '!test/polyfills/document-properties/index.spec.js',
         '!test/profiler/mutation-logging/index.spec.js',
@@ -45,6 +39,14 @@ export default {
 
         // Cannot reassign properties of module
         '!test/api/sanitizeAttribute/index.spec.js',
+
+        // Hacky nonsense highly tailored to Karma
+        '!test/custom-elements-registry/index.spec.js',
+
+        // Logging mismatches
+        '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
+        '!test/api/freezeTemplate/index.spec.js',
+        '!test/component/LightningElement.addEventListener/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, testPlugin],
 };
