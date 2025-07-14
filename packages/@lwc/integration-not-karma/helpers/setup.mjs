@@ -32,10 +32,11 @@ function jasmineSpyAdapter(spy) {
         callThrough: { value: () => spy.mockImplementation() },
     });
 
-    Object.assign(spy.mock.calls, {
-        allArgs: () => spy.mock.calls,
-        count: () => spy.mock.calls.length,
-        reset: () => spy.mockReset(),
+    Object.defineProperties(spy.mock.calls, {
+        // Must be non-enumerable for equality checks to work on array literal expected values
+        allArgs: { value: () => spy.mock.calls },
+        count: { value: () => spy.mock.calls.length },
+        reset: { value: () => spy.mockReset() },
     });
 
     return spy;

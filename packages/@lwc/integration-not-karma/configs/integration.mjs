@@ -10,7 +10,6 @@ export default {
         '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
         '!test/api/freezeTemplate/index.spec.js',
         '!test/api/getComponentDef/index.spec.js',
-        '!test/api/sanitizeAttribute/index.spec.js',
         '!test/component/LightningElement.addEventListener/index.spec.js',
         '!test/component/native-vs-synthetic-lifecycle/index.spec.js',
         '!test/custom-elements-registry/index.spec.js',
@@ -33,13 +32,11 @@ export default {
         '!test/rendering/sanitize-stylesheet-token/index.spec.js',
         '!test/rendering/slotting/index.spec.js',
         '!test/rendering/stylesheet-caching/index.spec.js',
-        '!test/rendering/version-mismatch/index.spec.js',
         '!test/shadow-dom/ShadowRoot.elementsFromPoint/index.spec.js',
         '!test/signal/protocol/index.spec.js',
         '!test/spread/index.spec.js',
         '!test/swapping/styles/index.spec.js',
         '!test/template/directive-for-each/index.spec.js',
-        '!test/template/directive-lwc-render-mode/index.spec.js',
 
         // Flaky tests that sometimes time out
         '!test/rendering/programmatic-stylesheets/index.spec.js',
@@ -47,6 +44,9 @@ export default {
         '!test/synthetic-shadow/dom-manual-sharing-nodes/index.spec.js',
         '!test/synthetic-shadow/host-pseudo/index.spec.js',
         '!test/synthetic-shadow/style-svg/index.spec.js',
+
+        // Cannot reassign properties of module
+        '!test/api/sanitizeAttribute/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, testPlugin],
 };
