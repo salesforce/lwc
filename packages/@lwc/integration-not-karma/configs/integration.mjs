@@ -44,6 +44,8 @@ export default {
         '!test/rendering/iframe/index.spec.js',
         '!test/rendering/inner-outer-html/index.spec.js',
         '!test/rendering/legacy-stylesheet-api/index.spec.js',
+        // Flaky: passes when run alone, but hits timeouts when run with others
+        '!test/rendering/programmatic-stylesheets/index.spec.js',
         '!test/rendering/sanitize-stylesheet-token/index.spec.js',
         '!test/rendering/side-effects/index.spec.js',
         '!test/rendering/slotting/index.spec.js',
@@ -60,6 +62,8 @@ export default {
         '!test/synthetic-shadow/dom-manual-sharing-nodes/index.spec.js',
         '!test/synthetic-shadow/element-api/element-api.spec.js',
         '!test/synthetic-shadow/host-pseudo/index.spec.js',
+        // Flaky: sometimes passes, sometimes times out
+        '!test/synthetic-shadow/style-svg/index.spec.js',
         '!test/template/directive-for-each/index.spec.js',
         '!test/template/directive-lwc-render-mode/index.spec.js',
     ],
