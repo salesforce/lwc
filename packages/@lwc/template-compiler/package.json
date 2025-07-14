@@ -48,12 +48,12 @@
     "dependencies": {
         "@lwc/errors": "8.20.1",
         "@lwc/shared": "8.20.1",
-        "acorn": "~8.14.1",
+        "acorn": "~8.15.0",
         "astring": "~1.9.0",
         "he": "~1.2.0"
     },
     "devDependencies": {
-        "@parse5/tools": "^0.6.0",
+        "@parse5/tools": "^0.7.0",
         "@types/estree": "^1.0.8",
         "@types/he": "^1.2.3",
         "estree-walker": "~3.0.3",

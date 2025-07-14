@@ -26,7 +26,7 @@
         "@lwc/engine-server": "8.20.1",
         "@lwc/rollup-plugin": "8.20.1",
         "@lwc/synthetic-shadow": "8.20.1",
-        "@types/jasmine": "^5.1.7",
+        "@types/jasmine": "^5.1.8",
         "chokidar": "^4.0.3",
         "istanbul-lib-coverage": "^3.2.2",
         "istanbul-lib-report": "^3.0.1",
