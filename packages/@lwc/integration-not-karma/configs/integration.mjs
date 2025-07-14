@@ -9,7 +9,6 @@ export default {
         'test/**/*.spec.js',
         '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
         '!test/api/freezeTemplate/index.spec.js',
-        '!test/api/getComponentDef/index.spec.js',
         '!test/component/LightningElement.addEventListener/index.spec.js',
         '!test/component/native-vs-synthetic-lifecycle/index.spec.js',
         '!test/custom-elements-registry/index.spec.js',
