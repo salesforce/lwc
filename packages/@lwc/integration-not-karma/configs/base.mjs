@@ -47,7 +47,7 @@ export default {
     testRunnerHtml: (testFramework) =>
         `<!DOCTYPE html>
         <html>
-          <body>
+          <head>
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
@@ -59,6 +59,6 @@ export default {
             </script>
             <script type="module" src="./helpers/setup.mjs"></script>
             <script type="module" src="${testFramework}"></script>
-          </body>
+          </head>
         </html>`,
 };
