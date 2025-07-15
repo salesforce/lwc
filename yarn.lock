@@ -1975,9 +1975,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -12022,10 +12024,10 @@ table@^6.0.7:
     string-width "^4.2.3"
     strip-ansi "^6.0.1"
 
-tachometer@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/tachometer/-/tachometer-0.7.1.tgz#5564e04f7b752cc1c7baa23c6cae7c80033015f2"
-  integrity sha512-gOc7NfhriHamSFG9bBVzhB80V97jUoIPKz3QOO8vDma7hUwJSulShCUm+dS7qu2r+qH/dcvB1jFQnt/m2Z4O+w==
+tachometer@^0.7.2:
+  version "0.7.2"
+  resolved "https://registry.yarnpkg.com/tachometer/-/tachometer-0.7.2.tgz#111c6b179f90399c9207cfa3cad41429cd1714cd"
+  integrity sha512-e9dtDyWuMFyomQxo16vzti6ymoJd3Dp2yGfKrhAiNzCkb2HiP6A0+SWtqE84hcO6tSKZF8eTFqrxM2uKbliJyQ==
   dependencies:
     ansi-escape-sequences "^6.0.1"
     command-line-args "^5.0.2"

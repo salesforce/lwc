@@ -27,7 +27,7 @@
         "@best/runner-remote": "^14.0.0",
         "folder-hash": "4.1.1",
         "markdown-table": "^3.0.4",
-        "tachometer": "^0.7.1"
+        "tachometer": "^0.7.2"
     },
     "nx": {
         "targets": {
