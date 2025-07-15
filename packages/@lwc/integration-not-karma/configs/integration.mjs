@@ -8,7 +8,6 @@ export default {
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
         '!test/events/focus-event-related-target/index.spec.js',
-        '!test/light-dom/host-pseudo/index.spec.js',
         '!test/light-dom/multiple-templates/index.spec.js',
         '!test/light-dom/scoped-slot/if-block/index.spec.js',
         '!test/light-dom/scoped-styles/index.spec.js',
@@ -31,6 +30,7 @@ export default {
         '!test/template/directive-for-each/index.spec.js',
 
         // Flaky tests that sometimes time out
+        '!test/light-dom/host-pseudo/index.spec.js',
         '!test/rendering/programmatic-stylesheets/index.spec.js',
         '!test/shadow-dom/multiple-templates/index.spec.js',
         '!test/synthetic-shadow/dom-manual-sharing-nodes/index.spec.js',
