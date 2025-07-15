@@ -1,5 +1,5 @@
 /*
- * An as yet uncategorized mishmash of helpers from
+ * An as yet uncategorized mishmash of helpers, relics of Karma
  */
 import * as LWC from 'lwc';
 import {
