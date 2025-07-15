@@ -98,3 +98,10 @@ hijackGlobal('after', (after) => {
     // Expose as an alias for migration
     globalThis.afterAll = after;
 });
+
+hijackGlobal('afterEach', (afterEach) => {
+    afterEach(() => {
+        // Ensure the DOM is in a clean state
+        document.body.replaceChildren();
+    });
+});

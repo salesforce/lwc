@@ -819,7 +819,7 @@ describe('text containing comments', () => {
         describe(`preserveComments ${preserveComments}`, () => {
             let elm;
             let nodes;
-            beforeAll(async () => {
+            beforeEach(async () => {
                 elm = createElement(tagName, {
                     is: ctor,
                 });
@@ -829,7 +829,7 @@ describe('text containing comments', () => {
             });
 
             afterAll(() => {
-                document.body.removeChild(elm);
+                elm.remove();
             });
 
             const assertChildNodesInnerHTMLMatches = (actual, expected) => {

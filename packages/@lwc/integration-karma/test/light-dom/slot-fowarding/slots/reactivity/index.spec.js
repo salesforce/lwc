@@ -7,14 +7,14 @@ describe('light DOM slot forwarding reactivity', () => {
     let nodes;
     let lightContainer;
 
-    beforeAll(() => {
+    beforeEach(() => {
         lightContainer = createElement('x-light-container', { is: LightContainer });
         document.body.appendChild(lightContainer);
         nodes = extractDataIds(lightContainer);
     });
 
-    afterAll(() => {
-        document.body.removeChild(lightContainer);
+    afterEach(() => {
+        lightContainer.remove();
     });
 
     const verifySlotContent = (leaf, expected) => {
