@@ -6,7 +6,8 @@ import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.mjs';
 import * as TestUtils from './utils.mjs';
 
-// FIXME: As a relic of the Karma tests, some test files rely on
+// FIXME: As a relic of the Karma tests, some test files rely on the global object,
+// rather than importing from `test-utils`.
 window.TestUtils = TestUtils;
 
 // allows using expect.extend instead of chai.use to extend plugins
