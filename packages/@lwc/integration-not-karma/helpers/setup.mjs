@@ -31,6 +31,7 @@ function jasmineSpyAdapter(spy) {
         returnValue: { value: () => spy.mockReturnValue() },
         // calling mockImplementation() with nothing restores the original
         callThrough: { value: () => spy.mockImplementation() },
+        callFake: { value: (impl) => spy.mockImplementation(impl) },
     });
 
     Object.defineProperties(spy.mock.calls, {
