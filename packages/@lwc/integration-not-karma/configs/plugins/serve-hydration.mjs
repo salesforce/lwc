@@ -3,10 +3,10 @@ import vm from 'node:vm';
 import fs from 'node:fs/promises';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
-import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from './options.mjs';
+import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.mjs';
 const lwcSsr = await (ENGINE_SERVER ? import('@lwc/engine-server') : import('@lwc/ssr-runtime'));
 
-const ROOT_DIR = path.join(import.meta.dirname, '..');
+const ROOT_DIR = path.join(import.meta.dirname, '../..');
 
 const context = {
     LWC: lwcSsr,
@@ -177,7 +177,7 @@ async function existsUp(dir, file) {
  * Hydration test `index.spec.js` files are actually config files, not spec files.
  * This function wraps those configs in the test code to be executed.
  */
-export default async function wrapHydrationTest(filePath /* .../index.spec.js */) {
+async function wrapHydrationTest(filePath) {
     const suiteDir = path.dirname(filePath);
 
     // Wrap all the tests into a describe block with the file stricture name
@@ -230,3 +230,17 @@ export default async function wrapHydrationTest(filePath /* .../index.spec.js */
         });
     }
 }
+
+/** @type {import('@web/dev-server-core').Plugin} */
+export default {
+    async serve(ctx) {
+        // Hydration test "index.spec.js" files are actually just config files.
+        // They don't directly define the tests. Instead, when we request the file,
+        // we wrap it with some boilerplate. That boilerplate must include the config
+        // file we originally requested, so the ?original query parameter is used
+        // to return the file unmodified.
+        if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
+            return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
+        }
+    },
+};

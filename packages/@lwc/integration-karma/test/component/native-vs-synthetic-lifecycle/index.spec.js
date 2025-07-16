@@ -25,7 +25,8 @@ const expectLogs = (regexes) => {
         const args = logger.calls.allArgs();
         expect(args.length).toBe(regexes.length);
         for (let i = 0; i < args.length; i++) {
-            expect(args[i][0]).toMatch(regexes[i]);
+            expect(args[i][0]).toBeInstanceOf(Error);
+            expect(args[i][0].message).toMatch(regexes[i]);
         }
     }
 };

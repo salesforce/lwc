@@ -21,7 +21,7 @@ function filterCalls(echoAdapterSpy, methodType) {
 
 describe('wiring', () => {
     describe('component lifecycle and wire adapter', () => {
-        it('should call a connect when component is connected', () => {
+        it('should call a connect when component is connected', async () => {
             const spy = [];
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             AdapterId.setSpy(spy);
@@ -30,7 +30,7 @@ describe('wiring', () => {
             expect(filterCalls(spy, 'connect').length).toBe(1);
         });
 
-        it('should call a disconnect when component is disconnected', () => {
+        it('should call a disconnect when component is disconnected', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
@@ -40,7 +40,7 @@ describe('wiring', () => {
             expect(filterCalls(spy, 'disconnect').length).toBe(1);
         });
 
-        it('should call a connect and disconnect when component is connected, disconnected twice', () => {
+        it('should call a connect and disconnect when component is connected, disconnected twice', async () => {
             const spy = [];
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             AdapterId.setSpy(spy);
@@ -59,7 +59,7 @@ describe('wiring', () => {
     });
 
     describe('update method on wire adapter', () => {
-        it('should be called in same tick when component with wire no dynamic params is created', () => {
+        it('should be called in same tick when component with wire no dynamic params is created', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
@@ -83,7 +83,7 @@ describe('wiring', () => {
                 setFeatureFlagForTest('ENABLE_WIRE_SYNC_EMIT', false);
             });
 
-            it('should be called synchronously after connect when a component with wire that has dynamic params is created', () => {
+            it('should be called synchronously after connect when a component with wire that has dynamic params is created', async () => {
                 const spy = [];
                 AdapterId.setSpy(spy);
                 expect(spy.length).toBe(0);
@@ -96,7 +96,7 @@ describe('wiring', () => {
                 expect(spy[1].method).toBe('update');
             });
 
-            it('should call synchronously update only once when the component is created and a wire dynamic param is modified', () => {
+            it('should call synchronously update only once when the component is created and a wire dynamic param is modified', async () => {
                 const spy = [];
                 AdapterId.setSpy(spy);
                 expect(spy.length).toBe(0);
@@ -112,7 +112,7 @@ describe('wiring', () => {
             });
         });
 
-        it('should be called next tick when the component with wire that has dynamic params is created', () => {
+        it('should be called next tick when the component with wire that has dynamic params is created', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
@@ -130,7 +130,7 @@ describe('wiring', () => {
             });
         });
 
-        it('should call update only once when the component is created and a wire dynamic param is modified in the same tick', () => {
+        it('should call update only once when the component is created and a wire dynamic param is modified in the same tick', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
@@ -147,7 +147,7 @@ describe('wiring', () => {
             });
         });
 
-        it('should be called only once during multiple renders when the wire config does not change', () => {
+        it('should be called only once during multiple renders when the wire config does not change', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
@@ -165,7 +165,7 @@ describe('wiring', () => {
                 });
         });
 
-        it('should be called when the wire parameters change its value.', () => {
+        it('should be called when the wire parameters change its value.', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
@@ -186,7 +186,7 @@ describe('wiring', () => {
                 });
         });
 
-        it('should be called for common parameter when shared among wires', () => {
+        it('should be called for common parameter when shared among wires', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
@@ -209,7 +209,7 @@ describe('wiring', () => {
             });
         });
 
-        it('should not update when setting parameter with same value', () => {
+        it('should not update when setting parameter with same value', async () => {
             const spy = [];
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
@@ -255,7 +255,7 @@ describe('wiring', () => {
             expect(dynamicValue.textContent).toBe('modified value');
         });
 
-        it('should not call update when component is disconnected.', () => {
+        it('should not call update when component is disconnected.', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
@@ -272,7 +272,7 @@ describe('wiring', () => {
                 });
         });
 
-        it('should call update when component is re-connected.', () => {
+        it('should call update when component is re-connected.', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
@@ -302,7 +302,7 @@ describe('wiring', () => {
 });
 
 describe('wired fields', () => {
-    it('should rerender component when adapter pushes data', () => {
+    it('should rerender component when adapter pushes data', async () => {
         BroadcastAdapter.clearInstances();
         const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
         document.body.appendChild(elm);
@@ -322,7 +322,7 @@ describe('wired fields', () => {
             });
     });
 
-    it('should rerender component when wired field is mutated from within the component', () => {
+    it('should rerender component when wired field is mutated from within the component', async () => {
         BroadcastAdapter.clearInstances();
         const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
         document.body.appendChild(elm);
@@ -343,7 +343,7 @@ describe('wired fields', () => {
 });
 
 describe('wired methods', () => {
-    it('should call component method when wired to a method', () => {
+    it('should call component method when wired to a method', async () => {
         BroadcastAdapter.clearInstances();
         const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
         document.body.appendChild(elm);
@@ -355,7 +355,7 @@ describe('wired methods', () => {
         });
     });
 
-    it('should support method override', () => {
+    it('should support method override', async () => {
         const spy = [];
         EchoWireAdapter.setSpy(spy);
         const elm = createElement('x-inherited-methods', { is: InheritedMethods });
@@ -376,7 +376,7 @@ describe('wired methods', () => {
 });
 
 describe('context aware', () => {
-    it('should receive the source element tag name when adapter is constructed', () => {
+    it('should receive the source element tag name when adapter is constructed', async () => {
         const spy = [];
         ContextLog.setSpy(spy);
 

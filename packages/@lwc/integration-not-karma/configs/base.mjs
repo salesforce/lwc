@@ -1,8 +1,9 @@
+import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import * as options from './helpers/options.mjs';
-import wrapHydrationTest from './helpers/hydration-tests.mjs';
+import * as options from '../helpers/options.mjs';
 
-const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, Boolean(obj[k])]));
+const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
+const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
 
 /** `process.env` to inject into test environment. */
 const env = {
@@ -20,32 +21,21 @@ const env = {
     LWC_VERSION,
     NODE_ENV: options.NODE_ENV_FOR_TEST,
 };
+
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
-    files: [
-        // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
-        'test-hydration/**/*.spec.js',
-        '!test-hydration/light-dom/scoped-styles/replace-scoped-styles-with-dynamic-templates/index.spec.js',
-    ],
     nodeResolve: true,
-    rootDir: import.meta.dirname,
+    rootDir: join(import.meta.dirname, '..'),
     plugins: [
         {
             resolveImport({ source }) {
                 if (source === 'test-utils') {
-                    return '/helpers/wtr-utils.mjs';
+                    return '/helpers/utils.mjs';
                 } else if (source === 'wire-service') {
-                    return '@lwc/wire-service';
-                }
-            },
-            async serve(ctx) {
-                // Hydration test "index.spec.js" files are actually just config files.
-                // They don't directly define the tests. Instead, when we request the file,
-                // we wrap it with some boilerplate. That boilerplate must include the config
-                // file we originally requested, so the ?original query parameter is used
-                // to return the file unmodified.
-                if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
-                    return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
+                    // To serve files outside the web root (e.g. node_modules in the monorepo root),
+                    // @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
+                    // `/__wds-outside-root__/${depth}/` === '../'.repeat(depth)
+                    return '/__wds-outside-root__/1/wire-service/dist/index.js';
                 }
             },
             async transform(ctx) {
@@ -59,16 +49,19 @@ export default {
     testRunnerHtml: (testFramework) =>
         `<!DOCTYPE html>
         <html>
-          <body>
+          <head>
+            <!-- scripts are included in the head so that the body can be fully reset between tests -->
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
                 pluck(options, ['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'])
             )};
+
+            ${maybeImport('@lwc/synthetic-shadow', !options.DISABLE_SYNTHETIC)}
+            ${maybeImport('@lwc/aria-reflection', options.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)}
             </script>
             <script type="module" src="./helpers/setup.mjs"></script>
-            <script type="module" src="./helpers/wtr-utils.mjs"></script>
             <script type="module" src="${testFramework}"></script>
-          </body>
+          </head>
         </html>`,
 };
