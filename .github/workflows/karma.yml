@@ -22,7 +22,7 @@ env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
     GITHUB_RUN_ID: ${{github.run_id}}
     COVERAGE: '1'
-    NODE_VERSION: '20.18.1'
+    NODE_VERSION: '20.19.4'
 
 jobs:
     run-karma-tests-group-1:

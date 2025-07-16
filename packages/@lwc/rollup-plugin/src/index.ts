@@ -398,5 +398,6 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 
 // For backward compatibility with commonjs format
 if (typeof module !== 'undefined') {
-    module.exports = lwc;
+    // Using Object.defineProperty because regular assignment breaks when running with vite
+    Object.defineProperty(module, 'exports', { value: lwc });
 }
