@@ -7,14 +7,6 @@ export default {
     files: [
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
-        '!test/events/focus-event-related-target/index.spec.js',
-        '!test/light-dom/multiple-templates/index.spec.js',
-        '!test/light-dom/scoped-styles/index.spec.js',
-        '!test/light-dom/style-global/index.spec.js',
-        '!test/misc/clean-dom/index.spec.js',
-        '!test/profiler/mutation-logging/index.spec.js',
-        '!test/regression/invalid-key/index.spec.js',
-        '!test/rendering/iframe/index.spec.js',
         '!test/rendering/legacy-stylesheet-api/index.spec.js',
         '!test/rendering/sanitize-stylesheet-token/index.spec.js',
         '!test/rendering/stylesheet-caching/index.spec.js',
@@ -41,6 +33,19 @@ export default {
         '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
         '!test/api/freezeTemplate/index.spec.js',
         '!test/component/LightningElement.addEventListener/index.spec.js',
+        '!test/regression/invalid-key/index.spec.js',
+
+        // Needs clean <head>
+        '!test/light-dom/multiple-templates/index.spec.js',
+        '!test/light-dom/style-global/index.spec.js',
+        '!test/misc/clean-dom/index.spec.js',
+
+        // Passes alone, fails when run with everything
+        '!test/events/focus-event-related-target/index.spec.js',
+        '!test/light-dom/scoped-styles/index.spec.js',
+
+        // Implement objectContaining / arrayWithExactContents
+        '!test/profiler/mutation-logging/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, testPlugin],
 };
