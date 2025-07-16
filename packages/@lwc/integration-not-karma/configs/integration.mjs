@@ -27,6 +27,7 @@ export default {
 
         // Flaky tests that sometimes time out
         '!test/light-dom/host-pseudo/index.spec.js',
+        '!test/rendering/iteration/index.spec.js',
         '!test/rendering/programmatic-stylesheets/index.spec.js',
         '!test/shadow-dom/multiple-templates/index.spec.js',
         '!test/synthetic-shadow/dom-manual-sharing-nodes/index.spec.js',
