@@ -14,17 +14,16 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
             const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
             document.body.appendChild(root);
             const elm = root.shadowRoot.querySelector('div');
+            const mutate = () => fn(elm);
 
-            // eslint-disable-next-line vitest/valid-expect
-            let expected = expect(() => fn(elm));
-            if (process.env.NATIVE_SHADOW) {
-                expected = expected.not; // no error
-            }
-            expected.toLogWarningDev(
-                new RegExp(
-                    `\\[LWC warn\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
-                )
+            const warning = new RegExp(
+                `\\[LWC warn\\]: The \`${method}\` method is available only on elements that use the \`lwc:dom="manual"\` directive.`
             );
+            if (process.env.NATIVE_SHADOW) {
+                expect(mutate).not.toLogWarningDev(warning);
+            } else {
+                expect(mutate).toLogWarningDev(warning);
+            }
         });
     }
 

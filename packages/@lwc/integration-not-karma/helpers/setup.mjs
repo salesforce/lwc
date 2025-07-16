@@ -3,7 +3,7 @@ import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expe
 import * as chai from 'chai';
 import * as LWC from 'lwc';
 import { spyOn, fn } from '@vitest/spy';
-import { registerCustomMatchers } from './matchers.mjs';
+import { registerCustomMatchers } from './matchers/index.mjs';
 
 // allows using expect.extend instead of chai.use to extend plugins
 chai.use(JestExtend);
