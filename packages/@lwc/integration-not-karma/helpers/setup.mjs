@@ -39,6 +39,7 @@ function jasmineSpyAdapter(spy) {
         allArgs: { value: () => spy.mock.calls },
         count: { value: () => spy.mock.calls.length },
         reset: { value: () => spy.mockReset() },
+        argsFor: { value: (index) => spy.mock.calls.at(index) },
     });
 
     return spy;
