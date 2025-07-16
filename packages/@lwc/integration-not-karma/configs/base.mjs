@@ -32,7 +32,9 @@ export default {
                 if (source === 'test-utils') {
                     return '/helpers/utils.mjs';
                 } else if (source === 'wire-service') {
-                    // `/__wds-outside-roout__/${depth}/` === '../'.repeat(depth)
+                    // To serve files outside the web root (e.g. node_modules in the monorepo root),
+                    // @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
+                    // `/__wds-outside-root__/${depth}/` === '../'.repeat(depth)
                     return '/__wds-outside-root__/1/wire-service/dist/index.js';
                 }
             },
