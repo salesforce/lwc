@@ -81,7 +81,7 @@
         "*.{js,mjs,ts,only,skip}": "eslint --cache",
         "*.{css,js,json,md,mjs,ts,yaml,yml}": "prettier --check",
         "{packages/**/package.json,scripts/tasks/check-and-rewrite-package-json.js}": "node ./scripts/tasks/check-and-rewrite-package-json.js --test",
-        "{LICENSE-CORE.md,**/LICENSE.md,yarn.lock,scripts/tasks/generate-license-files.js,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.js --test"
+        "{LICENSE-CORE.md,**/LICENSE.md,yarn.lock,scripts/tasks/generate-license-files.mjs,scripts/shared/bundled-dependencies.js}": "node ./scripts/tasks/generate-license-files.mjs --test"
     },
     "workspaces": [
         "packages/@lwc/*",
