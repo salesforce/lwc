@@ -1,7 +1,16 @@
 import path from 'node:path';
 import { readFile, writeFile, stat, readdir } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
 import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
+
+const require = createRequire(import.meta.url);
+
+const atLwcPackages = (await readdir('packages/@lwc'))
+    // skip dotfiles like .DS_Store
+    .filter((_) => !_.startsWith('.'))
+    .map((_) => `@lwc/${_}`);
 
 // Generate our LICENSE files for each package, including any bundled dependencies
 // This is modeled after how Rollup does it:
@@ -17,14 +26,43 @@ async function exists(filename) {
     }
 }
 
+/**
+ * Tries `require.resolve` with additional paths (`packages/@lwc/___/node_modules`)
+ * and `import.meta.resolve` (unmodified) to find a package's entrypoint.
+ */
+function tryResolve(specifier) {
+    try {
+        // As far as I can tell, there's no way to modify the `import` lookup paths
+        return fileURLToPath(import.meta.resolve(specifier));
+    } catch (err) {
+        // We expect to see missing packages, but throw other errors
+        if (err.code !== 'ERR_MODULE_NOT_FOUND') {
+            throw err;
+        }
+    }
+    // `require.resolve` accepts a second parameter of additional places to look
+    return require.resolve(specifier, {
+        paths: atLwcPackages.map((pkg) => path.join('packages', pkg, 'node_modules')),
+    });
+}
+
+/**
+ * Finds a dependency in our monorepo.
+ * @param {string} specifier - package name to find
+ */
+function findPackageDirectory(specifier) {
+    const resolved = tryResolve(specifier);
+    // An import can resolve to a nested directory, e.g. dist/index.js. We want the package
+    // root, which will always be the last node_modules/${specifier}.
+    const lookup = path.join('/node_modules', specifier);
+    return resolved.slice(0, resolved.lastIndexOf(lookup) + lookup.length);
+}
+
 async function findLicenseText(depName) {
     // Iterate through possible names for the license file
     const names = ['LICENSE', 'LICENSE.md', 'LICENSE.txt'];
 
-    // We would use require.resolve, but 1) that doesn't work if the module lacks a "main" in its `package.json`,
-    // and 2) it gives us a deep `./path/to/index.js` which makes it harder to find a top-level LICENSE file. So
-    // just assume that our deps are hoisted to the top-level `node_modules`.
-    const resolvedDepPath = path.join(process.cwd(), 'node_modules', depName);
+    const resolvedDepPath = findPackageDirectory(depName);
 
     for (const name of names) {
         const fullFilePath = path.join(resolvedDepPath, name);
@@ -34,9 +72,9 @@ async function findLicenseText(depName) {
     }
 
     // Get the license from the package.json if we can't find it elsewhere
-    const pkgJson = JSON.parse(await readFile(path.join(resolvedDepPath, 'package.json'), 'utf-8'));
-
-    const { license, version } = pkgJson;
+    const { license, version } = JSON.parse(
+        await readFile(path.join(resolvedDepPath, 'package.json'), 'utf-8')
+    );
 
     return `${license} license defined in package.json in v${version}.`;
 }
@@ -65,10 +103,7 @@ const shouldWarnChanges =
 await writeFile('LICENSE.md', formattedLicense, 'utf-8');
 
 // License file for each package as well, so that we publish it to npm
-const atLwcPackages = (await readdir('packages/@lwc'))
-    // skip dotfiles like .DS_Store
-    .filter((_) => !_.startsWith('.'))
-    .map((_) => `@lwc/${_}`);
+
 const packages = ['lwc', ...atLwcPackages];
 
 await Promise.all(
