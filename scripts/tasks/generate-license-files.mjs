@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
 import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
 
+// We're using ESM here, but some packages still only export CJS, so we also need `require`
 const require = createRequire(import.meta.url);
 
 const atLwcPackages = (await readdir('packages/@lwc'))
