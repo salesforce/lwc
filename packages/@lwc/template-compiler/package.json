@@ -57,6 +57,6 @@
         "@types/estree": "^1.0.8",
         "@types/he": "^1.2.3",
         "estree-walker": "~3.0.3",
-        "parse5": "^7.3.0"
+        "parse5": "^8.0.0"
     }
 }
