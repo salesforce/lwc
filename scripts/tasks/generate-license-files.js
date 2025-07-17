@@ -1,13 +1,7 @@
-/*
- * Copyright (c) 2024, Salesforce, Inc.
- * All rights reserved.
- * SPDX-License-Identifier: MIT
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
- */
-const path = require('node:path');
-const { readFile, writeFile, stat, readdir } = require('node:fs/promises');
-const prettier = require('prettier');
-const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
+import path from 'node:path';
+import { readFile, writeFile, stat, readdir } from 'node:fs/promises';
+import prettier from 'prettier';
+import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
 
 // Generate our LICENSE files for each package, including any bundled dependencies
 // This is modeled after how Rollup does it:
@@ -47,54 +41,46 @@ async function findLicenseText(depName) {
     return `${license} license defined in package.json in v${version}.`;
 }
 
-async function main() {
-    const coreLicense = await readFile('LICENSE-CORE.md', 'utf-8');
+const coreLicense = await readFile('LICENSE-CORE.md', 'utf-8');
 
-    const bundledLicenses = await Promise.all(
-        BUNDLED_DEPENDENCIES.map(async (depName) => {
-            return `## ${depName}\n\n` + (await findLicenseText(depName));
-        })
-    );
-    const newLicense =
-        `# LWC core license\n\n${coreLicense}\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
-            '\n'
-        )}`.trim() + '\n';
+const bundledLicenses = await Promise.all(
+    BUNDLED_DEPENDENCIES.map(async (depName) => {
+        return `## ${depName}\n\n` + (await findLicenseText(depName));
+    })
+);
+const newLicense =
+    `# LWC core license\n\n${coreLicense}\n# Licenses of bundled dependencies\n\n${bundledLicenses.join(
+        '\n'
+    )}`.trim() + '\n';
 
-    const formattedLicense = await prettier.format(newLicense, {
-        parser: 'markdown',
-    });
-
-    // Check against current top-level license for changes
-    const shouldWarnChanges =
-        process.argv.includes('--test') &&
-        formattedLicense !== (await readFile('LICENSE.md', 'utf-8'));
-
-    // Top level license
-    await writeFile('LICENSE.md', formattedLicense, 'utf-8');
-
-    // License file for each package as well, so that we publish it to npm
-    const atLwcPackages = (await readdir('packages/@lwc'))
-        // skip dotfiles like .DS_Store
-        .filter((_) => !_.startsWith('.'))
-        .map((_) => `@lwc/${_}`);
-    const packages = ['lwc', ...atLwcPackages];
-
-    await Promise.all(
-        packages.map(async (pkg) => {
-            await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
-        })
-    );
-
-    if (shouldWarnChanges) {
-        const relativeFilename = path.relative(process.cwd(), __filename);
-        throw new Error(
-            'Either the LWC core license or the license of a bundled dependency has been updated.\n' +
-                `Please run \`node ${relativeFilename}\` and commit the result.`
-        );
-    }
-}
-
-main().catch((err) => {
-    console.error(err);
-    process.exitCode ||= 1;
+const formattedLicense = await prettier.format(newLicense, {
+    parser: 'markdown',
 });
+
+// Check against current top-level license for changes
+const shouldWarnChanges =
+    process.argv.includes('--test') && formattedLicense !== (await readFile('LICENSE.md', 'utf-8'));
+
+// Top level license
+await writeFile('LICENSE.md', formattedLicense, 'utf-8');
+
+// License file for each package as well, so that we publish it to npm
+const atLwcPackages = (await readdir('packages/@lwc'))
+    // skip dotfiles like .DS_Store
+    .filter((_) => !_.startsWith('.'))
+    .map((_) => `@lwc/${_}`);
+const packages = ['lwc', ...atLwcPackages];
+
+await Promise.all(
+    packages.map(async (pkg) => {
+        await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
+    })
+);
+
+if (shouldWarnChanges) {
+    const relativeFilename = path.relative(process.cwd(), import.meta.filename);
+    throw new Error(
+        'Either the LWC core license or the license of a bundled dependency has been updated.\n' +
+            `Please run \`node ${relativeFilename}\` and commit the result.`
+    );
+}
