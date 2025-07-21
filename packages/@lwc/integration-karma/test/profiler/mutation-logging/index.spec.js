@@ -4,7 +4,8 @@ import Child from 'x/child';
 import GetterThrows from 'x/getterThrows';
 
 const arr = jasmine.arrayWithExactContents;
-const obj = jasmine.objectContaining;
+// `jasmine.objectContaining` is long, but the method can't be detached/aliased, ergo wrapper
+const obj = (val) => jasmine.objectContaining(val);
 
 let entries = [];
 
