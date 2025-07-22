@@ -24,6 +24,9 @@ const env = {
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
+    // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
+    // time out before they receive focus. But it also makes the full suite take 3x longer to run...
+    concurrency: 1,
     nodeResolve: true,
     rootDir: join(import.meta.dirname, '..'),
     plugins: [

@@ -8,16 +8,6 @@ export default {
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
 
-        // Flaky tests that sometimes time out
-        '!test/light-dom/host-pseudo/index.spec.js',
-        '!test/rendering/iteration/index.spec.js',
-        '!test/rendering/programmatic-stylesheets/index.spec.js',
-        '!test/rendering/slotting/index.spec.js',
-        '!test/shadow-dom/multiple-templates/index.spec.js',
-        '!test/synthetic-shadow/dom-manual-sharing-nodes/index.spec.js',
-        '!test/synthetic-shadow/host-pseudo/index.spec.js',
-        '!test/synthetic-shadow/style-svg/index.spec.js',
-
         // Cannot reassign properties of module
         '!test/api/sanitizeAttribute/index.spec.js',
 
@@ -37,10 +27,6 @@ export default {
         '!test/light-dom/style-global/index.spec.js',
         '!test/misc/clean-dom/index.spec.js',
         '!test/swapping/styles/index.spec.js',
-
-        // Passes alone, fails when run with everything
-        '!test/events/focus-event-related-target/index.spec.js',
-        '!test/light-dom/scoped-styles/index.spec.js',
 
         // Implement objectContaining / arrayWithExactContents
         '!test/profiler/mutation-logging/index.spec.js',
