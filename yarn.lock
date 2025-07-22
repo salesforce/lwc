@@ -3818,7 +3818,7 @@
   dependencies:
     "@web/test-runner-core" "^0.13.0"
 
-"@web/test-runner@^0.20.1":
+"@web/test-runner@^0.20.2":
   version "0.20.2"
   resolved "https://registry.yarnpkg.com/@web/test-runner/-/test-runner-0.20.2.tgz#3045de8f14eb9f9b8aa51aa7fd9849dd95bb0a93"
   integrity sha512-zfEGYEDnS0EI8qgoWFjmtkIXhqP15W40NW3dCaKtbxj5eU0a7E53f3GV/tZGD0GlZKF8d4Fyw+AFrwOJU9Z4GA==
