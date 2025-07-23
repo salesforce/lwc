@@ -4783,6 +4783,17 @@ chai@^5.2.0:
     loupe "^3.1.0"
     pathval "^2.0.0"
 
+chai@^5.2.1:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-5.2.1.tgz#a9502462bdc79cf90b4a0953537a9908aa638b47"
+  integrity sha512-5nFxhUrX0PqtyogoYOA8IPswy5sZFTOsBFl/9bNsmDLgsxYTzSZQJDPppDnZPTQbzSEm0hqGjWPzRemQCYbD6A==
+  dependencies:
+    assertion-error "^2.0.1"
+    check-error "^2.1.1"
+    deep-eql "^5.0.1"
+    loupe "^3.1.0"
+    pathval "^2.0.0"
+
 chalk-template@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/chalk-template/-/chalk-template-0.4.0.tgz#692c034d0ed62436b9062c1707fadcd0f753204b"
