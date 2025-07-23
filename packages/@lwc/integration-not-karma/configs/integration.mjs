@@ -16,8 +16,6 @@ export default {
 
         // Logging mismatches
         '!test/component/LightningElement.addEventListener/index.spec.js',
-        '!test/regression/invalid-key/index.spec.js',
-        '!test/rendering/sanitize-stylesheet-token/index.spec.js',
 
         // Needs clean <head>
         '!test/light-dom/multiple-templates/index.spec.js',
