@@ -26,6 +26,7 @@ const env = {
 export default {
     // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
     // time out before they receive focus. But it also makes the full suite take 3x longer to run...
+    // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
     concurrency: 1,
     nodeResolve: true,
     rootDir: join(import.meta.dirname, '..'),
