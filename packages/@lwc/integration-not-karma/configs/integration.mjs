@@ -15,10 +15,8 @@ export default {
         '!test/custom-elements-registry/index.spec.js',
 
         // Logging mismatches
-        '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
         '!test/component/LightningElement.addEventListener/index.spec.js',
         '!test/regression/invalid-key/index.spec.js',
-        '!test/rendering/legacy-stylesheet-api/index.spec.js',
         '!test/rendering/sanitize-stylesheet-token/index.spec.js',
 
         // Needs clean <head>
