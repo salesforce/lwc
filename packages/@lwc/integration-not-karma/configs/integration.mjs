@@ -16,7 +16,6 @@ export default {
 
         // Logging mismatches
         '!test/accessibility/synthetic-cross-root-aria/index.spec.js',
-        '!test/api/freezeTemplate/index.spec.js',
         '!test/component/LightningElement.addEventListener/index.spec.js',
         '!test/regression/invalid-key/index.spec.js',
         '!test/rendering/legacy-stylesheet-api/index.spec.js',
