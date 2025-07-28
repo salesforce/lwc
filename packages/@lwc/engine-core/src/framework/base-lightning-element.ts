@@ -188,12 +188,17 @@ type RefNodes = { [name: string]: Element };
 
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
-/**
- * A `LightningElement` will always be attached to an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement),
- * rather than the more broad `Element` used by the generic shadow root interface.
- */
 export interface LightningElementShadowRoot extends ShadowRoot {
+    /**
+     * A `LightningElement` will always be attached to an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement),
+     * rather than the more broad `Element` used by the generic shadow root interface.
+     */
     readonly host: HTMLElement;
+    /**
+     * When present, indicates that the shadow root is the synthetic polyfill loaded by
+     * `@lwc/synethic-shadow`.
+     */
+    readonly synthetic?: true;
 }
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
