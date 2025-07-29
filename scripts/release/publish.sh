@@ -2,7 +2,9 @@
 
 # Find the commit on master that last changed the root package.json version,
 # then submit a PR to merge that commit onto the release branch and release via nucleus
+# Optionally set WORK_ITEM env var to include in commit/PR title
 # Usage: yarn release:publish [branch=release]
+# Example: WORK_ITEM=W-1234567 yarn release:publish
 
 set -e
 
@@ -29,8 +31,12 @@ git switch -c "$BRANCH" "$VERSION_SHA"
 git push origin HEAD
 
 if which gh >/dev/null; then
+  PR_TITLE="chore: release $VERSION"
+  if [ -n "$WORK_ITEM" ]; then
+    PR_TITLE+=" @$WORK_ITEM"
+  fi
   # Use GitHub CLI to create a PR and wait for CI checks to pass
-  gh pr create -t "chore: release $VERSION" -B "$RELEASE_BRANCH" -b ''
+  gh pr create -t  -B "$RELEASE_BRANCH" -b ''
   # Clean up locally
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"

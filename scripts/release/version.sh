@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 # Bump package versions for release and submit a PR on GitHub
+# Optionally set WORK_ITEM env var to include in commit/PR title
 # Usage: yarn release:version <version>
+# Example: WORK_ITEM=W-1234567 yarn release:version patch
 
 set -e
 
@@ -28,6 +30,9 @@ node "$(dirname "$0")/version.js" "$VERSION"
 # Input could have been major/minor/patch; update the var to the resolved version
 VERSION=$(jq -r .version package.json)
 VERSION_BUMP_MESSAGE="chore: bump version to $VERSION"
+if [ -n "$WORK_ITEM" ]; then
+  VERSION_BUMP_MESSAGE+=" @$WORK_ITEM"
+fi
 git commit -am "$VERSION_BUMP_MESSAGE"
 git push origin HEAD
 
