@@ -31,21 +31,21 @@ VERSION_BUMP_MESSAGE="chore: bump version to $VERSION"
 git commit -am "$VERSION_BUMP_MESSAGE"
 git push origin HEAD
 
-if which gh 2>/dev/null 1>/dev/null; then
-  # Use GitHub CLI to create a PR and wait for it to be merged before exiting
-  gh pr create -t "$VERSION_BUMP_MESSAGE" -b ''
-  gh pr merge --auto --squash --delete-branch
-  git switch "$BASE_BRANCH"
-  git branch -D "$BRANCH"
-  
-  sleep 3 # Give GitHub time to start CI before we check it
-  . "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
-  while [ "$(gh pr view "$BRANCH" --json state -q .state)" != 'MERGED' ]; do
-    sleep 3 # Wait for GitHub to auto-merge the PR
-  done
-
-else
-  # Clean up and prompt for manual branch creation
+if ! gh >/dev/null; then
+  # No GitHub CLI, gotta do it manually
   git switch "$BASE_BRANCH"
   echo "Open a PR: https://github.com/salesforce/lwc/pull/new/$BRANCH"
+  exit 0
 fi
+
+# Use GitHub CLI to create a PR and wait for it to be merged before exiting
+gh pr create -t "$VERSION_BUMP_MESSAGE" -b ''
+gh pr merge --auto --squash --delete-branch
+git switch "$BASE_BRANCH"
+git branch -D "$BRANCH"
+
+sleep 3 # Give GitHub time to start CI before we check it
+. "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
+while [ "$(gh pr view "$BRANCH" --json state -q .state)" != 'MERGED' ]; do
+  sleep 3 # Wait for GitHub to auto-merge the PR
+done
