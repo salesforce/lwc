@@ -12,6 +12,7 @@ import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered } from './temp
 import { runWithBoundaryProtection } from './vm';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
 import { LightningElement } from './base-lightning-element';
+import { getDecoratorsMeta } from './decorators/register';
 import type { Template } from './template';
 import type { VM } from './vm';
 import type { LightningElementConstructor } from './base-lightning-element';
@@ -72,6 +73,9 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
                 'Invalid component constructor, the class should extend LightningElement.'
             );
         }
+
+        // NEW: Migrate class fields to reactive system
+        migrateClassFieldsToReactiveSystem(vm, result);
     } catch (e) {
         error = Object(e);
     } finally {
@@ -84,6 +88,27 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
             throw error; // eslint-disable-line no-unsafe-finally
         }
     }
+}
+
+function migrateClassFieldsToReactiveSystem(vm: VM, component: LightningElement) {
+    const def = vm.def;
+    const decoratorsMeta = getDecoratorsMeta(def.ctor);
+    const observedFields = decoratorsMeta.observedFields || {};
+
+    // Get the field names that should be observed
+    const fieldNames = Object.keys(observedFields);
+
+    fieldNames.forEach((fieldName) => {
+        // Check if the field exists on the component but not in the reactive system
+        if (fieldName in component && !(fieldName in vm.cmpFields)) {
+            // Migrate the value to the reactive system
+            const value = (component as any)[fieldName];
+            vm.cmpFields[fieldName] = value;
+
+            // Remove the direct property to ensure future access goes through reactive system
+            delete (component as any)[fieldName];
+        }
+    });
 }
 
 export function invokeComponentRenderMethod(vm: VM): VNodes {
