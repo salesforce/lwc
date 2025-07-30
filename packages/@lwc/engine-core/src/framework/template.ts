@@ -471,7 +471,7 @@ function computeHasScopedStylesInStylesheets(stylesheets: Stylesheets | undefine
     return false;
 }
 
-export function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
+function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
     const { stylesheets } = template;
     const vmStylesheets = !isUndefined(vm) ? vm.stylesheets : null;
 
