@@ -64,7 +64,7 @@ echo "Nucleus release started: $RELEASE_JOB"
 # Wait for GitHub release to be created by Nucleus, then open it
 echo 'The GitHub release notes must be added manually. You can exit the script now and open GitHub on your own, or wait until the release is created and the script will open the page for you.'
 sleep 300 # Nucleus job usually takes ~5 minutes
-while ! gh release view "v$VERSION" 1>/dev/null 2>/dev/null; do
+while ! gh release view "v$VERSION" >/dev/null; do
   sleep 15
 done
 gh release view "v$VERSION" --web
