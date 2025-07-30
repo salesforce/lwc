@@ -30,40 +30,41 @@ VERSION=$(jq -r .version package.json)
 git switch -c "$BRANCH" "$VERSION_SHA"
 git push origin HEAD
 
-if which gh >/dev/null; then
-  PR_TITLE="chore: release $VERSION"
-  if [ -n "$WORK_ITEM" ]; then
-    PR_TITLE+=" @$WORK_ITEM"
-  fi
-  # Use GitHub CLI to create a PR and wait for CI checks to pass
-  gh pr create -t "$PR_TITLE" -b '' -B "$RELEASE_BRANCH" -H "$BRANCH"
-  # Clean up locally
-  git switch "$BASE_BRANCH"
-  git branch -D "$BRANCH"
-
-  # Wait for CI to complete
-  sleep 3 # Give GitHub time to kick off CI
-  . "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
-  if ! gh pr checks --fail-fast --watch; then
-    echo 'CI failed. Cannot continue with release.'
-    gh pr view "$BRANCH" --web
-    exit 1
-  fi
-
-  sleep 10 # Give nucleus time to start the release job
-  RELEASE_JOB=$(gh pr checks "$BRANCH" --json name,link -q '.[]|select(.name=="continuous-integration/nucleus/release").link')
-  echo "Nucleus release started: $RELEASE_JOB"
-
-  # Wait for GitHub release to be created by Nucleus, then open it
-  echo 'The GitHub release notes must be added manually. You can exit the script now and open GitHub on your own, or wait until the release is created and the script will open the page for you.'
-  sleep 300 # Nucleus job usually takes ~5 minutes
-  while ! gh release view "v$VERSION" 1>/dev/null 2>/dev/null; do
-    sleep 15
-  done
-  gh release view "v$VERSION" --web
-else
+if ! which gh >/dev/null; then
   # GitHub CLI not installed - clean up and prompt for manual branch creation
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
   echo "Open a PR: https://github.com/salesforce/lwc/pull/new/$BRANCH"
+  exit 0
 fi
+
+PR_TITLE="chore: release $VERSION"
+if [ -n "$WORK_ITEM" ]; then
+  PR_TITLE+=" @$WORK_ITEM"
+fi
+# Use GitHub CLI to create a PR and wait for CI checks to pass
+gh pr create -t "$PR_TITLE" -b '' -B "$RELEASE_BRANCH" -H "$BRANCH"
+# Clean up locally
+git switch "$BASE_BRANCH"
+git branch -D "$BRANCH"
+
+# Wait for CI to complete
+sleep 3 # Give GitHub time to kick off CI
+. "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
+if ! gh pr checks --fail-fast --watch; then
+  echo 'CI failed. Cannot continue with release.'
+  gh pr view "$BRANCH" --web
+  exit 1
+fi
+
+sleep 10 # Give nucleus time to start the release job
+RELEASE_JOB=$(gh pr checks "$BRANCH" --json name,link -q '.[]|select(.name=="continuous-integration/nucleus/release").link')
+echo "Nucleus release started: $RELEASE_JOB"
+
+# Wait for GitHub release to be created by Nucleus, then open it
+echo 'The GitHub release notes must be added manually. You can exit the script now and open GitHub on your own, or wait until the release is created and the script will open the page for you.'
+sleep 300 # Nucleus job usually takes ~5 minutes
+while ! gh release view "v$VERSION" 1>/dev/null 2>/dev/null; do
+  sleep 15
+done
+gh release view "v$VERSION" --web
