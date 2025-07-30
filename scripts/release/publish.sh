@@ -36,7 +36,7 @@ if which gh >/dev/null; then
     PR_TITLE+=" @$WORK_ITEM"
   fi
   # Use GitHub CLI to create a PR and wait for CI checks to pass
-  gh pr create -t  -B "$RELEASE_BRANCH" -b ''
+  gh pr create -t "$PR_TITLE" -b '' -B "$RELEASE_BRANCH" -H "$BRANCH"
   # Clean up locally
   git switch "$BASE_BRANCH"
   git branch -D "$BRANCH"
