@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -20,12 +20,11 @@ import { logError } from '../shared/logger';
 
 import api from './api';
 import { RenderMode, ShadowMode } from './vm';
-import { computeHasScopedStyles, hasStyles } from './template';
+import { hasStyles } from './template';
 import { getStyleOrSwappedStyle } from './hot-swaps';
 import { checkVersionMismatch } from './check-version-mismatch';
-import { getComponentInternalDef } from './def';
 import { assertNotProd, EmptyArray } from './utils';
-import type { VCustomElement, VNode } from './vnodes';
+import type { VNode } from './vnodes';
 import type { Template } from './template';
 import type { VM } from './vm';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
@@ -319,22 +318,6 @@ export function getScopeTokenClass(owner: VM, legacy: boolean): string | null {
             (legacy ? cmpTemplate?.legacyStylesheetToken : cmpTemplate?.stylesheetToken)) ||
         null
     );
-}
-
-/**
- * This function returns the host style token for a custom element if it
- * exists. Otherwise it returns null.
- *
- * A host style token is applied to the component if scoped styles are used.
- * @param vnode
- */
-export function getStylesheetTokenHost(vnode: VCustomElement): string | null {
-    const { template } = getComponentInternalDef(vnode.ctor);
-    const { vm } = vnode;
-    const { stylesheetToken } = template;
-    return !isUndefined(stylesheetToken) && computeHasScopedStyles(template, vm)
-        ? makeHostToken(stylesheetToken)
-        : null;
 }
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {
