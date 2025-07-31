@@ -34,7 +34,7 @@
         "test:types": "nx test @lwc/integration-types",
         "release:version": "./scripts/release/version.sh",
         "release:publish": "./scripts/release/publish.sh",
-        "release:publish:canary": "nx release publish --registry https://registry.npmjs.org"
+        "release:publish:canary": "nx release publish --registry https://registry.npmjs.org --tag canary"
     },
     "devDependencies": {
         "@commitlint/cli": "^19.8.1",
