@@ -57,7 +57,7 @@ describe('slot forwarding', () => {
     });
 
     afterAll(() => {
-        document.body.removeChild(lightContainer);
+        lightContainer.remove();
     });
 
     it('should correctly forward slot assignments - light > light slot', () => {

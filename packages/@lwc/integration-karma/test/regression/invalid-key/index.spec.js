@@ -15,13 +15,12 @@ it('W-15885661 - renders list when key is invalid (preserve backwards compat)', 
     elm.items = [{ value: 1 }];
     await Promise.resolve();
 
-    const {
-        calls: { error },
-    } = spy;
-    expect(error.length).toBe(process.env.NODE_ENV === 'production' ? 0 : 2);
-    error.forEach((error) =>
-        expect(error).toMatch(/(Invalid key value.*|Invalid "key" attribute.*)/)
-    );
+    const errorCalls = spy.calls.error;
+    expect(errorCalls.length).toBe(process.env.NODE_ENV === 'production' ? 0 : 2);
+    errorCalls.forEach(([error]) => {
+        expect(error).toBeInstanceOf(Error);
+        expect(error.message).toMatch(/(Invalid key value.*|Invalid "key" attribute.*)/);
+    });
 
     spy.reset();
 

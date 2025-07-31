@@ -16,7 +16,7 @@
         "@types/chai": "^5.2.2",
         "@types/jasmine": "^5.1.8",
         "@web/dev-server-rollup": "^0.6.4",
-        "@web/test-runner": "^0.20.1",
+        "@web/test-runner": "^0.20.2",
         "chai": "^5.2.1"
     },
     "volta": {

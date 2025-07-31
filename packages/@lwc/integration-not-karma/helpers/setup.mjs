@@ -31,6 +31,7 @@ function jasmineSpyAdapter(spy) {
         returnValue: { value: () => spy.mockReturnValue() },
         // calling mockImplementation() with nothing restores the original
         callThrough: { value: () => spy.mockImplementation() },
+        callFake: { value: (impl) => spy.mockImplementation(impl) },
     });
 
     Object.defineProperties(spy.mock.calls, {
@@ -38,6 +39,7 @@ function jasmineSpyAdapter(spy) {
         allArgs: { value: () => spy.mock.calls },
         count: { value: () => spy.mock.calls.length },
         reset: { value: () => spy.mockReset() },
+        argsFor: { value: (index) => spy.mock.calls.at(index) },
     });
 
     return spy;
@@ -97,4 +99,19 @@ hijackGlobal('before', (before) => {
 hijackGlobal('after', (after) => {
     // Expose as an alias for migration
     globalThis.afterAll = after;
+});
+
+hijackGlobal('afterEach', (afterEach) => {
+    afterEach(() => {
+        // FIXME: Boost test speed by moving this to only files that need it
+        // Ensure the DOM is in a clean state
+        document.body.replaceChildren();
+    });
+});
+
+hijackGlobal('beforeEach', (beforeEach) => {
+    beforeEach(() => {
+        // FIXME: Boost test speed by moving this to only files that need it
+        window.__lwcResetAlreadyLoggedMessages();
+    });
 });
