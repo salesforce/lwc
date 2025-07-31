@@ -13,7 +13,7 @@ if [ -z "$BRANCH" ]; then
 fi
 
 # Wait for CI to complete
-if ! gh pr checks --fail-fast --watch; then
+if ! gh pr checks --fail-fast --watch "$BRANCH"; then
   echo 'CI failed. Cannot continue with release.'
   gh pr view "$BRANCH" --web
   exit 1
