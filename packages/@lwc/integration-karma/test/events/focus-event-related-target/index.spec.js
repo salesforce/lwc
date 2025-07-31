@@ -6,6 +6,7 @@ import Container from 'x/container';
 // So this test may "flap" during local development if your browser window isn't focused (e.g. you're focused on
 // the DevTools instead).
 it('should retarget relatedTarget', function () {
+    expect(document.hasFocus(), 'Browser window must be focused for test to work').toBe(true);
     const elm = createElement('x-container', { is: Container });
     document.body.appendChild(elm);
 
