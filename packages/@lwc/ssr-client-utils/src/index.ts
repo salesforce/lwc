@@ -24,6 +24,10 @@ class StyleDeduplicator extends HTMLElement {
             root.adoptedStyleSheets.push(stylesheet);
             const placeholder = document.createElement('style');
             placeholder.setAttribute('type', 'text/css');
+
+            // TODO [#2869]: `<style>`s should not have scope token classes but they are required for hydration to function correctly (W-19087941).
+            this.classList.forEach((className) => placeholder.classList.add(className));
+
             // Not-first <lwc-style> should be replaced with a placeholder <style>, since that's
             // what the diffing algorithm and hydration logic will expect to find
             this.replaceWith(placeholder);
@@ -55,4 +59,11 @@ class StyleDeduplicator extends HTMLElement {
  */
 export function registerLwcStyleComponent() {
     customElements.define('lwc-style', StyleDeduplicator);
+}
+
+/**
+ * Clears the stylesheet cache. This is useful for testing purposes.
+ */
+export function clearStylesheetCache() {
+    stylesheetCache.clear();
 }
