@@ -39,7 +39,7 @@ const attachInternalsSanityTest = (tagName, ctor) => {
         });
 
         afterAll(() => {
-            document.body.removeChild(elm);
+            elm.remove();
         });
 
         it('should be able to create ElementInternals object', () => {

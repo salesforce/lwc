@@ -10,7 +10,7 @@ describe('scoped slots, slot forwarding', () => {
     });
 
     afterAll(() => {
-        document.body.removeChild(lightContainer);
+        lightContainer.remove();
     });
 
     // TODO [#3889]: This test should be updated once a fix is ready.
