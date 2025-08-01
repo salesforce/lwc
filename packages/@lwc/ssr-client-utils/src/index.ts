@@ -61,9 +61,7 @@ export function registerLwcStyleComponent() {
     customElements.define('lwc-style', StyleDeduplicator);
 }
 
-/**
- * Clears the stylesheet cache. This is useful for testing purposes.
- */
-export function clearStylesheetCache() {
-    stylesheetCache.clear();
+// Only used in LWC's Karma tests
+if (process.env.NODE_ENV === 'test-karma-lwc') {
+    (window as any).__lwcClearStylesheetCache = () => stylesheetCache.clear();
 }

@@ -33,7 +33,7 @@ window.HydrateTest = (function (lwc, testUtils) {
     }
 
     function runTest(ssrRendered, Component, testConfig) {
-        window.LwcSsrClientUtils.clearStylesheetCache();
+        window.__lwcClearStylesheetCache();
         const container = appendTestTarget(ssrRendered);
         const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
