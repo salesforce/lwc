@@ -77,7 +77,13 @@ async function getCompiledModule(dirName, compileForSSR) {
             }),
         ],
 
-        external: ['lwc', '@lwc/ssr-runtime', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
+        external: [
+            'lwc',
+            '@lwc/ssr-runtime',
+            'test-utils',
+            '@test/loader',
+            '@lwc/ssr-client-utils',
+        ], // @todo: add ssr modules for test-utils and @test/loader
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin
@@ -96,6 +102,7 @@ async function getCompiledModule(dirName, compileForSSR) {
             lwc: 'LWC',
             '@lwc/ssr-runtime': 'LWC',
             'test-utils': 'TestUtils',
+            '@lwc/ssr-client-utils': 'LwcSsrClientUtils',
         },
     });
 
@@ -156,7 +163,7 @@ async function getSsrCode(moduleCode, testConfig, filename, expectedSSRConsoleCa
                 'x-${COMPONENT_UNDER_TEST}-${guid++}',
                 Main,
                 config.props || {},
-                false,
+                true,
                 'sync'
             );
         `,

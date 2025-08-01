@@ -23,12 +23,13 @@ const COVERAGE_DIR = path.resolve(__dirname, '../../../coverage');
 
 const SYNTHETIC_SHADOW = require.resolve('@lwc/synthetic-shadow/dist/index.js');
 const LWC_ENGINE = require.resolve('@lwc/engine-dom/dist/index.js');
+const SSR_CLIENT_UTILS = require.resolve('@lwc/ssr-client-utils/dist/index.js');
 
 const TEST_UTILS = require.resolve('../../../helpers/test-utils');
 const TEST_SETUP = require.resolve('../../../helpers/test-setup');
 const TEST_HYDRATE = require.resolve('../../../helpers/test-hydrate');
 
-const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE];
+const ALL_FRAMEWORK_FILES = [SYNTHETIC_SHADOW, LWC_ENGINE, SSR_CLIENT_UTILS];
 
 // Fix Node warning about >10 event listeners ("Possible EventEmitter memory leak detected").
 // This is due to the fact that we are running so many simultaneous rollup commands
@@ -40,6 +41,7 @@ function getFiles() {
     const files = [
         ...(ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION ? [createPattern(SYNTHETIC_SHADOW)] : []),
         createPattern(LWC_ENGINE),
+        createPattern(SSR_CLIENT_UTILS),
         createPattern(TEST_SETUP),
         createPattern(TEST_UTILS),
         createPattern(TEST_HYDRATE),

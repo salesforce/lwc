@@ -10,6 +10,8 @@ window.HydrateTest = (function (lwc, testUtils) {
         sanitizeHtmlContent: (content) => content,
     });
 
+    window.LwcSsrClientUtils.registerLwcStyleComponent();
+
     function parseStringToDom(html) {
         return Document.parseHTMLUnsafe(html).body.firstChild;
     }
@@ -31,6 +33,7 @@ window.HydrateTest = (function (lwc, testUtils) {
     }
 
     function runTest(ssrRendered, Component, testConfig) {
+        window.__lwcClearStylesheetCache();
         const container = appendTestTarget(ssrRendered);
         const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
