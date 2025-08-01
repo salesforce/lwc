@@ -49,21 +49,15 @@ updates:
               patterns:
                   - 'webdriverio'
                   - '@wdio/*'
-              update-types:
-                  - 'major'
-                  - 'minor'
-                  - 'patch'
           vitest:
               patterns:
                   - 'vitest'
                   - '@vitest/*'
-              update-types:
-                  - 'major'
-                  - 'minor'
-                  - 'patch'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:
               update-types:
                   - 'minor'
                   - 'patch'
+              exclude-patterns:
+                  - '@wdio/*'
