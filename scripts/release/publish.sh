@@ -27,13 +27,13 @@ VERSION_SHA=$(git blame -- package.json | grep '"version":' | cut -d' ' -f1)
 VERSION=$(jq -r .version package.json)
 
 # Create a new branch with the changes to release
-git switch -c "$BRANCH" "$VERSION_SHA"
-git push origin HEAD
+git branch "$BRANCH" "$VERSION_SHA"
+git push -u origin "$BRANCH"
+git branch -D "$BRANCH"
+
 
 if ! which gh >/dev/null; then
   # GitHub CLI not installed - clean up and prompt for manual branch creation
-  git switch "$BASE_BRANCH"
-  git branch -D "$BRANCH"
   echo "Open a PR: https://github.com/salesforce/lwc/pull/new/$BRANCH"
   exit 0
 fi
@@ -44,14 +44,11 @@ if [ -n "$WORK_ITEM" ]; then
 fi
 # Use GitHub CLI to create a PR and wait for CI checks to pass
 gh pr create -t "$PR_TITLE" -b '' -B "$RELEASE_BRANCH" -H "$BRANCH"
-# Clean up locally
-git switch "$BASE_BRANCH"
-git branch -D "$BRANCH"
 
 # Wait for CI to complete
 sleep 3 # Give GitHub time to kick off CI
 . "$(dirname "$0")/wait-for-pr.sh" "$BRANCH"
-if ! gh pr checks --fail-fast --watch; then
+if ! gh pr checks "$BRANCH" --fail-fast --watch; then
   echo 'CI failed. Cannot continue with release.'
   gh pr view "$BRANCH" --web
   exit 1

@@ -44,8 +44,10 @@ if ! gh >/dev/null; then
 fi
 
 # Use GitHub CLI to create a PR and wait for it to be merged before exiting
-gh pr create -t "$VERSION_BUMP_MESSAGE" -b ''
-gh pr merge --auto --squash --delete-branch
+gh pr create -t "$VERSION_BUMP_MESSAGE" -b '' -B "$BASE_BRANCH" -H "$BRANCH"
+# Squash on master, but not backports
+[ "$BASE_BRANCH" == 'master' ] && SQUASH='--squash'
+gh pr merge --auto --delete-branch $SQUASH
 git switch "$BASE_BRANCH"
 git branch -D "$BRANCH"
 
