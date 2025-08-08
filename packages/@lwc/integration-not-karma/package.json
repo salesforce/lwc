@@ -1,18 +1,18 @@
 {
     "name": "@lwc/integration-not-karma",
     "private": true,
-    "version": "8.20.3",
+    "version": "8.20.4",
     "scripts": {
         "start": "web-test-runner --manual",
         "test": "web-test-runner --config configs/integration.mjs",
         "test:hydration": "web-test-runner --config configs/hydration.mjs"
     },
     "devDependencies": {
-        "@lwc/compiler": "8.20.3",
-        "@lwc/engine-dom": "8.20.3",
-        "@lwc/engine-server": "8.20.3",
-        "@lwc/rollup-plugin": "8.20.3",
-        "@lwc/synthetic-shadow": "8.20.3",
+        "@lwc/compiler": "8.20.4",
+        "@lwc/engine-dom": "8.20.4",
+        "@lwc/engine-server": "8.20.4",
+        "@lwc/rollup-plugin": "8.20.4",
+        "@lwc/synthetic-shadow": "8.20.4",
         "@types/chai": "^5.2.2",
         "@types/jasmine": "^5.1.8",
         "@web/dev-server-rollup": "^0.6.4",
