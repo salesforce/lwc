@@ -62,6 +62,6 @@ export function registerLwcStyleComponent() {
 }
 
 // Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+if (typeof process !== 'undefined' && process?.env?.NODE_ENV === 'test-karma-lwc') {
     (window as any).__lwcClearStylesheetCache = () => stylesheetCache.clear();
 }
