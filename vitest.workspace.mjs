@@ -12,6 +12,7 @@ export default defineWorkspace([
     'packages/@lwc/rollup-plugin',
     'packages/@lwc/shared',
     'packages/@lwc/signals',
+    'packages/@lwc/ssr-client-utils',
     'packages/@lwc/ssr-compiler',
     'packages/@lwc/ssr-runtime',
     'packages/@lwc/style-compiler',
