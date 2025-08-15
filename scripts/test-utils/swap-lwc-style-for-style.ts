@@ -50,7 +50,8 @@ export function swapLwcStyleForStyleTag(src: string): string {
         });
     }
 
-    const lwcStyleCapture = /(\s*)<lwc-style style-id="([^"]+)">[^<]*<\/lwc-style>/s;
+    const lwcStyleCapture =
+        /(\s*)<lwc-style(?: class="[^"]*")? style-id="([^"]+)">[^<]*<\/lwc-style>/s;
     const idToStyleTag = Object.fromEntries(
         capturedStyleTags.map((styleTagInfo) => [styleTagInfo.styleId, styleTagInfo])
     );

@@ -71,10 +71,12 @@ export function renderStylesheets(
         if (!styleDedupeIsEnabled) {
             const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
             validateStyleTextContents(styleContents);
+            // TODO [#2869]: `<style>`s should not have scope token classes
             result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
         } else if (stylesheetToId.has(stylesheet)) {
             const styleId = stylesheetToId.get(stylesheet);
-            result += `<lwc-style style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
+            // TODO [#2869]: `<lwc-style>`s should not have scope token classes, but required for hydration to function correctly (W-19087941).
+            result += `<lwc-style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
         } else {
             const styleId = emit.cxt.nextId++;
             stylesheetToId.set(stylesheet, styleId.toString());

@@ -31,10 +31,10 @@ At a high level, the `@lwc/compiler` calls into three other packages to process 
 
 ```mermaid
 graph TD
-     compiler[@lwc/compiler];
-     templatecompiler[@lwc/template-compiler];
-     babelplugincomponent[@lwc/babel-plugin-component];
-     stylecompiler[@lwc/style-compiler];
+     compiler["@lwc/compiler"];
+     templatecompiler["@lwc/template-compiler"];
+     babelplugincomponent["@lwc/babel-plugin-component"];
+     stylecompiler["@lwc/style-compiler"];
      compiler-->|HTML|templatecompiler;
      compiler-->|CSS|stylecompiler;
      compiler-->|JS|babelplugincomponent;
@@ -52,11 +52,11 @@ We can complicate the diagram a bit more by including `@lwc/rollup-plugin`[^roll
 
 ```mermaid
 graph TD
-     rollupplugin[@lwc/rollup-plugin];
-     compiler[@lwc/compiler];
-     templatecompiler[@lwc/template-compiler];
-     babelplugincomponent[@lwc/babel-plugin-component];
-     stylecompiler[@lwc/style-compiler];
+     rollupplugin["@lwc/rollup-plugin"];
+     compiler["@lwc/compiler"];
+     templatecompiler["@lwc/template-compiler"];
+     babelplugincomponent["@lwc/babel-plugin-component"];
+     stylecompiler["@lwc/style-compiler"];
      rollupplugin-->compiler;
      compiler-->|HTML|templatecompiler;
      compiler-->|CSS|stylecompiler;
@@ -67,12 +67,12 @@ This also gets more complex once we include the SSR compiler:
 
 ```mermaid
 graph TD
-     rollupplugin[@lwc/rollup-plugin];
-     compiler[@lwc/compiler];
-     templatecompiler[@lwc/template-compiler];
-     babelplugincomponent[@lwc/babel-plugin-component];
-     stylecompiler[@lwc/style-compiler];
-     ssrcompiler[@lwc/ssr-compiler];
+     rollupplugin["@lwc/rollup-plugin"];
+     compiler["@lwc/compiler"];
+     templatecompiler["@lwc/template-compiler"];
+     babelplugincomponent["@lwc/babel-plugin-component"];
+     stylecompiler["@lwc/style-compiler"];
+     ssrcompiler["@lwc/ssr-compiler"];
      rollupplugin-->compiler;
      compiler-->|HTML|templatecompiler;
      compiler-->|CSS|stylecompiler;
@@ -90,9 +90,9 @@ At runtime, the core logic of the client-side LWC engine is in `@lwc/engine-core
 
 ```mermaid
 graph TD
-     enginedom[@lwc/engine-dom];
-     enginecore[@lwc/engine-core];
-     engineserver[@lwc/engine-server];
+     enginedom["@lwc/engine-dom"];
+     enginecore["@lwc/engine-core"];
+     engineserver["@lwc/engine-server"];
      enginedom-->enginecore;
      engineserver-->enginecore;
 ```

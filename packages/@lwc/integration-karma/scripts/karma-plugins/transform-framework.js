@@ -26,6 +26,8 @@ function getIifeName(filename) {
     } else if (filename.includes('aria-reflection')) {
         // aria reflection global polyfill does not need an IIFE name
         return undefined;
+    } else if (filename.includes('@lwc/ssr-client-utils')) {
+        return 'LwcSsrClientUtils';
     }
     throw new Error(`Unknown framework filename, not sure which IIFE name to use: ${filename}`);
 }
