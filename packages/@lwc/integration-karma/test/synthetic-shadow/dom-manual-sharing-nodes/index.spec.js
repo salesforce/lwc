@@ -3,6 +3,10 @@ import { createElement } from 'lwc';
 import Unstyled from 'x/unstyled';
 import Styled from 'x/styled';
 
+afterEach(() => {
+    window.__lwcResetGlobalStylesheets();
+});
+
 describe('dom manual sharing nodes', () => {
     it('has correct styles when sharing nodes from styled to unstyled component', () => {
         const unstyled = createElement('x-unstyled', { is: Unstyled });

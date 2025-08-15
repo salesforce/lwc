@@ -8,6 +8,10 @@ function waitForStyleToBeApplied() {
     return Promise.resolve();
 }
 
+afterEach(() => {
+    window.__lwcResetGlobalStylesheets();
+});
+
 describe('dom mutation without the lwc:dom="manual" directive', () => {
     function testErrorOnDomMutation(method, fn) {
         it(`should log a warning when calling ${method} on an element without the lwc:dom="manual" directive only in synthetic mode`, () => {

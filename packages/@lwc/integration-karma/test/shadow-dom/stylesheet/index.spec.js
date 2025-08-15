@@ -4,6 +4,10 @@ import Parent from 'x/parent';
 import Host from 'x/host';
 import MultiTemplates from 'x/multiTemplates';
 
+afterEach(() => {
+    window.__lwcResetGlobalStylesheets();
+});
+
 describe('shadow encapsulation', () => {
     it('should not style children elements', () => {
         const elm = createElement('x-parent', { is: Parent });
