@@ -20,3 +20,8 @@ declare module '@babel/plugin-transform-async-to-generator' {
     const props: any;
     export = props;
 }
+
+declare module '@babel/plugin-transform-private-methods' {
+    const props: any;
+    export = props;
+}

@@ -12,11 +12,12 @@ import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod 
 import api from './api';
 import wire from './wire';
 import track from './track';
+import privateDecorator from './private';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
 import type { Node, types, Visitor, NodePath } from '@babel/core';
 import type { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 
-const DECORATOR_TRANSFORMS = [api, wire, track];
+const DECORATOR_TRANSFORMS = [api, wire, track, privateDecorator];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
 export type DecoratorType = (typeof DECORATOR_TYPES)[keyof typeof DECORATOR_TYPES];
@@ -244,6 +245,7 @@ function getMetadataObjectPropertyList(
         ...api.transform(t, decoratorMetas, classBodyItems),
         ...track.transform(t, decoratorMetas),
         ...wire.transform(t, decoratorMetas),
+        ...privateDecorator.transform(t, decoratorMetas, classBodyItems),
     ];
 
     const fieldNames = classBodyItems
@@ -316,6 +318,71 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
 
             decoratorPaths.forEach((path) => path.remove());
 
+            // Lower instance class fields into constructor assignments BEFORE registerDecorators replacement
+            const fieldProps = classBodyItems
+                .filter((f) => f.isClassProperty({ static: false, computed: false }))
+                .filter((f) => !(f.node as types.ClassProperty).decorators);
+
+            const assigns: types.Statement[] = [];
+            for (const fp of fieldProps) {
+                const id = (fp.node.key as types.Identifier).name;
+                const init = fp.node.value ?? t.identifier('undefined');
+                assigns.push(
+                    t.expressionStatement(
+                        t.assignmentExpression(
+                            '=',
+                            t.memberExpression(t.thisExpression(), t.identifier(id)),
+                            init
+                        )
+                    )
+                );
+                fp.remove(); // remove native class field
+            }
+
+            // Find or create constructor
+            const ctorPath = classBodyItems.find((p) =>
+                p.isClassMethod({ kind: 'constructor' })
+            ) as NodePath<types.ClassMethod> | undefined;
+            if (assigns.length) {
+                if (ctorPath) {
+                    // insert after super(...)
+                    const body = ctorPath.get('body.body') as NodePath<types.Statement>[];
+                    const superIndex = body.findIndex(
+                        (b) =>
+                            b.isExpressionStatement() &&
+                            b.node.expression.type === 'CallExpression' &&
+                            (b.node.expression.callee as any).type === 'Super'
+                    );
+                    const insertIndex = superIndex >= 0 ? superIndex + 1 : 0;
+                    if (body[insertIndex]) {
+                        body[insertIndex].insertBefore(assigns);
+                    } else {
+                        ctorPath.get('body').pushContainer('body', assigns);
+                    }
+                } else {
+                    const needsSuper = node.superClass !== null;
+                    const ctorBodyStmts: types.Statement[] = needsSuper
+                        ? [
+                              t.expressionStatement(
+                                  t.callExpression(t.super(), [
+                                      t.spreadElement(t.identifier('args')),
+                                  ])
+                              ),
+                              ...assigns,
+                          ]
+                        : assigns;
+                    const params = needsSuper ? [t.restElement(t.identifier('args'))] : [];
+                    const ctor = t.classMethod(
+                        'constructor',
+                        t.identifier('constructor'),
+                        params,
+                        t.blockStatement(ctorBodyStmts)
+                    );
+                    path.get('body').pushContainer('body', ctor);
+                }
+            }
+
+            // Now perform registerDecorators transform
             const isAnonymousClassDeclaration =
                 path.isClassDeclaration() && !path.get('id').isIdentifier();
             const shouldTransformAsClassExpression =

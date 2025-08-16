@@ -10,5 +10,10 @@ export default class extends LightningElement {
     }
     decrement() {
         this.counter--;
+        this.#something();
+    }
+    #something() {
+        // eslint-disable-next-line no-console
+        console.log(`Private`);
     }
 }
