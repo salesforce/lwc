@@ -14,10 +14,10 @@
         "@lwc/rollup-plugin": "8.21.2",
         "@lwc/synthetic-shadow": "8.21.2",
         "@types/chai": "^5.2.2",
-        "@types/jasmine": "^5.1.8",
+        "@types/jasmine": "^5.1.9",
         "@web/dev-server-rollup": "^0.6.4",
         "@web/test-runner": "^0.20.2",
-        "chai": "^5.2.1"
+        "chai": "^5.3.1"
     },
     "volta": {
         "extends": "../../../package.json"
