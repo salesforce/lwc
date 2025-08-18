@@ -12,12 +12,11 @@ import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod 
 import api from './api';
 import wire from './wire';
 import track from './track';
-import privateDecorator from './private';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
 import type { Node, types, Visitor, NodePath } from '@babel/core';
 import type { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 
-const DECORATOR_TRANSFORMS = [api, wire, track, privateDecorator];
+const DECORATOR_TRANSFORMS = [api, wire, track];
 const AVAILABLE_DECORATORS = DECORATOR_TRANSFORMS.map((transform) => transform.name).join(', ');
 
 export type DecoratorType = (typeof DECORATOR_TYPES)[keyof typeof DECORATOR_TYPES];
@@ -245,7 +244,6 @@ function getMetadataObjectPropertyList(
         ...api.transform(t, decoratorMetas, classBodyItems),
         ...track.transform(t, decoratorMetas),
         ...wire.transform(t, decoratorMetas),
-        ...privateDecorator.transform(t, decoratorMetas, classBodyItems),
     ];
 
     const fieldNames = classBodyItems
