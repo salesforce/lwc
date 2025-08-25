@@ -1,0 +1,50 @@
+name: Release on chore commit
+
+on:
+    push:
+        branches:
+            - master
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+    pull_request:
+        branches:
+            - master
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+
+jobs:
+    release:
+        # TODO: remove PR bypass after testing
+        if: ${{ github.event_name == 'pull_request' || (contains(toJSON(github.event.commits), 'chore') && contains(toJSON(github.event.commits), 'release')) }}
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write
+            id-token: write
+            packages: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  registry-url: 'https://registry.npmjs.org'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Build
+              run: yarn build
+
+            - name: Publish with Nx Release
+              env:
+                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+              run: |
+                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo release)
+                  yarn nx release publish --dry-run --yes --registry https://registry.npmjs.org --tag "$TAG"
