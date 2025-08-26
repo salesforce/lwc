@@ -3,8 +3,8 @@ import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expe
 import * as chai from 'chai';
 import * as LWC from 'lwc';
 import { spyOn, fn } from '@vitest/spy';
-import { registerCustomMatchers } from './matchers/index.mjs';
-import * as TestUtils from './utils.mjs';
+import { registerCustomMatchers } from './matchers/index.js';
+import * as TestUtils from './utils.js';
 
 // FIXME: As a relic of the Karma tests, some test files rely on the global object,
 // rather than importing from `test-utils`.

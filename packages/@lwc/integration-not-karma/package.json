@@ -2,10 +2,11 @@
     "name": "@lwc/integration-not-karma",
     "private": true,
     "version": "8.21.1",
+    "type": "module",
     "scripts": {
         "start": "web-test-runner --manual",
-        "test": "web-test-runner --config configs/integration.mjs",
-        "test:hydration": "web-test-runner --config configs/hydration.mjs"
+        "test": "web-test-runner --config configs/integration.js",
+        "test:hydration": "web-test-runner --config configs/hydration.js"
     },
     "devDependencies": {
         "@lwc/compiler": "8.21.1",

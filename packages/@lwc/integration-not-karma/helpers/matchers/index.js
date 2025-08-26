@@ -1,6 +1,6 @@
-import { registerConsoleMatchers } from './console.mjs';
-import { registerErrorMatchers } from './errors.mjs';
-import { registerJasmineMatchers } from './jasmine.mjs';
+import { registerConsoleMatchers } from './console.js';
+import { registerErrorMatchers } from './errors.js';
+import { registerJasmineMatchers } from './jasmine.js';
 
 export const registerCustomMatchers = (chai, utils) => {
     registerConsoleMatchers(chai, utils);

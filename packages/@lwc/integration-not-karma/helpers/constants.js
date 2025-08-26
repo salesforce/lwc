@@ -1,4 +1,4 @@
-import { API_VERSION } from './options.mjs';
+import { API_VERSION } from './options.js';
 
 // These values are based on the API versions in @lwc/shared/api-version
 export const LOWERCASE_SCOPE_TOKENS = API_VERSION >= 59,

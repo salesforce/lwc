@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import { importMapsPlugin } from '@web/dev-server-import-maps';
-import * as options from '../helpers/options.mjs';
+import * as options from '../helpers/options.js';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
@@ -29,14 +29,15 @@ export default {
     // time out before they receive focus. But it also makes the full suite take 3x longer to run...
     // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
     concurrency: 1,
+    filterBrowserLogs: () => false,
     nodeResolve: true,
     rootDir: join(import.meta.dirname, '..'),
     plugins: [
-        importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.mjs' } } } }),
+        importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
         {
             resolveImport({ source }) {
                 if (source === 'test-utils') {
-                    return '/helpers/utils.mjs';
+                    return '/helpers/utils.js';
                 } else if (source === 'wire-service') {
                     // To serve files outside the web root (e.g. node_modules in the monorepo root),
                     // @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
@@ -66,7 +67,7 @@ export default {
             ${maybeImport('@lwc/synthetic-shadow', !options.DISABLE_SYNTHETIC)}
             ${maybeImport('@lwc/aria-reflection', options.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)}
             </script>
-            <script type="module" src="./helpers/setup.mjs"></script>
+            <script type="module" src="./helpers/setup.js"></script>
             <script type="module" src="${testFramework}"></script>
           </head>
         </html>`,

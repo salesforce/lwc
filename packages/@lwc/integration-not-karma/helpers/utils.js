@@ -8,9 +8,9 @@ import {
     ariaPropertiesMapping,
     nonPolyfilledAriaProperties,
     nonStandardAriaProperties,
-} from './aria.mjs';
-import { setHooks, getHooks } from './hooks.mjs';
-import { spyConsole } from './console.mjs';
+} from './aria.js';
+import { setHooks, getHooks } from './hooks.js';
+import { spyConsole } from './console.js';
 import {
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
@@ -22,8 +22,8 @@ import {
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
-} from './constants.mjs';
-import { addTrustedSignal } from './signals.mjs';
+} from './constants.js';
+import { addTrustedSignal } from './signals.js';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {

@@ -7,7 +7,7 @@ import {
     COVERAGE,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
-} from '../../helpers/options.mjs';
+} from '../../helpers/options.js';
 
 /** Cache reused between each compilation to speed up the compilation time. */
 let cache;

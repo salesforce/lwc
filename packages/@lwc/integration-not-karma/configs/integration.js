@@ -1,5 +1,5 @@
-import baseConfig from './base.mjs';
-import testPlugin from './plugins/serve-integration.mjs';
+import baseConfig from './base.js';
+import testPlugin from './plugins/serve-integration.js';
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
