@@ -103,7 +103,7 @@
                 "we need everyone to use the same types (mixing versions breaks stuff)."
             ]
         },
-        "http-cache-semantics": "4.1.1",
+        "http-cache-semantics": "4.2.0",
         "@types/estree": "^1.0.8"
     },
     "dependencies": {}
