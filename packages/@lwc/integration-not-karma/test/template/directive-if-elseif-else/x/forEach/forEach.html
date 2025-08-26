@@ -1,0 +1,11 @@
+<template>
+    <div lwc:if={showList} class="if">
+        <span>h</span>
+        <template for:each={items} for:item="item">
+            <template lwc:if={item.show}>
+                <div key={item.value}>{item.value}</div>
+            </template>
+        </template>
+        <span>f</span>
+    </div>
+</template>

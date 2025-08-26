@@ -1,0 +1,6 @@
+<template lwc:render-mode="light">
+    <template if:true={showSlot}>
+        <slot> <p data-id="default-slotted-text">Default slotted content</p> </slot>
+    </template>
+    <button data-id="button" onclick={toggleSlot}>Toggle</button>
+</template>

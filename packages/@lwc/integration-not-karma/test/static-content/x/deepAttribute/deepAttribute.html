@@ -1,0 +1,49 @@
+<template>
+    <!-- 1 level deep -->
+    <div data-id="deep1Style" style={one}></div>
+    <div data-id="deep1Attr" data-value={one}></div>
+    <div data-id="deep1Class" class={one}></div>
+    <div data-id="deep1Combined" style={one} data-value={one} class={one}></div>
+    <div>
+        <div data-id="deep1StyleNested" style={one}></div>
+        <div data-id="deep1AttrNested" data-value={one}></div>
+        <div data-id="deep1ClassNested" class={one}></div>
+        <div data-id="deep1CombinedNested" style={one} data-value={one} class={one}></div>
+    </div>
+
+    <!-- 2 levels deep -->
+    <div data-id="deep2Style" style={un.deux}></div>
+    <div data-id="deep2Attr" data-value={un.deux}></div>
+    <div data-id="deep2Class" class={un.deux}></div>
+    <div data-id="deep2Combined" style={un.deux} data-value={un.deux} class={un.deux}></div>
+    <div>
+        <div data-id="deep2StyleNested" style={un.deux}></div>
+        <div data-id="deep2AttrNested" data-value={un.deux}></div>
+        <div data-id="deep2ClassNested" class={un.deux}></div>
+        <div data-id="deep2CombinedNested" style={un.deux} data-value={un.deux} class={un.deux}></div>
+    </div>
+
+    <!-- 3 levels deep -->
+    <div data-id="deep3Style" style={uno.dos.tres}></div>
+    <div data-id="deep3Attr" data-value={uno.dos.tres}></div>
+    <div data-id="deep3Class" class={uno.dos.tres}></div>
+    <div data-id="deep3Combined" style={uno.dos.tres} data-value={uno.dos.tres} class={uno.dos.tres}></div>
+    <div>
+        <div data-id="deep3StyleNested" style={uno.dos.tres}></div>
+        <div data-id="deep3AttrNested" data-value={uno.dos.tres}></div>
+        <div data-id="deep3ClassNested" class={uno.dos.tres}></div>
+        <div data-id="deep3CombinedNested" style={uno.dos.tres} data-value={uno.dos.tres} class={uno.dos.tres}></div>
+    </div>
+
+    <!-- 4 levels deep -->
+    <div data-id="deep4Style" style={ichi.ni.san.shi}></div>
+    <div data-id="deep4Attr" data-value={ichi.ni.san.shi}></div>
+    <div data-id="deep4Class" class={ichi.ni.san.shi}></div>
+    <div data-id="deep4Combined" style={ichi.ni.san.shi} data-value={ichi.ni.san.shi} class={ichi.ni.san.shi}></div>
+    <div>
+        <div data-id="deep4StyleNested" style={ichi.ni.san.shi}></div>
+        <div data-id="deep4AttrNested" data-value={ichi.ni.san.shi}></div>
+        <div data-id="deep4ClassNested" class={ichi.ni.san.shi}></div>
+        <div data-id="deep4CombinedNested" style={ichi.ni.san.shi} data-value={ichi.ni.san.shi} class={ichi.ni.san.shi}></div>
+    </div>
+</template>

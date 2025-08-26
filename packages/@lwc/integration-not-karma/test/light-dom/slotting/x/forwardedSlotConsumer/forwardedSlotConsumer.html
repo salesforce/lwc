@@ -1,0 +1,9 @@
+<template lwc:render-mode="light">
+    <x-forwarded-slot>
+        <template lwc:if={slot}>
+            <p slot="upper">Upper slot content forwarded</p>
+            <p>Default slot forwarded</p>
+            <p slot="lower">Lower slot content forwarded</p>
+        </template>
+    </x-forwarded-slot>
+</template>

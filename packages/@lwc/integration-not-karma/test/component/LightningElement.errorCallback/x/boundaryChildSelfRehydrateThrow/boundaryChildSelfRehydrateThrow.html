@@ -1,0 +1,12 @@
+<template>
+    <template if:true={state.error}>
+        <div class='self-rehydrate-alternative'>self rehydrate alternative view</div>
+    </template>
+    <template if:false={state.error}>
+        <div>
+            <div>
+                <x-child-self-rehydrate-throw></x-child-self-rehydrate-throw>
+            </div>
+        </div>
+    </template>
+</template>
