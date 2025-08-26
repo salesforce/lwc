@@ -1879,6 +1879,11 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/retry/-/retry-0.4.2.tgz#1860473de7dfa1546767448f333db80cb0ff2161"
   integrity sha512-xeO57FpIu4p1Ri3Jq/EXq4ClRm86dVF2z/+kvFnyqVYRavTZmaFaUBbWCOuuTh0o/g7DSsk6kc2vrS4Vl5oPOQ==
 
+"@import-maps/resolve@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@import-maps/resolve/-/resolve-1.0.1.tgz#1e9fcadcf23aa0822256a329aabca241879d37c9"
+  integrity sha512-tWZNBIS1CoekcwlMuyG2mr0a1Wo5lb5lEHwwWvZo+5GLgr3e9LLDTtmgtCWEwBpXMkxn9D+2W9j2FY6eZQq0tA==
+
 "@inquirer/checkbox@^4.1.9":
   version "4.1.9"
   resolved "https://registry.yarnpkg.com/@inquirer/checkbox/-/checkbox-4.1.9.tgz#431c65a3a1fd289be8102034ece15c91dda1ceec"
@@ -2177,9 +2182,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -4259,6 +4266,18 @@
     parse5 "^6.0.1"
     picomatch "^2.2.2"
     ws "^7.5.10"
+
+"@web/dev-server-import-maps@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/@web/dev-server-import-maps/-/dev-server-import-maps-0.2.1.tgz#4b3ab65bb256b7852a1abfe9cdf1b7b129d3d0fa"
+  integrity sha512-iGM7s4qenmTDUWC2iV0HoQ1NR5lAyRxVHOpWzTsFH/TnUZzP+YuL6QIFtB2v2v7URfhGL2l2WPIibmliToITcg==
+  dependencies:
+    "@import-maps/resolve" "^1.0.1"
+    "@types/parse5" "^6.0.1"
+    "@web/dev-server-core" "^0.7.2"
+    "@web/parse5-utils" "^2.1.0"
+    parse5 "^6.0.1"
+    picomatch "^2.2.2"
 
 "@web/dev-server-rollup@^0.6.1", "@web/dev-server-rollup@^0.6.4":
   version "0.6.4"
