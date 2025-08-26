@@ -81,4 +81,4 @@ jobs:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
                   TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
-                  yarn nx release publish --yes --registry https://registry.npmjs.org --tag "$TAG"
+                  yarn nx release publish --dry-run --yes --registry https://registry.npmjs.org --tag "$TAG"
