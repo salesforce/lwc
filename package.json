@@ -98,14 +98,12 @@
     "resolutions": {
         "//": {
             "http-cache-semantics": "Pinned to address security vulnerability",
-            "semver": "Pinned to address security vulnerability",
             "@types/estree": [
                 "Used by us and our dependencies. Because it's a type definition package,",
                 "we need everyone to use the same types (mixing versions breaks stuff)."
             ]
         },
         "http-cache-semantics": "4.1.1",
-        "semver": "7.6.0",
         "@types/estree": "^1.0.8"
     },
     "dependencies": {}
