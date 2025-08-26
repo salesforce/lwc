@@ -1,0 +1,13 @@
+<template lwc:render-mode="light">
+  <x-light-child>
+    <p slot={undefinedName}>Default slot</p>
+    <p slot={named1Name}>
+      Named {counter}
+    </p>
+    <template slot={scoped} lwc:slot-data="scoped">
+      <p>
+        Hi {scoped.name}
+      </p>
+    </template>
+  </x-light-child>
+</template>

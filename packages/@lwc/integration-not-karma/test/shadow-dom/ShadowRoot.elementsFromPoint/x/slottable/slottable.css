@@ -1,0 +1,23 @@
+.in-slottable {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 75px;
+}
+
+.in-slottable-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.slot-wrapper {
+    position: absolute;
+    top: 75px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

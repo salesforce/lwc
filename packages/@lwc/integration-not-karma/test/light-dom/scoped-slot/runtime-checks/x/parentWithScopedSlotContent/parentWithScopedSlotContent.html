@@ -1,0 +1,16 @@
+<template>
+    <template lwc:if={lightDomChildWithStandardSlots}>
+        <x-child-with-standard-slots>
+            <template lwc:slot-data="item">
+                <span>{item}</span>
+            </template>
+        </x-child-with-standard-slots>
+    </template>
+    <template lwc:if={shadowDomChildWithStandardSlots}>
+        <x-shadow-dom-child>
+            <template lwc:slot-data="item">
+                <span>{item}</span>
+            </template>
+        </x-shadow-dom-child>
+    </template>
+</template>

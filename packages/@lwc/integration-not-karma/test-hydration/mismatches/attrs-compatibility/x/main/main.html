@@ -1,0 +1,18 @@
+<template>
+    <template if:true={ssr}>
+        <p
+            title="ssr-title"
+            data-same="same-value"
+            data-another-diff="ssr-val"
+        >text</p>
+    </template>
+    <template if:false={ssr}>
+        <p
+            title="client-title"
+            data-same="same-value"
+            data-another-diff="client-val"
+        >text</p>
+    </template>
+
+
+</template>

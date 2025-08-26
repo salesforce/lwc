@@ -1,0 +1,3 @@
+<template>
+    <p>client</p>
+</template>

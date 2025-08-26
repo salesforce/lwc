@@ -1,0 +1,14 @@
+<template lwc:render-mode="light">
+    <div>&lt;x-main&gt;</div>
+    <x-scoped instance="1">
+        <template lwc:slot-data="item1">
+            <x-scoped instance="2">
+                <template lwc:slot-data="item2">
+                    <span>main: {item1.msg} {item2.msg}</span>
+                    <x-child></x-child>
+                </template>
+            </x-scoped>
+        </template>
+    </x-scoped>
+    <div>&lt;/x-main&gt;</div>
+</template>

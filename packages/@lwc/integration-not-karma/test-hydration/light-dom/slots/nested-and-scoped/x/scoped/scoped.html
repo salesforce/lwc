@@ -1,0 +1,5 @@
+<template lwc:render-mode="light">
+    <div lwc:ref="div1">&lt;x-scoped&gt; ({instance})</div>
+    <slot lwc:slot-bind={scopedItem}></slot>
+    <div lwc:ref="div2">&lt;/x-scoped&gt; ({instance})</div>
+</template>

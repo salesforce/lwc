@@ -1,0 +1,10 @@
+<template lwc:render-mode="light">
+    <x-with-slots>
+        <div slot="foo">
+            <div>
+                <span onclick={handleClick}>{slotText}</span>
+            </div>
+            <span>2nd slotted content</span>
+        </div>
+    </x-with-slots>
+</template>

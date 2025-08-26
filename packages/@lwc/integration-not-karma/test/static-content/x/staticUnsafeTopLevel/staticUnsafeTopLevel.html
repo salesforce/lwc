@@ -1,0 +1,30 @@
+<template>
+  <!-- Separating these with individual "if" blocks causes the compiler to make each one a static fragment -->
+  <template if:true={doRender}>
+    <caption></caption>
+  </template>
+  <template if:true={doRender}>
+    <col>
+  </template>
+  <template if:true={doRender}>
+    <colgroup></colgroup>
+  </template>
+  <template if:true={doRender}>
+    <tbody></tbody>
+  </template>
+  <template if:true={doRender}>
+    <td></td>
+  </template>
+  <template if:true={doRender}>
+    <tfoot></tfoot>
+  </template>
+  <template if:true={doRender}>
+    <th></th>
+  </template>
+  <template if:true={doRender}>
+    <thead></thead>
+  </template>
+  <template if:true={doRender}>
+    <tr></tr>
+  </template>
+</template>

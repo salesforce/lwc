@@ -1,0 +1,10 @@
+<template>
+    <template for:each={loggers} for:item="logger">
+        <input
+            key={logger.id}
+            type="checkbox"
+            onclick={logger.onClick}
+            onchange={mainLogger.onChange}
+        ></input>
+    </template>
+</template>
