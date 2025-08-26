@@ -1,29 +1,38 @@
-name: Release on chore commit
+name: Manual Release
 
 on:
-    push:
-        branches:
-            - master
-            - 'spring*'
-            - 'summer*'
-            - 'winter*'
-    pull_request:
-        branches:
-            - master
-            - 'spring*'
-            - 'summer*'
-            - 'winter*'
+    workflow_dispatch:
+        inputs:
+            release_version:
+                description: 'Semver version to release (must be > current root version)'
+                required: true
+
+permissions:
+    contents: write
+    pull-requests: write
+    id-token: write
+    packages: write
 
 jobs:
     release:
-        # TODO: remove PR bypass after testing
-        if: ${{ github.event_name == 'pull_request' || (contains(toJSON(github.event.commits), 'chore') && contains(toJSON(github.event.commits), 'release')) }}
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
-            id-token: write
-            packages: write
         steps:
+            - name: Check authorization (must be in lwc-admin)
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const org = context.repo.owner;
+                      const team_slug = 'lwc-admin';
+                      const username = context.actor;
+                      try {
+                          const res = await github.rest.teams.getMembershipForUserInOrg({ org, team_slug, username });
+                          if (res.data.state !== 'active') {
+                              core.setFailed(`User ${username} is not an active member of ${team_slug}`);
+                          }
+                      } catch (e) {
+                          core.setFailed(`User ${username} is not a member of ${team_slug}`);
+                      }
+
             - name: Checkout
               uses: actions/checkout@v4
               with:
@@ -39,12 +48,37 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
 
+            - name: Validate release version > current
+              env:
+                  INPUT_VERSION: ${{ inputs.release_version }}
+              run: |
+                  node -e "
+                  const fs=require('fs');
+                  const semver=require('semver');
+                  const current=JSON.parse(fs.readFileSync('package.json','utf8')).version;
+                  const next=process.env.INPUT_VERSION;
+                  if(!semver.valid(next)) { console.error('Invalid semver: '+next); process.exit(1); }
+                  if(!semver.gt(next,current)) { console.error(`Version ${next} must be greater than current ${current}`); process.exit(1); }
+                  "
+
+            - name: Bump versions and commit
+              env:
+                  INPUT_VERSION: ${{ inputs.release_version }}
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+                  BRANCH="$GITHUB_REF_NAME"
+                  node ./scripts/release/version.js "$INPUT_VERSION"
+                  RESOLVED_VERSION=$(node -p "require('./package.json').version")
+                  git commit -am "chore: release $RESOLVED_VERSION"
+                  git push origin HEAD
+
             - name: Build
               run: yarn build
 
-            - name: Publish with Nx Release
+            - name: Publish to npm
               env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
               run: |
-                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo release)
-                  yarn nx release publish --dry-run --yes --registry https://registry.npmjs.org --tag "$TAG"
+                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
+                  yarn nx release publish --yes --registry https://registry.npmjs.org --tag "$TAG"
