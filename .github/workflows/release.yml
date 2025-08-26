@@ -17,22 +17,22 @@ jobs:
     release:
         runs-on: ubuntu-latest
         steps:
-            # - name: Check authorization (must be in lwc-admin)
-            #   uses: actions/github-script@v7
-            #   with:
-            #       github-token: ${{ secrets.ORG_READ_TOKEN }}
-            #       script: |
-            #           const org = context.repo.owner;
-            #           const team_slug = 'lwc-admin';
-            #           const username = context.actor;
-            #           try {
-            #               const res = await github.rest.teams.getMembershipForUserInOrg({ org, team_slug, username });
-            #               if (res.data.state !== 'active') {
-            #                   core.setFailed(`User ${username} is not an active member of ${team_slug}`);
-            #               }
-            #           } catch {
-            #               core.setFailed(`User ${username} is not a member of ${team_slug}`);
-            #           }
+            - name: Check authorization (must be in lwc-admin)
+              uses: actions/github-script@v7
+              with:
+                  github-token: ${{ secrets.ORG_READ_TOKEN }}
+                  script: |
+                      const org = context.repo.owner;
+                      const team_slug = 'lwc-admin';
+                      const username = context.actor;
+                      try {
+                          const res = await github.rest.teams.getMembershipForUserInOrg({ org, team_slug, username });
+                          if (res.data.state !== 'active') {
+                              core.setFailed(`User ${username} is not an active member of ${team_slug}`);
+                          }
+                      } catch {
+                          core.setFailed(`User ${username} is not a member of ${team_slug}`);
+                      }
 
             - name: Checkout
               uses: actions/checkout@v4
@@ -71,8 +71,8 @@ jobs:
                   BRANCH="$GITHUB_REF_NAME"
                   node ./scripts/release/version.js "$INPUT_VERSION"
                   RESOLVED_VERSION=$(node -p "require('./package.json').version")
-                  git commit -am "chore: release $RESOLVED_VERSION"
-                  git push origin HEAD
+                  # git commit -am "chore: release $RESOLVED_VERSION"
+                  # git push origin HEAD
 
             - name: Build
               run: yarn build
