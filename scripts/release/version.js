@@ -37,12 +37,16 @@ async function getVersion() {
 
 async function parseVersion(rawVersion) {
     try {
+        const current = rootPackageJson.version;
         const exact = semver.valid(rawVersion);
         if (exact) {
             // answer is a semver version
-            return exact;
+            if (semver.gt(exact, current)) {
+                return exact;
+            }
+            throw new Error(`Release version ${rawVersion} is not greater than ${current}.`);
         }
-        const incremented = semver.inc(rootPackageJson.version, rawVersion);
+        const incremented = semver.inc(current, rawVersion);
         if (incremented) {
             // answer is a semver release type (major/minor/etc.)
             return incremented;
