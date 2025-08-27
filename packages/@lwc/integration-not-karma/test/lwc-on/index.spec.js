@@ -11,6 +11,7 @@ import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 import ComputedKey from 'x/computedKey';
 import ValueEvaluationThrows from 'x/ValueEvaluationThrows';
+import { catchUnhandledRejectionsAndErrors, spyConsole } from '../../helpers/utils.js';
 
 describe('lwc:on', () => {
     it('adds multiple event listeners', () => {
@@ -152,7 +153,7 @@ describe('lwc:on', () => {
 
         let caughtError;
 
-        TestUtils.catchUnhandledRejectionsAndErrors((error) => {
+        catchUnhandledRejectionsAndErrors((error) => {
             caughtError = error;
         });
 
@@ -254,7 +255,7 @@ describe('lwc:on', () => {
             describe('with same object modified', () => {
                 let consoleSpy;
                 beforeEach(() => {
-                    consoleSpy = TestUtils.spyConsole();
+                    consoleSpy = spyConsole();
                 });
                 afterEach(() => {
                     consoleSpy.reset();
@@ -345,7 +346,7 @@ describe('lwc:on', () => {
             describe('with same object modified', () => {
                 let consoleSpy;
                 beforeEach(() => {
-                    consoleSpy = TestUtils.spyConsole();
+                    consoleSpy = spyConsole();
                 });
                 afterEach(() => {
                     consoleSpy.reset();
@@ -427,7 +428,7 @@ describe('lwc:on', () => {
 
         let caughtError;
 
-        TestUtils.catchUnhandledRejectionsAndErrors((error) => {
+        catchUnhandledRejectionsAndErrors((error) => {
             caughtError = error;
         });
 
