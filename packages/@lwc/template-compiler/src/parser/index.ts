@@ -461,6 +461,7 @@ function parseChildren(
 }
 
 function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
+    debugger;
     const parsedTextNodes: Text[] = [];
     const location = parse5Text.sourceCodeLocation;
 
@@ -493,11 +494,13 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     the HTML whitespace while preserving text content whitespace, while also taking into account how
     comments are sometimes preserved (in which case we need to keep the HTML whitespace).
     */
-    if (!rawText.trim().length && !ctx.config.experimentalComplexExpressions) {
+    //if (!rawText.trim().length && !ctx.config.experimentalComplexExpressions) {
+    if (!rawText.trim().length) {
         return parsedTextNodes;
     }
 
     // TODO [#3370]: remove experimental template expression flag
+    /*
     if (ctx.config.experimentalComplexExpressions && isExpression(rawText)) {
         // Implementation of the lexer ensures that each text-node template expression
         // will be contained in its own text node. Adjacent static text will be in
@@ -512,7 +515,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
             location: ast.sourceLocation(location),
         };
         return [ast.text(rawText, value, location)];
-    }
+    }*/
 
     // Split the text node content arround expression and create node for each
     const tokenizedContent = rawText.split(EXPRESSION_RE);

@@ -128,6 +128,7 @@ export function parseExpression(
     source: string,
     location: SourceLocation
 ): Expression {
+    debugger;
     const { ecmaVersion } = ctx;
     return ctx.withErrorWrapping(
         () => {

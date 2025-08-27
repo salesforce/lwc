@@ -12,7 +12,7 @@ import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import { sourceLocation } from '../shared/ast';
 
 import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
-import { parseFragment } from './expression-complex';
+//import { parseFragment } from './expression-complex';
 import type { DocumentFragment } from '@parse5/tools';
 import type ParserCtx from './parser';
 
@@ -46,13 +46,14 @@ export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
     };
 
     // TODO [#3370]: remove experimental template expression flag
+    /*
     if (ctx.config.experimentalComplexExpressions) {
         return parseFragment(source, {
             ctx,
             sourceCodeLocationInfo: true,
             onParseError,
         });
-    }
+    }*/
 
     return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,

@@ -122,6 +122,7 @@ class TemplateHtmlTokenizer extends Tokenizer {
     }
 
     parseTemplateExpression() {
+        debugger;
         const expressionStart: number = this.preprocessor.pos;
         const html = this.preprocessor.html;
 
