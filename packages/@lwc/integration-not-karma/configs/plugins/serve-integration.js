@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 
@@ -8,6 +9,8 @@ import {
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
 } from '../../helpers/options.js';
+
+const UTILS = fileURLToPath(new URL('../../helpers/utils.js', import.meta.url));
 
 /** Cache reused between each compilation to speed up the compilation time. */
 let cache;
@@ -22,7 +25,7 @@ const createRollupPlugin = (input, options) => {
         // Sourcemaps don't work with Istanbul coverage
         sourcemap: !process.env.COVERAGE,
         experimentalDynamicComponent: {
-            loader: 'test-utils',
+            loader: UTILS,
             strict: true,
         },
         enableDynamicComponents: true,
@@ -85,7 +88,7 @@ const transform = async (ctx) => {
 
         // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
         // globally in the page before running the tests.
-        external: ['lwc', 'wire-service', 'test-utils', '@test/loader'],
+        external: ['lwc', 'wire-service', '@test/loader', UTILS],
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin
