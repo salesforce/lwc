@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
 import Grandparent from 'x/grandparent';
-import { extractShadowDataIds } from 'test-utils';
+import { extractShadowDataIds } from '../../../helpers/utils.js';
 
 // The browsers disagree on whether elements _above_ the shadow root should also be included
 // when calling shadowRoot.elementsFromPoint(). Firefox only returns elements inside of the

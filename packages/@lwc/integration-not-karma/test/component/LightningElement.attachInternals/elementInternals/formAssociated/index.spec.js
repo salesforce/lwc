@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { ENABLE_ELEMENT_INTERNALS_AND_FACE, IS_SYNTHETIC_SHADOW_LOADED } from 'test-utils';
 
 import NotFormAssociated from 'x/notFormAssociated';
 import FormAssociated from 'x/formAssociated';
@@ -7,6 +6,10 @@ import FormAssociatedFalse from 'x/formAssociatedFalse';
 import NotFormAssociatedNoAttachInternals from 'x/notFormAssociatedNoAttachInternals';
 import FormAssociatedNoAttachInternals from 'x/formAssociatedNoAttachInternals';
 import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachInternals';
+import {
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    IS_SYNTHETIC_SHADOW_LOADED,
+} from '../../../../../helpers/utils.js';
 
 describe.runIf(
     ENABLE_ELEMENT_INTERNALS_AND_FACE &&

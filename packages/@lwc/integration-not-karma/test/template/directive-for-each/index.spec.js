@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import { spyConsole } from 'test-utils';
 import XTest from 'x/test';
 import XTestStatic from 'x/testStatic';
 import XTestCustomElement from 'x/testCustomElement';
 import ArrayNullPrototype from 'x/arrayNullPrototype';
+import { spyConsole } from '../../../helpers/utils.js';
 
 function testForEach(type, obj) {
     it(`should render ${type}`, () => {

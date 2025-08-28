@@ -1,11 +1,4 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
-import {
-    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-    USE_LIGHT_DOM_SLOT_FORWARDING,
-    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
-} from 'test-utils';
 
 import BasicSlot from 'x/basicSlot';
 import DynamicChildren from 'x/dynamicChildren';
@@ -14,6 +7,12 @@ import ShadowConsumer from 'x/shadowConsumer';
 import ConditionalSlot from 'x/conditionalSlot';
 import ConditionalSlotted from 'x/conditionalSlotted';
 import ForwardedSlotConsumer from 'x/forwardedSlotConsumer';
+import {
+    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
+} from '../../../helpers/utils.js';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 

@@ -1,7 +1,6 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
 import Container from 'x/container';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 function createShadowTree(parentNode) {
     const elm = createElement('x-container', { is: Container });

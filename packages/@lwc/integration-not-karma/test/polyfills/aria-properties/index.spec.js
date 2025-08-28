@@ -1,13 +1,13 @@
+import { createElement } from 'lwc';
+
+import Component from 'x/component';
 import {
     ariaPropertiesMapping,
     nonStandardAriaProperties,
     nonPolyfilledAriaProperties,
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from 'test-utils';
-import { createElement } from 'lwc';
-
-import Component from 'x/component';
+} from '../../../helpers/utils.js';
 
 function testAriaProperty(property, attribute, suite = describe) {
     suite(property, () => {

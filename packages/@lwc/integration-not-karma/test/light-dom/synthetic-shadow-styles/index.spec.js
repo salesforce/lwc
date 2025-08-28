@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import { LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 import Container from 'x/container';
+import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/utils.js';
 
 // This test only matters for synthetic shadow
 describe.skipIf(process.env.NATIVE_SHADOW)('Light DOM and synthetic shadow', () => {

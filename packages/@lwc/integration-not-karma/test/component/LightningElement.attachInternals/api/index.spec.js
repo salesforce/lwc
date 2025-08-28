@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
-import {
-    customElementCallbackReactionErrorListener,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE,
-    IS_SYNTHETIC_SHADOW_LOADED,
-} from 'test-utils';
 
 import ShadowDomCmp from 'ai/shadowDom';
 import LightDomCmp from 'ai/lightDom';
 import BasicCmp from 'ai/basic';
+import {
+    customElementCallbackReactionErrorListener,
+    ENABLE_ELEMENT_INTERNALS_AND_FACE,
+    IS_SYNTHETIC_SHADOW_LOADED,
+} from '../../../../helpers/utils.js';
 
 const testConnectedCallbackError = (elm, msg) => {
     const error = customElementCallbackReactionErrorListener(() => {

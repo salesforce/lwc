@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { getPropertyDescriptor } from 'test-utils';
+import { getPropertyDescriptor } from '../../../../../../helpers/utils.js';
 
 export default class GetterSetter extends LightningElement {
     _getterSetterProp;

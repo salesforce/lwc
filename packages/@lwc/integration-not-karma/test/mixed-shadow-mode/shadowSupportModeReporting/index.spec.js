@@ -1,10 +1,13 @@
 import { createElement } from 'lwc';
-import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 import Any from 'x/any';
 import Reset from 'x/reset';
 import None from 'x/none';
 import NativeOnly from 'x/native';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+} from '../../../helpers/utils.js';
 
 /**
  * These tests must be the first ones to generate the component def for the components they use.

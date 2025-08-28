@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 
 import LightContainer from 'x/lightContainer';
 import ShadowContainer from 'x/shadowContainer';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('Light DOM + Synthetic Shadow DOM', () => {
     describe('light -> shadow', () => {

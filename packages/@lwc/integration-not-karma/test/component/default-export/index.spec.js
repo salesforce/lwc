@@ -1,6 +1,5 @@
 import Component from 'x/component';
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import ExportAsDefault from 'x/exportAsDefault';
 import ExportAsDefaultWithOtherExports, {
     exportee as exporteeAsDefault,
@@ -8,6 +7,7 @@ import ExportAsDefaultWithOtherExports, {
 import ExportDefaultClassWithOtherExports, {
     exportee as exporteeDefaultClass,
 } from 'x/exportDefaultClassWithOtherExports';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('default export', () => {
     it('should work when a module exports non-components as default', () => {

@@ -1,9 +1,12 @@
 import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
-import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+} from '../../../helpers/utils.js';
 
 describe('compiler version mismatch', () => {
     describe('stamped with version number', () => {

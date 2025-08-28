@@ -2,9 +2,8 @@
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-post-dispatch.html
 
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
 import Container from 'x/container';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 function assertEventStateReset(evt) {
     expect(evt.eventPhase).toBe(0);

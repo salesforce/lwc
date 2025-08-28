@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import Inner from 'x/inner';
 import Outer from 'x/outer';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 beforeAll(() => {
     customElements.define('omg-whatever', class extends HTMLElement {});

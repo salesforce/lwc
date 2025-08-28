@@ -1,4 +1,3 @@
-import { spyConsole } from 'test-utils';
 import { LightningElement } from 'lwc';
 
 import ReflectElement from 'x/reflect';
@@ -10,6 +9,7 @@ import AttrChanged from 'x/attrChanged';
 import ReflectCamel from 'x/reflectCamel';
 import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
 import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
+import { spyConsole } from '../../../helpers/utils.js';
 import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
