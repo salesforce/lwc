@@ -1,6 +1,9 @@
 import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
 
-import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+} from '../../../helpers/utils.js';
 
 describe('freezeTemplate', () => {
     let dispatcher;

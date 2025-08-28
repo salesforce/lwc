@@ -1,11 +1,14 @@
 import { createElement } from 'lwc';
-import { USE_LIGHT_DOM_SLOT_FORWARDING, USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from 'test-utils';
 
 import BasicParent from 'x/basicParent';
 import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
 import ParentWNoSlotContent from 'x/parentWNoSlotContent';
 import ParentOfChildWithNamedSlots from 'x/parentOfChildWithNamedSlots';
 import NestedSlots from 'x/nestedSlots';
+import {
+    USE_LIGHT_DOM_SLOT_FORWARDING,
+    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
+} from '../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 

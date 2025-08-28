@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
 import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
 import XBoundaryChildRenderThrow from 'x/boundaryChildRenderThrow';
@@ -31,6 +30,7 @@ import XParentThrowsOnMutateChildRenderedThrows from 'x/parentThrowsOnMutateChil
 import XParentThrowsOnMutateChildConnectedThrows from 'x/parentThrowsOnMutateChildConnectedThrows';
 
 import XNoThrowOnMutate from 'x/noThrowOnMutate';
+import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 describe('error boundary', () => {
     it('should propagate frozen error to errorCallback()', () => {

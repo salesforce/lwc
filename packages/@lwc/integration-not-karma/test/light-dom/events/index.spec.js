@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 
 import LightChild from 'x/lightChild';
 import ShadowContainer from 'x/shadowContainer';
 import LightContainer from 'x/lightContainer';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });

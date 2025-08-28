@@ -2,9 +2,8 @@
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-inside-shadow-tree.html
 
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
 import Container from 'x/container';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 function dispatchEventWithLog(target, nodes, event) {
     const log = [];

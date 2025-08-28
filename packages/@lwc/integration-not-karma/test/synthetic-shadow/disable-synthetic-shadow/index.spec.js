@@ -1,6 +1,9 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { IS_SYNTHETIC_SHADOW_LOADED, isSyntheticShadowRootInstance } from 'test-utils';
 import Component from 'x/component';
+import {
+    IS_SYNTHETIC_SHADOW_LOADED,
+    isSyntheticShadowRootInstance,
+} from '../../../helpers/utils.js';
 
 describe.runIf(IS_SYNTHETIC_SHADOW_LOADED && !process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST)(
     'DISABLE_SYNTHETIC_SHADOW',

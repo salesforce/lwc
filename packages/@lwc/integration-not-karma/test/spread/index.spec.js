@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
-import { getHooks, setHooks } from 'test-utils';
+import { getHooks, setHooks } from '../../helpers/utils.js';
 
 function setSanitizeHtmlContentHookForTest(impl) {
     const { sanitizeHtmlContent } = getHooks();

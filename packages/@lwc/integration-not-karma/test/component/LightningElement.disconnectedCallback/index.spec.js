@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import { customElementCallbackReactionErrorListener } from 'test-utils';
 
 import Slotted from 'x/slotted';
 import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
+import { customElementCallbackReactionErrorListener } from '../../../helpers/utils.js';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {

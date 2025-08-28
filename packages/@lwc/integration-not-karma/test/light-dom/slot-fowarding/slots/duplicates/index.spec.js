@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import LightContainer from 'light/container';
 import ShadowContainer from 'shadow/container';
+import { catchUnhandledRejectionsAndErrors } from '../../../../../helpers/utils.js';
 
 const scenarios = [
     {

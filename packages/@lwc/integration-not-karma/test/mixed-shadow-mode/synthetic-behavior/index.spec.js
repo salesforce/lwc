@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { extractDataIds, isNativeShadowRootInstance } from 'test-utils';
 import ParentAnyChildAny from 'x/parentAnyChildAny';
 import ParentAnyChildReset from 'x/parentAnyChildReset';
 import ParentResetChildAny from 'x/parentResetChildAny';
@@ -14,6 +13,7 @@ import GrandparentResetParentAnyChildAny from 'x/grandparentResetParentAnyChildA
 import GrandparentResetParentAnyChildReset from 'x/grandparentResetParentAnyChildReset';
 import GrandparentResetParentResetChildAny from 'x/grandparentResetParentResetChildAny';
 import GrandparentResetParentResetChildReset from 'x/grandparentResetParentResetChildReset';
+import { extractDataIds, isNativeShadowRootInstance } from '../../../helpers/utils.js';
 
 afterEach(() => {
     window.__lwcResetGlobalStylesheets();

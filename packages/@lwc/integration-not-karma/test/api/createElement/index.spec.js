@@ -1,8 +1,11 @@
 import { createElement, LightningElement, setFeatureFlagForTest } from 'lwc';
-import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import Test from 'x/test';
 import ShadowRootGetter from 'x/shadowRootGetter';
+import {
+    isNativeShadowRootInstance,
+    isSyntheticShadowRootInstance,
+} from '../../../helpers/utils.js';
 
 function testInvalidOptions(type, option) {
     it(`throws a TypeError if option is a ${type}`, () => {

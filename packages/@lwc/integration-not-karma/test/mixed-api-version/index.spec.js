@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import Container from 'x/container';
 import UseApiVersion60 from 'x/useApiVersion60';
+import { extractDataIds } from '../../helpers/utils.js';
 
 describe('mixed API versions', () => {
     it('should trigger connected callback for v60 component rendered late inside non-portal <div>', async () => {

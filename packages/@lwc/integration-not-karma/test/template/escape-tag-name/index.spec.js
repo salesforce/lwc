@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import Component from 'x/component';
+import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 // Browsers treat tag names containing the \ (backslash) character differently
 // depending on whether the HTML is parsed or you call `createElement` directly.

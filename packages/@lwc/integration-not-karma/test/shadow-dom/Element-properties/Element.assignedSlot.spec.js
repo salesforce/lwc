@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { getHostChildNodes } from 'test-utils';
 
 import SimpleParent from 'x/simpleParent';
 import SlottedParent from 'x/slotted';
@@ -7,6 +6,7 @@ import SlottedCustomElement from 'x/slottedCustomElement';
 import SlotReceiver from 'x/slot';
 import CustomElementAsDefaultSlot from 'x/customElementAsDefaultSlot';
 import TextSlotted from 'x/textSlotted';
+import { getHostChildNodes } from '../../../helpers/utils.js';
 
 describe('assignedSlot', () => {
     it('should return null when custom element is not in slot', () => {

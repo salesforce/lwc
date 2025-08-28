@@ -1,5 +1,4 @@
 import { LightningElement, api, getComponentDef, createElement } from 'lwc';
-import { ariaProperties } from 'test-utils';
 
 import PublicProperties from 'x/publicProperties';
 import PublicAccessors from 'x/publicAccessors';
@@ -8,6 +7,7 @@ import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
 import PrivateAccessors from 'x/privateAccessors';
 import HtmlElementProps from 'x/htmlElementProps';
+import { ariaProperties } from '../../../helpers/utils.js';
 
 function testInvalidComponentConstructor(name, ctor) {
     it(`should throw for ${name}`, () => {

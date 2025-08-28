@@ -1,5 +1,4 @@
 import { createElement, swapStyle, swapTemplate } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import ShadowUsesStaticStylesheets from 'shadow/usesStaticStylesheets';
 import LightUsesStaticStylesheets from 'light/usesStaticStylesheets';
 import LightGlobalUsesStaticStylesheets from 'light-global/usesStaticStylesheets';
@@ -15,6 +14,7 @@ import libraryStyle from 'x/library';
 import libraryStyleV2 from 'x/libraryV2';
 import IdenticalStylesheets from 'shadow/identicalStylesheets';
 import IdenticalStylesheetsContainer from 'shadow/identicalStylesheetsContainer';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 function expectStyles(elm, styles) {
     const computed = getComputedStyle(elm);

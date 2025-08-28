@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import { expectEquivalentDOM } from 'test-utils';
 import Outer from 'x/outer';
+import { expectEquivalentDOM } from '../../../../../helpers/utils.js';
 
 // `expectEquivalentDOM` requires `Document.parseHTMLUnsafe`
 it.runIf(Document.parseHTMLUnsafe)('renders slots not at the top level', async () => {

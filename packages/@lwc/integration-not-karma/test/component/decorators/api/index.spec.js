@@ -1,5 +1,4 @@
 import { createElement, LightningElement, api } from 'lwc';
-import { getPropertyDescriptor } from 'test-utils';
 
 import GetterSetterAndProp from 'x/getterSetterAndProp';
 import Properties from 'x/properties';
@@ -14,6 +13,7 @@ import ExtendsMixin from 'x/extendsMixin';
 import StaticProperty from 'x/staticProperty';
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 import NoSetter from 'x/noSetter';
+import { getPropertyDescriptor } from '../../../../helpers/utils.js';
 
 describe('properties', () => {
     it('should expose class properties with the api decorator', () => {

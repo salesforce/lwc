@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { extractDataIds, LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 import Container from 'x/container';
 import Escape from 'x/escape';
 import MultipleStyles from 'x/multipleStyles';
@@ -24,6 +23,7 @@ import Text from 'x/text';
 import TableWithExpression from 'x/tableWithExpressions';
 import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
 import TextWithPreserveComments from 'x/textWithPreserveComments';
+import { extractDataIds, LOWERCASE_SCOPE_TOKENS } from '../../helpers/utils.js';
 
 describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () => {
     ['native', 'synthetic'].forEach((firstRenderMode) => {

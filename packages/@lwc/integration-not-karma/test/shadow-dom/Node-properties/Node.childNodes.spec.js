@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { getHostChildNodes } from 'test-utils';
 
 import Slotted from 'x/slotted';
 import SlottedParent from 'x/slottedParent';
@@ -8,6 +7,7 @@ import UnslottedParent from 'x/unslottedParent';
 import HasNoSlot from 'x/hasNoSlot';
 import Parent from 'x/parent';
 import SimpleParent from 'x/simpleParent';
+import { getHostChildNodes } from '../../../helpers/utils.js';
 
 describe('Node.childNodes', () => {
     it('should return the right children Nodes - x-slotted', () => {

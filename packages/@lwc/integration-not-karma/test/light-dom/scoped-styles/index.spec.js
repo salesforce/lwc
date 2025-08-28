@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import Basic from 'x/basic';
 import Other from 'x/other';
 import Switchable from 'x/switchable';
 import Unscoped from 'x/unscoped';
 import ShadowWithScoped from 'x/shadowWithScoped';
 import PseudoParent from 'x/pseudoParent';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('Light DOM scoped CSS', () => {
     it('should scope scoped CSS and allow unscoped CSS to leak out', () => {

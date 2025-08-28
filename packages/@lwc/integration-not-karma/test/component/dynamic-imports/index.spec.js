@@ -10,7 +10,7 @@ import LwcDynamicSlotted from 'x/lwcDynamicSlotted';
 import ContainerFoo from 'x/containerFoo';
 import ContainerBar from 'x/containerBar';
 
-import { registerForLoad, clearRegister, spyConsole } from 'test-utils';
+import { registerForLoad, clearRegister, spyConsole } from '../../../helpers/utils.js';
 
 beforeEach(() => {
     clearRegister();

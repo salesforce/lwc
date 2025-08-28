@@ -1,7 +1,7 @@
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
 
-import { addTrustedSignal } from 'test-utils';
+import { addTrustedSignal } from '../../../../../helpers/utils.js';
 
 export class Signal {
     subscribers = new Set();

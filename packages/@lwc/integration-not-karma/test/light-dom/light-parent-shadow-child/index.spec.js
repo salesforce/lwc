@@ -1,7 +1,6 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
 import LightParent from 'x/lightParent';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('light parent with shadow child', () => {
     it('should render properly', () => {

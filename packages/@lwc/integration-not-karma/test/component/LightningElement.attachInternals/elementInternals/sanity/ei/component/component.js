@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { ariaProperties } from 'test-utils';
+import { ariaProperties } from '../../../../../../../helpers/utils.js';
 
 export default class extends LightningElement {
     @api

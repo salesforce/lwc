@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import ShadowParent from 'x/shadowParent';
 import ShadowLightParent from 'x/shadowLightParent';
 import LightParent from 'x/lightParent';
@@ -8,6 +7,7 @@ import ToggleContainer from 'x/toggleContainer';
 import MultiTemplateConditionals from 'x/multiTemplateConditionals';
 import ShadowContainerMultipleConditionals from 'x/shadowContainerMultipleConditionals';
 import LightContainerMultipleConditionals from 'x/lightContainerMultipleConditionals';
+import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];

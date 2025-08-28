@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import { expectEquivalentDOM } from 'test-utils';
 import Outer from 'x/outer';
+import { expectEquivalentDOM } from '../../../../../helpers/utils.js';
 
 beforeAll(() => {
     customElements.define('x-external-shadow', class extends HTMLElement {});

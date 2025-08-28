@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import BooleanValue from 'x/booleanValue';
 import StringValue from 'x/stringValue';
+import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 // Browsers treat attribute names containing the ` (backtick) character differently
 // depending on whether the HTML is parsed or you call `setAttribute` directly.

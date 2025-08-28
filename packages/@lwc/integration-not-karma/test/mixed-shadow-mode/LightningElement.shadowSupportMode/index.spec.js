@@ -1,15 +1,15 @@
 import { createElement } from 'lwc';
-import {
-    isNativeShadowRootInstance,
-    isSyntheticShadowRootInstance,
-    IS_SYNTHETIC_SHADOW_LOADED,
-} from 'test-utils';
 
 import Any from 'x/any';
 import Any2 from 'x/any2';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 import NativeOnly from 'x/native';
+import {
+    isNativeShadowRootInstance,
+    isSyntheticShadowRootInstance,
+    IS_SYNTHETIC_SHADOW_LOADED,
+} from '../../../helpers/utils.js';
 
 describe('shadowSupportMode static property', () => {
     it('should log error for invalid values', () => {
