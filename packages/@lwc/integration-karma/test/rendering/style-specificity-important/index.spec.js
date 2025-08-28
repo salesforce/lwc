@@ -1,6 +1,10 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
 
+afterEach(() => {
+    window.__lwcResetGlobalStylesheets();
+});
+
 describe('important styling and style override', () => {
     it('should render !important styles correctly', async () => {
         const elm = createElement('x-component', { is: Component });

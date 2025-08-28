@@ -7,18 +7,18 @@ let originalSanitizeHtmlContent;
 
 beforeAll(() => {
     originalSanitizeHtmlContent = getHooks().sanitizeHtmlContent;
-    setHooks({
-        sanitizeHtmlContent: (content) => content,
-    });
+    setHooks({ sanitizeHtmlContent: (content) => content });
 });
 
 afterAll(() => {
-    setHooks({
-        sanitizeHtmlContent: originalSanitizeHtmlContent,
-    });
+    setHooks({ sanitizeHtmlContent: originalSanitizeHtmlContent });
 });
 
-it('renders the content as HTML', () => {
+afterEach(() => {
+    window.__lwcResetGlobalStylesheets();
+});
+
+it('renders the content as HTML', async () => {
     const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = 'Hello <b>World</b>';
     document.body.appendChild(elm);

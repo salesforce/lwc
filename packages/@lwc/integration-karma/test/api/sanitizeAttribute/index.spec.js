@@ -36,11 +36,10 @@ const scenarios = [
 
 scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
     describe(`${type} ${attrName}`, () => {
-        const originalSanitizeAttribute = LWC.sanitizeAttribute;
-
+        // Spy is created in a mock file and injected with the import map plugin
+        const sanitizeAttributeSpy = LWC.sanitizeAttribute;
         afterEach(() => {
-            // Reset original sanitizer after each test.
-            LWC.sanitizeAttribute = originalSanitizeAttribute;
+            sanitizeAttributeSpy.mockReset();
         });
 
         it('uses the original passthrough sanitizer when not overridden', () => {
@@ -52,8 +51,6 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
         });
 
         it('receives the right parameters', () => {
-            spyOn(LWC, 'sanitizeAttribute');
-
             const elm = createElement(tagName, { is: Ctor });
             document.body.appendChild(elm);
 
@@ -66,7 +63,7 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
         });
 
         it('replace the original attribute value with a string', () => {
-            spyOn(LWC, 'sanitizeAttribute').and.returnValue('/bar');
+            sanitizeAttributeSpy.mockReturnValue('/bar');
 
             const elm = createElement(tagName, { is: Ctor });
             document.body.appendChild(elm);
@@ -76,7 +73,7 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
         });
 
         it('replace the original attribute value with undefined', () => {
-            spyOn(LWC, 'sanitizeAttribute').and.returnValue(undefined);
+            sanitizeAttributeSpy.mockReturnValue(undefined);
 
             const elm = createElement(tagName, { is: Ctor });
             document.body.appendChild(elm);
@@ -105,8 +102,6 @@ booleanTrueScenarios.forEach(({ attrName, tagName, Ctor }) => {
     describe(attrName, () => {
         // For boolean literals (e.g. `<use xlink:href>`), there is no reason to sanitize since it's empty
         it('does not sanitize when used as a boolean-true attribute', () => {
-            spyOn(LWC, 'sanitizeAttribute');
-
             const elm = createElement(tagName, { is: Ctor });
             document.body.appendChild(elm);
 

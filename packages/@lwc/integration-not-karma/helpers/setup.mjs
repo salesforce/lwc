@@ -106,6 +106,7 @@ hijackGlobal('afterEach', (afterEach) => {
         // FIXME: Boost test speed by moving this to only files that need it
         // Ensure the DOM is in a clean state
         document.body.replaceChildren();
+        document.head.replaceChildren();
     });
 });
 
