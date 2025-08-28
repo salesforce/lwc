@@ -1,3 +1,4 @@
+import { expectConsoleCallsDev } from '../../../../../../helpers/utils.js';
 export default {
     props: {
         showA: false,
@@ -25,7 +26,7 @@ export default {
             getComputedStyle(child).getPropertyValue('--from-template').trim().replace(/"/g, "'")
         ).toBe("'a'");
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <style> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',

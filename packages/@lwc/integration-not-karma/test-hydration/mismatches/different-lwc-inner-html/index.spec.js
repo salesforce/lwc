@@ -1,3 +1,4 @@
+import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         content: '<p>test-content</p>',
@@ -21,7 +22,7 @@ export default {
         expect(p).not.toBe(snapshot.p);
         expect(p.textContent).toBe('different-content');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration innerHTML mismatch on: <div> - rendered on server: <p>test-content</p> - expected on client: <p>different-content</p>',

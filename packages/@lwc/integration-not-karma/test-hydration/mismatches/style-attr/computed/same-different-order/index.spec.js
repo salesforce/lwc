@@ -1,3 +1,4 @@
+import { expectConsoleCallsDev } from '../../../../../helpers/utils.js';
 export default {
     props: {
         dynamicStyle: 'background-color: red; border-color: red; margin: 1px;',
@@ -20,7 +21,7 @@ export default {
             'margin: 1px; border-color: red; background-color: red;'
         );
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <p> - rendered on server: style="background-color: red; border-color: red; margin: 1px;" - expected on client: style="margin: 1px; border-color: red; background-color: red;"',

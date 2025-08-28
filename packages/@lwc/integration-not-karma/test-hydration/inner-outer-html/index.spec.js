@@ -1,7 +1,8 @@
+import { extractDataIds } from '../../helpers/utils.js';
 export default {
     props: {},
     advancedTest(target, { consoleSpy }) {
-        const ids = Object.entries(TestUtils.extractDataIds(target)).filter(
+        const ids = Object.entries(extractDataIds(target)).filter(
             ([id]) => !id.endsWith('.shadowRoot')
         );
         for (const [id, node] of ids) {
