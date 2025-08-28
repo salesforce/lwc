@@ -1,3 +1,4 @@
+import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 export default {
     props: {},
     snapshot(target) {
@@ -12,7 +13,7 @@ export default {
         expect(snapshotAfterHydration.div).toBe(snapshots.div);
         expect(target.shadowRoot.querySelector('x-child').style.color).toBe('blue');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             warn: [],
             error: [],
         });

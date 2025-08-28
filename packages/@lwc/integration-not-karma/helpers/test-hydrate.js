@@ -1,8 +1,8 @@
 import * as LWC from 'lwc';
+import { spyConsole } from './console';
+import { setHooks } from './hooks';
 
-window.TestUtils.setHooks({
-    sanitizeHtmlContent: (content) => content,
-});
+setHooks({ sanitizeHtmlContent: (content) => content });
 
 function parseStringToDom(html) {
     return Document.parseHTMLUnsafe(html).body.firstChild;
@@ -28,7 +28,7 @@ async function runTest(ssrRendered, Component, testConfig) {
     let target = container.querySelector(selector);
 
     let testResult;
-    const consoleSpy = window.TestUtils.spyConsole();
+    const consoleSpy = spyConsole();
     setFeatureFlags(testConfig.requiredFeatureFlags, true);
 
     if (testConfig.test) {

@@ -1,3 +1,4 @@
+import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         showFirstComment: true,
@@ -18,7 +19,7 @@ export default {
         expect(comment.nodeValue).not.toBe(snapshots.commentText);
         expect(comment.nodeValue).toBe('second');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration comment mismatch on: #comment - rendered on server: first - expected on client: second',
