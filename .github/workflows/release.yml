@@ -79,6 +79,11 @@ jobs:
             - name: Publish to npm
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_REGISTRY: https://registry.npmjs.org
+                  NPM_CONFIG_ALWAYS_AUTH: 'true'
               run: |
+                  # Force registry + token for both npm and yarn
+                  printf "registry=https://registry.npmjs.org\n//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true\n" > ~/.npmrc
+
                   TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
-                  yarn nx release publish --yes --registry https://registry.npmjs.org --tag "$TAG"
+                  yarn nx release publish --yes --tag "$TAG"
