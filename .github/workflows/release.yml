@@ -73,7 +73,7 @@ jobs:
               run: |
                   VERSION=$(jq -r .version package.json)
                   git tag -a "v$VERSION" -m "Release v$VERSION"
-                  git push origin "v$VERSION"
+                  git push origin tag "v$VERSION"
                   gh release create "v$VERSION" --title "v$VERSION" --generate-notes
 
             - name: Publish to npm
