@@ -1,4 +1,4 @@
-name: Manual Release
+name: Manual Release Test Workflow
 
 on:
     workflow_dispatch:
@@ -25,7 +25,6 @@ permissions:
 jobs:
     release:
         # Allow only on master, spring*, summer*, winter*;
-        if: ${{ github.repository_owner == 'salesforce' && (github.ref_name == 'master' || startsWith(github.ref_name, 'spring') || startsWith(github.ref_name, 'summer') || startsWith(github.ref_name, 'winter')) }}
         environment: release
         runs-on: ubuntu-latest
         steps:
@@ -64,31 +63,31 @@ jobs:
                   git commit -am "chore: release v$RESOLVED_VERSION"
                   git push origin HEAD
 
-            - name: Build
-              run: yarn build
+            # - name: Build
+            #   run: yarn build
 
-            - name: Tag and create GitHub release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  VERSION=$(jq -r .version package.json)
-                  git tag -a "v$VERSION" -m "Release v$VERSION"
-                  git push origin tag "v$VERSION"
-                  gh release create "v$VERSION" --title "v$VERSION" --generate-notes
+            # - name: Tag and create GitHub release
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            #   run: |
+            #       VERSION=$(jq -r .version package.json)
+            #       git tag -a "v$VERSION" -m "Release v$VERSION"
+            #       git push origin tag "v$VERSION"
+            #       gh release create "v$VERSION" --title "v$VERSION" --generate-notes
 
-            - name: Publish to npm
-              env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  NPM_CONFIG_ALWAYS_AUTH: 'true'
-              run: |
-                  # Force both npm and yarn to use npmjs and pick up the token
-                  yarn config set registry https://registry.npmjs.org
-                  npm config set registry https://registry.npmjs.org
-                  printf "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true\n" > ~/.npmrc
+            # - name: Publish to npm
+            #   env:
+            #       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            #       NPM_CONFIG_ALWAYS_AUTH: 'true'
+            #   run: |
+            #       # Force both npm and yarn to use npmjs and pick up the token
+            #       yarn config set registry https://registry.npmjs.org
+            #       npm config set registry https://registry.npmjs.org
+            #       printf "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true\n" > ~/.npmrc
 
-                  # Sanity checks
-                  echo "yarn registry: $(yarn config get registry)"
-                  echo "npm registry:  $(npm config get registry)"
+            #       # Sanity checks
+            #       echo "yarn registry: $(yarn config get registry)"
+            #       echo "npm registry:  $(npm config get registry)"
 
-                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
-                  yarn nx release publish --yes --tag "$TAG"
+            #       TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
+            #       yarn nx release publish --yes --tag "$TAG"
