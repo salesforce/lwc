@@ -33,6 +33,7 @@ jobs:
               with:
                   token: ${{ secrets.WORKFLOW_PAT }}
                   fetch-depth: 0
+                  persist-credentials: false
 
             - name: Setup Node
               uses: actions/setup-node@v4
@@ -61,28 +62,12 @@ jobs:
                   RESOLVED_VERSION=$(jq -r .version package.json)
                   echo "RESOLVED_VERSION=$RESOLVED_VERSION" >> "$GITHUB_ENV"
 
-            - name: Set git identity (Actions bot)
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            - name: Sanity check PAT identity
-              env:
-                  WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
-              run: |
-                  curl -sSf -H "Authorization: Bearer $WORKFLOW_PAT" https://api.github.com/user | jq -r .login
-
-            - name: Set remote to use PAT
-              env:
-                  WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
-              run: |
-                  git remote set-url origin "https://x-access-token:${WORKFLOW_PAT}@github.com/${{ github.repository }}.git"
-                  git ls-remote origin 1>/dev/null
-
-            - name: Commit and push
-              run: |
-                  git add -A
-                  git commit -m "chore: release v${RESOLVED_VERSION}"
-                  git push origin "HEAD:${GITHUB_REF_NAME}"
+            - name: Commit & push with PAT
+              uses: actions-js/push@v1.4
+              with:
+                  github_token: ${{ secrets.WORKFLOW_PAT }}
+                  branch: ${{ github.ref_name }}
+                  message: 'chore: release v${{ env.RESOLVED_VERSION }}'
 
             # - name: Bump versions and commit
             #   env:
