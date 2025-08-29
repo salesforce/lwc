@@ -64,6 +64,18 @@ jobs:
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            - name: Sanity check PAT identity
+              env:
+                  WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+              run: |
+                  curl -sSf -H "Authorization: Bearer $WORKFLOW_PAT" https://api.github.com/user | jq -r .login
+
+            - name: Set remote to use PAT
+              env:
+                  WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
+              run: |
+                  git remote set-url origin "https://x-access-token:${WORKFLOW_PAT}@github.com/${{ github.repository }}.git"
+                  git ls-remote origin 1>/dev/null
 
             - name: Commit & push with PAT
               uses: actions-js/push@v1.4
