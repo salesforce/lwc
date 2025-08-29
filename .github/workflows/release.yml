@@ -77,12 +77,11 @@ jobs:
                   git remote set-url origin "https://x-access-token:${WORKFLOW_PAT}@github.com/${{ github.repository }}.git"
                   git ls-remote origin 1>/dev/null
 
-            - name: Commit & push with PAT
-              uses: actions-js/push@v1.4
-              with:
-                  github_token: ${{ secrets.WORKFLOW_PAT }}
-                  branch: ${{ github.ref_name }}
-                  message: 'chore: release v${{ env.RESOLVED_VERSION }}'
+            - name: Commit and push
+              run: |
+                  git add -A
+                  git commit -m "chore: release v${RESOLVED_VERSION}"
+                  git push origin "HEAD:${GITHUB_REF_NAME}"
 
             # - name: Bump versions and commit
             #   env:
