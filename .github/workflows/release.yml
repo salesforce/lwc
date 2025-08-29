@@ -63,17 +63,17 @@ jobs:
                   RESOLVED_VERSION=$(jq -r .version package.json)
                   echo "RESOLVED_VERSION=$RESOLVED_VERSION" >> "$GITHUB_ENV"
 
+            - name: Set git identity (Actions bot)
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
             - name: Commit & push
               uses: actions-js/push@v1.4
               with:
                   github_token: ${{ secrets.WORKFLOW_PAT }}
                   branch: ${{ github.ref_name }}
                   message: 'chore: release v${{ env.RESOLVED_VERSION }}'
-
-            - name: Set git identity (Actions bot)
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
             - name: Build
               run: yarn build
