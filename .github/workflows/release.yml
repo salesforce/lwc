@@ -31,6 +31,7 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
               with:
+                  token: ${{ secrets.WORKFLOW_PAT }}
                   fetch-depth: 0
 
             - name: Setup Node
