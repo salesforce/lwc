@@ -1,9 +1,9 @@
-import { extractDataIds } from 'test-utils';
 import { createElement } from 'lwc';
 import ForEach from 'x/forEach';
 import Iterator from 'x/iterator';
 import InlineForEach from 'x/inlineForEach';
 import InlineIterator from 'x/inlineIterator';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('iteration rendering', () => {
     function validateRenderedChildren(elm, iterationType) {

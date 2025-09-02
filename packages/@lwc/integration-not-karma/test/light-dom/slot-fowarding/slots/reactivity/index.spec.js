@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
+import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from '../../../../../helpers/utils.js';
 
 import LightContainer from './x/lightContainer/lightContainer';
 

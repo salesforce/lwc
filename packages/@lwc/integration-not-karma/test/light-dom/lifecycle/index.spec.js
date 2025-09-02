@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from 'test-utils';
 
 import SlotForwarding from 'x/slotForwarding';
 import DynamicSlotForwarding from 'x/dynamicSlotForwarding';
 import StandardSlotting from 'x/standardSlotting';
 import BasicContainer from 'x/basicContainer';
+import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from '../../../helpers/utils.js';
 
 import { resetId } from './util.js';
 

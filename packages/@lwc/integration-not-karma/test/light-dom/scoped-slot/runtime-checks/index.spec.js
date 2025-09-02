@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
-import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from 'test-utils';
 
 import ParentWithScopedSlotContent from 'x/parentWithScopedSlotContent';
 import ParentWithStandardSlotContent from 'x/parentWithStandardSlotContent';
+import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 

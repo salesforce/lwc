@@ -1,9 +1,12 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 import Component from 'x/component';
 import Parent from 'x/parent';
 import LogsWhenConnected from 'x/logsWhenConnected';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+} from '../../../helpers/utils.js';
 
 let logger;
 let dispatcher;

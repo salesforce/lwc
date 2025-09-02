@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
+import Light from 'x/light';
+import Shadow from 'x/shadow';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
     nonStandardAriaProperties,
-} from 'test-utils';
-import Light from 'x/light';
-import Shadow from 'x/shadow';
+} from '../../../helpers/utils.js';
 
 // This test only works if the ARIA reflection polyfill is loaded
 describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
