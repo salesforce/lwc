@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         greeting: 'hello!',
@@ -19,14 +18,14 @@ export default {
         expect(p.firstChild).toBe(snapshots.text);
         expect(p.textContent).toBe('bye!');
         if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
-            expectConsoleCallsDev(consoleCalls, {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
                     'Hydration text content mismatch on: #text - rendered on server: hello! - expected on client: bye!',
                 ],
             });
         } else {
-            expectConsoleCallsDev(consoleCalls, {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
                     'Hydration text content mismatch on: <p> - rendered on server: hello! - expected on client: bye!',

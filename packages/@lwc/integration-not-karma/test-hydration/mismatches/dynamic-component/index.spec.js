@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         ctor: 'server',
@@ -18,7 +17,7 @@ export default {
         // Client side constructor
         expect(target.shadowRoot.querySelector('x-client')).not.toBeNull();
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration node mismatch on: <x-client> - rendered on server: <x-server> - expected on client: <x-client>',

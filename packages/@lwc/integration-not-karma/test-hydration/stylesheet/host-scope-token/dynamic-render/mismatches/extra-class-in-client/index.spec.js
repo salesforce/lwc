@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../../../helpers/utils.js';
 export default {
     props: {
         clazz: '',
@@ -19,7 +18,7 @@ export default {
         expect(child).not.toBe(snapshots.child);
         expect(h1).not.toBe(snapshots.h1);
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <x-child> - rendered on server: class="" - expected on client: class="foo"',

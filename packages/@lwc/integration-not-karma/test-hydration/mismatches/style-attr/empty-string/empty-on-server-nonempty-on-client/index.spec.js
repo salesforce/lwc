@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../../helpers/utils.js';
 export default {
     props: {
         styles: '',
@@ -18,7 +17,7 @@ export default {
         expect(p).not.toBe(snapshots.p);
         expect(p.getAttribute('style')).toBe('color: burlywood;');
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <p> - rendered on server: style="" - expected on client: style="color: burlywood;"',

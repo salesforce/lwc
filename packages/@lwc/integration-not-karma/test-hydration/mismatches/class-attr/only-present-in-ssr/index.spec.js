@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 export default {
     advancedTest(target, { Component, hydrateComponent, consoleSpy }) {
         // This simulates a condition where the server-rendered markup has
@@ -12,7 +11,7 @@ export default {
         hydrateComponent(target, Component, {});
 
         const consoleCalls = consoleSpy.calls;
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <x-child> - rendered on server: class="foo" - expected on client: class=""',

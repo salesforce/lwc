@@ -1,4 +1,3 @@
-import { expectConsoleCalls } from '../../helpers/utils.js';
 export default {
     // server is expected to generate the same console error as the client
     expectedSSRConsoleCalls: {
@@ -41,7 +40,7 @@ export default {
         // Expect an error as one context was generated twice.
         // Expect an error as one context was malformed (did not define connectContext or disconnectContext methods).
         // Expect server/client context output parity (no hydration warnings)
-        expectConsoleCalls(consoleCalls, {
+        TestUtils.expectConsoleCalls(consoleCalls, {
             error: [],
             warn: [
                 'Attempted to connect to trusted context but received the following error',

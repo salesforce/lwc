@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 // SSR has `class="null"`, whereas the client has no class at all.
 // This is to test if hydration is smart enough to recognize the difference between a null
 // attribute and the literal string "null".
@@ -22,7 +21,7 @@ export default {
         expect(p).not.toBe(snapshots.p);
         expect(p.className).not.toBe(snapshots.className);
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <p> - rendered on server: class="null" - expected on client: class=""',

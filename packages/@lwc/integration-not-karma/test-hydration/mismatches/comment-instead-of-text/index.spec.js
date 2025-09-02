@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         showAsText: true,
@@ -18,7 +17,7 @@ export default {
         expect(comment.nodeType).toBe(Node.COMMENT_NODE);
         expect(comment.nodeValue).toBe(snapshots.text.nodeValue);
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration node mismatch on: #comment - rendered on server: #text - expected on client: #comment',

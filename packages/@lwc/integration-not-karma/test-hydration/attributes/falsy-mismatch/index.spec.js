@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         isFalse: false,
@@ -29,7 +28,7 @@ export default {
             expect(divs[i].getAttribute('data-foo')).toEqual(expectedAttrValues[i]);
         }
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <div> - rendered on server: data-foo=null - expected on client: data-foo="undefined"',
