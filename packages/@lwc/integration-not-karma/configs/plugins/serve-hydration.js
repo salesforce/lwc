@@ -178,22 +178,16 @@ async function existsUp(dir, file) {
  * This function wraps those configs in the test code to be executed.
  */
 async function wrapHydrationTest(filePath) {
-    const suiteDir = path.dirname(filePath);
-
-    const testCode = await getTestConfig(filePath);
-
-    // Create a temporary module to evaluate the bundled code and extract config properties for test configuration
-    const configModule = new vm.Script(testCode);
-    const configContext = { config: {} };
-    vm.createContext(configContext);
-    configModule.runInContext(configContext);
-    const { expectedSSRConsoleCalls, requiredFeatureFlags } = configContext.config;
-
-    requiredFeatureFlags?.forEach((featureFlag) => {
-        lwcSsr.setFeatureFlagForTest(featureFlag, true);
-    });
+    const {
+        default: { expectedSSRConsoleCalls, requiredFeatureFlags },
+    } = await import(path.join(ROOT_DIR, filePath));
 
     try {
+        requiredFeatureFlags?.forEach((featureFlag) => {
+            lwcSsr.setFeatureFlagForTest(featureFlag, true);
+        });
+
+        const suiteDir = path.dirname(filePath);
         // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
         const onlyFileExists = await existsUp(suiteDir, '.only');
 
@@ -203,7 +197,7 @@ async function wrapHydrationTest(filePath) {
             : await getCompiledModule(suiteDir, true);
         const ssrOutput = await getSsrCode(
             componentDefSSR,
-            testCode,
+            await getTestConfig(filePath),
             path.join(suiteDir, 'ssr.js'),
             expectedSSRConsoleCalls
         );
