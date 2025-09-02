@@ -180,9 +180,6 @@ async function existsUp(dir, file) {
 async function wrapHydrationTest(filePath) {
     const suiteDir = path.dirname(filePath);
 
-    // Wrap all the tests into a describe block with the file stricture name
-    const describeTitle = path.relative(ROOT_DIR, suiteDir).split(path.sep).join(' ');
-
     const testCode = await getTestConfig(filePath);
 
     // Create a temporary module to evaluate the bundled code and extract config properties for test configuration
@@ -200,7 +197,6 @@ async function wrapHydrationTest(filePath) {
         // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
         const onlyFileExists = await existsUp(suiteDir, '.only');
 
-        const describeFn = onlyFileExists ? 'describe.only' : 'describe';
         const componentDefCSR = await getCompiledModule(suiteDir, false);
         const componentDefSSR = ENGINE_SERVER
             ? componentDefCSR
@@ -216,14 +212,13 @@ async function wrapHydrationTest(filePath) {
         return `
         import { runTest } from '/helpers/test-hydrate.js';
         import config from '/${filePath}?original=1';
-        ${describeFn}("${describeTitle}", () => {
-            it('test', async () => {
-                const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
-                // Component code, IIFE set as Main
-                ${componentDefCSR};
-                return await runTest(ssrRendered, Main, config);
-            })
-        });`;
+        ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
+            const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
+            // Component code, IIFE set as Main
+            ${componentDefCSR};
+            return await runTest(ssrRendered, Main, config);
+        });
+        `;
     } finally {
         requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, false);
