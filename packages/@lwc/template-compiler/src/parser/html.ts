@@ -40,7 +40,6 @@ function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
 export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
     const onParseError = (err: parse5.ParserError) => {
         const { code, ...location } = err;
-
         const lwcError = getLwcErrorFromParse5Error(ctx, code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
@@ -54,11 +53,11 @@ export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
             onParseError,
         });
     }*/
-
-    return parse5.parseFragment(source, {
+    const parsed = parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,
         onParseError,
     });
+    return parsed;
 }
 
 // https://github.com/babel/babel/blob/d33d02359474296402b1577ef53f20d94e9085c4/packages/babel-types/src/react.js#L9-L55

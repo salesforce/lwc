@@ -55,6 +55,12 @@ export interface Identifier extends BaseNode {
     name: string;
 }
 
+export interface RawExpression {
+    expression: string;
+    prefix: string;
+    suffix: string;
+}
+
 export interface MemberExpression extends BaseNode {
     type: 'MemberExpression';
     object: Expression;

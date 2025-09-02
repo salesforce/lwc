@@ -147,7 +147,7 @@ export default class ParserCtx {
         this.apiVersion = config.apiVersion;
     }
 
-    getSource(start: number, end: number): string {
+    getSource(start: number, end?: number): string {
         return this.source.slice(start, end);
     }
 

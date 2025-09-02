@@ -8,6 +8,7 @@
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { walk } from 'estree-walker';
 import * as t from '../../shared/estree';
+import type { Expression } from '../../shared/types';
 import type { BaseNode } from 'estree';
 import type { Node } from 'estree-walker';
 
@@ -125,7 +126,8 @@ function validateNode(node: BaseNode, _parent: BaseNode | null, isWithinArrowFn:
     }
 }
 
-export function validateExpressionAst(rootNode: BaseNode) {
+export function validateExpressionAst(rootNode: BaseNode)
+: asserts rootNode is Expression {
     let arrowFnScopeDepth = 0;
     // TODO [#3370]: when the template expression flag is removed, the
     // ComplexExpression type should be redefined as an ESTree Node. Doing

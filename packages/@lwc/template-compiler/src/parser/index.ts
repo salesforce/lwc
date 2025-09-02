@@ -31,6 +31,7 @@ import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 import {
+    EXPRESSION_SYMBOL_START,
     isExpression,
     parseExpression,
     parseIdentifier,
@@ -61,6 +62,7 @@ import {
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
+import { parseComplexExpression } from './expression-complex';
 import type {
     TemplateParseResult,
     Attribute,
@@ -87,6 +89,7 @@ import type {
 } from '../shared/types';
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
+
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -461,7 +464,6 @@ function parseChildren(
 }
 
 function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
-    debugger;
     const parsedTextNodes: Text[] = [];
     const location = parse5Text.sourceCodeLocation;
 
@@ -478,46 +480,49 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     // Extract the raw source to avoid HTML entity decoding done by parse5
     const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
 
-    /*
-    The original job of this if-block was to discard the whitespace between HTML tags, HTML
-    comments, and HTML tags and HTML comments. The whitespace inside the text content of HTML tags
-    would never be considered here because they would not be parsed into individual text nodes until
-    later (several lines below).
-
-    ["Hello {first} {last}!"] => ["Hello ", "{first}", " ", "{last}", "!"]
-
-    With the implementation of complex template expressions, whitespace that shouldn't be discarded
-    has already been parsed into individual text nodes at this point so we only discard when
-    experimentalComplexExpressions is disabled.
-
-    When removing the experimentalComplexExpressions flag, we need to figure out how to best discard
-    the HTML whitespace while preserving text content whitespace, while also taking into account how
-    comments are sometimes preserved (in which case we need to keep the HTML whitespace).
-    */
-    //if (!rawText.trim().length && !ctx.config.experimentalComplexExpressions) {
     if (!rawText.trim().length) {
         return parsedTextNodes;
     }
 
-    // TODO [#3370]: remove experimental template expression flag
-    /*
-    if (ctx.config.experimentalComplexExpressions && isExpression(rawText)) {
-        // Implementation of the lexer ensures that each text-node template expression
-        // will be contained in its own text node. Adjacent static text will be in
-        // separate text nodes.
-        const entry = ctx.preparsedJsExpressions!.get(location.startOffset);
-        if (!entry?.parsedExpression) {
-            throw new Error('Implementation error: cannot find preparsed template expression');
+    if (ctx.config.experimentalComplexExpressions) {
+        let startOffset = 0;
+        let index = 0;
+        const templateSource = cleanTextNode(ctx.getSource(location.startOffset));
+
+        while (index < rawText.length) {
+            const char = rawText[index];
+
+            if (char === EXPRESSION_SYMBOL_START) {
+                // There was a literal before the expression
+                if (startOffset < index) {
+                    const literalToken = rawText.slice(startOffset, index);
+                    parsedTextNodes.push(ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location));
+                }
+                
+                const sourceLocation = ast.sourceLocation(location)
+                const acornExpression = parseComplexExpression(ctx, rawText, templateSource, index + 1, sourceLocation);
+
+                if (acornExpression) {
+                    const expressionSource = rawText.slice(index, acornExpression.end + 1)
+                    index = acornExpression.end;
+                    startOffset = index + 1;
+                    const expression = { ...acornExpression, location: sourceLocation }
+                    parsedTextNodes.push(ast.text(expressionSource, expression, location));
+                }
+            } 
+            index++;
         }
 
-        const value = {
-            ...entry.parsedExpression,
-            location: ast.sourceLocation(location),
-        };
-        return [ast.text(rawText, value, location)];
-    }*/
+        // There was a literal after the last expression
+        if (index > startOffset) {
+            const literalToken = rawText.slice(startOffset, index);
+            parsedTextNodes.push(ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location));
+        }
 
-    // Split the text node content arround expression and create node for each
+        return parsedTextNodes;
+    }
+
+    // Split the text node content around expression and create node for each
     const tokenizedContent = rawText.split(EXPRESSION_RE);
 
     for (const token of tokenizedContent) {

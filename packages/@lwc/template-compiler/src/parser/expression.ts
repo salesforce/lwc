@@ -62,7 +62,7 @@ function validateExpression(
     }
 }
 
-function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
+export function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
     if (parsedExpression.end === source.length - 1) {
         return;
     }
@@ -128,14 +128,14 @@ export function parseExpression(
     source: string,
     location: SourceLocation
 ): Expression {
-    debugger;
     const { ecmaVersion } = ctx;
     return ctx.withErrorWrapping(
         () => {
             const parsed = parseExpressionAt(source, 1, {
                 ecmaVersion,
                 // TODO [#3370]: remove experimental template expression flag
-                allowAwaitOutsideFunction: ctx.config.experimentalComplexExpressions,
+                allowAwaitOutsideFunction: ctx.config.experimentalComplexExpressions,            
+                onComment: () => invariant(false, ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED),
             });
 
             validateSourceIsParsedExpression(source, parsed);
