@@ -1,0 +1,106 @@
+name: Manual Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            bump:
+                description: 'Version bump type (used if release_version is empty)'
+                type: choice
+                options:
+                    - major
+                    - minor
+                    - patch
+                    - prerelease
+                required: false
+            release_version:
+                description: 'Semver version to release (must be > current root version)'
+                required: false
+
+permissions:
+    contents: write
+    pull-requests: write
+    id-token: write
+    packages: write
+
+jobs:
+    release:
+        # Allow only on master, spring*, summer*, winter*;
+        if: ${{ github.repository_owner == 'salesforce' && (github.ref_name == 'master' || startsWith(github.ref_name, 'spring') || startsWith(github.ref_name, 'summer') || startsWith(github.ref_name, 'winter')) }}
+        environment: release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.WORKFLOW_PAT }}
+                  persist-credentials: false
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+                  registry-url: 'https://registry.npmjs.org'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Resolve version input
+              id: resolve_version
+              run: |
+                  RELEASE_VERSION='${{ inputs.release_version }}'
+                  if [ -z "$RELEASE_VERSION" ]; then
+                    RELEASE_VERSION='${{ inputs.bump }}'
+                  fi
+                  echo "resolved=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+            - name: Resolve version
+              env:
+                  INPUT_VERSION: ${{ steps.resolve_version.outputs.resolved }}
+              run: |
+                  node ./scripts/release/version.js "$INPUT_VERSION"
+                  RESOLVED_VERSION=$(jq -r .version package.json)
+                  echo "RESOLVED_VERSION=$RESOLVED_VERSION" >> "$GITHUB_ENV"
+
+            - name: Set git identity (Actions bot)
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            - name: Commit & push
+              uses: actions-js/push@v1.4
+              with:
+                  github_token: ${{ secrets.WORKFLOW_PAT }}
+                  branch: ${{ github.ref_name }}
+                  message: 'chore: release v${{ env.RESOLVED_VERSION }}'
+
+            - name: Build
+              run: yarn build
+
+            - name: Tag and create GitHub release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  VERSION=$(jq -r .version package.json)
+                  git tag -a "v$VERSION" -m "Release v$VERSION"
+                  git push origin tag "v$VERSION"
+                  gh release create "v$VERSION" --title "v$VERSION" --generate-notes
+
+            - name: Publish to npm
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_ALWAYS_AUTH: 'true'
+              run: |
+                  # Force both npm and yarn to use npmjs and pick up the token
+                  yarn config set registry https://registry.npmjs.org
+                  npm config set registry https://registry.npmjs.org
+                  printf "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true\n" > ~/.npmrc
+
+                  # Sanity checks
+                  echo "yarn registry: $(yarn config get registry)"
+                  echo "npm registry:  $(npm config get registry)"
+
+                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
+                  yarn nx release publish --yes --tag "$TAG"
