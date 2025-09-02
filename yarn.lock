@@ -2114,9 +2114,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -3194,6 +3196,11 @@
   integrity sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==
   dependencies:
     "@types/istanbul-lib-report" "*"
+
+"@types/jasmine@^5.1.9":
+  version "5.1.9"
+  resolved "https://registry.yarnpkg.com/@types/jasmine/-/jasmine-5.1.9.tgz#9f00abff2a17687e675ce6669e7b53c9e7d145f0"
+  integrity sha512-8t4HtkW4wxiPVedMpeZ63n3vlWxEIquo/zc1Tm8ElU+SqVV7+D3Na2PWaJUp179AzTragMWVwkMv7mvty0NfyQ==
 
 "@types/jasmine@^5.1.9":
   version "5.1.9"

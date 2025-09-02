@@ -1,0 +1,9 @@
+<template>
+    <x-scoped-slot-child>
+        <template lwc:slot-data="defaultSlotData">
+            <template for:each={defaultSlotData} for:item="defaultSlotData">
+                <lwc:component lwc:is={defaultSlotData.ctor} key={defaultSlotData.key}></lwc:component>
+            </template>
+        </template>
+    </x-scoped-slot-child>
+</template>

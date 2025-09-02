@@ -1,0 +1,22 @@
+<template>
+  <!-- dynamic lwc:spread so that it's deoptimized and not a static block -->
+  <div lwc:spread={spread} lwc:ref="bar">january</div>
+  <div lwc:spread={spread}>
+    <div lwc:spread={spread}>
+      <div lwc:spread={spread} lwc:ref="foo">february</div>
+    </div>
+  </div>
+  <div lwc:spread={spread} lwc:ref="foo">march</div>
+  <div lwc:spread={spread}>
+    <div lwc:spread={spread}>
+      <div lwc:spread={spread} lwc:ref="bar">april</div>
+    </div>
+  </div>
+  <div lwc:spread={spread} lwc:ref="baz">may</div>
+  <div lwc:spread={spread} lwc:ref="baz">june</div>
+  <div lwc:spread={spread} lwc:ref="baz">july</div>
+  <div lwc:spread={spread} lwc:ref='quux'>
+    august
+    <div lwc:spread={spread} lwc:ref='quux'>september</div>
+  </div>
+</template>

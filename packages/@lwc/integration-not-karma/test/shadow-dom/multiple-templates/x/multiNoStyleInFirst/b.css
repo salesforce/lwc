@@ -1,0 +1,11 @@
+.red {
+    color: red;
+}
+
+:host {
+    margin-left: 5px;
+}
+
+.green {
+    color: green;
+}
