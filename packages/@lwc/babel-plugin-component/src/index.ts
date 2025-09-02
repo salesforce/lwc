@@ -15,6 +15,8 @@ import dedupeImports from './dedupe-imports';
 import dynamicImports from './dynamic-imports';
 import scopeCssImports from './scope-css-imports';
 import compilerVersionNumber from './compiler-version-number';
+import privateMethodTransform from './private-method-transform';
+import reversePrivateMethodTransform from './reverse-private-method-transform';
 import { getEngineImportSpecifiers } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { PluginObj } from '@babel/core';
@@ -33,6 +35,8 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
     const { Class: transformDecorators } = decorators(api);
     const { Import: transformDynamicImports } = dynamicImports();
     const { ClassBody: addCompilerVersionNumber } = compilerVersionNumber(api);
+    const { Program: transformPrivateMethods } = privateMethodTransform(api);
+    const { ClassMethod: reverseTransformPrivateMethods } = reversePrivateMethodTransform(api);
 
     return {
         manipulateOptions(opts, parserOpts) {
@@ -40,6 +44,7 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
                 'decorators',
                 { decoratorsBeforeExport: true },
             ]);
+            parserOpts.plugins.push('privateMethods');
         },
 
         visitor: {
@@ -54,6 +59,15 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
 
                     // Add ?scoped=true to *.scoped.css imports
                     scopeCssImports(api, path);
+
+                    // Transform private methods BEFORE any other plugin processes them
+                    if (
+                        transformPrivateMethods &&
+                        typeof transformPrivateMethods === 'object' &&
+                        'enter' in transformPrivateMethods
+                    ) {
+                        (transformPrivateMethods as any).enter(path, state);
+                    }
                 },
                 exit(path) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);
@@ -67,6 +81,8 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
             Import: transformDynamicImports,
 
             Class: transformDecorators,
+
+            ClassMethod: reverseTransformPrivateMethods,
 
             ClassBody: addCompilerVersionNumber,
 
