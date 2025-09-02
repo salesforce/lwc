@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../../helpers/utils.js';
 export default {
     snapshot(target) {
         return {
@@ -9,7 +8,7 @@ export default {
         const hydratedSnapshot = this.snapshot(target);
         expect(hydratedSnapshot.child).not.toBe(snapshots.child);
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <x-child> - rendered on server: data-mutate-during-render="true" - expected on client: data-mutate-during-render="false"',

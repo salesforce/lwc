@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         classes: 'ssr-class',
@@ -24,7 +23,7 @@ export default {
         expect(p.getAttribute('style')).toBe('background-color: blue;');
         expect(p.getAttribute('data-attrs')).toBe('client-attrs');
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <p> - rendered on server: data-attrs="ssr-attrs" - expected on client: data-attrs="client-attrs"',

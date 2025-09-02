@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../helpers/utils.js';
 export default {
     props: {
         showMe: false,
@@ -17,7 +16,7 @@ export default {
         expect(snapshots.div).toBeNull();
         expect(div).toBeDefined();
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration child node mismatch on: #document-fragment - rendered on server:  - expected on client: #comment',

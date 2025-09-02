@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 export default {
     props: {
         showBlue: true,
@@ -17,7 +16,7 @@ export default {
         expect(hydratedSnapshot.text).not.toBe(snapshots.text);
 
         if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
-            expectConsoleCallsDev(consoleCalls, {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
                     'Hydration text content mismatch on: #text - rendered on server: blue - expected on client: green',
@@ -26,7 +25,7 @@ export default {
                 ],
             });
         } else {
-            expectConsoleCallsDev(consoleCalls, {
+            TestUtils.expectConsoleCallsDev(consoleCalls, {
                 error: [],
                 warn: [
                     'Hydration child node mismatch on: <ul> - rendered on server: <li>,<li>,<li> - expected on client: <li>,,<li>',

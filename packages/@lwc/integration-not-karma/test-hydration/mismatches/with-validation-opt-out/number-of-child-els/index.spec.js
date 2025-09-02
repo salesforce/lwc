@@ -1,4 +1,3 @@
-import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 export default {
     props: {
         isServer: true,
@@ -15,7 +14,7 @@ export default {
         const hydratedSnapshot = this.snapshot(target);
         expect(hydratedSnapshot.childMarkup).not.toBe(snapshots.childMarkup);
 
-        expectConsoleCallsDev(consoleCalls, {
+        TestUtils.expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration child node mismatch on: <x-child> - rendered on server: <div> - expected on client: <div>,<div>',
