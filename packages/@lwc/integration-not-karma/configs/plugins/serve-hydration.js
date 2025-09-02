@@ -4,20 +4,19 @@ import fs from 'node:fs/promises';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.js';
-const lwcSsr = await (ENGINE_SERVER ? import('@lwc/engine-server') : import('@lwc/ssr-runtime'));
-
-const ROOT_DIR = path.join(import.meta.dirname, '../..');
-
-const context = {
-    LWC: lwcSsr,
-    moduleOutput: null,
-};
+/** LWC SSR module to use when server-side rendering components. */
+const lwcSsr = await (ENGINE_SERVER
+    ? // Using import('literal') rather than import(variable) so static analysis tools work
+      import('@lwc/engine-server')
+    : import('@lwc/ssr-runtime'));
 
 lwcSsr.setHooks({
     sanitizeHtmlContent(content) {
         return content;
     },
 });
+
+const ROOT_DIR = path.join(import.meta.dirname, '../..');
 
 let guid = 0;
 const COMPONENT_UNDER_TEST = 'main';
@@ -100,7 +99,7 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
         };
     }
     try {
-        runnable();
+        return runnable();
     } finally {
         Object.assign(console, originals);
     }
@@ -117,31 +116,26 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
  * So, script runs, generates markup, & we get that markup out and return it for use
  * in client-side tests.
  */
-async function getSsrCode(moduleCode, testConfig, filename, expectedSSRConsoleCalls) {
+async function getSsrCode(moduleCode, testConfig, filePath, expectedSSRConsoleCalls) {
     const script = new vm.Script(
-        // FIXME: Can these IIFEs be converted to ESM imports?
-        // No, vm.Script doesn't support that. But might be doable with experimental vm.Module
-        `
-            ${testConfig};
-            config = config || {};
-            ${moduleCode};
-            moduleOutput = LWC.renderComponent(
+        `(() => {
+            ${testConfig}
+            ${moduleCode}
+            return LWC.renderComponent(
                 'x-${COMPONENT_UNDER_TEST}-${guid++}',
                 Main,
                 config.props || {},
                 false,
                 'sync'
             );
-        `,
-        { filename }
+        })()`,
+        { filename: `[SSR] ${filePath}` }
     );
 
-    throwOnUnexpectedConsoleCalls(() => {
-        vm.createContext(context);
-        script.runInContext(context);
-    }, expectedSSRConsoleCalls);
-
-    return await context.moduleOutput;
+    return throwOnUnexpectedConsoleCalls(
+        () => script.runInContext(vm.createContext({ LWC: lwcSsr })),
+        expectedSSRConsoleCalls
+    );
 }
 
 async function getTestConfig(input) {
@@ -198,7 +192,7 @@ async function wrapHydrationTest(filePath) {
         const ssrOutput = await getSsrCode(
             componentDefSSR,
             await getTestConfig(filePath),
-            path.join(suiteDir, 'ssr.js'),
+            filePath,
             expectedSSRConsoleCalls
         );
 
