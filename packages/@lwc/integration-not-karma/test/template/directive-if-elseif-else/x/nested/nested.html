@@ -1,0 +1,12 @@
+<template>
+    <div lwc:if={showContent}>
+        <template lwc:if={showNestedContent}>
+            <div class="nestedContent">Nested Content</div>
+        </template>
+        <template lwc:else>
+            <div class="nestedElse">Nothing for you</div>
+        </template>
+        <div>Nested Footer</div>
+    </div>
+    <div><h1>Footer</h1></div>
+</template>

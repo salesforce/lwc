@@ -1,0 +1,5 @@
+@import 'x/onlyCss';
+
+span {
+    border: 1px dashed red;
+}

@@ -1,0 +1,9 @@
+<template>
+    NestedBoundaryHost: {state.title}
+    <template if:true={state.error}>
+        <div class='boundary-alt-view'>alternative view</div>
+    </template>
+    <template if:false={state.error}>
+        <x-nested-grand-child-throw></x-nested-grand-child-throw>
+    </template>
+</template>

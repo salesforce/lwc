@@ -1,0 +1,7 @@
+<template>
+    <div></div>
+    <x-child-marked-as-circular></x-child-marked-as-circular>
+    <template if:true={renderCircularModule}>
+        <x-child-module-marked-as-circular></x-child-module-marked-as-circular>
+    </template>
+</template>
