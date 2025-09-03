@@ -126,8 +126,7 @@ function validateNode(node: BaseNode, _parent: BaseNode | null, isWithinArrowFn:
     }
 }
 
-export function validateExpressionAst(rootNode: BaseNode)
-: asserts rootNode is Expression {
+export function validateExpressionAst(rootNode: BaseNode): asserts rootNode is Expression {
     let arrowFnScopeDepth = 0;
     // TODO [#3370]: when the template expression flag is removed, the
     // ComplexExpression type should be redefined as an ESTree Node. Doing

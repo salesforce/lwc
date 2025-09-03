@@ -35,7 +35,6 @@ import {
     isExpression,
     parseExpression,
     parseIdentifier,
-    validatePreparsedJsExpressions,
 } from './expression';
 import {
     attributeName,
@@ -90,7 +89,6 @@ import type {
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
 
-
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
     // if not an expression, it is not referencing iterator index
@@ -134,7 +132,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     const root = ctx.withErrorRecovery(() => {
-        validatePreparsedJsExpressions(ctx);
         const templateRoot = getTemplateRoot(ctx, fragment);
         return parseRoot(ctx, templateRoot);
     });
@@ -484,39 +481,47 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
         return parsedTextNodes;
     }
 
+    const sourceLocation = ast.sourceLocation(location);
+
     if (ctx.config.experimentalComplexExpressions) {
-        let startOffset = 0;
+        let start = 0;
         let index = 0;
         const templateSource = cleanTextNode(ctx.getSource(location.startOffset));
 
         while (index < rawText.length) {
-            const char = rawText[index];
-
-            if (char === EXPRESSION_SYMBOL_START) {
-                // There was a literal before the expression
-                if (startOffset < index) {
-                    const literalToken = rawText.slice(startOffset, index);
-                    parsedTextNodes.push(ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location));
+            if (rawText[index] === EXPRESSION_SYMBOL_START) {
+                // Parse any literal that preceeded the expression
+                if (start < index) {
+                    const literalToken = rawText.slice(start, index);
+                    parsedTextNodes.push(
+                        ast.text(
+                            literalToken,
+                            ast.literal(decodeTextContent(literalToken)),
+                            location
+                        )
+                    );
                 }
-                
-                const sourceLocation = ast.sourceLocation(location)
-                const acornExpression = parseComplexExpression(ctx, rawText, templateSource, index + 1, sourceLocation);
 
-                if (acornExpression) {
-                    const expressionSource = rawText.slice(index, acornExpression.end + 1)
-                    index = acornExpression.end;
-                    startOffset = index + 1;
-                    const expression = { ...acornExpression, location: sourceLocation }
-                    parsedTextNodes.push(ast.text(expressionSource, expression, location));
-                }
-            } 
+                const parsed = parseComplexExpression(
+                    ctx,
+                    rawText,
+                    templateSource,
+                    sourceLocation,
+                    index
+                );
+                parsedTextNodes.push(ast.text(parsed.raw, parsed.expression, location));
+                index += parsed.raw.length;
+                start = index;
+            }
             index++;
         }
 
-        // There was a literal after the last expression
-        if (index > startOffset) {
-            const literalToken = rawText.slice(startOffset, index);
-            parsedTextNodes.push(ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location));
+        // Parse any literal that followed the expression
+        if (index > start) {
+            const literalToken = rawText.slice(start, index);
+            parsedTextNodes.push(
+                ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
+            );
         }
 
         return parsedTextNodes;
@@ -533,7 +538,7 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
 
         let value: Expression | Literal;
         if (isExpression(token)) {
-            value = parseExpression(ctx, token, ast.sourceLocation(location));
+            value = parseExpression(ctx, token, sourceLocation);
         } else {
             value = ast.literal(decodeTextContent(token));
         }
@@ -1885,7 +1890,7 @@ function getTemplateAttribute(
     }
 
     const isBooleanAttribute = !rawAttribute.includes('=');
-    const { value, escapedExpression } = normalizeAttributeValue(
+    const { value, escapedExpression, quotedExpression } = normalizeAttributeValue(
         ctx,
         rawAttribute,
         tag,
@@ -1895,12 +1900,16 @@ function getTemplateAttribute(
 
     let attrValue: Literal | Expression;
 
-    // TODO [#3370]: If complex template expressions are adopted, `preparsedJsExpressions`
-    // should be checked. However, to avoid significant complications in the internal types,
-    // arising from supporting both implementations simultaneously, we will re-parse the
-    // expression here when `ctx.config.experimentalComplexExpressions` is true.
     if (isExpression(value) && !escapedExpression) {
-        attrValue = parseExpression(ctx, value, location);
+        if (ctx.config.experimentalComplexExpressions && quotedExpression) {
+            const attributeNameOffset = attribute.name.length + 2; // The +2 accounts for the '="'
+            const templateSource = ctx.getSource(
+                attributeLocation.startOffset + attributeNameOffset
+            );
+            attrValue = parseComplexExpression(ctx, value, templateSource, location).expression;
+        } else {
+            attrValue = parseExpression(ctx, value, location);
+        }
     } else if (isBooleanAttribute) {
         attrValue = ast.literal(true);
     } else {

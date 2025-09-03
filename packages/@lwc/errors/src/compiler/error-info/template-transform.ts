@@ -102,6 +102,14 @@ export const ParserDiagnostics = {
         url: '',
     },
 
+    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_COMPLEX: {
+        code: 1038,
+        message:
+            'Template expression doesn\'t allow computed property access unless the expression is surrounded by quotes: "{0}"',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
     DIRECTIVE_SHOULD_BE_EXPRESSION: {
         code: 1039,
         message: '{0} directive is expected to be an expression',
@@ -259,6 +267,14 @@ export const ParserDiagnostics = {
     INVALID_NODE: {
         code: 1060,
         message: "Template expression doesn't allow {0}",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_NODE_COMPLEX: {
+        code: 1060,
+        message:
+            'Template expression doesn\'t allow {0} unless the expression is surrounded by quotes: "{1}"',
         level: DiagnosticLevel.Error,
         url: '',
     },
