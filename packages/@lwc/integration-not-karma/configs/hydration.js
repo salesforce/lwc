@@ -11,9 +11,6 @@ export default {
         'test-hydration/**/*.spec.js',
         // FIXME: hits timeout?
         '!test-hydration/light-dom/scoped-styles/replace-scoped-styles-with-dynamic-templates/index.spec.js',
-        // FIXME: This uses ENABLE_SYNTHETIC_SHADOW_IN_MIGRATION to detect status,
-        // we should just use DISABLE_SYNTHETIC instead
-        '!test-hydration/synthetic-shadow/index.spec.js',
     ],
     plugins: [...baseConfig.plugins, hydrationTestPlugin],
 };
