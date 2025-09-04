@@ -22,7 +22,8 @@ export default function reversePrivateMethodTransform({
             const key = path.get('key');
 
             // Check if the key is an identifier with our special prefix
-            if (key.isIdentifier()) {
+            // kind: 'method' | 'get' | 'set' - only 'method' is in scope.
+            if (key.isIdentifier() && path.node.kind === 'method') {
                 const methodName = key.node.name;
 
                 // Check if this method has our special prefix
@@ -32,11 +33,17 @@ export default function reversePrivateMethodTransform({
 
                     // Create a new ClassPrivateMethod node to replace the ClassMethod
                     const classPrivateMethod = t.classPrivateMethod(
-                        'method', // kind: 'method' | 'get' | 'set'
+                        'method',
                         t.privateName(t.identifier(originalPrivateName)), // key
-                        path.node.params, // params
-                        path.node.body // body
+                        path.node.params,
+                        path.node.body,
+                        path.node.static
                     );
+                    // Set the additional properties that t.classPrivateMethod builder doesn't support
+                    // this might be a bug on babel ??
+                    classPrivateMethod.async = path.node.async;
+                    classPrivateMethod.generator = path.node.generator;
+                    classPrivateMethod.computed = path.node.computed;
 
                     // Replace the entire ClassMethod with the new ClassPrivateMethod
                     path.replaceWith(classPrivateMethod);

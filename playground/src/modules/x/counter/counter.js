@@ -10,8 +10,11 @@ export default class extends LightningElement {
     }
     decrement() {
         this.counter--;
-        this.#something();
+        // eslint-disable-next-line no-console
+        this.#something().then(console.log);
     }
 
-    #something() {}
+    async #something() {
+        return 'I am async';
+    }
 }
