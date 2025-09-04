@@ -1,7 +1,7 @@
 /*
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
-import * as LWC from 'lwc';
+import { __unstable__ReportingControl } from 'lwc';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
@@ -53,7 +53,7 @@ export function customElementCallbackReactionErrorListener(callback) {
  * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
  */
 export function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
-    LWC.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
+    __unstable__ReportingControl.attachDispatcher((eventName, payload) => {
         if (!runtimeEvents || runtimeEvents.includes(eventName)) {
             dispatcher(eventName, payload);
         }
@@ -61,7 +61,7 @@ export function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
 }
 
 export function detachReportingControlDispatcher() {
-    LWC.__unstable__ReportingControl.detachDispatcher();
+    __unstable__ReportingControl.detachDispatcher();
 }
 
 export function extractDataIds(root) {
