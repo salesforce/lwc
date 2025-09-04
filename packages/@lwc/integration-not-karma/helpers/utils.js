@@ -15,7 +15,6 @@ export {
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
 } from './constants.js';
-export { addTrustedSignal } from './signals.js';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
