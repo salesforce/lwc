@@ -2,13 +2,6 @@
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
 import * as LWC from 'lwc';
-export {
-    ariaAttributes,
-    ariaProperties,
-    ariaPropertiesMapping,
-    nonPolyfilledAriaProperties,
-    nonStandardAriaProperties,
-} from './aria.js';
 export { setHooks, getHooks } from './hooks.js';
 export { spyConsole } from './console.js';
 export {
