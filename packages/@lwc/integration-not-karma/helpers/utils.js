@@ -2,7 +2,6 @@
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
 import * as LWC from 'lwc';
-export { setHooks, getHooks } from './hooks.js';
 export { spyConsole } from './console.js';
 export {
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
