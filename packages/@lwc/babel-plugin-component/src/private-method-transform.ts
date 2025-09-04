@@ -20,7 +20,6 @@ import type { types } from '@babel/core';
  * - Async private methods: async #methodName()
  * - Method parameters: #method(param1, param2)
  * - Method body: #method() { return this.value; }
- * - Computed properties: #['method']()
  * - Static methods: static #method()
  *
  * EDGE CASES & MISSING SUPPORT:
