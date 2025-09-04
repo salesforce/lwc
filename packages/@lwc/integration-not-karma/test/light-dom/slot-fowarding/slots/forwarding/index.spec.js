@@ -3,7 +3,7 @@ import {
     extractDataIds,
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-} from 'test-utils';
+} from '../../../../../helpers/utils.js';
 
 import LightContainer from './x/lightContainer/lightContainer';
 

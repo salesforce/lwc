@@ -1,7 +1,6 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
 import Container from 'x/container';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('shadow parent with light child', () => {
     it('should render properly', () => {

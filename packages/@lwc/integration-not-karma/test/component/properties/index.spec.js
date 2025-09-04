@@ -1,7 +1,6 @@
 import { createElement } from 'lwc';
-import { ariaProperties } from 'test-utils';
-
 import Component from 'x/component';
+import { ariaProperties } from '../../../helpers/utils.js';
 
 // This list can grow as we add more properties to the base LightningElement
 const expectedEnumerableProps = [

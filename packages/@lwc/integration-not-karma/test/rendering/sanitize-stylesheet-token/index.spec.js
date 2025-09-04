@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { catchUnhandledRejectionsAndErrors } from 'test-utils';
 import Component from 'x/component';
 import Scoping from 'x/scoping';
+import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 let caughtError;
 let logger;

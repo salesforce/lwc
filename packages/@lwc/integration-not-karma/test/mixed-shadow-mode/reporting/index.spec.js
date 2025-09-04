@@ -1,9 +1,12 @@
 import { createElement } from 'lwc';
-import { attachReportingControlDispatcher, detachReportingControlDispatcher } from 'test-utils';
 
 import Component from 'x/component';
 import Parent from 'x/parent';
 import Light from 'x/light';
+import {
+    attachReportingControlDispatcher,
+    detachReportingControlDispatcher,
+} from '../../../helpers/utils.js';
 
 // Should be kept in sync with the enum in vm.ts
 const ShadowMode = {

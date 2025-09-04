@@ -1,6 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import { LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 import Component from 'x/component';
+import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/utils.js';
 
 // TODO [#3733]: remove support for legacy scope tokens
 [false, true].forEach((enableLegacyScopeTokens) => {

@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import { LOWERCASE_SCOPE_TOKENS } from 'test-utils';
 
 import NativeScopedStyles from 'x/nativeScopedStyles';
 import NativeStyles from 'x/nativeStyles';
 import NoStyles from 'x/noStyles';
 import ScopedStyles from 'x/scopedStyles';
 import Styles from 'x/styles';
+import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/utils.js';
 
 const scenarios = [
     {

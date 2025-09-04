@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { ariaPropertiesMapping, extractDataIds } from 'test-utils';
 import NoPropDeclared from 'x/noPropDeclared';
 import PropDeclared from 'x/propDeclared';
 import ApiPropDeclared from 'x/apiPropDeclared';
@@ -8,6 +7,7 @@ import NoPropDeclaredNoSuper from 'x/noPropDeclaredNoSuper';
 import PropDeclaredNoSuper from 'x/propDeclaredNoSuper';
 import ApiPropDeclaredNoSuper from 'x/apiPropDeclaredNoSuper';
 import TrackPropDeclaredNoSuper from 'x/trackPropDeclaredNoSuper';
+import { ariaPropertiesMapping, extractDataIds } from '../../../helpers/utils.js';
 
 describe('aria reflection', () => {
     // Test with and without a custom superclass, since we may set the property accessor differently in each case

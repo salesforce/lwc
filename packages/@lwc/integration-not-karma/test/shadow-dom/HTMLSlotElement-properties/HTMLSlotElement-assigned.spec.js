@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import { extractShadowDataIds } from 'test-utils';
 
 import NoDirectChild from 'x/noDirectChild';
 import Basic from 'x/basic';
 import SlotsInSlots from 'x/slotsInSlots';
 import Complex from 'x/complex';
+import { extractShadowDataIds } from '../../../helpers/utils.js';
 
 describe('ignore non direct host children', () => {
     let elm;

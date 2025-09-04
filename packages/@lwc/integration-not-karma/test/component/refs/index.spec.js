@@ -1,5 +1,4 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import Basic from 'x/basic';
 import BasicDynamic from 'x/basicDynamic';
 import None from 'x/none';
@@ -28,6 +27,7 @@ import AccessDuringRender from 'x/accessDuringRender';
 import RerenderElement from 'x/rerenderElement';
 import RerenderComponent from 'x/rerenderComponent';
 import RerenderElementStaticRef from 'x/rerenderElementStaticRef';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('refs', () => {
     describe('basic refs example', () => {

@@ -1,7 +1,6 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
-
 import LightElement from 'x/light';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 function createTestElement(tag, component) {
     const elm = createElement(tag, { is: component });

@@ -15,7 +15,7 @@ import UiAnother from 'ui/another';
 import UiOutputPercent from 'ui/outputpercent';
 import ForceFoo from 'force/foo';
 import NestedHtmlTags from 'nested/htmlTags';
-import { extractDataIds } from 'test-utils';
+import { extractDataIds } from '../../helpers/utils.js';
 import testProps from './act-components/test-props';
 import testAttrs from './act-components/test-attrs';
 import testBodySlot from './act-components/test-body-slot';

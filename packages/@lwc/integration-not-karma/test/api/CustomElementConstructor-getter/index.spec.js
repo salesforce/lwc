@@ -1,5 +1,4 @@
 import { LightningElement } from 'lwc';
-import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from 'test-utils';
 
 import ReflectElement from 'x/reflect';
 import LifecycleParent from 'x/lifecycleParent';
@@ -10,6 +9,8 @@ import AttrChanged from 'x/attrChanged';
 import ReflectCamel from 'x/reflectCamel';
 import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
 import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
+import { spyConsole } from '../../../helpers/utils.js';
+import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
@@ -68,7 +69,7 @@ it('should create custom element if it exists before customElements.define', () 
 describe('non-empty custom element', () => {
     let consoleSpy;
     beforeEach(() => {
-        consoleSpy = TestUtils.spyConsole();
+        consoleSpy = spyConsole();
     });
     afterEach(() => {
         consoleSpy.reset();

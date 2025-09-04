@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import { extractDataIds } from 'test-utils';
 import Grandparent from 'x/grandparent';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe.runIf(process.env.NATIVE_SHADOW)('part and exportparts', () => {
     it('supports part and exportparts', () => {

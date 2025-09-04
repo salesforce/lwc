@@ -1,9 +1,12 @@
 import { createElement } from 'lwc';
-import { isNativeShadowRootInstance, isSyntheticShadowRootInstance } from 'test-utils';
 
 import ResetExtendsAny from 'x/resetExtendsAny';
 import LightContainer from 'x/lightContainer';
 import NativeContainer from 'x/nativeContainer';
+import {
+    isNativeShadowRootInstance,
+    isSyntheticShadowRootInstance,
+} from '../../../helpers/utils.js';
 
 describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
     describe('when root component shadowSupportMode="native"', () => {
