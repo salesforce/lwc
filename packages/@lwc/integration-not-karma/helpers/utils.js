@@ -118,18 +118,6 @@ export function extractShadowDataIds(shadowRoot) {
     return nodes;
 }
 
-let register = {};
-export function load(id) {
-    return Promise.resolve(register[id]);
-}
-
-export function registerForLoad(name, Ctor) {
-    register[name] = Ctor;
-}
-export function clearRegister() {
-    register = {};
-}
-
 // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposes. This method
 // filters this node.
 export function getHostChildNodes(host) {

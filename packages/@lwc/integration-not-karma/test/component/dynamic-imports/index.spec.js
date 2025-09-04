@@ -11,7 +11,7 @@ import ContainerFoo from 'x/containerFoo';
 import ContainerBar from 'x/containerBar';
 
 import { spyConsole } from '../../../helpers/console.js';
-import { registerForLoad, clearRegister } from '../../../helpers/utils.js';
+import { registerForLoad, clearRegister } from '../../../helpers/dynamic-loader.js';
 
 beforeEach(() => {
     clearRegister();

@@ -10,8 +10,6 @@ import {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
 } from '../../helpers/options.js';
 
-const UTILS = fileURLToPath(new URL('../../helpers/utils.js', import.meta.url));
-
 /** Cache reused between each compilation to speed up the compilation time. */
 let cache;
 
@@ -25,7 +23,7 @@ const createRollupPlugin = (input, options) => {
         // Sourcemaps don't work with Istanbul coverage
         sourcemap: !process.env.COVERAGE,
         experimentalDynamicComponent: {
-            loader: UTILS,
+            loader: fileURLToPath(new URL('../../helpers/dynamic-loader', import.meta.url)),
             strict: true,
         },
         enableDynamicComponents: true,
