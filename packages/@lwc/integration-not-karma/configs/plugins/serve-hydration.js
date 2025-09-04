@@ -4,20 +4,19 @@ import fs from 'node:fs/promises';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.js';
-const lwcSsr = await (ENGINE_SERVER ? import('@lwc/engine-server') : import('@lwc/ssr-runtime'));
-
-const ROOT_DIR = path.join(import.meta.dirname, '../..');
-
-const context = {
-    LWC: lwcSsr,
-    moduleOutput: null,
-};
+/** LWC SSR module to use when server-side rendering components. */
+const lwcSsr = await (ENGINE_SERVER
+    ? // Using import('literal') rather than import(variable) so static analysis tools work
+      import('@lwc/engine-server')
+    : import('@lwc/ssr-runtime'));
 
 lwcSsr.setHooks({
     sanitizeHtmlContent(content) {
         return content;
     },
 });
+
+const ROOT_DIR = path.join(import.meta.dirname, '../..');
 
 let guid = 0;
 const COMPONENT_UNDER_TEST = 'main';
@@ -100,7 +99,7 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
         };
     }
     try {
-        runnable();
+        return runnable();
     } finally {
         Object.assign(console, originals);
     }
@@ -117,31 +116,26 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
  * So, script runs, generates markup, & we get that markup out and return it for use
  * in client-side tests.
  */
-async function getSsrCode(moduleCode, testConfig, filename, expectedSSRConsoleCalls) {
+async function getSsrCode(moduleCode, testConfig, filePath, expectedSSRConsoleCalls) {
     const script = new vm.Script(
-        // FIXME: Can these IIFEs be converted to ESM imports?
-        // No, vm.Script doesn't support that. But might be doable with experimental vm.Module
-        `
-            ${testConfig};
-            config = config || {};
-            ${moduleCode};
-            moduleOutput = LWC.renderComponent(
+        `(() => {
+            ${testConfig}
+            ${moduleCode}
+            return LWC.renderComponent(
                 'x-${COMPONENT_UNDER_TEST}-${guid++}',
                 Main,
                 config.props || {},
                 false,
                 'sync'
             );
-        `,
-        { filename }
+        })()`,
+        { filename: `[SSR] ${filePath}` }
     );
 
-    throwOnUnexpectedConsoleCalls(() => {
-        vm.createContext(context);
-        script.runInContext(context);
-    }, expectedSSRConsoleCalls);
-
-    return await context.moduleOutput;
+    return throwOnUnexpectedConsoleCalls(
+        () => script.runInContext(vm.createContext({ LWC: lwcSsr })),
+        expectedSSRConsoleCalls
+    );
 }
 
 async function getTestConfig(input) {
@@ -178,37 +172,27 @@ async function existsUp(dir, file) {
  * This function wraps those configs in the test code to be executed.
  */
 async function wrapHydrationTest(filePath) {
-    const suiteDir = path.dirname(filePath);
-
-    // Wrap all the tests into a describe block with the file stricture name
-    const describeTitle = path.relative(ROOT_DIR, suiteDir).split(path.sep).join(' ');
-
-    const testCode = await getTestConfig(filePath);
-
-    // Create a temporary module to evaluate the bundled code and extract config properties for test configuration
-    const configModule = new vm.Script(testCode);
-    const configContext = { config: {} };
-    vm.createContext(configContext);
-    configModule.runInContext(configContext);
-    const { expectedSSRConsoleCalls, requiredFeatureFlags } = configContext.config;
-
-    requiredFeatureFlags?.forEach((featureFlag) => {
-        lwcSsr.setFeatureFlagForTest(featureFlag, true);
-    });
+    const {
+        default: { expectedSSRConsoleCalls, requiredFeatureFlags },
+    } = await import(path.join(ROOT_DIR, filePath));
 
     try {
+        requiredFeatureFlags?.forEach((featureFlag) => {
+            lwcSsr.setFeatureFlagForTest(featureFlag, true);
+        });
+
+        const suiteDir = path.dirname(filePath);
         // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
         const onlyFileExists = await existsUp(suiteDir, '.only');
 
-        const describeFn = onlyFileExists ? 'describe.only' : 'describe';
         const componentDefCSR = await getCompiledModule(suiteDir, false);
         const componentDefSSR = ENGINE_SERVER
             ? componentDefCSR
             : await getCompiledModule(suiteDir, true);
         const ssrOutput = await getSsrCode(
             componentDefSSR,
-            testCode,
-            path.join(suiteDir, 'ssr.js'),
+            await getTestConfig(filePath),
+            filePath,
             expectedSSRConsoleCalls
         );
 
@@ -216,14 +200,13 @@ async function wrapHydrationTest(filePath) {
         return `
         import { runTest } from '/helpers/test-hydrate.js';
         import config from '/${filePath}?original=1';
-        ${describeFn}("${describeTitle}", () => {
-            it('test', async () => {
-                const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
-                // Component code, IIFE set as Main
-                ${componentDefCSR};
-                return await runTest(ssrRendered, Main, config);
-            })
-        });`;
+        ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
+            const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
+            // Component code, IIFE set as Main
+            ${componentDefCSR};
+            return await runTest(ssrRendered, Main, config);
+        });
+        `;
     } finally {
         requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, false);
