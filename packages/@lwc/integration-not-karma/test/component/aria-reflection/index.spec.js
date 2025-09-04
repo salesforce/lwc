@@ -7,7 +7,8 @@ import NoPropDeclaredNoSuper from 'x/noPropDeclaredNoSuper';
 import PropDeclaredNoSuper from 'x/propDeclaredNoSuper';
 import ApiPropDeclaredNoSuper from 'x/apiPropDeclaredNoSuper';
 import TrackPropDeclaredNoSuper from 'x/trackPropDeclaredNoSuper';
-import { ariaPropertiesMapping, extractDataIds } from '../../../helpers/utils.js';
+import { ariaPropertiesMapping } from '../../../helpers/aria.js';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('aria reflection', () => {
     // Test with and without a custom superclass, since we may set the property accessor differently in each case

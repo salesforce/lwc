@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 import {
-    extractDataIds,
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-} from '../../../../../helpers/utils.js';
+} from '../../../../../helpers/constants.js';
+import { extractDataIds } from '../../../../../helpers/utils.js';
 
 import LightContainer from './x/lightContainer/lightContainer';
 

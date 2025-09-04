@@ -1,4 +1,4 @@
-import { IS_SYNTHETIC_SHADOW_LOADED } from '../../../helpers/utils.js';
+import { IS_SYNTHETIC_SHADOW_LOADED } from '../../../helpers/constants.js';
 
 // From @lwc/shared/src/keys.ts
 const KEY__SHADOW_RESOLVER = '$shadowResolver$';

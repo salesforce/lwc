@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 import Outer from 'x/outer';
 import {
-    expectEquivalentDOM,
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-} from '../../../../../helpers/utils.js';
+} from '../../../../../helpers/constants.js';
+import { expectEquivalentDOM } from '../../../../../helpers/utils.js';
 
 beforeAll(() => {
     customElements.define('x-external-light', class extends HTMLElement {});

@@ -355,7 +355,25 @@ export default tseslint.config(
         },
     },
     {
-        files: ['packages/@lwc/integration-karma/**', 'packages/@lwc/integration-not-karma/**'],
+        files: ['packages/@lwc/integration-not-karma/**'],
+
+        languageOptions: {
+            globals: {
+                lwcRuntimeFlags: true,
+                process: true,
+                TestUtils: true,
+                ...globals.browser,
+                ...globals.jasmine,
+            },
+        },
+
+        rules: {
+            'no-var': 'off',
+            'prefer-rest-params': 'off',
+        },
+    },
+    {
+        files: ['packages/@lwc/integration-karma/**'],
 
         languageOptions: {
             globals: {

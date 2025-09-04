@@ -1,10 +1,12 @@
 // This import ensures that the global `Mocha` object is present for mutation.
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
-import * as LWC from 'lwc';
 import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.js';
 import * as TestUtils from './utils.js';
+import { initSignals } from './signals.js';
+
+initSignals();
 
 // FIXME: As a relic of the Karma tests, some test files rely on the global object,
 // rather than importing from `test-utils`.
@@ -47,8 +49,6 @@ function jasmineSpyAdapter(spy) {
 
 // expose so we don't need to import `expect` in every test file
 globalThis.expect = chai.expect;
-// Expose globals for karma compat
-globalThis.LWC = LWC;
 globalThis.spyOn = (object, prop) => jasmineSpyAdapter(spyOn(object, prop));
 globalThis.jasmine = {
     any: expect.any,

@@ -11,7 +11,7 @@ import {
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/constants.js';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';

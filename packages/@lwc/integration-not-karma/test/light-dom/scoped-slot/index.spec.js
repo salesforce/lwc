@@ -8,7 +8,7 @@ import NestedSlots from 'x/nestedSlots';
 import {
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/constants.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 

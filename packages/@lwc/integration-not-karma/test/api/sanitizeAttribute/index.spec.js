@@ -1,4 +1,8 @@
-import { createElement } from 'lwc';
+import {
+    createElement,
+    // Spy is created in a mock file and injected with the import map plugin
+    sanitizeAttribute as sanitizeAttributeSpy,
+} from 'lwc';
 
 import XlinkStatic from 'x/xlinkStatic';
 import XlinkDynamic from 'x/xlinkDynamic';
@@ -36,8 +40,6 @@ const scenarios = [
 
 scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
     describe(`${type} ${attrName}`, () => {
-        // Spy is created in a mock file and injected with the import map plugin
-        const sanitizeAttributeSpy = LWC.sanitizeAttribute;
         afterEach(() => {
             sanitizeAttributeSpy.mockReset();
         });
@@ -54,7 +56,7 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
             const elm = createElement(tagName, { is: Ctor });
             document.body.appendChild(elm);
 
-            expect(LWC.sanitizeAttribute).toHaveBeenCalledWith(
+            expect(sanitizeAttributeSpy).toHaveBeenCalledWith(
                 'use',
                 'http://www.w3.org/2000/svg',
                 attrName,
@@ -108,7 +110,7 @@ booleanTrueScenarios.forEach(({ attrName, tagName, Ctor }) => {
             const use = elm.shadowRoot.querySelector('use');
             expect(use.getAttribute(attrName)).toBe('');
 
-            expect(LWC.sanitizeAttribute).not.toHaveBeenCalled();
+            expect(sanitizeAttributeSpy).not.toHaveBeenCalled();
         });
     });
 });

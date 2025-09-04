@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
-import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/utils.js';
+import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
 
 describe('legacy scope tokens', () => {
     [false, true].forEach((enableLegacyScopeTokens) => {

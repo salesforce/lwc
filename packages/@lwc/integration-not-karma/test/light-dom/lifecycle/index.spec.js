@@ -4,7 +4,8 @@ import SlotForwarding from 'x/slotForwarding';
 import DynamicSlotForwarding from 'x/dynamicSlotForwarding';
 import StandardSlotting from 'x/standardSlotting';
 import BasicContainer from 'x/basicContainer';
-import { extractDataIds, USE_LIGHT_DOM_SLOT_FORWARDING } from '../../../helpers/utils.js';
+import { USE_LIGHT_DOM_SLOT_FORWARDING } from '../../../helpers/constants.js';
+import { extractDataIds } from '../../../helpers/utils.js';
 
 import { resetId } from './util.js';
 

@@ -5,10 +5,10 @@ import Any2 from 'x/any2';
 import Invalid from 'x/invalid';
 import Valid from 'x/valid';
 import NativeOnly from 'x/native';
+import { IS_SYNTHETIC_SHADOW_LOADED } from '../../../helpers/constants.js';
 import {
     isNativeShadowRootInstance,
     isSyntheticShadowRootInstance,
-    IS_SYNTHETIC_SHADOW_LOADED,
 } from '../../../helpers/utils.js';
 
 describe('shadowSupportMode static property', () => {

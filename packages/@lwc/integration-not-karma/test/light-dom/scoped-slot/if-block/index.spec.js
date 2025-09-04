@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import MixedSlotParent from 'x/mixedSlotParent';
-import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/utils.js';
+import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/constants.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 

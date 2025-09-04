@@ -11,7 +11,8 @@ import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 import ComputedKey from 'x/computedKey';
 import ValueEvaluationThrows from 'x/ValueEvaluationThrows';
-import { catchUnhandledRejectionsAndErrors, spyConsole } from '../../helpers/utils.js';
+import { spyConsole } from '../../helpers/console.js';
+import { catchUnhandledRejectionsAndErrors } from '../../helpers/utils.js';
 
 describe('lwc:on', () => {
     it('adds multiple event listeners', () => {

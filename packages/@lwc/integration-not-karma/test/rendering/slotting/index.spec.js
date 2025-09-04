@@ -5,7 +5,7 @@ import RegressionContainer from 'x/regressionContainer';
 import FallbackContentReuseDynamicKeyParent from 'x/fallbackContentReuseDynamicKeyParent';
 import UnknownSlotShadow from 'x/unknownSlotShadow';
 import UnknownSlotLight from 'x/unknownSlotLight';
-import { spyConsole } from '../../../helpers/utils.js';
+import { spyConsole } from '../../../helpers/console.js';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', () => {
