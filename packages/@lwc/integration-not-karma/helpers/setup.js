@@ -5,6 +5,9 @@ import * as LWC from 'lwc';
 import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.js';
 import * as TestUtils from './utils.js';
+import { initSignals } from './signals.js';
+
+initSignals();
 
 // FIXME: As a relic of the Karma tests, some test files rely on the global object,
 // rather than importing from `test-utils`.
