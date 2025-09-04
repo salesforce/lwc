@@ -199,6 +199,7 @@ async function wrapHydrationTest(filePath) {
 
         // FIXME: can we turn these IIFEs into ESM imports?
         return `
+        import * as LWC from 'lwc';
         import { runTest } from '/helpers/test-hydrate.js';
         import config from '/${filePath}?original=1';
         ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
