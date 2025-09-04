@@ -2,16 +2,16 @@
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
 import * as LWC from 'lwc';
-import {
+export {
     ariaAttributes,
     ariaProperties,
     ariaPropertiesMapping,
     nonPolyfilledAriaProperties,
     nonStandardAriaProperties,
 } from './aria.js';
-import { setHooks, getHooks } from './hooks.js';
-import { spyConsole } from './console.js';
-import {
+export { setHooks, getHooks } from './hooks.js';
+export { spyConsole } from './console.js';
+export {
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
     ENABLE_THIS_DOT_HOST_ELEMENT,
@@ -23,7 +23,7 @@ import {
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
 } from './constants.js';
-import { addTrustedSignal } from './signals.js';
+export { addTrustedSignal } from './signals.js';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
@@ -63,7 +63,7 @@ function windowErrorListener(callback) {
 // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
 //    only be caught with window.addEventListener('error')
 //      - Note native lifecycle callbacks are all thrown asynchronously.
-function customElementCallbackReactionErrorListener(callback) {
+export function customElementCallbackReactionErrorListener(callback) {
     return lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
         ? directErrorListener(callback)
         : windowErrorListener(callback);
@@ -74,7 +74,7 @@ function customElementCallbackReactionErrorListener(callback) {
  * @param dispatcher
  * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
  */
-function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
+export function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
     LWC.__unstable__ReportingControl.attachDispatcher((eventName, payload) => {
         if (!runtimeEvents || runtimeEvents.includes(eventName)) {
             dispatcher(eventName, payload);
@@ -82,11 +82,11 @@ function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
     });
 }
 
-function detachReportingControlDispatcher() {
+export function detachReportingControlDispatcher() {
     LWC.__unstable__ReportingControl.detachDispatcher();
 }
 
-function extractDataIds(root) {
+export function extractDataIds(root) {
     const nodes = {};
 
     function processElement(elm) {
@@ -120,7 +120,7 @@ function extractDataIds(root) {
     return nodes;
 }
 
-function extractShadowDataIds(shadowRoot) {
+export function extractShadowDataIds(shadowRoot) {
     const nodes = {};
 
     // Add the shadow root here even if they don't have [data-id] attributes. This reference is
@@ -141,35 +141,35 @@ function extractShadowDataIds(shadowRoot) {
 }
 
 let register = {};
-function load(id) {
+export function load(id) {
     return Promise.resolve(register[id]);
 }
 
-function registerForLoad(name, Ctor) {
+export function registerForLoad(name, Ctor) {
     register[name] = Ctor;
 }
-function clearRegister() {
+export function clearRegister() {
     register = {};
 }
 
 // #986 - childNodes on the host element returns a fake shadow comment node on IE11 for debugging purposes. This method
 // filters this node.
-function getHostChildNodes(host) {
+export function getHostChildNodes(host) {
     return Array.prototype.slice.call(host.childNodes).filter(function (n) {
         return !(n.nodeType === Node.COMMENT_NODE && n.tagName.startsWith('#shadow-root'));
     });
 }
 
-function isSyntheticShadowRootInstance(sr) {
+export function isSyntheticShadowRootInstance(sr) {
     return Boolean(sr && sr.synthetic);
 }
 
-function isNativeShadowRootInstance(sr) {
+export function isNativeShadowRootInstance(sr) {
     return Boolean(sr && !sr.synthetic);
 }
 
 // Keep traversing up the prototype chain until a property descriptor is found
-function getPropertyDescriptor(object, prop) {
+export function getPropertyDescriptor(object, prop) {
     do {
         const descriptor = Object.getOwnPropertyDescriptor(object, prop);
         if (descriptor) {
@@ -216,13 +216,13 @@ function stringifyArg(arg) {
     }
 }
 
-const expectConsoleCalls = createExpectConsoleCallsFunc(false);
-const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
+export const expectConsoleCalls = createExpectConsoleCallsFunc(false);
+export const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
 
 // Utility to handle unhandled rejections or errors without allowing Jasmine to handle them first.
 // Captures both onunhandledrejection and onerror events, since you might want both depending on
 // native vs synthetic lifecycle timing differences.
-function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
+export function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
     let originalOnError;
 
     const onError = (e) => {
@@ -257,7 +257,7 @@ function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
 
 // Succeeds if the given DOM element is equivalent to the given HTML in terms of nodes and elements. This is
 // basically the same as `expect(element.outerHTML).toBe(html)` except that it works despite bugs in synthetic shadow.
-function expectEquivalentDOM(element, html) {
+export function expectEquivalentDOM(element, html) {
     const fragment = Document.parseHTMLUnsafe(html);
 
     // When the fragment is parsed, the string "abc" is considered one text node. Whereas the engine
@@ -314,41 +314,3 @@ function expectEquivalentDOM(element, html) {
 
     expectEquivalent(element, fragment.body.firstChild);
 }
-
-export {
-    clearRegister,
-    extractDataIds,
-    extractShadowDataIds,
-    getHostChildNodes,
-    isNativeShadowRootInstance,
-    isSyntheticShadowRootInstance,
-    load,
-    registerForLoad,
-    getHooks,
-    setHooks,
-    spyConsole,
-    customElementCallbackReactionErrorListener,
-    ariaPropertiesMapping,
-    ariaProperties,
-    ariaAttributes,
-    nonStandardAriaProperties,
-    nonPolyfilledAriaProperties,
-    getPropertyDescriptor,
-    attachReportingControlDispatcher,
-    detachReportingControlDispatcher,
-    IS_SYNTHETIC_SHADOW_LOADED,
-    expectConsoleCalls,
-    expectConsoleCallsDev,
-    catchUnhandledRejectionsAndErrors,
-    addTrustedSignal,
-    expectEquivalentDOM,
-    LOWERCASE_SCOPE_TOKENS,
-    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
-    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE,
-    USE_LIGHT_DOM_SLOT_FORWARDING,
-    ENABLE_THIS_DOT_HOST_ELEMENT,
-    ENABLE_THIS_DOT_STYLE,
-    TEMPLATE_CLASS_NAME_OBJECT_BINDING,
-};
