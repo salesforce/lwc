@@ -9,7 +9,7 @@ import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachI
 import {
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
     IS_SYNTHETIC_SHADOW_LOADED,
-} from '../../../../../helpers/utils.js';
+} from '../../../../../helpers/constants.js';
 
 describe.runIf(
     ENABLE_ELEMENT_INTERNALS_AND_FACE &&

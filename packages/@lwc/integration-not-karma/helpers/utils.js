@@ -2,18 +2,6 @@
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
 import * as LWC from 'lwc';
-export {
-    DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE,
-    ENABLE_THIS_DOT_HOST_ELEMENT,
-    ENABLE_THIS_DOT_STYLE,
-    IS_SYNTHETIC_SHADOW_LOADED,
-    LOWERCASE_SCOPE_TOKENS,
-    TEMPLATE_CLASS_NAME_OBJECT_BINDING,
-    USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-    USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS,
-    USE_LIGHT_DOM_SLOT_FORWARDING,
-} from './constants.js';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
