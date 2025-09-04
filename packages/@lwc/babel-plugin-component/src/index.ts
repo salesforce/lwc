@@ -44,7 +44,6 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
                 'decorators',
                 { decoratorsBeforeExport: true },
             ]);
-            parserOpts.plugins.push('privateMethods');
         },
 
         visitor: {
