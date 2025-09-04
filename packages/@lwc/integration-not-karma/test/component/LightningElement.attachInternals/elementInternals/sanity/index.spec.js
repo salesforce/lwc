@@ -1,10 +1,7 @@
 import { createElement } from 'lwc';
 import ElementInternal from 'ei/component';
-import {
-    ariaProperties,
-    ariaAttributes,
-    ENABLE_ELEMENT_INTERNALS_AND_FACE,
-} from '../../../../../helpers/utils.js';
+import { ariaProperties, ariaAttributes } from '../../../../../helpers/aria.js';
+import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from '../../../../../helpers/utils.js';
 
 let elm;
 beforeEach(() => {
