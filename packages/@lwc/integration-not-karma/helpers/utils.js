@@ -2,7 +2,6 @@
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
 import * as LWC from 'lwc';
-export { spyConsole } from './console.js';
 export {
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION,
     ENABLE_ELEMENT_INTERNALS_AND_FACE,

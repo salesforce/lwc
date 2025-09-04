@@ -9,7 +9,7 @@ import AttrChanged from 'x/attrChanged';
 import ReflectCamel from 'x/reflectCamel';
 import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
 import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
-import { spyConsole } from '../../../helpers/utils.js';
+import { spyConsole } from '../../../helpers/console.js';
 import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../helpers/utils.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';

@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import EventHandler from 'x/eventHandler';
 import EventHandlerOptions from 'x/eventHandlerOptions';
 import AdditionWhileDispatch from 'x/additionWhileDispatch';
-import { spyConsole } from '../../../helpers/utils.js';
+import { spyConsole } from '../../../helpers/console.js';
 
 it('should be able to attach an event listener on the host element', () => {
     let thisValue;
