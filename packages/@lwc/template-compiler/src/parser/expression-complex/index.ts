@@ -8,7 +8,6 @@
 import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import { parseExpressionAt } from 'acorn';
 import { invariant, ParserDiagnostics } from '@lwc/errors';
-import { EXPRESSION_SYMBOL_END } from '../expression';
 import { validateExpressionAst } from './validate';
 import type ParserCtx from '../parser';
 import type { Expression, SourceLocation } from '../../shared/types';
@@ -27,12 +26,8 @@ export function parseComplexExpression(
     ctx: ParserCtx,
     source: string,
     templateSource: string,
-    location: SourceLocation,
-    expressionStart: number = 0
-): {
-    expression: Expression;
-    raw: string;
-} {
+    location: SourceLocation
+): Expression {
     const { ecmaVersion } = ctx;
     return ctx.withErrorWrapping(
         () => {
@@ -40,37 +35,37 @@ export function parseComplexExpression(
                 ecmaVersion,
                 onComment: () =>
                     invariant(false, ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED),
+                allowAwaitOutsideFunction: true,
             };
-            const expression = parseExpressionAt(source, expressionStart + 1, options);
+            const expression = parseExpressionAt(source, 1, options);
 
-            const expressionTerminator = source[expression.end];
+            validateExpressionAst(expression);
+
+            /*
+            const expressionEnd = source.indexOf(EXPRESSION_SYMBOL_END, expression.end);
+            
+            const isSourceTerminatedCorrectly = 
+                expressionEnd > 0 && // The expression is followed by "}"
+                !source.slice(expression.end, expressionEnd).trimEnd(); // The only thing between the expression and the "}" was whitespace
+
             invariant(
-                expressionTerminator === EXPRESSION_SYMBOL_END,
+                isSourceTerminatedCorrectly,
                 ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
                 ['expression must end with curly brace.']
-            );
+            );*/
 
             /*
                 This second parsing is for comparison purposes.
                 <span>{call("}<c-status></c-status>")}</span>
             */
-            const templateExpression = parseExpressionAt(
-                templateSource,
-                expressionStart + 1,
-                options
-            );
+            const templateExpression = parseExpressionAt(templateSource, 1, options);
             invariant(
                 expression.end === templateExpression.end,
                 ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
                 ['Expression incorrectly formed']
             );
 
-            validateExpressionAst(expression);
-
-            return {
-                expression: { ...expression, location },
-                raw: source.slice(expressionStart, expression.end + 1),
-            };
+            return { ...expression, location };
         },
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         location,

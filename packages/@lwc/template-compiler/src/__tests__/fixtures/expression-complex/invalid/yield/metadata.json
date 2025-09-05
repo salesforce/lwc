@@ -1,15 +1,3 @@
 {
-    "warnings": [
-        {
-            "code": 1083,
-            "message": "Invalid expression {yield bar} - LWC1083: Error parsing template expression: Unexpected end of expression",
-            "level": 1,
-            "location": {
-                "line": 3,
-                "column": 17,
-                "start": 41,
-                "length": 17
-            }
-        }
-    ]
+    "warnings": []
 }

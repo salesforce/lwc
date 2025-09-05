@@ -31,6 +31,7 @@ import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 import {
+    EXPRESSION_SYMBOL_END,
     EXPRESSION_SYMBOL_START,
     isExpression,
     parseExpression,
@@ -484,41 +485,57 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     const sourceLocation = ast.sourceLocation(location);
 
     if (ctx.config.experimentalComplexExpressions) {
-        let start = 0;
+        let offset = 0;
         let index = 0;
         const templateSource = cleanTextNode(ctx.getSource(location.startOffset));
 
         while (index < rawText.length) {
             if (rawText[index] === EXPRESSION_SYMBOL_START) {
-                // Parse any literal that preceeded the expression
-                if (start < index) {
-                    const literalToken = rawText.slice(start, index);
-                    parsedTextNodes.push(
-                        ast.text(
-                            literalToken,
-                            ast.literal(decodeTextContent(literalToken)),
-                            location
-                        )
-                    );
+                const expressionStart = index;
+                let expressionEnd = index + 1;
+                let braceCount = 1;
+                while (expressionEnd < rawText.length && braceCount) {
+                    if (rawText[expressionEnd] === EXPRESSION_SYMBOL_START) {
+                        braceCount++;
+                    } else if (rawText[expressionEnd] === EXPRESSION_SYMBOL_END) {
+                        braceCount--;
+                    }
+                    expressionEnd++;
                 }
 
-                const parsed = parseComplexExpression(
-                    ctx,
-                    rawText,
-                    templateSource,
-                    sourceLocation,
-                    index
-                );
-                parsedTextNodes.push(ast.text(parsed.raw, parsed.expression, location));
-                index += parsed.raw.length;
-                start = index;
+                if (!braceCount) {
+                    // Parse any literal that preceeded the expression
+                    if (offset < expressionStart) {
+                        const literalToken = rawText.slice(offset, expressionStart);
+                        parsedTextNodes.push(
+                            ast.text(literalToken, ast.literal(literalToken), location)
+                        );
+                    }
+
+                    const expressionSource = decodeTextContent(
+                        rawText.slice(expressionStart, expressionEnd)
+                    );
+                    const templateExpressionSource = decodeTextContent(
+                        templateSource.slice(expressionStart)
+                    );
+                    const parsed = parseComplexExpression(
+                        ctx,
+                        expressionSource,
+                        templateExpressionSource,
+                        sourceLocation
+                    );
+                    parsedTextNodes.push(ast.text(expressionSource, parsed, location));
+                    index += expressionSource.length;
+                    offset = index;
+                    continue;
+                }
             }
             index++;
         }
 
         // Parse any literal that followed the expression
-        if (index > start) {
-            const literalToken = rawText.slice(start, index);
+        if (offset < rawText.length) {
+            const literalToken = rawText.slice(offset, rawText.length);
             parsedTextNodes.push(
                 ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
             );
@@ -1906,7 +1923,7 @@ function getTemplateAttribute(
             const templateSource = ctx.getSource(
                 attributeLocation.startOffset + attributeNameOffset
             );
-            attrValue = parseComplexExpression(ctx, value, templateSource, location).expression;
+            attrValue = parseComplexExpression(ctx, value, templateSource, location);
         } else {
             attrValue = parseExpression(ctx, value, location);
         }

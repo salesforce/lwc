@@ -43,16 +43,6 @@ export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
         const lwcError = getLwcErrorFromParse5Error(ctx, code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
-
-    // TODO [#3370]: remove experimental template expression flag
-    /*
-    if (ctx.config.experimentalComplexExpressions) {
-        return parseFragment(source, {
-            ctx,
-            sourceCodeLocationInfo: true,
-            onParseError,
-        });
-    }*/
     const parsed = parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,
         onParseError,
