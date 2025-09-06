@@ -93,6 +93,12 @@ export interface FeatureFlagMap {
      * If false or unset, then the value of the `LEGACY_LOCKER_ENABLED` flag is used.
      */
     DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
+
+    /**
+     * If true, skips rehydration of DOM elements that are not connected.
+     * Applies to rehydration performed while flushing the rehydration queue.
+     */
+    DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
