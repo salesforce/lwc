@@ -18,6 +18,7 @@ const env = {
         'ENGINE_SERVER',
         'FORCE_NATIVE_SHADOW_MODE_FOR_TEST',
         'NATIVE_SHADOW',
+        'DISABLE_DETACHED_REHYDRATION',
     ]),
     LWC_VERSION,
     NODE_ENV: options.NODE_ENV_FOR_TEST,
@@ -61,7 +62,10 @@ export default {
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
-                pluck(options, ['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'])
+                pluck(options, [
+                    'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
+                    'DISABLE_DETACHED_REHYDRATION',
+                ])
             )};
 
             ${maybeImport('@lwc/synthetic-shadow', !options.DISABLE_SYNTHETIC)}
