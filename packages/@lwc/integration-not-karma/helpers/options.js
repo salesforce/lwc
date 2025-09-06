@@ -34,6 +34,8 @@ export const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
     process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
 );
 
+export const DISABLE_DETACHED_REHYDRATION = Boolean(process.env.DISABLE_DETACHED_REHYDRATION);
+
 export const ENGINE_SERVER = Boolean(process.env.ENGINE_SERVER);
 
 // --- Test config --- //
@@ -62,6 +64,7 @@ export const COVERAGE_DIR_FOR_OPTIONS =
         NODE_ENV_FOR_TEST,
         DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         ENGINE_SERVER,
+        DISABLE_DETACHED_REHYDRATION,
     })
         .filter(([, val]) => val)
         .map(([key, val]) => `${key}=${val}`)
