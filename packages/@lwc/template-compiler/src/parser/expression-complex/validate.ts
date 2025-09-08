@@ -201,7 +201,7 @@ export function validateComplexExpression(
     expression: Expression;
     raw: string;
 } {
-    const leadingChars = source.slice(expressionStart + 1, expression.start);
+    const leadingChars = source.slice(expressionStart + OPENING_CURLY_LEN, expression.start);
     const trailingChars = getTrailingChars(source.slice(expression.end));
     const idxOfClosingBracket = expression.end + trailingChars.length;
     // Capture text content between the outer curly braces, inclusive.
@@ -239,7 +239,7 @@ export function validateComplexExpression(
     invariant(
         expression.end === templateExpression.end,
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-        ['Expression incorrectly formed']
+        ['expression incorrectly formed']
     );
 
     return {

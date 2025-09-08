@@ -518,6 +518,8 @@ function parseTextComplex(
                 index
             );
             parsedTextNodes.push(ast.text(parsed.raw, parsed.expression, location));
+
+            // Parse the remainder of the text node for expressions
             index += parsed.raw.length;
             start = index;
             continue;
@@ -525,7 +527,7 @@ function parseTextComplex(
         index++;
     }
 
-    // Parse any literal that followed the expression
+    // Parse any remaining literal
     if (start < rawText.length) {
         const literalToken = rawText.slice(start, index);
         parsedTextNodes.push(
@@ -1914,6 +1916,13 @@ function getTemplateAttribute(
 
     let attrValue: Literal | Expression;
 
+    /*
+        A complex attribute expression should only be parsed as a complex expression if it has been quoted.
+        Quoting complex expressions ensures that the expression is valid HTML. If the complex expression 
+        has not been quoted, then it is parsed as a legacy expression and it will fail with an appropriate explanation.
+        This ensures backward compatibility with legacy expressions which do not require, or currently permit quotes
+        to be used.
+    */
     const isPotentialComplexExpression =
         quotedExpression && !escapedExpression && value.startsWith(EXPRESSION_SYMBOL_START);
     if (ctx.config.experimentalComplexExpressions && isPotentialComplexExpression) {
