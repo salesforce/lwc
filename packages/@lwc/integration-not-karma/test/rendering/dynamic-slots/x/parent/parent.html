@@ -1,0 +1,15 @@
+<template>
+  <x-child>
+    <p slot={undefinedName}>Default slot</p>
+    <p slot={named1Name}>
+      Named {counter}
+    </p>
+    <p slot={slotWithDefaultContentName}>Overridden default content</p>
+    <p slot={boolean}>Boolean slot</p>
+    <p slot={booleanFalse}>Boolean false slot</p>
+    <p slot={number}>Number slot</p>
+    <p slot={object.a}>Number</p>
+    <p slot={object}>Object</p>
+    <p slot={functionProp}>Function</p>
+  </x-child>
+</template>

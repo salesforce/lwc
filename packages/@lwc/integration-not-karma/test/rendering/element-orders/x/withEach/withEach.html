@@ -1,0 +1,5 @@
+<template>
+    <template for:each={elements} for:item="element">
+        <p if:true={element.show} key={element.key}>{element.key}</p>
+    </template>
+</template>

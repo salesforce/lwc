@@ -1,0 +1,8 @@
+<template lwc:preserve-comments>
+    hello
+    <template for:each={comments} for:item="comment">
+        <!--Comment inside for:each-->
+        <span key={comment}>{comment}</span>
+    </template>
+    world
+</template>

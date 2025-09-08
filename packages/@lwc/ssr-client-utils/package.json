@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/ssr-client-utils",
-    "version": "8.21.2",
+    "version": "8.21.6",
     "description": "Client-side complement to @lwc/ssr-compiler",
     "keywords": [
         "lwc",

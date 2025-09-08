@@ -1,0 +1,5 @@
+<template>
+    <template for:each={items} for:item="item">
+        <lwc:component lwc:is={item.ctor} key={item.key}></lwc:component>
+    </template>
+</template>
