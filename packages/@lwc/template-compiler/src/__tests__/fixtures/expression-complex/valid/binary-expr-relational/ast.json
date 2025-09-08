@@ -1,1 +1,267 @@
-{}
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 11,
+            "endColumn": 12,
+            "start": 0,
+            "end": 369,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 11,
+                "startColumn": 1,
+                "endLine": 11,
+                "endColumn": 12,
+                "start": 358,
+                "end": 369
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "section",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 10,
+                    "endColumn": 15,
+                    "start": 15,
+                    "end": 357,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 14,
+                        "start": 15,
+                        "end": 24
+                    },
+                    "endTag": {
+                        "startLine": 10,
+                        "startColumn": 5,
+                        "endLine": 10,
+                        "endColumn": 15,
+                        "start": 347,
+                        "end": 357
+                    }
+                },
+                "attributes": [],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": [
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 3,
+                            "startColumn": 9,
+                            "endLine": 3,
+                            "endColumn": 56,
+                            "start": 33,
+                            "end": 80,
+                            "startTag": {
+                                "startLine": 3,
+                                "startColumn": 9,
+                                "endLine": 3,
+                                "endColumn": 36,
+                                "start": 33,
+                                "end": 60
+                            },
+                            "endTag": {
+                                "startLine": 3,
+                                "startColumn": 47,
+                                "endLine": 3,
+                                "endColumn": 56,
+                                "start": 71,
+                                "end": 80
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "BinaryExpression",
+                                    "start": 1,
+                                    "end": 10,
+                                    "left": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
+                                    },
+                                    "operator": ">",
+                                    "right": {
+                                        "type": "Identifier",
+                                        "start": 7,
+                                        "end": 10,
+                                        "name": "bar"
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 17,
+                                        "endLine": 3,
+                                        "endColumn": 35,
+                                        "start": 41,
+                                        "end": 59
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 17,
+                                    "endLine": 3,
+                                    "endColumn": 35,
+                                    "start": 41,
+                                    "end": 59
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{foo > bar}",
+                                "value": {
+                                    "type": "BinaryExpression",
+                                    "start": 1,
+                                    "end": 10,
+                                    "left": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
+                                    },
+                                    "operator": ">",
+                                    "right": {
+                                        "type": "Identifier",
+                                        "start": 7,
+                                        "end": 10,
+                                        "name": "bar"
+                                    },
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 36,
+                                        "endLine": 3,
+                                        "endColumn": 47,
+                                        "start": 60,
+                                        "end": 71
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 36,
+                                    "endLine": 3,
+                                    "endColumn": 47,
+                                    "start": 60,
+                                    "end": 71
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "Comment",
+                        "raw": " \n            Using > in a text node (foo < bar) would couse a html parsing error.\n            It is not supported and has a dedicated test. Any expression must be HTML\n            compliant \n        ",
+                        "value": " \n            Using > in a text node (foo < bar) would couse a html parsing error.\n            It is not supported and has a dedicated test. Any expression must be HTML\n            compliant \n        ",
+                        "location": {
+                            "startLine": 4,
+                            "startColumn": 9,
+                            "endLine": 8,
+                            "endColumn": 12,
+                            "start": 89,
+                            "end": 296
+                        }
+                    },
+                    {
+                        "type": "Component",
+                        "name": "x-pert",
+                        "namespace": "http://www.w3.org/1999/xhtml",
+                        "location": {
+                            "startLine": 9,
+                            "startColumn": 9,
+                            "endLine": 9,
+                            "endColumn": 45,
+                            "start": 305,
+                            "end": 341,
+                            "startTag": {
+                                "startLine": 9,
+                                "startColumn": 9,
+                                "endLine": 9,
+                                "endColumn": 36,
+                                "start": 305,
+                                "end": 332
+                            },
+                            "endTag": {
+                                "startLine": 9,
+                                "startColumn": 36,
+                                "endLine": 9,
+                                "endColumn": 45,
+                                "start": 332,
+                                "end": 341
+                            }
+                        },
+                        "attributes": [],
+                        "properties": [
+                            {
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
+                                "value": {
+                                    "type": "BinaryExpression",
+                                    "start": 1,
+                                    "end": 10,
+                                    "left": {
+                                        "type": "Identifier",
+                                        "start": 1,
+                                        "end": 4,
+                                        "name": "foo"
+                                    },
+                                    "operator": "<",
+                                    "right": {
+                                        "type": "Identifier",
+                                        "start": 7,
+                                        "end": 10,
+                                        "name": "bar"
+                                    },
+                                    "location": {
+                                        "startLine": 9,
+                                        "startColumn": 17,
+                                        "endLine": 9,
+                                        "endColumn": 35,
+                                        "start": 313,
+                                        "end": 331
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 9,
+                                    "startColumn": 17,
+                                    "endLine": 9,
+                                    "endColumn": 35,
+                                    "start": 313,
+                                    "end": 331
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -186,26 +186,26 @@
                         "raw": "{bar.baz.arr[quux]}",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 1,
-                            "end": 18,
+                            "start": 16,
+                            "end": 33,
                             "object": {
                                 "type": "MemberExpression",
-                                "start": 1,
-                                "end": 12,
+                                "start": 16,
+                                "end": 27,
                                 "object": {
                                     "type": "MemberExpression",
-                                    "start": 1,
-                                    "end": 8,
+                                    "start": 16,
+                                    "end": 23,
                                     "object": {
                                         "type": "Identifier",
-                                        "start": 1,
-                                        "end": 4,
+                                        "start": 16,
+                                        "end": 19,
                                         "name": "bar"
                                     },
                                     "property": {
                                         "type": "Identifier",
-                                        "start": 5,
-                                        "end": 8,
+                                        "start": 20,
+                                        "end": 23,
                                         "name": "baz"
                                     },
                                     "computed": false,
@@ -213,8 +213,8 @@
                                 },
                                 "property": {
                                     "type": "Identifier",
-                                    "start": 9,
-                                    "end": 12,
+                                    "start": 24,
+                                    "end": 27,
                                     "name": "arr"
                                 },
                                 "computed": false,
@@ -222,8 +222,8 @@
                             },
                             "property": {
                                 "type": "Identifier",
-                                "start": 13,
-                                "end": 17,
+                                "start": 28,
+                                "end": 32,
                                 "name": "quux"
                             },
                             "computed": true,
@@ -267,22 +267,22 @@
                         "raw": "{bar.arr[baz.quux]}",
                         "value": {
                             "type": "MemberExpression",
-                            "start": 1,
-                            "end": 18,
+                            "start": 36,
+                            "end": 53,
                             "object": {
                                 "type": "MemberExpression",
-                                "start": 1,
-                                "end": 8,
+                                "start": 36,
+                                "end": 43,
                                 "object": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 36,
+                                    "end": 39,
                                     "name": "bar"
                                 },
                                 "property": {
                                     "type": "Identifier",
-                                    "start": 5,
-                                    "end": 8,
+                                    "start": 40,
+                                    "end": 43,
                                     "name": "arr"
                                 },
                                 "computed": false,
@@ -290,18 +290,18 @@
                             },
                             "property": {
                                 "type": "MemberExpression",
-                                "start": 9,
-                                "end": 17,
+                                "start": 44,
+                                "end": 52,
                                 "object": {
                                     "type": "Identifier",
-                                    "start": 9,
-                                    "end": 12,
+                                    "start": 44,
+                                    "end": 47,
                                     "name": "baz"
                                 },
                                 "property": {
                                     "type": "Identifier",
-                                    "start": 13,
-                                    "end": 17,
+                                    "start": 48,
+                                    "end": 52,
                                     "name": "quux"
                                 },
                                 "computed": false,

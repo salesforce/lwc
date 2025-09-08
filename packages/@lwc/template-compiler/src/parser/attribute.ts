@@ -140,12 +140,16 @@ export function normalizeAttributeValue(
             // -> By design the html parser consider the / as the last character of the attribute value.
             //    Make sure to remove strip the trailing / for self closing elements.
 
-            return { value: value.slice(0, -1), escapedExpression: false, quotedExpression: false };
+            return {
+                value: value.slice(0, -1),
+                escapedExpression: false,
+                quotedExpression: !!isQuoted,
+            };
         } else if (isExpressionEscaped) {
             // <input value="\{myValue}"/>
             // -> Valid escaped string literal
 
-            return { value: value.slice(1), escapedExpression: true, quotedExpression: false };
+            return { value: value.slice(1), escapedExpression: true, quotedExpression: !!isQuoted };
         }
 
         let escaped = raw.replace(/="?/, '="\\');
@@ -160,7 +164,7 @@ export function normalizeAttributeValue(
 
     // <input value="myValue"/>
     // -> Valid string literal.
-    return { value, escapedExpression: false, quotedExpression: false };
+    return { value, escapedExpression: false, quotedExpression: !!isQuoted };
 }
 
 export function attributeName(attr: Token.Attribute): string {

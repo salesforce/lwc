@@ -252,8 +252,8 @@
                                 "raw": "{spaceLeft}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 10,
+                                    "start": 2,
+                                    "end": 11,
                                     "name": "spaceLeft",
                                     "location": {
                                         "startLine": 5,
@@ -339,8 +339,8 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 6,
+                                    "end": 9,
                                     "name": "two",
                                     "location": {
                                         "startLine": 6,
@@ -416,8 +416,8 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 2,
+                                    "end": 5,
                                     "name": "one",
                                     "location": {
                                         "startLine": 7,
@@ -442,8 +442,8 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "two",
                                     "location": {
                                         "startLine": 7,
@@ -529,8 +529,8 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 6,
+                                    "end": 9,
                                     "name": "two",
                                     "location": {
                                         "startLine": 8,
@@ -648,8 +648,8 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "two",
                                     "location": {
                                         "startLine": 9,
@@ -725,8 +725,8 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 2,
+                                    "end": 5,
                                     "name": "one",
                                     "location": {
                                         "startLine": 10,
@@ -767,8 +767,8 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 8,
+                                    "end": 11,
                                     "name": "two",
                                     "location": {
                                         "startLine": 10,
@@ -870,8 +870,8 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "two",
                                     "location": {
                                         "startLine": 11,

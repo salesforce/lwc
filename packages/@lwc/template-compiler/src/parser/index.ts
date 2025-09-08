@@ -31,7 +31,6 @@ import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 import {
-    EXPRESSION_SYMBOL_END,
     EXPRESSION_SYMBOL_START,
     isExpression,
     parseExpression,
@@ -86,9 +85,11 @@ import type {
     LwcComponent,
     Element,
     Component,
+    SourceLocation,
 } from '../shared/types';
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
+import type { Location } from 'parse5/dist/common/token';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -441,7 +442,7 @@ function parseChildren(
                     ctx.endIfChain();
                 }
             } else if (parse5Tools.isTextNode(child)) {
-                const textNodes = parseText(ctx, child);
+                const textNodes = parseTextNode(ctx, child);
                 parent.children.push(...textNodes);
                 // Non whitespace text nodes end any if chain we may be parsing
                 if (ctx.isParsingSiblingIfBlock() && textNodes.length > 0) {
@@ -461,89 +462,13 @@ function parseChildren(
     ctx.endSiblingScope();
 }
 
-function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
+function parseText(
+    ctx: ParserCtx,
+    rawText: string,
+    sourceLocation: SourceLocation,
+    location: Location
+): Text[] {
     const parsedTextNodes: Text[] = [];
-    const location = parse5Text.sourceCodeLocation;
-
-    /* istanbul ignore if */
-    if (!location) {
-        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
-        // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
-        // This is a defensive check as this should never happen for TextNode.
-        throw new Error(
-            'An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.'
-        );
-    }
-
-    // Extract the raw source to avoid HTML entity decoding done by parse5
-    const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
-
-    if (!rawText.trim().length) {
-        return parsedTextNodes;
-    }
-
-    const sourceLocation = ast.sourceLocation(location);
-
-    if (ctx.config.experimentalComplexExpressions) {
-        let offset = 0;
-        let index = 0;
-        const templateSource = cleanTextNode(ctx.getSource(location.startOffset));
-
-        while (index < rawText.length) {
-            if (rawText[index] === EXPRESSION_SYMBOL_START) {
-                const expressionStart = index;
-                let expressionEnd = index + 1;
-                let braceCount = 1;
-                while (expressionEnd < rawText.length && braceCount) {
-                    if (rawText[expressionEnd] === EXPRESSION_SYMBOL_START) {
-                        braceCount++;
-                    } else if (rawText[expressionEnd] === EXPRESSION_SYMBOL_END) {
-                        braceCount--;
-                    }
-                    expressionEnd++;
-                }
-
-                if (!braceCount) {
-                    // Parse any literal that preceeded the expression
-                    if (offset < expressionStart) {
-                        const literalToken = rawText.slice(offset, expressionStart);
-                        parsedTextNodes.push(
-                            ast.text(literalToken, ast.literal(literalToken), location)
-                        );
-                    }
-
-                    const expressionSource = decodeTextContent(
-                        rawText.slice(expressionStart, expressionEnd)
-                    );
-                    const templateExpressionSource = decodeTextContent(
-                        templateSource.slice(expressionStart)
-                    );
-                    const parsed = parseComplexExpression(
-                        ctx,
-                        expressionSource,
-                        templateExpressionSource,
-                        sourceLocation
-                    );
-                    parsedTextNodes.push(ast.text(expressionSource, parsed, location));
-                    index += expressionSource.length;
-                    offset = index;
-                    continue;
-                }
-            }
-            index++;
-        }
-
-        // Parse any literal that followed the expression
-        if (offset < rawText.length) {
-            const literalToken = rawText.slice(offset, rawText.length);
-            parsedTextNodes.push(
-                ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
-            );
-        }
-
-        return parsedTextNodes;
-    }
-
     // Split the text node content around expression and create node for each
     const tokenizedContent = rawText.split(EXPRESSION_RE);
 
@@ -564,6 +489,78 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     }
 
     return parsedTextNodes;
+}
+
+function parseTextComplex(
+    ctx: ParserCtx,
+    rawText: string,
+    sourceLocation: SourceLocation,
+    location: Location
+): Text[] {
+    const parsedTextNodes: Text[] = [];
+    let start = 0;
+    let index = 0;
+    const templateSource = cleanTextNode(ctx.getSource(location.startOffset));
+
+    while (index < rawText.length) {
+        if (rawText[index] === EXPRESSION_SYMBOL_START) {
+            // Parse any literal that preceeded the expression
+            if (start < index) {
+                const literalToken = rawText.slice(start, index);
+                parsedTextNodes.push(ast.text(literalToken, ast.literal(literalToken), location));
+            }
+
+            const parsed = parseComplexExpression(
+                ctx,
+                rawText,
+                templateSource,
+                sourceLocation,
+                index
+            );
+            parsedTextNodes.push(ast.text(parsed.raw, parsed.expression, location));
+            index += parsed.raw.length;
+            start = index;
+            continue;
+        }
+        index++;
+    }
+
+    // Parse any literal that followed the expression
+    if (start < rawText.length) {
+        const literalToken = rawText.slice(start, index);
+        parsedTextNodes.push(
+            ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
+        );
+    }
+
+    return parsedTextNodes;
+}
+
+function parseTextNode(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
+    const location = parse5Text.sourceCodeLocation;
+
+    /* istanbul ignore if */
+    if (!location) {
+        // Parse5 will recover from invalid HTML. When this happens the node's sourceCodeLocation will be undefined.
+        // https://github.com/inikulin/parse5/blob/master/packages/parse5/docs/options/parser-options.md#sourcecodelocationinfo
+        // This is a defensive check as this should never happen for TextNode.
+        throw new Error(
+            'An internal parsing error occurred during node creation; a text node was found without a sourceCodeLocation.'
+        );
+    }
+
+    // Extract the raw source to avoid HTML entity decoding done by parse5
+    const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
+
+    if (!rawText.trim().length) {
+        return [];
+    }
+
+    const sourceLocation = ast.sourceLocation(location);
+
+    return ctx.config.experimentalComplexExpressions
+        ? parseTextComplex(ctx, rawText, sourceLocation, location)
+        : parseText(ctx, rawText, sourceLocation, location);
 }
 
 function parseComment(parse5Comment: parse5Tools.CommentNode): Comment {
@@ -1917,16 +1914,14 @@ function getTemplateAttribute(
 
     let attrValue: Literal | Expression;
 
-    if (isExpression(value) && !escapedExpression) {
-        if (ctx.config.experimentalComplexExpressions && quotedExpression) {
-            const attributeNameOffset = attribute.name.length + 2; // The +2 accounts for the '="'
-            const templateSource = ctx.getSource(
-                attributeLocation.startOffset + attributeNameOffset
-            );
-            attrValue = parseComplexExpression(ctx, value, templateSource, location);
-        } else {
-            attrValue = parseExpression(ctx, value, location);
-        }
+    const isPotentialComplexExpression =
+        quotedExpression && !escapedExpression && value.startsWith(EXPRESSION_SYMBOL_START);
+    if (ctx.config.experimentalComplexExpressions && isPotentialComplexExpression) {
+        const attributeNameOffset = attribute.name.length + 2; // The +2 accounts for the '="' in the attribute: attr="...
+        const templateSource = ctx.getSource(attributeLocation.startOffset + attributeNameOffset);
+        attrValue = parseComplexExpression(ctx, value, templateSource, location).expression;
+    } else if (isExpression(value) && !escapedExpression) {
+        attrValue = parseExpression(ctx, value, location);
     } else if (isBooleanAttribute) {
         attrValue = ast.literal(true);
     } else {
