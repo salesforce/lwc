@@ -36,6 +36,9 @@ function validateExpression(
     config: NormalizedConfig
 ): asserts node is Expression {
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
+    // INVALID_XYZ_COMPLEX provides additional context to the user if CTE is enabled.
+    // The author may not have delimited the CTE with quotes, resulting in it being parsed
+    // as a legacy expression.
     invariant(
         isValidNode,
         config.experimentalComplexExpressions
