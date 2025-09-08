@@ -226,9 +226,8 @@ export function validateComplexExpression(
             2. <c-status></c-status> (will be evaluated as an element)
             3. ")} (text node)
         - The expression: call(" is invalid so the parser would have already failed to validate. But if, somehow a valid expression was produced, this step
-           would compare the length of that expression to the length of the expression parsed from the raw template source and then compares the lengths
-           of the two expressions. If the two expressions don't match in length, that indicates parse5 interpreted a portion of the expression as HTML 
-           and we should throw.
+           would compare the length of that expression to the length of the expression parsed from the raw template source. 
+           If the two expressions don't match in length, that indicates parse5 interpreted a portion of the expression as HTML and we throw.
     */
     const templateExpression = parseExpressionAt(
         templateSource,

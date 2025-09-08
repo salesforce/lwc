@@ -507,7 +507,9 @@ function parseTextComplex(
             // Parse any literal that preceeded the expression
             if (start < index) {
                 const literalToken = rawText.slice(start, index);
-                parsedTextNodes.push(ast.text(literalToken, ast.literal(literalToken), location));
+                parsedTextNodes.push(
+                    ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
+                );
             }
 
             const parsed = parseComplexExpression(

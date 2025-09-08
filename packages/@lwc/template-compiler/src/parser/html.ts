@@ -12,7 +12,6 @@ import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import { sourceLocation } from '../shared/ast';
 
 import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
-//import { parseFragment } from './expression-complex';
 import type { DocumentFragment } from '@parse5/tools';
 import type ParserCtx from './parser';
 
@@ -43,11 +42,10 @@ export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
         const lwcError = getLwcErrorFromParse5Error(ctx, code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
-    const parsed = parse5.parseFragment(source, {
+    return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,
         onParseError,
     });
-    return parsed;
 }
 
 // https://github.com/babel/babel/blob/d33d02359474296402b1577ef53f20d94e9085c4/packages/babel-types/src/react.js#L9-L55
