@@ -1,6 +1,5 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import { importMapsPlugin } from '@web/dev-server-import-maps';
 import * as options from '../helpers/options.js';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
@@ -32,7 +31,6 @@ export default {
     nodeResolve: true,
     rootDir: join(import.meta.dirname, '..'),
     plugins: [
-        importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
         {
             resolveImport({ source }) {
                 if (source === 'wire-service') {
