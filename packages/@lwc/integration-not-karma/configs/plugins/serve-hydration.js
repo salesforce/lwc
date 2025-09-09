@@ -73,7 +73,7 @@ async function getCompiledModule(dir, compileForSSR) {
     return output[0].code;
 }
 
-function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
+async function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
     // The console is shared between the VM and the main realm. Here we ensure that known warnings
     // are ignored and any others cause an explicit error.
     const methods = ['error', 'warn', 'log', 'info'];
@@ -100,7 +100,7 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
         };
     }
     try {
-        return runnable();
+        return await runnable();
     } finally {
         Object.assign(console, originals);
     }
@@ -117,11 +117,15 @@ function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
  * So, script runs, generates markup, & we get that markup out and return it for use
  * in client-side tests.
  */
-async function getSsrCode(moduleCode, testConfig, filePath, expectedSSRConsoleCalls) {
+async function getSsrCode(moduleCode, filePath, expectedSSRConsoleCalls) {
+    // LWC itself requires configuration before each test (`setHooks` and
+    // `setFeatureFlagForTest`). Ideally, this would be done in pure isolation,
+    // but getting that set up for `vm.Script`/`vm.Module` is non-trivial.
+    // Instead, we inject a shared LWC that gets configured outside the script.
     const script = new vm.Script(
-        `(() => {
-            ${testConfig}
-            ${moduleCode}
+        `(async () => {
+            const {default: config} = await import('./${filePath}');
+            ${moduleCode /* var Main = ... */}
             return LWC.renderComponent(
                 'x-${COMPONENT_UNDER_TEST}-${guid++}',
                 Main,
@@ -130,33 +134,16 @@ async function getSsrCode(moduleCode, testConfig, filePath, expectedSSRConsoleCa
                 'sync'
             );
         })()`,
-        { filename: `[SSR] ${filePath}` }
+        {
+            filename: `[SSR] ${filePath}`,
+            importModuleDynamically: vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER,
+        }
     );
 
-    return throwOnUnexpectedConsoleCalls(
+    return await throwOnUnexpectedConsoleCalls(
         () => script.runInContext(vm.createContext({ LWC: lwcSsr })),
         expectedSSRConsoleCalls
     );
-}
-
-async function getTestConfig(input) {
-    const bundle = await rollup({
-        input,
-        external: ['lwc', 'test-utils', '@test/loader'],
-    });
-
-    const { output } = await bundle.generate({
-        format: 'iife',
-        globals: {
-            lwc: 'LWC',
-            'test-utils': 'TestUtils',
-        },
-        name: 'config',
-    });
-
-    const { code } = output[0];
-
-    return code;
 }
 
 async function existsUp(dir, file) {
@@ -190,12 +177,7 @@ async function wrapHydrationTest(filePath) {
         const componentDefSSR = ENGINE_SERVER
             ? componentDefCSR
             : await getCompiledModule(suiteDir, true);
-        const ssrOutput = await getSsrCode(
-            componentDefSSR,
-            await getTestConfig(filePath),
-            filePath,
-            expectedSSRConsoleCalls
-        );
+        const ssrOutput = await getSsrCode(componentDefSSR, filePath, expectedSSRConsoleCalls);
 
         // FIXME: can we turn these IIFEs into ESM imports?
         return `
