@@ -65,7 +65,6 @@ async function getCompiledModule(dir, compileForSSR) {
         globals: {
             lwc: 'LWC',
             '@lwc/ssr-runtime': 'LWC',
-            'test-utils': 'TestUtils',
         },
     });
 
