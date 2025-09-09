@@ -19,7 +19,6 @@ lwcSsr.setHooks({
 
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
 
-let guid = 0;
 const COMPONENT_UNDER_TEST = 'main';
 
 // Like `fs.existsSync` but async
@@ -127,7 +126,7 @@ async function getSsrCode(moduleCode, filePath, expectedSSRConsoleCalls) {
             const {default: config} = await import('./${filePath}');
             ${moduleCode /* var Main = ... */}
             return LWC.renderComponent(
-                'x-${COMPONENT_UNDER_TEST}-${guid++}',
+                'x-${COMPONENT_UNDER_TEST}',
                 Main,
                 config.props || {},
                 false,
