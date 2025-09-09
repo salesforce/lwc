@@ -19,7 +19,8 @@ lwcSsr.setHooks({
 
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
 
-const COMPONENT_UNDER_TEST = 'main';
+const COMPONENT_NAME = 'x-main';
+const COMPONENT_ENTRYPOINT = 'x/main/main.js';
 
 // Like `fs.existsSync` but async
 async function exists(path) {
@@ -33,7 +34,7 @@ async function exists(path) {
 
 async function getCompiledModule(dir, compileForSSR) {
     const bundle = await rollup({
-        input: path.join(dir, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
+        input: path.join(dir, COMPONENT_ENTRYPOINT),
         plugins: [
             lwcRollupPlugin({
                 targetSSR: !!compileForSSR,
@@ -61,7 +62,7 @@ async function getCompiledModule(dir, compileForSSR) {
 
     const { output } = await bundle.generate({
         format: 'iife',
-        name: 'Main',
+        name: 'Component',
         globals: {
             lwc: 'LWC',
             '@lwc/ssr-runtime': 'LWC',
@@ -123,10 +124,10 @@ async function getSsrCode(moduleCode, filePath, expectedSSRConsoleCalls) {
     const script = new vm.Script(
         `(async () => {
             const {default: config} = await import('./${filePath}');
-            ${moduleCode /* var Main = ... */}
+            ${moduleCode /* var Component = ... */}
             return LWC.renderComponent(
-                'x-${COMPONENT_UNDER_TEST}',
-                Main,
+                '${COMPONENT_NAME}',
+                Component,
                 config.props || {},
                 false,
                 'sync'
@@ -184,9 +185,8 @@ async function wrapHydrationTest(filePath) {
         import config from '/${filePath}?original=1';
         ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
             const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
-            // Component code, IIFE set as Main
-            ${componentDefCSR};
-            return await runTest(ssrRendered, Main, config);
+            ${componentDefCSR /* var Component = ... */};
+            return await runTest(ssrRendered, Component, config);
         });
         `;
     } finally {
