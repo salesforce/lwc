@@ -7,7 +7,7 @@
             "endLine": 5,
             "endColumn": 12,
             "start": 0,
-            "end": 97,
+            "end": 139,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 5,
                 "endColumn": 12,
-                "start": 86,
-                "end": 97
+                "start": 128,
+                "end": 139
             }
         },
         "directives": [],
@@ -37,7 +37,7 @@
                     "endLine": 4,
                     "endColumn": 15,
                     "start": 15,
-                    "end": 85,
+                    "end": 127,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -51,8 +51,8 @@
                         "startColumn": 5,
                         "endLine": 4,
                         "endColumn": 15,
-                        "start": 75,
-                        "end": 85
+                        "start": 117,
+                        "end": 127
                     }
                 },
                 "attributes": [],
@@ -68,56 +68,54 @@
                             "startLine": 3,
                             "startColumn": 9,
                             "endLine": 3,
-                            "endColumn": 46,
+                            "endColumn": 88,
                             "start": 33,
-                            "end": 70,
+                            "end": 112,
                             "startTag": {
                                 "startLine": 3,
                                 "startColumn": 9,
                                 "endLine": 3,
-                                "endColumn": 17,
+                                "endColumn": 47,
                                 "start": 33,
-                                "end": 41
+                                "end": 71
                             },
                             "endTag": {
                                 "startLine": 3,
-                                "startColumn": 37,
+                                "startColumn": 79,
                                 "endLine": 3,
-                                "endColumn": 46,
-                                "start": 61,
-                                "end": 70
+                                "endColumn": 88,
+                                "start": 103,
+                                "end": 112
                             }
                         },
                         "attributes": [],
-                        "properties": [],
-                        "directives": [],
-                        "listeners": [],
-                        "children": [
+                        "properties": [
                             {
-                                "type": "Text",
-                                "raw": "{({obj: 'literal'})}",
+                                "type": "Property",
+                                "name": "attr",
+                                "attributeName": "attr",
                                 "value": {
                                     "type": "ObjectExpression",
                                     "start": 2,
-                                    "end": 18,
+                                    "end": 20,
                                     "properties": [
                                         {
                                             "type": "Property",
-                                            "start": 3,
-                                            "end": 17,
+                                            "start": 4,
+                                            "end": 18,
                                             "method": false,
                                             "shorthand": false,
                                             "computed": false,
                                             "key": {
                                                 "type": "Identifier",
-                                                "start": 3,
-                                                "end": 6,
+                                                "start": 4,
+                                                "end": 7,
                                                 "name": "obj"
                                             },
                                             "value": {
                                                 "type": "Literal",
-                                                "start": 8,
-                                                "end": 17,
+                                                "start": 9,
+                                                "end": 18,
                                                 "value": "literal",
                                                 "raw": "'literal'"
                                             },
@@ -128,18 +126,91 @@
                                         "startLine": 3,
                                         "startColumn": 17,
                                         "endLine": 3,
-                                        "endColumn": 37,
+                                        "endColumn": 46,
                                         "start": 41,
-                                        "end": 61
+                                        "end": 70
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
                                     "startColumn": 17,
                                     "endLine": 3,
-                                    "endColumn": 37,
+                                    "endColumn": 46,
                                     "start": 41,
-                                    "end": 61
+                                    "end": 70
+                                }
+                            }
+                        ],
+                        "directives": [],
+                        "listeners": [],
+                        "children": [
+                            {
+                                "type": "Text",
+                                "raw": "{({ obj: 'literal'}).toString()}",
+                                "value": {
+                                    "type": "CallExpression",
+                                    "start": 1,
+                                    "end": 31,
+                                    "callee": {
+                                        "type": "MemberExpression",
+                                        "start": 1,
+                                        "end": 29,
+                                        "object": {
+                                            "type": "ObjectExpression",
+                                            "start": 2,
+                                            "end": 19,
+                                            "properties": [
+                                                {
+                                                    "type": "Property",
+                                                    "start": 4,
+                                                    "end": 18,
+                                                    "method": false,
+                                                    "shorthand": false,
+                                                    "computed": false,
+                                                    "key": {
+                                                        "type": "Identifier",
+                                                        "start": 4,
+                                                        "end": 7,
+                                                        "name": "obj"
+                                                    },
+                                                    "value": {
+                                                        "type": "Literal",
+                                                        "start": 9,
+                                                        "end": 18,
+                                                        "value": "literal",
+                                                        "raw": "'literal'"
+                                                    },
+                                                    "kind": "init"
+                                                }
+                                            ]
+                                        },
+                                        "property": {
+                                            "type": "Identifier",
+                                            "start": 21,
+                                            "end": 29,
+                                            "name": "toString"
+                                        },
+                                        "computed": false,
+                                        "optional": false
+                                    },
+                                    "arguments": [],
+                                    "optional": false,
+                                    "location": {
+                                        "startLine": 3,
+                                        "startColumn": 47,
+                                        "endLine": 3,
+                                        "endColumn": 79,
+                                        "start": 71,
+                                        "end": 103
+                                    }
+                                },
+                                "location": {
+                                    "startLine": 3,
+                                    "startColumn": 47,
+                                    "endLine": 3,
+                                    "endColumn": 79,
+                                    "start": 71,
+                                    "end": 103
                                 }
                             }
                         ]

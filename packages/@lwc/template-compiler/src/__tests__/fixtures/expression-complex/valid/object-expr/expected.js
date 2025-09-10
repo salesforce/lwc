@@ -6,6 +6,11 @@ const stc0 = {
   key: 0,
 };
 const stc1 = {
+  props: {
+    attr: {
+      obj: "literal",
+    },
+  },
   key: 1,
 };
 const stc2 = {
@@ -21,7 +26,7 @@ function tmpl($api, $cmp, $slotset, $ctx) {
   return [
     api_element("section", stc0, [
       api_custom_element("x-pert", _xPert, stc1, [
-        api_text(api_dynamic_text(stc2)),
+        api_text(api_dynamic_text(stc2.toString())),
       ]),
     ]),
   ];
