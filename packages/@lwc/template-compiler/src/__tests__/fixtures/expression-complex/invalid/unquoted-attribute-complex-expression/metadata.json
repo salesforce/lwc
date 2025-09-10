@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1208,
+            "message": "Invalid expression {bar()} - LWC1208: Template expression doesn't allow CallExpression unless the expression is surrounded by quotes: \"{bar()}\"",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 16,
+                "start": 111,
+                "length": 12
+            }
+        }
+    ]
+}
