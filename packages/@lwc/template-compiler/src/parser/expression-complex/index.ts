@@ -42,7 +42,6 @@ export function parseComplexExpression(
                 allowAwaitOutsideFunction: true,
             };
 
-            // Start parsing after the opening curly brace and any leading whitespace.
             const estreeNode = parseExpressionAt(
                 source,
                 expressionStart + OPENING_CURLY_LEN,
