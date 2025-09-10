@@ -154,8 +154,8 @@
                                 "raw": "{bar}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 1,
-                                    "end": 4,
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "bar",
                                     "location": {
                                         "startLine": 3,
