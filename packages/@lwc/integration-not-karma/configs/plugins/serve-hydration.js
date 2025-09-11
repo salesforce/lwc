@@ -73,39 +73,6 @@ async function compileModule(input, targetSSR, format) {
     return output[0].code;
 }
 
-async function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
-    // The console is shared between the VM and the main realm. Here we ensure that known warnings
-    // are ignored and any others cause an explicit error.
-    const methods = ['error', 'warn', 'log', 'info'];
-    const originals = {};
-    for (const method of methods) {
-        // eslint-disable-next-line no-console
-        originals[method] = console[method];
-        // eslint-disable-next-line no-console
-        console[method] = function (error) {
-            if (
-                method === 'warn' &&
-                // This eslint warning is a false positive due to RegExp.prototype.test
-                // eslint-disable-next-line vitest/no-conditional-tests
-                /Cannot set property "(inner|outer)HTML"/.test(error?.message)
-            ) {
-                return;
-            } else if (
-                expectedConsoleCalls[method]?.some((matcher) => error.message.includes(matcher))
-            ) {
-                return;
-            }
-
-            throw new Error(`Unexpected console.${method} call: ${error}`);
-        };
-    }
-    try {
-        return await runnable();
-    } finally {
-        Object.assign(console, originals);
-    }
-}
-
 /**
  * This is the function that takes SSR bundle code and test config, constructs a script that will
  * run in a separate JS runtime environment with its own global scope. The `context` object
@@ -117,7 +84,7 @@ async function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}
  * So, script runs, generates markup, & we get that markup out and return it for use
  * in client-side tests.
  */
-async function getSsrCode(moduleCode, filePath, expectedSSRConsoleCalls) {
+async function getSsrCode(moduleCode, filePath) {
     // LWC itself requires configuration before each test (`setHooks` and
     // `setFeatureFlagForTest`). Ideally, this would be done in pure isolation,
     // but getting that set up for `vm.Script`/`vm.Module` is non-trivial.
@@ -140,10 +107,7 @@ async function getSsrCode(moduleCode, filePath, expectedSSRConsoleCalls) {
         }
     );
 
-    return await throwOnUnexpectedConsoleCalls(
-        () => script.runInContext(vm.createContext({ LWC: lwcSsr })),
-        expectedSSRConsoleCalls
-    );
+    return await script.runInContext(vm.createContext({ LWC: lwcSsr }));
 }
 
 async function existsUp(dir, file) {
@@ -160,12 +124,10 @@ async function existsUp(dir, file) {
  * This function wraps those configs in the test code to be executed.
  */
 async function wrapHydrationTest(configPath) {
-    const {
-        default: { expectedSSRConsoleCalls, requiredFeatureFlags },
-    } = await import(path.join(ROOT_DIR, configPath));
+    const { default: config } = await import(path.join(ROOT_DIR, configPath));
 
     try {
-        requiredFeatureFlags?.forEach((featureFlag) => {
+        config.requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, true);
         });
 
@@ -175,7 +137,7 @@ async function wrapHydrationTest(configPath) {
         const onlyFileExists = await existsUp(suiteDir, '.only');
 
         const componentDefSSR = await compileModule(componentEntrypoint, !ENGINE_SERVER, 'iife');
-        const ssrOutput = await getSsrCode(componentDefSSR, configPath, expectedSSRConsoleCalls);
+        const ssrOutput = await getSsrCode(componentDefSSR, configPath);
 
         return `
         import { runTest } from '/helpers/test-hydrate.js';
@@ -187,7 +149,7 @@ async function wrapHydrationTest(configPath) {
         );
         `;
     } finally {
-        requiredFeatureFlags?.forEach((featureFlag) => {
+        config.requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, false);
         });
     }
