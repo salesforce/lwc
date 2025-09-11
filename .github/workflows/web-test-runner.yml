@@ -2,11 +2,7 @@ name: Run Web Test Runner integration tests
 
 on:
     push:
-        branches:
-            - master
     pull_request:
-        branches:
-            - master
 
 env:
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
@@ -50,11 +46,3 @@ jobs:
 
             - run: yarn test
             - run: yarn test:hydration
-
-    run-karma-tests:
-        runs-on: ubuntu-22.04
-        defaults:
-            run:
-                working-directory: ./packages/@lwc/integration-not-karma
-        needs:
-            - run-wtr-tests-group-1
