@@ -22,18 +22,36 @@ function setFeatureFlags(requiredFeatureFlags, value) {
     });
 }
 
+// Must be sync to properly register tests; async behavior can happen in before/after blocks
 export function runTest(configPath, componentPath, ssrRendered, focused) {
     const test = focused ? it.only : it;
-    test(configPath, async () => {
-        const testConfig = await import(configPath);
-        const Component = await import(componentPath);
+    const description = new URL(configPath, location.href).pathname;
+    let consoleSpy;
+    let testConfig;
+    let Component;
+
+    beforeAll(async () => {
+        testConfig = await import(configPath);
+        Component = await import(componentPath);
+        setFeatureFlags(testConfig.requiredFeatureFlags, true);
+    });
+
+    beforeEach(async () => {
+        consoleSpy = spyConsole();
+    });
+
+    afterEach(() => {
+        consoleSpy.reset();
+    });
+
+    afterAll(() => {
+        setFeatureFlags(testConfig.requiredFeatureFlags, false);
+    });
+
+    test(description, async () => {
         const container = appendTestTarget(ssrRendered);
         const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
-
-        let testResult;
-        const consoleSpy = spyConsole();
-        setFeatureFlags(testConfig.requiredFeatureFlags, true);
 
         if (testConfig.test) {
             const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
@@ -45,9 +63,9 @@ export function runTest(configPath, componentPath, ssrRendered, focused) {
 
             // let's select again the target, it should be the same elements as in the snapshot
             target = container.querySelector(selector);
-            testResult = await testConfig.test(target, snapshot, consoleSpy.calls);
+            await testConfig.test(target, snapshot, consoleSpy.calls);
         } else if (testConfig.advancedTest) {
-            testResult = await testConfig.advancedTest(target, {
+            await testConfig.advancedTest(target, {
                 Component,
                 hydrateComponent: LWC.hydrateComponent.bind(LWC),
                 consoleSpy,
@@ -55,9 +73,5 @@ export function runTest(configPath, componentPath, ssrRendered, focused) {
                 selector,
             });
         }
-
-        consoleSpy.reset();
-
-        return testResult;
     });
 }
