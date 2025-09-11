@@ -32,13 +32,14 @@ async function exists(path) {
     }
 }
 
-async function getCompiledModule(dir, compileForSSR, format = 'iife') {
+async function compileModule(input, targetSSR, format) {
+    const modulesDir = path.join(ROOT_DIR, input.slice(0, -COMPONENT_ENTRYPOINT.length));
     const bundle = await rollup({
-        input: path.join(dir, COMPONENT_ENTRYPOINT),
+        input,
         plugins: [
             lwcRollupPlugin({
-                targetSSR: !!compileForSSR,
-                modules: [{ dir: path.join(ROOT_DIR, dir) }],
+                targetSSR,
+                modules: [{ dir: modulesDir }],
                 experimentalDynamicComponent: {
                     loader: fileURLToPath(new URL('../../helpers/loader.js', import.meta.url)),
                     strict: true,
@@ -158,30 +159,28 @@ async function existsUp(dir, file) {
  * Hydration test `index.spec.js` files are actually config files, not spec files.
  * This function wraps those configs in the test code to be executed.
  */
-async function wrapHydrationTest(filePath) {
+async function wrapHydrationTest(configPath) {
     const {
         default: { expectedSSRConsoleCalls, requiredFeatureFlags },
-    } = await import(path.join(ROOT_DIR, filePath));
+    } = await import(path.join(ROOT_DIR, configPath));
 
     try {
         requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, true);
         });
 
-        const suiteDir = path.dirname(filePath);
+        const suiteDir = path.dirname(configPath);
         const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
         // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
         const onlyFileExists = await existsUp(suiteDir, '.only');
 
-        const componentDefSSR = ENGINE_SERVER
-            ? await getCompiledModule(suiteDir, false)
-            : await getCompiledModule(suiteDir, true);
-        const ssrOutput = await getSsrCode(componentDefSSR, filePath, expectedSSRConsoleCalls);
+        const componentDefSSR = await compileModule(componentEntrypoint, !ENGINE_SERVER, 'iife');
+        const ssrOutput = await getSsrCode(componentDefSSR, configPath, expectedSSRConsoleCalls);
 
         return `
         import { runTest } from '/helpers/test-hydrate.js';
         runTest(
-            '/${filePath}?original=1',
+            '/${configPath}?original=1',
             '/${componentEntrypoint}',
             ${JSON.stringify(ssrOutput) /* escape quotes */},
             ${onlyFileExists}
@@ -205,7 +204,7 @@ export default {
         if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
             return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
         } else if (ctx.path.endsWith('/' + COMPONENT_ENTRYPOINT)) {
-            return getCompiledModule(ctx.path.slice(1, -COMPONENT_ENTRYPOINT.length), false, 'esm');
+            return compileModule(ctx.path.slice(1) /* remove leading / */, false, 'esm');
         }
     },
 };
