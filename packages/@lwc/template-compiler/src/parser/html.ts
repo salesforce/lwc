@@ -12,7 +12,6 @@ import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import { sourceLocation } from '../shared/ast';
 
 import { errorCodesToErrorOn, errorCodesToWarnOnInOlderAPIVersions } from './parse5Errors';
-import { parseFragment } from './expression-complex';
 import type { DocumentFragment } from '@parse5/tools';
 import type ParserCtx from './parser';
 
@@ -40,20 +39,9 @@ function getLwcErrorFromParse5Error(ctx: ParserCtx, code: string) {
 export function parseHTML(ctx: ParserCtx, source: string): DocumentFragment {
     const onParseError = (err: parse5.ParserError) => {
         const { code, ...location } = err;
-
         const lwcError = getLwcErrorFromParse5Error(ctx, code);
         ctx.warnAtLocation(lwcError, sourceLocation(location), [code]);
     };
-
-    // TODO [#3370]: remove experimental template expression flag
-    if (ctx.config.experimentalComplexExpressions) {
-        return parseFragment(source, {
-            ctx,
-            sourceCodeLocationInfo: true,
-            onParseError,
-        });
-    }
-
     return parse5.parseFragment(source, {
         sourceCodeLocationInfo: true,
         onParseError,
