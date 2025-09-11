@@ -88,6 +88,7 @@ export function normalizeAttributeValue(
 ): {
     value: string;
     escapedExpression: boolean;
+    quotedExpression: boolean;
 } {
     const { name, value } = attr;
     if (isBooleanAttribute(name, tag)) {
@@ -126,7 +127,7 @@ export function normalizeAttributeValue(
 
         // <input value={myValue} />
         // -> Valid identifier.
-        return { value, escapedExpression: false };
+        return { value, escapedExpression: false, quotedExpression: !!isQuoted };
     } else if (!isEscaped && isPotentialExpression(value)) {
         const isExpressionEscaped = value.startsWith(`\\${EXPRESSION_SYMBOL_START}`);
         const isExpressionNextToSelfClosing =
@@ -139,12 +140,16 @@ export function normalizeAttributeValue(
             // -> By design the html parser consider the / as the last character of the attribute value.
             //    Make sure to remove strip the trailing / for self closing elements.
 
-            return { value: value.slice(0, -1), escapedExpression: false };
+            return {
+                value: value.slice(0, -1),
+                escapedExpression: false,
+                quotedExpression: !!isQuoted,
+            };
         } else if (isExpressionEscaped) {
             // <input value="\{myValue}"/>
             // -> Valid escaped string literal
 
-            return { value: value.slice(1), escapedExpression: true };
+            return { value: value.slice(1), escapedExpression: true, quotedExpression: !!isQuoted };
         }
 
         let escaped = raw.replace(/="?/, '="\\');
@@ -159,7 +164,7 @@ export function normalizeAttributeValue(
 
     // <input value="myValue"/>
     // -> Valid string literal.
-    return { value, escapedExpression: false };
+    return { value, escapedExpression: false, quotedExpression: !!isQuoted };
 }
 
 export function attributeName(attr: Token.Attribute): string {
