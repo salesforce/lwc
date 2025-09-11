@@ -18,7 +18,6 @@ lwcSsr.setHooks({
 });
 
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
-
 const COMPONENT_NAME = 'x-main';
 const COMPONENT_ENTRYPOINT = 'x/main/main.js';
 
@@ -74,25 +73,22 @@ async function compileModule(input, targetSSR, format) {
 }
 
 /**
- * This is the function that takes SSR bundle code and test config, constructs a script that will
- * run in a separate JS runtime environment with its own global scope. The `context` object
- * (defined at the top of this file) is passed in as the global scope for that script. The script
- * runs, utilizing the `LWC` object that we've attached to the global scope, it sets a
- * new value (the rendered markup) to `globalThis.moduleOutput`, which corresponds to
- * `context.moduleOutput in this file's scope.
- *
- * So, script runs, generates markup, & we get that markup out and return it for use
- * in client-side tests.
+ * This function takes a path to a component definition and a config file and returns the
+ * SSR-generated markup for the component. It does so by compiling the component and then
+ * running a script in a separate JS runtime environment to render it.
  */
-async function getSsrCode(moduleCode, filePath) {
-    // LWC itself requires configuration before each test (`setHooks` and
-    // `setFeatureFlagForTest`). Ideally, this would be done in pure isolation,
-    // but getting that set up for `vm.Script`/`vm.Module` is non-trivial.
-    // Instead, we inject a shared LWC that gets configured outside the script.
+async function getSsrMarkup(componentEntrypoint, configPath) {
+    const componentIife = await compileModule(componentEntrypoint, !ENGINE_SERVER, 'iife');
+    // To minimize the amount of code in the generated script, ideally we'd do `import Component`
+    // and delegate the bundling to the loader. However, that's complicated to configure and using
+    // imports with vm.Script/vm.Module is still experimental, so we use an IIFE for simplicity.
+    // Additionally, we could import LWC, but the framework requires configuration before each test
+    // (setHooks/setFeatureFlagForTest), so instead we configure it once in the top-level context
+    // and inject it as a global variable.
     const script = new vm.Script(
         `(async () => {
-            const {default: config} = await import('./${filePath}');
-            ${moduleCode /* var Component = ... */}
+            const {default: config} = await import('./${configPath}');
+            ${componentIife /* var Component = ... */}
             return LWC.renderComponent(
                 '${COMPONENT_NAME}',
                 Component,
@@ -102,7 +98,7 @@ async function getSsrCode(moduleCode, filePath) {
             );
         })()`,
         {
-            filename: `[SSR] ${filePath}`,
+            filename: `[SSR] ${configPath}`,
             importModuleDynamically: vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER,
         }
     );
@@ -133,11 +129,9 @@ async function wrapHydrationTest(configPath) {
 
         const suiteDir = path.dirname(configPath);
         const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
-        // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
+        // You can add an `.only` file alongside an `index.spec.js` file to make the test focused
         const onlyFileExists = await existsUp(suiteDir, '.only');
-
-        const componentDefSSR = await compileModule(componentEntrypoint, !ENGINE_SERVER, 'iife');
-        const ssrOutput = await getSsrCode(componentDefSSR, configPath);
+        const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
         return `
         import { runTest } from '/helpers/test-hydrate.js';
@@ -166,7 +160,7 @@ export default {
         if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
             return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
         } else if (ctx.path.endsWith('/' + COMPONENT_ENTRYPOINT)) {
-            return compileModule(ctx.path.slice(1) /* remove leading / */, false, 'esm');
+            return await compileModule(ctx.path.slice(1) /* remove leading / */, false, 'esm');
         }
     },
 };
