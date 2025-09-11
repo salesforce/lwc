@@ -32,7 +32,7 @@ async function exists(path) {
     }
 }
 
-async function getCompiledModule(dir, compileForSSR) {
+async function getCompiledModule(dir, compileForSSR, format = 'iife') {
     const bundle = await rollup({
         input: path.join(dir, COMPONENT_ENTRYPOINT),
         plugins: [
@@ -61,7 +61,7 @@ async function getCompiledModule(dir, compileForSSR) {
     });
 
     const { output } = await bundle.generate({
-        format: 'iife',
+        format,
         name: 'Component',
         globals: {
             lwc: 'LWC',
@@ -169,23 +169,23 @@ async function wrapHydrationTest(filePath) {
         });
 
         const suiteDir = path.dirname(filePath);
+        const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
         // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
         const onlyFileExists = await existsUp(suiteDir, '.only');
 
-        const componentDefCSR = await getCompiledModule(suiteDir, false);
         const componentDefSSR = ENGINE_SERVER
-            ? componentDefCSR
+            ? await getCompiledModule(suiteDir, false)
             : await getCompiledModule(suiteDir, true);
         const ssrOutput = await getSsrCode(componentDefSSR, filePath, expectedSSRConsoleCalls);
 
         // FIXME: can we turn these IIFEs into ESM imports?
         return `
-        import * as LWC from 'lwc';
         import { runTest } from '/helpers/test-hydrate.js';
         import config from '/${filePath}?original=1';
+        import Component from '/${componentEntrypoint}';
+
         ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
             const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
-            ${componentDefCSR /* var Component = ... */};
             return await runTest(ssrRendered, Component, config);
         });
         `;
@@ -206,6 +206,8 @@ export default {
         // to return the file unmodified.
         if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
             return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
+        } else if (ctx.path.endsWith('/' + COMPONENT_ENTRYPOINT)) {
+            return getCompiledModule(ctx.path.slice(1, -COMPONENT_ENTRYPOINT.length), false, 'esm');
         }
     },
 };
