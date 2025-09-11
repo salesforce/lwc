@@ -1,0 +1,4 @@
+<template>
+    <!-- This should fail as html characters are not decoded in complex or non-complex expressions -->
+    <x-foo attr="{foo &#60; bar}"></x-foo>
+</template>

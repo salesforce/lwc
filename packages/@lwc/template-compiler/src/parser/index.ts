@@ -31,10 +31,10 @@ import ParserCtx from './parser';
 
 import { cleanTextNode, decodeTextContent, parseHTML } from './html';
 import {
+    EXPRESSION_SYMBOL_START,
     isExpression,
     parseExpression,
     parseIdentifier,
-    validatePreparsedJsExpressions,
 } from './expression';
 import {
     attributeName,
@@ -61,6 +61,7 @@ import {
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
+import { parseComplexExpression } from './expression-complex';
 import type {
     TemplateParseResult,
     Attribute,
@@ -84,9 +85,11 @@ import type {
     LwcComponent,
     Element,
     Component,
+    SourceLocation,
 } from '../shared/types';
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
+import type { Location } from 'parse5/dist/common/token';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -131,7 +134,6 @@ export default function parse(source: string, state: State): TemplateParseResult
     }
 
     const root = ctx.withErrorRecovery(() => {
-        validatePreparsedJsExpressions(ctx);
         const templateRoot = getTemplateRoot(ctx, fragment);
         return parseRoot(ctx, templateRoot);
     });
@@ -440,7 +442,7 @@ function parseChildren(
                     ctx.endIfChain();
                 }
             } else if (parse5Tools.isTextNode(child)) {
-                const textNodes = parseText(ctx, child);
+                const textNodes = parseTextNode(ctx, child);
                 parent.children.push(...textNodes);
                 // Non whitespace text nodes end any if chain we may be parsing
                 if (ctx.isParsingSiblingIfBlock() && textNodes.length > 0) {
@@ -460,8 +462,85 @@ function parseChildren(
     ctx.endSiblingScope();
 }
 
-function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
+function parseText(
+    ctx: ParserCtx,
+    rawText: string,
+    sourceLocation: SourceLocation,
+    location: Location
+): Text[] {
     const parsedTextNodes: Text[] = [];
+    // Split the text node content around expression and create node for each
+    const tokenizedContent = rawText.split(EXPRESSION_RE);
+
+    for (const token of tokenizedContent) {
+        // Don't create nodes for emtpy strings
+        if (!token.length) {
+            continue;
+        }
+
+        let value: Expression | Literal;
+        if (isExpression(token)) {
+            value = parseExpression(ctx, token, sourceLocation);
+        } else {
+            value = ast.literal(decodeTextContent(token));
+        }
+
+        parsedTextNodes.push(ast.text(token, value, location));
+    }
+
+    return parsedTextNodes;
+}
+
+function parseTextComplex(
+    ctx: ParserCtx,
+    rawText: string,
+    sourceLocation: SourceLocation,
+    location: Location
+): Text[] {
+    const parsedTextNodes: Text[] = [];
+    let start = 0;
+    let index = 0;
+    const templateSource = cleanTextNode(ctx.getSource(location.startOffset));
+
+    while (index < rawText.length) {
+        if (rawText[index] === EXPRESSION_SYMBOL_START) {
+            // Parse any literal that preceeded the expression
+            if (start < index) {
+                const literalToken = rawText.slice(start, index);
+                parsedTextNodes.push(
+                    ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
+                );
+            }
+
+            const parsed = parseComplexExpression(
+                ctx,
+                rawText,
+                templateSource,
+                sourceLocation,
+                index
+            );
+            parsedTextNodes.push(ast.text(parsed.raw, parsed.expression, location));
+
+            // Parse the remainder of the text node for expressions
+            index += parsed.raw.length;
+            start = index;
+            continue;
+        }
+        index++;
+    }
+
+    // Parse any remaining literal
+    if (start < rawText.length) {
+        const literalToken = rawText.slice(start, index);
+        parsedTextNodes.push(
+            ast.text(literalToken, ast.literal(decodeTextContent(literalToken)), location)
+        );
+    }
+
+    return parsedTextNodes;
+}
+
+function parseTextNode(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     const location = parse5Text.sourceCodeLocation;
 
     /* istanbul ignore if */
@@ -477,63 +556,15 @@ function parseText(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[] {
     // Extract the raw source to avoid HTML entity decoding done by parse5
     const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
 
-    /*
-    The original job of this if-block was to discard the whitespace between HTML tags, HTML
-    comments, and HTML tags and HTML comments. The whitespace inside the text content of HTML tags
-    would never be considered here because they would not be parsed into individual text nodes until
-    later (several lines below).
-
-    ["Hello {first} {last}!"] => ["Hello ", "{first}", " ", "{last}", "!"]
-
-    With the implementation of complex template expressions, whitespace that shouldn't be discarded
-    has already been parsed into individual text nodes at this point so we only discard when
-    experimentalComplexExpressions is disabled.
-
-    When removing the experimentalComplexExpressions flag, we need to figure out how to best discard
-    the HTML whitespace while preserving text content whitespace, while also taking into account how
-    comments are sometimes preserved (in which case we need to keep the HTML whitespace).
-    */
-    if (!rawText.trim().length && !ctx.config.experimentalComplexExpressions) {
-        return parsedTextNodes;
+    if (!rawText.trim().length) {
+        return [];
     }
 
-    // TODO [#3370]: remove experimental template expression flag
-    if (ctx.config.experimentalComplexExpressions && isExpression(rawText)) {
-        // Implementation of the lexer ensures that each text-node template expression
-        // will be contained in its own text node. Adjacent static text will be in
-        // separate text nodes.
-        const entry = ctx.preparsedJsExpressions!.get(location.startOffset);
-        if (!entry?.parsedExpression) {
-            throw new Error('Implementation error: cannot find preparsed template expression');
-        }
+    const sourceLocation = ast.sourceLocation(location);
 
-        const value = {
-            ...entry.parsedExpression,
-            location: ast.sourceLocation(location),
-        };
-        return [ast.text(rawText, value, location)];
-    }
-
-    // Split the text node content arround expression and create node for each
-    const tokenizedContent = rawText.split(EXPRESSION_RE);
-
-    for (const token of tokenizedContent) {
-        // Don't create nodes for emtpy strings
-        if (!token.length) {
-            continue;
-        }
-
-        let value: Expression | Literal;
-        if (isExpression(token)) {
-            value = parseExpression(ctx, token, ast.sourceLocation(location));
-        } else {
-            value = ast.literal(decodeTextContent(token));
-        }
-
-        parsedTextNodes.push(ast.text(token, value, location));
-    }
-
-    return parsedTextNodes;
+    return ctx.config.experimentalComplexExpressions
+        ? parseTextComplex(ctx, rawText, sourceLocation, location)
+        : parseText(ctx, rawText, sourceLocation, location);
 }
 
 function parseComment(parse5Comment: parse5Tools.CommentNode): Comment {
@@ -1877,7 +1908,7 @@ function getTemplateAttribute(
     }
 
     const isBooleanAttribute = !rawAttribute.includes('=');
-    const { value, escapedExpression } = normalizeAttributeValue(
+    const { value, escapedExpression, quotedExpression } = normalizeAttributeValue(
         ctx,
         rawAttribute,
         tag,
@@ -1887,11 +1918,20 @@ function getTemplateAttribute(
 
     let attrValue: Literal | Expression;
 
-    // TODO [#3370]: If complex template expressions are adopted, `preparsedJsExpressions`
-    // should be checked. However, to avoid significant complications in the internal types,
-    // arising from supporting both implementations simultaneously, we will re-parse the
-    // expression here when `ctx.config.experimentalComplexExpressions` is true.
-    if (isExpression(value) && !escapedExpression) {
+    /*
+        A complex attribute expression should only be parsed as a complex expression if it has been quoted.
+        Quoting complex expressions ensures that the expression is valid HTML. If the complex expression 
+        has not been quoted, then it is parsed as a legacy expression and it will fail with an appropriate explanation.
+        This ensures backward compatibility with legacy expressions which do not require, or currently permit quotes
+        to be used.
+    */
+    const isPotentialComplexExpression =
+        quotedExpression && !escapedExpression && value.startsWith(EXPRESSION_SYMBOL_START);
+    if (ctx.config.experimentalComplexExpressions && isPotentialComplexExpression) {
+        const attributeNameOffset = attribute.name.length + 2; // The +2 accounts for the '="' in the attribute: attr="...
+        const templateSource = ctx.getSource(attributeLocation.startOffset + attributeNameOffset);
+        attrValue = parseComplexExpression(ctx, value, templateSource, location).expression;
+    } else if (isExpression(value) && !escapedExpression) {
         attrValue = parseExpression(ctx, value, location);
     } else if (isBooleanAttribute) {
         attrValue = ast.literal(true);

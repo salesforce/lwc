@@ -1,7 +1,7 @@
 <template>
     <template for:each={bento} for:item="okazu">
         <div key={okazu}>
-            <a onclick={() => taberu(okazu)}>
+            <a onclick="{() => taberu(okazu)}">
                 one
             </a>
         </div>
