@@ -178,16 +178,14 @@ async function wrapHydrationTest(filePath) {
             : await getCompiledModule(suiteDir, true);
         const ssrOutput = await getSsrCode(componentDefSSR, filePath, expectedSSRConsoleCalls);
 
-        // FIXME: can we turn these IIFEs into ESM imports?
         return `
         import { runTest } from '/helpers/test-hydrate.js';
-        import config from '/${filePath}?original=1';
-        import Component from '/${componentEntrypoint}';
-
-        ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
-            const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
-            return await runTest(ssrRendered, Component, config);
-        });
+        runTest(
+            '/${filePath}?original=1',
+            '/${componentEntrypoint}',
+            ${JSON.stringify(ssrOutput) /* escape quotes */},
+            ${onlyFileExists}
+        );
         `;
     } finally {
         requiredFeatureFlags?.forEach((featureFlag) => {

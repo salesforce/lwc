@@ -22,39 +22,42 @@ function setFeatureFlags(requiredFeatureFlags, value) {
     });
 }
 
-async function runTest(ssrRendered, Component, testConfig) {
-    const container = appendTestTarget(ssrRendered);
-    const selector = container.firstChild.tagName.toLowerCase();
-    let target = container.querySelector(selector);
+export function runTest(configPath, componentPath, ssrRendered, focused) {
+    const test = focused ? it.only : it;
+    test(configPath, async () => {
+        const testConfig = await import(configPath);
+        const Component = await import(componentPath);
+        const container = appendTestTarget(ssrRendered);
+        const selector = container.firstChild.tagName.toLowerCase();
+        let target = container.querySelector(selector);
 
-    let testResult;
-    const consoleSpy = spyConsole();
-    setFeatureFlags(testConfig.requiredFeatureFlags, true);
+        let testResult;
+        const consoleSpy = spyConsole();
+        setFeatureFlags(testConfig.requiredFeatureFlags, true);
 
-    if (testConfig.test) {
-        const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
+        if (testConfig.test) {
+            const snapshot = testConfig.snapshot ? testConfig.snapshot(target) : {};
 
-        const props = testConfig.props || {};
-        const clientProps = testConfig.clientProps || props;
+            const props = testConfig.props || {};
+            const clientProps = testConfig.clientProps || props;
 
-        LWC.hydrateComponent(target, Component, clientProps);
+            LWC.hydrateComponent(target, Component, clientProps);
 
-        // let's select again the target, it should be the same elements as in the snapshot
-        target = container.querySelector(selector);
-        testResult = await testConfig.test(target, snapshot, consoleSpy.calls);
-    } else if (testConfig.advancedTest) {
-        testResult = await testConfig.advancedTest(target, {
-            Component,
-            hydrateComponent: LWC.hydrateComponent.bind(LWC),
-            consoleSpy,
-            container,
-            selector,
-        });
-    }
+            // let's select again the target, it should be the same elements as in the snapshot
+            target = container.querySelector(selector);
+            testResult = await testConfig.test(target, snapshot, consoleSpy.calls);
+        } else if (testConfig.advancedTest) {
+            testResult = await testConfig.advancedTest(target, {
+                Component,
+                hydrateComponent: LWC.hydrateComponent.bind(LWC),
+                consoleSpy,
+                container,
+                selector,
+            });
+        }
 
-    consoleSpy.reset();
+        consoleSpy.reset();
 
-    return testResult;
+        return testResult;
+    });
 }
-
-export { runTest };
