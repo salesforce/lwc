@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import XInnerHtml from 'x/innerHtml';
-import { getHooks, setHooks } from '../../../helpers/utils.js';
+import { getHooks, setHooks } from '../../../helpers/hooks.js';
 
 const ACTUAL_CONTENT = 'Hello <b>World</b>';
 const ALTERNATIVE_CONTENT = 'Hello <b>LWC</b>';

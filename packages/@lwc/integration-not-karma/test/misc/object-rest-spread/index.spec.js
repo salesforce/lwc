@@ -1,4 +1,4 @@
-import { DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION } from '../../../helpers/utils.js';
+import { DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION } from '../../../helpers/constants.js';
 
 // It's useful to have Karma tests for this, so that we confirm legacy browsers still work
 describe('object rest spread transformation', () => {

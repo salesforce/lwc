@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 
 import Dynamic from 'x/dynamic';
 import Reactive from 'x/reactive';
-import { TEMPLATE_CLASS_NAME_OBJECT_BINDING } from '../../../helpers/utils.js';
+import { TEMPLATE_CLASS_NAME_OBJECT_BINDING } from '../../../helpers/constants.js';
 
 function createDynamicClass(value) {
     const elm = createElement('x-dynamic', { is: Dynamic });

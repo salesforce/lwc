@@ -5,7 +5,7 @@ import NativeStyles from 'x/nativeStyles';
 import NoStyles from 'x/noStyles';
 import ScopedStyles from 'x/scopedStyles';
 import Styles from 'x/styles';
-import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/utils.js';
+import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
 
 const scenarios = [
     {

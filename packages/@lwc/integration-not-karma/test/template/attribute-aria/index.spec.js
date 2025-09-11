@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Parent from 'x/parent';
-import { ariaAttributes, ariaProperties, ariaPropertiesMapping } from '../../../helpers/utils.js';
+import { ariaAttributes, ariaProperties, ariaPropertiesMapping } from '../../../helpers/aria.js';
 
 describe('setting aria attributes', () => {
     let childComponent;
