@@ -1,0 +1,7 @@
+<template>
+    <div class="items-container">
+        <template for:each={items} for:item="item">
+            <x-child key={item.id} value={item.value}></x-child>
+        </template>
+    </div>
+</template>

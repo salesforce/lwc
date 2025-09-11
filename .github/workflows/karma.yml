@@ -58,7 +58,9 @@ jobs:
             - run: LEGACY_BROWSERS=1 yarn sauce:ci
             - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn sauce:ci
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn sauce:ci
+            - run: DISABLE_DETACHED_REHYDRATION=1 yarn sauce:ci
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 yarn sauce:ci
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn sauce:ci
 
             - name: Upload coverage results
               uses: actions/upload-artifact@v4
@@ -187,6 +189,8 @@ jobs:
             - run: NODE_ENV_FOR_TEST=production yarn hydration:sauce:ci:engine-server
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn hydration:sauce:ci:engine-server
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn hydration:sauce:ci:engine-server
+            - run: DISABLE_DETACHED_REHYDRATION=1 yarn hydration:sauce:ci:engine-server
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn hydration:sauce:ci:engine-server
             - run: yarn hydration:sauce:ci
             - run: ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 yarn hydration:sauce:ci
             - run: NODE_ENV_FOR_TEST=production yarn hydration:sauce:ci
