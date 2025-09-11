@@ -22,7 +22,7 @@ jobs:
     # TODO: add env var combos we use for Karma tests
     # TODO: upload result artifacts
     # TODO: make it saucy 🥫
-    run-wtr-tests-group-1:
+    wtr-group-1:
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
