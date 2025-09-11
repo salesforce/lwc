@@ -1,6 +1,11 @@
 <template>
     <section>
-        <x-pert attr={foo > bar}>{foo > bar}</x-pert>
-        <x-pert attr={foo < bar}>{foo < bar}</x-pert>
+        <x-pert attr="{foo > bar}">{foo > bar}</x-pert>
+        <!-- 
+            Using > in a text node (foo < bar) would couse a html parsing error.
+            It is not supported and has a dedicated test. Any expression must be HTML
+            compliant 
+        -->
+        <x-pert attr="{foo < bar}"></x-pert> 
     </section>
 </template>

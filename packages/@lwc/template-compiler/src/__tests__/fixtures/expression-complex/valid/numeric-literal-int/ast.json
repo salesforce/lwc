@@ -7,7 +7,7 @@
             "endLine": 5,
             "endColumn": 12,
             "start": 0,
-            "end": 91,
+            "end": 93,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 5,
                 "endColumn": 12,
-                "start": 80,
-                "end": 91
+                "start": 82,
+                "end": 93
             }
         },
         "directives": [],
@@ -37,7 +37,7 @@
                     "endLine": 4,
                     "endColumn": 15,
                     "start": 15,
-                    "end": 79,
+                    "end": 81,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -51,8 +51,8 @@
                         "startColumn": 5,
                         "endLine": 4,
                         "endColumn": 15,
-                        "start": 69,
-                        "end": 79
+                        "start": 71,
+                        "end": 81
                     }
                 },
                 "attributes": [],
@@ -68,24 +68,24 @@
                             "startLine": 3,
                             "startColumn": 9,
                             "endLine": 3,
-                            "endColumn": 40,
+                            "endColumn": 42,
                             "start": 33,
-                            "end": 64,
+                            "end": 66,
                             "startTag": {
                                 "startLine": 3,
                                 "startColumn": 9,
                                 "endLine": 3,
-                                "endColumn": 27,
+                                "endColumn": 29,
                                 "start": 33,
-                                "end": 51
+                                "end": 53
                             },
                             "endTag": {
                                 "startLine": 3,
-                                "startColumn": 31,
+                                "startColumn": 33,
                                 "endLine": 3,
-                                "endColumn": 40,
-                                "start": 55,
-                                "end": 64
+                                "endColumn": 42,
+                                "start": 57,
+                                "end": 66
                             }
                         },
                         "attributes": [],
@@ -104,18 +104,18 @@
                                         "startLine": 3,
                                         "startColumn": 17,
                                         "endLine": 3,
-                                        "endColumn": 26,
+                                        "endColumn": 28,
                                         "start": 41,
-                                        "end": 50
+                                        "end": 52
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
                                     "startColumn": 17,
                                     "endLine": 3,
-                                    "endColumn": 26,
+                                    "endColumn": 28,
                                     "start": 41,
-                                    "end": 50
+                                    "end": 52
                                 }
                             }
                         ],
@@ -127,40 +127,26 @@
                                 "raw": "{42}",
                                 "value": {
                                     "type": "Literal",
-                                    "start": 52,
-                                    "end": 54,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 27
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 29
-                                        }
-                                    },
-                                    "range": [
-                                        52,
-                                        54
-                                    ],
+                                    "start": 1,
+                                    "end": 3,
                                     "value": 42,
                                     "raw": "42",
                                     "location": {
                                         "startLine": 3,
-                                        "startColumn": 27,
+                                        "startColumn": 29,
                                         "endLine": 3,
-                                        "endColumn": 31,
-                                        "start": 51,
-                                        "end": 55
+                                        "endColumn": 33,
+                                        "start": 53,
+                                        "end": 57
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
-                                    "startColumn": 27,
+                                    "startColumn": 29,
                                     "endLine": 3,
-                                    "endColumn": 31,
-                                    "start": 51,
-                                    "end": 55
+                                    "endColumn": 33,
+                                    "start": 53,
+                                    "end": 57
                                 }
                             }
                         ]

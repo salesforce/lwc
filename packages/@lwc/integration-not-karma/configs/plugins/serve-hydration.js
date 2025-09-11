@@ -134,6 +134,7 @@ async function wrapHydrationTest(configPath) {
         const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
         return `
+        import * as LWC from 'lwc';
         import { runTest } from '/helpers/test-hydrate.js';
         runTest(
             '/${configPath}?original=1',
