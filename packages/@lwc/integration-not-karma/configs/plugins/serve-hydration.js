@@ -1,6 +1,7 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.js';
@@ -39,7 +40,7 @@ async function getCompiledModule(dir, compileForSSR) {
                 targetSSR: !!compileForSSR,
                 modules: [{ dir: path.join(ROOT_DIR, dir) }],
                 experimentalDynamicComponent: {
-                    loader: 'test-utils',
+                    loader: fileURLToPath(new URL('../../helpers/loader.js', import.meta.url)),
                     strict: true,
                 },
                 enableDynamicComponents: true,
@@ -198,6 +199,7 @@ async function wrapHydrationTest(filePath) {
 
         // FIXME: can we turn these IIFEs into ESM imports?
         return `
+        import * as LWC from 'lwc';
         import { runTest } from '/helpers/test-hydrate.js';
         import config from '/${filePath}?original=1';
         ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {

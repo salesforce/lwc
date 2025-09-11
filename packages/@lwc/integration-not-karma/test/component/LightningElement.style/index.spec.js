@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
-import { ENABLE_THIS_DOT_STYLE } from '../../../helpers/utils.js';
+import { ENABLE_THIS_DOT_STYLE } from '../../../helpers/constants.js';
 
 it.runIf(ENABLE_THIS_DOT_STYLE)(
     'this.style should return the CSSStyleDeclaration of host element',
