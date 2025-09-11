@@ -2,6 +2,12 @@ name: Run Web Test Runner integration tests
 
 on:
     push:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
     pull_request:
 
 env:
