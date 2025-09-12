@@ -3,7 +3,7 @@ import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 describe('freezeTemplate', () => {
     let dispatcher;

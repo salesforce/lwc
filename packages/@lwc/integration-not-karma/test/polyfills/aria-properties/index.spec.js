@@ -9,7 +9,7 @@ import {
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 function testAriaProperty(property, attribute, suite = describe) {
     suite(property, () => {

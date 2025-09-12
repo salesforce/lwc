@@ -6,7 +6,7 @@ import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStyles
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 describe('compiler version mismatch', () => {
     describe('stamped with version number', () => {
