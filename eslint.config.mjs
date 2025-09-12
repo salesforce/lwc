@@ -364,11 +364,6 @@ export default tseslint.config(
                 ...globals.browser,
             },
         },
-
-        rules: {
-            'no-var': 'off',
-            'prefer-rest-params': 'off',
-        },
     },
     {
         files: ['packages/@lwc/integration-karma/**'],
@@ -382,11 +377,6 @@ export default tseslint.config(
                 ...globals.browser,
                 ...globals.jasmine,
             },
-        },
-
-        rules: {
-            'no-var': 'off',
-            'prefer-rest-params': 'off',
         },
     },
     {
