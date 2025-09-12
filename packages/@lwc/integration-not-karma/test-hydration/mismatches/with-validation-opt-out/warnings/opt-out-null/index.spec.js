@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../../../helpers/utils.js';
+
 export default {
     snapshot(target) {
         return {
@@ -8,7 +10,7 @@ export default {
         const hydratedSnapshot = this.snapshot(target);
         expect(hydratedSnapshot.child).toBe(snapshots.child);
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             warn: [
                 '`validationOptOut` must be `true` or an array of attributes that should not be validated.',
             ],

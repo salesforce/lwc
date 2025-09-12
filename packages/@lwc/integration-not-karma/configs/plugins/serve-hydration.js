@@ -50,7 +50,7 @@ async function compileModule(input, targetSSR, format) {
             }),
         ],
 
-        external: ['lwc', '@lwc/ssr-runtime', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
+        external: ['lwc', '@lwc/ssr-runtime'],
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin

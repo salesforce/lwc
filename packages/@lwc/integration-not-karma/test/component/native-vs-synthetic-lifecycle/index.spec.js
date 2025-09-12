@@ -6,7 +6,7 @@ import LogsWhenConnected from 'x/logsWhenConnected';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 let logger;
 let dispatcher;

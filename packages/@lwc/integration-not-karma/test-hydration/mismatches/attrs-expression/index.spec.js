@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../helpers/utils.js';
+
 export default {
     props: {
         foo: 'server',
@@ -17,7 +19,7 @@ export default {
         expect(div.getAttribute('data-foo')).toBe('client');
         expect(div.getAttribute('data-static')).toBe('same-value');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <div> - rendered on server: data-foo="server" - expected on client: data-foo="client"',

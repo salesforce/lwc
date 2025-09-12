@@ -84,12 +84,9 @@ const transform = async (ctx) => {
         cache,
         plugins: [customLwcRollupPlugin],
 
-        // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
-        // globally in the page before running the tests.
         external: [
             'lwc',
             'wire-service',
-            '@test/loader',
             // Some helper files export functions that mutate a global state. The setup file calls
             // some of those functions and does not get bundled. Including the helper files in the
             // bundle would create a separate global state, causing tests to fail. We don't need to

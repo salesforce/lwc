@@ -5,7 +5,7 @@ import { nonStandardAriaProperties } from '../../../helpers/aria.js';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 // This test only works if the ARIA reflection polyfill is loaded
 describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(

@@ -361,7 +361,6 @@ export default tseslint.config(
             globals: {
                 lwcRuntimeFlags: true,
                 process: true,
-                TestUtils: true,
                 ...globals.browser,
                 ...globals.jasmine,
             },

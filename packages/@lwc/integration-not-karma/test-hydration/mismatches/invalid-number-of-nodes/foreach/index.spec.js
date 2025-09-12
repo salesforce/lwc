@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
+
 export default {
     props: {
         colors: ['red', 'blue', 'green'],
@@ -15,7 +17,7 @@ export default {
 
         expect(hydratedSnapshot.text).not.toBe(snapshots.text);
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration child node mismatch on: <ul> - rendered on server: <li>,<li>,<li> - expected on client: <li>,<li>',

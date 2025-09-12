@@ -3,14 +3,9 @@ import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expe
 import * as chai from 'chai';
 import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.js';
-import * as TestUtils from './utils.js';
 import { initSignals } from './signals.js';
 
 initSignals();
-
-// FIXME: As a relic of the Karma tests, some test files rely on the global object,
-// rather than importing from `test-utils`.
-window.TestUtils = TestUtils;
 
 // allows using expect.extend instead of chai.use to extend plugins
 chai.use(JestExtend);

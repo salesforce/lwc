@@ -4,7 +4,7 @@ import Light from 'x/light';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 describe('lwc:render-mode', () => {
     let dispatcher;

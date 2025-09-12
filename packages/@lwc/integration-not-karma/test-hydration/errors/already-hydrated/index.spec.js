@@ -1,3 +1,5 @@
+import { expectConsoleCalls } from '../../../helpers/utils.js';
+
 export default {
     advancedTest(target, { Component, hydrateComponent, consoleSpy }) {
         hydrateComponent(target, Component, {});
@@ -6,7 +8,7 @@ export default {
 
         const consoleCalls = consoleSpy.calls;
 
-        TestUtils.expectConsoleCalls(consoleCalls, {
+        expectConsoleCalls(consoleCalls, {
             warn: ['"hydrateComponent" expects an element that is not hydrated.'],
         });
     },
