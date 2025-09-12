@@ -1,6 +1,6 @@
 import * as LWC from 'lwc';
-import { spyConsole } from './console';
-import { setHooks } from './hooks';
+import { spyConsole } from '../../helpers/console';
+import { setHooks } from '../../helpers/hooks';
 
 setHooks({ sanitizeHtmlContent: (content) => content });
 

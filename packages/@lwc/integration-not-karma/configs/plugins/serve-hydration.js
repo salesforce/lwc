@@ -135,7 +135,7 @@ async function wrapHydrationTest(configPath) {
 
         return `
         import * as LWC from 'lwc';
-        import { runTest } from '/helpers/test-hydrate.js';
+        import { runTest } from '/configs/plugins/test-hydration.js';
         runTest(
             '/${configPath}?original=1',
             '/${componentEntrypoint}',
