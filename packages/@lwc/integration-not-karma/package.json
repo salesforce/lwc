@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-not-karma",
     "private": true,
-    "version": "8.21.6",
+    "version": "8.22.0",
     "type": "module",
     "scripts": {
         "start": "web-test-runner --manual",
@@ -9,11 +9,11 @@
         "test:hydration": "web-test-runner --config configs/hydration.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "8.21.6",
-        "@lwc/engine-dom": "8.21.6",
-        "@lwc/engine-server": "8.21.6",
-        "@lwc/rollup-plugin": "8.21.6",
-        "@lwc/synthetic-shadow": "8.21.6",
+        "@lwc/compiler": "8.22.0",
+        "@lwc/engine-dom": "8.22.0",
+        "@lwc/engine-server": "8.22.0",
+        "@lwc/rollup-plugin": "8.22.0",
+        "@lwc/synthetic-shadow": "8.22.0",
         "@types/chai": "^5.2.2",
         "@types/jasmine": "^5.1.9",
         "@vitest/spy": "^3.2.4",
