@@ -33,6 +33,9 @@ interface FixtureConfig {
 
     /** The string used to uniquely identify one set of dedupe IDs with multiple SSR islands */
     styleDedupe?: string;
+
+    /* TODO [#3370]: remove experimental template expression flag */
+    experimentalComplexExpressions?: boolean;
 }
 
 vi.mock('@lwc/ssr-runtime', async () => {
@@ -51,7 +54,7 @@ vi.mock('@lwc/ssr-runtime', async () => {
 
 const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
-async function compileFixture({ entry, dirname }: { entry: string; dirname: string }) {
+async function compileFixture({ entry, dirname, experimentalComplexExpressions }: { entry: string; dirname: string, experimentalComplexExpressions: boolean }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
     const input = 'virtual/fixture/test.js';
@@ -73,6 +76,7 @@ async function compileFixture({ entry, dirname }: { entry: string; dirname: stri
                     loader: path.join(__dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
+                experimentalComplexExpressions
             }),
         ],
         onwarn({ message, code }) {
@@ -109,6 +113,7 @@ describe.concurrent('fixtures', () => {
                 compiledFixturePath = await compileFixture({
                     entry: config!.entry,
                     dirname,
+                    experimentalComplexExpressions: config!.experimentalComplexExpressions,
                 });
             } catch (err: any) {
                 return {
