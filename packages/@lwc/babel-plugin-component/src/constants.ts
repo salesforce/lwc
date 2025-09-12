@@ -34,6 +34,7 @@ const TEMPLATE_KEY = 'tmpl';
 const COMPONENT_NAME_KEY = 'sel';
 const API_VERSION_KEY = 'apiVersion';
 const COMPONENT_CLASS_ID = '__lwc_component_class_internal';
+const PRIVATE_METHOD_PREFIX = '__lwc_component_class_internal_private_';
 
 export {
     DECORATOR_TYPES,
@@ -46,4 +47,5 @@ export {
     COMPONENT_NAME_KEY,
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
+    PRIVATE_METHOD_PREFIX,
 };
