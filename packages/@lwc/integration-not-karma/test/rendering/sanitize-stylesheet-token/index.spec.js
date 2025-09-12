@@ -1,6 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 import Scoping from 'x/scoping';
+import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 let caughtError;

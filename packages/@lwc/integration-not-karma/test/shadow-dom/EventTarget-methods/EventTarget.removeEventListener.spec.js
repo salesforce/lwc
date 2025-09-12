@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
+import { jasmine } from '../../../helpers/jasmine.js';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createShadowTree(parentNode) {

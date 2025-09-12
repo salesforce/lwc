@@ -1,4 +1,5 @@
 import { registerTemplate, freezeTemplate, setFeatureFlagForTest } from 'lwc';
+import { jasmine } from '../../../helpers/jasmine.js';
 
 import {
     attachReportingControlDispatcher,

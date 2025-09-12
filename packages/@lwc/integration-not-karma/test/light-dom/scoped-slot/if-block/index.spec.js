@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import MixedSlotParent from 'x/mixedSlotParent';
+import { jasmineSpyOn as spyOn } from '../../../../helpers/jasmine.js';
 import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/constants.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';

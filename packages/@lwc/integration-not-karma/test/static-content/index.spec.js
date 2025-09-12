@@ -23,6 +23,7 @@ import Text from 'x/text';
 import TableWithExpression from 'x/tableWithExpressions';
 import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
 import TextWithPreserveComments from 'x/textWithPreserveComments';
+import { jasmine } from '../../helpers/jasmine.js';
 import { LOWERCASE_SCOPE_TOKENS } from '../../helpers/constants.js';
 import { extractDataIds } from '../../helpers/utils.js';
 

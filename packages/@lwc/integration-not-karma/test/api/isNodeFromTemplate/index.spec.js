@@ -1,5 +1,6 @@
 import { createElement, isNodeFromTemplate } from 'lwc';
 import Test from 'x/test';
+import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 function testNonNodes(type, obj) {
     it(`should return false if the passed object if a ${type}`, () => {

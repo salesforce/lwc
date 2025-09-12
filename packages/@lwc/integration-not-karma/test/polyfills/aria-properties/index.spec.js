@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import Component from 'x/component';
+import { jasmine } from '../../../helpers/jasmine.js';
 import {
     ariaPropertiesMapping,
     nonPolyfilledAriaProperties,

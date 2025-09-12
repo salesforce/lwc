@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import { installCustomContext, setCustomContext } from 'x/simpleProvider';
 import Consumer from 'x/simpleConsumer';
+import { jasmine } from '../../helpers/jasmine.js';
 
 describe('Simple Custom Context Provider', () => {
     it('should be install-able on any dom element', function () {
