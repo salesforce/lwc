@@ -3,6 +3,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import LockerIntegration from 'x/lockerIntegration';
 import LockerLiveComponent from 'x/lockerLiveComponent';
 import LockerHooks, { hooks } from 'x/lockerHooks';
+import { jasmine, jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 beforeEach(() => {
     setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
 });

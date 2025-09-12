@@ -2,10 +2,11 @@ import { createElement } from 'lwc';
 
 import AriaContainer from 'x/ariaContainer';
 import Valid from 'x/valid';
+import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 const expectedMessageForCrossRoot =
     'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-source>';

@@ -3,10 +3,11 @@ import { createElement, LightningElement, registerTemplate, registerComponent } 
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
+import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 describe('compiler version mismatch', () => {
     describe('stamped with version number', () => {

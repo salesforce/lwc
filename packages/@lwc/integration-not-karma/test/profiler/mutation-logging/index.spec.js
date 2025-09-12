@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import Parent from 'x/parent';
 import Child from 'x/child';
 import GetterThrows from 'x/getterThrows';
+import { jasmine, jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 const arr = jasmine.arrayWithExactContents;
 // `jasmine.objectContaining` is long, but the method can't be detached/aliased, ergo wrapper

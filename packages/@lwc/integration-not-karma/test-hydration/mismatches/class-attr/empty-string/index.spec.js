@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
+
 export default {
     props: {
         classes: '',
@@ -14,7 +16,7 @@ export default {
         expect(p).toBe(snapshots.p);
         expect(p.className).toBe(snapshots.classes);
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [],
         });

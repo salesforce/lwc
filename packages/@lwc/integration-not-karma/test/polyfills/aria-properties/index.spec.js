@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import Component from 'x/component';
+import { jasmine } from '../../../helpers/jasmine.js';
 import {
     ariaPropertiesMapping,
     nonPolyfilledAriaProperties,
@@ -9,7 +10,7 @@ import {
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 function testAriaProperty(property, attribute, suite = describe) {
     suite(property, () => {

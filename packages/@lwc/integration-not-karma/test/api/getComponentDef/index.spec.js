@@ -7,6 +7,7 @@ import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'x/publicMethodsInheritance';
 import PrivateAccessors from 'x/privateAccessors';
 import HtmlElementProps from 'x/htmlElementProps';
+import { jasmine } from '../../../helpers/jasmine.js';
 import { ariaProperties } from '../../../helpers/aria.js';
 
 function testInvalidComponentConstructor(name, ctor) {
