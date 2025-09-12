@@ -1,7 +1,6 @@
 // This import ensures that the global `Mocha` object is present for mutation.
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
-import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.js';
 import { initSignals } from './signals.js';
 
@@ -15,44 +14,8 @@ chai.use(JestChaiExpect);
 chai.use(JestAsymmetricMatchers);
 // add our custom matchers
 chai.use(registerCustomMatchers);
-
-/**
- * Adds the jasmine interfaces we use in the Karma tests to a Vitest spy.
- * Should ultimately be removed and tests updated to use Vitest spies.
- * @param {import('@vitest/spy').MockInstance}
- */
-function jasmineSpyAdapter(spy) {
-    Object.defineProperties(spy, {
-        and: { get: () => spy },
-        calls: { get: () => spy.mock.calls },
-        returnValue: { value: () => spy.mockReturnValue() },
-        // calling mockImplementation() with nothing restores the original
-        callThrough: { value: () => spy.mockImplementation() },
-        callFake: { value: (impl) => spy.mockImplementation(impl) },
-    });
-
-    Object.defineProperties(spy.mock.calls, {
-        // Must be non-enumerable for equality checks to work on array literal expected values
-        allArgs: { value: () => spy.mock.calls },
-        count: { value: () => spy.mock.calls.length },
-        reset: { value: () => spy.mockReset() },
-        argsFor: { value: (index) => spy.mock.calls.at(index) },
-    });
-
-    return spy;
-}
-
 // expose so we don't need to import `expect` in every test file
 globalThis.expect = chai.expect;
-globalThis.spyOn = (object, prop) => jasmineSpyAdapter(spyOn(object, prop));
-globalThis.jasmine = {
-    any: expect.any,
-    arrayWithExactContents: () => {
-        throw new Error('TODO: jasmine.arrayWithExactContents');
-    },
-    createSpy: (name, impl) => jasmineSpyAdapter(fn(impl)),
-    objectContaining: expect.objectContaining,
-};
 
 /**
  * `@web/test-runner-mocha`'s autorun.js file inlines its own copy of mocha, and there's no direct
