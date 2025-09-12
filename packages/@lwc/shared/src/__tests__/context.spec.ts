@@ -96,8 +96,8 @@ describe('context', () => {
             expect(isTrustedContext({})).toBe(false);
         });
 
-        it('should return true for all calls when trustedContexts is not set', () => {
-            expect(isTrustedContext({})).toBe(true);
+        it('should return false for all calls when trustedContexts is not set', () => {
+            expect(isTrustedContext({})).toBe(false);
         });
     });
 });

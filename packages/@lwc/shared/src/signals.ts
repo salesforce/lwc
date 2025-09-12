@@ -21,10 +21,7 @@ export function addTrustedSignal(signal: object) {
 
 export function isTrustedSignal(target: object): boolean {
     if (!trustedSignals) {
-        // The runtime didn't set a trustedSignals set
-        // this check should only be performed for runtimes that care about filtering signals to track
-        // our default behavior should be to track all signals
-        return true;
+        return false;
     }
     return trustedSignals.has(target);
 }

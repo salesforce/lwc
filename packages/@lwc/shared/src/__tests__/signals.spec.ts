@@ -53,8 +53,8 @@ describe('signals', () => {
             expect(isTrustedSignal({})).toBe(false);
         });
 
-        it('should return true for all calls when trustedSignals is not set', () => {
-            expect(isTrustedSignal({})).toBe(true);
+        it('should return false for all calls when trustedSignals is not set', () => {
+            expect(isTrustedSignal({})).toBe(false);
         });
     });
 });

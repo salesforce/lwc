@@ -47,15 +47,13 @@ export function setTrustedContextSet(context: WeakSet<object>) {
 }
 
 export function addTrustedContext(contextParticipant: object) {
-    // This should be a no-op when the trustedSignals set isn't set by runtime
+    // This should be a no-op when the trustedContext set isn't set by runtime
     trustedContext?.add(contextParticipant);
 }
 
 export function isTrustedContext(target: object): boolean {
     if (!trustedContext) {
-        // The runtime didn't set a trustedContext set
-        // this check should only be performed for runtimes that care about filtering context participants to track
-        return true;
+        return false;
     }
     return trustedContext.has(target);
 }
