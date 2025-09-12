@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import ConditionalList from 'x/conditionalList';
-import { extractDataIds, spyConsole } from '../../../helpers/utils.js';
+import { extractDataIds } from '../../../helpers/utils.js';
+import { spyConsole } from '../../../helpers/console.js';
 
 it('W-15885661 - renders list when key is invalid (preserve backwards compat)', async () => {
     const elm = createElement('x-conditional-list', { is: ConditionalList });

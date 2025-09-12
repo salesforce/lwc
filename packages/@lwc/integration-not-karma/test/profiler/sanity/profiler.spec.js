@@ -1,4 +1,8 @@
-import { createElement, hydrateComponent } from 'lwc';
+import {
+    createElement,
+    hydrateComponent,
+    __unstable__ProfilerControl as profilerControl,
+} from 'lwc';
 import Container from 'x/container';
 import Simple from 'x/simple';
 
@@ -19,8 +23,8 @@ describe('Profiler Sanity Test', () => {
     });
 
     afterEach(() => {
-        LWC.__unstable__ProfilerControl.detachDispatcher();
-        LWC.__unstable__ProfilerControl.disableProfiler();
+        profilerControl.detachDispatcher();
+        profilerControl.disableProfiler();
 
         // No marks or measures added by the profiler
         if (hasPerfMarksAndMeasures) {
@@ -86,7 +90,6 @@ describe('Profiler Sanity Test', () => {
     }
 
     function enableProfilerAndRegisterBuffer() {
-        const profilerControl = LWC.__unstable__ProfilerControl;
         const events = [];
         profilerControl.enableProfiler();
         profilerControl.attachDispatcher((opId, phase, name, id, renderMode, shadowMode) => {

@@ -3,8 +3,10 @@ import { createElement } from 'lwc';
 import Component from 'x/component';
 import {
     ariaPropertiesMapping,
-    nonStandardAriaProperties,
     nonPolyfilledAriaProperties,
+    nonStandardAriaProperties,
+} from '../../../helpers/aria.js';
+import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
 } from '../../../helpers/utils.js';

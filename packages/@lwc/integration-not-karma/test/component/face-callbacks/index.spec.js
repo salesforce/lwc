@@ -5,7 +5,7 @@ import FormAssociated from 'x/formAssociated';
 import NotFormAssociated from 'x/notFormAssociated';
 import LightDomFormAssociated from 'x/lightDomFormAssociated';
 import LightDomNotFormAssociated from 'x/lightDomNotFormAssociated';
-import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from '../../../helpers/utils.js';
+import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from '../../../helpers/constants.js';
 
 const createFormElement = () => {
     const container = createElement('face-container', { is: Container });
