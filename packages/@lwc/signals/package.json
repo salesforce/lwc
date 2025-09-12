@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/signals",
-    "version": "8.21.6",
+    "version": "8.22.0",
     "description": "Provides the interface to interact with reactivity from outside the framework",
     "keywords": [
         "lwc"
@@ -46,6 +46,6 @@
         }
     },
     "devDependencies": {
-        "@lwc/shared": "8.21.6"
+        "@lwc/shared": "8.22.0"
     }
 }
