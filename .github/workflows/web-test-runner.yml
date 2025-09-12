@@ -4,9 +4,11 @@ on:
     push:
         branches:
             - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
     pull_request:
-        branches:
-            - master
 
 env:
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
@@ -20,7 +22,7 @@ jobs:
     # TODO: add env var combos we use for Karma tests
     # TODO: upload result artifacts
     # TODO: make it saucy 🥫
-    run-wtr-tests-group-1:
+    wtr-group-1:
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -50,11 +52,3 @@ jobs:
 
             - run: yarn test
             - run: yarn test:hydration
-
-    run-karma-tests:
-        runs-on: ubuntu-22.04
-        defaults:
-            run:
-                working-directory: ./packages/@lwc/integration-not-karma
-        needs:
-            - run-wtr-tests-group-1
