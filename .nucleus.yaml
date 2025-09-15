@@ -5,6 +5,7 @@ core-deploy:
 branches:
     ~DEFAULT~:
         pull-request: &branch-definition
+            workflow: build-and-test
             auto-start: true
             auto-start-from-forks: false
             merge-method: disabled # do not auto-merge; we'll do it ourselves
@@ -31,7 +32,6 @@ branches:
     release:
         pull-request:
             <<: *branch-definition
-            merge-method: force-push # release branch should always be in sync with master branch (linear history)
     # Only active branches need to be included in this config
     winter26:
         pull-request:
@@ -62,16 +62,3 @@ steps:
     # this project runs yarn build after yarn install so skip explicit build step
     node-build: &node-build
         skip: true
-    node-pre-release-tests:
-        params:
-            command: yarn test
-    npm-configure:
-        params:
-            registry-url: https://registry.yarnpkg.com
-    npm-configure-for-publish:
-        params:
-            registry-url: https://registry.npmjs.org
-    npm-publish-release:
-        params:
-            access: public
-            tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch
