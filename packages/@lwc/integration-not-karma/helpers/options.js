@@ -42,8 +42,6 @@ export const API_VERSION = process.env.API_VERSION
 
 export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST || 'development';
 
-export const GREP = process.env.GREP;
-
 export const NATIVE_SHADOW = DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST;
 
 /** Unique directory name that encodes the flags that the tests were executed with. */

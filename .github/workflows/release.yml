@@ -34,7 +34,7 @@ jobs:
               with:
                   fetch-depth: 0
                   token: ${{ secrets.WORKFLOW_PAT }}
-                  persist-credentials: false
+                  persist-credentials: true
 
             - name: Setup Node
               uses: actions/setup-node@v4
