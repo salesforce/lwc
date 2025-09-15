@@ -12,6 +12,7 @@ import {
     ArrayFilter,
     ContextEventName,
     isTrustedContext,
+    legacyIsTrustedContext,
     type ContextProvidedCallback,
     type ContextBinding as IContextBinding,
 } from '@lwc/shared';
@@ -92,7 +93,17 @@ export function connectContext(vm: VM) {
 
     const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext((component as any)[enumerableKey])
+        /**
+         * The legacy validation behavior was that this check should only
+         * be performed for runtimes that have provided a trustedContext set.
+         * However, this resulted in a bug as all component properties were
+         * being considered context in environments where the trustedContext
+         * set had not been provided. The runtime flag has been added as a killswitch
+         * in case the fix needs to be reverted.
+         */
+        lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION
+            ? legacyIsTrustedContext((component as any)[enumerableKey])
+            : isTrustedContext((component as any)[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {
@@ -128,7 +139,17 @@ export function disconnectContext(vm: VM) {
 
     const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext((component as any)[enumerableKey])
+        /**
+         * The legacy validation behavior was that this check should only
+         * be performed for runtimes that have provided a trustedContext set.
+         * However, this resulted in a bug as all component properties were
+         * being considered context in environments where the trustedContext
+         * set had not been provided. The runtime flag has been added as a killswitch
+         * in case the fix needs to be reverted.
+         */
+        lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION
+            ? legacyIsTrustedContext((component as any)[enumerableKey])
+            : isTrustedContext((component as any)[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {

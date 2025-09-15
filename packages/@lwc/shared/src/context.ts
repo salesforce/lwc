@@ -51,6 +51,23 @@ export function addTrustedContext(contextParticipant: object) {
     trustedContext?.add(contextParticipant);
 }
 
+/**
+ * The legacy validation behavior was that this check should only
+ * be performed for runtimes that have provided a trustedContext set.
+ * However, this resulted in a bug as all component properties were
+ * being considered context in environments where the trustedContext
+ * set had not been provided. The runtime flag has been added as a killswitch
+ * in case the fix needs to be reverted.
+ */
+export function legacyIsTrustedContext(target: object): boolean {
+    if (!trustedContext) {
+        // The runtime didn't set a trustedContext set
+        // this check should only be performed for runtimes that care about filtering context participants to track
+        return true;
+    }
+    return trustedContext.has(target);
+}
+
 export function isTrustedContext(target: object): boolean {
     if (!trustedContext) {
         return false;

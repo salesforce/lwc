@@ -12,6 +12,7 @@ describe('context', () => {
     let setTrustedContextSet: (signals: WeakSet<object>) => void;
     let addTrustedContext: (signal: object) => void;
     let isTrustedContext: (target: object) => boolean;
+    let legacyIsTrustedContext: (target: object) => boolean;
 
     beforeEach(async () => {
         vi.resetModules();
@@ -21,6 +22,7 @@ describe('context', () => {
         setTrustedContextSet = contextModule.setTrustedContextSet;
         addTrustedContext = contextModule.addTrustedContext;
         isTrustedContext = contextModule.isTrustedContext;
+        legacyIsTrustedContext = contextModule.legacyIsTrustedContext;
     });
 
     it('should set and get context keys', () => {
@@ -98,6 +100,10 @@ describe('context', () => {
 
         it('should return false for all calls when trustedContexts is not set', () => {
             expect(isTrustedContext({})).toBe(false);
+        });
+
+        it('legacyIsTrustedContext should return true when trustedContexts is not set', () => {
+            expect(legacyIsTrustedContext({})).toBe(true);
         });
     });
 });

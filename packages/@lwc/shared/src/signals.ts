@@ -19,6 +19,24 @@ export function addTrustedSignal(signal: object) {
     trustedSignals?.add(signal);
 }
 
+/**
+ * The legacy validation behavior was that this check should only
+ * be performed for runtimes that have provided a trustedSignals set.
+ * However, this resulted in a bug as all component properties were
+ * being considered signals in environments where the trustedSignals
+ * set had not been defined. The runtime flag has been added as a killswitch
+ * in case the fix needs to be reverted.
+ */
+export function legacyIsTrustedSignal(target: object): boolean {
+    if (!trustedSignals) {
+        // The runtime didn't set a trustedSignals set
+        // this check should only be performed for runtimes that care about filtering signals to track
+        // our default behavior should be to track all signals
+        return true;
+    }
+    return trustedSignals.has(target);
+}
+
 export function isTrustedSignal(target: object): boolean {
     if (!trustedSignals) {
         return false;

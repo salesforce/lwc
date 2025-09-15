@@ -8,6 +8,7 @@ import {
     type ContextProvidedCallback,
     type ContextBinding as IContextBinding,
     isTrustedContext,
+    legacyIsTrustedContext,
     getContextKeys,
     isUndefined,
     keys,
@@ -66,8 +67,11 @@ export function connectContext(le: LightningElement) {
     const { connectContext } = contextKeys;
 
     const enumerableKeys = keys(le);
+
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext((le as any)[enumerableKey])
+        lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION
+            ? legacyIsTrustedContext((le as any)[enumerableKey])
+            : isTrustedContext((le as any)[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {
