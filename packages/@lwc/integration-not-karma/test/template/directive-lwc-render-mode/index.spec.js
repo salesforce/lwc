@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Shadow from 'x/shadow';
 import Light from 'x/light';
+import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,

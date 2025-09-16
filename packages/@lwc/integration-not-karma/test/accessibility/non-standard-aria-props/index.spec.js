@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
+import { jasmine } from '../../../helpers/jasmine.js';
 import { nonStandardAriaProperties } from '../../../helpers/aria.js';
 import {
     attachReportingControlDispatcher,

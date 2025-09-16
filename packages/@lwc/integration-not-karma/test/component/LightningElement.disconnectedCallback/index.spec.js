@@ -5,6 +5,7 @@ import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
+import { jasmine } from '../../../helpers/jasmine.js';
 import { customElementCallbackReactionErrorListener } from '../../../helpers/utils.js';
 
 function testDisconnectSlot(name, fn) {

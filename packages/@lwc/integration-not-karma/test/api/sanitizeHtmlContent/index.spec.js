@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import XInnerHtml from 'x/innerHtml';
+import { jasmine } from '../../../helpers/jasmine.js';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 
 const ACTUAL_CONTENT = 'Hello <b>World</b>';
