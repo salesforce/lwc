@@ -673,7 +673,14 @@ function flushRehydrationQueue() {
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];
         try {
-            rehydrate(vm);
+            // We want to prevent rehydration from occurring when nodes are detached from the DOM as this can trigger
+            // unintended side effects, like lifecycle methods being called multiple times.
+            // For backwards compatibility, we use a flag to control the check.
+            // 1. When flag is off, always rehydrate (legacy behavior)
+            // 2. When flag is on, only rehydrate when the VM state is connected (fixed behavior)
+            if (!lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION || vm.state === VMState.connected) {
+                rehydrate(vm);
+            }
         } catch (error) {
             if (i + 1 < len) {
                 // pieces of the queue are still pending to be rehydrated, those should have priority
