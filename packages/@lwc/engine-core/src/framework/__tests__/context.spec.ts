@@ -102,6 +102,8 @@ describe('context functions', () => {
             connectContext(mockVM);
             disconnectContext(mockVM);
             setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
+            connectContext(mockVM);
+            disconnectContext(mockVM);
             expect(logWarnOnce).not.toHaveBeenCalled();
         });
     });
