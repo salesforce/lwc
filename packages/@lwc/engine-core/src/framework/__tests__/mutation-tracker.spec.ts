@@ -32,33 +32,38 @@ const setFeatureFlag = (name: string, value: boolean) => {
  * regardless of whether trusted context has been defined by a state manager or not.
  * Integration tests have been used for extensive coverage of the LWC signals feature, but this particular
  * scenario is best isolated and unit tested as it involves manipulation of the trusted context API.
+ * See bug fix: #5492
  */
 describe('mutation-tracker', () => {
-    it('should not throw when componentValueObserved is called using the new signals validation and no signal set is defined', () => {
-        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
-        expect(() => {
-            componentValueObserved(mockVM, 'testKey', {});
-        }).not.toThrow();
+    describe('trustedSignal set not defined', () => {
+        it('should not throw when componentValueObserved is called using the new signals validation', () => {
+            setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
+            expect(() => {
+                componentValueObserved(mockVM, 'testKey', {});
+            }).not.toThrow();
+        });
+
+        it('should throw when componentValueObserved is called using legacy signals validation', () => {
+            setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
+            expect(() => {
+                componentValueObserved(mockVM, 'testKey', {});
+            }).toThrow();
+        });
     });
 
-    it('should throw when componentValueObserved is called using legacy signals validation and no signal set has been defined', () => {
-        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
-        expect(() => {
-            componentValueObserved(mockVM, 'testKey', {});
-        }).toThrow();
-    });
+    describe('trustedSignal set defined', () => {
+        it('should not throw when componentValueObserved is called, regardless of validation type', () => {
+            setTrustedSignalSet(new WeakSet());
+            setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
+            expect(() => {
+                componentValueObserved(mockVM, 'testKey', {});
+            }).not.toThrow();
 
-    it('should not throw when a trusted signal set is defined abd componentValueObserved is called', () => {
-        setTrustedSignalSet(new WeakSet());
-        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
-        expect(() => {
-            componentValueObserved(mockVM, 'testKey', {});
-        }).not.toThrow();
-
-        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
-        expect(() => {
-            componentValueObserved(mockVM, 'testKey', {});
-        }).not.toThrow();
+            setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
+            expect(() => {
+                componentValueObserved(mockVM, 'testKey', {});
+            }).not.toThrow();
+        });
     });
 
     beforeAll(() => {

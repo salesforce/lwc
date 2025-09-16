@@ -48,6 +48,7 @@ const setFeatureFlag = (name: string, value: boolean) => {
  * functions regardless of whether trusted context has been defined or not.
  * Integration tests have been used for extensive coverage of the LWC context feature, but this particular
  * scenario is best isolated and unit tested as it involves manipulation of the trusted context API.
+ * See bug fix: #5492
  */
 describe('context functions', () => {
     beforeAll(() => {
