@@ -1,0 +1,5 @@
+<template lwc:render-mode="light">
+    <template for:each={children} for:item="child">
+        <mutations-grand-child key={child.uid} uid={child.uid}></mutations-grand-child>
+    </template>
+</template>
