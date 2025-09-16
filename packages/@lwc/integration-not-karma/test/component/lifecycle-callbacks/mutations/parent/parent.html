@@ -1,0 +1,5 @@
+<template>
+    <template for:each={children} for:item="child">
+        <mutations-child key={child.uid} uid={child.uid} data-id={child.name}></mutations-child>
+    </template>
+</template>
