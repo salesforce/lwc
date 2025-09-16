@@ -48,15 +48,15 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         /**
          * The legacy validation behavior was that this check should only
          * be performed for runtimes that have provided a trustedSignals set.
-         * However, this resulted in a bug as all component properties were
+         * However, this resulted in a bug as all object values were
          * being considered signals in environments where the trustedSignals
          * set had not been defined. The runtime flag has been added as a killswitch
          * in case the fix needs to be reverted.
          */
         if (
-            (lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION &&
-                legacyIsTrustedSignal(target)) ||
-            (!lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION && isTrustedSignal(target))
+            lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION
+                ? legacyIsTrustedSignal(target)
+                : isTrustedSignal(target)
         ) {
             // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
             subscribeToSignal(component, target as Signal<unknown>, tro.notify.bind(tro));

@@ -22,7 +22,7 @@ export function addTrustedSignal(signal: object) {
 /**
  * The legacy validation behavior was that this check should only
  * be performed for runtimes that have provided a trustedSignals set.
- * However, this resulted in a bug as all component properties were
+ * However, this resulted in a bug as all object values were
  * being considered signals in environments where the trustedSignals
  * set had not been defined. The runtime flag has been added as a killswitch
  * in case the fix needs to be reverted.

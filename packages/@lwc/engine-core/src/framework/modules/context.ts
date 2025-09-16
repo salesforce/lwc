@@ -96,7 +96,7 @@ export function connectContext(vm: VM) {
         /**
          * The legacy validation behavior was that this check should only
          * be performed for runtimes that have provided a trustedContext set.
-         * However, this resulted in a bug as all component properties were
+         * However, this resulted in a bug as all object values were
          * being considered context in environments where the trustedContext
          * set had not been provided. The runtime flag has been added as a killswitch
          * in case the fix needs to be reverted.
@@ -142,7 +142,7 @@ export function disconnectContext(vm: VM) {
         /**
          * The legacy validation behavior was that this check should only
          * be performed for runtimes that have provided a trustedContext set.
-         * However, this resulted in a bug as all component properties were
+         * However, this resulted in a bug as all object values were
          * being considered context in environments where the trustedContext
          * set had not been provided. The runtime flag has been added as a killswitch
          * in case the fix needs to be reverted.
