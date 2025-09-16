@@ -20,6 +20,7 @@
         "dev": "nx run-many --target=dev --all --parallel=999 --exclude=@lwc/perf-benchmarks,@lwc/perf-benchmarks-components,@lwc/integration-tests",
         "test": "vitest --workspace vitest.workspace.mjs",
         "test:production": "VITE_NODE_ENV=production vitest --workspace vitest.workspace.mjs",
+        "test:production:debug": "VITE_NODE_ENV=production vitest --workspace vitest.workspace.mjs  --no-file-parallelism --inspect-brk",
         "test:bespoke": "nx run-many --target=test",
         "test:debug": "vitest --workspace vitest.workspace.mjs --inspect-brk --no-file-parallelism",
         "test:ci": "vitest run --workspace vitest.workspace.mjs --coverage",

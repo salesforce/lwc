@@ -6,7 +6,6 @@
  */
 import { describe, it, expect, vi, afterEach, beforeEach, afterAll, beforeAll } from 'vitest';
 import { setTrustedSignalSet } from '@lwc/shared';
-import { setFeatureFlagForTest } from '@lwc/features';
 import { componentValueObserved } from '../../framework/mutation-tracker';
 
 // Create a mock VM object with required properties
@@ -17,6 +16,17 @@ const mockVM = {
     },
 } as any;
 
+if (!(globalThis as any).lwcRuntimeFlags) {
+    Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: {} });
+}
+
+/**
+ * Need to be able to set and reset the flags at will (lwc/features doesn't provide this)
+ */
+const setFeatureFlag = (name: string, value: boolean) => {
+    (globalThis as any).lwcRuntimeFlags[name] = value;
+};
+
 /**
  * These tests check that properties are correctly validated within the mutation-tracker
  * regardless of whether trusted context has been defined by a state manager or not.
@@ -25,14 +35,14 @@ const mockVM = {
  */
 describe('mutation-tracker', () => {
     it('should not throw when componentValueObserved is called using the new signals validation and no signal set is defined', () => {
-        setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
+        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
         expect(() => {
             componentValueObserved(mockVM, 'testKey', {});
         }).not.toThrow();
     });
 
     it('should throw when componentValueObserved is called using legacy signals validation and no signal set has been defined', () => {
-        setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
+        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
         expect(() => {
             componentValueObserved(mockVM, 'testKey', {});
         }).toThrow();
@@ -40,25 +50,25 @@ describe('mutation-tracker', () => {
 
     it('should not throw when a trusted signal set is defined abd componentValueObserved is called', () => {
         setTrustedSignalSet(new WeakSet());
-
-        setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
+        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
         expect(() => {
             componentValueObserved(mockVM, 'testKey', {});
         }).not.toThrow();
 
-        setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
+        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
         expect(() => {
             componentValueObserved(mockVM, 'testKey', {});
         }).not.toThrow();
     });
 
     beforeAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlag('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true);
     });
 
     afterAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
-        setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
+        setFeatureFlag('ENABLE_EXPERIMENTAL_SIGNALS', false);
+        setFeatureFlag('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false);
     });
 
     beforeEach(() => {
