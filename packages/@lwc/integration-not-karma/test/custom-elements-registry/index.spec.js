@@ -3,25 +3,25 @@ const tagAlreadyUsedErrorMessage =
     /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element|This name is a registered custom element, preventing LWC to upgrade the element)/;
 
 /** Fetches a text resource. */
-function getCode(src) {
-    return fetch(src).then((resp) => resp.text());
+async function getCode(src) {
+    const res = await fetch(src);
+    return await res.text();
 }
 
 /** Gets the contents of a set of script tags to insert on a page. */
-function getEngineCode() {
-    const engineDomSrc = document.querySelector('script[src*="engine-dom"]').src;
+async function getEngineCode() {
+    const engineDom = await getCode(document.querySelector('script[src*="engine-dom"]').src);
 
-    const syntheticShadowSrc =
+    const syntheticShadow =
         !process.env.NATIVE_SHADOW &&
-        getCode(document.querySelector('script[src*="synthetic-shadow"]').src);
+        (await getCode(document.querySelector('script[src*="synthetic-shadow"]').src));
 
-    const scripts = [
+    return [
         `globalThis.process = { env: { NODE_ENV: "production" } };`,
         `globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};`, // copy runtime flags to iframe
-        syntheticShadowSrc,
-        getCode(engineDomSrc),
+        syntheticShadow,
+        engineDom,
     ].filter(Boolean);
-    return Promise.all(scripts);
 }
 
 /**
@@ -113,7 +113,7 @@ describe('custom elements registry', () => {
     }
 
     // Create the iframe and load the basic set of scripts to inject
-    beforeEach(() => {
+    beforeEach(async () => {
         iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
 
@@ -123,9 +123,7 @@ describe('custom elements registry', () => {
             iframe.contentWindow.__coverage__ = window.__coverage__;
         }
 
-        return getEngineCode().then((scripts) => {
-            engineScripts = scripts;
-        });
+        engineScripts = await getEngineCode();
     });
 
     describe('basic', () => {
