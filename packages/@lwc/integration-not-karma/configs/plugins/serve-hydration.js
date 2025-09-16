@@ -152,6 +152,7 @@ async function wrapHydrationTest(configPath) {
 
 /** @type {import('@web/dev-server-core').Plugin} */
 export default {
+    name: 'lwc-hydration-plugin',
     async serve(ctx) {
         // Hydration test "index.spec.js" files are actually just config files.
         // They don't directly define the tests. Instead, when we request the file,

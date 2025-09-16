@@ -116,6 +116,7 @@ const transform = async (ctx) => {
 
 /** @type {import('@web/dev-server-core').Plugin} */
 export default {
+    name: 'lwc-integration-plugin',
     async serve(ctx) {
         if (ctx.path.endsWith('.spec.js')) {
             return await transform(ctx);
