@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import * as options from '../helpers/options.js';
+import { lwcPackagePath } from '../helpers/utils.js';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
@@ -35,10 +36,7 @@ export default {
             name: 'lwc-base-plugin',
             resolveImport({ source }) {
                 if (source === 'wire-service') {
-                    // To serve files outside the web root (e.g. node_modules in the monorepo root),
-                    // @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
-                    // `/__wds-outside-root__/${depth}/` === '../'.repeat(depth)
-                    return '/__wds-outside-root__/1/wire-service/dist/index.js';
+                    return lwcPackagePath('wire-service');
                 }
             },
             async transform(ctx) {
