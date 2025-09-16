@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "start": "web-test-runner --manual",
-        "test": "env && web-test-runner --config configs/integration.js",
+        "test": "web-test-runner --config configs/integration.js",
         "test:hydration": "web-test-runner --config configs/hydration.js"
     },
     "devDependencies": {
