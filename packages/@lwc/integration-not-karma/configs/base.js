@@ -33,6 +33,7 @@ export default {
     debug: true,
     plugins: [
         {
+            name: 'lwc-base-plugin',
             resolveImport({ source }) {
                 if (source === 'wire-service') {
                     // To serve files outside the web root (e.g. node_modules in the monorepo root),
