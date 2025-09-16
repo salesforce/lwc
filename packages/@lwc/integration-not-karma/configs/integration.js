@@ -1,3 +1,4 @@
+import { importMapsPlugin } from '@web/dev-server-import-maps';
 import baseConfig from './base.js';
 import testPlugin from './plugins/serve-integration.js';
 
@@ -23,5 +24,9 @@ export default {
         '!test/template-expressions/errors/index.spec.js',
         '!test/template-expressions/smoke-test/index.spec.js',
     ],
-    plugins: [...baseConfig.plugins, testPlugin],
+    plugins: [
+        ...baseConfig.plugins,
+        importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
+        testPlugin,
+    ],
 };
