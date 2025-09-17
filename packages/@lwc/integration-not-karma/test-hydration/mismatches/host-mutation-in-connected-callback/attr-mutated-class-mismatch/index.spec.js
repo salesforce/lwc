@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
+
 export default {
     props: {
         ssr: true,
@@ -24,7 +26,7 @@ export default {
         expect(child.getAttribute('data-mutatis')).toBe('mutandis');
         expect(child.getAttribute('class')).toBe('is-client');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <x-child> - rendered on server: class="is-server" - expected on client: class="is-client"',

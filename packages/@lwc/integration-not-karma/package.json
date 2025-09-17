@@ -16,6 +16,7 @@
         "@lwc/synthetic-shadow": "8.22.1",
         "@types/chai": "^5.2.2",
         "@types/jasmine": "^5.1.9",
+        "@vitest/spy": "^3.2.4",
         "@web/dev-server-import-maps": "^0.2.1",
         "@web/dev-server-rollup": "^0.6.4",
         "@web/test-runner": "^0.20.2",

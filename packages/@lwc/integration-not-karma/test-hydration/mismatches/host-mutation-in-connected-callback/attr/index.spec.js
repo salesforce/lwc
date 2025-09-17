@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
+
 export default {
     props: {},
     snapshot(target) {
@@ -14,7 +16,7 @@ export default {
         expect(child.getAttribute('data-foo')).toBe('bar');
         expect(child.getAttribute('data-mutatis')).toBe('mutandis');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             warn: [],
             error: [],
         });

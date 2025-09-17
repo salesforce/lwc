@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
+
 export default {
     props: {},
     snapshot(target) {
@@ -14,7 +16,7 @@ export default {
             'static mutatis'
         );
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             warn: [],
             error: [],
         });

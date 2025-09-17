@@ -14,7 +14,7 @@ import Details from 'x/details';
 import MutationsParent from 'mutations/parent';
 import MutationsParentLight from 'mutations/parentLight';
 
-import { extractDataIds } from 'test-utils';
+import { extractDataIds } from '../../../helpers/utils';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];

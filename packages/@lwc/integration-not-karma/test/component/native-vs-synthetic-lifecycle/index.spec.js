@@ -3,10 +3,11 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 import Parent from 'x/parent';
 import LogsWhenConnected from 'x/logsWhenConnected';
+import { jasmine, jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 let logger;
 let dispatcher;

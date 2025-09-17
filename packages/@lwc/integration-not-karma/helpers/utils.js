@@ -1,7 +1,6 @@
 /*
  * An as yet uncategorized mishmash of helpers, relics of Karma
  */
-import { __unstable__ReportingControl } from 'lwc';
 
 // Listen for errors thrown directly by the callback
 function directErrorListener(callback) {
@@ -45,23 +44,6 @@ export function customElementCallbackReactionErrorListener(callback) {
     return lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
         ? directErrorListener(callback)
         : windowErrorListener(callback);
-}
-
-/**
- *
- * @param dispatcher
- * @param runtimeEvents List of runtime events to filter by. If no list is provided, all events will be dispatched.
- */
-export function attachReportingControlDispatcher(dispatcher, runtimeEvents) {
-    __unstable__ReportingControl.attachDispatcher((eventName, payload) => {
-        if (!runtimeEvents || runtimeEvents.includes(eventName)) {
-            dispatcher(eventName, payload);
-        }
-    });
-}
-
-export function detachReportingControlDispatcher() {
-    __unstable__ReportingControl.detachDispatcher();
 }
 
 export function extractDataIds(root) {
