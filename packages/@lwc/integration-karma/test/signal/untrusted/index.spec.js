@@ -2,7 +2,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Test from 'x/test';
 import { Signal } from 'x/signal';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyConsole } from 'test-utils';
 
 const createElementSignalAndInsertIntoDom = async (object) => {
     const elm = createElement('x-test', { is: Test });
