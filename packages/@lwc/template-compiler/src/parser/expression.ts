@@ -7,9 +7,7 @@
 import { parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
-import * as ast from '../shared/ast';
 import * as t from '../shared/estree';
-import { validateExpressionAst } from './expression-complex';
 import { isReservedES6Keyword } from './utils/javascript';
 import type { Expression, Identifier, SourceLocation } from '../shared/types';
 
@@ -33,36 +31,44 @@ export function isPotentialExpression(source: string): boolean {
 }
 
 function validateExpression(
+    source: string,
     node: t.BaseNode,
     config: NormalizedConfig
 ): asserts node is Expression {
-    // TODO [#3370]: remove experimental template expression flag
-    if (config.experimentalComplexExpressions) {
-        return validateExpressionAst(node);
-    }
-
     const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
-    invariant(isValidNode, ParserDiagnostics.INVALID_NODE, [node.type]);
+    // INVALID_XYZ_COMPLEX provides additional context to the user if CTE is enabled.
+    // The author may not have delimited the CTE with quotes, resulting in it being parsed
+    // as a legacy expression.
+    invariant(
+        isValidNode,
+        config.experimentalComplexExpressions
+            ? ParserDiagnostics.INVALID_NODE_COMPLEX
+            : ParserDiagnostics.INVALID_NODE,
+        [node.type, source]
+    );
 
     if (t.isMemberExpression(node)) {
         invariant(
             config.experimentalComputedMemberExpression || !node.computed,
-            ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED
+            config.experimentalComplexExpressions
+                ? ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_COMPLEX
+                : ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED,
+            [source]
         );
 
         const { object, property } = node;
 
         if (!t.isIdentifier(object)) {
-            validateExpression(object, config);
+            validateExpression(source, object, config);
         }
 
         if (!t.isIdentifier(property)) {
-            validateExpression(property, config);
+            validateExpression(source, property, config);
         }
     }
 }
 
-function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
+export function validateSourceIsParsedExpression(source: string, parsedExpression: Node) {
     if (parsedExpression.end === source.length - 1) {
         return;
     }
@@ -100,29 +106,6 @@ function validateSourceIsParsedExpression(source: string, parsedExpression: Node
     ]);
 }
 
-export function validatePreparsedJsExpressions(ctx: ParserCtx) {
-    ctx.preparsedJsExpressions?.forEach(({ parsedExpression, rawText }) => {
-        const acornLoc = parsedExpression.loc!;
-        const parse5Loc = {
-            startLine: acornLoc.start.line,
-            startCol: acornLoc.start.column,
-            startOffset: parsedExpression.start,
-            endLine: acornLoc.end.line,
-            endCol: acornLoc.end.column,
-            endOffset: parsedExpression.end,
-        };
-
-        ctx.withErrorWrapping(
-            () => {
-                validateExpressionAst(parsedExpression);
-            },
-            ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
-            ast.sourceLocation(parse5Loc),
-            (err) => `Invalid expression ${rawText} - ${err.message}`
-        );
-    });
-}
-
 export function parseExpression(
     ctx: ParserCtx,
     source: string,
@@ -133,12 +116,13 @@ export function parseExpression(
         () => {
             const parsed = parseExpressionAt(source, 1, {
                 ecmaVersion,
-                // TODO [#3370]: remove experimental template expression flag
-                allowAwaitOutsideFunction: ctx.config.experimentalComplexExpressions,
+                allowAwaitOutsideFunction: false,
+                onComment: () =>
+                    invariant(false, ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED),
             });
 
             validateSourceIsParsedExpression(source, parsed);
-            validateExpression(parsed, ctx.config);
+            validateExpression(source, parsed, ctx.config);
 
             return { ...parsed, location };
         },

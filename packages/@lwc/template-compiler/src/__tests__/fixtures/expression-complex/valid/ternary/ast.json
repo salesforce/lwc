@@ -7,7 +7,7 @@
             "endLine": 7,
             "endColumn": 12,
             "start": 0,
-            "end": 271,
+            "end": 277,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 7,
                 "endColumn": 12,
-                "start": 260,
-                "end": 271
+                "start": 266,
+                "end": 277
             }
         },
         "directives": [],
@@ -37,7 +37,7 @@
                     "endLine": 6,
                     "endColumn": 15,
                     "start": 15,
-                    "end": 259,
+                    "end": 265,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -51,8 +51,8 @@
                         "startColumn": 5,
                         "endLine": 6,
                         "endColumn": 15,
-                        "start": 249,
-                        "end": 259
+                        "start": 255,
+                        "end": 265
                     }
                 },
                 "attributes": [],
@@ -68,24 +68,24 @@
                             "startLine": 3,
                             "startColumn": 9,
                             "endLine": 3,
-                            "endColumn": 66,
+                            "endColumn": 68,
                             "start": 33,
-                            "end": 90,
+                            "end": 92,
                             "startTag": {
                                 "startLine": 3,
                                 "startColumn": 9,
                                 "endLine": 3,
-                                "endColumn": 40,
+                                "endColumn": 42,
                                 "start": 33,
-                                "end": 64
+                                "end": 66
                             },
                             "endTag": {
                                 "startLine": 3,
-                                "startColumn": 57,
+                                "startColumn": 59,
                                 "endLine": 3,
-                                "endColumn": 66,
-                                "start": 81,
-                                "end": 90
+                                "endColumn": 68,
+                                "start": 83,
+                                "end": 92
                             }
                         },
                         "attributes": [],
@@ -120,18 +120,18 @@
                                         "startLine": 3,
                                         "startColumn": 17,
                                         "endLine": 3,
-                                        "endColumn": 39,
+                                        "endColumn": 41,
                                         "start": 41,
-                                        "end": 63
+                                        "end": 65
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
                                     "startColumn": 17,
                                     "endLine": 3,
-                                    "endColumn": 39,
+                                    "endColumn": 41,
                                     "start": 41,
-                                    "end": 63
+                                    "end": 65
                                 }
                             }
                         ],
@@ -143,98 +143,42 @@
                                 "raw": "{foo ? bar : baz}",
                                 "value": {
                                     "type": "ConditionalExpression",
-                                    "start": 65,
-                                    "end": 80,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 40
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 55
-                                        }
-                                    },
-                                    "range": [
-                                        65,
-                                        80
-                                    ],
+                                    "start": 1,
+                                    "end": 16,
                                     "test": {
                                         "type": "Identifier",
-                                        "start": 65,
-                                        "end": 68,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 40
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 43
-                                            }
-                                        },
-                                        "range": [
-                                            65,
-                                            68
-                                        ],
+                                        "start": 1,
+                                        "end": 4,
                                         "name": "foo"
                                     },
                                     "consequent": {
                                         "type": "Identifier",
-                                        "start": 71,
-                                        "end": 74,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 46
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 49
-                                            }
-                                        },
-                                        "range": [
-                                            71,
-                                            74
-                                        ],
+                                        "start": 7,
+                                        "end": 10,
                                         "name": "bar"
                                     },
                                     "alternate": {
                                         "type": "Identifier",
-                                        "start": 77,
-                                        "end": 80,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 52
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 55
-                                            }
-                                        },
-                                        "range": [
-                                            77,
-                                            80
-                                        ],
+                                        "start": 13,
+                                        "end": 16,
                                         "name": "baz"
                                     },
                                     "location": {
                                         "startLine": 3,
-                                        "startColumn": 40,
+                                        "startColumn": 42,
                                         "endLine": 3,
-                                        "endColumn": 57,
-                                        "start": 64,
-                                        "end": 81
+                                        "endColumn": 59,
+                                        "start": 66,
+                                        "end": 83
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
-                                    "startColumn": 40,
+                                    "startColumn": 42,
                                     "endLine": 3,
-                                    "endColumn": 57,
-                                    "start": 64,
-                                    "end": 81
+                                    "endColumn": 59,
+                                    "start": 66,
+                                    "end": 83
                                 }
                             }
                         ]
@@ -247,24 +191,24 @@
                             "startLine": 4,
                             "startColumn": 9,
                             "endLine": 4,
-                            "endColumn": 58,
-                            "start": 99,
-                            "end": 148,
+                            "endColumn": 60,
+                            "start": 101,
+                            "end": 152,
                             "startTag": {
                                 "startLine": 4,
                                 "startColumn": 9,
                                 "endLine": 4,
-                                "endColumn": 36,
-                                "start": 99,
-                                "end": 126
+                                "endColumn": 38,
+                                "start": 101,
+                                "end": 130
                             },
                             "endTag": {
                                 "startLine": 4,
-                                "startColumn": 49,
+                                "startColumn": 51,
                                 "endLine": 4,
-                                "endColumn": 58,
-                                "start": 139,
-                                "end": 148
+                                "endColumn": 60,
+                                "start": 143,
+                                "end": 152
                             }
                         },
                         "attributes": [],
@@ -299,18 +243,18 @@
                                         "startLine": 4,
                                         "startColumn": 17,
                                         "endLine": 4,
-                                        "endColumn": 35,
-                                        "start": 107,
-                                        "end": 125
+                                        "endColumn": 37,
+                                        "start": 109,
+                                        "end": 129
                                     }
                                 },
                                 "location": {
                                     "startLine": 4,
                                     "startColumn": 17,
                                     "endLine": 4,
-                                    "endColumn": 35,
-                                    "start": 107,
-                                    "end": 125
+                                    "endColumn": 37,
+                                    "start": 109,
+                                    "end": 129
                                 }
                             }
                         ],
@@ -322,98 +266,42 @@
                                 "raw": "{foo?bar:baz}",
                                 "value": {
                                     "type": "ConditionalExpression",
-                                    "start": 127,
-                                    "end": 138,
-                                    "loc": {
-                                        "start": {
-                                            "line": 4,
-                                            "column": 36
-                                        },
-                                        "end": {
-                                            "line": 4,
-                                            "column": 47
-                                        }
-                                    },
-                                    "range": [
-                                        127,
-                                        138
-                                    ],
+                                    "start": 1,
+                                    "end": 12,
                                     "test": {
                                         "type": "Identifier",
-                                        "start": 127,
-                                        "end": 130,
-                                        "loc": {
-                                            "start": {
-                                                "line": 4,
-                                                "column": 36
-                                            },
-                                            "end": {
-                                                "line": 4,
-                                                "column": 39
-                                            }
-                                        },
-                                        "range": [
-                                            127,
-                                            130
-                                        ],
+                                        "start": 1,
+                                        "end": 4,
                                         "name": "foo"
                                     },
                                     "consequent": {
                                         "type": "Identifier",
-                                        "start": 131,
-                                        "end": 134,
-                                        "loc": {
-                                            "start": {
-                                                "line": 4,
-                                                "column": 40
-                                            },
-                                            "end": {
-                                                "line": 4,
-                                                "column": 43
-                                            }
-                                        },
-                                        "range": [
-                                            131,
-                                            134
-                                        ],
+                                        "start": 5,
+                                        "end": 8,
                                         "name": "bar"
                                     },
                                     "alternate": {
                                         "type": "Identifier",
-                                        "start": 135,
-                                        "end": 138,
-                                        "loc": {
-                                            "start": {
-                                                "line": 4,
-                                                "column": 44
-                                            },
-                                            "end": {
-                                                "line": 4,
-                                                "column": 47
-                                            }
-                                        },
-                                        "range": [
-                                            135,
-                                            138
-                                        ],
+                                        "start": 9,
+                                        "end": 12,
                                         "name": "baz"
                                     },
                                     "location": {
                                         "startLine": 4,
-                                        "startColumn": 36,
+                                        "startColumn": 38,
                                         "endLine": 4,
-                                        "endColumn": 49,
-                                        "start": 126,
-                                        "end": 139
+                                        "endColumn": 51,
+                                        "start": 130,
+                                        "end": 143
                                     }
                                 },
                                 "location": {
                                     "startLine": 4,
-                                    "startColumn": 36,
+                                    "startColumn": 38,
                                     "endLine": 4,
-                                    "endColumn": 49,
-                                    "start": 126,
-                                    "end": 139
+                                    "endColumn": 51,
+                                    "start": 130,
+                                    "end": 143
                                 }
                             }
                         ]
@@ -426,24 +314,24 @@
                             "startLine": 5,
                             "startColumn": 9,
                             "endLine": 5,
-                            "endColumn": 96,
-                            "start": 157,
-                            "end": 244,
+                            "endColumn": 98,
+                            "start": 161,
+                            "end": 250,
                             "startTag": {
                                 "startLine": 5,
                                 "startColumn": 9,
                                 "endLine": 5,
-                                "endColumn": 55,
-                                "start": 157,
-                                "end": 203
+                                "endColumn": 57,
+                                "start": 161,
+                                "end": 209
                             },
                             "endTag": {
                                 "startLine": 5,
-                                "startColumn": 87,
+                                "startColumn": 89,
                                 "endLine": 5,
-                                "endColumn": 96,
-                                "start": 235,
-                                "end": 244
+                                "endColumn": 98,
+                                "start": 241,
+                                "end": 250
                             }
                         },
                         "attributes": [],
@@ -495,18 +383,18 @@
                                         "startLine": 5,
                                         "startColumn": 17,
                                         "endLine": 5,
-                                        "endColumn": 54,
-                                        "start": 165,
-                                        "end": 202
+                                        "endColumn": 56,
+                                        "start": 169,
+                                        "end": 208
                                     }
                                 },
                                 "location": {
                                     "startLine": 5,
                                     "startColumn": 17,
                                     "endLine": 5,
-                                    "endColumn": 54,
-                                    "start": 165,
-                                    "end": 202
+                                    "endColumn": 56,
+                                    "start": 169,
+                                    "end": 208
                                 }
                             }
                         ],
@@ -518,157 +406,59 @@
                                 "raw": "{ foo ? bar : baz ? biz : buzz }",
                                 "value": {
                                     "type": "ConditionalExpression",
-                                    "start": 205,
-                                    "end": 233,
-                                    "loc": {
-                                        "start": {
-                                            "line": 5,
-                                            "column": 56
-                                        },
-                                        "end": {
-                                            "line": 5,
-                                            "column": 84
-                                        }
-                                    },
-                                    "range": [
-                                        205,
-                                        233
-                                    ],
+                                    "start": 2,
+                                    "end": 30,
                                     "test": {
                                         "type": "Identifier",
-                                        "start": 205,
-                                        "end": 208,
-                                        "loc": {
-                                            "start": {
-                                                "line": 5,
-                                                "column": 56
-                                            },
-                                            "end": {
-                                                "line": 5,
-                                                "column": 59
-                                            }
-                                        },
-                                        "range": [
-                                            205,
-                                            208
-                                        ],
+                                        "start": 2,
+                                        "end": 5,
                                         "name": "foo"
                                     },
                                     "consequent": {
                                         "type": "Identifier",
-                                        "start": 211,
-                                        "end": 214,
-                                        "loc": {
-                                            "start": {
-                                                "line": 5,
-                                                "column": 62
-                                            },
-                                            "end": {
-                                                "line": 5,
-                                                "column": 65
-                                            }
-                                        },
-                                        "range": [
-                                            211,
-                                            214
-                                        ],
+                                        "start": 8,
+                                        "end": 11,
                                         "name": "bar"
                                     },
                                     "alternate": {
                                         "type": "ConditionalExpression",
-                                        "start": 217,
-                                        "end": 233,
-                                        "loc": {
-                                            "start": {
-                                                "line": 5,
-                                                "column": 68
-                                            },
-                                            "end": {
-                                                "line": 5,
-                                                "column": 84
-                                            }
-                                        },
-                                        "range": [
-                                            217,
-                                            233
-                                        ],
+                                        "start": 14,
+                                        "end": 30,
                                         "test": {
                                             "type": "Identifier",
-                                            "start": 217,
-                                            "end": 220,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 5,
-                                                    "column": 68
-                                                },
-                                                "end": {
-                                                    "line": 5,
-                                                    "column": 71
-                                                }
-                                            },
-                                            "range": [
-                                                217,
-                                                220
-                                            ],
+                                            "start": 14,
+                                            "end": 17,
                                             "name": "baz"
                                         },
                                         "consequent": {
                                             "type": "Identifier",
-                                            "start": 223,
-                                            "end": 226,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 5,
-                                                    "column": 74
-                                                },
-                                                "end": {
-                                                    "line": 5,
-                                                    "column": 77
-                                                }
-                                            },
-                                            "range": [
-                                                223,
-                                                226
-                                            ],
+                                            "start": 20,
+                                            "end": 23,
                                             "name": "biz"
                                         },
                                         "alternate": {
                                             "type": "Identifier",
-                                            "start": 229,
-                                            "end": 233,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 5,
-                                                    "column": 80
-                                                },
-                                                "end": {
-                                                    "line": 5,
-                                                    "column": 84
-                                                }
-                                            },
-                                            "range": [
-                                                229,
-                                                233
-                                            ],
+                                            "start": 26,
+                                            "end": 30,
                                             "name": "buzz"
                                         }
                                     },
                                     "location": {
                                         "startLine": 5,
-                                        "startColumn": 55,
+                                        "startColumn": 57,
                                         "endLine": 5,
-                                        "endColumn": 87,
-                                        "start": 203,
-                                        "end": 235
+                                        "endColumn": 89,
+                                        "start": 209,
+                                        "end": 241
                                     }
                                 },
                                 "location": {
                                     "startLine": 5,
-                                    "startColumn": 55,
+                                    "startColumn": 57,
                                     "endLine": 5,
-                                    "endColumn": 87,
-                                    "start": 203,
-                                    "end": 235
+                                    "endColumn": 89,
+                                    "start": 209,
+                                    "end": 241
                                 }
                             }
                         ]

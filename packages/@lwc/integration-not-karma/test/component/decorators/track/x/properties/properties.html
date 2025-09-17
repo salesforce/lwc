@@ -1,0 +1,10 @@
+<template>
+    <span class="prop">{prop}</span>
+    <span class="obj">{obj.value}</span>
+    <span class="nested-obj">{nestedObj.value.nestedValue}</span>
+    <span class="array">
+        <template for:each={array} for:item="item">
+            {item}
+        </template>
+    </span>
+</template>

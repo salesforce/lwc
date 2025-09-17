@@ -15,6 +15,10 @@ import GrandparentResetParentAnyChildReset from 'x/grandparentResetParentAnyChil
 import GrandparentResetParentResetChildAny from 'x/grandparentResetParentResetChildAny';
 import GrandparentResetParentResetChildReset from 'x/grandparentResetParentResetChildReset';
 
+afterEach(() => {
+    window.__lwcResetGlobalStylesheets();
+});
+
 describe.skipIf(process.env.NATIVE_SHADOW)('synthetic behavior', () => {
     const scenarios = [
         {

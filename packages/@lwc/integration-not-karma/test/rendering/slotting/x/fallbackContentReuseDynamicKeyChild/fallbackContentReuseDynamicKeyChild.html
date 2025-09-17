@@ -1,0 +1,8 @@
+<template>
+    <slot>
+        <div for:each={defaultItems} for:item="item" key={item}>Default fallback</div>
+    </slot>
+    <slot name="foo">
+        <div for:each={fooItems} for:item="item" key={item}>Named fallback</div>
+    </slot>
+</template>

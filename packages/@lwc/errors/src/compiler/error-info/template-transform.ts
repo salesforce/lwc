@@ -979,4 +979,20 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_COMPLEX: {
+        code: 1207,
+        message:
+            'Template expression doesn\'t allow computed property access unless the expression is surrounded by quotes: "{0}"',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_NODE_COMPLEX: {
+        code: 1208,
+        message:
+            'Template expression doesn\'t allow {0} unless the expression is surrounded by quotes: "{1}"',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 };

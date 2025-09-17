@@ -7,7 +7,7 @@
             "endLine": 5,
             "endColumn": 12,
             "start": 0,
-            "end": 99,
+            "end": 101,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 5,
                 "endColumn": 12,
-                "start": 88,
-                "end": 99
+                "start": 90,
+                "end": 101
             }
         },
         "directives": [],
@@ -37,7 +37,7 @@
                     "endLine": 4,
                     "endColumn": 15,
                     "start": 15,
-                    "end": 87,
+                    "end": 89,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -51,8 +51,8 @@
                         "startColumn": 5,
                         "endLine": 4,
                         "endColumn": 15,
-                        "start": 77,
-                        "end": 87
+                        "start": 79,
+                        "end": 89
                     }
                 },
                 "attributes": [],
@@ -68,24 +68,24 @@
                             "startLine": 3,
                             "startColumn": 9,
                             "endLine": 3,
-                            "endColumn": 48,
+                            "endColumn": 50,
                             "start": 33,
-                            "end": 72,
+                            "end": 74,
                             "startTag": {
                                 "startLine": 3,
                                 "startColumn": 9,
                                 "endLine": 3,
-                                "endColumn": 39,
+                                "endColumn": 41,
                                 "start": 33,
-                                "end": 63
+                                "end": 65
                             },
                             "endTag": {
                                 "startLine": 3,
-                                "startColumn": 39,
+                                "startColumn": 41,
                                 "endLine": 3,
-                                "endColumn": 48,
-                                "start": 63,
-                                "end": 72
+                                "endColumn": 50,
+                                "start": 65,
+                                "end": 74
                             }
                         },
                         "attributes": [],
@@ -121,18 +121,18 @@
                                         "startLine": 3,
                                         "startColumn": 17,
                                         "endLine": 3,
-                                        "endColumn": 38,
+                                        "endColumn": 40,
                                         "start": 41,
-                                        "end": 62
+                                        "end": 64
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
                                     "startColumn": 17,
                                     "endLine": 3,
-                                    "endColumn": 38,
+                                    "endColumn": 40,
                                     "start": 41,
-                                    "end": 62
+                                    "end": 64
                                 }
                             }
                         ],

@@ -1,0 +1,8 @@
+<template>
+    <template if:true={state.error}>
+        <x-post-error-child-view></x-post-error-child-view>
+    </template>
+    <template if:false={state.error}>
+        <x-pre-error-child-view></x-pre-error-child-view>
+    </template>
+</template>

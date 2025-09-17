@@ -1,0 +1,6 @@
+@import './bar.css';
+@import './foo.native-only.css';
+
+div {
+    --style-library: 'default';
+}

@@ -1,0 +1,16 @@
+<template>
+    <x-child-with-named-slot>
+        <div slot="slotname1">static slot header</div>
+        <template lwc:if={condition}>
+            <div slot="slotname1">conditional slot content</div>
+            <template lwc:if={nestedNamedSlot}>
+                <div slot="slotname1">nested slot content</div>
+            </template>
+            <template lwc:elseif={nestedDefaultSlot}>
+                <div>nested default slot content</div>
+                <span>additional default slot content</span>
+            </template>
+        </template>
+        <div slot="slotname1">static slot footer</div>
+    </x-child-with-named-slot>
+</template>

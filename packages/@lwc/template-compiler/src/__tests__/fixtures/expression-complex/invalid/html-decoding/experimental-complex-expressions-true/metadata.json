@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression {foo &#60; bar} - Unexpected character '6' (1:7)",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 125,
+                "length": 15
+            }
+        }
+    ]
+}

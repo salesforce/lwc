@@ -1,12 +1,4 @@
 export default {
-    // server is expected to generate the same console error as the client
-    expectedSSRConsoleCalls: {
-        error: [],
-        warn: [
-            'Attempted to connect to trusted context but received the following error',
-            'Multiple contexts of the same variety were provided. Only the first context will be used.',
-        ],
-    },
     requiredFeatureFlags: ['ENABLE_EXPERIMENTAL_SIGNALS'],
     snapshot(target) {
         const grandparent = target.shadowRoot.querySelector('x-grandparent');

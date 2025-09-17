@@ -532,7 +532,9 @@ export function isStringLiteral(
     return node.type === 'Literal' && typeof node.value === 'string';
 }
 
-export function isBooleanLiteral(node: Expression | Literal): node is Literal<boolean> {
+export function isBooleanLiteral(
+    node: Expression | Literal | ComplexExpression
+): node is Literal<boolean> {
     return node.type === 'Literal' && typeof node.value === 'boolean';
 }
 

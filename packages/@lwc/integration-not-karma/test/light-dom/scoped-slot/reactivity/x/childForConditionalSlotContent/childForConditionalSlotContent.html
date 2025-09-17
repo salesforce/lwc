@@ -1,0 +1,6 @@
+<template lwc:render-mode="light">
+    Slot Child
+    <template if:true={visible}>
+      <slot lwc:slot-bind={variations}>Default Content</slot>
+    </template>
+  </template>

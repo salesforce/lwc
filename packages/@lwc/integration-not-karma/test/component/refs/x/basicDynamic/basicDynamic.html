@@ -1,0 +1,11 @@
+<template>
+  <!-- force all vnodes to be dynamic (non-static optimizable) using a data-dynamic attr -->
+  <div data-dynamic={dynamic} lwc:ref="first">first</div>
+  <div data-dynamic={dynamic} lwc:ref="second">second</div>
+  <div data-dynamic={dynamic}>
+    <div data-dynamic={dynamic} lwc:ref="inner">inner</div>
+    <div data-dynamic={dynamic}>
+      <div data-dynamic={dynamic} lwc:ref="deepInner">deepInner</div>
+    </div>
+  </div>
+</template>

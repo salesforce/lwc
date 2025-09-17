@@ -1,0 +1,8 @@
+:host {
+    display: block;
+    margin-left: 10px;
+}
+
+:host([data-styled]) {
+    margin-left: 20px;
+}

@@ -1,0 +1,8 @@
+<template lwc:render-mode="light">
+    <div lwc:if={isTablet}>
+        <slot name="navigation"></slot>
+    </div>
+    <div lwc:else>
+        <slot name="navigation"></slot>
+    </div>
+</template>

@@ -7,7 +7,7 @@
             "endLine": 10,
             "endColumn": 12,
             "start": 0,
-            "end": 188,
+            "end": 190,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 10,
                 "endColumn": 12,
-                "start": 177,
-                "end": 188
+                "start": 179,
+                "end": 190
             }
         },
         "directives": [],
@@ -37,22 +37,22 @@
                     "endLine": 9,
                     "endColumn": 15,
                     "start": 15,
-                    "end": 176,
+                    "end": 178,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
                         "endLine": 9,
                         "endColumn": 6,
                         "start": 15,
-                        "end": 167
+                        "end": 169
                     },
                     "endTag": {
                         "startLine": 9,
                         "startColumn": 6,
                         "endLine": 9,
                         "endColumn": 15,
-                        "start": 167,
-                        "end": 176
+                        "start": 169,
+                        "end": 178
                     }
                 },
                 "attributes": [],
@@ -178,18 +178,18 @@
                                 "startLine": 3,
                                 "startColumn": 9,
                                 "endLine": 8,
-                                "endColumn": 11,
+                                "endColumn": 12,
                                 "start": 31,
-                                "end": 161
+                                "end": 163
                             }
                         },
                         "location": {
                             "startLine": 3,
                             "startColumn": 9,
                             "endLine": 8,
-                            "endColumn": 11,
+                            "endColumn": 12,
                             "start": 31,
-                            "end": 161
+                            "end": 163
                         }
                     }
                 ],

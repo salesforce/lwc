@@ -1,0 +1,19 @@
+<template>
+    <div>Profiler Sanity</div>
+    <div>
+        <x-error-child class="profiler-error">
+            Make child throw error
+        </x-error-child>
+    </div>
+    <button class="profiler-renderList" onclick={enableList}>
+        Render Children List
+    </button>
+    <ul if:true={renderList}>
+        <template for:each={items} for:item="item">
+            <li key={item.id}>
+                <x-item id={item.id}></x-item>
+            </li>
+        </template>
+    </ul>
+    <x-light></x-light>
+</template>

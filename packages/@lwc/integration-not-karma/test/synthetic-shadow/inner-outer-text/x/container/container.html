@@ -1,0 +1,128 @@
+<template>
+    <div class="non-selectable-text">
+        <span>non selectable text</span>
+    </div>
+    <div class="consecutive-LF">
+        <span>initial</span>
+        <p>first case text</p>
+        <p>second case text</p>
+        <span>end</span>
+    </div>
+
+    <div class="hidden-text-in-between" data-desc="removes hidden text + removes empty text between LF counts">
+        <span>initial</span>
+        <p hidden>first case text</p>
+        <p hidden>second case text</p>
+        <span>end</span>
+    </div>
+
+    <div class="hidden-text-with-css" data-desc="removes hidden text with css">
+        <span>initial</span>
+        <p style="display: none">first case text</p>
+        <p style="display: none">second case text</p>
+        <span>end</span>
+    </div>
+
+    <div style="display: none" class="element-hidden-shows-text-content" data-desc="displays textContent if element is hidden">
+        <span>initial</span>
+        <p style="display: none">first case text</p>
+        <p style="display: none">second case text</p>
+        <span>end</span>
+    </div>
+
+    <div class="empty-inner-text-due-hidden-children" data-desc="innerText is empty when childNodes are hidden">
+        <p style="display: none">first case text</p>
+        <p style="display: none">second case text</p>
+    </div>
+
+    <div class="collect-text-multiple-levels" data-desc="collect text from multiple levels">
+        <div>
+            This is,
+            a text that should be displayed,
+            in one line. It includes <a href="#">links</a>.
+            <p>Also
+            paragraphs
+            </p>
+        </div>
+        <span>and then another text</span>
+    </div>
+
+    <div class="table-testcase" data-desc="collect text from table cell / row">
+        <div class="table">
+            <div class="table-row">
+                <div class="table-cell">1,1</div>
+                <div class="table-cell">1,2</div>
+            </div>
+            <div class="table-row">
+                <div class="table-cell">2,1</div>
+                <div class="table-cell">2,2</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="select-testcase">
+        <label for="pets">Chose a pet:</label>
+        <select id="pets" name="pets">
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+        </select>
+    </div>
+
+    <div class="select-hidden-testcase">
+        <label for="pets1">Chose a pet:</label>
+        <select id="pets1" name="pets" style="display: none">
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+        </select>
+    </div>
+
+    <div class="textarea-testcase">
+        <label for="story">Tell us your story:</label>
+
+        <textarea id="story" name="story" rows="5" cols="33">It was a dark and stormy night...</textarea>
+    </div>
+
+    <div class="datalist-case">
+        <label for="ice-cream-choice">Choose a flavor:</label>
+        <input list="ice-cream-flavors" id="ice-cream-choice" name="ice-cream-choice" />
+
+        <datalist id="ice-cream-flavors">
+            <option value="Chocolate">Chocolate</option>
+            <option value="Coconut">Coconut</option>
+        </datalist>
+    </div>
+
+    <div class="test-case multiple-layers" data-desc="collect text from multiple layers">
+        <!-- hack is to go around the issue that the polyfill does not treat correctly the last table-cell/table-row properly. -->
+        <div class="container">
+            <div class="in-bg">hidden text, but part of innerText</div>
+            <div class="in-front">visible text</div>
+        </div>
+    </div>
+
+    <!-- These tests check that innerText polyfill uses patched traversals for a web component -->
+    <div class="without-slotted-content">
+        <span>first text</span>
+        <br>
+        <x-slotable></x-slotable>
+        <span>second text</span>
+    </div>
+
+    <div class="with-slotted-content">
+        <span>first text</span>
+        <x-slotable>
+            <p>slotted element</p>
+        </x-slotable>
+        <span>second text</span>
+    </div>
+
+    <div class="with-slotted-content-2-levels">
+        <span>first text</span>
+        <x-slotable>
+            <x-grand-child>
+                <p>slotted element</p>
+            </x-grand-child>
+        </x-slotable>
+        <span>second text</span>
+    </div>
+</template>

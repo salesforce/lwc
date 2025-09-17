@@ -7,7 +7,7 @@
             "endLine": 5,
             "endColumn": 12,
             "start": 0,
-            "end": 137,
+            "end": 139,
             "startTag": {
                 "startLine": 1,
                 "startColumn": 1,
@@ -21,8 +21,8 @@
                 "startColumn": 1,
                 "endLine": 5,
                 "endColumn": 12,
-                "start": 126,
-                "end": 137
+                "start": 128,
+                "end": 139
             }
         },
         "directives": [],
@@ -37,7 +37,7 @@
                     "endLine": 4,
                     "endColumn": 15,
                     "start": 15,
-                    "end": 125,
+                    "end": 127,
                     "startTag": {
                         "startLine": 2,
                         "startColumn": 5,
@@ -51,8 +51,8 @@
                         "startColumn": 5,
                         "endLine": 4,
                         "endColumn": 15,
-                        "start": 115,
-                        "end": 125
+                        "start": 117,
+                        "end": 127
                     }
                 },
                 "attributes": [],
@@ -68,24 +68,24 @@
                             "startLine": 3,
                             "startColumn": 9,
                             "endLine": 3,
-                            "endColumn": 86,
+                            "endColumn": 88,
                             "start": 33,
-                            "end": 110,
+                            "end": 112,
                             "startTag": {
                                 "startLine": 3,
                                 "startColumn": 9,
                                 "endLine": 3,
-                                "endColumn": 45,
+                                "endColumn": 47,
                                 "start": 33,
-                                "end": 69
+                                "end": 71
                             },
                             "endTag": {
                                 "startLine": 3,
-                                "startColumn": 77,
+                                "startColumn": 79,
                                 "endLine": 3,
-                                "endColumn": 86,
-                                "start": 101,
-                                "end": 110
+                                "endColumn": 88,
+                                "start": 103,
+                                "end": 112
                             }
                         },
                         "attributes": [],
@@ -126,18 +126,18 @@
                                         "startLine": 3,
                                         "startColumn": 17,
                                         "endLine": 3,
-                                        "endColumn": 44,
+                                        "endColumn": 46,
                                         "start": 41,
-                                        "end": 68
+                                        "end": 70
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
                                     "startColumn": 17,
                                     "endLine": 3,
-                                    "endColumn": 44,
+                                    "endColumn": 46,
                                     "start": 41,
-                                    "end": 68
+                                    "end": 70
                                 }
                             }
                         ],
@@ -149,118 +149,34 @@
                                 "raw": "{({ obj: 'literal'}).toString()}",
                                 "value": {
                                     "type": "CallExpression",
-                                    "start": 70,
-                                    "end": 100,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 45
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 75
-                                        }
-                                    },
-                                    "range": [
-                                        70,
-                                        100
-                                    ],
+                                    "start": 1,
+                                    "end": 31,
                                     "callee": {
                                         "type": "MemberExpression",
-                                        "start": 70,
-                                        "end": 98,
-                                        "loc": {
-                                            "start": {
-                                                "line": 3,
-                                                "column": 45
-                                            },
-                                            "end": {
-                                                "line": 3,
-                                                "column": 73
-                                            }
-                                        },
-                                        "range": [
-                                            70,
-                                            98
-                                        ],
+                                        "start": 1,
+                                        "end": 29,
                                         "object": {
                                             "type": "ObjectExpression",
-                                            "start": 71,
-                                            "end": 88,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 46
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 63
-                                                }
-                                            },
-                                            "range": [
-                                                71,
-                                                88
-                                            ],
+                                            "start": 2,
+                                            "end": 19,
                                             "properties": [
                                                 {
                                                     "type": "Property",
-                                                    "start": 73,
-                                                    "end": 87,
-                                                    "loc": {
-                                                        "start": {
-                                                            "line": 3,
-                                                            "column": 48
-                                                        },
-                                                        "end": {
-                                                            "line": 3,
-                                                            "column": 62
-                                                        }
-                                                    },
-                                                    "range": [
-                                                        73,
-                                                        87
-                                                    ],
+                                                    "start": 4,
+                                                    "end": 18,
                                                     "method": false,
                                                     "shorthand": false,
                                                     "computed": false,
                                                     "key": {
                                                         "type": "Identifier",
-                                                        "start": 73,
-                                                        "end": 76,
-                                                        "loc": {
-                                                            "start": {
-                                                                "line": 3,
-                                                                "column": 48
-                                                            },
-                                                            "end": {
-                                                                "line": 3,
-                                                                "column": 51
-                                                            }
-                                                        },
-                                                        "range": [
-                                                            73,
-                                                            76
-                                                        ],
+                                                        "start": 4,
+                                                        "end": 7,
                                                         "name": "obj"
                                                     },
                                                     "value": {
                                                         "type": "Literal",
-                                                        "start": 78,
-                                                        "end": 87,
-                                                        "loc": {
-                                                            "start": {
-                                                                "line": 3,
-                                                                "column": 53
-                                                            },
-                                                            "end": {
-                                                                "line": 3,
-                                                                "column": 62
-                                                            }
-                                                        },
-                                                        "range": [
-                                                            78,
-                                                            87
-                                                        ],
+                                                        "start": 9,
+                                                        "end": 18,
                                                         "value": "literal",
                                                         "raw": "'literal'"
                                                     },
@@ -270,22 +186,8 @@
                                         },
                                         "property": {
                                             "type": "Identifier",
-                                            "start": 90,
-                                            "end": 98,
-                                            "loc": {
-                                                "start": {
-                                                    "line": 3,
-                                                    "column": 65
-                                                },
-                                                "end": {
-                                                    "line": 3,
-                                                    "column": 73
-                                                }
-                                            },
-                                            "range": [
-                                                90,
-                                                98
-                                            ],
+                                            "start": 21,
+                                            "end": 29,
                                             "name": "toString"
                                         },
                                         "computed": false,
@@ -295,20 +197,20 @@
                                     "optional": false,
                                     "location": {
                                         "startLine": 3,
-                                        "startColumn": 45,
+                                        "startColumn": 47,
                                         "endLine": 3,
-                                        "endColumn": 77,
-                                        "start": 69,
-                                        "end": 101
+                                        "endColumn": 79,
+                                        "start": 71,
+                                        "end": 103
                                     }
                                 },
                                 "location": {
                                     "startLine": 3,
-                                    "startColumn": 45,
+                                    "startColumn": 47,
                                     "endLine": 3,
-                                    "endColumn": 77,
-                                    "start": 69,
-                                    "end": 101
+                                    "endColumn": 79,
+                                    "start": 71,
+                                    "end": 103
                                 }
                             }
                         ]

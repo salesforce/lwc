@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1207,
+            "message": "Invalid expression {list[0].name} - LWC1207: Template expression doesn't allow computed property access unless the expression is surrounded by quotes: \"{list[0].name}\"",
+            "level": 1,
+            "location": {
+                "line": 4,
+                "column": 16,
+                "start": 111,
+                "length": 19
+            }
+        }
+    ]
+}
