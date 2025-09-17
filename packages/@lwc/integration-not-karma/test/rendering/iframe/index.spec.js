@@ -1,5 +1,6 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
+import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 let spy;
 

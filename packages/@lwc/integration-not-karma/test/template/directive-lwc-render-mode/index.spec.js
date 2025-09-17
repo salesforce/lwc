@@ -1,10 +1,11 @@
 import { createElement } from 'lwc';
 import Shadow from 'x/shadow';
 import Light from 'x/light';
+import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
-} from '../../../helpers/utils.js';
+} from '../../../helpers/reporting-control.js';
 
 describe('lwc:render-mode', () => {
     let dispatcher;

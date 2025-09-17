@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XWithLwcDomManual from 'x/withLwcDomManual';
+import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 describe('should not provide access to elements inside shadow tree', () => {
     beforeEach(() => {
