@@ -10,6 +10,7 @@ describe('signals', () => {
     let setTrustedSignalSet: (signals: WeakSet<object>) => void;
     let addTrustedSignal: (signal: object) => void;
     let isTrustedSignal: (target: object) => boolean;
+    let legacyIsTrustedSignal: (target: object) => boolean;
 
     beforeEach(async () => {
         vi.resetModules();
@@ -17,6 +18,7 @@ describe('signals', () => {
         setTrustedSignalSet = signalsModule.setTrustedSignalSet;
         addTrustedSignal = signalsModule.addTrustedSignal;
         isTrustedSignal = signalsModule.isTrustedSignal;
+        legacyIsTrustedSignal = signalsModule.legacyIsTrustedSignal;
     });
 
     describe('setTrustedSignalSet', () => {
@@ -53,8 +55,12 @@ describe('signals', () => {
             expect(isTrustedSignal({})).toBe(false);
         });
 
-        it('should return true for all calls when trustedSignals is not set', () => {
-            expect(isTrustedSignal({})).toBe(true);
+        it('should return false for all calls when trustedSignals is not set', () => {
+            expect(isTrustedSignal({})).toBe(false);
+        });
+
+        it('legacyIsTrustedSignal should return true when trustedSignals is not set', () => {
+            expect(legacyIsTrustedSignal({})).toBe(true);
         });
     });
 });
