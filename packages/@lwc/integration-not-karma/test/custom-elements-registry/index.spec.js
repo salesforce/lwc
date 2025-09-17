@@ -106,15 +106,9 @@ describe('custom elements registry', () => {
         const inputIsArray = Array.isArray(scriptOrScripts);
         const scripts = inputIsArray ? scriptOrScripts : [scriptOrScripts];
         const results = [];
-        try {
-            for (const script of scripts) {
-                const scriptStr = typeof script === 'string' ? script : `(${script})()`;
-                results.push(iframe.contentWindow.eval(scriptStr));
-            }
-        } catch (err) {
-            // Rethrowing the error is necessary because otherwise Jasmine
-            // gets confused by the iframe's Error object versus our Error object
-            throw new Error(err.message);
+        for (const script of scripts) {
+            const scriptStr = typeof script === 'string' ? script : `(${script})()`;
+            results.push(iframe.contentWindow.eval(scriptStr));
         }
         return inputIsArray ? results : results[0];
     }
