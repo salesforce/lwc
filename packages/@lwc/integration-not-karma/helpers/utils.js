@@ -263,11 +263,13 @@ export function expectEquivalentDOM(element, html) {
     expectEquivalent(element, fragment.body.firstChild);
 }
 
-// To serve files outside the web root (e.g. node_modules in the monorepo root),
-// @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
-// `/__wds-outside-root__/${depth}/` === '../'.repeat(depth)
-/**
- * Gets the path to an LWC package when WTR is running in a browser.
- * Should only be necessary for usage that WTR doesn't already know how to transform
- */
-export const lwcPackagePath = (pkg) => `/__wds-outside-root__/1/${pkg}/dist/index.js`;
+export const resolvePathOutsideRoot = (file) => {
+    return file.replace(/^(\.\.\/)+?(.+?)$/, (_, outside, filepath) => {
+        // To serve files from outside the web root (e.g. from the monorepo root
+        // node_modules, @web/dev-server provides this "magic" path. It's hacky
+        // of us to use it it directly.
+        // '../'.repeat(depth) becomes `/__wds-outside-root__/${depth}/`
+        const depth = outside.length / 3;
+        return `/__wds-outside-root__/${depth}/${filepath}`;
+    });
+};

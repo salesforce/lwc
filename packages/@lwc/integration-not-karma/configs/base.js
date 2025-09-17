@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import * as options from '../helpers/options.js';
-import { lwcPackagePath } from '../helpers/utils.js';
+import { resolvePathOutsideRoot } from '../helpers/utils.js';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
@@ -36,7 +36,7 @@ export default {
             name: 'lwc-base-plugin',
             resolveImport({ source }) {
                 if (source === 'wire-service') {
-                    return lwcPackagePath('wire-service');
+                    return resolvePathOutsideRoot('../wire-service/dist/index.js');
                 }
             },
             async transform(ctx) {

@@ -1,4 +1,4 @@
-import { lwcPackagePath } from '../../helpers/utils';
+import { resolvePathOutsideRoot } from '../../helpers/utils';
 
 let engineDomCode, syntheticShadowCode;
 
@@ -7,22 +7,25 @@ const tagAlreadyUsedErrorMessage =
     /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element|This name is a registered custom element, preventing LWC to upgrade the element)/;
 
 /** Fetches a text resource. */
-async function getCode(src) {
-    const res = await fetch(src);
+async function getModuleCode(pkg) {
+    const res = await fetch(resolvePathOutsideRoot(`../${pkg}/dist/index.cjs.js`));
     return await res.text();
 }
 
 /** Gets the contents of a set of script tags to insert on a page. */
 async function getEngineCode() {
-    engineDomCode = engineDomCode || (await getCode(lwcPackagePath('engine-dom')));
+    engineDomCode = engineDomCode || (await getModuleCode('engine-dom'));
 
     syntheticShadowCode =
         syntheticShadowCode ||
-        (!process.env.NATIVE_SHADOW && (await getCode(lwcPackagePath('synthetic-shadow'))));
+        (!process.env.NATIVE_SHADOW && (await getModuleCode('synthetic-shadow')));
 
     return [
-        `globalThis.process = { env: { NODE_ENV: "production" } };`,
-        `globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};`, // copy runtime flags to iframe
+        `
+        globalThis.process = { env: { NODE_ENV: "production" } };
+        globalThis.LWC = globalThis.exports = {};
+        globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};
+        `,
         syntheticShadowCode,
         engineDomCode,
     ].filter(Boolean);
