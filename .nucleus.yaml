@@ -32,7 +32,6 @@ branches:
         pull-request:
             <<: *branch-definition
             merge-method: force-push # release branch should always be in sync with master branch (linear history)
-    # Only active branches need to be included in this config
     winter26:
         pull-request:
             <<: *branch-definition
