@@ -4,9 +4,15 @@ on:
     push:
         branches:
             - master
+            - winter26
+            - spring25
+            - summer25
     pull_request:
         branches:
             - master
+            - winter26
+            - spring25
+            - summer25
 
 env:
     SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
