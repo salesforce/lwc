@@ -9,7 +9,7 @@ set -e
 
 VERSION="$1"
 BRANCH="release-version-$(date -u +'%Y-%m-%d-%H_%M')"
-BASE_BRANCH='master'
+BASE_BRANCH='winter26'
 
 if [ -z "$VERSION" ]; then
   echo 'Specify a new version.'
