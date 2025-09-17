@@ -3,6 +3,7 @@ import XParent from 'x/parent';
 import XSlottedChild from 'x/slottedChild';
 import XNestedSlotContainer from 'x/nestedSlotContainer';
 import XTemplateMutations from 'x/templateMutations';
+import { jasmine } from '../../../helpers/jasmine.js';
 
 const observerConfig = { childList: true, subtree: true };
 

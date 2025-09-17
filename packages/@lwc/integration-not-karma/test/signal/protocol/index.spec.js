@@ -11,6 +11,7 @@ import Throws from 'x/throws';
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
 import { Signal } from 'x/signal';
+import { jasmine } from '../../../helpers/jasmine.js';
 
 describe('signal protocol', () => {
     beforeAll(() => {
