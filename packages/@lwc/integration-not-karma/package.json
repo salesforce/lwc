@@ -15,6 +15,7 @@
         "@lwc/synthetic-shadow": "8.20.3",
         "@types/chai": "^5.2.2",
         "@types/jasmine": "^5.1.8",
+        "@vitest/spy": "^3.2.4",
         "@web/dev-server-rollup": "^0.6.4",
         "@web/test-runner": "^0.20.2",
         "chai": "^5.2.1"
