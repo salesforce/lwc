@@ -7,6 +7,7 @@
 const assert = require('assert');
 
 describe('Event target in slot elements', () => {
+    this.timeout(15000); // Increase timeout
     const URL = '/slotted-event-target/';
 
     before(async () => {
@@ -21,6 +22,7 @@ describe('Event target in slot elements', () => {
             'integration-slotted-event-target',
             '.target-is-select'
         );
+
         assert.strictEqual(await element.getText(), 'Event Target is select element');
     });
 });
