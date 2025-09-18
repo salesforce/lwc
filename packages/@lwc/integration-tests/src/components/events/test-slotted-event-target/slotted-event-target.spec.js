@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-//const assert = require('assert');
+const assert = require('assert');
 
 describe('Event target in slot elements', () => {
     const URL = '/slotted-event-target/';
@@ -21,15 +21,6 @@ describe('Event target in slot elements', () => {
             'integration-slotted-event-target',
             '.target-is-select'
         );
-        await browser.waitUntil(
-            async () => {
-                const text = await element.getText();
-                return text === 'Event Target is select element';
-            },
-            {
-                timeoutMsg: 'expected Event Target is select element',
-            }
-        );
-        //assert.strictEqual(await element.getText(), 'Event Target is select element');
+        assert.strictEqual(await element.getText(), 'Event Target is select element');
     });
 });
