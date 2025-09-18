@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/rollup-plugin",
-    "version": "8.20.4",
+    "version": "8.20.5",
     "description": "Rollup plugin to compile LWC",
     "keywords": [
         "lwc"
@@ -46,13 +46,13 @@
         }
     },
     "dependencies": {
-        "@lwc/compiler": "8.20.4",
-        "@lwc/module-resolver": "8.20.4",
-        "@lwc/shared": "8.20.4",
+        "@lwc/compiler": "8.20.5",
+        "@lwc/module-resolver": "8.20.5",
+        "@lwc/shared": "8.20.5",
         "@rollup/pluginutils": "~5.2.0"
     },
     "devDependencies": {
-        "@lwc/errors": "8.20.4"
+        "@lwc/errors": "8.20.5"
     },
     "peerDependencies": {
         "rollup": "^1.2.0||^2.0.0||^3.0.0||^4.0.0"
