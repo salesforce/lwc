@@ -133,6 +133,7 @@ describe('custom elements registry', () => {
         it('can create elements', () => {
             injectEngine();
             callInIframe(injectableCreateLWC);
+
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
@@ -151,6 +152,7 @@ describe('custom elements registry', () => {
                 injectEngine();
                 injectEngine();
                 callInIframe(injectableCreateLWC, { customElement });
+
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                         .textContent
@@ -162,6 +164,7 @@ describe('custom elements registry', () => {
                 callInIframe(() => (window.oldLWC = window.LWC));
                 injectEngine();
                 callInIframe(injectableCreateLWC, { customElement, globalLWC: 'oldLWC' });
+
                 expect(
                     iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                         .textContent
@@ -173,12 +176,15 @@ describe('custom elements registry', () => {
     describe('custom element registered before LWC engine loads', () => {
         it('can register element when another element was registered before engine loaded', () => {
             callInIframe(injectableCreateVanilla);
+
             expect(
                 iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
                     .textContent
             ).toEqual('Not LWC!');
+
             injectEngine();
             callInIframe(injectableCreateLWC, { tagName: 'x-bar' });
+
             expect(
                 iframe.contentDocument.querySelector('x-bar').shadowRoot.querySelector('h1')
                     .textContent
@@ -187,24 +193,28 @@ describe('custom elements registry', () => {
 
         it('throws error when another element with same tag name was registered before engine loaded', () => {
             callInIframe(injectableCreateVanilla);
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
+
+            let text = iframe.contentDocument
+                .querySelector('x-foo')
+                .shadowRoot.querySelector('h1').textContent;
+            expect(text).toEqual('Not LWC!');
+
             injectEngine();
+
             expect(() => callInIframe(injectableCreateLWC)).toThrowError(
                 tagAlreadyUsedErrorMessage
             );
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
+            text = iframe.contentDocument
+                .querySelector('x-foo')
+                .shadowRoot.querySelector('h1').textContent;
+            expect(text).toEqual('Not LWC!');
         });
 
         it('can do customElements.get() for element registered before engine loads', () => {
             callInIframe(injectableCreateVanilla);
             injectEngine();
             const Ctor = callInIframe(() => customElements.get('x-foo'));
+
             expect(Ctor.name).toEqual('MyCustomElement');
         });
 
@@ -212,10 +222,11 @@ describe('custom elements registry', () => {
             callInIframe(() => document.body.appendChild(document.createElement('x-foo')));
             injectEngine();
             callInIframe(injectableCreateVanilla, { skipInject: true });
-            expect(
-                iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                    .textContent
-            ).toEqual('Not LWC!');
+
+            const text = iframe.contentDocument
+                .querySelector('x-foo')
+                .shadowRoot.querySelector('h1').textContent;
+            expect(text).toEqual('Not LWC!');
         });
 
         it('can upgrade multiple elements with same tag name that exist before engine loads - vanilla', () => {
@@ -225,12 +236,12 @@ describe('custom elements registry', () => {
             });
             injectEngine();
             callInIframe(injectableCreateVanilla, { skipInject: true });
-            expect(
-                Array.from(
-                    iframe.contentDocument.querySelectorAll('x-foo'),
-                    (xFoo) => xFoo.shadowRoot.querySelector('h1').textContent
-                )
-            ).toEqual(['Not LWC!', 'Not LWC!']);
+
+            const allText = Array.from(
+                iframe.contentDocument.querySelectorAll('x-foo'),
+                (xFoo) => xFoo.shadowRoot.querySelector('h1').textContent
+            );
+            expect(allText).toEqual(['Not LWC!', 'Not LWC!']);
         });
 
         it('can upgrade elements that existed before engine loads - LWC', () => {
@@ -247,6 +258,7 @@ describe('custom elements registry', () => {
             callInIframe(injectableCreateVanilla);
             injectEngine();
             const Ctor = await callInIframe(async () => await customElements.whenDefined('x-foo'));
+
             expect(Ctor.name).toEqual('MyCustomElement');
         });
     });
@@ -291,12 +303,16 @@ describe('custom elements registry', () => {
             scenarios.forEach(({ name, setup }) => {
                 it(name, () => {
                     setup();
-                    expect(
-                        callInIframe(() => document.querySelector('x-adopted')._adopted)
-                    ).toEqual(false);
+
+                    const adopted = callInIframe(
+                        () => document.querySelector('x-adopted')._adopted
+                    );
+                    expect(adopted).toEqual(false);
+
                     const elm = iframe.contentDocument.querySelector('x-adopted');
                     elm.parentElement.removeChild(elm);
                     expect(elm._adopted).toEqual(false);
+
                     document.body.appendChild(elm);
                     expect(elm._adopted).toEqual(true);
                 });
@@ -307,7 +323,7 @@ describe('custom elements registry', () => {
             injectEngine();
             callInIframe(injectableCreateVanilla);
 
-            // We're basically just testing that this doesn't throw an error
+            // No assertion because we're basically just testing that this doesn't throw an error
             const elm = iframe.contentDocument.querySelector('x-foo');
             elm.parentElement.removeChild(elm);
             document.body.appendChild(elm);
