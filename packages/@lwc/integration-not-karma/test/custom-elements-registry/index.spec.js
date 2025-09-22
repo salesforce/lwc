@@ -141,12 +141,13 @@ describe('custom elements registry', () => {
     });
 
     describe('two copies of LWC engine loaded', () => {
-        [false, true].forEach((customElement) => {
-            const testName = customElement
-                ? 'with CustomElementConstructor'
-                : 'with LWC.createElement';
+        const scenarios = [
+            { customElement: false, description: 'with LWC.createElement' },
+            { customElement: true, description: 'with CustomElementConstructor' },
+        ];
 
-            it(`creates elements in second engine - ${testName}`, () => {
+        scenarios.forEach(({ customElement, description }) => {
+            it(`creates elements in second engine - ${description}`, () => {
                 injectEngine();
                 injectEngine();
                 callInIframe(injectableCreateLWC, { customElement });
@@ -156,7 +157,7 @@ describe('custom elements registry', () => {
                 ).toEqual('Hello LWC');
             });
 
-            it(`creates elements in first engine - ${testName}`, () => {
+            it(`creates elements in first engine - ${description}`, () => {
                 injectEngine();
                 callInIframe(() => (window.oldLWC = window.LWC));
                 injectEngine();
