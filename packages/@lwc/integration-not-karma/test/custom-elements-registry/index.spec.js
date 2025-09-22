@@ -274,17 +274,17 @@ describe('custom elements registry', () => {
             const scenarios = [
                 {
                     name: 'element defined before engine loads',
-                    getScripts: () => [injectableDefineVanillaAdopted, engineScripts],
+                    scripts: [injectableDefineVanillaAdopted, engineScripts],
                 },
                 {
                     name: 'element defined after engine loads',
-                    getScripts: () => [engineScripts, injectableDefineVanillaAdopted],
+                    scripts: [engineScripts, injectableDefineVanillaAdopted],
                 },
             ];
 
-            scenarios.forEach(({ name, getScripts }) => {
+            scenarios.forEach(({ name, scripts }) => {
                 it(name, () => {
-                    for (const script of getScripts()) {
+                    for (const script of scripts) {
                         evaluate(script);
                     }
                     expect(evaluate(() => document.querySelector('x-adopted')._adopted)).toEqual(
