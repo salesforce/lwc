@@ -95,11 +95,11 @@ const injectableCreateVanilla = String(function createVanilla({
 
 describe('custom elements registry', () => {
     let iframe;
-    let engineScripts;
+    let engineCode;
 
     /** Run `eval` on the LWC engine code to inject it into the iframe. */
     function injectEngine() {
-        iframe.contentWindow.eval(engineScripts);
+        iframe.contentWindow.eval(engineCode);
     }
 
     /**
@@ -114,7 +114,7 @@ describe('custom elements registry', () => {
     }
 
     beforeAll(async () => {
-        engineScripts = await getEngineCode();
+        engineCode = await getEngineCode();
     });
 
     beforeEach(async () => {
