@@ -109,7 +109,8 @@ describe('custom elements registry', () => {
      * @param  {...any} args JSON-serializable function parameters
      */
     function callInIframe(fn, ...args) {
-        const script = `(${fn})(${JSON.stringify(args)});`;
+        const strargs = JSON.stringify(args).slice(1, -1); // remove [ and ]
+        const script = `(${fn})(${strargs});`;
         return iframe.contentWindow.eval(script);
     }
 
