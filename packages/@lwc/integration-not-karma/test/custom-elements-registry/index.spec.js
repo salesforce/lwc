@@ -1,7 +1,5 @@
 import { resolvePathOutsideRoot } from '../../helpers/utils';
 
-let engineDomCode, syntheticShadowCode;
-
 // Error message differs between browsers
 const tagAlreadyUsedErrorMessage =
     /(has already been used with this registry|Cannot define multiple custom elements with the same tag name|has already been defined as a custom element|This name is a registered custom element, preventing LWC to upgrade the element)/;
@@ -14,21 +12,19 @@ async function getModuleCode(pkg) {
 
 /** Gets the contents of a set of script tags to insert on a page. */
 async function getEngineCode() {
-    engineDomCode = engineDomCode || (await getModuleCode('engine-dom'));
+    const engineDom = await getModuleCode('engine-dom');
 
-    syntheticShadowCode =
-        syntheticShadowCode ||
-        (!process.env.NATIVE_SHADOW && (await getModuleCode('synthetic-shadow')));
+    const syntheticShadow = process.env.NATIVE_SHADOW
+        ? ''
+        : await getModuleCode('synthetic-shadow');
 
-    return [
-        `
+    return `
         globalThis.process = { env: { NODE_ENV: "production" } };
         globalThis.LWC = globalThis.exports = {};
         globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};
-        `,
-        syntheticShadowCode,
-        engineDomCode,
-    ].filter(Boolean);
+        ${syntheticShadow};
+        ${engineDom};
+        `;
 }
 
 /**
@@ -103,9 +99,7 @@ describe('custom elements registry', () => {
 
     /** Run `eval` on the LWC engine code to inject it into the iframe. */
     function injectEngine() {
-        for (const script of engineScripts) {
-            iframe.contentWindow.eval(script);
-        }
+        iframe.contentWindow.eval(engineScripts);
     }
 
     /**
@@ -119,18 +113,20 @@ describe('custom elements registry', () => {
         return iframe.contentWindow.eval(script);
     }
 
-    // Create the iframe and load the basic set of scripts to inject
+    beforeAll(async () => {
+        engineScripts = await getEngineCode();
+    });
+
     beforeEach(async () => {
         iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
 
         if (window.__coverage__) {
+            // FIXME: Is this still necessary for WTR?
             // If istanbul coverage is enabled, we should proxy any calls in the iframe
             // to window.__coverage__ to the main one, so that the coverage is properly computed.
             iframe.contentWindow.__coverage__ = window.__coverage__;
         }
-
-        engineScripts = await getEngineCode();
     });
 
     describe('basic', () => {
