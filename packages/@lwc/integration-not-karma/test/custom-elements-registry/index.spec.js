@@ -34,14 +34,13 @@ async function getEngineCode() {
 const injectableCreateLWC = String(function createLWC({
     tagName = 'x-foo',
     skipInject = false,
-    text = 'Hello LWC',
     globalLWC = 'LWC',
     customElement = false,
 } = {}) {
     // basic "Hello World" compiled LWC component
     function tmpl($api) {
         const { t: api_text, h: api_element } = $api;
-        return [api_element('h1', { key: 0 }, [api_text(text)])];
+        return [api_element('h1', { key: 0 }, [api_text('Hello LWC')])];
     }
 
     const LWC = window[globalLWC];
@@ -75,10 +74,8 @@ const injectableCreateLWC = String(function createLWC({
  * The text of a function that creates a vanilla custom element.
  * The function is injected into an iframe, and must not reference any variables in this file.
  */
-const injectableCreateVanilla = String(function createVanilla({
-    tagName = 'x-foo',
-    skipInject = false,
-} = {}) {
+const injectableCreateVanilla = String(function createVanilla({ skipInject = false } = {}) {
+    const tagName = 'x-foo';
     customElements.define(
         tagName,
         class MyCustomElement extends HTMLElement {
@@ -166,10 +163,10 @@ describe('custom elements registry', () => {
                 injectEngine();
                 callInIframe(injectableCreateLWC, { customElement, globalLWC: 'oldLWC' });
 
-                expect(
-                    iframe.contentDocument.querySelector('x-foo').shadowRoot.querySelector('h1')
-                        .textContent
-                ).toEqual('Hello LWC');
+                const text = iframe.contentDocument
+                    .querySelector('x-foo')
+                    .shadowRoot.querySelector('h1').textContent;
+                expect(text).toEqual('Hello LWC');
             });
         });
     });
