@@ -88,6 +88,28 @@ const injectableCreateVanilla = String(function createVanilla({ skipInject = fal
     }
 });
 
+/**
+ * The text of a function that creates a vanilla custom element with an `adoptedCallback`.
+ * The function is injected into an iframe, and must not reference any variables in this file.
+ */
+const injectableDefineVanillaAdopted = String(function defineVanillaAdopted() {
+    customElements.define(
+        'x-adopted',
+        class extends HTMLElement {
+            constructor() {
+                super();
+                // avoid class properties so Babel doesn't transform this class
+                this._adopted = false;
+            }
+
+            adoptedCallback() {
+                this._adopted = true;
+            }
+        }
+    );
+    document.body.appendChild(document.createElement('x-adopted'));
+});
+
 describe('custom elements registry', () => {
     let iframe;
     let engineCode;
@@ -263,24 +285,6 @@ describe('custom elements registry', () => {
 
     describe('adoptedCallback', () => {
         describe('calls adoptedCallback when element moves between documents', () => {
-            const injectableDefineVanillaAdopted = String(function defineVanillaAdopted() {
-                customElements.define(
-                    'x-adopted',
-                    class extends HTMLElement {
-                        constructor() {
-                            super();
-                            // avoid class properties so Babel doesn't transform this class
-                            this._adopted = false;
-                        }
-
-                        adoptedCallback() {
-                            this._adopted = true;
-                        }
-                    }
-                );
-                document.body.appendChild(document.createElement('x-adopted'));
-            });
-
             const scenarios = [
                 {
                     name: 'element defined before engine loads',
