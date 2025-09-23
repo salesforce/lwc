@@ -3,7 +3,7 @@ import XTest from 'x/test';
 import XTestStatic from 'x/testStatic';
 import XTestCustomElement from 'x/testCustomElement';
 import ArrayNullPrototype from 'x/arrayNullPrototype';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 function testForEach(type, obj) {
     it(`should render ${type}`, () => {
@@ -73,14 +73,10 @@ it('should throw an error when the passing a non iterable', () => {
 
 describe('null/undefined values', () => {
     let spy;
-
-    beforeEach(() => {
-        spy = spyConsole();
+    beforeAll(() => {
+        spy = spyOn(console, 'error').mockImplementation(() => {});
     });
-
-    afterEach(() => {
-        spy.reset();
-    });
+    afterEach(() => spy.mockRestore());
 
     [undefined, null].forEach((value) => {
         it(`should log an error when passing in ${value}`, async () => {
@@ -93,13 +89,16 @@ describe('null/undefined values', () => {
             expect(elm.shadowRoot.querySelector('ul').children.length).toBe(0);
 
             if (process.env.NODE_ENV === 'production') {
-                expect(spy.calls.error.length).toBe(0);
+                expect(spy).not.toHaveBeenCalled();
             } else {
-                expect(spy.calls.error.length).toBe(1);
-                const err = spy.calls.error[0][0]; // first arg of first call
-                expect(err).toBeInstanceOf(Error);
-                // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-                expect(err.message).toMatch(/It must be an array-like object/);
+                expect(spy).toHaveBeenCalledTimes(1);
+                expect(spy).toHaveBeenCalledWith(expect.any(Error));
+                expect(spy).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
+                        message: expect.stringMatching(/It must be an array-like object/),
+                    })
+                );
             }
         });
     });
