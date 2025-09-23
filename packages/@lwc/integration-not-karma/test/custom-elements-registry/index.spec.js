@@ -43,17 +43,15 @@ const injectableCreateLWC = String(function createLWC({
         return [api_element('h1', { key: 0 }, [api_text('Hello LWC')])];
     }
 
-    const LWC = window[globalLWC];
+    const lwc = window[globalLWC];
 
-    LWC.registerTemplate(tmpl);
+    lwc.registerTemplate(tmpl);
     tmpl.stylesheets = [];
-    LWC.freezeTemplate(tmpl);
+    lwc.freezeTemplate(tmpl);
 
-    const Component = LWC.registerComponent(
-        class MyLightningElement extends LWC.LightningElement {},
-        {
-            tmpl,
-        }
+    const Component = lwc.registerComponent(
+        class MyLightningElement extends lwc.LightningElement {},
+        { tmpl }
     );
 
     let elm;
@@ -62,7 +60,7 @@ const injectableCreateLWC = String(function createLWC({
         customElements.define(tagName, Component.CustomElementConstructor);
         elm = document.createElement(tagName);
     } else {
-        elm = LWC.createElement(tagName, { is: Component });
+        elm = lwc.createElement(tagName, { is: Component });
     }
 
     if (!skipInject) {
