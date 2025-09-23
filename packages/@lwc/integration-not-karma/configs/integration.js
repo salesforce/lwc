@@ -9,9 +9,6 @@ export default {
         // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
 
-        // Hacky nonsense highly tailored to Karma
-        '!test/custom-elements-registry/index.spec.js',
-
         // Logging mismatches
         '!test/component/LightningElement.addEventListener/index.spec.js',
 

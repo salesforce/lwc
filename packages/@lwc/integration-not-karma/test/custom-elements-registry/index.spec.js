@@ -18,13 +18,13 @@ async function getEngineCode() {
         ? ''
         : await getModuleCode('synthetic-shadow');
 
-    return `
+    return `(() => {
         globalThis.process = { env: { NODE_ENV: "production" } };
         globalThis.LWC = globalThis.exports = {};
         globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};
         ${syntheticShadow};
         ${engineDom};
-        `;
+    })();`;
 }
 
 /**
@@ -157,7 +157,9 @@ describe('custom elements registry', () => {
 
             it(`creates elements in first engine - ${description}`, () => {
                 injectEngine();
-                callInIframe(() => (window.oldLWC = window.LWC));
+                callInIframe(() => {
+                    globalThis.oldLWC = globalThis.LWC;
+                });
                 injectEngine();
                 callInIframe(injectableCreateLWC, { customElement, globalLWC: 'oldLWC' });
 
