@@ -51,7 +51,6 @@ export default {
         `<!DOCTYPE html>
         <html>
           <head>
-            <!-- scripts are included in the head so that the body can be fully reset between tests -->
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
