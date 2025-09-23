@@ -1,3 +1,5 @@
+import { expectConsoleCallsDev } from '../../../helpers/utils.js';
+
 export default {
     props: {
         ssr: true,
@@ -18,7 +20,7 @@ export default {
         expect(p.getAttribute('data-same')).toBe('same-value');
         expect(p.getAttribute('data-another-diff')).toBe('client-val');
 
-        TestUtils.expectConsoleCallsDev(consoleCalls, {
+        expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
                 'Hydration attribute mismatch on: <p> - rendered on server: title="ssr-title" - expected on client: title="client-title"',

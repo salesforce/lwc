@@ -1,6 +1,5 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import { importMapsPlugin } from '@web/dev-server-import-maps';
 import * as options from '../helpers/options.js';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
@@ -17,6 +16,7 @@ const env = {
         'ENGINE_SERVER',
         'FORCE_NATIVE_SHADOW_MODE_FOR_TEST',
         'NATIVE_SHADOW',
+        'DISABLE_DETACHED_REHYDRATION',
     ]),
     LWC_VERSION,
     NODE_ENV: options.NODE_ENV_FOR_TEST,
@@ -32,12 +32,9 @@ export default {
     nodeResolve: true,
     rootDir: join(import.meta.dirname, '..'),
     plugins: [
-        importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
         {
             resolveImport({ source }) {
-                if (source === 'test-utils') {
-                    return '/helpers/utils.js';
-                } else if (source === 'wire-service') {
+                if (source === 'wire-service') {
                     // To serve files outside the web root (e.g. node_modules in the monorepo root),
                     // @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
                     // `/__wds-outside-root__/${depth}/` === '../'.repeat(depth)
@@ -60,7 +57,10 @@ export default {
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
-                pluck(options, ['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'])
+                pluck(options, [
+                    'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
+                    'DISABLE_DETACHED_REHYDRATION',
+                ])
             )};
 
             ${maybeImport('@lwc/synthetic-shadow', !options.DISABLE_SYNTHETIC)}

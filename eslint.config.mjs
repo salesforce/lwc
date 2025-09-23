@@ -361,15 +361,8 @@ export default tseslint.config(
             globals: {
                 lwcRuntimeFlags: true,
                 process: true,
-                TestUtils: true,
                 ...globals.browser,
-                ...globals.jasmine,
             },
-        },
-
-        rules: {
-            'no-var': 'off',
-            'prefer-rest-params': 'off',
         },
     },
     {
@@ -384,11 +377,6 @@ export default tseslint.config(
                 ...globals.browser,
                 ...globals.jasmine,
             },
-        },
-
-        rules: {
-            'no-var': 'off',
-            'prefer-rest-params': 'off',
         },
     },
     {

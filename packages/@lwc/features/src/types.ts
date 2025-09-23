@@ -71,6 +71,13 @@ export interface FeatureFlagMap {
     ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
 
     /**
+     * If true, legacy signal validation is used, where all component properties are considered signals or context
+     * if a trustedSignalSet and trustedContextSet have not been provided via setTrustedSignalSet and setTrustedContextSet.
+     * This is a killswitch for a bug fix: #5492
+     */
+    ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION: FeatureFlagValue;
+
+    /**
      * If true, ignore `@lwc/synthetic-shadow` even if it's loaded on the page. Instead, run all components in
      * native shadow mode.
      */
@@ -93,6 +100,12 @@ export interface FeatureFlagMap {
      * If false or unset, then the value of the `LEGACY_LOCKER_ENABLED` flag is used.
      */
     DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
+
+    /**
+     * If true, skips rehydration of DOM elements that are not connected.
+     * Applies to rehydration performed while flushing the rehydration queue.
+     */
+    DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

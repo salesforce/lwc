@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Inner from 'x/inner';
 import Outer from 'x/outer';
+import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 beforeAll(() => {

@@ -11,6 +11,7 @@ import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 import ComputedKey from 'x/computedKey';
 import ValueEvaluationThrows from 'x/valueEvaluationThrows';
+import { jasmine } from '../../helpers/jasmine.js';
 import { spyConsole } from '../../helpers/console.js';
 import { catchUnhandledRejectionsAndErrors } from '../../helpers/utils.js';
 
