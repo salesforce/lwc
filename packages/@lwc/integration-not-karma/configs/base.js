@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import * as options from '../helpers/options.js';
+import { resolvePathOutsideRoot } from '../helpers/utils.js';
 
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
@@ -28,17 +29,14 @@ export default {
     // time out before they receive focus. But it also makes the full suite take 3x longer to run...
     // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
     concurrency: 1,
-    filterBrowserLogs: () => false,
     nodeResolve: true,
     rootDir: join(import.meta.dirname, '..'),
     plugins: [
         {
+            name: 'lwc-base-plugin',
             resolveImport({ source }) {
                 if (source === 'wire-service') {
-                    // To serve files outside the web root (e.g. node_modules in the monorepo root),
-                    // @web/dev-server provides this "magic" path. It's hacky of us to use it directly.
-                    // `/__wds-outside-root__/${depth}/` === '../'.repeat(depth)
-                    return '/__wds-outside-root__/1/wire-service/dist/index.js';
+                    return resolvePathOutsideRoot('../wire-service/dist/index.js');
                 }
             },
             async transform(ctx) {
@@ -53,7 +51,6 @@ export default {
         `<!DOCTYPE html>
         <html>
           <head>
-            <!-- scripts are included in the head so that the body can be fully reset between tests -->
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
