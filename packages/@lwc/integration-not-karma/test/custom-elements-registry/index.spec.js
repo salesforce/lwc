@@ -7,7 +7,13 @@ const tagAlreadyUsedErrorMessage =
 /** Fetches a text resource. */
 async function getModuleCode(pkg) {
     const res = await fetch(resolvePathOutsideRoot(`../${pkg}/dist/index.cjs.js`));
-    return await res.text();
+    const code = await res.text();
+    // CommonJS code needs to have `exports` defined, so we wrap in an IIFE
+    // to provide it and to encapsulate the code.
+    return `((exports) => {
+        ${code};
+        return exports;
+    })({});`;
 }
 
 /** Gets the contents of a set of script tags to insert on a page. */
@@ -20,10 +26,9 @@ async function getEngineCode() {
 
     return `(() => {
         globalThis.process = { env: { NODE_ENV: "production" } };
-        globalThis.LWC = globalThis.exports = {};
         globalThis.lwcRuntimeFlags = ${JSON.stringify(lwcRuntimeFlags)};
         ${syntheticShadow};
-        ${engineDom};
+        globalThis.LWC = ${engineDom};
     })();`;
 }
 

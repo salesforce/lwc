@@ -267,7 +267,7 @@ export const resolvePathOutsideRoot = (file) => {
     return file.replace(/^(\.\.\/)+?(.+?)$/, (_, outside, filepath) => {
         // To serve files from outside the web root (e.g. from the monorepo root
         // node_modules, @web/dev-server provides this "magic" path. It's hacky
-        // of us to use it it directly.
+        // of us to use it directly.
         // '../'.repeat(depth) becomes `/__wds-outside-root__/${depth}/`
         const depth = outside.length / 3;
         return `/__wds-outside-root__/${depth}/${filepath}`;
