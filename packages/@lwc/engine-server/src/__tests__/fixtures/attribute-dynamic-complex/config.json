@@ -1,0 +1,8 @@
+{
+    "entry": "x/attribute-dynamic-complex",
+    "experimentalComplexExpressions": true,
+    "ssrFiles": {
+        "expected": "expected-ssr.txt",
+        "error": "error-ssr.txt"
+    }
+}
