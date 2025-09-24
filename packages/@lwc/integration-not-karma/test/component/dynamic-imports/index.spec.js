@@ -23,7 +23,7 @@ async function microTask() {
 
 /** Actually waits a macro-task and then a micro-task, for reasons unspecified. */
 async function macroTask() {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     await microTask();
 }
 
