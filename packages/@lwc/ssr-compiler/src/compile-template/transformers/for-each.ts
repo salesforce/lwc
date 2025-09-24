@@ -8,10 +8,11 @@
 import { builders as b, is } from 'estree-toolkit';
 import { esTemplate } from '../../estemplate';
 import { irChildrenToEs } from '../ir-to-es';
-import { getScopedExpression, optimizeAdjacentYieldStmts } from '../shared';
+import { optimizeAdjacentYieldStmts } from '../shared';
 
+import { getScopedExpression } from '../expression';
 import type { ForEach as IrForEach } from '@lwc/template-compiler';
-import type { Expression as EsExpression, ForOfStatement as EsForOfStatement } from 'estree';
+import type { ForOfStatement as EsForOfStatement } from 'estree';
 import type { Transformer } from '../types';
 
 const bForOfYieldFrom = esTemplate`
@@ -28,7 +29,7 @@ export const ForEach: Transformer<IrForEach> = function ForEach(node, cxt): EsFo
     const forEachStatements = irChildrenToEs(node.children, cxt);
     cxt.popLocalVars();
 
-    const expression = node.expression as EsExpression;
+    const expression = node.expression;
     const iterable = getScopedExpression(expression, cxt);
 
     return [

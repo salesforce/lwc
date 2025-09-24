@@ -54,7 +54,15 @@ vi.mock('@lwc/ssr-runtime', async () => {
 
 const SSR_MODE: CompilationMode = DEFAULT_SSR_MODE;
 
-async function compileFixture({ entry, dirname, experimentalComplexExpressions }: { entry: string; dirname: string, experimentalComplexExpressions: boolean }) {
+async function compileFixture({
+    entry,
+    dirname,
+    experimentalComplexExpressions,
+}: {
+    entry: string;
+    dirname: string;
+    experimentalComplexExpressions: boolean;
+}) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
     const input = 'virtual/fixture/test.js';
@@ -76,7 +84,7 @@ async function compileFixture({ entry, dirname, experimentalComplexExpressions }
                     loader: path.join(__dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
-                experimentalComplexExpressions
+                experimentalComplexExpressions,
             }),
         ],
         onwarn({ message, code }) {
