@@ -1,0 +1,1 @@
+LWC1034: Ambiguous attribute value lwc:if="{isTrue()}". If you want to make it a valid identifier you should remove the surrounding quotes lwc:if={isTrue()}. If you want to make it a string you should escape it lwc:if="\{isTrue()}".

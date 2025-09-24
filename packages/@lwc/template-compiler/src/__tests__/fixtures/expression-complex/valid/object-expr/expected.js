@@ -1,33 +1,34 @@
 import _implicitStylesheets from "./object-expr.css";
 import _implicitScopedStylesheets from "./object-expr.scoped.css?scoped=true";
-import { freezeTemplate, parseFragment, registerTemplate } from "lwc";
-const $fragment1 = parseFragment`<li${3}>${"t1"}</li>`;
+import _xPert from "x/pert";
+import { freezeTemplate, registerTemplate } from "lwc";
 const stc0 = {
   key: 0,
 };
+const stc1 = {
+  props: {
+    attr: {
+      obj: "literal",
+    },
+  },
+  key: 1,
+};
+const stc2 = {
+  obj: "literal",
+};
 function tmpl($api, $cmp, $slotset, $ctx) {
   const {
-    k: api_key,
     d: api_dynamic_text,
-    sp: api_static_part,
-    st: api_static_fragment,
-    i: api_iterator,
+    t: api_text,
+    c: api_custom_element,
     h: api_element,
   } = $api;
   return [
-    api_element(
-      "ul",
-      stc0,
-      api_iterator($cmp.list(), function (item, index) {
-        return api_static_fragment($fragment1, api_key(2, item), [
-          api_static_part(
-            1,
-            null,
-            api_dynamic_text(index) + " - " + api_dynamic_text(item)
-          ),
-        ]);
-      })
-    ),
+    api_element("section", stc0, [
+      api_custom_element("x-pert", _xPert, stc1, [
+        api_text(api_dynamic_text(stc2.toString())),
+      ]),
+    ]),
   ];
   /*LWC compiler vX.X.X*/
 }
