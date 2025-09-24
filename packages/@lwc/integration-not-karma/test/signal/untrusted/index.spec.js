@@ -2,7 +2,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Test from 'x/test';
 import { Signal } from 'x/signal';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 const createElementSignalAndInsertIntoDom = async (object) => {
     const elm = createElement('x-test', { is: Test });
@@ -17,8 +17,10 @@ describe('signal reaction in lwc', () => {
 
     beforeAll(() => setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true));
     afterAll(() => setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false));
-    beforeEach(() => (consoleSpy = spyConsole()));
-    afterEach(() => consoleSpy.reset());
+    beforeEach(() => {
+        consoleSpy = spyOn(console, 'warn');
+    });
+    afterEach(() => consoleSpy.mockRestore());
 
     describe('with trusted signal set', () => {
         describe('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION is enabled', () => {
@@ -28,13 +30,13 @@ describe('signal reaction in lwc', () => {
                 const elm = await createElementSignalAndInsertIntoDom({
                     value: 'non signal value',
                 });
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 expect(elm.shadowRoot.textContent).toBe('non signal value');
             });
             it('will not warn if rendering signal objects', async () => {
                 const signal = new Signal('signal value');
                 const elm = await createElementSignalAndInsertIntoDom(signal);
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 signal.value = 'new signal value';
                 await Promise.resolve();
                 expect(elm.shadowRoot.textContent).toBe('new signal value');
@@ -49,13 +51,13 @@ describe('signal reaction in lwc', () => {
                 const elm = await createElementSignalAndInsertIntoDom({
                     value: 'non signal value',
                 });
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 expect(elm.shadowRoot.textContent).toBe('non signal value');
             });
             it('will not warn if rendering signal objects', async () => {
                 const signal = new Signal('signal value');
                 const elm = await createElementSignalAndInsertIntoDom(signal);
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 signal.value = 'new signal value';
                 await Promise.resolve();
                 expect(elm.shadowRoot.textContent).toBe('new signal value');
@@ -80,15 +82,20 @@ describe('signal reaction in lwc', () => {
                 const elm = await createElementSignalAndInsertIntoDom({
                     value: 'non signal value',
                 });
-                expect(consoleSpy.calls.warn[0][0].message).toContain(
-                    'Attempted to subscribe to an object that has the shape of a signal but received the following error: TypeError: signal.subscribe is not a function'
+                expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                    expect.objectContaining({
+                        message: expect.stringContaining(
+                            'Attempted to subscribe to an object that has the shape of a signal but received the following error: TypeError: signal.subscribe is not a function'
+                        ),
+                    })
                 );
                 expect(elm.shadowRoot.textContent).toBe('non signal value');
             });
             it('will not warn if rendering signal objects', async () => {
                 const signal = new Signal('signal value');
                 const elm = await createElementSignalAndInsertIntoDom(signal);
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 signal.value = 'new signal value';
                 await Promise.resolve();
                 expect(elm.shadowRoot.textContent).toBe('new signal value');
@@ -103,7 +110,7 @@ describe('signal reaction in lwc', () => {
                 const elm = await createElementSignalAndInsertIntoDom({
                     value: 'non signal value',
                 });
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 expect(elm.shadowRoot.textContent).toBe('non signal value');
             });
             /**
@@ -116,7 +123,7 @@ describe('signal reaction in lwc', () => {
             it('will not warn if rendering signal objects but it will not react', async () => {
                 const signal = new Signal('signal value');
                 const elm = await createElementSignalAndInsertIntoDom(signal);
-                expect(consoleSpy.calls.warn.length).toEqual(0);
+                expect(consoleSpy).not.toHaveBeenCalled();
                 signal.value = 'new signal value';
                 await Promise.resolve();
                 expect(elm.shadowRoot.textContent).toBe('signal value');

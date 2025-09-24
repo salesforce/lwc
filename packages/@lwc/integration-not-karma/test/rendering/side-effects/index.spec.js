@@ -4,15 +4,15 @@ import SideEffectDuringRender from 'x/sideEffectDuringRender';
 import SideEffectDuringTemplate from 'x/sideEffectDuringTemplate';
 import SideEffectDuringRenderExternal from 'x/sideEffectDuringRenderExternal';
 import SideEffectDuringTemplateExternal from 'x/sideEffectDuringTemplateExternal';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 describe('side effects', () => {
     let consoleSpy;
     beforeEach(() => {
-        consoleSpy = spyConsole();
+        consoleSpy = spyOn(console, 'error');
     });
     afterEach(() => {
-        consoleSpy.reset();
+        consoleSpy.mockRestore();
     });
 
     it('logs error for side effect during render', async () => {
@@ -22,11 +22,15 @@ describe('side effects', () => {
         await Promise.resolve();
 
         if (process.env.NODE_ENV === 'production') {
-            expect(consoleSpy.calls.error.length).toEqual(0);
+            expect(consoleSpy).not.toHaveBeenCalled();
         } else {
-            expect(consoleSpy.calls.error.length).toEqual(1);
-            expect(consoleSpy.calls.error[0][0].message).toContain(
-                'render() method has side effects on the state of property "foo"'
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        'render() method has side effects on the state of property "foo"'
+                    ),
+                })
             );
         }
     });
@@ -40,11 +44,15 @@ describe('side effects', () => {
         await Promise.resolve();
 
         if (process.env.NODE_ENV === 'production') {
-            expect(consoleSpy.calls.error.length).toEqual(0);
+            expect(consoleSpy).not.toHaveBeenCalled();
         } else {
-            expect(consoleSpy.calls.error.length).toEqual(1);
-            expect(consoleSpy.calls.error[0][0].message).toContain(
-                'Updating the template has side effects on the state of property "foo"'
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        'Updating the template has side effects on the state of property "foo"'
+                    ),
+                })
             );
         }
     });
@@ -57,18 +65,22 @@ describe('side effects', () => {
 
         await Promise.resolve();
 
-        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy).not.toHaveBeenCalled();
 
         elm.bar = 1; // force re-render
 
         await Promise.resolve();
 
         if (process.env.NODE_ENV === 'production') {
-            expect(consoleSpy.calls.error.length).toEqual(0);
+            expect(consoleSpy).not.toHaveBeenCalled();
         } else {
-            expect(consoleSpy.calls.error.length).toEqual(1);
-            expect(consoleSpy.calls.error[0][0].message).toContain(
-                'render() method has side effects on the state of property "baz"'
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        'render() method has side effects on the state of property "baz"'
+                    ),
+                })
             );
         }
     });
@@ -81,18 +93,22 @@ describe('side effects', () => {
 
         await Promise.resolve();
 
-        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy).not.toHaveBeenCalled();
 
         elm.bar = 1; // force re-render
 
         await Promise.resolve();
 
         if (process.env.NODE_ENV === 'production') {
-            expect(consoleSpy.calls.error.length).toEqual(0);
+            expect(consoleSpy).not.toHaveBeenCalled();
         } else {
-            expect(consoleSpy.calls.error.length).toEqual(1);
-            expect(consoleSpy.calls.error[0][0].message).toContain(
-                'Updating the template has side effects on the state of property "baz"'
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        'Updating the template has side effects on the state of property "baz"'
+                    ),
+                })
             );
         }
     });

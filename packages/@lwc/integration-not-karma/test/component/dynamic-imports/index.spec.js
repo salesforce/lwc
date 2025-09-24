@@ -10,7 +10,7 @@ import LwcDynamicSlotted from 'x/lwcDynamicSlotted';
 import ContainerFoo from 'x/containerFoo';
 import ContainerBar from 'x/containerBar';
 
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 import { registerForLoad, clearRegister } from '../../../helpers/dynamic-loader.js';
 
 beforeEach(() => {
@@ -116,12 +116,10 @@ it('should not cache DOM elements using lwc:dynamic', async () => {
 
 describe('slotted content using lwc:dynamic', () => {
     let consoleSpy;
-    beforeEach(() => {
-        consoleSpy = spyConsole();
+    beforeAll(() => {
+        consoleSpy = spyOn(console, 'error');
     });
-    afterEach(() => {
-        consoleSpy.reset();
-    });
+    afterAll(() => consoleSpy.mockRestore());
 
     it('reallocate slotted content after changing constructor', async () => {
         const elm = createElement('x-dynamic-slotted', { is: LwcDynamicSlotted });
@@ -136,7 +134,7 @@ describe('slotted content using lwc:dynamic', () => {
             // `slot-bar` is not rendered in synthetic shadow
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBe(null);
         }
-        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy).not.toHaveBeenCalled();
 
         // Swap construstor and check if nodes have been reallocated.
         elm.ctor = ContainerBar;
@@ -150,7 +148,7 @@ describe('slotted content using lwc:dynamic', () => {
             // `slot-foo` is not rendered in synthetic shadow
             expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(null);
         }
-        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy).not.toHaveBeenCalled();
     });
 });
 
@@ -242,12 +240,10 @@ it('should not cache DOM elements', async () => {
 
 describe('slotted content', () => {
     let consoleSpy;
-    beforeEach(() => {
-        consoleSpy = spyConsole();
+    beforeAll(() => {
+        consoleSpy = spyOn(console, 'error');
     });
-    afterEach(() => {
-        consoleSpy.reset();
-    });
+    afterAll(() => consoleSpy.mockRestore());
 
     it('reallocate slotted content after changing constructor', async () => {
         const elm = createElement('x-dynamic-slotted', { is: DynamicSlotted });
@@ -262,7 +258,7 @@ describe('slotted content', () => {
             // `slot-bar` is not rendered in synthetic shadow
             expect(elm.shadowRoot.querySelector('[data-id="slot-bar"]').assignedSlot).toBe(null);
         }
-        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy).not.toHaveBeenCalled();
 
         // Swap constructor and check if nodes have been reallocated.
         elm.ctor = ContainerBar;
@@ -276,6 +272,6 @@ describe('slotted content', () => {
             // `slot-foo` is not rendered in synthetic shadow
             expect(elm.shadowRoot.querySelector('[data-id="slot-foo"]').assignedSlot).toBe(null);
         }
-        expect(consoleSpy.calls.error.length).toEqual(0);
+        expect(consoleSpy).not.toHaveBeenCalled();
     });
 });

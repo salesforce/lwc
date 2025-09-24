@@ -5,7 +5,7 @@ import RegressionContainer from 'x/regressionContainer';
 import FallbackContentReuseDynamicKeyParent from 'x/fallbackContentReuseDynamicKeyParent';
 import UnknownSlotShadow from 'x/unknownSlotShadow';
 import UnknownSlotLight from 'x/unknownSlotLight';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', () => {
@@ -78,12 +78,15 @@ it('should not throw error when updating slotted content triggers next tick re-r
 });
 
 describe('does not log an error/warning on unknown slot name', () => {
-    let consoleSpy;
+    let warnSpy;
+    let errorSpy;
     beforeEach(() => {
-        consoleSpy = spyConsole();
+        warnSpy = spyOn(console, 'warn');
+        errorSpy = spyOn(console, 'error');
     });
     afterEach(() => {
-        consoleSpy.reset();
+        warnSpy.mockRestore();
+        errorSpy.mockRestore();
     });
 
     it('shadow dom', async () => {
@@ -100,8 +103,8 @@ describe('does not log an error/warning on unknown slot name', () => {
                 .assignedNodes().length
         ).toEqual(0);
 
-        expect(consoleSpy.calls.error.length).toEqual(0);
-        expect(consoleSpy.calls.warn.length).toEqual(0);
+        expect(warnSpy).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
     });
 
     it('light dom', async () => {
@@ -113,7 +116,7 @@ describe('does not log an error/warning on unknown slot name', () => {
         // nothing slotted into the child
         expect(elm.querySelector('x-unknown-slot-light-child').children.length).toEqual(0);
 
-        expect(consoleSpy.calls.error.length).toEqual(0);
-        expect(consoleSpy.calls.warn.length).toEqual(0);
+        expect(warnSpy).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
     });
 });

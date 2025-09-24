@@ -73,7 +73,7 @@ it('should throw an error when the passing a non iterable', () => {
 
 describe('null/undefined values', () => {
     let spy;
-    beforeAll(() => {
+    beforeEach(() => {
         spy = spyOn(console, 'error').mockImplementation(() => {});
     });
     afterEach(() => spy.mockRestore());
