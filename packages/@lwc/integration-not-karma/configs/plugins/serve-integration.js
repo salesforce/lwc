@@ -10,8 +10,6 @@ import {
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
 } from '../../helpers/options.js';
 
-const UTILS = fileURLToPath(new URL('../../helpers/utils.js', import.meta.url));
-
 /** Cache reused between each compilation to speed up the compilation time. */
 let cache;
 
@@ -25,7 +23,7 @@ const createRollupPlugin = (input, options) => {
         // Sourcemaps don't work with Istanbul coverage
         sourcemap: !process.env.COVERAGE,
         experimentalDynamicComponent: {
-            loader: UTILS,
+            loader: fileURLToPath(new URL('../../helpers/dynamic-loader', import.meta.url)),
             strict: true,
         },
         enableDynamicComponents: true,
@@ -86,9 +84,15 @@ const transform = async (ctx) => {
         cache,
         plugins: [customLwcRollupPlugin],
 
-        // Rollup should not attempt to resolve the engine and the test utils, Karma takes care of injecting it
-        // globally in the page before running the tests.
-        external: ['lwc', 'wire-service', '@test/loader', UTILS],
+        external: [
+            'lwc',
+            'wire-service',
+            // Some helper files export functions that mutate a global state. The setup file calls
+            // some of those functions and does not get bundled. Including the helper files in the
+            // bundle would create a separate global state, causing tests to fail. We don't need to
+            // mark _all_ helpers as external, but we do anyway for ease of maintenance.
+            /\/helpers\/\w+\.js$/,
+        ],
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin
@@ -112,6 +116,7 @@ const transform = async (ctx) => {
 
 /** @type {import('@web/dev-server-core').Plugin} */
 export default {
+    name: 'lwc-integration-plugin',
     async serve(ctx) {
         if (ctx.path.endsWith('.spec.js')) {
             return await transform(ctx);

@@ -15,12 +15,13 @@ describe('Event target in slot elements', () => {
 
     it('should receive event with correct target', async () => {
         const select = await browser.shadowDeep$('integration-slotted-event-target', 'select');
-        await select.selectByVisibleText('Second');
+        await select.selectByIndex(1); // Second option (0-indexed)
 
         const element = await browser.shadowDeep$(
             'integration-slotted-event-target',
             '.target-is-select'
         );
+
         assert.strictEqual(await element.getText(), 'Event Target is select element');
     });
 });

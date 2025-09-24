@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Wrapper from 'x/wrapper';
-import { ENABLE_THIS_DOT_HOST_ELEMENT } from '../../../helpers/utils.js';
+import { ENABLE_THIS_DOT_HOST_ELEMENT } from '../../../helpers/constants.js';
 
 function createWrapper() {
     const elm = createElement('x-wrapper', { is: Wrapper });

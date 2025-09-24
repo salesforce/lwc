@@ -1,6 +1,7 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import fs from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.js';
@@ -17,9 +18,8 @@ lwcSsr.setHooks({
 });
 
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
-
-let guid = 0;
-const COMPONENT_UNDER_TEST = 'main';
+const COMPONENT_NAME = 'x-main';
+const COMPONENT_ENTRYPOINT = 'x/main/main.js';
 
 // Like `fs.existsSync` but async
 async function exists(path) {
@@ -31,15 +31,16 @@ async function exists(path) {
     }
 }
 
-async function getCompiledModule(dir, compileForSSR) {
+async function compileModule(input, targetSSR, format) {
+    const modulesDir = path.join(ROOT_DIR, input.slice(0, -COMPONENT_ENTRYPOINT.length));
     const bundle = await rollup({
-        input: path.join(dir, 'x', COMPONENT_UNDER_TEST, `${COMPONENT_UNDER_TEST}.js`),
+        input,
         plugins: [
             lwcRollupPlugin({
-                targetSSR: !!compileForSSR,
-                modules: [{ dir: path.join(ROOT_DIR, dir) }],
+                targetSSR,
+                modules: [{ dir: modulesDir }],
                 experimentalDynamicComponent: {
-                    loader: 'test-utils',
+                    loader: fileURLToPath(new URL('../../helpers/loader.js', import.meta.url)),
                     strict: true,
                 },
                 enableDynamicComponents: true,
@@ -49,7 +50,7 @@ async function getCompiledModule(dir, compileForSSR) {
             }),
         ],
 
-        external: ['lwc', '@lwc/ssr-runtime', 'test-utils', '@test/loader'], // @todo: add ssr modules for test-utils and @test/loader
+        external: ['lwc', '@lwc/ssr-runtime'],
 
         onwarn(warning, warn) {
             // Ignore warnings from our own Rollup plugin
@@ -60,102 +61,49 @@ async function getCompiledModule(dir, compileForSSR) {
     });
 
     const { output } = await bundle.generate({
-        format: 'iife',
-        name: 'Main',
+        format,
+        name: 'Component',
         globals: {
             lwc: 'LWC',
             '@lwc/ssr-runtime': 'LWC',
-            'test-utils': 'TestUtils',
         },
     });
 
     return output[0].code;
 }
 
-function throwOnUnexpectedConsoleCalls(runnable, expectedConsoleCalls = {}) {
-    // The console is shared between the VM and the main realm. Here we ensure that known warnings
-    // are ignored and any others cause an explicit error.
-    const methods = ['error', 'warn', 'log', 'info'];
-    const originals = {};
-    for (const method of methods) {
-        // eslint-disable-next-line no-console
-        originals[method] = console[method];
-        // eslint-disable-next-line no-console
-        console[method] = function (error) {
-            if (
-                method === 'warn' &&
-                // This eslint warning is a false positive due to RegExp.prototype.test
-                // eslint-disable-next-line vitest/no-conditional-tests
-                /Cannot set property "(inner|outer)HTML"/.test(error?.message)
-            ) {
-                return;
-            } else if (
-                expectedConsoleCalls[method]?.some((matcher) => error.message.includes(matcher))
-            ) {
-                return;
-            }
-
-            throw new Error(`Unexpected console.${method} call: ${error}`);
-        };
-    }
-    try {
-        return runnable();
-    } finally {
-        Object.assign(console, originals);
-    }
-}
-
 /**
- * This is the function that takes SSR bundle code and test config, constructs a script that will
- * run in a separate JS runtime environment with its own global scope. The `context` object
- * (defined at the top of this file) is passed in as the global scope for that script. The script
- * runs, utilizing the `LWC` object that we've attached to the global scope, it sets a
- * new value (the rendered markup) to `globalThis.moduleOutput`, which corresponds to
- * `context.moduleOutput in this file's scope.
- *
- * So, script runs, generates markup, & we get that markup out and return it for use
- * in client-side tests.
+ * This function takes a path to a component definition and a config file and returns the
+ * SSR-generated markup for the component. It does so by compiling the component and then
+ * running a script in a separate JS runtime environment to render it.
  */
-async function getSsrCode(moduleCode, testConfig, filePath, expectedSSRConsoleCalls) {
+async function getSsrMarkup(componentEntrypoint, configPath) {
+    const componentIife = await compileModule(componentEntrypoint, !ENGINE_SERVER, 'iife');
+    // To minimize the amount of code in the generated script, ideally we'd do `import Component`
+    // and delegate the bundling to the loader. However, that's complicated to configure and using
+    // imports with vm.Script/vm.Module is still experimental, so we use an IIFE for simplicity.
+    // Additionally, we could import LWC, but the framework requires configuration before each test
+    // (setHooks/setFeatureFlagForTest), so instead we configure it once in the top-level context
+    // and inject it as a global variable.
     const script = new vm.Script(
-        `(() => {
-            ${testConfig}
-            ${moduleCode}
+        `(async () => {
+            const {default: config} = await import('./${configPath}');
+            ${componentIife /* var Component = ... */}
             return LWC.renderComponent(
-                'x-${COMPONENT_UNDER_TEST}-${guid++}',
-                Main,
+                '${COMPONENT_NAME}',
+                Component,
                 config.props || {},
                 false,
                 'sync'
             );
         })()`,
-        { filename: `[SSR] ${filePath}` }
+        {
+            filename: `[SSR] ${configPath}`,
+            importModuleDynamically: vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER,
+        }
     );
 
-    return throwOnUnexpectedConsoleCalls(
-        () => script.runInContext(vm.createContext({ LWC: lwcSsr })),
-        expectedSSRConsoleCalls
-    );
-}
-
-async function getTestConfig(input) {
-    const bundle = await rollup({
-        input,
-        external: ['lwc', 'test-utils', '@test/loader'],
-    });
-
-    const { output } = await bundle.generate({
-        format: 'iife',
-        globals: {
-            lwc: 'LWC',
-            'test-utils': 'TestUtils',
-        },
-        name: 'config',
-    });
-
-    const { code } = output[0];
-
-    return code;
+    return await script.runInContext(vm.createContext({ LWC: lwcSsr }));
 }
 
 async function existsUp(dir, file) {
@@ -171,44 +119,32 @@ async function existsUp(dir, file) {
  * Hydration test `index.spec.js` files are actually config files, not spec files.
  * This function wraps those configs in the test code to be executed.
  */
-async function wrapHydrationTest(filePath) {
-    const {
-        default: { expectedSSRConsoleCalls, requiredFeatureFlags },
-    } = await import(path.join(ROOT_DIR, filePath));
+async function wrapHydrationTest(configPath) {
+    const { default: config } = await import(path.join(ROOT_DIR, configPath));
 
     try {
-        requiredFeatureFlags?.forEach((featureFlag) => {
+        config.requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, true);
         });
 
-        const suiteDir = path.dirname(filePath);
-        // You can add an `.only` file alongside an `index.spec.js` file to make it `fdescribe()`
+        const suiteDir = path.dirname(configPath);
+        const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
+        // You can add an `.only` file alongside an `index.spec.js` file to make the test focused
         const onlyFileExists = await existsUp(suiteDir, '.only');
+        const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
-        const componentDefCSR = await getCompiledModule(suiteDir, false);
-        const componentDefSSR = ENGINE_SERVER
-            ? componentDefCSR
-            : await getCompiledModule(suiteDir, true);
-        const ssrOutput = await getSsrCode(
-            componentDefSSR,
-            await getTestConfig(filePath),
-            filePath,
-            expectedSSRConsoleCalls
-        );
-
-        // FIXME: can we turn these IIFEs into ESM imports?
         return `
-        import { runTest } from '/helpers/test-hydrate.js';
-        import config from '/${filePath}?original=1';
-        ${onlyFileExists ? 'it.only' : 'it'}('${filePath}', async () => {
-            const ssrRendered = ${JSON.stringify(ssrOutput) /* escape quotes */};
-            // Component code, IIFE set as Main
-            ${componentDefCSR};
-            return await runTest(ssrRendered, Main, config);
-        });
+        import * as LWC from 'lwc';
+        import { runTest } from '/configs/plugins/test-hydration.js';
+        runTest(
+            '/${configPath}?original=1',
+            '/${componentEntrypoint}',
+            ${JSON.stringify(ssrOutput) /* escape quotes */},
+            ${onlyFileExists}
+        );
         `;
     } finally {
-        requiredFeatureFlags?.forEach((featureFlag) => {
+        config.requiredFeatureFlags?.forEach((featureFlag) => {
             lwcSsr.setFeatureFlagForTest(featureFlag, false);
         });
     }
@@ -216,6 +152,7 @@ async function wrapHydrationTest(filePath) {
 
 /** @type {import('@web/dev-server-core').Plugin} */
 export default {
+    name: 'lwc-hydration-plugin',
     async serve(ctx) {
         // Hydration test "index.spec.js" files are actually just config files.
         // They don't directly define the tests. Instead, when we request the file,
@@ -224,6 +161,8 @@ export default {
         // to return the file unmodified.
         if (ctx.path.endsWith('.spec.js') && !ctx.query.original) {
             return await wrapHydrationTest(ctx.path.slice(1)); // remove leading /
+        } else if (ctx.path.endsWith('/' + COMPONENT_ENTRYPOINT)) {
+            return await compileModule(ctx.path.slice(1) /* remove leading / */, false, 'esm');
         }
     },
 };

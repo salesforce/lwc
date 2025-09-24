@@ -23,7 +23,9 @@ import Text from 'x/text';
 import TableWithExpression from 'x/tableWithExpressions';
 import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
 import TextWithPreserveComments from 'x/textWithPreserveComments';
-import { extractDataIds, LOWERCASE_SCOPE_TOKENS } from '../../helpers/utils.js';
+import { jasmine } from '../../helpers/jasmine.js';
+import { LOWERCASE_SCOPE_TOKENS } from '../../helpers/constants.js';
+import { extractDataIds } from '../../helpers/utils.js';
 
 describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () => {
     ['native', 'synthetic'].forEach((firstRenderMode) => {

@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
-import { getHooks, setHooks } from '../../helpers/utils.js';
+import { jasmine, jasmineSpyOn as spyOn } from '../../helpers/jasmine.js';
+import { getHooks, setHooks } from '../../helpers/hooks.js';
 
 function setSanitizeHtmlContentHookForTest(impl) {
     const { sanitizeHtmlContent } = getHooks();

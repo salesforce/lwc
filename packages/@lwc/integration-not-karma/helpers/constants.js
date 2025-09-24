@@ -1,7 +1,7 @@
 import { API_VERSION } from './options.js';
 
-// These values are based on the API versions in @lwc/shared/api-version
-export const LOWERCASE_SCOPE_TOKENS = API_VERSION >= 59,
+export const // These values are based on the API versions in @lwc/shared/api-version
+    LOWERCASE_SCOPE_TOKENS = API_VERSION >= 59,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS = API_VERSION >= 60,
     USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS = API_VERSION >= 60,
     DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION = API_VERSION >= 60,

@@ -4,6 +4,7 @@ import Slotted from 'x/slotted';
 import Nested from 'x/nested';
 import NestedFallback from 'x/nestedFallback';
 import TestWithDiv from 'x/testWithDiv';
+import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 describe('Element.querySelector', () => {
     it('should return null if no Element match', () => {

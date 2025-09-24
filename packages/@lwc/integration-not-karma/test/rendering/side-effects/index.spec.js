@@ -4,7 +4,7 @@ import SideEffectDuringRender from 'x/sideEffectDuringRender';
 import SideEffectDuringTemplate from 'x/sideEffectDuringTemplate';
 import SideEffectDuringRenderExternal from 'x/sideEffectDuringRenderExternal';
 import SideEffectDuringTemplateExternal from 'x/sideEffectDuringTemplateExternal';
-import { spyConsole } from '../../../helpers/utils.js';
+import { spyConsole } from '../../../helpers/console.js';
 
 describe('side effects', () => {
     let consoleSpy;

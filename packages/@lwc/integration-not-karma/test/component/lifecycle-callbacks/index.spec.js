@@ -11,6 +11,10 @@ import TimingParentLight from 'timing/parentLight';
 import ReorderingList from 'reordering/list';
 import ReorderingListLight from 'reordering/listLight';
 import Details from 'x/details';
+import MutationsParent from 'mutations/parent';
+import MutationsParentLight from 'mutations/parentLight';
+
+import { extractDataIds } from '../../../helpers/utils';
 
 function resetTimingBuffer() {
     window.timingBuffer = [];
@@ -319,11 +323,18 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
                 resetTimingBuffer();
 
                 document.body.appendChild(elm);
-                expect(window.timingBuffer).toEqual(
-                    !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                        ? ['parent:connectedCallback', 'child:connectedCallback']
-                        : ['parent:connectedCallback']
-                );
+
+                const expected = ['parent:connectedCallback'];
+
+                if (lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION) {
+                    expected.push('parent:renderedCallback');
+                }
+
+                if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                    expected.push('child:connectedCallback');
+                }
+
+                expect(window.timingBuffer).toEqual(expected);
             });
         });
     });
@@ -434,5 +445,120 @@ describe('attributeChangedCallback', () => {
         const cb = Details.CustomElementConstructor.prototype.attributeChangedCallback;
         cb.call(details, 'open', '', 'open');
         expect(details.getAttribute('open')).toBeNull();
+    });
+});
+
+describe('child mutations - scheduled rehydration', () => {
+    const scenarios = [
+        {
+            testName: 'shadow',
+            tagName: 'mutations-parent',
+            Ctor: MutationsParent,
+        },
+        {
+            testName: 'light',
+            tagName: 'mutations-parent-light',
+            Ctor: MutationsParentLight,
+        },
+    ];
+
+    scenarios.forEach(({ testName, tagName, Ctor }) => {
+        describe(testName, () => {
+            it('connect', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+
+                expect(window.timingBuffer).toEqual([
+                    'parent:connectedCallback',
+                    'child1:connectedCallback',
+                    'grand:child1:connectedCallback',
+                    'grand:child1:renderedCallback',
+                    'child1:renderedCallback',
+                    'parent:renderedCallback',
+                ]);
+            });
+
+            it('connect/mutate-child', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+                resetTimingBuffer();
+
+                const ids = extractDataIds(elm);
+                ids.child1.addChild();
+
+                await Promise.resolve();
+
+                expect(window.timingBuffer).toEqual([
+                    'grand:child2:connectedCallback',
+                    'grand:child2:renderedCallback',
+                    'child1:renderedCallback',
+                ]);
+            });
+
+            it('connect/mutate-child/disconnect-child', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+                resetTimingBuffer();
+
+                const ids = extractDataIds(elm);
+                // Mutate child - grand child 2
+                ids.child1.addChild();
+                // Disconnect the child that was just mutated
+                elm.disconnectLastChild();
+
+                await Promise.resolve();
+
+                const expected = [
+                    'child1:disconnectedCallback',
+                    'grand:child1:disconnectedCallback',
+                    'parent:renderedCallback',
+                ];
+
+                if (
+                    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
+                    !lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION
+                ) {
+                    // These are fired in the children of the disconnected child
+                    expected.push(
+                        'grand:child2:connectedCallback',
+                        'grand:child2:renderedCallback'
+                    );
+                }
+
+                expect(window.timingBuffer).toEqual(expected);
+            });
+
+            it('connect/disconnect-child/mutate-child', async () => {
+                const elm = createElement(tagName, { is: Ctor });
+                document.body.appendChild(elm);
+                resetTimingBuffer();
+
+                const ids = extractDataIds(elm);
+                elm.disconnectLastChild();
+                // Mutate child that was just disconnected
+                ids.child1.addChild();
+
+                await Promise.resolve();
+
+                const expected = [
+                    'child1:disconnectedCallback',
+                    'grand:child1:disconnectedCallback',
+                    'parent:renderedCallback',
+                ];
+
+                if (
+                    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
+                    !lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION
+                ) {
+                    // These are fired in the children of the disconnected child
+                    expected.push(
+                        'grand:child2:connectedCallback',
+                        'grand:child2:renderedCallback'
+                    );
+                }
+
+                expect(window.timingBuffer).toEqual(expected);
+            });
+        });
     });
 });
