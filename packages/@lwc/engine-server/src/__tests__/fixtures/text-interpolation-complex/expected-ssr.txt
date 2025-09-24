@@ -1,7 +1,0 @@
-<fixture-test>
-  <template shadowrootmode="open">
-    <p>
-      foo bar bar foo
-    </p>
-  </template>
-</fixture-test>

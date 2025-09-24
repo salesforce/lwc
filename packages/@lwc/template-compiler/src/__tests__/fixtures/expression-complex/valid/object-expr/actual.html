@@ -1,5 +1,7 @@
 <template>
-    <section>
-        <x-pert attr="{({ obj: 'literal' })}">{({ obj: 'literal'}).toString()}</x-pert>
-    </section>
+    <ul>
+        <template for:each="{list()}" for:item="item" for:index="index">
+            <li key={item}>{index} - {item}</li>
+        </template>
+    </ul>
 </template>

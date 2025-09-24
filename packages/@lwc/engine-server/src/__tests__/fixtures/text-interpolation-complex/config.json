@@ -5,7 +5,7 @@
     },
     "experimentalComplexExpressions": true,
     "ssrFiles": {
-        "expected": "expected-ssr.txt",
+        "expected": "expected-ssr.html",
         "error": "error-ssr.txt"
     }
 }
