@@ -10,15 +10,12 @@ import { is, builders as b } from 'estree-toolkit';
 import { esTemplateWithYield } from '../../estemplate';
 
 import { irChildrenToEs } from '../ir-to-es';
-import { bAttributeValue, getScopedExpression } from '../shared';
+import { bAttributeValue } from '../shared';
 import { isNullableOf } from '../../estree/validators';
+import { getScopedExpression } from '../expression';
 import { Element } from './element';
 import type { Slot as IrSlot } from '@lwc/template-compiler';
-import type {
-    Statement as EsStatement,
-    IfStatement as EsIfStatement,
-    Expression as EsExpression,
-} from 'estree';
+import type { Statement as EsStatement, IfStatement as EsIfStatement } from 'estree';
 import type { Transformer } from '../types';
 
 const bConditionalSlot = esTemplateWithYield`
@@ -86,7 +83,7 @@ const bConditionalSlot = esTemplateWithYield`
 export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[] {
     const slotBindDirective = node.directives.find((dir) => dir.name === 'SlotBind');
     const slotBound = slotBindDirective?.value
-        ? getScopedExpression(slotBindDirective.value as EsExpression, ctx)
+        ? getScopedExpression(slotBindDirective.value, ctx)
         : null;
     const slotName = bAttributeValue(node, 'name');
     // FIXME: avoid serializing the slot's children twice

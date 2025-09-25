@@ -9,7 +9,6 @@ import { walk } from 'estree-walker';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 import { isBooleanAttribute } from '@lwc/shared';
 import * as t from '../shared/estree';
-import { TEMPLATE_PARAMS } from '../shared/constants';
 import { isProperty, isStringLiteral } from '../shared/ast';
 import {
     isAllowedFragOnlyUrlsXHTML,
@@ -18,13 +17,75 @@ import {
     isIdReferencingAttribute,
     isSvgUseHref,
 } from '../parser/attribute';
-import type { Attribute, BaseElement, ComplexExpression, Property } from '../shared/types';
+import type {
+    Attribute,
+    BaseElement,
+    Expression,
+    ComplexExpression,
+    Property,
+} from '../shared/types';
 import type { Node } from 'estree-walker';
 import type CodeGen from './codegen';
 
 type VariableName = string;
 type VariableShadowingMultiplicity = number;
 type VariableNames = Set<string>;
+
+/**
+ * Bind the passed expression to the component instance. It applies the following transformation to the expression:
+ * - {value} --> {$cmp.value}
+ * - {value[index]} --> {$cmp.value[$cmp.index]}
+ * @param expression
+ */
+export function bindExpression(
+    expression: Expression | t.Literal | ComplexExpression,
+    isLocalIdentifier: (node: t.Identifier) => boolean,
+    templateInstanceName: string,
+    experimentalComplexExpressions: boolean
+): t.Expression {
+    if (t.isIdentifier(expression)) {
+        if (!isLocalIdentifier(expression)) {
+            return t.memberExpression(t.identifier(templateInstanceName), expression);
+        } else {
+            return expression;
+        }
+    }
+
+    // TODO [#3370]: remove experimental template expression flag
+    if (experimentalComplexExpressions) {
+        // Cloning here is necessary because `this.replace()` is destructive, and we might use the
+        // node later during static content optimization
+        expression = structuredClone(expression);
+        return bindComplexExpression(
+            expression as ComplexExpression,
+            isLocalIdentifier,
+            templateInstanceName
+        );
+    }
+
+    // Cloning here is necessary because `this.replace()` is destructive, and we might use the
+    // node later during static content optimization
+    expression = structuredClone(expression);
+    // TODO [#3370]: when the template expression flag is removed, the
+    // ComplexExpression type should be redefined as an ESTree Node. Doing
+    // so when the flag is still in place results in a cascade of required
+    // type changes across the codebase.
+    walk(expression as Node, {
+        leave(node, parent) {
+            if (
+                parent !== null &&
+                t.isIdentifier(node) &&
+                t.isMemberExpression(parent) &&
+                parent.object === node &&
+                !isLocalIdentifier(node)
+            ) {
+                this.replace(t.memberExpression(t.identifier(templateInstanceName), node) as Node);
+            }
+        },
+    });
+
+    return expression as t.Expression;
+}
 
 /**
  * Bind the passed expression to the component instance. It applies the following
@@ -49,7 +110,8 @@ type VariableNames = Set<string>;
  */
 export function bindComplexExpression(
     expression: ComplexExpression,
-    codeGen: CodeGen
+    isLocalIdentifier: (node: t.Identifier) => boolean,
+    templateInstanceName: string
 ): t.Expression {
     const expressionScopes = new ExpressionScopes();
     // TODO [#3370]: when the template expression flag is removed, the
@@ -76,12 +138,10 @@ export function bindComplexExpression(
                 isIdentifier &&
                 !(t.isMemberExpression(parent) && parent.property === node && !parent.computed) &&
                 !(t.isProperty(parent) && parent.key === node) &&
-                !codeGen.isLocalIdentifier(node) &&
+                !isLocalIdentifier(node) &&
                 !expressionScopes.isScopedToExpression(node)
             ) {
-                this.replace(
-                    t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node) as Node
-                );
+                this.replace(t.memberExpression(t.identifier(templateInstanceName), node) as Node);
             }
         },
     });

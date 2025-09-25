@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { walk } from 'estree-walker';
 import {
     getAPIVersionFromNumber,
     SVG_NAMESPACE,
@@ -47,7 +46,7 @@ import {
     hasDynamicText,
 } from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
-import { bindAttributeExpression, bindComplexExpression } from './expression';
+import { bindAttributeExpression, bindExpression } from './expression';
 import type State from '../state';
 import type {
     ChildNode,
@@ -65,7 +64,6 @@ import type {
     OnDirective,
 } from '../shared/types';
 import type { APIVersion } from '@lwc/shared';
-import type { Node } from 'estree-walker';
 
 type RenderPrimitive =
     | 'iterator'
@@ -630,50 +628,12 @@ export default class CodeGen {
      * @param expression
      */
     bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
-        if (t.isIdentifier(expression)) {
-            if (!this.isLocalIdentifier(expression)) {
-                return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
-            } else {
-                return expression;
-            }
-        }
-
-        // TODO [#3370]: remove experimental template expression flag
-        if (this.state.config.experimentalComplexExpressions) {
-            // Cloning here is necessary because `this.replace()` is destructive, and we might use the
-            // node later during static content optimization
-            expression = structuredClone(expression);
-            return bindComplexExpression(expression as ComplexExpression, this);
-        }
-
-        // We need access to both this `this` and the walker's `this` in the walker
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const scope = this;
-
-        // Cloning here is necessary because `this.replace()` is destructive, and we might use the
-        // node later during static content optimization
-        expression = structuredClone(expression);
-        // TODO [#3370]: when the template expression flag is removed, the
-        // ComplexExpression type should be redefined as an ESTree Node. Doing
-        // so when the flag is still in place results in a cascade of required
-        // type changes across the codebase.
-        walk(expression as Node, {
-            leave(node, parent) {
-                if (
-                    parent !== null &&
-                    t.isIdentifier(node) &&
-                    t.isMemberExpression(parent) &&
-                    parent.object === node &&
-                    !scope.isLocalIdentifier(node)
-                ) {
-                    this.replace(
-                        t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node) as Node
-                    );
-                }
-            },
-        });
-
-        return expression as t.Expression;
+        return bindExpression(
+            expression,
+            this.isLocalIdentifier.bind(this),
+            TEMPLATE_PARAMS.INSTANCE,
+            this.state.config.experimentalComplexExpressions
+        );
     }
 
     genStaticElement(element: StaticElement, slotParentName?: string): t.Expression {
