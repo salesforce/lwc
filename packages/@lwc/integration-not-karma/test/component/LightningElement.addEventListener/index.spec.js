@@ -55,8 +55,13 @@ describe('event handler is not a function', () => {
         if (process.env.NODE_ENV === 'production') {
             expect(consoleSpy).not.toHaveBeenCalled();
         } else {
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
             expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
-                expect.stringContaining('Invalid second argument for this.addEventListener()')
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        'Invalid second argument for this.addEventListener()'
+                    ),
+                })
             );
         }
     });

@@ -6,12 +6,7 @@ import testPlugin from './plugins/serve-integration.js';
 export default {
     ...baseConfig,
     files: [
-        // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
         'test/**/*.spec.js',
-
-        // Logging mismatches
-        '!test/component/LightningElement.addEventListener/index.spec.js',
-
         // Implement objectContaining / arrayWithExactContents
         '!test/profiler/mutation-logging/index.spec.js',
     ],
