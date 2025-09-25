@@ -8,7 +8,7 @@ export default {
             colors: target.querySelectorAll('li'),
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         const ul = target.querySelector('ul');
         let colors = ul.querySelectorAll('li');
         expect(ul).toBe(snapshots.ul);
@@ -21,11 +21,10 @@ export default {
 
         target.colors = ['orange', 'green', 'violet'];
 
-        return Promise.resolve().then(() => {
-            colors = ul.querySelectorAll('li');
-            expect(colors[0].textContent).toBe('orange');
-            expect(colors[1].textContent).toBe('green');
-            expect(colors[2].textContent).toBe('violet');
-        });
+        await Promise.resolve();
+        colors = ul.querySelectorAll('li');
+        expect(colors[0].textContent).toBe('orange');
+        expect(colors[1].textContent).toBe('green');
+        expect(colors[2].textContent).toBe('violet');
     },
 };

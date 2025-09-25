@@ -134,29 +134,27 @@ describe('adopt node in the shadow', () => {
         expect(inner.parentElement.parentElement).toBe(elm);
     });
 
-    it('should apply the component styles to inserted elements', () => {
+    it('should apply the component styles to inserted elements', async () => {
         const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
 
         const elm = root.shadowRoot.querySelector('div');
         elm.innerHTML = '<div class="foo"></div>';
 
-        return waitForStyleToBeApplied().then(() => {
-            expect(window.getComputedStyle(elm.firstElementChild).fontSize).toBe('10px');
-        });
+        await waitForStyleToBeApplied();
+        expect(window.getComputedStyle(elm.firstElementChild).fontSize).toBe('10px');
     });
 
-    it('#871 - should apply style to inserted SVG elements', () => {
+    it('#871 - should apply style to inserted SVG elements', async () => {
         const root = createElement('x-test', { is: SvgWithLwcDomManual });
         document.body.appendChild(root);
 
         const svgElm = root.shadowRoot.querySelector('svg');
         svgElm.innerHTML = '<rect></rect>';
 
-        return waitForStyleToBeApplied().then(() => {
-            // Use firstChild instead of firstElementChild since accessing firstElementChild in an SVG element on
-            // IE11 throws an error.
-            expect(window.getComputedStyle(svgElm.firstChild).fill).toBe('rgb(0, 255, 0)');
-        });
+        await waitForStyleToBeApplied();
+        // Use firstChild instead of firstElementChild since accessing firstElementChild in an SVG element on
+        // IE11 throws an error.
+        expect(window.getComputedStyle(svgElm.firstChild).fill).toBe('rgb(0, 255, 0)');
     });
 });

@@ -40,28 +40,26 @@ describe('post-dispatch event state', () => {
     });
 
     describe('lwc:dom="manual" element', () => {
-        it('{ bubbles: true, composed: true }', () => {
+        it('{ bubbles: true, composed: true }', async () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
             nodes.container_span_manual.dispatchEvent(event);
 
             // lwc:dom=manual is async due to MutationObserver
-            return new Promise(setTimeout).then(() => {
-                assertEventStateReset(event);
-                expect(event.target).toBe(nodes['x-container']);
-            });
+            await new Promise(setTimeout);
+            assertEventStateReset(event);
+            expect(event.target).toBe(nodes['x-container']);
         });
 
-        it('{ bubbles: true, composed: false }', () => {
+        it('{ bubbles: true, composed: false }', async () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
             nodes.container_span_manual.dispatchEvent(event);
 
             // lwc:dom=manual is async due to MutationObserver
-            return new Promise(setTimeout).then(() => {
-                assertEventStateReset(event);
-                expect(event.target).toBe(null);
-            });
+            await new Promise(setTimeout);
+            assertEventStateReset(event);
+            expect(event.target).toBe(null);
         });
     });
 

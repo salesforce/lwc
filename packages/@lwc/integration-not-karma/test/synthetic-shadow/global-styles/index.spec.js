@@ -5,13 +5,12 @@ import Component from 'x/component';
 // Currently we can't, due to backwards compat.
 
 describe.skipIf(process.env.NATIVE_SHADOW)('global styles', () => {
-    it('injects global styles in document.head in synthetic shadow', () => {
+    it('injects global styles in document.head in synthetic shadow', async () => {
         const numStyleSheetsBefore = document.styleSheets.length;
         const elm = createElement('x-component', { is: Component });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            const numStyleSheetsAfter = document.styleSheets.length;
-            expect(numStyleSheetsBefore + 1).toEqual(numStyleSheetsAfter);
-        });
+        await Promise.resolve();
+        const numStyleSheetsAfter = document.styleSheets.length;
+        expect(numStyleSheetsBefore + 1).toEqual(numStyleSheetsAfter);
     });
 });

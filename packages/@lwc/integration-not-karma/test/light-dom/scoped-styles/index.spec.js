@@ -26,7 +26,7 @@ describe('Light DOM scoped CSS', () => {
         expect(otherComputed.marginRight).toEqual('5px');
     });
 
-    it('should replace scoped styles correctly with dynamic templates', () => {
+    it('should replace scoped styles correctly with dynamic templates', async () => {
         const elm = createElement('x-switchable', { is: Switchable });
 
         document.body.appendChild(elm);
@@ -37,23 +37,17 @@ describe('Light DOM scoped CSS', () => {
         expect(getComputedStyle(elm).marginLeft).toEqual('0px');
         expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 0)');
         elm.next();
-        return rafPromise()
-            .then(() => {
-                expect(getComputedStyle(elm).marginLeft).toEqual('20px');
-                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(255, 0, 0)');
-                elm.next();
-                return rafPromise();
-            })
-            .then(() => {
-                expect(getComputedStyle(elm).marginLeft).toEqual('0px');
-                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 0)');
-                elm.next();
-                return rafPromise();
-            })
-            .then(() => {
-                expect(getComputedStyle(elm).marginLeft).toEqual('30px');
-                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 255)');
-            });
+        await rafPromise();
+        expect(getComputedStyle(elm).marginLeft).toEqual('20px');
+        expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(255, 0, 0)');
+        elm.next();
+        await rafPromise();
+        expect(getComputedStyle(elm).marginLeft).toEqual('0px');
+        expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 0)');
+        elm.next();
+        await rafPromise();
+        expect(getComputedStyle(elm).marginLeft).toEqual('30px');
+        expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 255)');
     });
 
     it('only applies styling tokens if scoped styles are present', () => {

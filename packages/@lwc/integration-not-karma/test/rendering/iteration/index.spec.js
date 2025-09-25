@@ -51,7 +51,7 @@ describe('iteration rendering', () => {
     components.forEach(({ Ctor, type, iterationType }) => {
         const tag = `x-${type}-${iterationType}`;
 
-        it(`${type} ${iterationType}`, () => {
+        it(`${type} ${iterationType}`, async () => {
             const elm = createElement(tag, { is: Ctor });
             elm.items = [1, 2, 3, 4];
             document.body.appendChild(elm);
@@ -59,14 +59,13 @@ describe('iteration rendering', () => {
             const [c1, c2, c3, c4] = elm.shadowRoot.querySelectorAll('x-item');
 
             elm.items = [3, 1, 2, 4];
-            return Promise.resolve().then(() => {
-                validateRenderedChildren(elm, iterationType);
-                const [c3b, c1b, c2b, c4b] = elm.shadowRoot.querySelectorAll('x-item');
-                expect(c1).toBe(c1b);
-                expect(c2).toBe(c2b);
-                expect(c3).toBe(c3b);
-                expect(c4).toBe(c4b);
-            });
+            await Promise.resolve();
+            validateRenderedChildren(elm, iterationType);
+            const [c3b, c1b, c2b, c4b] = elm.shadowRoot.querySelectorAll('x-item');
+            expect(c1).toBe(c1b);
+            expect(c2).toBe(c2b);
+            expect(c3).toBe(c3b);
+            expect(c4).toBe(c4b);
         });
     });
 });

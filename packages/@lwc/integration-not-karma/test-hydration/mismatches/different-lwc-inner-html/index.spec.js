@@ -15,7 +15,7 @@ export default {
             p,
         };
     },
-    test(target, snapshot, consoleCalls) {
+    async test(target, snapshot, consoleCalls) {
         const div = target.shadowRoot.querySelector('div');
         const p = div.querySelector('p');
 
@@ -32,8 +32,7 @@ export default {
 
         target.content = '<p>another-content</p>';
 
-        return Promise.resolve().then(() => {
-            expect(div.textContent).toBe('another-content');
-        });
+        await Promise.resolve();
+        expect(div.textContent).toBe('another-content');
     },
 };

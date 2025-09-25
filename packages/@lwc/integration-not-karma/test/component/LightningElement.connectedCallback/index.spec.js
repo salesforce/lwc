@@ -52,14 +52,13 @@ it('should associate the component stack when the invocation throws', () => {
 });
 
 describe('addEventListner in `connectedCallback`', () => {
-    it('clicking force button should update value', function () {
+    it('clicking force button should update value', async () => {
         const elm = createElement('x-slotted-parent', { is: XSlottedParent });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('x-child');
         child.dispatchEventOnHost();
-        return Promise.resolve().then(() => {
-            expect(elm.eventHandled).toBe(true);
-            expect(elm.shadowRoot.querySelector('p').textContent).toBe('Was clicked: true');
-        });
+        await Promise.resolve();
+        expect(elm.eventHandled).toBe(true);
+        expect(elm.shadowRoot.querySelector('p').textContent).toBe('Was clicked: true');
     });
 });

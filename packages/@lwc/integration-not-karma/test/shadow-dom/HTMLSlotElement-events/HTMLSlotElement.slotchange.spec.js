@@ -27,43 +27,39 @@ it('should fire non-composed slotchange', () => {
     expect(parent.getSlotChangeCount()).toBe(0);
 });
 
-it('should fire slotchange on add', () => {
+it('should fire slotchange on add', async () => {
     child.setSlotChangeCount(0);
     parent.add();
 
-    return waitForSlotChange().then(() => {
-        expect(child.getSlotChangeCount()).toBe(1);
-    });
+    await waitForSlotChange();
+    expect(child.getSlotChangeCount()).toBe(1);
 });
 
-it('should fire slotchange on remove', () => {
+it('should fire slotchange on remove', async () => {
     child.setSlotChangeCount(0);
     parent.clear();
 
-    return waitForSlotChange().then(() => {
-        expect(child.getSlotChangeCount()).toBe(1);
-    });
+    await waitForSlotChange();
+    expect(child.getSlotChangeCount()).toBe(1);
 });
 
-it('should fire slotchange on replace', () => {
+it('should fire slotchange on replace', async () => {
     child.setSlotChangeCount(0);
     parent.replace();
 
-    return waitForSlotChange().then(() => {
-        expect(child.getSlotChangeCount()).toBe(1);
-    });
+    await waitForSlotChange();
+    expect(child.getSlotChangeCount()).toBe(1);
 });
 
-it('should fire slotchange when slot is removed', () => {
+it('should fire slotchange when slot is removed', async () => {
     child.setSlotChangeCount(0);
     child.removeSlot();
 
-    return waitForSlotChange().then(() => {
-        expect(child.getSlotChangeCount()).toBe(1);
-    });
+    await waitForSlotChange();
+    expect(child.getSlotChangeCount()).toBe(1);
 });
 
-it('should fire slotchange when listener added programmatically', () => {
+it('should fire slotchange when listener added programmatically', async () => {
     let count = 0;
 
     child.shadowRoot.querySelector('slot').addEventListener('slotchange', () => {
@@ -72,7 +68,6 @@ it('should fire slotchange when listener added programmatically', () => {
 
     parent.add();
 
-    return waitForSlotChange().then(() => {
-        expect(count).toBe(1);
-    });
+    await waitForSlotChange();
+    expect(count).toBe(1);
 });

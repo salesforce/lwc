@@ -6,26 +6,22 @@ import ArrayNullPrototype from 'x/arrayNullPrototype';
 import { spyOn } from '@vitest/spy';
 
 function testForEach(type, obj) {
-    it(`should render ${type}`, () => {
+    it(`should render ${type}`, async () => {
         const elm = createElement('x-test', { is: XTest });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
         elm.items = obj;
 
-        return Promise.resolve()
-            .then(() => {
-                const ul = elm.shadowRoot.querySelector('ul');
-                expect(ul.childElementCount).toBe(3);
-                expect(ul.children[0].textContent).toBe('one');
-                expect(ul.children[1].textContent).toBe('two');
-                expect(ul.children[2].textContent).toBe('three');
-
-                elm.items = [];
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
-            });
+        await Promise.resolve();
+        const ul = elm.shadowRoot.querySelector('ul');
+        expect(ul.childElementCount).toBe(3);
+        expect(ul.children[0].textContent).toBe('one');
+        expect(ul.children[1].textContent).toBe('two');
+        expect(ul.children[2].textContent).toBe('three');
+        elm.items = [];
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
     });
 }
 

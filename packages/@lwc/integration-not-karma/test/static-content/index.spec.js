@@ -50,7 +50,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () =
 });
 
 describe('static content when stylesheets change', () => {
-    it('should reflect correct token for scoped styles', () => {
+    it('should reflect correct token for scoped styles', async () => {
         const elm = createElement('x-container', { is: MultipleStyles });
 
         const stylesheetsWarning =
@@ -79,25 +79,21 @@ describe('static content when stylesheets change', () => {
 
         window.__lwcResetAlreadyLoggedMessages();
 
-        return Promise.resolve()
-            .then(() => {
-                const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
-                expect(classList).toEqual([
-                    'foo',
-                    LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'x-multipleStyles_b',
-                ]);
-
-                expect(() => {
-                    elm.updateTemplate({
-                        name: 'a',
-                        useScopedCss: false,
-                    });
-                }).toLogWarningDev(stylesheetsWarning);
-            })
-            .then(() => {
-                const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
-                expect(classList).toEqual(['foo']);
+        await Promise.resolve();
+        const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
+        expect(classList).toEqual([
+            'foo',
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'x-multipleStyles_b',
+        ]);
+        expect(() => {
+            elm.updateTemplate({
+                name: 'a',
+                useScopedCss: false,
             });
+        }).toLogWarningDev(stylesheetsWarning);
+        await Promise.resolve();
+        const classList_1 = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
+        expect(classList_1).toEqual(['foo']);
     });
 });
 
@@ -187,7 +183,7 @@ describe('svg and static content', () => {
 });
 
 describe('elements that cannot be parsed as top-level', () => {
-    it('should work with a static <td>', () => {
+    it('should work with a static <td>', async () => {
         const elm = createElement('x-table', { is: Table });
         document.body.appendChild(elm);
 
@@ -195,13 +191,12 @@ describe('elements that cannot be parsed as top-level', () => {
 
         elm.addRow();
 
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(1);
-            expect(elm.shadowRoot.querySelector('td').textContent).toEqual('');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(1);
+        expect(elm.shadowRoot.querySelector('td').textContent).toEqual('');
     });
 
-    it('works for all elements that cannot be safely parsed as top-level', () => {
+    it('works for all elements that cannot be safely parsed as top-level', async () => {
         const elm = createElement('x-static-unsafe-top-level', { is: StaticUnsafeTopLevel });
         document.body.appendChild(elm);
 
@@ -228,18 +223,14 @@ describe('elements that cannot be parsed as top-level', () => {
 
         expect(getChildrenTagNames()).toEqual([]);
         elm.doRender = true;
-        return Promise.resolve()
-            .then(() => {
-                expect(getChildrenTagNames()).toEqual(expectedChildren);
-                elm.doRender = false;
-            })
-            .then(() => {
-                expect(getChildrenTagNames()).toEqual([]);
-                elm.doRender = true;
-            })
-            .then(() => {
-                expect(getChildrenTagNames()).toEqual(expectedChildren);
-            });
+        await Promise.resolve();
+        expect(getChildrenTagNames()).toEqual(expectedChildren);
+        elm.doRender = false;
+        await Promise.resolve();
+        expect(getChildrenTagNames()).toEqual([]);
+        elm.doRender = true;
+        await Promise.resolve();
+        expect(getChildrenTagNames()).toEqual(expectedChildren);
     });
 });
 

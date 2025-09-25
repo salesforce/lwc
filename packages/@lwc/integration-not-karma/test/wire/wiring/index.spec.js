@@ -123,11 +123,10 @@ describe('wiring', () => {
             expect(spy).toHaveSize(1);
             expect(spy[0].method).toBe('connect');
 
-            return Promise.resolve().then(() => {
-                expect(spy).toHaveSize(2);
-                expect(spy[0].method).toBe('connect');
-                expect(spy[1].method).toBe('update');
-            });
+            await Promise.resolve();
+            expect(spy).toHaveSize(2);
+            expect(spy[0].method).toBe('connect');
+            expect(spy[1].method).toBe('update');
         });
 
         it('should call update only once when the component is created and a wire dynamic param is modified in the same tick', async () => {
@@ -139,12 +138,11 @@ describe('wiring', () => {
             elm.setDynamicParamSource(1);
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => {
-                // in the old wire protocol, there is only one call because
-                // on the same tick the config was modified
-                const updateCalls = filterCalls(spy, 'update');
-                expect(updateCalls).toHaveSize(1);
-            });
+            await Promise.resolve();
+            // in the old wire protocol, there is only one call because
+            // on the same tick the config was modified
+            const updateCalls = filterCalls(spy, 'update');
+            expect(updateCalls).toHaveSize(1);
         });
 
         it('should be called only once during multiple renders when the wire config does not change', async () => {
@@ -153,16 +151,11 @@ describe('wiring', () => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                    elm.forceRerender();
-
-                    return Promise.resolve();
-                })
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                });
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
+            elm.forceRerender();
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
         });
 
         it('should be called when the wire parameters change its value.', async () => {
@@ -171,19 +164,13 @@ describe('wiring', () => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                    elm.setDynamicParamSource('simpleParam modified');
-
-                    return Promise.resolve();
-                })
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(2);
-                    const wireResult = elm.getWiredProp();
-
-                    expect(wireResult.simpleParam).toBe('simpleParam modified');
-                });
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
+            elm.setDynamicParamSource('simpleParam modified');
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(2);
+            const wireResult = elm.getWiredProp();
+            expect(wireResult.simpleParam).toBe('simpleParam modified');
         });
 
         it('should be called for common parameter when shared among wires', async () => {
@@ -192,21 +179,17 @@ describe('wiring', () => {
             const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
             document.body.appendChild(elm);
 
-            return Promise.resolve().then(() => {
-                expect(filterCalls(spy, 'update')).toHaveSize(2);
-                elm.setCommonParameter('modified');
-
-                return Promise.resolve().then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(4);
-                    const wireResult1 = elm.getEchoWiredProp1();
-                    const wireResult2 = elm.getEchoWiredProp2();
-
-                    expect(wireResult1.id).toBe('echoWire1');
-                    expect(wireResult1.common).toBe('modified');
-                    expect(wireResult2.id).toBe('echoWire2');
-                    expect(wireResult2.common).toBe('modified');
-                });
-            });
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(2);
+            elm.setCommonParameter('modified');
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(4);
+            const wireResult1 = elm.getEchoWiredProp1();
+            const wireResult2 = elm.getEchoWiredProp2();
+            expect(wireResult1.id).toBe('echoWire1');
+            expect(wireResult1.common).toBe('modified');
+            expect(wireResult2.id).toBe('echoWire2');
+            expect(wireResult2.common).toBe('modified');
         });
 
         it('should not update when setting parameter with same value', async () => {
@@ -218,19 +201,15 @@ describe('wiring', () => {
             const expected = 'expected value';
             elm.setDynamicParamSource(expected);
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(spy.length).toBe(1); // update,connected
-                    const wireResult = elm.getWiredProp();
-                    expect(wireResult.simpleParam).toBe(expected);
+            await Promise.resolve();
+            expect(spy.length).toBe(1); // update,connected
+            const wireResult = elm.getWiredProp();
+            expect(wireResult.simpleParam).toBe(expected);
 
-                    elm.setDynamicParamSource(expected);
+            elm.setDynamicParamSource(expected);
 
-                    return Promise.resolve();
-                })
-                .then(() => {
-                    expect(spy.length).toBe(1); // update,connected
-                });
+            await Promise.resolve();
+            expect(spy.length).toBe(1); // update,connected
         });
 
         it('should trigger component rerender when field is updated', async () => {
@@ -261,15 +240,12 @@ describe('wiring', () => {
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                    document.body.removeChild(elm);
-                    elm.setDynamicParamSource('simpleParam modified');
-                })
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                });
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
+            document.body.removeChild(elm);
+            elm.setDynamicParamSource('simpleParam modified');
+            await Promise.resolve();
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
         });
 
         it('should call update when component is re-connected.', async () => {
@@ -277,26 +253,24 @@ describe('wiring', () => {
             AdapterId.setSpy(spy);
             const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
+            await Promise.resolve();
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                    document.body.removeChild(elm);
-                    elm.setDynamicParamSource('simpleParam modified');
-                })
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(1);
-                    const wireResult = elm.getWiredProp();
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
 
-                    expect(wireResult.simpleParam).not.toBeDefined();
-                    document.body.appendChild(elm);
-                })
-                .then(() => {
-                    expect(filterCalls(spy, 'update')).toHaveSize(2);
-                    const wireResult = elm.getWiredProp();
+            document.body.removeChild(elm);
+            elm.setDynamicParamSource('simpleParam modified');
+            await Promise.resolve();
 
-                    expect(wireResult.simpleParam).toBe('simpleParam modified');
-                });
+            expect(filterCalls(spy, 'update')).toHaveSize(1);
+            const wireResult1 = elm.getWiredProp();
+            expect(wireResult1.simpleParam).not.toBeDefined();
+
+            document.body.appendChild(elm);
+            await Promise.resolve();
+
+            expect(filterCalls(spy, 'update')).toHaveSize(2);
+            const wireResult2 = elm.getWiredProp();
+            expect(wireResult2.simpleParam).toBe('simpleParam modified');
         });
     });
 });
@@ -308,18 +282,13 @@ describe('wired fields', () => {
         document.body.appendChild(elm);
         BroadcastAdapter.broadcastData('expected value');
 
-        return Promise.resolve()
-            .then(() => {
-                const staticValue = elm.shadowRoot.querySelector('span');
-                expect(staticValue.textContent).toBe('expected value');
-                BroadcastAdapter.broadcastData('modified value');
-
-                return Promise.resolve();
-            })
-            .then(() => {
-                const staticValue = elm.shadowRoot.querySelector('span');
-                expect(staticValue.textContent).toBe('modified value');
-            });
+        await Promise.resolve();
+        const staticValue1 = elm.shadowRoot.querySelector('span');
+        expect(staticValue1.textContent).toBe('expected value');
+        BroadcastAdapter.broadcastData('modified value');
+        await Promise.resolve();
+        const staticValue2 = elm.shadowRoot.querySelector('span');
+        expect(staticValue2.textContent).toBe('modified value');
     });
 
     it('should rerender component when wired field is mutated from within the component', async () => {
@@ -328,17 +297,14 @@ describe('wired fields', () => {
         document.body.appendChild(elm);
         BroadcastAdapter.broadcastData('expected value');
 
-        return Promise.resolve()
-            .then(() => {
-                const staticValue = elm.shadowRoot.querySelector('span');
-                expect(staticValue.textContent).toBe('expected value');
+        await Promise.resolve();
+        const staticValue1 = elm.shadowRoot.querySelector('span');
+        expect(staticValue1.textContent).toBe('expected value');
 
-                elm.setWiredPropToValue('modified value');
-            })
-            .then(() => {
-                const staticValue = elm.shadowRoot.querySelector('span');
-                expect(staticValue.textContent).toBe('modified value');
-            });
+        elm.setWiredPropToValue('modified value');
+        await Promise.resolve();
+        const staticValue2 = elm.shadowRoot.querySelector('span');
+        expect(staticValue2.textContent).toBe('modified value');
     });
 });
 
@@ -349,10 +315,9 @@ describe('wired methods', () => {
         document.body.appendChild(elm);
         BroadcastAdapter.broadcastData('expected value');
 
-        return Promise.resolve().then(() => {
-            const actual = elm.getWiredMethodArgument();
-            expect(actual).toBe('expected value');
-        });
+        await Promise.resolve();
+        const actual = elm.getWiredMethodArgument();
+        expect(actual).toBe('expected value');
     });
 
     it('should support method override', async () => {

@@ -90,7 +90,7 @@ describe('refs', () => {
         expect(Object.isFrozen(refs)).toEqual(true);
     });
 
-    it('multi templates', () => {
+    it('multi templates', async () => {
         const elm = createElement('x-multi', { is: Multi });
 
         document.body.appendChild(elm);
@@ -101,23 +101,20 @@ describe('refs', () => {
         expect(elm.getRef('b')).toBeUndefined();
 
         elm.next();
-        return Promise.resolve()
-            .then(() => {
-                expect(elm.getRef('b').textContent).toEqual('b');
-                expect(elm.getRef('shared').textContent).toEqual('b-shared');
-                expect(elm.getRef('deepShared').textContent).toEqual('b-deepShared');
-                expect(elm.getRef('a')).toBeUndefined();
-                elm.next();
-            })
-            .then(() => {
-                expect(elm.getRef('a').textContent).toEqual('a');
-                expect(elm.getRef('shared').textContent).toEqual('a-shared');
-                expect(elm.getRef('deepShared').textContent).toEqual('a-deepShared');
-                expect(elm.getRef('b')).toBeUndefined();
-            });
+        await Promise.resolve();
+        expect(elm.getRef('b').textContent).toEqual('b');
+        expect(elm.getRef('shared').textContent).toEqual('b-shared');
+        expect(elm.getRef('deepShared').textContent).toEqual('b-deepShared');
+        expect(elm.getRef('a')).toBeUndefined();
+        elm.next();
+        await Promise.resolve();
+        expect(elm.getRef('a').textContent).toEqual('a');
+        expect(elm.getRef('shared').textContent).toEqual('a-shared');
+        expect(elm.getRef('deepShared').textContent).toEqual('a-deepShared');
+        expect(elm.getRef('b')).toBeUndefined();
     });
 
-    it('multi templates - no refs in one', () => {
+    it('multi templates - no refs in one', async () => {
         const elm = createElement('x-multi-no-refs-in-one', { is: MultiNoRefsInOne });
 
         document.body.appendChild(elm);
@@ -125,26 +122,22 @@ describe('refs', () => {
         expect(elm.getRefs()).toBeUndefined();
 
         elm.next();
-        return Promise.resolve()
-            .then(() => {
-                expect(elm.getRefs().foo.textContent).toEqual('foo');
-                elm.next();
-            })
-            .then(() => {
-                expect(elm.getRefs()).toBeUndefined();
-            });
+        await Promise.resolve();
+        expect(elm.getRefs().foo.textContent).toEqual('foo');
+        elm.next();
+        await Promise.resolve();
+        expect(elm.getRefs()).toBeUndefined();
     });
 
-    it('can overwrite refs', () => {
+    it('can overwrite refs', async () => {
         const elm = createElement('x-overwrite', { is: Overwrite });
 
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('h1').textContent).toEqual('yolo');
         elm.next();
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('h1').textContent).toEqual('woohoo');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('h1').textContent).toEqual('woohoo');
     });
 
     it('can overwrite refs with an expando', () => {
@@ -238,7 +231,7 @@ describe('refs', () => {
         expect(elm.getRefTextContent('foo')).toEqual('foo');
     });
 
-    it('ref on a dynamic component - lwc:dynamic', () => {
+    it('ref on a dynamic component - lwc:dynamic', async () => {
         const elm = createElement('x-dynamic', { is: LwcDynamic });
         document.body.appendChild(elm);
 
@@ -248,15 +241,14 @@ describe('refs', () => {
         // Set the constructor
         elm.setDynamicConstructor();
 
-        return Promise.resolve().then(() => {
-            const dynamic = elm.getRef('dynamic');
-            // Ref is available after constructor set
-            expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
-            expect(dynamic.getRefTextContent('first')).toEqual('first');
-        });
+        await Promise.resolve();
+        const dynamic = elm.getRef('dynamic');
+        // Ref is available after constructor set
+        expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
+        expect(dynamic.getRefTextContent('first')).toEqual('first');
     });
 
-    it('ref on a dynamic component - <lwc:component lwc:is={}>', () => {
+    it('ref on a dynamic component - <lwc:component lwc:is={}>', async () => {
         const elm = createElement('x-dynamic', { is: Dynamic });
         document.body.appendChild(elm);
 
@@ -266,15 +258,14 @@ describe('refs', () => {
         // Set the constructor
         elm.setDynamicConstructor();
 
-        return Promise.resolve().then(() => {
-            const dynamic = elm.getRef('dynamic');
-            // Ref is available after constructor set
-            expect(dynamic.tagName.toLowerCase()).toEqual('x-basic');
-            expect(dynamic.getRefTextContent('first')).toEqual('first');
-        });
+        await Promise.resolve();
+        const dynamic = elm.getRef('dynamic');
+        // Ref is available after constructor set
+        expect(dynamic.tagName.toLowerCase()).toEqual('x-basic');
+        expect(dynamic.getRefTextContent('first')).toEqual('first');
     });
 
-    it('ref with conditional', () => {
+    it('ref with conditional', async () => {
         const elm = createElement('x-conditional', { is: Conditional });
         document.body.appendChild(elm);
 
@@ -283,20 +274,17 @@ describe('refs', () => {
         expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
         expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
         elm.next();
-        return Promise.resolve()
-            .then(() => {
-                expect(elm.getRef('coinflip').textContent).toEqual('heads');
-                expect(elm.getRef('onlyTails')).toBeUndefined();
-                expect(elm.getRef('onlyHeads').textContent).toEqual('only heads');
-                expect(elm.getRefNames()).toEqual(['coinflip', 'onlyHeads']);
-                elm.next();
-            })
-            .then(() => {
-                expect(elm.getRef('coinflip').textContent).toEqual('tails');
-                expect(elm.getRef('onlyHeads')).toBeUndefined();
-                expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
-                expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
-            });
+        await Promise.resolve();
+        expect(elm.getRef('coinflip').textContent).toEqual('heads');
+        expect(elm.getRef('onlyTails')).toBeUndefined();
+        expect(elm.getRef('onlyHeads').textContent).toEqual('only heads');
+        expect(elm.getRefNames()).toEqual(['coinflip', 'onlyHeads']);
+        elm.next();
+        await Promise.resolve();
+        expect(elm.getRef('coinflip').textContent).toEqual('tails');
+        expect(elm.getRef('onlyHeads')).toBeUndefined();
+        expect(elm.getRef('onlyTails').textContent).toEqual('only tails');
+        expect(elm.getRefNames()).toEqual(['coinflip', 'onlyTails']);
     });
 
     it('ref with slot', () => {
@@ -398,24 +386,21 @@ describe('refs', () => {
             expect(elm.result).toEqual('foo');
         });
 
-        it('works in render', () => {
+        it('works in render', async () => {
             const elm = createElement('x-render', { is: Render });
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogErrorDev(
                 /Error: \[LWC error]: this\.refs is undefined for <x-render>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
             );
-            return Promise.resolve()
-                .then(() => {
-                    expect(elm.results).toEqual([undefined]);
-                    elm.next();
-                })
-                .then(() => {
-                    expect(elm.results).toEqual([undefined, 'foo']);
-                });
+            await Promise.resolve();
+            expect(elm.results).toEqual([undefined]);
+            elm.next();
+            await Promise.resolve();
+            expect(elm.results).toEqual([undefined, 'foo']);
         });
 
-        it('logs error if this.refs is accessed during render', () => {
+        it('logs error if this.refs is accessed during render', async () => {
             const elm = createElement('x-access-during-render', { is: AccessDuringRender });
             expect(() => {
                 document.body.appendChild(elm);
@@ -426,10 +411,9 @@ describe('refs', () => {
 
             // this.refs should be undefined during rendering
             expect(ids.refTextContent.textContent).toEqual('refs are undefined');
-            return Promise.resolve().then(() => {
-                expect(ids.refTextContent.textContent).toEqual('refs are undefined');
-                expect(elm.refTextContent).toEqual('content in ref');
-            });
+            await Promise.resolve();
+            expect(ids.refTextContent.textContent).toEqual('refs are undefined');
+            expect(elm.refTextContent).toEqual('content in ref');
         });
     });
 });

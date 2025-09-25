@@ -99,7 +99,7 @@ describe('Node.getRootNode', () => {
     });
 
     describe('manual dom mutations', () => {
-        it('nodes appended to parent with lwc:dom="manual" directive', () => {
+        it('nodes appended to parent with lwc:dom="manual" directive', async () => {
             const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
             const elm = host.shadowRoot.querySelector('div.manual');
@@ -119,20 +119,15 @@ describe('Node.getRootNode', () => {
             // the portal elements would not have been patched yet
             verifyConnectedNodes();
             // allow for engine's mutation observer to pick up the mutations
-            return Promise.resolve()
-                .then(() => {
-                    // reverify, after the portal elements have been patched
-                    verifyConnectedNodes();
-                    // disconnect the manually inserted nodes
-                    elm.removeChild(span);
-                })
-                .then(() => {
-                    expect(span.getRootNode()).toBe(span);
-                    expect(span.getRootNode(composedTrueConfig)).toBe(span);
-
-                    expect(nestedManualElement.getRootNode()).toBe(span);
-                    expect(nestedManualElement.getRootNode(composedTrueConfig)).toBe(span);
-                });
+            await Promise.resolve();
+            // reverify, after the portal elements have been patched
+            verifyConnectedNodes();
+            // disconnect the manually inserted nodes
+            elm.removeChild(span);
+            expect(span.getRootNode()).toBe(span);
+            expect(span.getRootNode(composedTrueConfig)).toBe(span);
+            expect(nestedManualElement.getRootNode()).toBe(span);
+            expect(nestedManualElement.getRootNode(composedTrueConfig)).toBe(span);
         });
 
         it('node appended to parent without lwc:dom="manual" directive', () => {

@@ -2,21 +2,18 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 
 describe('Dynamic text nodes rendering duplicate text', () => {
-    it('should not render duplicate text', function () {
+    it('should not render duplicate text', async () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
         elm.click();
 
-        return Promise.resolve().then(() => {
-            const textInFirstCheck = elm.shadowRoot.textContent;
-            // This first check is to verify that there is no extra text an any moment.
-            expect(textInFirstCheck).not.toBe('ab');
-
-            return Promise.resolve().then(() => {
-                const textInFirstCheck = elm.shadowRoot.textContent;
-                expect(textInFirstCheck).toBe('b');
-            });
-        });
+        await Promise.resolve();
+        const textInFirstCheck = elm.shadowRoot.textContent;
+        // This first check is to verify that there is no extra text an any moment.
+        expect(textInFirstCheck).not.toBe('ab');
+        await Promise.resolve();
+        const textInFirstCheck_1 = elm.shadowRoot.textContent;
+        expect(textInFirstCheck_1).toBe('b');
     });
 });

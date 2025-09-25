@@ -426,7 +426,7 @@ describe('event propagation', () => {
     });
 
     describe('dispatched on lwc:dom="manual" node', () => {
-        it('{bubbles: true, composed: true}', () => {
+        it('{bubbles: true, composed: true}', async () => {
             const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
 
@@ -451,13 +451,12 @@ describe('event propagation', () => {
                 [window, nodes['x-container'], composedPath],
             ];
 
-            return new Promise(setTimeout).then(() => {
-                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
+            await new Promise(setTimeout);
+            const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
         });
 
-        it('{bubbles: true, composed: false}', () => {
+        it('{bubbles: true, composed: false}', async () => {
             const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
 
@@ -472,13 +471,12 @@ describe('event propagation', () => {
                 [nodes['x-container'].shadowRoot, nodes.container_span_manual, composedPath],
             ];
 
-            return Promise.resolve().then(() => {
-                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
+            await Promise.resolve();
+            const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
         });
 
-        it('{bubbles: false, composed: true}', () => {
+        it('{bubbles: false, composed: true}', async () => {
             const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: true });
 
@@ -505,13 +503,12 @@ describe('event propagation', () => {
                 ];
             }
 
-            return Promise.resolve().then(() => {
-                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
+            await Promise.resolve();
+            const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
         });
 
-        it('{bubbles: false, composed: false}', () => {
+        it('{bubbles: false, composed: false}', async () => {
             const nodes = createTestElement();
             const event = new CustomEvent('test', { bubbles: false, composed: false });
 
@@ -524,10 +521,9 @@ describe('event propagation', () => {
                 [nodes.container_span_manual, nodes.container_span_manual, composedPath],
             ];
 
-            return Promise.resolve().then(() => {
-                const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
+            await Promise.resolve();
+            const actualLogs = dispatchEventWithLog(nodes.container_span_manual, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
         });
     });
 

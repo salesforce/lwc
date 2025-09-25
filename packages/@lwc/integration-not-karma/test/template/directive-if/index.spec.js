@@ -21,7 +21,7 @@ describe('if:true directive', () => {
         expect(elm.shadowRoot.querySelector('.true')).toBeNull();
     });
 
-    it('should remove element within a nested conditional', () => {
+    it('should remove element within a nested conditional', async () => {
         const elm = createElement('x-nested-render-conditional', { is: NestedRenderConditional });
         document.body.appendChild(elm);
 
@@ -29,14 +29,12 @@ describe('if:true directive', () => {
 
         elementToggler.click();
 
-        return Promise.resolve().then(() => {
-            const elementInsideNestedCondition = elm.shadowRoot.querySelector('.toggle');
-
-            expect(elementInsideNestedCondition).toBeNull();
-        });
+        await Promise.resolve();
+        const elementInsideNestedCondition = elm.shadowRoot.querySelector('.toggle');
+        expect(elementInsideNestedCondition).toBeNull();
     });
 
-    it('should update if the value change', () => {
+    it('should update if the value change', async () => {
         const elm = createElement('x-test', { is: XTest });
         elm.isVisible = true;
         document.body.appendChild(elm);
@@ -44,36 +42,29 @@ describe('if:true directive', () => {
         expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
 
         elm.isVisible = false;
-        return Promise.resolve()
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.true')).toBeNull();
-                elm.isVisible = {};
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
-                elm.isVisible = 0;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.true')).toBeNull();
-                elm.isVisible = 1;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
-                elm.isVisible = null;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.true')).toBeNull();
-                elm.isVisible = [];
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
-            });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.true')).toBeNull();
+        elm.isVisible = {};
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
+        elm.isVisible = 0;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.true')).toBeNull();
+        elm.isVisible = 1;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
+        elm.isVisible = null;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.true')).toBeNull();
+        elm.isVisible = [];
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.true')).not.toBeNull();
     });
     // In native shadow, the slotted content from parent is always queriable, its only the
     // child's <slot> that is rendered/unrendered based on the directive
     it.runIf(process.env.NATIVE_SHADOW)(
         'should update child with slot content if value changes',
-        () => {
+        async () => {
             const elm = createElement('x-test', { is: XSlotted });
             document.body.appendChild(elm);
             const assignedSlotContent = elm.shadowRoot.querySelector('div.content');
@@ -83,31 +74,27 @@ describe('if:true directive', () => {
 
             child.show = true;
 
-            return Promise.resolve()
-                .then(() => {
-                    const slot = child.shadowRoot.querySelector('slot');
-                    expect(slot).not.toBeNull();
-                    const assignedNodes = slot.assignedNodes({ flatten: true });
-                    expect(assignedNodes.length).toBe(1);
-                    expect(assignedNodes[0]).toBe(assignedSlotContent);
-                    child.show = false;
-                })
-                .then(() => {
-                    expect(child.shadowRoot.querySelector('slot')).toBeNull();
-                    child.show = true;
-                })
-                .then(() => {
-                    const slot = child.shadowRoot.querySelector('slot');
-                    expect(slot).not.toBeNull();
-                    const assignedNodes = slot.assignedNodes({ flatten: true });
-                    expect(assignedNodes.length).toBe(1);
-                    expect(assignedNodes[0]).toBe(assignedSlotContent);
-                });
+            await Promise.resolve();
+            const slot = child.shadowRoot.querySelector('slot');
+            expect(slot).not.toBeNull();
+            const assignedNodes = slot.assignedNodes({ flatten: true });
+            expect(assignedNodes.length).toBe(1);
+            expect(assignedNodes[0]).toBe(assignedSlotContent);
+            child.show = false;
+            await Promise.resolve();
+            expect(child.shadowRoot.querySelector('slot')).toBeNull();
+            child.show = true;
+            await Promise.resolve();
+            const slot_1 = child.shadowRoot.querySelector('slot');
+            expect(slot_1).not.toBeNull();
+            const assignedNodes_1 = slot_1.assignedNodes({ flatten: true });
+            expect(assignedNodes_1.length).toBe(1);
+            expect(assignedNodes_1[0]).toBe(assignedSlotContent);
         }
     );
     it.skipIf(process.env.NATIVE_SHADOW)(
         'should update child with slot content if value changes',
-        () => {
+        async () => {
             const elm = createElement('x-test', { is: XSlotted });
             document.body.appendChild(elm);
             const child = elm.shadowRoot.querySelector('x-child');
@@ -116,22 +103,18 @@ describe('if:true directive', () => {
 
             child.show = true;
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(child.querySelector('.content')).not.toBeNull();
-                    child.show = false;
-                })
-                .then(() => {
-                    expect(child.querySelector('.content')).toBeNull();
-                    child.show = true;
-                })
-                .then(() => {
-                    expect(child.querySelector('.content')).not.toBeNull();
-                });
+            await Promise.resolve();
+            expect(child.querySelector('.content')).not.toBeNull();
+            child.show = false;
+            await Promise.resolve();
+            expect(child.querySelector('.content')).toBeNull();
+            child.show = true;
+            await Promise.resolve();
+            expect(child.querySelector('.content')).not.toBeNull();
         }
     );
 
-    it('should continue rendering content for nested slots after multiple rehydrations', () => {
+    it('should continue rendering content for nested slots after multiple rehydrations', async () => {
         const elm = createElement('x-multiple-slot', { is: MultipleSlot });
         document.body.appendChild(elm);
         const multipleSlotLevel1 = elm.shadowRoot.querySelector('x-multiple-slot-level1');
@@ -139,30 +122,23 @@ describe('if:true directive', () => {
 
         textToggleButton.click();
 
-        return Promise.resolve()
-            .then(() => {
-                const multipleSlotLevel2 = multipleSlotLevel1.shadowRoot
-                    .querySelector('slot')
-                    .assignedElements()[0];
-
-                expect(multipleSlotLevel2.textContent).toContain('text in multiple level slot');
-                // hide the slot
-                textToggleButton.click();
-            })
-            .then(() => {
-                const slotLevel1 = multipleSlotLevel1.shadowRoot.querySelector('slot');
-
-                expect(slotLevel1).toBe(null);
-                // show the slot
-                textToggleButton.click();
-            })
-            .then(() => {
-                const multipleSlotLevel2 = multipleSlotLevel1.shadowRoot
-                    .querySelector('slot')
-                    .assignedElements()[0];
-
-                expect(multipleSlotLevel2.textContent).toContain('text in multiple level slot');
-            });
+        await Promise.resolve();
+        const multipleSlotLevel2 = multipleSlotLevel1.shadowRoot
+            .querySelector('slot')
+            .assignedElements()[0];
+        expect(multipleSlotLevel2.textContent).toContain('text in multiple level slot');
+        // hide the slot
+        textToggleButton.click();
+        await Promise.resolve();
+        const slotLevel1 = multipleSlotLevel1.shadowRoot.querySelector('slot');
+        expect(slotLevel1).toBe(null);
+        // show the slot
+        textToggleButton.click();
+        await Promise.resolve();
+        const multipleSlotLevel2_1 = multipleSlotLevel1.shadowRoot
+            .querySelector('slot')
+            .assignedElements()[0];
+        expect(multipleSlotLevel2_1.textContent).toContain('text in multiple level slot');
     });
 });
 
@@ -183,7 +159,7 @@ describe('if:false directive', () => {
         expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
     });
 
-    it('should update if the value change', () => {
+    it('should update if the value change', async () => {
         const elm = createElement('x-test', { is: XTest });
         elm.isVisible = true;
         document.body.appendChild(elm);
@@ -191,29 +167,22 @@ describe('if:false directive', () => {
         expect(elm.shadowRoot.querySelector('.false')).toBeNull();
 
         elm.isVisible = false;
-        return Promise.resolve()
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
-                elm.isVisible = {};
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.false')).toBeNull();
-                elm.isVisible = 0;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
-                elm.isVisible = 1;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.false')).toBeNull();
-                elm.isVisible = null;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
-                elm.isVisible = [];
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.false')).toBeNull();
-            });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
+        elm.isVisible = {};
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.false')).toBeNull();
+        elm.isVisible = 0;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
+        elm.isVisible = 1;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.false')).toBeNull();
+        elm.isVisible = null;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.false')).not.toBeNull();
+        elm.isVisible = [];
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.false')).toBeNull();
     });
 });

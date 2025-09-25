@@ -71,7 +71,7 @@ it('supports returning a template', () => {
     expect(elm.shadowRoot.textContent).toBe('Template 1');
 });
 
-it('supports returning different templates', () => {
+it('supports returning different templates', async () => {
     const elm = createElement('x-dynamic-template', { is: DynamicTemplate });
     elm.template = template1;
     document.body.appendChild(elm);
@@ -79,9 +79,8 @@ it('supports returning different templates', () => {
     expect(elm.shadowRoot.textContent).toBe('Template 1');
 
     elm.template = template2;
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.textContent).toBe('Template 2');
-    });
+    await Promise.resolve();
+    expect(elm.shadowRoot.textContent).toBe('Template 2');
 });
 
 it('throws an error when render() returns an invalid value', () => {
