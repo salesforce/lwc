@@ -1,0 +1,1 @@
+LWC1060: Template expression doesn't allow CallExpression
