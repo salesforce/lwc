@@ -30,6 +30,7 @@ export default {
     // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
     concurrency: 1,
     nodeResolve: true,
+    browserLogs: false,
     rootDir: join(import.meta.dirname, '..'),
     plugins: [
         {
