@@ -45,8 +45,7 @@ function setFeatureFlags(requiredFeatureFlags, value) {
 }
 
 // Must be sync to properly register tests; async behavior can happen in before/after blocks
-export function runTest(configPath, componentPath, ssrRendered, focused) {
-    const test = focused ? it.only : it;
+export function runTest(configPath, componentPath, ssrRendered) {
     const description = new URL(configPath, location.href).pathname;
     let consoleSpy;
     let testConfig;
@@ -70,7 +69,7 @@ export function runTest(configPath, componentPath, ssrRendered, focused) {
         setFeatureFlags(testConfig.requiredFeatureFlags, false);
     });
 
-    test(description, async () => {
+    it(description, async () => {
         const container = appendTestTarget(ssrRendered);
         const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
