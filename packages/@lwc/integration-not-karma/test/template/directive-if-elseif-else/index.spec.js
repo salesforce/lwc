@@ -30,7 +30,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         expect(elm.shadowRoot.querySelector('.else')).not.toBeNull();
     });
 
-    it('should update which branch is rendered if the value changes', () => {
+    it('should update which branch is rendered if the value changes', async () => {
         const elm = createElement('x-test', { is: XTest });
         elm.showIf = true;
         document.body.appendChild(elm);
@@ -38,18 +38,14 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         expect(elm.shadowRoot.querySelector('.if')).not.toBeNull();
 
         elm.showIf = false;
-        return Promise.resolve()
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.else')).not.toBeNull();
-                elm.showElseif = true;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.elseif')).not.toBeNull();
-                elm.showIf = true;
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('.if')).not.toBeNull();
-            });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.else')).not.toBeNull();
+        elm.showElseif = true;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.elseif')).not.toBeNull();
+        elm.showIf = true;
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.if')).not.toBeNull();
     });
 
     it('should render content when nested inside another if branch', () => {
@@ -61,7 +57,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         expect(element.shadowRoot.querySelector('.nestedContent')).not.toBeNull();
     });
 
-    it('should rerender content when nested inside another if branch', () => {
+    it('should rerender content when nested inside another if branch', async () => {
         const element = createElement('x-nested', { is: XNested });
         element.showContent = true;
         document.body.appendChild(element);
@@ -69,9 +65,8 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         expect(element.shadowRoot.querySelector('.nestedElse')).not.toBeNull();
 
         element.showNestedContent = true;
-        return Promise.resolve().then(() => {
-            expect(element.shadowRoot.querySelector('.nestedContent')).not.toBeNull();
-        });
+        await Promise.resolve();
+        expect(element.shadowRoot.querySelector('.nestedContent')).not.toBeNull();
     });
 
     describe('foreach', () => {
@@ -83,7 +78,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             expect(element.shadowRoot.querySelector('.if').textContent).toBe('h123f');
         });
 
-        it('should rerender list content when updated', () => {
+        it('should rerender list content when updated', async () => {
             const element = createElement('x-for-each', { is: XForEach });
             element.showList = true;
             document.body.appendChild(element);
@@ -95,31 +90,25 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 show: true,
             });
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(element.shadowRoot.querySelector('.if').textContent).toBe('h1234f');
-
-                    element.showList = false;
-                    element.appendToList({
-                        value: 5,
-                        show: true,
-                    });
-                    element.prependToList({
-                        value: 0,
-                        show: true,
-                    });
-                })
-                .then(() => {
-                    expect(element.shadowRoot.querySelector('.if')).toBeNull();
-
-                    element.showList = true;
-                })
-                .then(() => {
-                    expect(element.shadowRoot.querySelector('.if').textContent).toBe('h012345f');
-                });
+            await Promise.resolve();
+            expect(element.shadowRoot.querySelector('.if').textContent).toBe('h1234f');
+            element.showList = false;
+            element.appendToList({
+                value: 5,
+                show: true,
+            });
+            element.prependToList({
+                value: 0,
+                show: true,
+            });
+            await Promise.resolve();
+            expect(element.shadowRoot.querySelector('.if')).toBeNull();
+            element.showList = true;
+            await Promise.resolve();
+            expect(element.shadowRoot.querySelector('.if').textContent).toBe('h012345f');
         });
 
-        it('should rerender list items when conditional expressions change', () => {
+        it('should rerender list items when conditional expressions change', async () => {
             const element = createElement('x-for-each', { is: XForEach });
             element.showList = true;
             document.body.appendChild(element);
@@ -131,25 +120,19 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 show: false,
             });
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(element.shadowRoot.querySelector('.if').textContent).toBe('h123f');
-
-                    element.show(4);
-                })
-                .then(() => {
-                    expect(element.shadowRoot.querySelector('.if').textContent).toBe('h1234f');
-
-                    element.hide(1);
-                    element.hide(3);
-                    element.prependToList({
-                        value: 0,
-                        show: true,
-                    });
-                })
-                .then(() => {
-                    expect(element.shadowRoot.querySelector('.if').textContent).toBe('h024f');
-                });
+            await Promise.resolve();
+            expect(element.shadowRoot.querySelector('.if').textContent).toBe('h123f');
+            element.show(4);
+            await Promise.resolve();
+            expect(element.shadowRoot.querySelector('.if').textContent).toBe('h1234f');
+            element.hide(1);
+            element.hide(3);
+            element.prependToList({
+                value: 0,
+                show: true,
+            });
+            await Promise.resolve();
+            expect(element.shadowRoot.querySelector('.if').textContent).toBe('h024f');
         });
     });
 
@@ -171,7 +154,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             }
         }
 
-        it('should properly assign content for slots', () => {
+        it('should properly assign content for slots', async () => {
             const element = createElement('x-parent', { is: XparentWithSlot });
             document.body.appendChild(element);
 
@@ -180,13 +163,12 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             // When if condition is false, no slot content is provided by parent
             verifyExpectedSlotContent(child, false);
             element.condition = true;
-            return Promise.resolve().then(() => {
-                // Slot content should be provided when condition is true
-                verifyExpectedSlotContent(child, true);
-            });
+            await Promise.resolve();
+            // Slot content should be provided when condition is true
+            verifyExpectedSlotContent(child, true);
         });
 
-        it('should properly rerender content for slots', () => {
+        it('should properly rerender content for slots', async () => {
             const element = createElement('x-parent', { is: XparentWithSlot });
             element.condition = true;
             document.body.appendChild(element);
@@ -196,18 +178,14 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             verifyExpectedSlotContent(child, true);
 
             element.condition = false;
-            return Promise.resolve()
-                .then(() => {
-                    verifyExpectedSlotContent(child, false);
-
-                    element.condition = true;
-                })
-                .then(() => {
-                    verifyExpectedSlotContent(child, true);
-                });
+            await Promise.resolve();
+            verifyExpectedSlotContent(child, false);
+            element.condition = true;
+            await Promise.resolve();
+            verifyExpectedSlotContent(child, true);
         });
 
-        it('should properly rerender list content nested inside slots', () => {
+        it('should properly rerender list content nested inside slots', async () => {
             const element = createElement('x-slotted-for-each', { is: XSlottedForEach });
             element.showList = true;
             document.body.appendChild(element);
@@ -221,28 +199,21 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 show: false,
             });
 
-            return Promise.resolve()
-                .then(() => {
-                    expect(child.textContent).toBe('Hh123fF');
-
-                    element.show(4);
-                })
-                .then(() => {
-                    expect(child.textContent).toBe('Hh1234fF');
-                    element.hide(1);
-                })
-                .then(() => {
-                    expect(child.textContent).toBe('Hh234fF');
-
-                    element.hide(3);
-                    element.prependToList({
-                        value: 0,
-                        show: true,
-                    });
-                })
-                .then(() => {
-                    expect(child.textContent).toBe('Hh024fF');
-                });
+            await Promise.resolve();
+            expect(child.textContent).toBe('Hh123fF');
+            element.show(4);
+            await Promise.resolve();
+            expect(child.textContent).toBe('Hh1234fF');
+            element.hide(1);
+            await Promise.resolve();
+            expect(child.textContent).toBe('Hh234fF');
+            element.hide(3);
+            element.prependToList({
+                value: 0,
+                show: true,
+            });
+            await Promise.resolve();
+            expect(child.textContent).toBe('Hh024fF');
         });
 
         describe('named slots', () => {
@@ -276,7 +247,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 expect(child.shadowRoot.querySelector('.defaultSlot')).not.toBeNull();
             }
 
-            it('should properly assign content for named slots', () => {
+            it('should properly assign content for named slots', async () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 document.body.appendChild(element);
 
@@ -285,12 +256,11 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 // When if condition is false, no slot content is provided by parent
                 verifyExpectedNamedSlotContent(child, false);
                 element.condition = true;
-                return Promise.resolve().then(() => {
-                    verifyExpectedNamedSlotContent(child, true);
-                });
+                await Promise.resolve();
+                verifyExpectedNamedSlotContent(child, true);
             });
 
-            it('should properly rerender content for named slots', () => {
+            it('should properly rerender content for named slots', async () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
 
@@ -301,19 +271,16 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 verifyDefaultSlotContent(child);
 
                 element.condition = false;
-                return Promise.resolve()
-                    .then(() => {
-                        verifyExpectedNamedSlotContent(child, false);
-                        verifyDefaultSlotContent(child);
-                        element.condition = true;
-                    })
-                    .then(() => {
-                        verifyExpectedNamedSlotContent(child, true);
-                        verifyDefaultSlotContent(child);
-                    });
+                await Promise.resolve();
+                verifyExpectedNamedSlotContent(child, false);
+                verifyDefaultSlotContent(child);
+                element.condition = true;
+                await Promise.resolve();
+                verifyExpectedNamedSlotContent(child, true);
+                verifyDefaultSlotContent(child);
             });
 
-            it('should not override default slot content when no elements are explicitly passed to the default slot', () => {
+            it('should not override default slot content when no elements are explicitly passed to the default slot', async () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
                 document.body.appendChild(element);
@@ -322,9 +289,8 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 verifyDefaultSlotContent(child);
 
                 element.nestedNamedSlot = true;
-                return Promise.resolve().then(() => {
-                    verifyDefaultSlotContent(child);
-                });
+                await Promise.resolve();
+                verifyDefaultSlotContent(child);
             });
 
             it('should override default slot content when nested conditional elements are passed to the default slot', () => {
@@ -341,7 +307,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
                 expect(assignedNodes[1].innerHTML).toBe('additional default slot content');
             });
 
-            it('should properly rerender nested conditional slot content', () => {
+            it('should properly rerender nested conditional slot content', async () => {
                 const element = createElement('x-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
                 element.nestedDefaultSlot = true;
@@ -354,11 +320,10 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
 
                 element.nestedNamedSlot = true;
                 element.nestedDefaultSlot = false;
-                return Promise.resolve().then(() => {
-                    const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
-                    expect(assignedNodes.length).toBe(4);
-                    expect(assignedNodes[2].innerHTML).toBe('nested slot content');
-                });
+                await Promise.resolve();
+                const assignedNodes_1 = child.shadowRoot.querySelector('slot').assignedNodes();
+                expect(assignedNodes_1.length).toBe(4);
+                expect(assignedNodes_1[2].innerHTML).toBe('nested slot content');
             });
         });
     });

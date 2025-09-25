@@ -6,7 +6,7 @@ import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/constant
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 describe('if-block', () => {
-    it('should work when parent and child have matching slot types', () => {
+    it('should work when parent and child have matching slot types', async () => {
         const elm = createElement('x-parent', { is: MixedSlotParent });
         elm.showStandard = true;
         document.body.appendChild(elm);
@@ -18,14 +18,13 @@ describe('if-block', () => {
         // Switch off the if branch and switch on the elseif branch
         elm.showStandard = false;
         elm.showVariant = true;
-        return Promise.resolve().then(() => {
-            expect(child.innerHTML).toBe(
-                `${vFragBookend}${vFragBookend}${vFragBookend}<span>1 - slots and if block</span>${vFragBookend}${vFragBookend}${vFragBookend}`
-            );
-        });
+        await Promise.resolve();
+        expect(child.innerHTML).toBe(
+            `${vFragBookend}${vFragBookend}${vFragBookend}<span>1 - slots and if block</span>${vFragBookend}${vFragBookend}${vFragBookend}`
+        );
     });
 
-    it('should throw error when parent and child have mismatched slot types', () => {
+    it('should throw error when parent and child have mismatched slot types', async () => {
         let errorMsg;
         const consoleErrorSpy = spyOn(console, 'error').and.callFake((error) => {
             errorMsg = error.message;
@@ -38,20 +37,17 @@ describe('if-block', () => {
         // Switch off the if branch and switch on the elseif branch
         elm.showStandard = false;
         elm.showVariant = true;
-        return Promise.resolve()
-            .then(() => {
-                child.switchFromVariantToStandard();
-            })
-            .then(() => {
-                if (process.env.NODE_ENV === 'production') {
-                    expect(consoleErrorSpy).not.toHaveBeenCalled();
-                } else {
-                    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-                    expect(errorMsg).toMatch(/Mismatched slot types for \(default\) slot/);
-                }
-                expect(child.innerHTML).toBe(
-                    `${vFragBookend}${vFragBookend}${vFragBookend}${vFragBookend}`
-                );
-            });
+        await Promise.resolve();
+        child.switchFromVariantToStandard();
+        await Promise.resolve();
+        if (process.env.NODE_ENV === 'production') {
+            expect(consoleErrorSpy).not.toHaveBeenCalled();
+        } else {
+            expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+            expect(errorMsg).toMatch(/Mismatched slot types for \(default\) slot/);
+        }
+        expect(child.innerHTML).toBe(
+            `${vFragBookend}${vFragBookend}${vFragBookend}${vFragBookend}`
+        );
     });
 });

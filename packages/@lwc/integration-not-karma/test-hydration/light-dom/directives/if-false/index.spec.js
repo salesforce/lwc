@@ -7,13 +7,12 @@ export default {
             p: target.querySelector('p'),
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         expect(target.querySelector('p')).toBe(snapshots.p);
 
         target.control = true;
 
-        return Promise.resolve().then(() => {
-            expect(target.querySelector('p')).toBeNull();
-        });
+        await Promise.resolve();
+        expect(target.querySelector('p')).toBeNull();
     },
 };

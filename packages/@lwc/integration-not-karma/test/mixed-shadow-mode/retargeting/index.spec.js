@@ -2,18 +2,16 @@ import { createElement } from 'lwc';
 import SyntheticParent from 'x/syntheticParent';
 
 function testSelector(name, selector) {
-    it(name, () => {
+    it(name, async () => {
         const elm = createElement('x-synthetic-parent', { is: SyntheticParent });
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            let target;
-            elm.addEventListener('click', (event) => {
-                target = event.target;
-            });
-            elm.shadowRoot.querySelector(selector).click();
-
-            expect(target).toBe(elm);
+        await Promise.resolve();
+        let target;
+        elm.addEventListener('click', (event) => {
+            target = event.target;
         });
+        elm.shadowRoot.querySelector(selector).click();
+        expect(target).toBe(elm);
     });
 }
 

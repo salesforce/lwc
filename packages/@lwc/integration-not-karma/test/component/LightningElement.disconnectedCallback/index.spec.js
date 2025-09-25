@@ -171,14 +171,13 @@ describe('disconnectedCallback for components with a explicit render()', () => {
         expect(disconnectedCallbackInvoked).toBe(true);
     });
 
-    it('should invoke disconnectedCallback for children when parent switches template', () => {
+    it('should invoke disconnectedCallback for children when parent switches template', async () => {
         const parent = createElement('x-parent', { is: DualTemplate });
         document.body.appendChild(parent);
         const child = parent.shadowRoot.querySelector('x-test');
         child.disconnect = disconnectedCallback;
         parent.hideChild = true;
-        return Promise.resolve().then(() => {
-            expect(disconnectedCallbackInvoked).toBe(true);
-        });
+        await Promise.resolve();
+        expect(disconnectedCallbackInvoked).toBe(true);
     });
 });

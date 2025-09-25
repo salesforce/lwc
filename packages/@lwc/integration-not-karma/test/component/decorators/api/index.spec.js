@@ -26,28 +26,26 @@ describe('properties', () => {
         }).toLogWarningDev(/Add the @api annotation to the property declaration/);
     });
 
-    it('should make the public property reactive if used in the template', () => {
+    it('should make the public property reactive if used in the template', async () => {
         const elm = createElement('x-reactive', { is: Reactivity });
         document.body.appendChild(elm);
 
         expect(elm.getRenderCount()).toBe(1);
 
         elm.reactive = 'reactive';
-        return Promise.resolve().then(() => {
-            expect(elm.getRenderCount()).toBe(2);
-        });
+        await Promise.resolve();
+        expect(elm.getRenderCount()).toBe(2);
     });
 
-    it('should make the public property not reactive if not used in the template', () => {
+    it('should make the public property not reactive if not used in the template', async () => {
         const elm = createElement('x-reactive', { is: Reactivity });
         document.body.appendChild(elm);
 
         expect(elm.getRenderCount()).toBe(1);
 
         elm.nonReactive = 'reactive';
-        return Promise.resolve().then(() => {
-            expect(elm.getRenderCount()).toBe(1);
-        });
+        await Promise.resolve();
+        expect(elm.getRenderCount()).toBe(1);
     });
 
     it('throws an error when attempting set a property of a public property', () => {
@@ -257,7 +255,7 @@ describe('non-LightningElement `this` when calling accessor', () => {
 
 describe('regression [W-9927596]', () => {
     describe('public property with duplicate observed field', () => {
-        it('log errors when evaluated and preserve the public property', () => {
+        it('log errors when evaluated and preserve the public property', async () => {
             let Ctor;
 
             expect(() => {
@@ -282,9 +280,8 @@ describe('regression [W-9927596]', () => {
             expect(elm.shadowRoot.querySelector('p').textContent).toBe('public');
 
             elm.foo = 'updated';
-            return Promise.resolve().then(() => {
-                expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
-            });
+            await Promise.resolve();
+            expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
         });
     });
 

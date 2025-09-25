@@ -31,7 +31,7 @@ it('renders the content as HTML', async () => {
     expect(div.childNodes[1].textContent).toBe('World');
 });
 
-it('re-renders the content on update', () => {
+it('re-renders the content on update', async () => {
     const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = 'Hello <b>World</b>';
     document.body.appendChild(elm);
@@ -40,10 +40,9 @@ it('re-renders the content on update', () => {
     expect(b.textContent).toBe('World');
 
     elm.content = 'Hello <b>LWC</b>';
-    return Promise.resolve().then(() => {
-        const b = elm.shadowRoot.querySelector('b');
-        expect(b.textContent).toBe('LWC');
-    });
+    await Promise.resolve();
+    const b_1 = elm.shadowRoot.querySelector('b');
+    expect(b_1.textContent).toBe('LWC');
 });
 
 describe('type conversion', () => {

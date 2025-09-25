@@ -84,7 +84,7 @@ it('should invoke the component lifecycle hooks in the right order when removing
     ]);
 });
 
-it('should call children component lifecycle hooks when rendered dynamically via the template', () => {
+it('should call children component lifecycle hooks when rendered dynamically via the template', async () => {
     const elm = createElement('x-parent-if', { is: ParentIf });
     document.body.appendChild(elm);
 
@@ -96,27 +96,23 @@ it('should call children component lifecycle hooks when rendered dynamically via
     resetTimingBuffer();
     elm.childVisible = true;
 
-    return Promise.resolve()
-        .then(() => {
-            expect(window.timingBuffer).toEqual([
-                'child:constructor',
-                'child:connectedCallback',
-                'child:renderedCallback',
-                'parentIf:renderedCallback',
-            ]);
-
-            resetTimingBuffer();
-            elm.childVisible = false;
-        })
-        .then(() => {
-            expect(window.timingBuffer).toEqual([
-                'child:disconnectedCallback',
-                'parentIf:renderedCallback',
-            ]);
-        });
+    await Promise.resolve();
+    expect(window.timingBuffer).toEqual([
+        'child:constructor',
+        'child:connectedCallback',
+        'child:renderedCallback',
+        'parentIf:renderedCallback',
+    ]);
+    resetTimingBuffer();
+    elm.childVisible = false;
+    await Promise.resolve();
+    expect(window.timingBuffer).toEqual([
+        'child:disconnectedCallback',
+        'parentIf:renderedCallback',
+    ]);
 });
 
-it('should call children component lifecycle hooks when a public property change', () => {
+it('should call children component lifecycle hooks when a public property change', async () => {
     const elm = createElement('x-parent-prop', { is: ParentProp });
     document.body.appendChild(elm);
 
@@ -131,15 +127,10 @@ it('should call children component lifecycle hooks when a public property change
     resetTimingBuffer();
     elm.value = 'bar';
 
-    return Promise.resolve().then(() => {
-        expect(window.timingBuffer).toEqual([
-            'child:renderedCallback',
-            'parentProp:renderedCallback',
-        ]);
-
-        resetTimingBuffer();
-        elm.childVisible = false;
-    });
+    await Promise.resolve();
+    expect(window.timingBuffer).toEqual(['child:renderedCallback', 'parentProp:renderedCallback']);
+    resetTimingBuffer();
+    elm.childVisible = false;
 });
 
 describe('invocation order', () => {

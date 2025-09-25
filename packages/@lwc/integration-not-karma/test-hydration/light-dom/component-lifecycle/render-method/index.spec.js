@@ -9,7 +9,7 @@ export default {
             text: p.firstChild,
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         const p = target.querySelector('p');
         expect(p).toBe(snapshots.p);
         expect(p.firstChild).toBe(snapshots.text);
@@ -17,8 +17,7 @@ export default {
 
         target.useTplA = false;
 
-        return Promise.resolve().then(() => {
-            expect(target.querySelector('p').textContent).toBe('template B');
-        });
+        await Promise.resolve();
+        expect(target.querySelector('p').textContent).toBe('template B');
     },
 };

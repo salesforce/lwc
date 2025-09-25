@@ -315,7 +315,7 @@ describe('ACTCompiler', () => {
         );
     });
 
-    it('property reference and events', () => {
+    it('property reference and events', async () => {
         let callCount = 0;
         const component = createAndInsertActComponent(testPropertyReference, {
             props: {
@@ -350,16 +350,13 @@ describe('ACTCompiler', () => {
 
         const outputPercent = component.shadowRoot.querySelector('ui-outputpercent');
         outputPercent.fireToggleSectionCollapsedEvent();
-        return Promise.resolve()
-            .then(() => {
-                expect(callCount).toEqual(1);
-                expect(nodes.notWhitelisted.textContent).toEqual('foobar1');
-                outputPercent.fireToggleSectionCollapsedEvent();
-            })
-            .then(() => {
-                expect(callCount).toEqual(2);
-                expect(nodes.notWhitelisted.textContent).toEqual('foobar2');
-            });
+        await Promise.resolve();
+        expect(callCount).toEqual(1);
+        expect(nodes.notWhitelisted.textContent).toEqual('foobar1');
+        outputPercent.fireToggleSectionCollapsedEvent();
+        await Promise.resolve();
+        expect(callCount).toEqual(2);
+        expect(nodes.notWhitelisted.textContent).toEqual('foobar2');
     });
 
     it('slot adjacent to named slot', () => {

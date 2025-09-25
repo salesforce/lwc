@@ -27,7 +27,7 @@ const notAConstructorError =
 const undefinedElementError = /(Illegal constructor|does not define a custom element)/;
 
 describe('customElements.get and customElements.whenDefined', () => {
-    it('using CustomElementConstructor', () => {
+    it('using CustomElementConstructor', async () => {
         // Nonce elements should be defined only once in the entire Karma test suite
         const tagName = 'x-nonce1';
         expect(customElements.get(tagName)).toBeUndefined();
@@ -39,14 +39,10 @@ describe('customElements.get and customElements.whenDefined', () => {
         expect(Ctor).toBe(Nonce1.CustomElementConstructor);
         document.body.appendChild(elm);
         expect(elm.expectedTagName).toEqual(tagName);
-        return promise
-            .then((Ctor) => {
-                expect(Ctor).toBe(Nonce1.CustomElementConstructor);
-                return customElements.whenDefined(tagName);
-            })
-            .then((Ctor) => {
-                expect(Ctor).toBe(Nonce1.CustomElementConstructor);
-            });
+        const Ctor_1 = await promise;
+        expect(Ctor_1).toBe(Nonce1.CustomElementConstructor);
+        const Ctor_2 = await customElements.whenDefined(tagName);
+        expect(Ctor_2).toBe(Nonce1.CustomElementConstructor);
     });
 });
 
@@ -105,46 +101,35 @@ describe('patched registry', () => {
             expect(secondCtor).toBe(firstCtor);
         });
 
-        it('whenDefined() should always return the same constructor - defined before whenDefined', () => {
+        it('whenDefined() should always return the same constructor - defined before whenDefined', async () => {
             createElement('x-nonce6', { is: Nonce6 });
-            let firstCtor;
-            return customElements
-                .whenDefined('x-nonce6')
-                .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    firstCtor = Ctor;
-                    // Create an lwc with same tag but different constructor, this will register a pivot for the same tag
-                    createElement('x-nonce6', { is: Nonce7 });
-                    return customElements.whenDefined('x-nonce6');
-                })
-                .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    expect(Ctor).toBe(firstCtor);
-                });
+            const Ctor = await customElements.whenDefined('x-nonce6');
+            expect(Ctor).not.toBeUndefined();
+            const firstCtor = Ctor;
+            // Create an lwc with same tag but different constructor, this will register a pivot for the same tag
+            createElement('x-nonce6', { is: Nonce7 });
+            const Ctor_1 = await customElements.whenDefined('x-nonce6');
+            expect(Ctor_1).not.toBeUndefined();
+            expect(Ctor_1).toBe(firstCtor);
         });
 
-        it('whenDefined() should always return the same constructor - defined after whenDefined', () => {
+        it('whenDefined() should always return the same constructor - defined after whenDefined', async () => {
             // Check `cE.whenDefined()` called _before_ `cE.define()`
             const promise = customElements.whenDefined('x-nonce12');
             createElement('x-nonce12', { is: Nonce12 });
-            let firstCtor;
-            return promise
-                .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    firstCtor = Ctor;
-                    // Check `cE.whenDefined()` called _after_ `cE.define()`
-                    const promise = customElements.whenDefined('x-nonce12');
-                    createElement('x-nonce12', { is: Nonce13 });
-                    return promise;
-                })
-                .then((Ctor) => {
-                    expect(Ctor).not.toBeUndefined();
-                    expect(Ctor).toBe(firstCtor);
-                });
+            const Ctor = await promise;
+            expect(Ctor).not.toBeUndefined();
+            const firstCtor = Ctor;
+            // Check `cE.whenDefined()` called _after_ `cE.define()`
+            const promise_1 = customElements.whenDefined('x-nonce12');
+            createElement('x-nonce12', { is: Nonce13 });
+            const Ctor_1 = await promise_1;
+            expect(Ctor_1).not.toBeUndefined();
+            expect(Ctor_1).toBe(firstCtor);
         });
     });
 
-    it('vanilla element should be an instance of the right class', () => {
+    it('vanilla element should be an instance of the right class', async () => {
         const tagName = 'x-check-ctor-instanceof';
         class MyElement extends HTMLElement {}
 
@@ -162,15 +147,10 @@ describe('patched registry', () => {
         expect(Ctor).toBe(MyElement);
 
         // check cE.whenDefined() when the promise is created _before_ cE.define()
-        return whenDefinedPromiseBeforeDefine
-            .then((Ctor) => {
-                expect(Ctor).toBe(MyElement);
-                // check cE.whenDefined() when the promise is created _after_ cE.define()
-                return customElements.whenDefined(tagName);
-            })
-            .then((Ctor) => {
-                expect(Ctor).toBe(MyElement);
-            });
+        const Ctor_1 = await whenDefinedPromiseBeforeDefine;
+        expect(Ctor_1).toBe(MyElement);
+        const Ctor_2 = await customElements.whenDefined(tagName);
+        expect(Ctor_2).toBe(MyElement);
     });
 
     describe('defining an invalid tag name', () => {

@@ -16,7 +16,7 @@ describe('live properties', () => {
             expect(elm.shadowRoot.querySelector('input').checked).toBe(true);
         });
 
-        it('should use the DOM value for diffing', () => {
+        it('should use the DOM value for diffing', async () => {
             const elm = createElement('live-input-checked', { is: InputChecked });
             elm.checkedValue = true;
             document.body.appendChild(elm);
@@ -25,9 +25,8 @@ describe('live properties', () => {
             elm.shadowRoot.querySelector('input').checked = false;
             elm.checkedValue = true;
 
-            return Promise.resolve().then(() => {
-                expect(elm.shadowRoot.querySelector('input').checked).toBe(true);
-            });
+            await Promise.resolve();
+            expect(elm.shadowRoot.querySelector('input').checked).toBe(true);
         });
     });
 
@@ -40,7 +39,7 @@ describe('live properties', () => {
             expect(elm.shadowRoot.querySelector('input').value).toBe('foo bar');
         });
 
-        it('should use the DOM value for diffing', () => {
+        it('should use the DOM value for diffing', async () => {
             const elm = createElement('live-input-value', { is: InputValue });
             elm.checkedValue = 'foo bar';
             document.body.appendChild(elm);
@@ -49,38 +48,35 @@ describe('live properties', () => {
             elm.shadowRoot.querySelector('input').value = 'bar baz';
             elm.valueValue = 'foo bar';
 
-            return Promise.resolve().then(() => {
-                expect(elm.shadowRoot.querySelector('input').value).toBe('foo bar');
-            });
+            await Promise.resolve();
+            expect(elm.shadowRoot.querySelector('input').value).toBe('foo bar');
         });
     });
 });
 
 describe('custom properties', () => {
-    it('should allow attribute value with underscore', () => {
+    it('should allow attribute value with underscore', async () => {
         const elm = createElement('attrs-special-character', { is: SpecialCharacterPublicProp });
         document.body.appendChild(elm);
 
         expect(elm.public_prop).toBe('underscore property');
 
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('attrs-underscore-child').under_score).toEqual(
-                'underscore property'
-            );
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('attrs-underscore-child').under_score).toEqual(
+            'underscore property'
+        );
     });
 
-    it('should allow attribute name with a leading uppercase character', () => {
+    it('should allow attribute name with a leading uppercase character', async () => {
         const elm = createElement('attrs-uppercase-parent', {
             is: UppercaseCharacterPublicPropParent,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('attrs-uppercase-child').Upper).toEqual(
-                'uppercase value from parent component'
-            );
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('attrs-uppercase-child').Upper).toEqual(
+            'uppercase value from parent component'
+        );
     });
 });
 

@@ -33,109 +33,95 @@ import XNoThrowOnMutate from 'x/noThrowOnMutate';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 describe('error boundary', () => {
-    it('should propagate frozen error to errorCallback()', () => {
+    it('should propagate frozen error to errorCallback()', async () => {
         const elm = createElement('x-boundary-rendered-throw-frozen', {
             is: XBoundaryRenderedThrowFrozen,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            expect(elm.getErrorMessage()).toEqual('Child threw frozen error in renderedCallback()');
-        });
+        await Promise.resolve();
+        expect(elm.getErrorMessage()).toEqual('Child threw frozen error in renderedCallback()');
     });
 
-    it('should not add web component stack trace to frozen error', () => {
+    it('should not add web component stack trace to frozen error', async () => {
         const elm = createElement('x-boundary-rendered-throw-frozen', {
             is: XBoundaryRenderedThrowFrozen,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            expect(elm.getErrorWCStack()).toBeUndefined();
-        });
+        await Promise.resolve();
+        expect(elm.getErrorWCStack()).toBeUndefined();
     });
 
-    it('should render alternative view if child throws in renderedCallback()', () => {
+    it('should render alternative view if child throws in renderedCallback()', async () => {
         const elm = createElement('x-boundary-child-rendered-throw', {
             is: XBoundaryChildRenderedThrow,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.rendered-callback-alternative');
-
-            expect(alternativeView.textContent).toEqual('renderedCallback alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-rendered-throw')).toBe(null);
-        });
+        await Promise.resolve();
+        const alternativeView = elm.shadowRoot.querySelector('.rendered-callback-alternative');
+        expect(alternativeView.textContent).toEqual('renderedCallback alternative view');
+        expect(elm.shadowRoot.querySelector('x-child-rendered-throw')).toBe(null);
     });
 
-    it('should render alternative view if child throws in render()', () => {
+    it('should render alternative view if child throws in render()', async () => {
         const elm = createElement('x-boundary-child-render-throw', {
             is: XBoundaryChildRenderThrow,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.render-alternative');
-
-            expect(alternativeView.textContent).toEqual('render alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-render-throw')).toBe(null);
-        });
+        await Promise.resolve();
+        const alternativeView = elm.shadowRoot.querySelector('.render-alternative');
+        expect(alternativeView.textContent).toEqual('render alternative view');
+        expect(elm.shadowRoot.querySelector('x-child-render-throw')).toBe(null);
     });
 
-    it('should render alternative view if child throws in constructor()', () => {
+    it('should render alternative view if child throws in constructor()', async () => {
         const elm = createElement('x-boundary-child-constructor-throw', {
             is: XBoundaryChildConstructorThrow,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.constructor-alternative');
-
-            expect(alternativeView.textContent).toEqual('constructor alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-constructor-throw')).toBe(null);
-            expect(elm.shadowRoot.querySelector('x-child-constructor-wrapper')).toBe(null);
-        });
+        await Promise.resolve();
+        const alternativeView = elm.shadowRoot.querySelector('.constructor-alternative');
+        expect(alternativeView.textContent).toEqual('constructor alternative view');
+        expect(elm.shadowRoot.querySelector('x-child-constructor-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-constructor-wrapper')).toBe(null);
     });
 
-    it('should render alternative view if child throws in connectedCallback()', () => {
+    it('should render alternative view if child throws in connectedCallback()', async () => {
         const elm = createElement('x-boundary-child-connected-throw', {
             is: XBoundaryChildConnectedThrow,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.connected-callback-alternative');
-
-            expect(alternativeView.textContent).toEqual('connectedCallback alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-connected-throw')).toBe(null);
-        });
+        await Promise.resolve();
+        const alternativeView = elm.shadowRoot.querySelector('.connected-callback-alternative');
+        expect(alternativeView.textContent).toEqual('connectedCallback alternative view');
+        expect(elm.shadowRoot.querySelector('x-child-connected-throw')).toBe(null);
     });
 
-    it('should render alternative view if child slot throws in render()', () => {
+    it('should render alternative view if child slot throws in render()', async () => {
         const elm = createElement('x-boundary-child-slot-throw', { is: XBoundaryChildSlotThrow });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.slot-alternative');
-
-            expect(alternativeView.textContent).toEqual('slot alternative view');
-            expect(elm.shadowRoot.querySelector('x-child-slot-host')).toBe(null);
-        });
+        await Promise.resolve();
+        const alternativeView = elm.shadowRoot.querySelector('.slot-alternative');
+        expect(alternativeView.textContent).toEqual('slot alternative view');
+        expect(elm.shadowRoot.querySelector('x-child-slot-host')).toBe(null);
     });
 
-    it('should render alternative view if nested child throws in render()', () => {
+    it('should render alternative view if nested child throws in render()', async () => {
         const elm = createElement('x-nested-boundary-child-throw', {
             is: XNestedBoundaryChildThrow,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            const alternativeView = elm.shadowRoot.querySelector('.boundary-alt-view');
-
-            expect(alternativeView.textContent).toEqual('alternative view');
-            expect(elm.shadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
-        });
+        await Promise.resolve();
+        const alternativeView = elm.shadowRoot.querySelector('.boundary-alt-view');
+        expect(alternativeView.textContent).toEqual('alternative view');
+        expect(elm.shadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
     });
 
     it('should render alternative view if child throws during self rehydration cycle', async () => {
@@ -157,20 +143,19 @@ describe('error boundary', () => {
         expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
     });
 
-    it('should fail to unmount alternative offender when root element is not a boundary', () => {
+    it('should fail to unmount alternative offender when root element is not a boundary', async () => {
         const elm = createElement('x-boundary-alternative-view-throw', {
             is: XBoundaryAlternativeViewThrow,
         });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            // ensure offender still exists since boundary failed to recover
-            expect(
-                elm.shadowRoot
-                    .querySelector('x-alt-child-boundary-view-throw')
-                    .shadowRoot.querySelector('x-post-error-child-view')
-            ).not.toBe(null);
-        });
+        await Promise.resolve();
+        // ensure offender still exists since boundary failed to recover
+        expect(
+            elm.shadowRoot
+                .querySelector('x-alt-child-boundary-view-throw')
+                .shadowRoot.querySelector('x-post-error-child-view')
+        ).not.toBe(null);
     });
 });
 
@@ -303,42 +288,32 @@ describe('errorCallback throws after value mutation', () => {
     });
 
     function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {
-        it(`parent errorCallback throws after value mutation ${testcase}`, () => {
+        it(`parent errorCallback throws after value mutation ${testcase}`, async () => {
             const throwElm = createElement(hostSelector, { is: hostClass });
             const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
             document.body.appendChild(throwElm);
             document.body.appendChild(noThrowElm);
-            return (
-                Promise.resolve()
-                    .then(() => {
-                        throwElm.show = true;
-                        noThrowElm.show = true;
-                    })
-                    // Need to wait a few ticks so flushRehydrationQueue can finish
-                    .then(() => new Promise((resolve) => setTimeout(resolve)))
-                    .then(() => new Promise((resolve) => setTimeout(resolve)))
-                    .then(() => {
-                        // error is thrown by parent's errorCallback
-                        expect(caughtError).not.toBeUndefined();
-                        expect(caughtError.message).toMatch(
-                            /error in the parent error callback after value mutation/
-                        );
-                        // child after the throwing child is not rendered
-                        // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
-                        const afterThrowingChild =
-                            throwElm.shadowRoot.querySelector('x-after-throwing-child');
-                        if (expectAfterThrowingChildToExist) {
-                            expect(afterThrowingChild).not.toBeNull();
-                        } else {
-                            expect(afterThrowingChild).toBeNull();
-                        }
-                        // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
-                        // give up rendering entirely just because one element threw in errorCallback.
-                        expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual(
-                            'shown'
-                        );
-                    })
+            await Promise.resolve();
+            throwElm.show = true;
+            noThrowElm.show = true;
+            await new Promise((resolve) => setTimeout(resolve));
+            await new Promise((resolve_1) => setTimeout(resolve_1));
+            // error is thrown by parent's errorCallback
+            expect(caughtError).not.toBeUndefined();
+            expect(caughtError.message).toMatch(
+                /error in the parent error callback after value mutation/
             );
+            // child after the throwing child is not rendered
+            // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
+            const afterThrowingChild = throwElm.shadowRoot.querySelector('x-after-throwing-child');
+            if (expectAfterThrowingChildToExist) {
+                expect(afterThrowingChild).not.toBeNull();
+            } else {
+                expect(afterThrowingChild).toBeNull();
+            }
+            // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
+            // give up rendering entirely just because one element threw in errorCallback.
+            expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual('shown');
         });
     }
 

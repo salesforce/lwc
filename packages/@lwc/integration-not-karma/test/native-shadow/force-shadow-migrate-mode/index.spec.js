@@ -3,9 +3,10 @@ import Native from 'x/native';
 import Synthetic from 'x/synthetic';
 import StyledLight from 'x/styledLight';
 
-function doubleMicrotask() {
+async function doubleMicrotask() {
     // wait for applyShadowMigrateMode()
-    return Promise.resolve().then(() => Promise.resolve());
+    await Promise.resolve();
+    return await Promise.resolve();
 }
 
 function isActuallyNativeShadow(shadowRoot) {
