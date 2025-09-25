@@ -19,11 +19,6 @@ export const registerJasmineMatchers = (chai, utils) => {
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             chai.expect(value).to.be.true;
         },
-        toHaveBeenCalledOnceWith(...args) {
-            const spy = utils.flag(this, 'object');
-            chai.expect(spy.calls).to.have.length(1);
-            chai.expect(spy.calls[0]).to.deep.equal(args);
-        },
     };
 
     for (const [name, impl] of Object.entries(matchers)) {

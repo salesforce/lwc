@@ -2,26 +2,38 @@ import { createElement } from 'lwc';
 import Parent from 'x/parent';
 import Child from 'x/child';
 import GetterThrows from 'x/getterThrows';
-import { jasmine, jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { ArrayContaining } from '@vitest/expect';
+import { spyOn } from '@vitest/spy';
 
-const arr = jasmine.arrayWithExactContents;
-// `jasmine.objectContaining` is long, but the method can't be detached/aliased, ergo wrapper
-const obj = (val) => jasmine.objectContaining(val);
+class ArrayWithExactContents extends ArrayContaining {
+    asymmetricMatch(other) {
+        return (
+            super.asymmetricMatch(other) &&
+            (this.inverse
+                ? this.sample.length !== other.length
+                : this.sample.length === other.length)
+        );
+    }
+}
+
+const arr = (val) => new ArrayWithExactContents(val);
+const obj = (val) => expect.objectContaining(val);
 
 let entries = [];
 
-beforeEach(() => {
-    const perfMeasure = performance.measure.bind(performance);
-
-    // We could use PerformanceObserver for this, but it's awkward and unreliable for unit testing
-    // See: https://github.com/salesforce/lwc/issues/4600
-    spyOn(performance, 'measure').and.callFake((...args) => {
-        const entry = perfMeasure(...args);
+beforeAll(() => {
+    const realMeasure = performance.measure.bind(performance);
+    spyOn(performance, 'measure').mockImplementation((...args) => {
+        const entry = realMeasure(...args);
         if (['lwc-render', 'lwc-rerender'].includes(entry.name)) {
             entries.push(entry);
         }
         return entry;
     });
+});
+
+afterAll(() => {
+    performance.measure.mockRestore();
 });
 
 afterEach(() => {

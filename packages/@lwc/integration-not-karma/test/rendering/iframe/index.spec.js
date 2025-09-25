@@ -14,5 +14,5 @@ it('renders iframes correctly - W-17015807', async () => {
 
     await Promise.resolve();
 
-    expect(spy).toHaveBeenCalledOnceWith('src', 'about:blank');
+    expect(spy).toHaveBeenCalledExactlyOnceWith('src', 'about:blank');
 });
