@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import Test from 'x/test';
 import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
 import XSlottedParent from 'x/slottedParent';
-import { customElementCallbackReactionErrorListener } from '../../../helpers/utils.js';
+import { customElementCallbackReactionErrorListener } from '../../../helpers/matchers/errors.js';
 
 function testConnectSlot(name, fn) {
     it(`should invoke the connectedCallback the root element is added in the DOM via ${name}`, () => {

@@ -6,7 +6,7 @@ import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
 import { jasmine } from '../../../helpers/jasmine.js';
-import { customElementCallbackReactionErrorListener } from '../../../helpers/utils.js';
+import { customElementCallbackReactionErrorListener } from '../../../helpers/matchers/errors.js';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {

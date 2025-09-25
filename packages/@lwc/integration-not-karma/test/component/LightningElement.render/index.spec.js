@@ -3,7 +3,7 @@ import { createElement, registerTemplate } from 'lwc';
 import DynamicTemplate, { template1, template2 } from 'x/dynamicTemplate';
 import RenderThrow from 'x/renderThrow';
 import RenderInvalid from 'x/renderInvalid';
-import { customElementCallbackReactionErrorListener } from '../../../helpers/utils.js';
+import { customElementCallbackReactionErrorListener } from '../../../helpers/matchers/errors.js';
 
 function testInvalidTemplate(type, template) {
     it(`throws an error if returns ${type}`, () => {
