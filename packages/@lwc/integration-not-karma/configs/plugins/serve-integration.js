@@ -81,6 +81,7 @@ const transform = async (ctx) => {
         plugins: [customLwcRollupPlugin],
 
         external: [
+            '@vitest/expect',
             '@vitest/spy',
             'lwc',
             'wire-service',

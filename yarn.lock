@@ -3569,7 +3569,7 @@
     "@typescript-eslint/scope-manager" "^8.41.0"
     "@typescript-eslint/utils" "^8.24.1"
 
-"@vitest/expect@3.2.4":
+"@vitest/expect@3.2.4", "@vitest/expect@^3.2.4":
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-3.2.4.tgz#8362124cd811a5ee11c5768207b9df53d34f2433"
   integrity sha512-Io0yyORnB6sikFlt8QW5K7slY4OjqNX9jmJQ02QDda8lyM6B5oNgVWoSoKPac8/kgnCUzuHQKrSLtu/uOqqrig==
