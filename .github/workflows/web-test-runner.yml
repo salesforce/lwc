@@ -51,4 +51,41 @@ jobs:
             #       region: us
 
             - run: yarn test
-            - run: yarn test:hydration
+            - run: yarn test || true
+            - run: DISABLE_SYNTHETIC=1 yarn test || true
+            - run: LEGACY_BROWSERS=1 yarn test || true
+            - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn test || true
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
+            - run: DISABLE_DETACHED_REHYDRATION=1 yarn test || true
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn test || true
+            - run: API_VERSION=58 yarn test || true
+            - run: API_VERSION=58 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: API_VERSION=59 yarn test || true
+            - run: API_VERSION=59 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: API_VERSION=60 yarn test || true
+            - run: API_VERSION=60 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: API_VERSION=61 yarn test || true
+            - run: API_VERSION=61 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: API_VERSION=62 yarn test || true
+            - run: API_VERSION=62 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_SYNTHETIC=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test || true
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test || true
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test || true
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn test || true
+            - run: NODE_ENV_FOR_TEST=production yarn test || true
+            - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn test || true
+            - run: ENGINE_SERVER=1 yarn test:hydration || true
+            - run: ENGINE_SERVER=1  ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 yarn test:hydration || true
+            - run: ENGINE_SERVER=1 NODE_ENV_FOR_TEST=production yarn test:hydration || true
+            - run: ENGINE_SERVER=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test:hydration || true
+            - run: ENGINE_SERVER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test:hydration || true
+            - run: ENGINE_SERVER=1 DISABLE_DETACHED_REHYDRATION=1 yarn test:hydration || true
+            - run: ENGINE_SERVER=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn test:hydration || true
+            - run: yarn test:hydration || true
+            - run: ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION=1 yarn test:hydration || true
+            - run: NODE_ENV_FOR_TEST=production yarn test:hydration || true
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test:hydration || true
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test:hydration || true
