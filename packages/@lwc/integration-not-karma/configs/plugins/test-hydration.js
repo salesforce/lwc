@@ -93,6 +93,8 @@ export function runTest(configPath, componentPath, ssrRendered) {
                 container,
                 selector,
             });
+        } else {
+            throw new Error(`Missing test or advancedTest function in ${configPath}.`);
         }
     });
 }
