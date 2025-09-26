@@ -53,8 +53,8 @@ jobs:
             - run: LEGACY_BROWSERS=1 yarn test || true
             - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn test
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
-            - run: DISABLE_DETACHED_REHYDRATION=1 yarn test || true
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 SHADOW_MODE_OVERRIDE=native yarn test || true
+            - run: DISABLE_DETACHED_REHYDRATION=1 yarn test
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn test || true
             - run: API_VERSION=58 yarn test || true
             - run: API_VERSION=58 SHADOW_MODE_OVERRIDE=native yarn test || true
