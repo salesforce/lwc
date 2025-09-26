@@ -8,11 +8,6 @@ import { HIGHEST_API_VERSION } from '@lwc/shared';
 
 export const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
 
-export const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
-export const ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION = Boolean(
-    process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION
-);
-
 export const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(
     process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST
 );
@@ -39,20 +34,26 @@ export const ENGINE_SERVER = Boolean(process.env.ENGINE_SERVER);
 
 // --- Test config --- //
 
+/**
+ * Integration tests default to synthetic shadow mode, while hydration tests default to native.
+ * This should be set to "native" or "synthetic" to override the default mode.
+ * @type {'native'|'synthetic'|undefined}
+ */
+// NOTE: NATIVE_SHADOW is not defined here because integration/hydration have different defaults
+export const SHADOW_MODE_OVERRIDE = process.env.SHADOW_MODE_OVERRIDE;
+
 export const API_VERSION = process.env.API_VERSION
     ? parseInt(process.env.API_VERSION, 10)
     : HIGHEST_API_VERSION;
 
 export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST || 'development';
 
-export const NATIVE_SHADOW = DISABLE_SYNTHETIC || FORCE_NATIVE_SHADOW_MODE_FOR_TEST;
-
 /** Unique directory name that encodes the flags that the tests were executed with. */
 export const COVERAGE_DIR_FOR_OPTIONS =
     Object.entries({
         API_VERSION,
         DISABLE_STATIC_CONTENT_OPTIMIZATION,
-        DISABLE_SYNTHETIC,
+        SHADOW_MODE_OVERRIDE,
         DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
         ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
         FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
