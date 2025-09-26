@@ -3,11 +3,24 @@ import { LWC_VERSION } from '@lwc/shared';
 import * as options from '../helpers/options.js';
 import { resolvePathOutsideRoot } from '../helpers/utils.js';
 
+/**
+ * We want to convert from parsed options (true/false) to a `process.env` with only strings.
+ * This drops `false` values and converts everything else to a string.
+ */
+const envify = (obj) => {
+    const clone = {};
+    for (const [key, val] of Object.entries(obj)) {
+        if (val !== false) {
+            clone[key] = String(val);
+        }
+    }
+    return clone;
+};
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
 
 /** `process.env` to inject into test environment. */
-const env = {
+const env = envify({
     ...pluck(options, [
         'API_VERSION',
         'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
@@ -21,7 +34,7 @@ const env = {
     ]),
     LWC_VERSION,
     NODE_ENV: options.NODE_ENV_FOR_TEST,
-};
+});
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
