@@ -24,11 +24,13 @@ describe.runIf(process.env.NATIVE_SHADOW)(
             );
             expect(getNumStyleSheets()).toEqual(1);
             element.next();
+            await Promise.resolve();
             expect(getComputedStyle(element.shadowRoot.querySelector('div')).color).toEqual(
                 'rgb(255, 0, 0)'
             );
             expect(getNumStyleSheets()).toEqual(2);
             element.next();
+            await Promise.resolve();
             expect(getComputedStyle(element.shadowRoot.querySelector('div')).color).toEqual(
                 'rgb(0, 0, 255)'
             );

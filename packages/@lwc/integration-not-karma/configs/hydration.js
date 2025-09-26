@@ -1,7 +1,13 @@
-// Use native shadow by default in hydration tests; MUST be set before imports
-process.env.DISABLE_SYNTHETIC ??= 'true';
-import baseConfig from './base.js';
+import * as options from '../helpers/options.js';
+import createConfig from './base.js';
 import hydrationTestPlugin from './plugins/serve-hydration.js';
+
+const SHADOW_MODE = options.SHADOW_MODE_OVERRIDE ?? 'native';
+
+const baseConfig = createConfig({
+    ...options,
+    NATIVE_SHADOW: SHADOW_MODE === 'native' || options.FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
+});
 
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {

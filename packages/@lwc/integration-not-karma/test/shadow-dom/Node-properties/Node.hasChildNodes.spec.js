@@ -26,7 +26,7 @@ describe('Node.hasChildNodes', () => {
 
         expect(container.shadowRoot.querySelector('.container').hasChildNodes()).toBe(true);
         expect(container.shadowRoot.querySelector('slot').hasChildNodes()).toBe(
-            process.env.NATIVE_SHADOW
+            Boolean(process.env.NATIVE_SHADOW)
         );
     });
 });

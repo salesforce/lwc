@@ -30,8 +30,9 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
         });
 
         describe('flag on', () => {
-            beforeEach(() => {
+            beforeEach(async () => {
                 setFeatureFlagForTest('ENABLE_FORCE_SHADOW_MIGRATE_MODE', true);
+                await Promise.resolve();
             });
 
             afterEach(() => {
@@ -59,9 +60,8 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
 
                 expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
                 expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(false);
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
-                    'rgb(0, 0, 0)'
-                );
+                const computed = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(computed.color).toBe('rgb(0, 0, 0)');
             });
 
             it('does not apply styles from global light DOM components to synthetic components', async () => {
@@ -83,9 +83,8 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
 
                 await doubleMicrotask();
 
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
-                    'rgb(0, 0, 255)'
-                );
+                let computed = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(computed.color).toBe('rgb(0, 0, 255)');
 
                 const style = document.createElement('style');
                 style.textContent = `h1 { color: purple; background-color: crimson }`;
@@ -93,12 +92,9 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
 
                 await doubleMicrotask();
 
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
-                    'rgb(128, 0, 128)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).backgroundColor).toBe(
-                    'rgb(220, 20, 60)'
-                );
+                computed = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(computed.color).toBe('rgb(128, 0, 128)');
+                expect(computed.backgroundColor).toBe('rgb(220, 20, 60)');
             });
 
             it('local styles are defined after global styles', async () => {
@@ -111,12 +107,9 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
 
                 await doubleMicrotask();
 
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).backgroundColor).toBe(
-                    'rgb(0, 128, 0)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).fontFamily).toBe(
-                    'monospace'
-                );
+                const computed = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(computed.backgroundColor).toBe('rgb(0, 128, 0)');
+                expect(computed.fontFamily).toBe('monospace');
             });
         });
 
@@ -128,9 +121,8 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
                 await doubleMicrotask();
                 expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
                 expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(false);
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
-                    'rgb(0, 0, 0)'
-                );
+                const computed = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(computed.color).toBe('rgb(0, 0, 0)');
             });
 
             it('does not use global styles for native components', async () => {
@@ -140,9 +132,8 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
                 await doubleMicrotask();
                 expect(isActuallyNativeShadow(elm.shadowRoot)).toBe(true);
                 expect(isClaimingToBeSyntheticShadow(elm.shadowRoot)).toBe(false);
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toBe(
-                    'rgb(0, 0, 0)'
-                );
+                const computed = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+                expect(computed.color).toBe('rgb(0, 0, 0)');
             });
         });
     }
