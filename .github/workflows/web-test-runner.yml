@@ -18,11 +18,9 @@ env:
     NODE_VERSION: '20.19.4'
 
 jobs:
-    # Starting with the basics, just get tests running in CI
-    # TODO: add env var combos we use for Karma tests
     # TODO: upload result artifacts
     # TODO: make it saucy 🥫
-    wtr-group-1:
+    integration-tests:
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -50,7 +48,6 @@ jobs:
             #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
             #       region: us
 
-            - run: yarn test
             - run: yarn test || true
             - run: DISABLE_SYNTHETIC=1 yarn test || true
             - run: LEGACY_BROWSERS=1 yarn test || true
@@ -77,6 +74,33 @@ jobs:
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 DISABLE_SYNTHETIC=1 yarn test || true
             - run: NODE_ENV_FOR_TEST=production yarn test || true
             - run: NODE_ENV_FOR_TEST=production DISABLE_SYNTHETIC=1 yarn test || true
+    hydration-tests:
+        runs-on: ubuntu-22.04
+        env:
+            SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-not-karma
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            # - uses: saucelabs/sauce-connect-action@v3.0.0
+            #   with:
+            #       username: ${{ secrets.SAUCE_USERNAME }}
+            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+            #       region: us
             - run: ENGINE_SERVER=1 yarn test:hydration || true
             # DISABLE_SYNTHETIC is enabled by default in hydration tests, so the inverse is disabling
             - run: ENGINE_SERVER=1 DISABLE_SYNTHETIC='' yarn test:hydration || true
