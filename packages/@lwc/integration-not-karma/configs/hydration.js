@@ -1,5 +1,5 @@
 // Use native shadow by default in hydration tests; MUST be set before imports
-process.env.DISABLE_SYNTHETIC ??= '1';
+process.env.DISABLE_SYNTHETIC ??= 'true';
 import baseConfig from './base.js';
 import hydrationTestPlugin from './plugins/serve-hydration.js';
 
