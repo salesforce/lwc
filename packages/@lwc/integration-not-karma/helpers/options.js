@@ -9,6 +9,9 @@ import { HIGHEST_API_VERSION } from '@lwc/shared';
 export const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
 
 export const DISABLE_SYNTHETIC = Boolean(process.env.DISABLE_SYNTHETIC);
+export const ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION = Boolean(
+    process.env.ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION
+);
 
 export const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(
     process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST

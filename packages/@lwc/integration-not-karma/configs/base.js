@@ -23,14 +23,15 @@ const maybeImport = (file, condition) => (condition ? `await import('${file}');`
 const env = envify({
     ...pluck(options, [
         'API_VERSION',
+        'DISABLE_DETACHED_REHYDRATION',
         'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
         'DISABLE_STATIC_CONTENT_OPTIMIZATION',
         'DISABLE_SYNTHETIC',
         'ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL',
+        'ENABLE_SYNTHETIC_SHADOW_IN_HYDRATION',
         'ENGINE_SERVER',
         'FORCE_NATIVE_SHADOW_MODE_FOR_TEST',
         'NATIVE_SHADOW',
-        'DISABLE_DETACHED_REHYDRATION',
     ]),
     LWC_VERSION,
     NODE_ENV: options.NODE_ENV_FOR_TEST,
