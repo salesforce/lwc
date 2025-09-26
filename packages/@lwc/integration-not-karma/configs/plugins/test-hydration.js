@@ -52,8 +52,8 @@ export function runTest(configPath, componentPath, ssrRendered) {
     let Component;
 
     beforeAll(async () => {
-        testConfig = await import(configPath);
-        Component = await import(componentPath);
+        testConfig = (await import(configPath)).default;
+        Component = (await import(componentPath)).default;
         setFeatureFlags(testConfig.requiredFeatureFlags, true);
     });
 
