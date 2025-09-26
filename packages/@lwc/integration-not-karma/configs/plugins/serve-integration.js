@@ -118,6 +118,11 @@ export default {
     async serve(ctx) {
         if (ctx.path.endsWith('.spec.js')) {
             return await transform(ctx);
+        } else if (ctx.path === '/test_api_sanitizeAttribute') {
+            // The test in /test/api/sanitizeAttribute makes network requests
+            // The returned value doesn't matter; this is just to avoid
+            // unnecessary logging output
+            return '';
         }
     },
 };
