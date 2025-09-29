@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import lineColumn from 'line-column';
-import { generateErrorMessage } from '@lwc/errors';
+import { generateErrorMessage, generateCompilerDiagnostic } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
 import type { types, NodePath } from '@babel/core';
-import type { CompilerMetrics } from '@lwc/errors';
+import type { CompilerMetrics, CompilerDiagnostic } from '@lwc/errors';
 import type { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
 import type { LwcBabelPluginPass } from './types';
 
@@ -112,6 +112,48 @@ function generateError(
     return error;
 }
 
+function collectError(
+    source: NodePath<types.Node>,
+    { errorInfo, messageArgs }: DecoratorErrorOptions,
+    state: LwcBabelPluginPass
+): CompilerDiagnostic {
+    const diagnostic = generateCompilerDiagnostic(errorInfo, {
+        messageArgs,
+        origin: {
+            filename: state.filename,
+            location: normalizeLocation(source) || undefined,
+        },
+    });
+
+    // Initialize errors array if it doesn't exist
+    if (!state.errors) {
+        state.errors = [];
+    }
+
+    // Add the error to the state
+    state.errors.push(diagnostic);
+
+    // Also store in file metadata for access from transformer
+    if (!(state.file.metadata as any).lwcErrors) {
+        (state.file.metadata as any).lwcErrors = [];
+    }
+    (state.file.metadata as any).lwcErrors.push(diagnostic);
+
+    return diagnostic;
+}
+
+function handleError(
+    source: NodePath<types.Node>,
+    { errorInfo, messageArgs }: DecoratorErrorOptions,
+    state: LwcBabelPluginPass
+) {
+    if (state.opts.collectMultipleErrors) {
+        return collectError(source, { errorInfo, messageArgs }, state);
+    } else {
+        throw generateError(source, { errorInfo, messageArgs }, state);
+    }
+}
+
 function incrementMetricCounter(metric: CompilerMetrics, state: LwcBabelPluginPass) {
     state.opts.instrumentation?.incrementCounter(metric);
 }
@@ -121,6 +163,8 @@ export {
     isGetterClassMethod,
     isSetterClassMethod,
     generateError,
+    collectError,
+    handleError,
     getEngineImportSpecifiers,
     incrementMetricCounter,
 };

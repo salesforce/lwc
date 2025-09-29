@@ -8,7 +8,13 @@ import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
 import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
-import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
+import {
+    generateError,
+    handleError,
+    isClassMethod,
+    isGetterClassMethod,
+    isSetterClassMethod,
+} from '../utils';
 import api from './api';
 import wire from './wire';
 import track from './track';
@@ -60,13 +66,14 @@ function getDecoratedNodeType(
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
     } else {
-        throw generateError(
+        handleError(
             propertyOrMethod,
             {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
             },
             state
         );
+        return DECORATOR_TYPES.PROPERTY; // Default fallback
     }
 }
 
@@ -102,7 +109,7 @@ function validateImportedLwcDecoratorUsage(
                 : reference.parentPath!.parentPath!;
 
             if (!decorator.isDecorator()) {
-                throw generateError(
+                handleError(
                     decorator,
                     {
                         errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
@@ -113,9 +120,12 @@ function validateImportedLwcDecoratorUsage(
             }
 
             const propertyOrMethod = decorator.parentPath;
-            if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-                throw generateError(
-                    propertyOrMethod,
+            if (
+                !propertyOrMethod ||
+                (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod())
+            ) {
+                handleError(
+                    propertyOrMethod || decorator,
                     {
                         errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
                         messageArgs: [name],

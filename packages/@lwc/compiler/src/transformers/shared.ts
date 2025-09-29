@@ -14,6 +14,10 @@ export interface TransformResult {
     map: unknown;
     /** Any diagnostic warnings that may have occurred. */
     warnings?: CompilerDiagnostic[];
+    /** Any diagnostic errors that were collected during compilation. */
+    errors?: CompilerDiagnostic[];
+    /** Whether compilation failed due to fatal errors. */
+    fatal?: boolean;
     /**
      * String tokens used for style scoping in synthetic shadow DOM and `*.scoped.css`, as either
      * attributes or classes.

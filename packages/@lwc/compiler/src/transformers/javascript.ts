@@ -11,7 +11,7 @@ import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties
 import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { normalizeToCompilerError, normalizeToDiagnostic, TransformerErrors } from '@lwc/errors';
 import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 
 import type { NormalizedTransformOptions } from '../options';
@@ -41,6 +41,7 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
+        collectMultipleErrors,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
@@ -50,6 +51,7 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
+        collectMultipleErrors,
     };
 
     const plugins: babel.PluginItem[] = [
@@ -69,7 +71,9 @@ export default function scriptTransform(
         );
     }
 
+    const errors: any[] = [];
     let result;
+
     try {
         result = babel.transformSync(code, {
             filename,
@@ -82,8 +86,31 @@ export default function scriptTransform(
             // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
             compact: false,
-            plugins,
+            plugins: plugins.map((plugin) => {
+                if (Array.isArray(plugin) && plugin[0] === lwcClassTransformPlugin) {
+                    // Wrap the LWC plugin to capture its state
+                    return [
+                        plugin[0],
+                        {
+                            ...plugin[1],
+                            onPluginState: (state: any) => {
+                                pluginState = state;
+                            },
+                        },
+                    ];
+                }
+                return plugin;
+            }),
         })!;
+
+        // Check if the LWC plugin collected any errors from file metadata
+        if (
+            result.metadata &&
+            (result.metadata as any).lwcErrors &&
+            (result.metadata as any).lwcErrors.length > 0
+        ) {
+            errors.push(...(result.metadata as any).lwcErrors);
+        }
     } catch (e) {
         let transformerError = TransformerErrors.JS_TRANSFORMER_ERROR;
 
@@ -95,11 +122,21 @@ export default function scriptTransform(
         ) {
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
-        throw normalizeToCompilerError(transformerError, e, { filename });
+
+        if (collectMultipleErrors) {
+            // Convert to diagnostic and continue
+            const diagnostic = normalizeToDiagnostic(transformerError, e, { filename });
+            errors.push(diagnostic);
+            result = { code: '', map: null };
+        } else {
+            throw normalizeToCompilerError(transformerError, e, { filename });
+        }
     }
 
     return {
         code: result.code!,
         map: result.map,
+        errors: errors.length > 0 ? errors : undefined,
+        fatal: errors.length > 0,
     };
 }

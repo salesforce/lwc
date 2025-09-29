@@ -40,6 +40,7 @@ const DEFAULT_OPTIONS = {
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
     ssrMode: DEFAULT_SSR_MODE,
+    collectMultipleErrors: false,
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -142,6 +143,8 @@ export interface TransformOptions {
     apiVersion?: number;
     targetSSR?: boolean;
     ssrMode?: CompilationMode;
+    /** Whether to collect multiple errors instead of stopping on first error */
+    collectMultipleErrors?: boolean;
 }
 
 type OptionalTransformKeys =
