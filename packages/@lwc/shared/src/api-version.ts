@@ -123,26 +123,29 @@ export const enum APIFeature {
     ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS,
 }
 
-const minFeatureApiVersions = new Map([
-    [APIFeature.LOWERCASE_SCOPE_TOKENS, APIVersion.V59_246_WINTER_24],
-    [APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS, APIVersion.V59_246_WINTER_24],
-    [APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION, APIVersion.V60_248_SPRING_24],
-    [APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS, APIVersion.V60_248_SPRING_24],
-    [APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS, APIVersion.V60_248_SPRING_24],
-    [APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, APIVersion.V60_248_SPRING_24],
-    [APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE, APIVersion.V61_250_SUMMER_24],
-    [APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING, APIVersion.V61_250_SUMMER_24],
-    [APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT, APIVersion.V62_252_WINTER_25],
-    [APIFeature.ENABLE_THIS_DOT_STYLE, APIVersion.V62_252_WINTER_25],
-    [APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING, APIVersion.V62_252_WINTER_25],
-    [APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS, APIVersion.V66_260_SPRING_26],
-]);
-
 /**
  * @param apiVersionFeature
  */
 export function minApiVersion(apiVersionFeature: APIFeature): APIVersion {
-    return minFeatureApiVersions.get(apiVersionFeature) || HIGHEST_API_VERSION;
+    switch (apiVersionFeature) {
+        case APIFeature.LOWERCASE_SCOPE_TOKENS:
+        case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
+            return APIVersion.V59_246_WINTER_24;
+        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
+        case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
+        case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
+        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
+            return APIVersion.V60_248_SPRING_24;
+        case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
+        case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
+            return APIVersion.V61_250_SUMMER_24;
+        case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
+        case APIFeature.ENABLE_THIS_DOT_STYLE:
+        case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
+            return APIVersion.V62_252_WINTER_25;
+        case APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS:
+            return APIVersion.V66_260_SPRING_26;
+    }
 }
 
 /**
