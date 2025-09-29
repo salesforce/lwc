@@ -24,7 +24,7 @@ import {
     isExpression,
     isPotentialExpression,
 } from './expression';
-import { isComplexTemplateExpressionEnabled } from './expression-complex';
+
 import {
     ATTR_NAME,
     DATA_RE,
@@ -111,7 +111,9 @@ export function normalizeAttributeValue(
     const isQuoted = isQuotedAttribute(rawAttrVal);
     const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
-        if (isQuoted && !isComplexTemplateExpressionEnabled(ctx)) {
+        // Don't test for the API version here, just check if CTE is enabled.
+        // We can provide more specific errors WRT API versions after the expression has been parsed and we know what it is.
+        if (isQuoted && !ctx.config.experimentalComplexExpressions) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
 

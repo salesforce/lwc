@@ -61,7 +61,7 @@ async function compileFixture({
 }: {
     entry: string;
     dirname: string;
-    experimentalComplexExpressions: boolean;
+    experimentalComplexExpressions: boolean | undefined;
 }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');

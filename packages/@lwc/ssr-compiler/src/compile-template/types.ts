@@ -48,4 +48,5 @@ export interface TransformerContext {
 export interface TemplateOpts {
     preserveComments: boolean;
     experimentalComplexExpressions: boolean;
+    apiVersion: number;
 }
