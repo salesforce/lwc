@@ -68,10 +68,6 @@ jobs:
     integration-tests-2:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (singleton batch)
-        strategy:
-            matrix:
-                shadow_mode: [native, synthetic]
-
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
