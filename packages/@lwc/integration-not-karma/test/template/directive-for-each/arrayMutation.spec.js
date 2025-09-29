@@ -14,16 +14,14 @@ describe('Testing array primitives', () => {
     });
 
     function testReactivity(testCase, expectedItems, fn) {
-        it(`check ${testCase} reactivity`, function () {
+        it(`check ${testCase} reactivity`, async () => {
             fn(elm);
-            return Promise.resolve().then(function () {
-                var list = Array.prototype.slice.call(elm.shadowRoot.querySelectorAll('li'));
-
-                var textList = list.map(function (li) {
-                    return li.textContent;
-                });
-                expect(textList).toEqual(expectedItems);
+            await Promise.resolve();
+            var list = Array.prototype.slice.call(elm.shadowRoot.querySelectorAll('li'));
+            var textList = list.map(function (li) {
+                return li.textContent;
             });
+            expect(textList).toEqual(expectedItems);
         });
     }
 

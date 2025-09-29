@@ -23,7 +23,7 @@ function testClassNameValue(name, value, expected, test = it) {
 }
 
 function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
-    it(name, () => {
+    it(name, async () => {
         const elm = createElement('x-reactive', { is: Reactive });
         elm.updateDynamicClass(setupFn);
         document.body.appendChild(elm);
@@ -31,9 +31,8 @@ function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
         const target = elm.shadowRoot.querySelector('div');
 
         elm.updateDynamicClass(updateFn);
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe(expected);
-        });
+        await Promise.resolve();
+        expect(target.className).toBe(expected);
     });
 }
 

@@ -1,6 +1,5 @@
 import path from 'node:path';
 import vm from 'node:vm';
-import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
@@ -20,16 +19,6 @@ lwcSsr.setHooks({
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
 const COMPONENT_NAME = 'x-main';
 const COMPONENT_ENTRYPOINT = 'x/main/main.js';
-
-// Like `fs.existsSync` but async
-async function exists(path) {
-    try {
-        await fs.access(path);
-        return true;
-    } catch (_err) {
-        return false;
-    }
-}
 
 async function compileModule(input, targetSSR, format) {
     const modulesDir = path.join(ROOT_DIR, input.slice(0, -COMPONENT_ENTRYPOINT.length));
@@ -106,15 +95,6 @@ async function getSsrMarkup(componentEntrypoint, configPath) {
     return await script.runInContext(vm.createContext({ LWC: lwcSsr }));
 }
 
-async function existsUp(dir, file) {
-    while (true) {
-        if (await exists(path.join(dir, file))) return true;
-        dir = path.join(dir, '..');
-        const basename = path.basename(dir);
-        if (basename === '.') return false;
-    }
-}
-
 /**
  * Hydration test `index.spec.js` files are actually config files, not spec files.
  * This function wraps those configs in the test code to be executed.
@@ -129,8 +109,6 @@ async function wrapHydrationTest(configPath) {
 
         const suiteDir = path.dirname(configPath);
         const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
-        // You can add an `.only` file alongside an `index.spec.js` file to make the test focused
-        const onlyFileExists = await existsUp(suiteDir, '.only');
         const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
         return `
@@ -139,8 +117,7 @@ async function wrapHydrationTest(configPath) {
         runTest(
             '/${configPath}?original=1',
             '/${componentEntrypoint}',
-            ${JSON.stringify(ssrOutput) /* escape quotes */},
-            ${onlyFileExists}
+            ${JSON.stringify(ssrOutput) /* escape quotes */}
         );
         `;
     } finally {

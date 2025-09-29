@@ -21,89 +21,67 @@ function supportsDirPseudoclass() {
 
 // In native shadow we delegate to the browser, so it has to support :dir()
 describe.runIf(!process.env.NATIVE_SHADOW || supportsDirPseudoclass())(':dir() pseudoclass', () => {
-    it('can apply styles based on :dir()', () => {
+    it('can apply styles based on :dir()', async () => {
         const elm = createElement('x-parent', { is: Component });
         document.body.appendChild(elm);
 
         elm.setAttribute('dir', 'ltr');
 
-        return Promise.resolve()
-            .then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                    'rgb(0, 0, 1)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.foo')).color).toEqual(
-                    'rgb(0, 0, 3)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color).toEqual(
-                    'rgb(0, 0, 5)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color).toEqual(
-                    'rgb(0, 0, 7)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color).toEqual(
-                    'rgb(0, 0, 9)'
-                );
-                elm.setAttribute('dir', 'rtl');
-            })
-            .then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                    'rgb(0, 0, 2)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.foo')).color).toEqual(
-                    'rgb(0, 0, 4)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color).toEqual(
-                    'rgb(0, 0, 6)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color).toEqual(
-                    'rgb(0, 0, 8)'
-                );
-                expect(getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color).toEqual(
-                    'rgb(0, 0, 10)'
-                );
-            });
+        await Promise.resolve();
+        expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.foo')).color).toEqual(
+            'rgb(0, 0, 3)'
+        );
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color).toEqual(
+            'rgb(0, 0, 5)'
+        );
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color).toEqual(
+            'rgb(0, 0, 7)'
+        );
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color).toEqual(
+            'rgb(0, 0, 9)'
+        );
+        elm.setAttribute('dir', 'rtl');
+        expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual('rgb(0, 0, 2)');
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.foo')).color).toEqual(
+            'rgb(0, 0, 4)'
+        );
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.foo.bar')).color).toEqual(
+            'rgb(0, 0, 6)'
+        );
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.baz span')).color).toEqual(
+            'rgb(0, 0, 8)'
+        );
+        expect(getComputedStyle(elm.shadowRoot.querySelector('.baz button')).color).toEqual(
+            'rgb(0, 0, 10)'
+        );
     });
 
-    it('can apply styles based on :dir() for light-within-shadow', () => {
+    it('can apply styles based on :dir() for light-within-shadow', async () => {
         const elm = createElement('x-shadow-container', { is: ShadowContainer });
         document.body.appendChild(elm);
 
         elm.setAttribute('dir', 'ltr');
 
-        return Promise.resolve()
-            .then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                    'rgb(0, 0, 1)'
-                );
-                elm.setAttribute('dir', 'rtl');
-            })
-            .then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
-                    'rgb(0, 0, 2)'
-                );
-            });
+        await Promise.resolve();
+        expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
+        elm.setAttribute('dir', 'rtl');
+        expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual('rgb(0, 0, 2)');
     });
 });
 
 it.runIf(process.env.NATIVE_SHADOW && supportsDirPseudoclass())(
     'can apply styles based on :dir() for light-at-root',
-    () => {
+    async () => {
         const elm = createElement('x-light', { is: Light });
         document.body.appendChild(elm);
 
-        return Promise.resolve()
-            .then(() => {
-                // Unlike [dir], :dir(ltr) matches even when there is no dir attribute anywhere
-                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
-                elm.setAttribute('dir', 'rtl');
-            })
-            .then(() => {
-                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 2)');
-                elm.setAttribute('dir', 'ltr');
-            })
-            .then(() => {
-                expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
-            });
+        await Promise.resolve();
+        // Unlike [dir], :dir(ltr) matches even when there is no dir attribute anywhere
+        expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
+        elm.setAttribute('dir', 'rtl');
+        expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 2)');
+        elm.setAttribute('dir', 'ltr');
+        expect(getComputedStyle(elm.querySelector('div')).color).toEqual('rgb(0, 0, 1)');
     }
 );

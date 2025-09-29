@@ -7,28 +7,26 @@ import SetTrackedValueToNull from 'x/setTrackedValueToNull';
 import StaticProperty from 'x/staticProperty';
 import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
-it('rerenders the component when a track property is updated - literal', () => {
+it('rerenders the component when a track property is updated - literal', async () => {
     const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
     expect(elm.shadowRoot.querySelector('.prop').textContent).toBe('0');
 
     elm.mutateCmp((cmp) => (cmp.prop = 1));
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('.prop').textContent).toBe('1');
-    });
+    await Promise.resolve();
+    expect(elm.shadowRoot.querySelector('.prop').textContent).toBe('1');
 });
 
-it('rerenders the component when a track property is updated - object', () => {
+it('rerenders the component when a track property is updated - object', async () => {
     const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
     expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('0');
 
     elm.mutateCmp((cmp) => (cmp.obj.value = 1));
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
-    });
+    await Promise.resolve();
+    expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
 });
 
 it("doesn't work for decorated static props", () => {
@@ -81,31 +79,29 @@ describe('restrictions', () => {
 });
 
 describe('object mutations', () => {
-    it('rerenders the component when a property is updated', () => {
+    it('rerenders the component when a property is updated', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('0');
 
         elm.mutateCmp((cmp) => (cmp.nestedObj.value.nestedValue = 1));
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('1');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('1');
     });
 
-    it('rerenders the component when a property is deleted', () => {
+    it('rerenders the component when a property is deleted', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => {
             delete cmp.obj.value;
         });
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('');
     });
 
-    it('rerenders the component when a track is defined using Object.defineProperty', () => {
+    it('rerenders the component when a track is defined using Object.defineProperty', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
@@ -114,12 +110,11 @@ describe('object mutations', () => {
                 value: 1,
             });
         });
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
     });
 
-    it('should support freezing tracked property', () => {
+    it('should support freezing tracked property', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
@@ -127,9 +122,8 @@ describe('object mutations', () => {
             cmp.obj = { value: 1 };
             Object.freeze(cmp.obj);
         });
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('1');
     });
 
     it('should not log an error when setting tracked value to null', () => {
@@ -140,34 +134,31 @@ describe('object mutations', () => {
 });
 
 describe('array mutations', () => {
-    it('rerenders the component if a new item is added via Array.prototype.push', () => {
+    it('rerenders the component if a new item is added via Array.prototype.push', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => cmp.array.push(4));
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.array').textContent).toBe('1234');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.array').textContent).toBe('1234');
     });
 
-    it('rerenders the component if an item is removed via Array.prototype.pop', () => {
+    it('rerenders the component if an item is removed via Array.prototype.pop', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => cmp.array.pop());
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.array').textContent).toBe('12');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.array').textContent).toBe('12');
     });
 
-    it('rerenders the component if an item is removed via Array.prototype.pop', () => {
+    it('rerenders the component if an item is removed via Array.prototype.pop', async () => {
         const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => cmp.array.unshift(4));
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('.array').textContent).toBe('4123');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('.array').textContent).toBe('4123');
     });
 });
 
@@ -184,7 +175,7 @@ describe('non-observable values', () => {
 });
 
 describe('regression [W-9927596] - track field with duplicate observed field', () => {
-    it('log errors when evaluated and preserve the public property', () => {
+    it('log errors when evaluated and preserve the public property', async () => {
         let Ctor;
 
         expect(() => {
@@ -213,8 +204,7 @@ describe('regression [W-9927596] - track field with duplicate observed field', (
         expect(elm.shadowRoot.querySelector('p').textContent).toBe('track');
 
         elm.updateProperty('updated');
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('p').textContent).toBe('updated');
     });
 });

@@ -16,7 +16,7 @@ export default {
             cmpWithSlotParagraphs,
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         const snapshotAfterHydration = this.snapshot(target);
 
         expect(snapshotAfterHydration.withSlot).toBe(snapshots.withSlot);
@@ -37,10 +37,8 @@ export default {
 
         target.slotText = 'changed';
 
-        return Promise.resolve().then(() => {
-            const lateSnapshot = this.snapshot(target);
-
-            expect(lateSnapshot.mainText.textContent).toBe('changed');
-        });
+        await Promise.resolve();
+        const lateSnapshot = this.snapshot(target);
+        expect(lateSnapshot.mainText.textContent).toBe('changed');
     },
 };

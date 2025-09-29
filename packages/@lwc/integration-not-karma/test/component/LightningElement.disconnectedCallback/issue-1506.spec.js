@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Parent from 'x/dualTemplate1506';
 
-it('setting tracked value in disconnectedCallback should not throw', () => {
+it('setting tracked value in disconnectedCallback should not throw', async () => {
     const elm = createElement('x-parent', { is: Parent });
     document.body.appendChild(elm);
     expect(
@@ -9,7 +9,6 @@ it('setting tracked value in disconnectedCallback should not throw', () => {
     ).not.toBeNull();
     elm.toggleTemplate();
 
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('div').textContent).toBe('simple template');
-    });
+    await Promise.resolve();
+    expect(elm.shadowRoot.querySelector('div').textContent).toBe('simple template');
 });

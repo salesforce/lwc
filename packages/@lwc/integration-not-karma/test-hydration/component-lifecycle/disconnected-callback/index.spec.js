@@ -14,15 +14,14 @@ export default {
             xFoo: target.shadowRoot.querySelector('x-foo'),
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         const xFoo = target.shadowRoot.querySelector('x-foo');
         expect(xFoo).not.toBe(null);
         expect(xFoo).toBe(snapshots.xFoo);
 
         target.showFoo = false;
 
-        return Promise.resolve().then(() => {
-            expect(disconnectedCalled).toBe(true);
-        });
+        await Promise.resolve();
+        expect(disconnectedCalled).toBe(true);
     },
 };

@@ -11,8 +11,8 @@ import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 import ComputedKey from 'x/computedKey';
 import ValueEvaluationThrows from 'x/valueEvaluationThrows';
+import { spyOn } from '@vitest/spy';
 import { jasmine } from '../../helpers/jasmine.js';
-import { spyConsole } from '../../helpers/console.js';
 import { catchUnhandledRejectionsAndErrors } from '../../helpers/utils.js';
 
 describe('lwc:on', () => {
@@ -257,10 +257,10 @@ describe('lwc:on', () => {
             describe('with same object modified', () => {
                 let consoleSpy;
                 beforeEach(() => {
-                    consoleSpy = spyConsole();
+                    consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
                 });
                 afterEach(() => {
-                    consoleSpy.reset();
+                    consoleSpy.mockRestore();
                 });
 
                 it('throws when a new property is added to object passed to lwc:on', async () => {
@@ -268,12 +268,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -282,12 +286,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -296,12 +304,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
             });
@@ -348,10 +360,10 @@ describe('lwc:on', () => {
             describe('with same object modified', () => {
                 let consoleSpy;
                 beforeEach(() => {
-                    consoleSpy = spyConsole();
+                    consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
                 });
                 afterEach(() => {
-                    consoleSpy.reset();
+                    consoleSpy.mockRestore();
                 });
 
                 it('throws when a new property is added to object passed to lwc:on', async () => {
@@ -359,12 +371,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -373,12 +389,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -387,12 +407,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
             });

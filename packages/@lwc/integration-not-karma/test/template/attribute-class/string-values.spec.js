@@ -39,43 +39,39 @@ describe('dynamic class attribute', () => {
         expect(target.className).toBe('foo bar baz');
     });
 
-    it('empty', () => {
+    it('empty', async () => {
         const { host, target } = createDynamicClass('foo');
 
         host.dynamicClass = '';
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('');
-        });
+        await Promise.resolve();
+        expect(target.className).toBe('');
     });
 
-    it('partial replacement', () => {
+    it('partial replacement', async () => {
         const { host, target } = createDynamicClass('foo bar');
 
         host.dynamicClass = 'bar baz';
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('bar baz');
-        });
+        await Promise.resolve();
+        expect(target.className).toBe('bar baz');
     });
 
-    it('full replacement', () => {
+    it('full replacement', async () => {
         const { host, target } = createDynamicClass('foo bar');
         expect(target.className).toBe('foo bar');
 
         host.dynamicClass = 'baz buz';
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('baz buz');
-        });
+        await Promise.resolve();
+        expect(target.className).toBe('baz buz');
     });
 
-    it('preserves manually added classes', () => {
+    it('preserves manually added classes', async () => {
         const { host, target } = createDynamicClass('foo');
         target.classList.add('bar');
         expect(target.className).toBe('foo bar');
 
         host.dynamicClass = 'baz';
-        return Promise.resolve().then(() => {
-            expect(target.className).toBe('bar baz');
-        });
+        await Promise.resolve();
+        expect(target.className).toBe('bar baz');
     });
 
     describe('updating with null/undefined/empty string', () => {

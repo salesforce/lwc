@@ -12,7 +12,7 @@ function getChildrenComments(node) {
 }
 
 describe('html comments', () => {
-    it('should be rendered within if', () => {
+    it('should be rendered within if', async () => {
         const elm = createElement('x-test', { is: Test });
         elm.count = 1;
         document.body.appendChild(elm);
@@ -23,14 +23,13 @@ describe('html comments', () => {
 
         elm.count = 2;
 
-        return Promise.resolve().then(() => {
-            comments = getChildrenComments(elm.shadowRoot);
-            expect(comments).toContain('Comment for even number');
-            expect(comments).not.toContain('Comment for odd number');
-        });
+        await Promise.resolve();
+        comments = getChildrenComments(elm.shadowRoot);
+        expect(comments).toContain('Comment for even number');
+        expect(comments).not.toContain('Comment for odd number');
     });
 
-    it('should be rendered within for:each', () => {
+    it('should be rendered within for:each', async () => {
         const elm = createElement('x-test', { is: Test });
         elm.count = 1;
         document.body.appendChild(elm);
@@ -40,13 +39,12 @@ describe('html comments', () => {
 
         elm.count = 2;
 
-        return Promise.resolve().then(() => {
-            comments = getChildrenComments(elm.shadowRoot);
-            expect(comments.filter((c) => c === 'Comment inside for:each')).toHaveSize(2);
-        });
+        await Promise.resolve();
+        comments = getChildrenComments(elm.shadowRoot);
+        expect(comments.filter((c_1) => c_1 === 'Comment inside for:each')).toHaveSize(2);
     });
 
-    it('should be rendered within slots', () => {
+    it('should be rendered within slots', async () => {
         const elm = createElement('x-test', { is: Test });
         elm.count = 1;
         document.body.appendChild(elm);
@@ -58,13 +56,12 @@ describe('html comments', () => {
 
         elm.count = 2;
 
-        return Promise.resolve().then(() => {
-            comments = getChildrenComments(child);
-            expect(comments).not.toContain('slotted:odd comment');
-        });
+        await Promise.resolve();
+        comments = getChildrenComments(child);
+        expect(comments).not.toContain('slotted:odd comment');
     });
 
-    it('should not confuse comments with text nodes', () => {
+    it('should not confuse comments with text nodes', async () => {
         const elm = createElement('x-confused-with-text', { is: ConfusedWithText });
         document.body.appendChild(elm);
 
@@ -72,10 +69,9 @@ describe('html comments', () => {
 
         elm.comments = ['comment'];
 
-        return Promise.resolve().then(() => {
-            const comments = getChildrenComments(elm.shadowRoot);
-            expect(comments).toContain('Comment inside for:each');
-            expect(elm.shadowRoot.textContent).toBe('hellocommentworld');
-        });
+        await Promise.resolve();
+        const comments = getChildrenComments(elm.shadowRoot);
+        expect(comments).toContain('Comment inside for:each');
+        expect(elm.shadowRoot.textContent).toBe('hellocommentworld');
     });
 });

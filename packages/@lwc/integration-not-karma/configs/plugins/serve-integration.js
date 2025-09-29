@@ -32,12 +32,8 @@ const createRollupPlugin = (input, options) => {
         enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
         disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
         apiVersion: API_VERSION,
-        modules: [
-            {
-                // Assume `ctx.path` is a component file, e.g. modules/x/foo/foo.js
-                dir: path.resolve(input, '../../..'),
-            },
-        ],
+        // Assume `ctx.path` is a component file, e.g. modules/x/foo/foo.js
+        modules: [{ dir: path.resolve(input, '../../..') }],
         ...options,
     });
 };
@@ -85,6 +81,8 @@ const transform = async (ctx) => {
         plugins: [customLwcRollupPlugin],
 
         external: [
+            '@vitest/expect',
+            '@vitest/spy',
             'lwc',
             'wire-service',
             // Some helper files export functions that mutate a global state. The setup file calls
@@ -120,6 +118,11 @@ export default {
     async serve(ctx) {
         if (ctx.path.endsWith('.spec.js')) {
             return await transform(ctx);
+        } else if (ctx.path === '/test_api_sanitizeAttribute') {
+            // The test in /test/api/sanitizeAttribute makes network requests
+            // The returned value doesn't matter; this is just to avoid
+            // unnecessary logging output
+            return '';
         }
     },
 };

@@ -17,7 +17,7 @@ testRenderedAttribute('undefined', undefined, null);
 testRenderedAttribute('number', 1, '1');
 testRenderedAttribute('string', 'foo', 'foo');
 
-it(`should remove the existing attribute if set to null`, () => {
+it(`should remove the existing attribute if set to null`, async () => {
     const elm = createElement('x-test', { is: Test });
     elm.attr = 'initial value';
     document.body.appendChild(elm);
@@ -25,13 +25,12 @@ it(`should remove the existing attribute if set to null`, () => {
     expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial value');
 
     elm.attr = null;
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
-        expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
-    });
+    await Promise.resolve();
+    expect(elm.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
+    expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
 });
 
-it(`should remove the existing attribute if set to undefined`, () => {
+it(`should remove the existing attribute if set to undefined`, async () => {
     const elm = createElement('x-test', { is: Test });
     elm.attr = 'initial value';
     document.body.appendChild(elm);
@@ -39,8 +38,7 @@ it(`should remove the existing attribute if set to undefined`, () => {
     expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe('initial value');
 
     elm.attr = undefined;
-    return Promise.resolve().then(() => {
-        expect(elm.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
-        expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
-    });
+    await Promise.resolve();
+    expect(elm.shadowRoot.querySelector('div').hasAttribute('title')).toBe(false);
+    expect(elm.shadowRoot.querySelector('div').getAttribute('title')).toBe(null);
 });

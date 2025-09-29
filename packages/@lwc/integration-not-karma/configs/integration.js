@@ -5,16 +5,7 @@ import testPlugin from './plugins/serve-integration.js';
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
     ...baseConfig,
-    files: [
-        // FIXME: These tests are just symlinks to integration-karma for now so the git diff smaller
-        'test/**/*.spec.js',
-
-        // Logging mismatches
-        '!test/component/LightningElement.addEventListener/index.spec.js',
-
-        // Implement objectContaining / arrayWithExactContents
-        '!test/profiler/mutation-logging/index.spec.js',
-    ],
+    files: ['test/**/*.spec.js'],
     plugins: [
         ...baseConfig.plugins,
         importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),

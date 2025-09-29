@@ -7,7 +7,7 @@ import {
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
     IS_SYNTHETIC_SHADOW_LOADED,
 } from '../../../../helpers/constants.js';
-import { customElementCallbackReactionErrorListener } from '../../../../helpers/utils.js';
+import { customElementCallbackReactionErrorListener } from '../../../../helpers/matchers/errors.js';
 
 const testConnectedCallbackError = (elm, msg) => {
     const error = customElementCallbackReactionErrorListener(() => {

@@ -36,7 +36,7 @@ function windowErrorListener(callback) {
 // 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
 //    only be caught with window.addEventListener('error')
 //      - Note native lifecycle callbacks are all thrown asynchronously.
-function customElementCallbackReactionErrorListener(callback) {
+export function customElementCallbackReactionErrorListener(callback) {
     return lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
         ? directErrorListener(callback)
         : windowErrorListener(callback);
