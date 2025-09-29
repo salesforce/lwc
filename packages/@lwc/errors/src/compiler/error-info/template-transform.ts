@@ -980,7 +980,7 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_COMPLEX: {
+    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_CTE_UNQUOTED: {
         code: 1207,
         message:
             'Template expression doesn\'t allow computed property access unless the expression is surrounded by quotes: "{0}"',
@@ -988,10 +988,26 @@ export const ParserDiagnostics = {
         url: '',
     },
 
-    INVALID_NODE_COMPLEX: {
+    INVALID_NODE_CTE_UNQUOTED: {
         code: 1208,
         message:
             'Template expression doesn\'t allow {0} unless the expression is surrounded by quotes: "{1}"',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_CTE_API_VERSION: {
+        code: 1209,
+        message:
+            "Template expression doesn't allow computed property access. The current component API version ({1}) is insufficient and must be increased to at least {2} for this type of expression.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_NODE_CTE_API_VERSION: {
+        code: 1210,
+        message:
+            "Template expression doesn't allow {0}. The current component API version ({1}) is insufficient and must be increased to at least {2} for this type of expression.",
         level: DiagnosticLevel.Error,
         url: '',
     },

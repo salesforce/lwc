@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { bindExpression } from '@lwc/template-compiler';
+import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';
 import type {
     ComplexExpression as IrComplexExpression,
     Expression as IrExpression,
@@ -18,11 +19,17 @@ export function expressionIrToEs(
     node: IrExpression | IrComplexExpression,
     cxt: TransformerContext
 ): EsExpression {
+    const isComplexTemplateExpressionEnabled =
+        cxt.templateOptions.experimentalComplexExpressions &&
+        isAPIFeatureEnabled(
+            APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS,
+            cxt.templateOptions.apiVersion
+        );
     return bindExpression(
         node as IrComplexExpression,
-        (n: EsIdentifier) => cxt.isLocalVar((n as EsIdentifier).name),
+        (n: EsIdentifier) => cxt.isLocalVar(n.name),
         'instance',
-        cxt.templateOptions.experimentalComplexExpressions
+        isComplexTemplateExpressionEnabled
     );
 }
 
