@@ -37,7 +37,7 @@
         "release:publish:canary": "nx release publish --registry https://registry.npmjs.org --tag canary"
     },
     "devDependencies": {
-        "@commitlint/cli": "^19.8.1",
+        "@commitlint/cli": "^20.0.0",
         "@eslint/js": "9.36.0",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/test-utils-lwc-internals": "link:./scripts/test-utils",
