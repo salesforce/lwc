@@ -506,11 +506,26 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
             );
         }
 
+        const internals = attachInternals(elm);
         if (vm.shadowMode === ShadowMode.Synthetic) {
-            throw new Error('attachInternals API is not supported in synthetic shadow.');
+            const handler = {
+                get(target: ElementInternals, prop: keyof ElementInternals) {
+                    if (prop === 'shadowRoot') {
+                        return vm.shadowRoot;
+                    }
+                    const value = Reflect.get(target, prop);
+                    if (typeof value === 'function') {
+                        return value.bind(target);
+                    }
+                    return value;
+                },
+                set(target: ElementInternals, prop: keyof ElementInternals, value: any) {
+                    return Reflect.set(target, prop, value);
+                },
+            };
+            return new Proxy(internals, handler);
         }
-
-        return attachInternals(elm);
+        return internals;
     },
 
     get isConnected(): boolean {

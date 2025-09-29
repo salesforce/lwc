@@ -153,17 +153,8 @@ describe.runIf(typeof ElementInternals !== 'undefined')('ElementInternals', () =
             notFormAssociatedSanityTest('native-shadow', NotFormAssociated);
         });
         describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow', () => {
-            createFaceTests('synthetic-shadow', FormAssociated, (createFace) => {
-                it('cannot be used and throws an error', () => {
-                    const face = createFace();
-                    const form = createFormElement();
-                    expect(() =>
-                        form.appendChild(face)
-                    ).toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode(
-                        'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
-                    );
-                });
-            });
+            faceSanityTest('synthetic-shadow', FormAssociated);
+            notFormAssociatedSanityTest('synthetic-shadow', NotFormAssociated);
         });
         describe('light DOM', () => {
             faceSanityTest('light-dom', LightDomFormAssociated);
