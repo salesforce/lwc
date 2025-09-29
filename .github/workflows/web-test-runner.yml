@@ -20,7 +20,7 @@ env:
 jobs:
     # TODO: upload result artifacts
     # TODO: make it saucy 🥫
-    integration-tests-1:
+    integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow)
         strategy:
             matrix:
@@ -55,17 +55,17 @@ jobs:
             #       region: us
 
             - run: yarn test
+            - run: API_VERSION=58 yarn test
+            - run: API_VERSION=59 yarn test
+            - run: API_VERSION=60 yarn test
+            - run: API_VERSION=61 yarn test
+            - run: API_VERSION=62 yarn test
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
-            - run: API_VERSION=58 yarn test || true
-            - run: API_VERSION=59 yarn test || true
-            - run: API_VERSION=60 yarn test || true
-            - run: API_VERSION=61 yarn test || true
-            - run: API_VERSION=62 yarn test || true
-            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
             - run: NODE_ENV_FOR_TEST=production yarn test
 
-    integration-tests-2:
+    integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (singleton batch)
         runs-on: ubuntu-22.04

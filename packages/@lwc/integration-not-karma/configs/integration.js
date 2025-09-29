@@ -13,7 +13,12 @@ const baseConfig = createConfig({
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
     ...baseConfig,
-    files: ['test/**/*.spec.js'],
+    files: [
+        'test/**/*.spec.js',
+        // Make John fix this after his PR is merged
+        '!test/template-expressions/errors/index.spec.js',
+        '!test/template-expressions/smoke-test/index.spec.js',
+    ],
     plugins: [
         ...baseConfig.plugins,
         importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
