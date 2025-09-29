@@ -112,7 +112,7 @@ export function normalizeAttributeValue(
     const isEscaped = isEscapedAttribute(rawAttrVal);
     if (!isEscaped && isExpression(value)) {
         // Don't test for the API version here, just check if CTE is enabled.
-        // We can provide more specific errors WRT API versions after the expression has been parsed and we know what it is.
+        // We can provide more specific errors w.r.t API versions after the expression has been parsed and we know what it is.
         if (isQuoted && !ctx.config.experimentalComplexExpressions) {
             // <input value="{myValue}" />
             // -> ambiguity if the attribute value is a template identifier or a string literal.
