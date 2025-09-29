@@ -1072,6 +1072,14 @@
     "@best/utils" "15.0.0"
     chalk "~2.4.2"
 
+"@best/console-stream@16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@best/console-stream/-/console-stream-16.0.0.tgz#84386b678c705f12c15f1b328f814109dadbf2f8"
+  integrity sha512-P9/ZbxNWN8mCOrLq6qix1vtKxL0bRKve9g5RKbKYsxdDCVzGirpPOox97VYLdAv3cimb4ynUOczGpRUFTPyA6Q==
+  dependencies:
+    "@best/utils" "16.0.0"
+    chalk "~2.4.2"
+
 "@best/github-integration@15.0.0":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@best/github-integration/-/github-integration-15.0.0.tgz#4be6357e3a5345a5370ffbf93011f180a4372d8b"
@@ -1099,6 +1107,14 @@
     "@best/utils" "15.0.0"
     express "^4.21.1"
 
+"@best/runner-abstract@16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@best/runner-abstract/-/runner-abstract-16.0.0.tgz#53017237179ea718c089af64a680fc5ced5a5d30"
+  integrity sha512-8g3zgQFCt4hBsZvC8gA7tSKGc7ZOo74djvFxbPoqDIf6IP+UL1wNN6W/2Z45eJcePN/8bnAuGAHNA1JuJHQGDQ==
+  dependencies:
+    "@best/utils" "16.0.0"
+    express "^4.21.1"
+
 "@best/runner-headless@^15.0.0":
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@best/runner-headless/-/runner-headless-15.0.0.tgz#92c1cda9fb56484a88a72fab89e61c5fc8b659ce"
@@ -1108,14 +1124,14 @@
     "@best/types" "15.0.0"
     puppeteer "24.10.0"
 
-"@best/runner-remote@^15.0.0":
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/@best/runner-remote/-/runner-remote-15.0.0.tgz#c68709d54222196ed5d0e71c56df5bbc31d80c53"
-  integrity sha512-OxU+1a6Hf2DqdB6KSvSxRQT5TZd3N/Gvouscly9WjLab5OLVZ639r2GFlLU04PQfinWqsVYtg1VIHcjx+5Jluw==
+"@best/runner-remote@^16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@best/runner-remote/-/runner-remote-16.0.0.tgz#a73bc51be4e2cba4f309cde8f6490f1a741e33d6"
+  integrity sha512-SX1RETRcqQauI8KDXE+MG+KLFxqiIvYs6iKGK930NkyFuTujph1WhWu0f2yb7tWYu7lVihcmufoyC0aHmg4Gmw==
   dependencies:
-    "@best/console-stream" "15.0.0"
-    "@best/runner-abstract" "15.0.0"
-    "@best/shared" "15.0.0"
+    "@best/console-stream" "16.0.0"
+    "@best/runner-abstract" "16.0.0"
+    "@best/shared" "16.0.0"
     debug "^4.4.0"
     socket.io-client "^4.8.1"
     tar "^7.4.3"
@@ -1137,10 +1153,10 @@
   dependencies:
     chalk "~2.4.2"
 
-"@best/shared@15.0.0":
-  version "15.0.0"
-  resolved "https://registry.yarnpkg.com/@best/shared/-/shared-15.0.0.tgz#5bbb91d9a45f50aa94e118f23036ad58b8604e72"
-  integrity sha512-1Sq0p42Z912Y4qwNRM68IXsGkgfggpSsSQTfHWXdb1Joux6dAxaFP9Uk2/vfYja5vnpS7k9gP+isAaQfC/4PRA==
+"@best/shared@16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@best/shared/-/shared-16.0.0.tgz#70287810972d00cb6b1c8415e1a86c44aed172d3"
+  integrity sha512-Hx3UOYMA04B6fWDzSaHEUY/c+Id99qcpQUPnfQ/7Pu1V47W1gb10aWYVMTO9x8hG2Qve9Oy2jjEwto1S+A6Iuw==
 
 "@best/store-fs@15.0.0":
   version "15.0.0"
@@ -1170,6 +1186,18 @@
   version "15.0.0"
   resolved "https://registry.yarnpkg.com/@best/utils/-/utils-15.0.0.tgz#afd0f0f0f1b977dafa46cc0661d826a0ebb980c0"
   integrity sha512-HTtBVxoeHAAJMtYDxoWZrkC3eCxAOIHSHLiAT38/M1EuINrO/Tyh94y6FHRJMCYuUCZFLcO8YJF8Nu0B4keXMw==
+  dependencies:
+    chalk "~2.4.2"
+    https-proxy-agent "^5.0.1"
+    is-ci "^4.1.0"
+    picocolors "^1.1.1"
+    systeminformation "^5.23.6"
+    winston "^3.17.0"
+
+"@best/utils@16.0.0":
+  version "16.0.0"
+  resolved "https://registry.yarnpkg.com/@best/utils/-/utils-16.0.0.tgz#3a3eae183613678fffcf6d292d4b0aba3e9acc0f"
+  integrity sha512-bYJdpLNEE5k5/dtzsWYksGDPJRDqHCURHp3jnJ/TEJ0ToR919BtUR1jwyfKwlRLY7CGc22+dYTtR7QhW8CM0Dg==
   dependencies:
     chalk "~2.4.2"
     https-proxy-agent "^5.0.1"
