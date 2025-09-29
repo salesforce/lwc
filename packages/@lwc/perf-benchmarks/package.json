@@ -23,7 +23,7 @@
     },
     "devDependencies": {
         "@best/cli": "^15.0.0",
-        "@best/runner-headless": "^15.0.0",
+        "@best/runner-headless": "^16.0.0",
         "@best/runner-remote": "^16.0.0",
         "folder-hash": "4.1.1",
         "markdown-table": "^3.0.4",
