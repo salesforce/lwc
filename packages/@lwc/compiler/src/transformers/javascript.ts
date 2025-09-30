@@ -86,21 +86,7 @@ export default function scriptTransform(
             // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
             compact: false,
-            plugins: plugins.map((plugin) => {
-                if (Array.isArray(plugin) && plugin[0] === lwcClassTransformPlugin) {
-                    // Wrap the LWC plugin to capture its state
-                    return [
-                        plugin[0],
-                        {
-                            ...plugin[1],
-                            onPluginState: (state: any) => {
-                                pluginState = state;
-                            },
-                        },
-                    ];
-                }
-                return plugin;
-            }),
+            plugins,
         })!;
 
         // Check if the LWC plugin collected any errors from file metadata

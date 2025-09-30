@@ -6,7 +6,7 @@
  */
 import type * as BabelCoreNamespace from '@babel/core';
 import type { PluginPass, types } from '@babel/core';
-import type { InstrumentationObject, CompilerDiagnostic } from '@lwc/errors';
+import type { InstrumentationObject } from '@lwc/errors';
 
 export type BabelAPI = typeof BabelCoreNamespace;
 export type BabelTypes = typeof types;
@@ -28,5 +28,4 @@ export interface LwcBabelPluginPass extends PluginPass {
     opts: LwcBabelPluginOptions;
     dynamicImports?: string[];
     loaderRef?: types.Identifier;
-    errors?: CompilerDiagnostic[];
 }

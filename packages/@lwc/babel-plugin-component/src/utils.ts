@@ -125,15 +125,7 @@ function collectError(
         },
     });
 
-    // Initialize errors array if it doesn't exist
-    if (!state.errors) {
-        state.errors = [];
-    }
-
-    // Add the error to the state
-    state.errors.push(diagnostic);
-
-    // Also store in file metadata for access from transformer
+    // Store in file metadata for access from transformer
     if (!(state.file.metadata as any).lwcErrors) {
         (state.file.metadata as any).lwcErrors = [];
     }
