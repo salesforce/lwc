@@ -21,8 +21,10 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
         it('should be able to toggle states', () => {
             elm.toggleChecked();
             expect(elm.internals.states.has('--checked')).toBe(true);
+            expect(getComputedStyle(elm).color).toBe('rgb(255, 0, 0)');
             elm.toggleChecked();
             expect(elm.internals.states.has('--checked')).toBe(false);
+            expect(getComputedStyle(elm).color).toBe('rgb(0, 0, 0)');
         });
 
         describe('accessibility', () => {

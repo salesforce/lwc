@@ -65,6 +65,7 @@ hijackGlobal('afterEach', (afterEach) => {
         // Ensure the DOM is in a clean state
         document.body.replaceChildren();
         document.head.replaceChildren();
+        window.__lwcResetGlobalStylesheets();
     });
 });
 

@@ -8,6 +8,27 @@ import FormAssociatedNoAttachInternals from 'x/formAssociatedNoAttachInternals';
 import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachInternals';
 import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from '../../../../../helpers/constants.js';
 
+const formAssociatedFalsyTest = (tagName, ctor) => {
+    const form = document.createElement('form');
+    document.body.appendChild(form);
+
+    const elm = createElement(`x-${tagName}`, { is: ctor });
+    form.appendChild(elm);
+
+    const { internals } = elm;
+    expect(() => internals.form).toThrow();
+    expect(() => internals.setFormValue('2019-03-15')).toThrow();
+    expect(() => internals.willValidate).toThrow();
+    expect(() => internals.validity).toThrow();
+    expect(() => internals.checkValidity()).toThrow();
+    expect(() => internals.reportValidity()).toThrow();
+    expect(() => internals.setValidity('')).toThrow();
+    expect(() => internals.validationMessage).toThrow();
+    expect(() => internals.labels).toThrow();
+
+    document.body.removeChild(form);
+};
+
 describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 'undefined')(
     'should throw an error when duplicate tag name used',
     () => {
@@ -38,30 +59,12 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
             ).not.toThrow();
         });
 
-        it('should throw an error when accessing form related properties on a non-form associated component', () => {
-            const form = document.createElement('form');
-            document.body.appendChild(form);
+        it('should throw an error when accessing form related properties when formAssociated is false', () => {
+            formAssociatedFalsyTest('x-form-associated-false', FormAssociatedFalse);
+        });
 
-            const testElements = {
-                'x-form-associated-false': FormAssociatedFalse,
-                'x-not-form-associated': NotFormAssociated,
-            };
-            let elm;
-            Object.entries(testElements).forEach(([tagName, ctor]) => {
-                elm = createElement(`x-${tagName}`, { is: ctor });
-                const { internals } = elm;
-                form.appendChild(elm);
-                expect(() => internals.form).toThrow();
-                expect(() => internals.setFormValue('2019-03-15')).toThrow();
-                expect(() => internals.willValidate).toThrow();
-                expect(() => internals.validity).toThrow();
-                expect(() => internals.checkValidity()).toThrow();
-                expect(() => internals.reportValidity()).toThrow();
-                expect(() => internals.setValidity('')).toThrow();
-                expect(() => internals.validationMessage).toThrow();
-                expect(() => internals.labels).toThrow();
-            });
-            document.body.removeChild(form);
+        it('should throw an error when accessing form related properties when formAssociated is undefined', () => {
+            formAssociatedFalsyTest('x-not-form-associated', NotFormAssociated);
         });
 
         it('should be able to use internals to validate form associated component', () => {
@@ -116,7 +119,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
     }
 );
 
-it.runIf(typeof ElementInternals === 'undefined')(
+it.runIf(typeof ElementInternals !== 'undefined')(
     'disallows form association on older API versions',
     () => {
         const isFormAssociated = (elm) => {
