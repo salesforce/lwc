@@ -9,10 +9,6 @@ beforeEach(() => {
     document.body.appendChild(elm);
 });
 
-afterEach(() => {
-    document.body.removeChild(elm);
-});
-
 describe.runIf(
     ENABLE_ELEMENT_INTERNALS_AND_FACE &&
         process.env.NATIVE_SHADOW &&

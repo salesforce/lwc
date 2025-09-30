@@ -22,7 +22,7 @@ export default {
         expect(child.shadowRoot.synthetic).toBeUndefined();
 
         // sanity check that the env var is working
-        if (process.env.DISABLE_SYNTHETIC) {
+        if (process.env.NATIVE_SHADOW) {
             expect(document.body.attachShadow.toString()).toContain('[native code');
         } else {
             expect(document.body.attachShadow.toString()).not.toContain('[native code');
