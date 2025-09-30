@@ -79,18 +79,17 @@ describe('global HTML Properties', () => {
                 expect(element[prop]).toBe(value);
             });
 
-            it(`${prop} should be reactive by default`, () => {
+            it(`${prop} should be reactive by default`, async () => {
                 resetReactiveRenderCount();
                 const element = createElement(`prop-${prop}-reactive`, { is: AttributeIsReactive });
                 document.body.appendChild(element);
 
                 element[prop] = value;
-                return Promise.resolve().then(() => {
-                    expect(attributeIsReactiveRenderCount).toBe(2);
-                    expect(element.shadowRoot.querySelector(`div.${prop}`).textContent).toBe(
-                        `${value}`
-                    );
-                });
+                await Promise.resolve();
+                expect(attributeIsReactiveRenderCount).toBe(2);
+                expect(element.shadowRoot.querySelector(`div.${prop}`).textContent).toBe(
+                    `${value}`
+                );
             });
             it('should throw an error when setting default value in constructor', () => {
                 propertyAndValueToSetInConstructor(prop, value);
@@ -110,16 +109,15 @@ describe('global HTML Properties', () => {
 
                     expect(attributeSetterCounter).toBe(1);
                 });
-                it('should not be reactive when defining own setter', () => {
+                it('should not be reactive when defining own setter', async () => {
                     const element = createElement(`prop-setter-${prop}-reactive`, {
                         is: AttributeMutations,
                     });
                     document.body.appendChild(element);
 
                     element[prop] = value;
-                    return Promise.resolve().then(() => {
-                        expect(attributeRenderCounter).toBe(1);
-                    });
+                    await Promise.resolve();
+                    expect(attributeRenderCounter).toBe(1);
                 });
                 it('should call getter defined in component', () => {
                     const element = createElement(`prop-getter-${prop}-imperative`, {
@@ -164,13 +162,12 @@ describe('#tabIndex', function () {
         expect(elm.getTabIndex()).toBe(2);
     });
 
-    it('should not trigger render cycle', function () {
+    it('should not trigger render cycle', async function () {
         const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
-        return Promise.resolve().then(() => {
-            expect(elm.renderCount).toBe(1);
-        });
+        await Promise.resolve();
+        expect(elm.renderCount).toBe(1);
     });
 
     it('should allow parent component to overwrite internally set tabIndex', function () {

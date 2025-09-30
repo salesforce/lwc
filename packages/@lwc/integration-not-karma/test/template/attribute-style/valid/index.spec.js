@@ -38,7 +38,7 @@ describe('dynamic style attribute', () => {
     );
 
     function testUpdateStyleAttribute(type, value, expectedValue) {
-        it(`updates the style attribute for ${type}`, () => {
+        it(`updates the style attribute for ${type}`, async () => {
             const elm = createElement('x-dynamic', { is: Dynamic });
             elm.dynamicStyle = 'position: relative;';
             document.body.appendChild(elm);
@@ -48,11 +48,8 @@ describe('dynamic style attribute', () => {
             );
 
             elm.dynamicStyle = value;
-            return Promise.resolve().then(() => {
-                expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(
-                    expectedValue
-                );
-            });
+            await Promise.resolve();
+            expect(elm.shadowRoot.querySelector('div').getAttribute('style')).toBe(expectedValue);
         });
     }
 

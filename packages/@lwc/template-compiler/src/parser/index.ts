@@ -61,7 +61,7 @@ import {
     SUPPORTED_SVG_TAGS,
     VALID_IF_MODIFIER,
 } from './constants';
-import { parseComplexExpression } from './expression-complex';
+import { isComplexTemplateExpressionEnabled, parseComplexExpression } from './expression-complex';
 import type {
     TemplateParseResult,
     Attribute,
@@ -480,7 +480,7 @@ function parseText(
 
         let value: Expression | Literal;
         if (isExpression(token)) {
-            value = parseExpression(ctx, token, sourceLocation);
+            value = parseExpression(ctx, token, sourceLocation, false);
         } else {
             value = ast.literal(decodeTextContent(token));
         }
@@ -562,7 +562,7 @@ function parseTextNode(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[]
 
     const sourceLocation = ast.sourceLocation(location);
 
-    return ctx.config.experimentalComplexExpressions
+    return isComplexTemplateExpressionEnabled(ctx)
         ? parseTextComplex(ctx, rawText, sourceLocation, location)
         : parseText(ctx, rawText, sourceLocation, location);
 }
@@ -1927,12 +1927,12 @@ function getTemplateAttribute(
     */
     const isPotentialComplexExpression =
         quotedExpression && !escapedExpression && value.startsWith(EXPRESSION_SYMBOL_START);
-    if (ctx.config.experimentalComplexExpressions && isPotentialComplexExpression) {
+    if (isComplexTemplateExpressionEnabled(ctx) && isPotentialComplexExpression) {
         const attributeNameOffset = attribute.name.length + 2; // The +2 accounts for the '="' in the attribute: attr="...
         const templateSource = ctx.getSource(attributeLocation.startOffset + attributeNameOffset);
         attrValue = parseComplexExpression(ctx, value, templateSource, location).expression;
     } else if (isExpression(value) && !escapedExpression) {
-        attrValue = parseExpression(ctx, value, location);
+        attrValue = parseExpression(ctx, value, location, !quotedExpression);
     } else if (isBooleanAttribute) {
         attrValue = ast.literal(true);
     } else {

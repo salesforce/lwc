@@ -1,0 +1,8 @@
+{
+    "entry": "x/for-each-block",
+    "experimentalComplexExpressions": true,
+    "ssrFiles": {
+        "expected": "expected-ssr.html",
+        "error": "error-ssr.txt"
+    }
+}

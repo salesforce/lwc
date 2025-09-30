@@ -7,12 +7,13 @@
 import { parseExpressionAt, isIdentifierStart, isIdentifierChar } from 'acorn';
 import { ParserDiagnostics, invariant } from '@lwc/errors';
 
+import { APIFeature, minApiVersion } from '@lwc/shared';
 import * as t from '../shared/estree';
 import { isReservedES6Keyword } from './utils/javascript';
+import { isComplexTemplateExpressionEnabled } from './expression-complex';
 import type { Expression, Identifier, SourceLocation } from '../shared/types';
 
 import type ParserCtx from './parser';
-import type { NormalizedConfig } from '../config';
 import type { Node } from 'acorn';
 
 export const EXPRESSION_SYMBOL_START = '{';
@@ -30,40 +31,71 @@ export function isPotentialExpression(source: string): boolean {
     return !!source.match(POTENTIAL_EXPRESSION_RE);
 }
 
+const minCteApiVersion = minApiVersion(APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS);
+
 function validateExpression(
     source: string,
     node: t.BaseNode,
-    config: NormalizedConfig
+    ctx: ParserCtx,
+    unquotedAttributeExpression: boolean
 ): asserts node is Expression {
-    const isValidNode = t.isIdentifier(node) || t.isMemberExpression(node);
-    // INVALID_XYZ_COMPLEX provides additional context to the user if CTE is enabled.
-    // The author may not have delimited the CTE with quotes, resulting in it being parsed
-    // as a legacy expression.
-    invariant(
-        isValidNode,
-        config.experimentalComplexExpressions
-            ? ParserDiagnostics.INVALID_NODE_COMPLEX
-            : ParserDiagnostics.INVALID_NODE,
-        [node.type, source]
-    );
+    const cteOnlyNode = !t.isIdentifier(node) && !t.isMemberExpression(node);
+
+    // If this node is not an identifier or a member expression (the only two nodes allowed if complexTemplateExpressions are disabled),
+    // then we throw if the following invariants do not hold true.
+    if (cteOnlyNode) {
+        // complexTemplateExpressions must be enabled if this is a cteOnlyNode.
+        invariant(ctx.config.experimentalComplexExpressions, ParserDiagnostics.INVALID_NODE, [
+            node.type,
+        ]);
+        // complexTemplateExpressions must be enabled and the component API version must be sufficient.
+        invariant(
+            isComplexTemplateExpressionEnabled(ctx),
+            ParserDiagnostics.INVALID_NODE_CTE_API_VERSION,
+            [node.type, ctx.apiVersion, minCteApiVersion]
+        );
+        // complexTemplateExpressions must be enabled, the component API version must be sufficient and the expression should not be
+        // an unquoted attribute expression.
+        invariant(
+            isComplexTemplateExpressionEnabled(ctx) && !unquotedAttributeExpression,
+            ParserDiagnostics.INVALID_NODE_CTE_UNQUOTED,
+            [node.type, source]
+        );
+    }
 
     if (t.isMemberExpression(node)) {
-        invariant(
-            config.experimentalComputedMemberExpression || !node.computed,
-            config.experimentalComplexExpressions
-                ? ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_COMPLEX
-                : ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED,
-            [source]
-        );
+        // If this is a computed node and experimentalComputedMemberExpressions is not enabled,
+        // then we throw if the following invariants do not hold true.
+        if (!ctx.config.experimentalComputedMemberExpression && node.computed) {
+            // complexTemplateExpressions must be enabled.
+            invariant(
+                ctx.config.experimentalComplexExpressions,
+                ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED,
+                [source]
+            );
+            // complexTemplateExpressions must be enabled and the component API version must be sufficient.
+            invariant(
+                isComplexTemplateExpressionEnabled(ctx),
+                ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_CTE_API_VERSION,
+                [source, ctx.apiVersion, minCteApiVersion]
+            );
+            // complexTemplateExpressions must be enabled, the component API version must be sufficient and the expression
+            // should not be an unquoted attribute expression.
+            invariant(
+                isComplexTemplateExpressionEnabled(ctx) && !unquotedAttributeExpression,
+                ParserDiagnostics.COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_CTE_UNQUOTED,
+                [source]
+            );
+        }
 
         const { object, property } = node;
 
         if (!t.isIdentifier(object)) {
-            validateExpression(source, object, config);
+            validateExpression(source, object, ctx, unquotedAttributeExpression);
         }
 
         if (!t.isIdentifier(property)) {
-            validateExpression(source, property, config);
+            validateExpression(source, property, ctx, unquotedAttributeExpression);
         }
     }
 }
@@ -109,7 +141,8 @@ export function validateSourceIsParsedExpression(source: string, parsedExpressio
 export function parseExpression(
     ctx: ParserCtx,
     source: string,
-    location: SourceLocation
+    location: SourceLocation,
+    unquotedAttributeExpression: boolean
 ): Expression {
     const { ecmaVersion } = ctx;
     return ctx.withErrorWrapping(
@@ -122,7 +155,7 @@ export function parseExpression(
             });
 
             validateSourceIsParsedExpression(source, parsed);
-            validateExpression(source, parsed, ctx.config);
+            validateExpression(source, parsed, ctx, unquotedAttributeExpression);
 
             return { ...parsed, location };
         },

@@ -1,11 +1,33 @@
+import { spyOn } from '@vitest/spy';
 import * as LWC from 'lwc';
-import { spyConsole } from '../../helpers/console';
 import { setHooks } from '../../helpers/hooks';
 
 setHooks({ sanitizeHtmlContent: (content) => content });
 
 function parseStringToDom(html) {
     return Document.parseHTMLUnsafe(html).body.firstChild;
+}
+
+/**
+ * A much simplified version of the spies originally used for Karma.
+ * Should probably be eventually replaced with individual spies.
+ */
+export function spyConsole() {
+    const log = spyOn(console, 'log');
+    const warn = spyOn(console, 'warn');
+    const error = spyOn(console, 'error');
+    return {
+        calls: {
+            log: log.mock.calls,
+            warn: warn.mock.calls,
+            error: error.mock.calls,
+        },
+        reset() {
+            log.mockRestore();
+            warn.mockRestore();
+            error.mockRestore();
+        },
+    };
 }
 
 function appendTestTarget(ssrText) {
@@ -23,16 +45,15 @@ function setFeatureFlags(requiredFeatureFlags, value) {
 }
 
 // Must be sync to properly register tests; async behavior can happen in before/after blocks
-export function runTest(configPath, componentPath, ssrRendered, focused) {
-    const test = focused ? it.only : it;
+export function runTest(configPath, componentPath, ssrRendered) {
     const description = new URL(configPath, location.href).pathname;
     let consoleSpy;
     let testConfig;
     let Component;
 
     beforeAll(async () => {
-        testConfig = await import(configPath);
-        Component = await import(componentPath);
+        testConfig = (await import(configPath)).default;
+        Component = (await import(componentPath)).default;
         setFeatureFlags(testConfig.requiredFeatureFlags, true);
     });
 
@@ -48,7 +69,7 @@ export function runTest(configPath, componentPath, ssrRendered, focused) {
         setFeatureFlags(testConfig.requiredFeatureFlags, false);
     });
 
-    test(description, async () => {
+    it(description, async () => {
         const container = appendTestTarget(ssrRendered);
         const selector = container.firstChild.tagName.toLowerCase();
         let target = container.querySelector(selector);
@@ -72,6 +93,8 @@ export function runTest(configPath, componentPath, ssrRendered, focused) {
                 container,
                 selector,
             });
+        } else {
+            throw new Error(`Missing test or advancedTest function in ${configPath}.`);
         }
     });
 }

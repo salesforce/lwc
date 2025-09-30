@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import EventHandler from 'x/eventHandler';
 import EventHandlerOptions from 'x/eventHandlerOptions';
 import AdditionWhileDispatch from 'x/additionWhileDispatch';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 it('should be able to attach an event listener on the host element', () => {
     let thisValue;
@@ -39,12 +39,11 @@ it('should warn when passing a 3rd parameter to the event handler', () => {
 
 describe('event handler is not a function', () => {
     let consoleSpy;
-    beforeEach(() => {
-        consoleSpy = spyConsole();
+    beforeAll(() => {
+        consoleSpy = spyOn(console, 'error');
     });
-    afterEach(() => {
-        consoleSpy.reset();
-    });
+    afterEach(() => consoleSpy.mockReset());
+    afterAll(() => consoleSpy.mockRestore());
 
     it('should log an error if event handler is not a function', () => {
         const elm = createElement('x-event-handler', { is: EventHandler });
@@ -54,11 +53,15 @@ describe('event handler is not a function', () => {
         }).toThrowCallbackReactionError(/Expected an EventListener but received undefined/);
 
         if (process.env.NODE_ENV === 'production') {
-            expect(consoleSpy.calls.error.length).toEqual(0);
+            expect(consoleSpy).not.toHaveBeenCalled();
         } else {
-            expect(consoleSpy.calls.error.length).toEqual(1);
-            expect(consoleSpy.calls.error[0][0].message).toContain(
-                'Invalid second argument for this.addEventListener()'
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+            expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        'Invalid second argument for this.addEventListener()'
+                    ),
+                })
             );
         }
     });

@@ -21,16 +21,15 @@ function testConstructor(expected) {
 }
 
 function testRerender(expected) {
-    it('component rerender', () => {
+    it('component rerender', async () => {
         const elm = createElement('x-child', { is: Child });
         document.body.appendChild(elm);
 
         resetMeasures();
         elm.value = 1;
 
-        return Promise.resolve().then(() => {
-            expectMeasureEquals(expected);
-        });
+        await Promise.resolve();
+        expectMeasureEquals(expected);
     });
 }
 
@@ -44,16 +43,15 @@ function testNestedTree(expected) {
 }
 
 function testNestedRerender(expected) {
-    it('captures component nested component tree rerender', () => {
+    it('captures component nested component tree rerender', async () => {
         const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
 
         resetMeasures();
         elm.value = 1;
 
-        return Promise.resolve().then(() => {
-            expectMeasureEquals(expected);
-        });
+        await Promise.resolve();
+        expectMeasureEquals(expected);
     });
 }
 

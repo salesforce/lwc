@@ -7,13 +7,12 @@ export default {
             p: target.shadowRoot.querySelector('p'),
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         expect(target.shadowRoot.querySelector('p')).toBe(snapshots.p);
 
         target.control = false;
 
-        return Promise.resolve().then(() => {
-            expect(target.shadowRoot.querySelector('p')).toBeNull();
-        });
+        await Promise.resolve();
+        expect(target.shadowRoot.querySelector('p')).toBeNull();
     },
 };

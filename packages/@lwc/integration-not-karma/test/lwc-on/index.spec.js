@@ -11,45 +11,40 @@ import RerenderLoop from 'x/rerenderLoop';
 import PublicProp from 'x/publicProp';
 import ComputedKey from 'x/computedKey';
 import ValueEvaluationThrows from 'x/valueEvaluationThrows';
-import { jasmine } from '../../helpers/jasmine.js';
-import { spyConsole } from '../../helpers/console.js';
+import { spyOn, fn as mockFn } from '@vitest/spy';
 import { catchUnhandledRejectionsAndErrors } from '../../helpers/utils.js';
 
 describe('lwc:on', () => {
     it('adds multiple event listeners', () => {
         const element = createElement('x-basic', { is: Basic });
-        const testFn = jasmine.createSpy('test function');
-        element.testFn = testFn;
+        element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
         button.click();
         button.dispatchEvent(new MouseEvent('mouseover'));
 
-        expect(testFn).toHaveBeenCalledWith('click handler called');
-        expect(testFn).toHaveBeenCalledWith('mouseover handler called');
+        expect(element.testFn).toHaveBeenCalledWith('click handler called');
+        expect(element.testFn).toHaveBeenCalledWith('mouseover handler called');
     });
 
     it('event listeners added by lwc:on are bound to the owner component', () => {
         const element = createElement('x-execution-context', { is: ExecutionContext });
-        const testFn = jasmine.createSpy('test function');
-        element.testFn = testFn;
+        element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
         button.click();
 
-        expect(testFn).toHaveBeenCalledWith("'this' is the component");
+        expect(element.testFn).toHaveBeenCalledWith("'this' is the component");
     });
 
     describe('ignored properties', () => {
         let element;
         let button;
-        let testFn;
 
         function setup(propType) {
             element = createElement('x-ignored', { is: Ignored });
-            testFn = jasmine.createSpy('test function');
-            element.testFn = testFn;
+            element.testFn = mockFn();
             element.propType = propType;
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');
@@ -60,13 +55,13 @@ describe('lwc:on', () => {
         it('silently ignores non-enumerable properties', () => {
             setup('non-enumerable');
             button.click();
-            expect(testFn).not.toHaveBeenCalled();
+            expect(element.testFn).not.toHaveBeenCalled();
         });
 
         it('silently ignores inherited properties', () => {
             setup('inherited');
             button.click();
-            expect(testFn).not.toHaveBeenCalled();
+            expect(element.testFn).not.toHaveBeenCalled();
         });
 
         it('silently ignores symbol-keyed properties', () => {
@@ -77,12 +72,10 @@ describe('lwc:on', () => {
     describe('event type case', () => {
         let element;
         let button;
-        let testFn;
 
         function setup(propCase) {
             element = createElement('x-case-variants', { is: CaseVariants });
-            testFn = jasmine.createSpy('test function');
-            element.testFn = testFn;
+            element.testFn = mockFn();
             element.propCase = propCase;
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');
@@ -91,60 +84,58 @@ describe('lwc:on', () => {
         it('adds event listeners corresponding to lowercase keyed property', () => {
             setup('lower');
             button.dispatchEvent(new CustomEvent('lowercase'));
-            expect(testFn).toHaveBeenCalledWith('lowercase handler called');
+            expect(element.testFn).toHaveBeenCalledWith('lowercase handler called');
         });
 
         it('adds event listeners corresponding to kebab-case keyed property', () => {
             setup('kebab');
             button.dispatchEvent(new CustomEvent('kebab-case'));
-            expect(testFn).toHaveBeenCalledWith('kebab-case handler called');
+            expect(element.testFn).toHaveBeenCalledWith('kebab-case handler called');
         });
 
         it('adds event listeners corresponding to camelCase keyed property', () => {
             setup('camel');
             button.dispatchEvent(new CustomEvent('camelCase'));
-            expect(testFn).toHaveBeenCalledWith('camelCase handler called');
+            expect(element.testFn).toHaveBeenCalledWith('camelCase handler called');
         });
 
         it('adds event listeners corresponding to CAPScase keyed property', () => {
             setup('caps');
             button.dispatchEvent(new CustomEvent('CAPSCASE'));
-            expect(testFn).toHaveBeenCalledWith('CAPSCASE handler called');
+            expect(element.testFn).toHaveBeenCalledWith('CAPSCASE handler called');
         });
 
         it('adds event listeners corresponding to PascalCase keyed property', () => {
             setup('pascal');
             button.dispatchEvent(new CustomEvent('PascalCase'));
-            expect(testFn).toHaveBeenCalledWith('PascalCase handler called');
+            expect(element.testFn).toHaveBeenCalledWith('PascalCase handler called');
         });
 
         it('adds event listeners corresponding to empty-string keyed property', () => {
             setup('empty');
             button.dispatchEvent(new CustomEvent(''));
-            expect(testFn).toHaveBeenCalledWith('empty string handler called');
+            expect(element.testFn).toHaveBeenCalledWith('empty string handler called');
         });
     });
 
     it('event listeners are added independently from lwc:on and lwc:spread', () => {
         const element = createElement('x-spread', { is: Spread });
-        const testFn = jasmine.createSpy('test function');
-        element.testFn = testFn;
+        element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
         button.click();
 
-        expect(testFn).toHaveBeenCalledWith('lwc:spread handler called');
-        expect(testFn).toHaveBeenCalledWith('lwc:on handler called');
+        expect(element.testFn).toHaveBeenCalledWith('lwc:spread handler called');
+        expect(element.testFn).toHaveBeenCalledWith('lwc:on handler called');
     });
 
     it("event listeners are added before child's connectedCallback", () => {
         const element = createElement('x-lifecycle', { is: Lifecycle });
-        const testFn = jasmine.createSpy('foo handler');
-        element.testFn = testFn;
+        element.testFn = mockFn();
         document.body.appendChild(element);
 
-        expect(testFn).toHaveBeenCalledWith(
+        expect(element.testFn).toHaveBeenCalledWith(
             'handled events dispatched from child connectedCallback'
         );
     });
@@ -214,13 +205,11 @@ describe('lwc:on', () => {
     describe('re-render behavior', () => {
         let element;
         let button;
-        let testFn;
 
         describe('without for:each loop', () => {
             beforeEach(() => {
                 element = createElement('x-rerender', { is: Rerender });
-                testFn = jasmine.createSpy('test function');
-                element.testFn = testFn;
+                element.testFn = mockFn();
                 document.body.appendChild(element);
                 button = element.shadowRoot.querySelector('button');
             });
@@ -232,8 +221,8 @@ describe('lwc:on', () => {
 
                     button.click();
                     button.dispatchEvent(new MouseEvent('mouseover'));
-                    expect(testFn).toHaveBeenCalledWith('click handler called');
-                    expect(testFn).toHaveBeenCalledWith('mouseover handler called');
+                    expect(element.testFn).toHaveBeenCalledWith('click handler called');
+                    expect(element.testFn).toHaveBeenCalledWith('mouseover handler called');
                 });
 
                 it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
@@ -241,7 +230,7 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(testFn).not.toHaveBeenCalledWith('click handler called');
+                    expect(element.testFn).not.toHaveBeenCalledWith('click handler called');
                 });
 
                 it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
@@ -249,18 +238,18 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(testFn).not.toHaveBeenCalledWith('click handler called');
-                    expect(testFn).toHaveBeenCalledWith('modified click handler called');
+                    expect(element.testFn).not.toHaveBeenCalledWith('click handler called');
+                    expect(element.testFn).toHaveBeenCalledWith('modified click handler called');
                 });
             });
 
             describe('with same object modified', () => {
                 let consoleSpy;
                 beforeEach(() => {
-                    consoleSpy = spyConsole();
+                    consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
                 });
                 afterEach(() => {
-                    consoleSpy.reset();
+                    consoleSpy.mockRestore();
                 });
 
                 it('throws when a new property is added to object passed to lwc:on', async () => {
@@ -268,12 +257,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -282,12 +275,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -296,12 +293,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
             });
@@ -310,8 +311,7 @@ describe('lwc:on', () => {
         describe('with for:each loop and local variable passed as argument to lwc:on', () => {
             beforeEach(() => {
                 element = createElement('x-rerender-loop', { is: RerenderLoop });
-                testFn = jasmine.createSpy('test function');
-                element.testFn = testFn;
+                element.testFn = mockFn();
                 document.body.appendChild(element);
                 button = element.shadowRoot.querySelector('button');
             });
@@ -323,8 +323,8 @@ describe('lwc:on', () => {
 
                     button.click();
                     button.dispatchEvent(new MouseEvent('mouseover'));
-                    expect(testFn).toHaveBeenCalledWith('click handler called');
-                    expect(testFn).toHaveBeenCalledWith('mouseover handler called');
+                    expect(element.testFn).toHaveBeenCalledWith('click handler called');
+                    expect(element.testFn).toHaveBeenCalledWith('mouseover handler called');
                 });
 
                 it('Event listeners are removed when lwc:on is provided a new object with reduced properties', async () => {
@@ -332,7 +332,7 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(testFn).not.toHaveBeenCalledWith('click handler called');
+                    expect(element.testFn).not.toHaveBeenCalledWith('click handler called');
                 });
 
                 it('Event listeners are modified when lwc:on is provided a new object with modified properties', async () => {
@@ -340,18 +340,18 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     button.click();
-                    expect(testFn).not.toHaveBeenCalledWith('click handler called');
-                    expect(testFn).toHaveBeenCalledWith('modified click handler called');
+                    expect(element.testFn).not.toHaveBeenCalledWith('click handler called');
+                    expect(element.testFn).toHaveBeenCalledWith('modified click handler called');
                 });
             });
 
             describe('with same object modified', () => {
                 let consoleSpy;
                 beforeEach(() => {
-                    consoleSpy = spyConsole();
+                    consoleSpy = spyOn(console, 'error').mockImplementation(() => {});
                 });
                 afterEach(() => {
-                    consoleSpy.reset();
+                    consoleSpy.mockRestore();
                 });
 
                 it('throws when a new property is added to object passed to lwc:on', async () => {
@@ -359,12 +359,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'mouseover' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -373,12 +377,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
 
@@ -387,12 +395,16 @@ describe('lwc:on', () => {
                     await element.triggerReRender();
 
                     if (process.env.NODE_ENV !== 'production') {
-                        expect(consoleSpy.calls.error.length).toEqual(1);
-                        expect(consoleSpy.calls.error[0][0].message).toContain(
-                            "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
+                        expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(
+                            expect.objectContaining({
+                                message: expect.stringContaining(
+                                    "Detected mutation of property 'click' in the object passed to lwc:on for <button>. Reusing the same object with modified properties is prohibited. Please pass a new object instead."
+                                ),
+                            })
                         );
                     } else {
-                        expect(consoleSpy.calls.error.length).toEqual(0);
+                        expect(consoleSpy).not.toHaveBeenCalled();
                     }
                 });
             });
@@ -402,10 +414,8 @@ describe('lwc:on', () => {
     it('works when the object is passed as public property to component', () => {
         // In this test, we are implicitly asserting that no error is thrown if the test passes
         const element = createElement('x-public-prop', { is: PublicProp });
-        const testFn = jasmine.createSpy('test function');
-        element.eventHandlers = {
-            click: testFn,
-        };
+        const testFn = mockFn();
+        element.eventHandlers = { click: testFn };
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
@@ -415,13 +425,12 @@ describe('lwc:on', () => {
 
     it('works properly with objects whose keys are computed', () => {
         const element = createElement('x-computed-key', { is: ComputedKey });
-        const testFn = jasmine.createSpy('test function');
-        element.testFn = testFn;
+        element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
 
         button.click();
-        expect(testFn).toHaveBeenCalled();
+        expect(element.testFn).toHaveBeenCalled();
     });
 
     describe('object passed to lwc:on has property whose value evaluation throws', () => {

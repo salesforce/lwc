@@ -1,3 +1,7 @@
+/**
+ * The URLs used in test are handled by the `serve` method defined in `serve-integration.js`.
+ * What they serve doesn't matter, it's just to avoid a 404 warning logged to console
+ */
 import {
     createElement,
     // Spy is created in a mock file and injected with the import map plugin
@@ -49,7 +53,7 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
             document.body.appendChild(elm);
 
             const use = elm.shadowRoot.querySelector('use');
-            expect(use.getAttribute(attrName)).toBe('/foo');
+            expect(use.getAttribute(attrName)).toBe('/test_api_sanitizeAttribute?foo');
         });
 
         it('receives the right parameters', () => {
@@ -60,18 +64,18 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
                 'use',
                 'http://www.w3.org/2000/svg',
                 attrName,
-                '/foo'
+                '/test_api_sanitizeAttribute?foo'
             );
         });
 
         it('replace the original attribute value with a string', () => {
-            sanitizeAttributeSpy.mockReturnValue('/bar');
+            sanitizeAttributeSpy.mockReturnValue('/test_api_sanitizeAttribute?bar');
 
             const elm = createElement(tagName, { is: Ctor });
             document.body.appendChild(elm);
 
             const use = elm.shadowRoot.querySelector('use');
-            expect(use.getAttribute(attrName)).toBe('/bar');
+            expect(use.getAttribute(attrName)).toBe('/test_api_sanitizeAttribute?bar');
         });
 
         it('replace the original attribute value with undefined', () => {

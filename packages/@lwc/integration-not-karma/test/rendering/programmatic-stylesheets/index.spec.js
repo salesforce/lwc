@@ -15,121 +15,112 @@ import MixedScopedAndUnscoped from 'x/mixedScopedAndUnscoped';
 import StylesheetsMutation from 'x/stylesheetsMutation';
 
 describe('programmatic stylesheets', () => {
-    it('works for a basic usage of static stylesheets', () => {
+    it('works for a basic usage of static stylesheets', async () => {
         const elm = createElement('x-basic', { is: Basic });
         document.body.appendChild(elm);
         const h1 = document.createElement('h1');
         document.body.appendChild(h1);
 
-        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(255, 0, 0)'
-            );
-            // styles do not leak (e.g. synthetic shadow)
-            expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
-        });
+        await new Promise(requestAnimationFrame);
+        expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
+            'rgb(255, 0, 0)'
+        );
+        // styles do not leak (e.g. synthetic shadow)
+        expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
     });
 
-    it('works for scoped stylesheets in light DOM', () => {
+    it('works for scoped stylesheets in light DOM', async () => {
         const elm = createElement('x-scoped', { is: Scoped });
         document.body.appendChild(elm);
         const h1 = document.createElement('h1');
         document.body.appendChild(h1);
 
-        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-            expect(getComputedStyle(elm.querySelector('h1')).color).toEqual('rgb(0, 128, 0)');
-            // styles do not leak (e.g. synthetic shadow)
-            expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
-        });
+        await new Promise(requestAnimationFrame);
+        expect(getComputedStyle(elm.querySelector('h1')).color).toEqual('rgb(0, 128, 0)');
+        // styles do not leak (e.g. synthetic shadow)
+        expect(getComputedStyle(h1).color).toEqual('rgb(0, 0, 0)');
     });
 
-    it('works if you do not wrap stylesheets in an explicit array', () => {
+    it('works if you do not wrap stylesheets in an explicit array', async () => {
         const elm = createElement('x-direct', { is: Direct });
         document.body.appendChild(elm);
 
-        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                'rgb(255, 0, 0)'
-            );
-        });
+        await new Promise(requestAnimationFrame);
+        expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
+            'rgb(255, 0, 0)'
+        );
     });
 
-    it('works with multiple stylesheets', () => {
+    it('works with multiple stylesheets', async () => {
         const elm = createElement('x-multi-styles', { is: MultiStyles });
         document.body.appendChild(elm);
 
-        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-            const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-            expect(style.color).toEqual('rgb(255, 0, 0)');
-            expect(style.backgroundColor).toEqual('rgb(0, 128, 0)');
-            expect(style.opacity).toEqual('0');
-            expect(style.display).toEqual('block'); // last style wins
-        });
+        await new Promise(requestAnimationFrame);
+        const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+        expect(style.color).toEqual('rgb(255, 0, 0)');
+        expect(style.backgroundColor).toEqual('rgb(0, 128, 0)');
+        expect(style.opacity).toEqual('0');
+        expect(style.display).toEqual('block'); // last style wins
     });
 
-    it('works with mixed scoped and unscoped in light dom', () => {
+    it('works with mixed scoped and unscoped in light dom', async () => {
         const elm = createElement('x-mixed-scoped-and-unscoped', { is: MixedScopedAndUnscoped });
         document.body.appendChild(elm);
         const h1 = document.createElement('h1');
         document.body.appendChild(h1);
 
-        return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-            const style = getComputedStyle(elm.querySelector('h1'));
-            expect(style.color).toEqual('rgb(255, 0, 0)');
-            expect(style.backgroundColor).toEqual('rgb(0, 128, 0)');
-            expect(style.opacity).toEqual('0');
-
-            // styles only bleed for the unscoped styles
-            const h1Style = getComputedStyle(h1);
-            expect(h1Style.color).toEqual('rgb(0, 0, 0)');
-            expect(h1Style.backgroundColor).toEqual('rgb(0, 128, 0)');
-            expect(h1Style.opacity).toEqual('0');
-        });
+        await new Promise(requestAnimationFrame);
+        const style = getComputedStyle(elm.querySelector('h1'));
+        expect(style.color).toEqual('rgb(255, 0, 0)');
+        expect(style.backgroundColor).toEqual('rgb(0, 128, 0)');
+        expect(style.opacity).toEqual('0');
+        // styles only bleed for the unscoped styles
+        const h1Style = getComputedStyle(h1);
+        expect(h1Style.color).toEqual('rgb(0, 0, 0)');
+        expect(h1Style.backgroundColor).toEqual('rgb(0, 128, 0)');
+        expect(h1Style.opacity).toEqual('0');
     });
 
     describe('inheritance', () => {
-        it('can attempt to inherit from lightning element which has no stylesheets', () => {
+        it('can attempt to inherit from lightning element which has no stylesheets', async () => {
             const elm = createElement('x-inherit-from-lightning-element', {
                 is: InheritFromLightningElement,
             });
             document.body.appendChild(elm);
 
-            return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                    'rgb(255, 0, 0)'
-                );
-            });
+            await new Promise(requestAnimationFrame);
+            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
+                'rgb(255, 0, 0)'
+            );
         });
 
-        it('can inherit from superclass', () => {
+        it('can inherit from superclass', async () => {
             const elm = createElement('x-inherit', {
                 is: Inherit,
             });
             document.body.appendChild(elm);
 
-            return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-                const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-                expect(style.color).toEqual('rgb(0, 0, 255)');
-                expect(style.backgroundColor).toEqual('rgb(0, 128, 0)');
-            });
+            await new Promise(requestAnimationFrame);
+            const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+            expect(style.color).toEqual('rgb(0, 0, 255)');
+            expect(style.backgroundColor).toEqual('rgb(0, 128, 0)');
         });
 
-        it('can override implicit styles due to ordering', () => {
+        it('can override implicit styles due to ordering', async () => {
             const elm = createElement('x-implicit', {
                 is: Implicit,
             });
             document.body.appendChild(elm);
 
-            return new Promise((resolve) => requestAnimationFrame(() => resolve())).then(() => {
-                expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
-                    'rgb(0, 0, 255)'
-                );
-            });
+            await new Promise(requestAnimationFrame);
+            expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
+                'rgb(0, 0, 255)'
+            );
         });
     });
 
     describe('multi-template components', () => {
-        it('can override styles in a multi-template component', () => {
+        it('can override styles in a multi-template component', async () => {
             const elm = createElement('x-multi', {
                 is: Multi,
             });
@@ -142,24 +133,21 @@ describe('programmatic stylesheets', () => {
             // 4. static stylesheet (with B token, if synthetic shadow)
             // In native shadow there are no tokens, so #4 never happens.
 
-            return new Promise((resolve) => requestAnimationFrame(() => resolve()))
-                .then(() => {
-                    const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-                    expect(style.color).toEqual('rgb(0, 0, 255)');
-                    expect(style.backgroundColor).toEqual('rgb(255, 215, 0)');
-                    elm.next();
-                })
-                .then(() => {
-                    const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-                    // See above note about native vs synthetic shadow
-                    expect(style.color).toEqual(
-                        process.env.NATIVE_SHADOW ? 'rgb(0, 128, 0)' : 'rgb(0, 0, 255)'
-                    );
-                    expect(style.backgroundColor).toEqual('rgb(250, 128, 114)');
-                });
+            await new Promise(requestAnimationFrame);
+            const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+            expect(style.color).toEqual('rgb(0, 0, 255)');
+            expect(style.backgroundColor).toEqual('rgb(255, 215, 0)');
+            elm.next();
+            await Promise.resolve();
+            const style_1 = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+            // See above note about native vs synthetic shadow
+            expect(style_1.color).toEqual(
+                process.env.NATIVE_SHADOW ? 'rgb(0, 128, 0)' : 'rgb(0, 0, 255)'
+            );
+            expect(style_1.backgroundColor).toEqual('rgb(250, 128, 114)');
         });
 
-        it('can override scoped styles in a multi-template component', () => {
+        it('can override scoped styles in a multi-template component', async () => {
             const elm = createElement('x-multi-scoped', {
                 is: MultiScoped,
             });
@@ -171,18 +159,15 @@ describe('programmatic stylesheets', () => {
             // 3. B
             // 4. static stylesheet with B token
 
-            return new Promise((resolve) => requestAnimationFrame(() => resolve()))
-                .then(() => {
-                    const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-                    expect(style.color).toEqual('rgb(0, 0, 255)');
-                    expect(style.backgroundColor).toEqual('rgb(255, 215, 0)');
-                    elm.next();
-                })
-                .then(() => {
-                    const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
-                    expect(style.color).toEqual('rgb(0, 0, 255)');
-                    expect(style.backgroundColor).toEqual('rgb(250, 128, 114)');
-                });
+            await new Promise(requestAnimationFrame);
+            const style = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+            expect(style.color).toEqual('rgb(0, 0, 255)');
+            expect(style.backgroundColor).toEqual('rgb(255, 215, 0)');
+            elm.next();
+            await Promise.resolve();
+            const style_1 = getComputedStyle(elm.shadowRoot.querySelector('h1'));
+            expect(style_1.color).toEqual('rgb(0, 0, 255)');
+            expect(style_1.backgroundColor).toEqual('rgb(250, 128, 114)');
         });
     });
 

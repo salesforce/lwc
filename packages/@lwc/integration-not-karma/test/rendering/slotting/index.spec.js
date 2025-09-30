@@ -5,10 +5,10 @@ import RegressionContainer from 'x/regressionContainer';
 import FallbackContentReuseDynamicKeyParent from 'x/fallbackContentReuseDynamicKeyParent';
 import UnknownSlotShadow from 'x/unknownSlotShadow';
 import UnknownSlotLight from 'x/unknownSlotLight';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
-xit('should not render if the slotted content changes', () => {
+xit('should not render if the slotted content changes', async () => {
     const elm = createElement('x-render-count-parent', { is: RenderCountParent });
     elm.value = 'initial';
     document.body.appendChild(elm);
@@ -19,11 +19,10 @@ xit('should not render if the slotted content changes', () => {
 
     elm.value = 'updated';
 
-    return Promise.resolve().then(() => {
-        expect(elm.getRenderCount()).toBe(2);
-        expect(elm.shadowRoot.querySelector('x-render-count-child').getRenderCount()).toBe(1);
-        expect(elm.shadowRoot.querySelector('div').textContent).toBe('updated');
-    });
+    await Promise.resolve();
+    expect(elm.getRenderCount()).toBe(2);
+    expect(elm.shadowRoot.querySelector('x-render-count-child').getRenderCount()).toBe(1);
+    expect(elm.shadowRoot.querySelector('div').textContent).toBe('updated');
 });
 
 [
@@ -38,7 +37,7 @@ xit('should not render if the slotted content changes', () => {
         Ctor: FallbackContentReuseDynamicKeyParent,
     },
 ].forEach(({ type, tag, Ctor }) => {
-    it(`#663 - should not reuse elements from the fallback slot content - ${type} key`, () => {
+    it(`#663 - should not reuse elements from the fallback slot content - ${type} key`, async () => {
         const childTag = tag.replace('parent', 'child');
         const elm = createElement(tag, {
             is: Ctor,
@@ -48,11 +47,10 @@ xit('should not render if the slotted content changes', () => {
         expect(elm.shadowRoot.querySelector(childTag).innerHTML).toBe('');
         elm.renderSlotted = true;
 
-        return Promise.resolve().then(() => {
-            expect(elm.shadowRoot.querySelector(childTag).innerHTML).toBe(
-                '<div>Default slotted</div><div slot="foo">Named slotted</div>'
-            );
-        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector(childTag).innerHTML).toBe(
+            '<div>Default slotted</div><div slot="foo">Named slotted</div>'
+        );
     });
 });
 
@@ -78,12 +76,15 @@ it('should not throw error when updating slotted content triggers next tick re-r
 });
 
 describe('does not log an error/warning on unknown slot name', () => {
-    let consoleSpy;
+    let warnSpy;
+    let errorSpy;
     beforeEach(() => {
-        consoleSpy = spyConsole();
+        warnSpy = spyOn(console, 'warn');
+        errorSpy = spyOn(console, 'error');
     });
     afterEach(() => {
-        consoleSpy.reset();
+        warnSpy.mockRestore();
+        errorSpy.mockRestore();
     });
 
     it('shadow dom', async () => {
@@ -100,8 +101,8 @@ describe('does not log an error/warning on unknown slot name', () => {
                 .assignedNodes().length
         ).toEqual(0);
 
-        expect(consoleSpy.calls.error.length).toEqual(0);
-        expect(consoleSpy.calls.warn.length).toEqual(0);
+        expect(warnSpy).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
     });
 
     it('light dom', async () => {
@@ -113,7 +114,7 @@ describe('does not log an error/warning on unknown slot name', () => {
         // nothing slotted into the child
         expect(elm.querySelector('x-unknown-slot-light-child').children.length).toEqual(0);
 
-        expect(consoleSpy.calls.error.length).toEqual(0);
-        expect(consoleSpy.calls.warn.length).toEqual(0);
+        expect(warnSpy).not.toHaveBeenCalled();
+        expect(errorSpy).not.toHaveBeenCalled();
     });
 });

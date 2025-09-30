@@ -27,27 +27,23 @@ describe('boolean attribute', () => {
         }
     });
 
-    it('should be added/removed when used with computed value in html element', () => {
+    it('should be added/removed when used with computed value in html element', async () => {
         const elm = createElement('x-computed', { is: Computed });
         document.body.appendChild(elm);
 
-        return Promise.resolve()
-            .then(() => {
-                const elmWithHidden = elm.shadowRoot.querySelector('.hidden-value');
-                expect(elmWithHidden.hidden).toBe(false);
-                expect(elmWithHidden.getAttribute('hidden')).toBeNull();
-                elm.toggleHiddenValue();
-            })
-            .then(() => {
-                const elmWithHidden = elm.shadowRoot.querySelector('.hidden-value');
-                expect(elmWithHidden.hidden).toBe(true);
-                expect(elmWithHidden.getAttribute('hidden')).toBe('');
-                elm.toggleHiddenValue();
-            })
-            .then(() => {
-                const elmWithHidden = elm.shadowRoot.querySelector('.hidden-value');
-                expect(elmWithHidden.hidden).toBe(false);
-                expect(elmWithHidden.getAttribute('hidden')).toBeNull();
-            });
+        await Promise.resolve();
+        const elmWithHidden = elm.shadowRoot.querySelector('.hidden-value');
+        expect(elmWithHidden.hidden).toBe(false);
+        expect(elmWithHidden.getAttribute('hidden')).toBeNull();
+        elm.toggleHiddenValue();
+        await Promise.resolve();
+        const elmWithHidden_1 = elm.shadowRoot.querySelector('.hidden-value');
+        expect(elmWithHidden_1.hidden).toBe(true);
+        expect(elmWithHidden_1.getAttribute('hidden')).toBe('');
+        elm.toggleHiddenValue();
+        await Promise.resolve();
+        const elmWithHidden_2 = elm.shadowRoot.querySelector('.hidden-value');
+        expect(elmWithHidden_2.hidden).toBe(false);
+        expect(elmWithHidden_2.getAttribute('hidden')).toBeNull();
     });
 });

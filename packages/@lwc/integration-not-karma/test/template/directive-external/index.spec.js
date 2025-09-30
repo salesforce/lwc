@@ -43,7 +43,7 @@ describe('lwc:external directive basic tests', () => {
         expect(slotContent[0].textContent).toBe('slot content');
     });
 
-    it('should render a Custom Element and handle hiding and showing the element', () => {
+    it('should render a Custom Element and handle hiding and showing the element', async () => {
         const elm = createElement('x-with-different-views', { is: XWithDifferentViews });
         document.body.appendChild(elm);
 
@@ -51,13 +51,12 @@ describe('lwc:external directive basic tests', () => {
         expect(ce).toBeNull();
 
         elm.showWC = true;
-        return Promise.resolve().then(() => {
-            ce = elm.shadowRoot.querySelector('ce-with-children');
-            expect(ce).not.toBeNull();
-        });
+        await Promise.resolve();
+        ce = elm.shadowRoot.querySelector('ce-with-children');
+        expect(ce).not.toBeNull();
     });
 
-    it('should imperatively listen to a DOM event dispatched by a Custom Element', () => {
+    it('should imperatively listen to a DOM event dispatched by a Custom Element', async () => {
         const elm = createElement('x-with-imperative-event', { is: XWithImperativeEvent });
         document.body.appendChild(elm);
 
@@ -66,12 +65,11 @@ describe('lwc:external directive basic tests', () => {
 
         const ce = elm.shadowRoot.querySelector('ce-with-event');
         ce.click();
-        return Promise.resolve().then(() => {
-            expect(handled.textContent).toBe('true');
-        });
+        await Promise.resolve();
+        expect(handled.textContent).toBe('true');
     });
 
-    it('should declaratively listen to a DOM event dispatched by a Custom Element', () => {
+    it('should declaratively listen to a DOM event dispatched by a Custom Element', async () => {
         const elm = createElement('x-with-declarative-event', { is: XWithDeclarativeEvent });
         document.body.appendChild(elm);
 
@@ -80,9 +78,8 @@ describe('lwc:external directive basic tests', () => {
 
         const ce = elm.shadowRoot.querySelector('ce-with-event');
         ce.click();
-        return Promise.resolve().then(() => {
-            expect(handled.textContent).toBe('true');
-        });
+        await Promise.resolve();
+        expect(handled.textContent).toBe('true');
     });
 
     it('should use unresolved HTMLElement if Custom Element is not registered', () => {
@@ -117,38 +114,35 @@ describe('lwc:external directive basic tests', () => {
             }).toLogWarningDev(unknownPropTokyo);
         });
 
-        it('should be stringified when set as an attribute', () => {
+        it('should be stringified when set as an attribute', async () => {
             elm.data = {};
 
-            return Promise.resolve().then(() => {
-                const ce = elm.shadowRoot.querySelector('ce-with-property');
-                expect(ce.getAttribute('attr')).toBe('[object Object]');
-            });
+            await Promise.resolve();
+            const ce = elm.shadowRoot.querySelector('ce-with-property');
+            expect(ce.getAttribute('attr')).toBe('[object Object]');
         });
 
-        it('should pass object without stringifying', () => {
+        it('should pass object without stringifying', async () => {
             const obj = {};
             elm.data = obj;
 
-            return Promise.resolve().then(() => {
-                const ce = elm.shadowRoot.querySelector('ce-with-property');
-                expect(ce.prop).toEqual(obj);
-            });
+            await Promise.resolve();
+            const ce = elm.shadowRoot.querySelector('ce-with-property');
+            expect(ce.prop).toEqual(obj);
         });
     });
 
-    it('should work with lwc:spread', () => {
+    it('should work with lwc:spread', async () => {
         const elm = createElement('x-with-property', { is: XWithProperty });
         expect(() => {
             document.body.appendChild(elm);
         }).toLogWarningDev(unknownPropTokyo);
 
-        return Promise.resolve().then(() => {
-            const ce = elm.shadowRoot.querySelector('ce-with-property');
-            expect(ce.kyoto).toBe('kamogawa river');
-            expect(ce.osaka).toBe('yodogawa river');
-            expect(ce.tokyo).toBe('tamagawa');
-        });
+        await Promise.resolve();
+        const ce = elm.shadowRoot.querySelector('ce-with-property');
+        expect(ce.kyoto).toBe('kamogawa river');
+        expect(ce.osaka).toBe('yodogawa river');
+        expect(ce.tokyo).toBe('tamagawa');
     });
 
     it('should work with camel case properties', async () => {
@@ -178,21 +172,19 @@ describe('lwc:external directive basic tests', () => {
             document.body.appendChild(elm);
         });
 
-        it('should set only attributes on mount', () => {
-            return Promise.resolve().then(() => {
-                const ce = elm.shadowRoot.querySelector('ce-not-registered');
-                expect(ce.getAttribute('attr')).toBe('default');
-                expect(elm.attr).toBeUndefined();
-            });
+        it('should set only attributes on mount', async () => {
+            await Promise.resolve();
+            const ce = elm.shadowRoot.querySelector('ce-not-registered');
+            expect(ce.getAttribute('attr')).toBe('default');
+            expect(elm.attr).toBeUndefined();
         });
 
-        it('should set only attributes on update', () => {
+        it('should set only attributes on update', async () => {
             elm.data = 'apple';
-            return Promise.resolve().then(() => {
-                const ce = elm.shadowRoot.querySelector('ce-not-registered');
-                expect(ce.getAttribute('attr')).toBe('apple');
-                expect(ce.attr).toBeUndefined();
-            });
+            await Promise.resolve();
+            const ce = elm.shadowRoot.querySelector('ce-not-registered');
+            expect(ce.getAttribute('attr')).toBe('apple');
+            expect(ce.attr).toBeUndefined();
         });
     });
 

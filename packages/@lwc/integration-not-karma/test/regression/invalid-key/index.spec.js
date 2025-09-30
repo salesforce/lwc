@@ -1,7 +1,15 @@
 import { createElement } from 'lwc';
 import ConditionalList from 'x/conditionalList';
+import { spyOn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
-import { spyConsole } from '../../../helpers/console.js';
+
+let consoleSpy;
+beforeEach(() => {
+    consoleSpy = spyOn(console, 'error');
+});
+afterEach(() => {
+    consoleSpy.mockRestore();
+});
 
 it('W-15885661 - renders list when key is invalid (preserve backwards compat)', async () => {
     const elm = createElement('x-conditional-list', { is: ConditionalList });
@@ -12,18 +20,21 @@ it('W-15885661 - renders list when key is invalid (preserve backwards compat)', 
     // Empty fragment
     expect(ul.children.length).toBe(0);
 
-    const spy = spyConsole();
     elm.items = [{ value: 1 }];
     await Promise.resolve();
 
-    const errorCalls = spy.calls.error;
-    expect(errorCalls.length).toBe(process.env.NODE_ENV === 'production' ? 0 : 2);
-    errorCalls.forEach(([error]) => {
-        expect(error).toBeInstanceOf(Error);
-        expect(error.message).toMatch(/(Invalid key value.*|Invalid "key" attribute.*)/);
-    });
-
-    spy.reset();
+    if (process.env.NODE_ENV === 'production') {
+        expect(consoleSpy).not.toHaveBeenCalled();
+    } else {
+        expect(consoleSpy).toHaveBeenCalledTimes(2);
+        const [firstCall, secondCall] = consoleSpy.mock.calls;
+        expect(firstCall).toHaveSize(1);
+        expect(firstCall[0]).toBeInstanceOf(Error);
+        expect(firstCall[0].message).toContain('Invalid key value');
+        expect(secondCall).toHaveSize(1);
+        expect(secondCall[0]).toBeInstanceOf(Error);
+        expect(secondCall[0].message).toContain('Invalid "key" attribute');
+    }
 
     // Still renders list with invalid keys
     expect(ul.children.length).toBe(1);

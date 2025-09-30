@@ -3,43 +3,39 @@ import Test from 'x/test';
 import { jasmine } from '../../../helpers/jasmine.js';
 
 describe('event.composedPath() of event dispatched from closed shadow root', () => {
-    it('should have shadowed elements when invoked inside the shadow root', () => {
+    it('should have shadowed elements when invoked inside the shadow root', async () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            elm.clickShadowedButton();
-
-            expect(elm.getShadowedComposedPath()).toEqual([
-                jasmine.any(HTMLElement), // button
-                jasmine.any(Object), // #shadow-root(closed)
-                elm.child,
-                elm.shadowRoot,
-                elm,
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ]);
-        });
+        await Promise.resolve();
+        elm.clickShadowedButton();
+        expect(elm.getShadowedComposedPath()).toEqual([
+            jasmine.any(HTMLElement), // button
+            jasmine.any(Object), // #shadow-root(closed)
+            elm.child,
+            elm.shadowRoot,
+            elm,
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ]);
     });
 
-    it('should not have shadowed elements when invoked outside the shadow root', () => {
+    it('should not have shadowed elements when invoked outside the shadow root', async () => {
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        return Promise.resolve().then(() => {
-            elm.clickShadowedButton();
-
-            expect(elm.getComposedPath()).toEqual([
-                elm.child,
-                elm.shadowRoot,
-                elm,
-                document.body,
-                document.documentElement,
-                document,
-                window,
-            ]);
-        });
+        await Promise.resolve();
+        elm.clickShadowedButton();
+        expect(elm.getComposedPath()).toEqual([
+            elm.child,
+            elm.shadowRoot,
+            elm,
+            document.body,
+            document.documentElement,
+            document,
+            window,
+        ]);
     });
 });

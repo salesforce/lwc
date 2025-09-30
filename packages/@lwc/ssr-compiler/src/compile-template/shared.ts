@@ -22,8 +22,6 @@ import type {
 } from '@lwc/template-compiler';
 import type {
     Expression as EsExpression,
-    Identifier as EsIdentifier,
-    MemberExpression as EsMemberExpression,
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
     Statement as EsStatement,
@@ -77,59 +75,6 @@ export function bAttributeValue(node: IrNode, attrName: string): EsExpression {
     } else {
         return b.memberExpression(b.literal('instance'), nameAttrValue as EsExpression);
     }
-}
-
-function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
-    return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
-}
-
-function getRootIdentifier(node: EsMemberExpression, cxt: TransformerContext): EsIdentifier | null {
-    const rootMemberExpression = getRootMemberExpression(node);
-    if (is.identifier(rootMemberExpression.object)) {
-        return rootMemberExpression.object;
-    }
-    if (cxt.templateOptions.experimentalComplexExpressions) {
-        // TODO [#3370]: Implement complex template expressions
-        return null;
-    }
-    // Should be impossible to hit, at least until we implement complex template expressions
-    /* v8 ignore next */
-    throw new Error(
-        `Invalid expression, must be an Identifier, found type="${rootMemberExpression.type}": \`${JSON.stringify(rootMemberExpression)}\``
-    );
-}
-
-/**
- * Given an expression in a context, return an expression that may be scoped to that context.
- * For example, for the expression `foo`, it will typically be `instance.foo`, but if we're
- * inside a `for:each` block then the `foo` variable may refer to the scoped `foo`,
- * e.g. `<template for:each={foos} for:item="foo">`
- * @param expression
- * @param cxt
- */
-export function getScopedExpression(expression: EsExpression, cxt: TransformerContext) {
-    let scopeReferencedId: EsExpression | null = null;
-    if (is.memberExpression(expression)) {
-        // e.g. `foo.bar` -> scopeReferencedId is `foo`
-        scopeReferencedId = getRootIdentifier(expression, cxt);
-    } else if (is.identifier(expression)) {
-        // e.g. `foo` -> scopeReferencedId is `foo`
-        scopeReferencedId = expression;
-    }
-    if (scopeReferencedId === null) {
-        if (cxt.templateOptions.experimentalComplexExpressions) {
-            // TODO [#3370]: Implement complex template expressions
-            return expression;
-        }
-        // Should be impossible to hit, at least until we implement complex template expressions
-        /* v8 ignore next */
-        throw new Error(
-            `Invalid expression, must be a MemberExpression or Identifier, found type="${expression.type}": \`${JSON.stringify(expression)}\``
-        );
-    }
-    return cxt.isLocalVar(scopeReferencedId.name)
-        ? expression
-        : b.memberExpression(b.identifier('instance'), expression);
 }
 
 export function normalizeClassAttributeValue(value: string) {

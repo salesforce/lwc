@@ -38,7 +38,7 @@ it('receives the right parameters', () => {
     setSanitizeHtmlContentHookForTest(original);
 });
 
-it('does not call sanitizeHtmlContent when raw value does not change', () => {
+it('does not call sanitizeHtmlContent when raw value does not change', async () => {
     const spy = jasmine.createSpy('sanitizeHook', override);
     const original = setSanitizeHtmlContentHookForTest(spy);
 
@@ -50,11 +50,10 @@ it('does not call sanitizeHtmlContent when raw value does not change', () => {
 
     elm.message = 'modified';
 
-    return Promise.resolve().then(() => {
-        expect(spy).toHaveBeenCalledTimes(1);
-        expect(elm.shadowRoot.querySelector('p').innerText).toBe('modified');
-        setSanitizeHtmlContentHookForTest(original);
-    });
+    await Promise.resolve();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(elm.shadowRoot.querySelector('p').innerText).toBe('modified');
+    setSanitizeHtmlContentHookForTest(original);
 });
 
 it('replace the original attribute value with the returned value', () => {

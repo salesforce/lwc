@@ -19,7 +19,7 @@ describe('shadow encapsulation', () => {
         expect(window.getComputedStyle(childDiv).marginLeft).toBe('0px');
     });
 
-    it('should work with multiple templates', () => {
+    it('should work with multiple templates', async () => {
         const elm = createElement('x-multi-template', { is: MultiTemplates });
         document.body.appendChild(elm);
 
@@ -28,11 +28,10 @@ describe('shadow encapsulation', () => {
         expect(window.getComputedStyle(div).marginRight).toBe('0px');
 
         elm.toggleTemplate();
-        return Promise.resolve().then(() => {
-            const div = elm.shadowRoot.querySelector('div');
-            expect(window.getComputedStyle(div).marginLeft).toBe('0px');
-            expect(window.getComputedStyle(div).marginRight).toBe('10px');
-        });
+        await Promise.resolve();
+        const div_1 = elm.shadowRoot.querySelector('div');
+        expect(window.getComputedStyle(div_1).marginLeft).toBe('0px');
+        expect(window.getComputedStyle(div_1).marginRight).toBe('10px');
     });
 });
 

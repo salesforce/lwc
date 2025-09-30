@@ -1,0 +1,11 @@
+{
+    "entry": "x/text-interpolation",
+    "props": {
+        "publicProp": "public-prop"
+    },
+    "experimentalComplexExpressions": true,
+    "ssrFiles": {
+        "expected": "expected-ssr.html",
+        "error": "error-ssr.txt"
+    }
+}

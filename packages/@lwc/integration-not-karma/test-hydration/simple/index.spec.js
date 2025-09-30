@@ -9,7 +9,7 @@ export default {
             text: p.firstChild,
         };
     },
-    test(target, snapshots) {
+    async test(target, snapshots) {
         const p = target.shadowRoot.querySelector('p');
         expect(p).toBe(snapshots.p);
         expect(p.firstChild).toBe(snapshots.text);
@@ -19,8 +19,7 @@ export default {
 
         target.greeting = 'bye!';
 
-        return Promise.resolve().then(() => {
-            expect(p.textContent).toBe('bye!');
-        });
+        await Promise.resolve();
+        expect(p.textContent).toBe('bye!');
     },
 };

@@ -39,25 +39,24 @@ describe('should not provide access to elements inside shadow tree', () => {
 });
 
 describe('dynamic nodes', () => {
-    it('if parent node has lwc:dom="manual", child node is not accessible', () => {
+    it('if parent node has lwc:dom="manual", child node is not accessible', async () => {
         const elm = createElement('x-test-with-lwc-dom-manual', { is: XWithLwcDomManual });
         document.body.appendChild(elm);
         const span = document.createElement('span');
         span.classList.add('manual-span');
         const div = elm.shadowRoot.querySelector('div');
         div.appendChild(span);
-        return new Promise((resolve) => {
+        await new Promise((resolve) => {
             setTimeout(resolve);
-        }).then(() => {
-            expect(document.querySelector('span.manual-span')).toBe(null);
         });
+        expect(document.querySelector('span.manual-span')).toBe(null);
     });
     // TODO [#1252]: old behavior that is still used by some pieces of the platform
     // that is only useful in synthetic mode where elements inserted manually without lwc:dom="manual"
     // are still considered global elements
     it.skipIf(process.env.NATIVE_SHADOW)(
         'if parent node does not have lwc:dom="manual", child node is accessible',
-        () => {
+        async () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual
@@ -66,11 +65,10 @@ describe('dynamic nodes', () => {
             h2.classList.add('manual-h2');
             const div = elm.shadowRoot.querySelector('.in-the-shadow');
             div.appendChild(h2);
-            return new Promise((resolve) => {
+            await new Promise((resolve) => {
                 setTimeout(resolve);
-            }).then(() => {
-                expect(document.querySelector('h2.manual-h2')).toBe(h2);
             });
+            expect(document.querySelector('h2.manual-h2')).toBe(h2);
         }
     );
 });

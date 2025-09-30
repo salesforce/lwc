@@ -3,29 +3,25 @@ import XTest from 'x/test';
 import XTestStatic from 'x/testStatic';
 import XTestCustomElement from 'x/testCustomElement';
 import ArrayNullPrototype from 'x/arrayNullPrototype';
-import { spyConsole } from '../../../helpers/console.js';
+import { spyOn } from '@vitest/spy';
 
 function testForEach(type, obj) {
-    it(`should render ${type}`, () => {
+    it(`should render ${type}`, async () => {
         const elm = createElement('x-test', { is: XTest });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
         elm.items = obj;
 
-        return Promise.resolve()
-            .then(() => {
-                const ul = elm.shadowRoot.querySelector('ul');
-                expect(ul.childElementCount).toBe(3);
-                expect(ul.children[0].textContent).toBe('one');
-                expect(ul.children[1].textContent).toBe('two');
-                expect(ul.children[2].textContent).toBe('three');
-
-                elm.items = [];
-            })
-            .then(() => {
-                expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
-            });
+        await Promise.resolve();
+        const ul = elm.shadowRoot.querySelector('ul');
+        expect(ul.childElementCount).toBe(3);
+        expect(ul.children[0].textContent).toBe('one');
+        expect(ul.children[1].textContent).toBe('two');
+        expect(ul.children[2].textContent).toBe('three');
+        elm.items = [];
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
     });
 }
 
@@ -73,14 +69,10 @@ it('should throw an error when the passing a non iterable', () => {
 
 describe('null/undefined values', () => {
     let spy;
-
     beforeEach(() => {
-        spy = spyConsole();
+        spy = spyOn(console, 'error').mockImplementation(() => {});
     });
-
-    afterEach(() => {
-        spy.reset();
-    });
+    afterEach(() => spy.mockRestore());
 
     [undefined, null].forEach((value) => {
         it(`should log an error when passing in ${value}`, async () => {
@@ -93,13 +85,16 @@ describe('null/undefined values', () => {
             expect(elm.shadowRoot.querySelector('ul').children.length).toBe(0);
 
             if (process.env.NODE_ENV === 'production') {
-                expect(spy.calls.error.length).toBe(0);
+                expect(spy).not.toHaveBeenCalled();
             } else {
-                expect(spy.calls.error.length).toBe(1);
-                const err = spy.calls.error[0][0]; // first arg of first call
-                expect(err).toBeInstanceOf(Error);
-                // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
-                expect(err.message).toMatch(/It must be an array-like object/);
+                expect(spy).toHaveBeenCalledTimes(1);
+                expect(spy).toHaveBeenCalledWith(expect.any(Error));
+                expect(spy).toHaveBeenCalledWith(
+                    expect.objectContaining({
+                        // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
+                        message: expect.stringMatching(/It must be an array-like object/),
+                    })
+                );
             }
         });
     });

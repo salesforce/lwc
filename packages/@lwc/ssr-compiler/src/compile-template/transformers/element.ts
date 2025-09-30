@@ -20,16 +20,15 @@ import {
     type Property as IrProperty,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
-import { expressionIrToEs } from '../expression';
+import { expressionIrToEs, getScopedExpression } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import { getScopedExpression, normalizeClassAttributeValue } from '../shared';
+import { normalizeClassAttributeValue } from '../shared';
 import type {
     ExternalComponent as IrExternalComponent,
     Slot as IrSlot,
 } from '@lwc/template-compiler';
 
 import type {
-    BinaryExpression,
     BlockStatement as EsBlockStatement,
     Expression as EsExpression,
     Statement as EsStatement,
@@ -165,11 +164,11 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
 function yieldAttrOrPropDynamicValue(
     elementName: string,
     name: string,
-    value: IrExpression | BinaryExpression,
+    value: IrExpression,
     cxt: TransformerContext
 ): EsStatement[] {
     cxt.import('htmlEscape');
-    const scopedExpression = getScopedExpression(value as EsExpression, cxt);
+    const scopedExpression = getScopedExpression(value, cxt);
     switch (name) {
         case 'class':
             cxt.import('normalizeClass');
