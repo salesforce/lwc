@@ -8,6 +8,16 @@ import FormAssociatedNoAttachInternals from 'x/formAssociatedNoAttachInternals';
 import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachInternals';
 import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from '../../../../../helpers/constants.js';
 
+const readOnlyProperties = [
+    'shadowRoot',
+    'states',
+    'form',
+    'willValidate',
+    'validity',
+    'validationMessage',
+    'labels',
+];
+
 const formAssociatedFalsyTest = (tagName, ctor) => {
     const form = document.createElement('form');
     document.body.appendChild(form);
@@ -116,6 +126,34 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
             expect(internals.labels.length).toBe(1);
             expect(internals.labels[0]).toBe(label);
         });
+
+        it('should throw error when trying to set readonly properties on form associated component', () => {
+            const elm = createElement('x-form-associated', { is: FormAssociated });
+            document.body.appendChild(elm);
+            const { internals } = elm;
+
+            const readOnlyProperties = [
+                'shadowRoot',
+                'states',
+                'form',
+                'willValidate',
+                'validity',
+                'validationMessage',
+                'labels',
+            ];
+            readOnlyProperties.forEach((property) => {
+                expect(() => (internals[property] = 'test')).toThrow();
+            });
+        });
+
+        for (const prop of readOnlyProperties) {
+            it(`should throw error when trying to set ${prop} on form associated component`, () => {
+                const elm = createElement('x-form-associated', { is: FormAssociated });
+                document.body.appendChild(elm);
+                const { internals } = elm;
+                expect(() => (internals[prop] = 'test')).toThrow();
+            });
+        }
     }
 );
 
