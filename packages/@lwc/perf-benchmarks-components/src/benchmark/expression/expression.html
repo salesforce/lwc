@@ -5,7 +5,33 @@ SPDX-License-Identifier: MIT
 For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
 -->
 <template>
+  <!-- Basic expressions (already working) -->
   <div data-foo="{expr1()}"></div>
   <p class="{expr2.expr21.expr22}"></p>
   <p>{expr3[0]['expr3' + '3']}</p>
+  
+  <!-- Complex expressions that require experimentalComplexExpressions -->
+  <div class="{`complex-${expr1()}-${expr2.expr21.expr22}`}">
+    {`Template literal: ${expr1()} and ${expr2.expr21.expr22}`}
+  </div>
+  
+  <p data-computed="{expr1() ? 'truthy' : 'falsy'}">
+    {expr1() ? 'Conditional: ' + expr1() : 'Default value'}
+  </p>
+  
+  <div class="{expr2?.expr21?.expr22 || 'fallback'}">
+    {expr2?.expr21?.expr22 ?? 'nullish fallback'}
+  </div>
+  
+  <p data-array="{expr3.map(item => item.expr33).join(', ')}">
+    {expr3.length > 0 ? `Array length: ${expr3.length}` : 'Empty array'}
+  </p>
+  
+  <div class="{expr1() === 'bar' ? 'matched' : 'not-matched'}">
+    {expr1() === 'bar' ? 'String comparison works!' : 'String comparison failed'}
+  </div>
+  
+  <p data-object="{JSON.stringify({nested: expr2, computed: expr1()})}">
+    {`Object: ${JSON.stringify({nested: expr2, computed: expr1()})}`}
+  </p>
 </template>
