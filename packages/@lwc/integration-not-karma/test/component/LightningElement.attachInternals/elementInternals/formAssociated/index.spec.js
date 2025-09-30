@@ -128,7 +128,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
         });
 
         for (const prop of readOnlyProperties) {
-            it(`should throw error when trying to set ${prop} on form associated component`, () => {
+            it(`should throw error when trying to set readonly ${prop} on form associated component`, () => {
                 const elm = createElement('x-form-associated', { is: FormAssociated });
                 document.body.appendChild(elm);
                 const { internals } = elm;
