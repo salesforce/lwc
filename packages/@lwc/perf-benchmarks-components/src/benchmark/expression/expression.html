@@ -30,8 +30,4 @@ For full license text, see the LICENSE file in the repo root or https://opensour
   <div class="{expr1() === 'bar' ? 'matched' : 'not-matched'}">
     {expr1() === 'bar' ? 'String comparison works!' : 'String comparison failed'}
   </div>
-  
-  <p data-object="{JSON.stringify({nested: expr2, computed: expr1()})}">
-    {`Object: ${JSON.stringify({nested: expr2, computed: expr1()})}`}
-  </p>
 </template>
