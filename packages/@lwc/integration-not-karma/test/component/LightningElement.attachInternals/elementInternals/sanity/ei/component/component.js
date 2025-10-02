@@ -19,4 +19,13 @@ export default class extends LightningElement {
             this.internals[prop] = value;
         }
     }
+
+    @api
+    toggleChecked() {
+        if (!this.internals.states.has('--checked')) {
+            this.internals.states.add('--checked');
+        } else {
+            this.internals.states.delete('--checked');
+        }
+    }
 }

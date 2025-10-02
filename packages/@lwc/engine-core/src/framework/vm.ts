@@ -972,14 +972,6 @@ export function forceRehydration(vm: VM) {
 }
 
 export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void, args?: any[]) {
-    const { renderMode, shadowMode } = vm;
-
-    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
-        throw new Error(
-            'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
-        );
-    }
-
     invokeComponentCallback(vm, faceCb, args);
 }
 

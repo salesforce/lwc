@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import ShadowDomCmp from 'ai/shadowDom';
+import SyntheticShadowDomCmp from 'ai/syntheticShadowDom';
 import LightDomCmp from 'ai/lightDom';
 import BasicCmp from 'ai/basic';
 import {
@@ -67,13 +68,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals', () => {
         });
 
         describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow', () => {
-            it('should throw error when used inside a component', () => {
-                const elm = createElement('synthetic-shadow', { is: ShadowDomCmp });
-                testConnectedCallbackError(
-                    elm,
-                    'attachInternals API is not supported in synthetic shadow.'
-                );
-            });
+            attachInternalsSanityTest('synthetic-shadow', SyntheticShadowDomCmp);
         });
 
         describe('light DOM', () => {
