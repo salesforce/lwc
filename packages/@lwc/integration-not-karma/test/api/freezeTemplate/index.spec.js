@@ -5,6 +5,7 @@ import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
 } from '../../../helpers/reporting-control.js';
+import { resetAlreadyLoggedMessages } from '../../../helpers/reset.js';
 
 describe('freezeTemplate', () => {
     let dispatcher;
@@ -112,7 +113,7 @@ describe('freezeTemplate', () => {
             /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/
         );
 
-        window.__lwcResetAlreadyLoggedMessages();
+        resetAlreadyLoggedMessages();
 
         expect(template.stylesheets.length).toEqual(2);
         expect(template.stylesheets[0]).toBe(stylesheet);

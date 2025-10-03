@@ -26,6 +26,7 @@ import TextWithPreserveComments from 'x/textWithPreserveComments';
 import { jasmine } from '../../helpers/jasmine.js';
 import { LOWERCASE_SCOPE_TOKENS } from '../../helpers/constants.js';
 import { extractDataIds } from '../../helpers/utils.js';
+import { resetAlreadyLoggedMessages } from '../../helpers/reset.js';
 
 describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () => {
     ['native', 'synthetic'].forEach((firstRenderMode) => {
@@ -63,7 +64,7 @@ describe('static content when stylesheets change', () => {
             });
         }).toLogWarningDev(stylesheetsWarning);
 
-        window.__lwcResetAlreadyLoggedMessages();
+        resetAlreadyLoggedMessages();
 
         document.body.appendChild(elm);
 
@@ -77,7 +78,7 @@ describe('static content when stylesheets change', () => {
             });
         }).toLogWarningDev(stylesheetsWarning);
 
-        window.__lwcResetAlreadyLoggedMessages();
+        resetAlreadyLoggedMessages();
 
         await Promise.resolve();
         const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();

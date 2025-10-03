@@ -1,9 +1,8 @@
 import { createElement } from 'lwc';
 import Component from 'x/component';
+import { resetDOM } from '../../../helpers/reset';
 
-afterEach(() => {
-    window.__lwcResetGlobalStylesheets();
-});
+afterEach(resetDOM);
 
 describe('important styling and style override', () => {
     it('should render !important styles correctly', async () => {

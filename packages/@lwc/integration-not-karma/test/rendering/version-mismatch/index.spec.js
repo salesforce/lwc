@@ -8,6 +8,7 @@ import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
 } from '../../../helpers/reporting-control.js';
+import { resetWarnedOnVersionMismatch } from '../../../helpers/reset.js';
 
 describe('compiler version mismatch', () => {
     describe('stamped with version number', () => {
@@ -46,7 +47,7 @@ describe('compiler version mismatch', () => {
         let dispatcher;
 
         beforeEach(() => {
-            window.__lwcResetWarnedOnVersionMismatch();
+            resetWarnedOnVersionMismatch();
             dispatcher = jasmine.createSpy();
             attachReportingControlDispatcher(dispatcher, 'CompilerRuntimeVersionMismatch');
         });

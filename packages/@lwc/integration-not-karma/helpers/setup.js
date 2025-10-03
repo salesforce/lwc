@@ -1,6 +1,7 @@
 // This import ensures that the global `Mocha` object is present for mutation.
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
+import { resetAlreadyLoggedMessages } from '../helpers/reset.js';
 import { registerCustomMatchers } from './matchers/index.js';
 import { initSignals } from './signals.js';
 
@@ -65,12 +66,6 @@ hijackGlobal('afterEach', (afterEach) => {
         // Ensure the DOM is in a clean state
         document.body.replaceChildren();
         document.head.replaceChildren();
-    });
-});
-
-hijackGlobal('beforeEach', (beforeEach) => {
-    beforeEach(() => {
-        // FIXME: Boost test speed by moving this to only files that need it
-        window.__lwcResetAlreadyLoggedMessages();
+        resetAlreadyLoggedMessages();
     });
 });

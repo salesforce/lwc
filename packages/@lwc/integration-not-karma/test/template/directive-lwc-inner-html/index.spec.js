@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 import XInnerHtml from 'x/innerHtml';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
+import { resetDOM } from '../../../helpers/reset.js';
 
 let originalSanitizeHtmlContent;
 
@@ -13,9 +14,7 @@ afterAll(() => {
     setHooks({ sanitizeHtmlContent: originalSanitizeHtmlContent });
 });
 
-afterEach(() => {
-    window.__lwcResetGlobalStylesheets();
-});
+afterEach(resetDOM);
 
 it('renders the content as HTML', async () => {
     const elm = createElement('x-inner-html', { is: XInnerHtml });
