@@ -17,7 +17,7 @@ export function setTrustedSignalSet(signals: WeakSet<object>) {
     // this module. Placing it here ensures we reference the import where the trustedSignals set is maintained
     if (process.env.NODE_ENV === 'test-karma-lwc') {
         // Used to reset the global state between test runs
-        (globalThis as any).__lwcResetTrustedSignalsSetForTest = () => (trustedSignals = undefined);
+        (globalThis as any).__lwcResetTrustedSignals = () => (trustedSignals = undefined);
     }
 }
 

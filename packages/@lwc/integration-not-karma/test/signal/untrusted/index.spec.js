@@ -66,7 +66,7 @@ describe('signal reaction in lwc', () => {
     });
 
     describe('without trusted signal set', () => {
-        beforeAll(() => globalThis.__lwcResetTrustedSignalsSetForTest());
+        beforeAll(() => globalThis.__lwcResetTrustedSignals());
         describe('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION is enabled', () => {
             beforeAll(() => setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true));
             afterAll(() => setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false));
