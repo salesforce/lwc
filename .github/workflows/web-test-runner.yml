@@ -60,6 +60,7 @@ jobs:
             - run: API_VERSION=60 yarn test
             - run: API_VERSION=61 yarn test
             - run: API_VERSION=62 yarn test
+            - run: API_VERSION=66 yarn test
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
             - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
