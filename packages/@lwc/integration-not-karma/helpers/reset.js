@@ -7,21 +7,32 @@
  * order to reduce the amout of "magic" in the code.
  */
 
+function clearElement(elm) {
+    // `childNodes` and `attributes` are live lists, so we clone them to avoid
+    // skipping values as we delete items in the list
+    for (const child of [...elm.childNodes]) {
+        // Synthetic custom element lifecycle only patches DOM manipulation
+        // methods on Node.prototype, not Element.prototype, so we must use Node
+        // methods for signals tests to pass when using synthetic lifecycle.
+        elm.removeChild(child);
+    }
+    expect(elm.hasChildNodes(), `${elm.outerHTML} should not have child nodes`).toBe(false);
+
+    for (const attr of [...elm.attributes]) {
+        elm.removeAttributeNode(attr);
+    }
+    expect(elm.attributes, `${elm.outerHTML} should not have attributes`).toHaveSize(0);
+}
+
 /**
  * Clears all nodes from the document's `head` and `body` and resets LWC's
  * stylesheets cache.
  * @see engine-dom/src/styles.ts
  */
 export function resetDOM() {
-    // Synthetic custom element lifecycle only patches DOM manipulation methods
-    // on Node.prototype, not Element.prototype, so we must use those in order
-    // for signals tests to pass when using synthetic lifecycle.
-    for (const child of document.body.childNodes) {
-        document.body.removeChild(child);
-    }
-    for (const child of document.head.childNodes) {
-        document.head.removeChild(child);
-    }
+    clearElement(document.body);
+    clearElement(document.head);
+
     // LWC caches stylesheet data; we need to reset the cache when we clear the
     // DOM, otherwise components will render with incorrect styles
     // Defined in engine-dom/src/styles.ts

@@ -3,8 +3,11 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Container from 'x/container';
 import Two from 'x/two';
 import Shadow from 'x/shadow';
+import { resetDOM } from '../../../helpers/reset';
 
 describe('Light DOM styling at the global level', () => {
+    afterEach(resetDOM);
+
     it('styles bleed into other light DOM but not shadow DOM components in root context', () => {
         const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);

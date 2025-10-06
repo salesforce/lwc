@@ -7,7 +7,7 @@ import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
 } from '../../../helpers/reporting-control.js';
-import { resetAlreadyLoggedMessages } from '../../../helpers/reset.js';
+import { resetAlreadyLoggedMessages, resetDOM } from '../../../helpers/reset.js';
 
 const expectedMessageForCrossRoot =
     'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-source>';
@@ -33,6 +33,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
     afterEach(() => {
         detachReportingControlDispatcher();
         resetAlreadyLoggedMessages();
+        resetDOM();
     });
 
     describe('detection', () => {
