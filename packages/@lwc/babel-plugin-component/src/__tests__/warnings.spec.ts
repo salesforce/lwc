@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { afterEach, beforeEach, expect, vi, test } from 'vitest';
+import { afterEach, beforeEach, expect, vi, test, afterAll } from 'vitest';
 import { transformSync } from '@babel/core';
 import plugin from '../index';
 
@@ -17,6 +17,8 @@ beforeEach(() => {
 afterEach(() => {
     spy!.mockReset();
 });
+
+afterAll(() => spy!.mockRestore());
 
 test('warns on missing name/namespace', () => {
     const source = `
@@ -42,8 +44,7 @@ test('warns on missing name/namespace', () => {
     // compilation works successfully
     expect(code).toBeTypeOf('string');
 
-    expect(spy!).toHaveBeenCalledOnce();
-    expect(spy!).toHaveBeenCalledWith(
+    expect(spy!).toHaveBeenCalledExactlyOnceWith(
         'The namespace and name should both be non-empty strings. You may get unexpected behavior at runtime. Found: namespace="" and name=""'
     );
 });

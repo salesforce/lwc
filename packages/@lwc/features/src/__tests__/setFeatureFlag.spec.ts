@@ -38,7 +38,7 @@ describe('setFeatureFlag', () => {
                 };
                 if (env === 'production') {
                     callback();
-                    expect(error).toHaveBeenCalledWith(expectedError);
+                    expect(error).toHaveBeenCalledExactlyOnceWith(expectedError);
                 } else {
                     expect(callback).toThrowError(expectedError);
                 }
@@ -50,7 +50,7 @@ describe('setFeatureFlag', () => {
             it('logs and does nothing when the flag is unknown', () => {
                 // @ts-expect-error Explicitly testing JS behavior that violates TS types
                 setFeatureFlag('DOES_NOT_EXIST', true);
-                expect(info).toHaveBeenCalledWith(
+                expect(info).toHaveBeenCalledExactlyOnceWith(
                     expect.stringMatching(/Attempt to set a value on an unknown feature flag/)
                 );
 
@@ -64,7 +64,7 @@ describe('setFeatureFlag', () => {
                 expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
                 setFeatureFlag('PLACEHOLDER_TEST_FLAG', false);
                 if (env === 'production') {
-                    expect(error).toHaveBeenCalledWith(
+                    expect(error).toHaveBeenCalledExactlyOnceWith(
                         'Failed to set the value "false" for the runtime feature flag "PLACEHOLDER_TEST_FLAG". "PLACEHOLDER_TEST_FLAG" has already been set with the value "true".'
                     );
                     expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
