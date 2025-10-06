@@ -46,13 +46,13 @@ function createPreprocessor(config, emitter, logger) {
         const magicString = new MagicString(content.replace(/\/\/# sourceMappingURL=\S+/, ''));
 
         /**
-         * This transformation replaces `process.env.NODE_ENV === 'test-karma-lwc'` with `true`.
+         * This transformation replaces `process.env.NODE_ENV === 'test-lwc-integration'` with `true`.
          *
          * You might wonder why we replace the whole thing rather than just `process.env.NODE_ENV`. Well, because we need a way
          * to test `process.env.NODE_ENV === "production"` (prod mode) vs `process.env.NODE_ENV !== "production"` (dev mode).
          * If we replaced `process.env.NODE_ENV`, then that would be impossible.
          *
-         * Then you might wonder why we call it "test-karma-lwc" rather than something simple like "test". Well, because
+         * Then you might wonder why we call it "test-lwc-integration" rather than something simple like "test". Well, because
          * "test" was already squatted by Jest, and we actually use it for Jest-specific (not Karma-specific) behavior:
          * - https://jestjs.io/docs/environment-variables#node_env
          * - https://github.com/search?q=repo%3Asalesforce%2Flwc%20node_env%20%3D%3D%3D%20%27test%27&type=code
@@ -71,7 +71,7 @@ function createPreprocessor(config, emitter, logger) {
          *
          * So that's why this is so weird and complicated. I'm sorry.
          */
-        const replacee = `process.env.NODE_ENV === 'test-karma-lwc'`;
+        const replacee = `process.env.NODE_ENV === 'test-lwc-integration'`;
         // pad to keep things pretty in Istanbul coverage HTML
         magicString.replaceAll(replacee, 'true'.padEnd(replacee.length, ' '));
 

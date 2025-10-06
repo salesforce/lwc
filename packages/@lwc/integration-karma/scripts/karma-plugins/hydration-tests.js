@@ -266,7 +266,10 @@ function createHCONFIG2JSPreprocessor(config, logger, emitter) {
                     testWatchFiles.concat(componentWatchFilesCSR).concat(componentWatchFilesSSR)
                 );
                 ssrOutput = await getSsrCode(
-                    componentDefSSR.replace(`process.env.NODE_ENV === 'test-karma-lwc'`, 'true'),
+                    componentDefSSR.replace(
+                        `process.env.NODE_ENV === 'test-lwc-integration'`,
+                        'true'
+                    ),
                     testCode,
                     path.join(suiteDir, 'ssr.js'),
                     expectedSSRConsoleCalls

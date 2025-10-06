@@ -60,8 +60,8 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
         );
         return;
     }
-    // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests
-    if (process.env.NODE_ENV === 'test-karma-lwc' || process.env.NODE_ENV !== 'production') {
+    // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by Karma tests
+    if (process.env.NODE_ENV === 'test-lwc-integration' || process.env.NODE_ENV !== 'production') {
         // Allow the same flag to be set more than once outside of production to enable testing
         flags[name] = value;
     } else {
@@ -86,8 +86,8 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
  * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
-    // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests
-    if (process.env.NODE_ENV === 'test-karma-lwc' || process.env.NODE_ENV !== 'production') {
+    // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by Karma tests
+    if (process.env.NODE_ENV === 'test-lwc-integration' || process.env.NODE_ENV !== 'production') {
         setFeatureFlag(name, value);
     }
 }
