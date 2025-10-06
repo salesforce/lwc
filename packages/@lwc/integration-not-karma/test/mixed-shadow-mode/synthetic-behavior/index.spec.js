@@ -14,10 +14,9 @@ import GrandparentResetParentAnyChildReset from 'x/grandparentResetParentAnyChil
 import GrandparentResetParentResetChildAny from 'x/grandparentResetParentResetChildAny';
 import GrandparentResetParentResetChildReset from 'x/grandparentResetParentResetChildReset';
 import { extractDataIds, isNativeShadowRootInstance } from '../../../helpers/utils.js';
+import { resetDOM } from '../../../helpers/reset.js';
 
-afterEach(() => {
-    window.__lwcResetGlobalStylesheets();
-});
+afterEach(resetDOM);
 
 describe.skipIf(process.env.NATIVE_SHADOW)('synthetic behavior', () => {
     const scenarios = [

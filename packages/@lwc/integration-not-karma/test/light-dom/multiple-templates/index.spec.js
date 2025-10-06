@@ -2,8 +2,11 @@ import { createElement } from 'lwc';
 
 import Multi from 'x/multi';
 import MultiNoStyleInFirst from 'x/multiNoStyleInFirst';
+import { resetDOM } from '../../../helpers/reset';
 
 describe('multiple templates', () => {
+    afterEach(resetDOM);
+
     it('can render multiple templates with different styles', async () => {
         const element = createElement('x-multi', { is: Multi });
 

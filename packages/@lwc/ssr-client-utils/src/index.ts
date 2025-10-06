@@ -67,7 +67,7 @@ if (
     typeof process === 'object' &&
     typeof process?.env === 'object' &&
     process.env &&
-    process.env.NODE_ENV === 'test-karma-lwc'
+    process.env.NODE_ENV === 'test-lwc-integration'
 ) {
     (window as any).__lwcClearStylesheetCache = () => stylesheetCache.clear();
 }

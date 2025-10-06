@@ -4,14 +4,13 @@ import withLwcDomManual from 'x/withLwcDomManual';
 import withoutLwcDomManual from 'x/withoutLwcDomManual';
 import SvgWithLwcDomManual from 'x/svgWithLwcDomManual';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { resetDOM } from '../../../helpers/reset.js';
 
 function waitForStyleToBeApplied() {
     return Promise.resolve();
 }
 
-afterEach(() => {
-    window.__lwcResetGlobalStylesheets();
-});
+afterEach(resetDOM);
 
 describe('dom mutation without the lwc:dom="manual" directive', () => {
     function testErrorOnDomMutation(method, fn) {

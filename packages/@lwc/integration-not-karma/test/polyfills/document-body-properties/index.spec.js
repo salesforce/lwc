@@ -1,11 +1,14 @@
 import { createElement } from 'lwc';
 import XTest from 'x/test';
+import { resetDOM } from '../../../helpers/reset';
 
 describe('should not provide access to elements inside shadow tree', () => {
     beforeEach(() => {
         const elm = createElement('x-test-document-body-properties', { is: XTest });
         document.body.appendChild(elm);
     });
+
+    afterEach(resetDOM);
 
     function testMethodReturnsEmptyNodeList(api, selector) {
         it(`document.body.${api}`, () => {
@@ -41,6 +44,8 @@ describe('should provide access to elements outside shadow tree', () => {
                                <input name='in-the-shadow-${random}'>`;
         container.appendChild(document.createElement(`x-unique-tag-name-${random}`));
     });
+
+    afterEach(resetDOM);
 
     function testMethodReturnsNode(api, selector) {
         it(`document.body.${api}`, () => {

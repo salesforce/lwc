@@ -51,7 +51,7 @@ const stylesheetCache: Map<string, CacheData> = new Map();
 //
 
 // Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+if (process.env.NODE_ENV === 'test-lwc-integration') {
     (window as any).__lwcResetGlobalStylesheets = () => {
         stylesheetCache.clear();
     };

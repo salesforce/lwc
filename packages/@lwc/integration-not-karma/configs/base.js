@@ -56,7 +56,7 @@ export default (options) => {
                     if (ctx.type === 'application/javascript') {
                         // FIXME: copy/paste Nolan's spiel about why we do this ugly thing
                         return ctx.body.replace(
-                            /process\.env\.NODE_ENV === 'test-karma-lwc'/g,
+                            /process\.env\.NODE_ENV === 'test-lwc-integration'/g,
                             'true'
                         );
                     }

@@ -2,10 +2,9 @@ import { createElement } from 'lwc';
 
 import Unstyled from 'x/unstyled';
 import Styled from 'x/styled';
+import { resetDOM } from '../../../helpers/reset';
 
-afterEach(() => {
-    window.__lwcResetGlobalStylesheets();
-});
+afterEach(resetDOM);
 
 describe('dom manual sharing nodes', () => {
     it('has correct styles when sharing nodes from styled to unstyled component', async () => {
