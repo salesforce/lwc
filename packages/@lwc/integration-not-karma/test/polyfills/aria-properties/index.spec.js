@@ -11,6 +11,7 @@ import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
 } from '../../../helpers/reporting-control.js';
+import { resetAlreadyLoggedMessages } from '../../../helpers/reset.js';
 
 function testAriaProperty(property, attribute, suite = describe) {
     suite(property, () => {
@@ -23,6 +24,7 @@ function testAriaProperty(property, attribute, suite = describe) {
 
         afterEach(() => {
             detachReportingControlDispatcher();
+            resetAlreadyLoggedMessages();
         });
 
         function getDefaultValue(prop) {

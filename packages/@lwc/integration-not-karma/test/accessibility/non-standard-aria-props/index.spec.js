@@ -7,6 +7,7 @@ import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
 } from '../../../helpers/reporting-control.js';
+import { resetAlreadyLoggedMessages } from '../../../helpers/reset.js';
 
 // This test only works if the ARIA reflection polyfill is loaded
 describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
@@ -21,6 +22,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
 
         afterEach(() => {
             detachReportingControlDispatcher();
+            resetAlreadyLoggedMessages();
         });
 
         nonStandardAriaProperties.forEach((prop) => {
