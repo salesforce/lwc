@@ -64,7 +64,8 @@ export default (options) => {
             },
         ],
         testRunnerHtml: (testFramework) =>
-            `<!DOCTYPE html>
+            `
+        <!DOCTYPE html>
         <html>
           <head>
             <script type="module">
@@ -82,6 +83,7 @@ export default (options) => {
             <script type="module" src="./helpers/setup.js"></script>
             <script type="module" src="${testFramework}"></script>
           </head>
-        </html>`,
+        </html>
+        `,
     };
 };
