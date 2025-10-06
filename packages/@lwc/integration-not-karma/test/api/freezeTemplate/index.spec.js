@@ -17,6 +17,7 @@ describe('freezeTemplate', () => {
 
     afterEach(() => {
         detachReportingControlDispatcher();
+        resetAlreadyLoggedMessages();
     });
 
     it('should warn when setting tmpl.stylesheetToken', () => {
