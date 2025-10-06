@@ -155,7 +155,7 @@ describe('context', () => {
 
             binding.consumeContext(mockContextVariety, mockContextProvidedCallback);
 
-            expect(mockContextProvidedCallback).toHaveBeenCalledWith(mockContextSignal);
+            expect(mockContextProvidedCallback).toHaveBeenCalledExactlyOnceWith(mockContextSignal);
         });
 
         it('should not call callback if context is not found in ancestors', () => {
