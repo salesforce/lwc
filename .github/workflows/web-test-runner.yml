@@ -19,7 +19,6 @@ env:
 
 jobs:
     # TODO: upload result artifacts
-    # TODO: make it saucy 🥫
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow)
         strategy:
@@ -90,12 +89,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            # - uses: saucelabs/sauce-connect-action@v3.0.0
-            #   with:
-            #       username: ${{ secrets.SAUCE_USERNAME }}
-            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-            #       region: us
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
             # Synthetic shadow only
             - run: LEGACY_BROWSERS=1 yarn test || true
