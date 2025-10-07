@@ -46,12 +46,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            # - uses: saucelabs/sauce-connect-action@v3.0.0
-            #   with:
-            #       username: ${{ secrets.SAUCE_USERNAME }}
-            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-            #       region: us
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
             - run: yarn test
             - run: API_VERSION=58 yarn test
@@ -127,12 +127,12 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            # - uses: saucelabs/sauce-connect-action@v3.0.0
-            #   with:
-            #       username: ${{ secrets.SAUCE_USERNAME }}
-            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-            #       region: us
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
             - run: ENGINE_SERVER=1 yarn test:hydration
             - run: ENGINE_SERVER=1 SHADOW_MODE_OVERRIDE=synthetic yarn test:hydration
             - run: ENGINE_SERVER=1 NODE_ENV_FOR_TEST=production yarn test:hydration
