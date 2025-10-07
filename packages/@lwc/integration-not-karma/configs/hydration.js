@@ -1,5 +1,5 @@
 import * as options from '../helpers/options.js';
-import createConfig from './base.js';
+import createConfig from './shared/base-config.js';
 import hydrationTestPlugin from './plugins/serve-hydration.js';
 
 const SHADOW_MODE = options.SHADOW_MODE_OVERRIDE ?? 'native';

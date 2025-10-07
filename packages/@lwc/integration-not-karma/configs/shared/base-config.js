@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import { resolvePathOutsideRoot } from '../helpers/utils.js';
+import { resolvePathOutsideRoot } from '../../helpers/utils.js';
 
 /**
  * We want to convert from parsed options (true/false) to a `process.env` with only strings.
@@ -43,7 +43,7 @@ export default (options) => {
         concurrency: 1,
         browserLogs: false,
         nodeResolve: true,
-        rootDir: join(import.meta.dirname, '..'),
+        rootDir: join(import.meta.dirname, '../..'),
         plugins: [
             {
                 name: 'lwc-base-plugin',
