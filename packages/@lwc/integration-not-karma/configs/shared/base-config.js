@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import { resolvePathOutsideRoot } from '../../helpers/utils.js';
+import { getBrowsers } from './browsers.js';
 
 /**
  * We want to convert from parsed options (true/false) to a `process.env` with only strings.
@@ -37,11 +38,13 @@ export default (options) => {
     });
 
     return {
+        browsers: getBrowsers(options),
+        browserLogs: false,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
         concurrency: 1,
-        browserLogs: false,
+        concurrentBrowsers: 3,
         nodeResolve: true,
         rootDir: join(import.meta.dirname, '../..'),
         plugins: [
