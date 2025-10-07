@@ -53,6 +53,7 @@ jobs:
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
                   region: us
 
+            - run: yarn exec -- playwright install-deps chromium firefox webkit
             - run: yarn test
             - run: API_VERSION=58 yarn test
             - run: API_VERSION=59 yarn test
@@ -96,6 +97,7 @@ jobs:
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
                   region: us
 
+            - run: yarn exec -- playwright install-deps chromium firefox webkit
             # Synthetic shadow only
             - run: LEGACY_BROWSERS=1 yarn test || true
             - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn test
@@ -133,6 +135,8 @@ jobs:
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
                   tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
                   region: us
+
+            - run: yarn exec -- playwright install-deps chromium firefox webkit
             - run: ENGINE_SERVER=1 yarn test:hydration
             - run: ENGINE_SERVER=1 SHADOW_MODE_OVERRIDE=synthetic yarn test:hydration
             - run: ENGINE_SERVER=1 NODE_ENV_FOR_TEST=production yarn test:hydration
