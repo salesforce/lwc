@@ -87,7 +87,7 @@ async function getSsrMarkup(componentEntrypoint, configPath) {
             );
         })()`,
         {
-            filename: `[SSR] ${configPath}`,
+            filename: `(virtual SSR file for) ${configPath}`,
             importModuleDynamically: vm.constants.USE_MAIN_CONTEXT_DEFAULT_LOADER,
         }
     );
