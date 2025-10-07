@@ -19,7 +19,7 @@ const envify = (obj) => {
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
 
-/** @type {() => import("@web/test-runner").TestRunnerConfig} */
+/** @type {(options: typeof import('../../helpers/options.js')) => import("@web/test-runner").TestRunnerConfig} */
 export default (options) => {
     /** `process.env` to inject into test environment. */
     const env = envify({
