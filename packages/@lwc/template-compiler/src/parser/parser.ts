@@ -362,10 +362,20 @@ export default class ParserCtx {
     }
 
     throwOnError(errorInfo: LWCErrorInfo, error: any, location?: SourceLocation): never {
-        const diagnostic = normalizeToDiagnostic(errorInfo, error, {
-            location: normalizeLocation(location),
-        });
-        throw CompilerError.from(diagnostic);
+        if (this.config.collectMultipleErrors) {
+            // Convert to diagnostic and continue parsing
+            const diagnostic = normalizeToDiagnostic(errorInfo, error, {
+                location: normalizeLocation(location),
+            });
+            this.addDiagnostic(diagnostic);
+            return undefined as never; // Don't throw, continue parsing
+        } else {
+            // Original behavior - throw immediately
+            const diagnostic = normalizeToDiagnostic(errorInfo, error, {
+                location: normalizeLocation(location),
+            });
+            throw CompilerError.from(diagnostic);
+        }
     }
 
     /**
@@ -396,12 +406,25 @@ export default class ParserCtx {
      * @throws
      */
     throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
-        throw generateCompilerError(errorInfo, {
-            messageArgs,
-            origin: {
-                location: normalizeLocation(location),
-            },
-        });
+        if (this.config.collectMultipleErrors) {
+            // Convert to diagnostic and continue parsing
+            const diagnostic = generateCompilerDiagnostic(errorInfo, {
+                messageArgs,
+                origin: {
+                    location: normalizeLocation(location),
+                },
+            });
+            this.addDiagnostic(diagnostic);
+            return undefined as never; // Don't throw, continue parsing
+        } else {
+            // Original behavior - throw immediately
+            throw generateCompilerError(errorInfo, {
+                messageArgs,
+                origin: {
+                    location: normalizeLocation(location),
+                },
+            });
+        }
     }
 
     /**

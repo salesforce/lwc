@@ -27,6 +27,7 @@ export default class TestComponent extends LightningElement {
     // Error 6: Duplicate API property (1096 - DUPLICATE_API_PROPERTY)
     @api duplicateProp;
     @api duplicateProp; // Duplicate
+    @wire(getSome, {})
     
     // Error 7: API and Track decorator conflict (1093 - API_AND_TRACK_DECORATOR_CONFLICT)
     // @api @track conflictingProperty;

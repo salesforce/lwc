@@ -141,6 +141,53 @@ describe('transformSync', () => {
         ]);
     });
 
+    describe('multiple error collection', () => {
+        it('should collect multiple template errors when collectMultipleErrors is true', () => {
+            const template = `
+                <template>
+                    <div lwc:invalid-directive="test"></div>
+                    <span lwc:another-invalid="test"></span>
+                </template>
+            `;
+
+            const result = transformSync(template, 'foo.html', {
+                ...TRANSFORMATION_OPTIONS,
+                collectMultipleErrors: true,
+            });
+
+            expect(result.errors).toBeDefined();
+            expect(result.errors!.length).toBeGreaterThan(0);
+            expect(result.fatal).toBe(true);
+            expect(result.code).toBe('');
+        });
+
+        it('should throw on first error when collectMultipleErrors is false', () => {
+            const template = `
+                <template>
+                    <div lwc:invalid-directive="test"></div>
+                    <span lwc:another-invalid="test"></span>
+                </template>
+            `;
+
+            expect(() =>
+                transformSync(template, 'foo.html', {
+                    ...TRANSFORMATION_OPTIONS,
+                    collectMultipleErrors: false,
+                })
+            ).toThrow();
+        });
+
+        it('should maintain backward compatibility when collectMultipleErrors is undefined', () => {
+            const template = `
+                <template>
+                    <div lwc:invalid-directive="test"></div>
+                </template>
+            `;
+
+            expect(() => transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS)).toThrow();
+        });
+    });
+
     describe('dynamic components', () => {
         it('should allow dynamic components when enableDynamicComponents is set to true', () => {
             const template = `

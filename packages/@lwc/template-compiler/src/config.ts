@@ -94,6 +94,9 @@ export interface Config {
 
     /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output. */
     disableSyntheticShadowSupport?: boolean;
+
+    /** When true, collects multiple errors instead of throwing on the first error. */
+    collectMultipleErrors?: boolean;
 }
 type OptionalConfigNames = 'customRendererConfig' | 'instrumentation' | 'namespace' | 'name';
 type RequiredConfigOptions = Required<Omit<Config, OptionalConfigNames>>;
@@ -102,6 +105,7 @@ export type NormalizedConfig = RequiredConfigOptions & OptionalConfigOptions;
 
 const AVAILABLE_OPTION_NAMES = new Set([
     'apiVersion',
+    'collectMultipleErrors',
     'customRendererConfig',
     'enableLwcSpread',
     'enableLwcOn',
@@ -184,6 +188,7 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         enableLwcSpread: true,
         enableLwcOn: false,
         disableSyntheticShadowSupport: false,
+        collectMultipleErrors: false,
         ...config,
         apiVersion, // overrides the config apiVersion
         ...{ customRendererConfig },

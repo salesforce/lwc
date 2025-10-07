@@ -87,6 +87,9 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
             plugins,
+            parserOpts: {
+                errorRecovery: collectMultipleErrors,
+            },
         })!;
 
         // Check if the LWC plugin collected any errors from file metadata

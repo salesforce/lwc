@@ -7,6 +7,7 @@
 import {
     CompilerError,
     normalizeToCompilerError,
+    normalizeToDiagnostic,
     DiagnosticLevel,
     TransformerErrors,
 } from '@lwc/errors';
@@ -46,6 +47,7 @@ export default function templateTransform(
         name,
         apiVersion,
         disableSyntheticShadowSupport,
+        collectMultipleErrors,
     } = options;
     const experimentalDynamicDirective =
         deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
@@ -66,26 +68,52 @@ export default function templateTransform(
             instrumentation,
             apiVersion,
             disableSyntheticShadowSupport,
+            collectMultipleErrors,
         });
     } catch (e) {
-        throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
+        if (collectMultipleErrors) {
+            // Convert compilation error to diagnostic and continue
+            const diagnostic = normalizeToDiagnostic(TransformerErrors.HTML_TRANSFORMER_ERROR, e, {
+                filename,
+            });
+            return {
+                code: '',
+                map: { mappings: '' },
+                errors: [diagnostic],
+                fatal: true,
+            };
+        } else {
+            throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, {
+                filename,
+            });
+        }
     }
 
-    const fatalError = result.warnings.find((warning) => warning.level === DiagnosticLevel.Error);
-    if (fatalError) {
-        throw CompilerError.from(fatalError, { filename });
+    // Separate errors from warnings
+    const errors = result.warnings.filter((warning) => warning.level === DiagnosticLevel.Error);
+    const warnings = result.warnings.filter((warning) => warning.level === DiagnosticLevel.Warning);
+
+    if (collectMultipleErrors) {
+        // Collect all errors instead of throwing
+        return {
+            code: result.code,
+            map: { mappings: '' },
+            errors: errors.length > 0 ? errors : undefined,
+            warnings: warnings.length > 0 ? warnings : undefined,
+            fatal: errors.length > 0,
+            cssScopeTokens: result.cssScopeTokens,
+        };
+    } else {
+        // Original behavior - throw on first error
+        if (errors.length > 0) {
+            throw CompilerError.from(errors[0], { filename });
+        }
+
+        return {
+            code: result.code,
+            map: { mappings: '' },
+            warnings,
+            cssScopeTokens: result.cssScopeTokens,
+        };
     }
-
-    // The "Error" diagnostic level makes no sense to include here, because it would already have been
-    // thrown above. As for "Log" and "Fatal", they are currently unused.
-    const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
-
-    // Rollup only cares about the mappings property on the map. Since producing a source map for
-    // the template doesn't make sense, the transform returns an empty mappings.
-    return {
-        code: result.code,
-        map: { mappings: '' },
-        warnings,
-        cssScopeTokens: result.cssScopeTokens,
-    };
 }
