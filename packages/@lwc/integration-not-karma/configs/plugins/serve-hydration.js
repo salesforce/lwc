@@ -1,20 +1,16 @@
 import path from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { rollup } from 'rollup';
 import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helpers/options.js';
-/** LWC SSR module to use when server-side rendering components. */
-const lwcSsr = await (ENGINE_SERVER
-    ? // Using import('literal') rather than import(variable) so static analysis tools work
-      import('@lwc/engine-server')
-    : import('@lwc/ssr-runtime'));
 
-lwcSsr.setHooks({
-    sanitizeHtmlContent(content) {
-        return content;
-    },
-});
+/** Code for the LWC SSR module. */
+const LWC_SSR = readFileSync(
+    new URL(import.meta.resolve(ENGINE_SERVER ? '@lwc/engine-server' : '@lwc/ssr-runtime')),
+    'utf8'
+);
 
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
 const COMPONENT_NAME = 'x-main';
@@ -68,16 +64,27 @@ async function compileModule(input, targetSSR, format) {
  */
 async function getSsrMarkup(componentEntrypoint, configPath) {
     const componentIife = await compileModule(componentEntrypoint, !ENGINE_SERVER, 'iife');
-    // To minimize the amount of code in the generated script, ideally we'd do `import Component`
-    // and delegate the bundling to the loader. However, that's complicated to configure and using
-    // imports with vm.Script/vm.Module is still experimental, so we use an IIFE for simplicity.
-    // Additionally, we could import LWC, but the framework requires configuration before each test
-    // (setHooks/setFeatureFlagForTest), so instead we configure it once in the top-level context
-    // and inject it as a global variable.
+    // Ideally, we'd be able to do `import Component` and delegate bundling to the loader. We also
+    // need each import of LWC to be isolated, but by all server-side imports share a global state.
+    // We could solve this with the right `vm.Script`/`vm.Module` setup, but that's complicated and
+    // still experimental. Therefore, we just inline everything.
     const script = new vm.Script(
         `(async () => {
-            const {default: config} = await import('./${configPath}');
-            ${componentIife /* var Component = ... */}
+            // node.js / CommonJS setup
+            const process = { env: ${JSON.stringify(process.env)} };
+            const exports = Object.create(null);
+            const LWC = exports;
+
+            // LWC / test setup
+            ${LWC_SSR};
+            LWC.setHooks({ sanitizeHtmlContent: (v) => v });
+            const { default: config } = await import('./${configPath}');
+            config.requiredFeatureFlags?.forEach(ff => {
+                LWC.setFeatureFlagForTest(ff, true);
+            });
+
+            // Component code
+            ${componentIife};
             return LWC.renderComponent(
                 '${COMPONENT_NAME}',
                 Component,
@@ -92,7 +99,7 @@ async function getSsrMarkup(componentEntrypoint, configPath) {
         }
     );
 
-    return await script.runInContext(vm.createContext({ LWC: lwcSsr }));
+    return await script.runInNewContext();
 }
 
 /**
@@ -100,31 +107,19 @@ async function getSsrMarkup(componentEntrypoint, configPath) {
  * This function wraps those configs in the test code to be executed.
  */
 async function wrapHydrationTest(configPath) {
-    const { default: config } = await import(path.join(ROOT_DIR, configPath));
+    const suiteDir = path.dirname(configPath);
+    const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
+    const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
-    try {
-        config.requiredFeatureFlags?.forEach((featureFlag) => {
-            lwcSsr.setFeatureFlagForTest(featureFlag, true);
-        });
-
-        const suiteDir = path.dirname(configPath);
-        const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
-        const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
-
-        return `
-        import * as LWC from 'lwc';
-        import { runTest } from '/configs/plugins/test-hydration.js';
-        runTest(
-            '/${configPath}?original=1',
-            '/${componentEntrypoint}',
-            ${JSON.stringify(ssrOutput) /* escape quotes */}
-        );
-        `;
-    } finally {
-        config.requiredFeatureFlags?.forEach((featureFlag) => {
-            lwcSsr.setFeatureFlagForTest(featureFlag, false);
-        });
-    }
+    return `
+    import * as LWC from 'lwc';
+    import { runTest } from '/configs/plugins/test-hydration.js';
+    runTest(
+        '/${configPath}?original=1',
+        '/${componentEntrypoint}',
+        ${JSON.stringify(ssrOutput) /* escape quotes */}
+    );
+    `;
 }
 
 /** @type {import('@web/dev-server-core').Plugin} */
