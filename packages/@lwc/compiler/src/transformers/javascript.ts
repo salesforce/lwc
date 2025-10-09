@@ -90,8 +90,7 @@ export default function scriptTransform(
         // Sniff for a Babel decorator error, so we can provide a more helpful error message.
         if (
             (e as any).code === 'BABEL_TRANSFORM_ERROR' &&
-            (e as any).message?.includes('Decorators are not enabled.') &&
-            /\b(track|api|wire)\b/.test((e as any).message) // sniff for @track/@api/@wire
+            (e as any).message?.includes('Decorators are not enabled.')
         ) {
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
