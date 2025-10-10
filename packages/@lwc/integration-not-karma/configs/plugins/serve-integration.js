@@ -40,19 +40,33 @@ const createRollupPlugin = (input, options) => {
 
 const transform = async (ctx) => {
     const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
-
     const defaultRollupPlugin = createRollupPlugin(input);
+
+    // Override the LWC rollup plugin config on a per-file basis by searching for a comment
+    // directive /*!WTR {...}*/ and parsing the content as JSON. The spec file acts as a default
+    // location to update the config for every component file.
+    let rootConfig = {};
+    const configDirective = /(?:\/\*|<!--)!WTR\s*(.*?)(?:\*\/|-->)/s;
+    const parseConfig = (src, id) => {
+        const configStr = src.match(configDirective)?.[1];
+        if (!configStr) {
+            return rootConfig; // default config if no overrides found
+        }
+        const config = JSON.parse(configStr);
+        // id is full file path, input is relative to the package dir
+        if (id.endsWith(`/${input}`)) {
+            // this is the test entrypoint
+            rootConfig = config;
+        }
+        return config;
+    };
 
     const customLwcRollupPlugin = {
         ...defaultRollupPlugin,
         transform(src, id) {
+            const { apiVersion, nativeOnly } = parseConfig(src, id);
+
             let transform;
-
-            // Override the LWC Rollup plugin on a per-file basis by searching for a comment
-            // directive /*!WTR {...}*/ and parsing the content as JSON
-            const perFileConfigStr = src.match(/\/\*!WTR\s*(.*?)\*\//)?.[1];
-            const { apiVersion, nativeOnly } = perFileConfigStr ? JSON.parse(perFileConfigStr) : {};
-
             if (apiVersion) {
                 transform = createRollupPlugin(input, { apiVersion }).transform;
             } else if (nativeOnly) {
@@ -62,6 +76,7 @@ const transform = async (ctx) => {
             } else {
                 transform = defaultRollupPlugin.transform;
             }
+
             return transform.call(this, src, id);
         },
     };
