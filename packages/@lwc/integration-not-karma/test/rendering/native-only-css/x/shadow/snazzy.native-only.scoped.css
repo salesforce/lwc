@@ -1,5 +1,5 @@
 /* Per-file compiler config, used in configs/plugins/serve-integration.js */
-/*!WTR {nativeOnly: true}*/
+/*!WTR {"nativeOnly": true}*/
 div {
     --snazzy: 'native';
 }
