@@ -48,22 +48,13 @@ const transform = async (ctx) => {
         transform(src, id) {
             let transform;
 
-            // Override the LWC Rollup plugin to specify different options based on file name patterns.
-            // This allows us to alter the API version or other compiler props on a filename-only basis.
-            const apiVersion = id.match(/useApiVersion(\d+)/)?.[1];
-            const nativeOnly = /\.native-only\./.test(id);
+            // Override the LWC Rollup plugin on a per-file basis by searching for a comment
+            // directive /*!WTR {...}*/ and parsing the content as JSON
+            const perFileConfigStr = src.match(/\/\*!WTR\s*(.*?)\*\//)?.[1];
+            const { apiVersion, nativeOnly } = perFileConfigStr ? JSON.parse(perFileConfigStr) : {};
+
             if (apiVersion) {
-                // The original Karma tests only ever had filename-based config for API version 60.
-                // Filename-based config is a pattern we want to move away from, so this transform
-                // only works for that version, so that we could simplify the logic here.
-                if (apiVersion !== '60') {
-                    throw new Error(
-                        'TODO: fully implement or remove support for filename-based API version'
-                    );
-                }
-                transform = createRollupPlugin(input, {
-                    apiVersion: 60,
-                }).transform;
+                transform = createRollupPlugin(input, { apiVersion }).transform;
             } else if (nativeOnly) {
                 transform = createRollupPlugin(input, {
                     disableSyntheticShadowSupport: true,
