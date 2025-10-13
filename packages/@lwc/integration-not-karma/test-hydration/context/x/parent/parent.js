@@ -3,6 +3,9 @@ import { parentContextFactory, anotherParentContextFactory } from 'x/parentConte
 import Base from 'x/base';
 
 export default class Parent extends Base {
-    @api context = parentContextFactory();
     @api anotherContext = anotherParentContextFactory();
+
+    constructor() {
+        super(parentContextFactory());
+    }
 }
