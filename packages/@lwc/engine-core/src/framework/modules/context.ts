@@ -6,6 +6,7 @@
  */
 import {
     isUndefined,
+    getPrototypeOf,
     keys,
     getContextKeys,
     ArrayFilter,
@@ -80,25 +81,6 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
 }
 
 export function connectContext(vm: VM) {
-    // Non-decorated objects
-    connect(vm, vm.cmpFields);
-    // Decorated objects like @api context
-    connect(vm, vm.cmpProps);
-}
-
-export function disconnectContext(vm: VM) {
-    // Non-decorated objects
-    disconnect(vm, vm.cmpFields);
-    // Decorated objects like @api context
-    disconnect(vm, vm.cmpProps);
-}
-
-function connect(
-    vm: VM,
-    fieldsOrProps: {
-        [name: string]: any;
-    }
-) {
     const contextKeys = getContextKeys();
 
     if (isUndefined(contextKeys)) {
@@ -106,10 +88,9 @@ function connect(
     }
 
     const { connectContext } = contextKeys;
-
     const { component } = vm;
 
-    const enumerableKeys = keys(fieldsOrProps);
+    const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
         isTrustedContext((component as any)[enumerableKey])
     );
@@ -122,7 +103,7 @@ function connect(
 
     try {
         for (let i = 0; i < contextfulKeys.length; i++) {
-            fieldsOrProps[contextfulKeys[i]][connectContext](
+            (component as any)[contextfulKeys[i]][connectContext](
                 new ContextBinding(vm, component, providedContextVarieties)
             );
         }
@@ -135,12 +116,7 @@ function connect(
     }
 }
 
-function disconnect(
-    vm: VM,
-    fieldsOrProps: {
-        [name: string]: any;
-    }
-) {
+export function disconnectContext(vm: VM) {
     const contextKeys = getContextKeys();
 
     if (!contextKeys) {
@@ -148,12 +124,11 @@ function disconnect(
     }
 
     const { disconnectContext } = contextKeys;
-
     const { component } = vm;
 
-    const enumerableKeys = keys(fieldsOrProps);
+    const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext(fieldsOrProps[enumerableKey])
+        isTrustedContext((component as any)[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {
@@ -162,7 +137,7 @@ function disconnect(
 
     try {
         for (let i = 0; i < contextfulKeys.length; i++) {
-            fieldsOrProps[contextfulKeys[i]][disconnectContext](component);
+            (component as any)[contextfulKeys[i]][disconnectContext](component);
         }
     } catch (err: any) {
         logWarnOnce(
