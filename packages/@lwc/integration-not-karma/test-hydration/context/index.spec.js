@@ -39,16 +39,19 @@ export default {
         // Assert context is disconnected when components are removed
         assertContextDisconnected(target, snapshot);
 
-        // Expect an error as one context was generated twice.
-        // Expect an error as one context was malformed (did not define connectContext or disconnectContext methods).
-        // Expect server/client context output parity (no hydration warnings)
-        expectConsoleCalls(consoleCalls, {
-            error: [],
-            warn: [
-                'Attempted to connect to trusted context but received the following error',
-                'Multiple contexts of the same variety were provided. Only the first context will be used.',
-            ],
-        });
+        // Legacy SSRv1 does not support context when inherited
+        if (!process.env.ENGINE_SERVER) {
+            // Expect an error as one context was generated twice.
+            // Expect an error as one context was malformed (did not define connectContext or disconnectContext methods).
+            // Expect server/client context output parity (no hydration warnings)
+            expectConsoleCalls(consoleCalls, {
+                error: [],
+                warn: [
+                    'Attempted to connect to trusted context but received the following error',
+                    'Multiple contexts of the same variety were provided. Only the first context will be used.',
+                ],
+            });
+        }
     },
 };
 
