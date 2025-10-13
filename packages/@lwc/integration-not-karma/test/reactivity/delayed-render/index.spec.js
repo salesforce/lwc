@@ -5,10 +5,11 @@ import Test from 'x/test';
 // A bug (W-19830319) has shown that if child component properties are incorrectly marked for observation by the lifecycle, they can trigger the parent component to re-render
 // and this will cause undesired effects. This bug manifested due to context connection/disconnection erroneously accessing properties, but it could theoretically occur in any instance where
 // the "live" component property is accessed instead of via vm.cmpFields / vm.cmpProps.
-describe('Unobserved properties should NOT trigger re-renders', () => {
-    it('when signals is enabled', async () => {
+describe('Unobserved properties should trigger additional re-renders', () => {
+    it('when signals is enabled and legacy context connection is enabled', async () => {
         // This is on by default, but enabled here to confirm the case
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', true);
 
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
@@ -25,11 +26,62 @@ describe('Unobserved properties should NOT trigger re-renders', () => {
         // Before the bugfix (W-19830319/PR-5536), expecting 2 renders when signals was enabled would fail.
         // An erroneous 3rd render would occur when signals was enabled due to the behavior described above.
         setTimeout(() => {
-            expect(elm.renderCount).toBe(2); // pre-fix, this will fail as it will render 3 times.
+            expect(elm.renderCount).toBe(3); // because ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION = true this will render 3 times (incorrect)
         });
     });
 
-    // Test with the signals flag disabled for completness
+    it('when signals is enabled, legacy context connection is true and detached rehydration is enabled', async () => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', true);
+        setFeatureFlagForTest('DISABLE_DETACHED_REHYDRATION', true);
+
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        elm.switchToEmptyTemplate();
+
+        // Enabling detached rehydration does not change the behavior (bug still exists and the third render occurs)
+        setTimeout(() => {
+            expect(elm.renderCount).toBe(3);
+        });
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', false);
+        setFeatureFlagForTest('DISABLE_DETACHED_REHYDRATION', false);
+    });
+});
+
+describe('Unobserved properties should NOT trigger additional re-renders', () => {
+    it('when signals is enabled, legacy context connection is disabled and detached rehydration is enabled', async () => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', false);
+        setFeatureFlagForTest('DISABLE_DETACHED_REHYDRATION', true);
+
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        elm.switchToEmptyTemplate();
+
+        // Enabling detached rehydration does not change the behavior
+        setTimeout(() => {
+            expect(elm.renderCount).toBe(2);
+        });
+    });
+
+    it('when signals is enabled and legacy context connection is disabled', async () => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', false);
+
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        elm.switchToEmptyTemplate();
+
+        // CORRECT: This component should render twice as the corrected context connection is in use.
+        setTimeout(() => {
+            expect(elm.renderCount).toBe(2);
+        });
+    });
+
     it('when signals is disabled', async () => {
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
 
@@ -37,9 +89,14 @@ describe('Unobserved properties should NOT trigger re-renders', () => {
         document.body.appendChild(elm);
         elm.switchToEmptyTemplate();
 
-        // CORRECT: This component should render twice.
+        // CORRECT: This component should render twice as signals is disabled and there should be no observation bugs elsewhere in the lifecycle.
         setTimeout(() => {
             expect(elm.renderCount).toBe(2);
         });
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+        setFeatureFlagForTest('DISABLE_DETACHED_REHYDRATION', false);
     });
 });

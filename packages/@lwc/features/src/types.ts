@@ -106,6 +106,13 @@ export interface FeatureFlagMap {
      * Applies to rehydration performed while flushing the rehydration queue.
      */
     DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
+
+    /**
+     * If true, enables legacy context connection and disconnection which can result in the component lifecycle
+     * observing properties that are not typically observed. ENABLE_EXPERIMENTAL_SIGNALS must also be enabled for
+     * this flag to have an effect. See PR #5536 for more information.
+     */
+    ENABLE_LEGACY_CONTEXT_CONNECTION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
