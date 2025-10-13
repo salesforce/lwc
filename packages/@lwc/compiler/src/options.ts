@@ -108,6 +108,8 @@ export interface TransformOptions {
     experimentalDynamicDirective?: boolean;
     /** Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
     enableDynamicComponents?: boolean;
+    /** Flag to enable usage of ElementInternals in synthetic shadow DOM */
+    enableSyntheticElementInternals?: boolean;
     // TODO [#3370]: remove experimental template expression flag
     /** Flag to enable use of (a subset of) JavaScript expressions in place of template bindings. Passed to `@lwc/template-compiler`. */
     experimentalComplexExpressions?: boolean;
@@ -153,6 +155,7 @@ type OptionalTransformKeys =
     | 'enableLwcOn'
     | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
+    | 'enableSyntheticElementInternals'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
     | 'instrumentation';

@@ -38,7 +38,11 @@ import {
 } from '../libs/reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { getComponentAPIVersion, getWrappedComponentsListener } from './component';
+import {
+    getComponentAPIVersion,
+    getWrappedComponentsListener,
+    supportsSyntheticElementInternals,
+} from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import { associateVM, getAssociatedVM, RenderMode, ShadowMode } from './vm';
 import { componentValueObserved } from './mutation-tracker';
@@ -493,6 +497,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     attachInternals(): ElementInternals {
         const vm = getAssociatedVM(this);
         const {
+            def: { ctor },
             elm,
             apiVersion,
             renderer: { attachInternals },
@@ -507,7 +512,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         }
 
         const internals = attachInternals(elm);
-        if (vm.shadowMode === ShadowMode.Synthetic) {
+        if (supportsSyntheticElementInternals(ctor) && vm.shadowMode === ShadowMode.Synthetic) {
             const handler: ProxyHandler<ElementInternals> = {
                 get(target: ElementInternals, prop: keyof ElementInternals) {
                     if (prop === 'shadowRoot') {

@@ -21,6 +21,7 @@ export interface LwcBabelPluginOptions {
     name: string;
     instrumentation?: InstrumentationObject;
     apiVersion?: number;
+    enableSyntheticElementInternals?: boolean;
 }
 
 export interface LwcBabelPluginPass extends PluginPass {
