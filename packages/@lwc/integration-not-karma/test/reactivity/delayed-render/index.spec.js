@@ -12,8 +12,8 @@ describe('Unobserved properties should NOT trigger re-renders', () => {
 
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
-        // Specific sequence (it is rather nuanced):
-        // 1. The template change results in the parent component being as dirty.
+        // Specific sequence (it is rather nuanced and requires 1. parent to switch templates and 2. child to mutate a property in a setTimeout function or similar.):
+        // 1. The template change results in the parent component being marked as dirty.
         // 1a. Marking the parent as dirty sets the currentReactiveObserver to the parent, here: https://github.com/salesforce/lwc/blob/master/packages/%40lwc/engine-core/src/libs/mutation-tracker/index.ts#L83
         // 2. The new template doesn't contain the child so disconnectContext is called on the child component. The BUG: If the child properties are incorrectly observed then riggering disconnectContext marks all child properties
         // for observation using the currentReactiveObserver of the parent set in 1a. here: https://github.com/salesforce/lwc/blob/master/packages/%40lwc/engine-core/src/libs/mutation-tracker/index.ts#L60
