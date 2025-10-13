@@ -12,11 +12,14 @@ describe('Unobserved properties should NOT trigger re-renders', () => {
 
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
-        // This will:
-        // 1. Mark the parent component as dirty as the component template is changed.
-        // 2. Trigger disconnectContext on the child component which will mark each child property for observation, with the parent properties as the listeners.
-        // 3. Trigger a delayed mutation on the child in the child renderedCallback.
-        // 4. The erroneously observed properties will trigger a re-render of the parent as the parent properties are listening.
+        // Specific sequence (it is rather nuanced):
+        // 1. The template change results in the parent component being as dirty.
+        // 1a. Marking the parent as dirty sets the currentReactiveObserver to the parent, here: https://github.com/salesforce/lwc/blob/master/packages/%40lwc/engine-core/src/libs/mutation-tracker/index.ts#L83
+        // 2. The new template doesn't contain the child so disconnectContext is called on the child component. The BUG: If the child properties are incorrectly observed then riggering disconnectContext marks all child properties
+        // for observation using the currentReactiveObserver of the parent set in 1a. here: https://github.com/salesforce/lwc/blob/master/packages/%40lwc/engine-core/src/libs/mutation-tracker/index.ts#L60
+        // 3. Next, a delayed property mutation inside the child component's renderedCallback occurs and this delayed (post disconnection) mutation triggers valueMutated, where all the parent properties are registered listeners.
+        // That happens here: https://github.com/salesforce/lwc/blob/master/packages/%40lwc/engine-core/src/libs/mutation-tracker/index.ts#L41
+        // 3b. This causes the parent component to re-render.
         elm.switchToEmptyTemplate();
 
         // Before the bugfix (W-19830319/PR-5536), expecting 2 renders when signals was enabled would fail.

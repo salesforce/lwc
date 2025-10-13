@@ -111,7 +111,7 @@ function connect(
 
     const enumerableKeys = keys(fieldsOrProps);
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext((component as any)[enumerableKey])
+        isTrustedContext(fieldsOrProps[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {
