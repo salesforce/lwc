@@ -25,6 +25,7 @@ const features: FeatureFlagMap = {
     LEGACY_LOCKER_ENABLED: null,
     DISABLE_LEGACY_VALIDATION: null,
     DISABLE_DETACHED_REHYDRATION: null,
+    ENABLE_LEGACY_CONTEXT_CONNECTION: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

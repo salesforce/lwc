@@ -1,15 +1,11 @@
 import {
-    setContextKeys,
-    setTrustedContextSet,
-    __dangerous_do_not_use_addTrustedContext,
-} from 'lwc';
+    connectContext,
+    disconnectContext,
+    addTrustedContext,
+    initContext,
+} from '../../../../helpers/context';
 
-const connectContext = Symbol('connectContext');
-const disconnectContext = Symbol('disconnectContext');
-const trustedContext = new WeakSet();
-
-setTrustedContextSet(trustedContext);
-setContextKeys({ connectContext, disconnectContext });
+initContext();
 
 class MockContextSignal {
     connectProvidedComponent;
@@ -20,7 +16,7 @@ class MockContextSignal {
         this.value = initialValue;
         this.contextDefinition = contextDefinition;
         this.fromContext = fromContext;
-        __dangerous_do_not_use_addTrustedContext(this);
+        addTrustedContext(this);
     }
     [connectContext](runtimeAdapter) {
         this.connectProvidedComponent = runtimeAdapter.component;
@@ -42,7 +38,7 @@ class MockContextSignal {
 // This is a malformed context signal that does not implement the connectContext or disconnectContext methods
 class MockMalformedContextSignal {
     constructor() {
-        trustedContext.add(this);
+        addTrustedContext(this);
     }
 }
 
