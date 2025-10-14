@@ -18,7 +18,7 @@ export const LWCClassErrors = {
         url: '',
         level: DiagnosticLevel.Error,
     },
-};
+} as const;
 
 export const DecoratorErrors = {
     ADAPTER_SHOULD_BE_FIRST_PARAMETER: {

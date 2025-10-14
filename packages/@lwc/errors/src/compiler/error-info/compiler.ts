@@ -88,7 +88,7 @@ export const CompilerValidationErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-};
+} as const;
 
 export const ModuleResolutionErrors = {
     MODULE_RESOLUTION_ERROR: {
@@ -149,7 +149,7 @@ export const ModuleResolutionErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-};
+} as const;
 
 export const TransformerErrors = {
     CSS_TRANSFORMER_ERROR: {
@@ -207,4 +207,4 @@ export const TransformerErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-};
+} as const;

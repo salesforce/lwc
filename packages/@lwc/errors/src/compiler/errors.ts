@@ -6,12 +6,14 @@
  */
 import { templateString } from '../shared/utils';
 import { CompilerError, getCodeFromError, getFilename, getLocation } from './utils';
+import { getEffectiveErrorLevel } from './error-level-overrides';
 import type { LWCErrorInfo } from '../shared/types';
 import type { CompilerDiagnosticOrigin, CompilerDiagnostic } from './utils';
 
 export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
 
 export * from './error-info';
+export * from './error-level-overrides';
 
 // TODO [#1289]: Can be flattened now that we're down to only 2 properties
 export interface ErrorConfig {
@@ -47,13 +49,20 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  */
 export function generateCompilerDiagnostic(
     errorInfo: LWCErrorInfo,
-    config?: ErrorConfig
+    config?: ErrorConfig,
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
+    let { level } = errorInfo;
+
+    if (useStrictErrorOverride) {
+        level = getEffectiveErrorLevel(errorInfo.code, errorInfo.level);
+    }
+
     const diagnostic: CompilerDiagnostic = {
         code: errorInfo.code,
         message,
-        level: errorInfo.level,
+        level,
     };
 
     if (config && config.origin) {
@@ -74,10 +83,17 @@ export function generateCompilerDiagnostic(
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
-    config?: ErrorConfig
+    config?: ErrorConfig,
+    useStrictErrorOverride = false
 ): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
-    const error = new CompilerError(errorInfo.code, message);
+    const { code } = errorInfo;
+    let { level } = errorInfo;
+
+    if (useStrictErrorOverride) {
+        level = getEffectiveErrorLevel(code, level);
+    }
+    const error = new CompilerError(errorInfo.code, message, undefined, undefined, level);
 
     if (config) {
         error.filename = getFilename(config.origin);
@@ -110,9 +126,10 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
  * @returns The normalized compiler error.
  */
 export function normalizeToCompilerError(
-    errorInfo: LWCErrorInfo,
+    fallbackErrorInfo: LWCErrorInfo,
     error: any,
-    origin?: CompilerDiagnosticOrigin
+    origin?: CompilerDiagnosticOrigin,
+    useStrictErrorOverride = false
 ): CompilerError {
     if (error instanceof CompilerError) {
         if (origin) {
@@ -121,14 +138,20 @@ export function normalizeToCompilerError(
         }
         return error;
     }
-
-    const { code, message, filename, location } = convertErrorToDiagnostic(
+    const { code, message, filename, location, level } = convertErrorToDiagnostic(
         error,
-        errorInfo,
-        origin
+        fallbackErrorInfo,
+        origin,
+        useStrictErrorOverride
     );
 
-    const compilerError = new CompilerError(code, `${error.name}: ${message}`, filename, location);
+    const compilerError = new CompilerError(
+        code,
+        `${error.name}: ${message}`,
+        filename,
+        location,
+        level
+    );
     compilerError.stack = error.stack;
     return compilerError;
 }
@@ -160,14 +183,20 @@ export function normalizeToDiagnostic(
 function convertErrorToDiagnostic(
     error: any,
     fallbackErrorInfo: LWCErrorInfo,
-    origin?: CompilerDiagnosticOrigin
+    origin?: CompilerDiagnosticOrigin,
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
     const code = getCodeFromError(error) || fallbackErrorInfo.code;
     const message = error.lwcCode
         ? error.message
         : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
-    const level = error.level || fallbackErrorInfo.level;
+    let level = error.level || fallbackErrorInfo.level;
+
+    if (useStrictErrorOverride) {
+        level = getEffectiveErrorLevel(code, level);
+    }
+
     const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 

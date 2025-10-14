@@ -62,7 +62,8 @@ const visitors: Visitors = {
             if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
                 throw generateError(
                     path.node!,
-                    LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT
+                    LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
+                    is.literal(path.node?.source) ? String(path.node.source.value) : 'undefined'
                 );
             }
         }
