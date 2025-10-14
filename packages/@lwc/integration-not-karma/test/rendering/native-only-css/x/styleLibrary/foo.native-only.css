@@ -1,3 +1,5 @@
+/* Per-file compiler config, used in configs/plugins/serve-integration.js */
+/*!WTR {"nativeOnly": true}*/
 div {
     --foo: 'native';
 }
