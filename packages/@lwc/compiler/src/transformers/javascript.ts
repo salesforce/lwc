@@ -88,9 +88,12 @@ export default function scriptTransform(
         let transformerError = TransformerErrors.JS_TRANSFORMER_ERROR;
 
         // Sniff for a Babel decorator error, so we can provide a more helpful error message.
+        // The regex handles both plain text (@api) and ANSI-formatted ([33m@[39mapi) decorator names
         if (
             (e as any).code === 'BABEL_TRANSFORM_ERROR' &&
-            (e as any).message?.includes('Decorators are not enabled.')
+            (e as any).message?.includes('Decorators are not enabled.') &&
+            // eslint-disable-next-line no-control-regex -- Intentionally matching ANSI escape sequences
+            /@[\x1b[0-9;m]*(track|api|wire)\b/.test((e as any).message)
         ) {
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
