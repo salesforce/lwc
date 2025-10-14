@@ -512,7 +512,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         }
 
         const internals = attachInternals(elm);
-        if (supportsSyntheticElementInternals(ctor) && vm.shadowMode === ShadowMode.Synthetic) {
+        if (vm.shadowMode === ShadowMode.Synthetic && supportsSyntheticElementInternals(ctor)) {
             const handler: ProxyHandler<ElementInternals> = {
                 get(target: ElementInternals, prop: keyof ElementInternals) {
                     if (prop === 'shadowRoot') {

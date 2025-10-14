@@ -89,8 +89,8 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             // The client needs to trust the server that it's providing an actual known API version
             t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
         ];
-        // Only include enableSyntheticElementInternals if explicitly defined
-        if (typeof state.opts.enableSyntheticElementInternals === 'boolean') {
+        // Only include enableSyntheticElementInternals if set to true
+        if (state.opts.enableSyntheticElementInternals === true) {
             const supportsSyntheticElementInternals = t.booleanLiteral(
                 state.opts.enableSyntheticElementInternals || false
             );
