@@ -37,7 +37,7 @@ let stylesheetsToCssContent: WeakMap<Stylesheet, Set<string>> = /*@__PURE__@*/ n
 let cssContentToAbortControllers: Map<string, AbortController> = /*@__PURE__@*/ new Map();
 
 // Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+if (process.env.NODE_ENV === 'test-lwc-integration') {
     // Used to reset the global state between test runs
     (window as any).__lwcResetStylesheetCache = () => {
         stylesheetsToCssContent = new WeakMap();

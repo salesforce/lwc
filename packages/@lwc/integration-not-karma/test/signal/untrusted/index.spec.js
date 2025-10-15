@@ -3,6 +3,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Test from 'x/test';
 import { Signal } from 'x/signal';
 import { spyOn } from '@vitest/spy';
+import { resetTrustedSignals } from '../../../helpers/reset';
 
 const createElementSignalAndInsertIntoDom = async (object) => {
     const elm = createElement('x-test', { is: Test });
@@ -66,7 +67,7 @@ describe('signal reaction in lwc', () => {
     });
 
     describe('without trusted signal set', () => {
-        beforeAll(() => globalThis.__lwcResetTrustedSignalsSetForTest());
+        beforeAll(resetTrustedSignals);
         describe('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION is enabled', () => {
             beforeAll(() => setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', true));
             afterAll(() => setFeatureFlagForTest('ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION', false));

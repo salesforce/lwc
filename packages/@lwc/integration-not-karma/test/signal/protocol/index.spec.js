@@ -12,6 +12,7 @@ import Throws from 'x/throws';
 // In production the signal will come from a 3rd party library.
 import { Signal } from 'x/signal';
 import { jasmine } from '../../../helpers/jasmine.js';
+import { resetDOM } from '../../../helpers/reset.js';
 
 describe('signal protocol', () => {
     beforeAll(() => {
@@ -21,6 +22,8 @@ describe('signal protocol', () => {
     afterAll(() => {
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
     });
+
+    afterEach(resetDOM);
 
     describe('lwc engine subscribes template re-render callback when signal is bound to an LWC and used on a template', () => {
         [

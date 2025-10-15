@@ -2,6 +2,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
 import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
+import { resetFragmentCache } from '../../../helpers/reset.js';
 
 describe('legacy scope tokens', () => {
     [false, true].forEach((enableLegacyScopeTokens) => {
@@ -14,7 +15,7 @@ describe('legacy scope tokens', () => {
                 setFeatureFlagForTest('ENABLE_LEGACY_SCOPE_TOKENS', false);
                 // We keep a cache of parsed static fragments; these need to be reset
                 // since they can vary based on whether we use the legacy scope token or not.
-                window.__lwcResetFragmentCache();
+                resetFragmentCache();
             });
 
             function getAttributes(elm) {

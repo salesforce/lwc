@@ -1,10 +1,16 @@
 // This import ensures that the global `Mocha` object is present for mutation.
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
+import { setFeatureFlagForTest } from 'lwc';
 import { registerCustomMatchers } from './matchers/index.js';
 import { initSignals } from './signals.js';
+import { initContext } from './context.js';
 
 initSignals();
+initContext();
+
+// Enabling signals by default to increase coverage
+setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
 
 // allows using expect.extend instead of chai.use to extend plugins
 chai.use(JestExtend);
@@ -57,21 +63,4 @@ hijackGlobal('before', (before) => {
 hijackGlobal('after', (after) => {
     // Expose as an alias for migration
     globalThis.afterAll = after;
-});
-
-hijackGlobal('afterEach', (afterEach) => {
-    afterEach(() => {
-        // FIXME: Boost test speed by moving this to only files that need it
-        // Ensure the DOM is in a clean state
-        document.body.replaceChildren();
-        document.head.replaceChildren();
-        window.__lwcResetGlobalStylesheets();
-    });
-});
-
-hijackGlobal('beforeEach', (beforeEach) => {
-    beforeEach(() => {
-        // FIXME: Boost test speed by moving this to only files that need it
-        window.__lwcResetAlreadyLoggedMessages();
-    });
 });

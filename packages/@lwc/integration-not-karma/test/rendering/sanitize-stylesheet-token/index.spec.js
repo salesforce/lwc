@@ -3,6 +3,7 @@ import Component from 'x/component';
 import Scoping from 'x/scoping';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
+import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
 
 let caughtError;
 let logger;
@@ -49,9 +50,10 @@ props.forEach((prop) => {
                     setFeatureFlagForTest('ENABLE_LEGACY_SCOPE_TOKENS', false);
                     // We keep a cache of parsed static fragments; these need to be reset
                     // since they can vary based on whether we use the legacy scope token or not.
-                    window.__lwcResetFragmentCache();
+                    resetFragmentCache();
                     // Reset template object for clean state between tests
                     Ctor.resetTemplate();
+                    resetAlreadyLoggedMessages();
                 });
 
                 it('W-16614556 should not render arbitrary content via stylesheet token', async () => {

@@ -15,6 +15,7 @@ import libraryStyleV2 from 'x/libraryV2';
 import IdenticalStylesheets from 'shadow/identicalStylesheets';
 import IdenticalStylesheetsContainer from 'shadow/identicalStylesheetsContainer';
 import { extractDataIds } from '../../../helpers/utils.js';
+import { resetDOM, resetHotSwaps } from '../../../helpers/reset.js';
 
 function expectStyles(elm, styles) {
     const computed = getComputedStyle(elm);
@@ -26,9 +27,8 @@ function expectStyles(elm, styles) {
 // Swapping is only enabled in dev mode
 describe.skipIf(process.env.NODE_ENV === 'production')('style swapping', () => {
     afterEach(() => {
-        window.__lwcResetHotSwaps();
-        window.__lwcResetStylesheetCache();
-        window.__lwcResetGlobalStylesheets();
+        resetHotSwaps();
+        resetDOM();
     });
 
     const scenarios = [

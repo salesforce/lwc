@@ -2,12 +2,15 @@ import { createElement } from 'lwc';
 import XTest from 'x/test';
 import XWithLwcDomManual from 'x/withLwcDomManual';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { resetDOM } from '../../../helpers/reset.js';
 
 describe('should not provide access to elements inside shadow tree', () => {
     beforeEach(() => {
         const elm = createElement('x-test-document-properties', { is: XTest });
         document.body.appendChild(elm);
     });
+
+    afterEach(resetDOM);
 
     function testMethodReturnsEmptyNodeList(api, selector) {
         it(`document.${api}`, () => {
@@ -39,6 +42,8 @@ describe('should not provide access to elements inside shadow tree', () => {
 });
 
 describe('dynamic nodes', () => {
+    afterEach(resetDOM);
+
     it('if parent node has lwc:dom="manual", child node is not accessible', async () => {
         const elm = createElement('x-test-with-lwc-dom-manual', { is: XWithLwcDomManual });
         document.body.appendChild(elm);
@@ -84,6 +89,8 @@ describe('should provide access to elements outside shadow tree', () => {
                                <input name='in-the-shadow-${random}'>`;
         container.appendChild(document.createElement(`x-unique-tag-name-${random}`));
     });
+
+    afterEach(resetDOM);
 
     function testMethodReturnsNode(api, selector) {
         it(`document.${api}`, () => {

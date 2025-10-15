@@ -3,10 +3,9 @@ import { createElement } from 'lwc';
 import Parent from 'x/parent';
 import Host from 'x/host';
 import MultiTemplates from 'x/multiTemplates';
+import { resetDOM } from '../../../helpers/reset';
 
-afterEach(() => {
-    window.__lwcResetGlobalStylesheets();
-});
+afterEach(resetDOM);
 
 describe('shadow encapsulation', () => {
     it('should not style children elements', () => {

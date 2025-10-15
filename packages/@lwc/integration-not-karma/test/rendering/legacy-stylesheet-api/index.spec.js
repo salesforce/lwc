@@ -2,8 +2,10 @@ import { createElement } from 'lwc';
 import PatchesStylesheet from 'x/patchesStylesheet';
 import PatchesStylesheetOnStylesheet from 'x/patchesStylesheetOnStylesheet';
 import InspectStylesheets from 'x/inspectStylesheets';
+import { resetAlreadyLoggedMessages } from '../../../helpers/reset';
 
 describe('legacy undocumented stylesheetTokens API', () => {
+    afterEach(resetAlreadyLoggedMessages);
     it('can patch a template with stylesheets onto a template without stylesheets', () => {
         const elm = createElement('x-patches-stylesheet', { is: PatchesStylesheet });
         expect(() => {

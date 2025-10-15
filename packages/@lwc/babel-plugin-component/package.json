@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/babel-plugin-component",
-    "version": "8.22.3",
+    "version": "8.22.6",
     "description": "Babel plugin to transform a LWC module",
     "keywords": [
         "lwc"
@@ -47,8 +47,8 @@
     },
     "dependencies": {
         "@babel/helper-module-imports": "7.27.1",
-        "@lwc/errors": "8.22.3",
-        "@lwc/shared": "8.22.3",
+        "@lwc/errors": "8.22.6",
+        "@lwc/shared": "8.22.6",
         "line-column": "~1.0.2"
     },
     "devDependencies": {

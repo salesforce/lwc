@@ -99,7 +99,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
         // because the unit tests just create Reactive Observers on-the-fly.
         // Note we could explicitly target Vitest with `process.env.NODE_ENV === 'test'`, but then that would also
         // affect our downstream consumers' Jest/Vitest tests, and we don't want to throw an error just for a logger.
-        if (process.env.NODE_ENV === 'test-karma-lwc') {
+        if (process.env.NODE_ENV === 'test-lwc-integration') {
             throw new Error('The VM should always be defined except possibly in unit tests');
         }
     } else {

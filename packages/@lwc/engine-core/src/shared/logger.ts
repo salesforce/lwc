@@ -12,7 +12,7 @@ import type { VM } from '../framework/vm';
 const alreadyLoggedMessages = new Set();
 
 // Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+if (process.env.NODE_ENV === 'test-lwc-integration') {
     (window as any).__lwcResetAlreadyLoggedMessages = () => {
         alreadyLoggedMessages.clear();
     };

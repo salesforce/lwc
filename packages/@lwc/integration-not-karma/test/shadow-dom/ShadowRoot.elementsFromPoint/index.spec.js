@@ -2,6 +2,7 @@ import { createElement } from 'lwc';
 import Container from 'x/container';
 import Grandparent from 'x/grandparent';
 import { extractShadowDataIds } from '../../../helpers/utils.js';
+import { resetDOM } from '../../../helpers/reset.js';
 
 // The browsers disagree on whether elements _above_ the shadow root should also be included
 // when calling shadowRoot.elementsFromPoint(). Firefox only returns elements inside of the
@@ -42,6 +43,8 @@ function testElementsFromPoint(rootNode, x, y, expectedElements) {
 
     expect(elementsFromPoint).toEqual(expectedElements);
 }
+
+afterEach(resetDOM);
 
 // Safari <v11 doesn't support elementsFromPoint
 it('non-shadow example', () => {
