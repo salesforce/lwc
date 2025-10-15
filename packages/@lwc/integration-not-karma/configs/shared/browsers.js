@@ -30,7 +30,6 @@ export function getBrowsers(options) {
             sauceLabsLauncher({
                 browserName: 'safari',
                 browserVersion: 'latest',
-                platformName: 'macOS 15', // Update this with new Mac releases
             }),
             ...(options.LEGACY_BROWSERS
                 ? [
@@ -41,7 +40,7 @@ export function getBrowsers(options) {
                       sauceLabsLauncher({
                           browserName: 'safari',
                           browserVersion: 'latest-2',
-                          platformName: 'macOS 13', // Should be 2 behind latest
+                          platformName: 'Mac 13', // update with new releases
                       }),
                   ]
                 : []),
