@@ -20,10 +20,48 @@ env:
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
     # Test grouping is also somewhat arbitrary.
-
     # TODO: upload result artifacts
+
+    install-and-build:
+        runs-on: ubuntu-22.04
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+            - name: Cache yarn dependencies
+              uses: actions/cache/save@v4
+              with:
+                  path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+
+            - name: Cache LWC build
+              uses: actions/cache/save@v4
+              with:
+                  key: ${{ runner.os }}-${{ github.sha }}
+                  path: |
+                      .nx-cache
+                      packages/@lwc/*/dist
+                      playground/dist
+
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow)
+        needs: install-and-build
         strategy:
             matrix:
                 shadow_mode: [native, synthetic]
@@ -50,7 +88,7 @@ jobs:
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
             - name: Cache yarn dependencies
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -58,7 +96,7 @@ jobs:
                       ${{ runner.os }}-yarn-
 
             - name: Cache LWC build
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   key: ${{ runner.os }}-${{ github.sha }}
                   path: |
@@ -86,6 +124,7 @@ jobs:
 
     integration-tests-api-versions:
         name: Integration tests (${{ matrix.shadow_mode }} shadow) - API versions
+        needs: install-and-build
         strategy:
             matrix:
                 shadow_mode: [native, synthetic]
@@ -112,7 +151,7 @@ jobs:
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
             - name: Cache yarn dependencies
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -120,7 +159,7 @@ jobs:
                       ${{ runner.os }}-yarn-
 
             - name: Cache LWC build
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   key: ${{ runner.os }}-${{ github.sha }}
                   path: |
@@ -150,6 +189,7 @@ jobs:
     integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (singleton batch)
+        needs: install-and-build
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -172,7 +212,7 @@ jobs:
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
             - name: Cache yarn dependencies
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -180,7 +220,7 @@ jobs:
                       ${{ runner.os }}-yarn-
 
             - name: Cache LWC build
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   key: ${{ runner.os }}-${{ github.sha }}
                   path: |
@@ -212,6 +252,7 @@ jobs:
 
     hydration-tests-ssr-v2:
         name: Hydration tests (SSR v2)
+        needs: install-and-build
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -233,7 +274,7 @@ jobs:
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
             - name: Cache yarn dependencies
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -241,7 +282,7 @@ jobs:
                       ${{ runner.os }}-yarn-
 
             - name: Cache LWC build
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   key: ${{ runner.os }}-${{ github.sha }}
                   path: |
@@ -269,6 +310,7 @@ jobs:
 
     hydration-tests-engine-server:
         name: Hydration tests (engine-server)
+        needs: install-and-build
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -291,7 +333,7 @@ jobs:
               run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
             - name: Cache yarn dependencies
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
                   key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -299,7 +341,7 @@ jobs:
                       ${{ runner.os }}-yarn-
 
             - name: Cache LWC build
-              uses: actions/cache@v4
+              uses: actions/cache/restore@v4
               with:
                   key: ${{ runner.os }}-${{ github.sha }}
                   path: |
