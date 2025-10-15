@@ -1,10 +1,16 @@
 // This import ensures that the global `Mocha` object is present for mutation.
 import { JestAsymmetricMatchers, JestChaiExpect, JestExtend } from '@vitest/expect';
 import * as chai from 'chai';
+import { setFeatureFlagForTest } from 'lwc';
 import { registerCustomMatchers } from './matchers/index.js';
 import { initSignals } from './signals.js';
+import { initContext } from './context.js';
 
 initSignals();
+initContext();
+
+// Enabling signals by default to increase coverage
+setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
 
 // allows using expect.extend instead of chai.use to extend plugins
 chai.use(JestExtend);

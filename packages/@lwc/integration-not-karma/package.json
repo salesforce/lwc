@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-not-karma",
     "private": true,
-    "version": "8.22.4",
+    "version": "8.22.6",
     "type": "module",
     "scripts": {
         "build": "playwright install || true",
@@ -10,11 +10,11 @@
         "test:hydration": "web-test-runner --config configs/hydration.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "8.22.4",
-        "@lwc/engine-dom": "8.22.4",
-        "@lwc/engine-server": "8.22.4",
-        "@lwc/rollup-plugin": "8.22.4",
-        "@lwc/synthetic-shadow": "8.22.4",
+        "@lwc/compiler": "8.22.6",
+        "@lwc/engine-dom": "8.22.6",
+        "@lwc/engine-server": "8.22.6",
+        "@lwc/rollup-plugin": "8.22.6",
+        "@lwc/synthetic-shadow": "8.22.6",
         "@types/chai": "^5.2.2",
         "@types/jasmine": "^5.1.9",
         "@vitest/expect": "^3.2.4",
