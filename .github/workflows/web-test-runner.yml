@@ -18,6 +18,9 @@ env:
     NODE_VERSION: '20.19.4'
 
 jobs:
+    # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
+    # Test grouping is also somewhat arbitrary.
+
     # TODO: upload result artifacts
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow)
@@ -76,16 +79,73 @@ jobs:
 
             - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: yarn test
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
+            - run: NODE_ENV_FOR_TEST=production yarn test
+
+    integration-tests-api-versions:
+        name: Integration tests (${{ matrix.shadow_mode }} shadow) - API versions
+        strategy:
+            matrix:
+                shadow_mode: [native, synthetic]
+
+        runs-on: ubuntu-22.04
+        env:
+            SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
+            SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-not-karma
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Get yarn cache directory path
+              id: yarn-cache-dir-path
+              run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
+
+            - name: Cache yarn dependencies
+              uses: actions/cache@v4
+              with:
+                  path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+                  key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-yarn-
+
+            - name: Cache LWC build
+              uses: actions/cache@v4
+              with:
+                  key: ${{ runner.os }}-${{ github.sha }}
+                  path: |
+                      .nx-cache
+                      packages/@lwc/*/dist
+                      playground/dist
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
+
+            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: API_VERSION=58 yarn test
             - run: API_VERSION=59 yarn test
             - run: API_VERSION=60 yarn test
             - run: API_VERSION=61 yarn test
             - run: API_VERSION=62 yarn test
             - run: API_VERSION=66 yarn test
-            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
-            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
-            - run: NODE_ENV_FOR_TEST=production yarn test
 
     integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
