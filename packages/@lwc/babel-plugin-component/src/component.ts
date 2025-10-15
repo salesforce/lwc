@@ -91,13 +91,10 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         ];
         // Only include enableSyntheticElementInternals if set to true
         if (state.opts.enableSyntheticElementInternals === true) {
-            const supportsSyntheticElementInternals = t.booleanLiteral(
-                state.opts.enableSyntheticElementInternals || false
-            );
             properties.push(
                 t.objectProperty(
                     t.identifier(SYNTHETIC_ELEMENT_INTERNALS_KEY),
-                    supportsSyntheticElementInternals
+                    t.booleanLiteral(true)
                 )
             );
         }
