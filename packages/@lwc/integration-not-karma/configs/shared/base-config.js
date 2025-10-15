@@ -37,14 +37,16 @@ export default (options) => {
         NODE_ENV: options.NODE_ENV_FOR_TEST,
     });
 
+    const browsers = getBrowsers(options);
+
     return {
-        browsers: getBrowsers(options),
+        browsers,
         browserLogs: false,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
         concurrency: options.CI ? 6 : 1,
-        concurrentBrowsers: 3,
+        concurrentBrowsers: browsers.length,
         nodeResolve: true,
         rootDir: join(import.meta.dirname, '../..'),
         plugins: [
