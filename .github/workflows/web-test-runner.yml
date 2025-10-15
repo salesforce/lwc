@@ -24,7 +24,6 @@ jobs:
 
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow)
-        needs: install-and-build
         strategy:
             matrix:
                 shadow_mode: [native, synthetic]
@@ -66,7 +65,6 @@ jobs:
 
     integration-tests-api-versions:
         name: Integration tests (${{ matrix.shadow_mode }} shadow) - API versions
-        needs: install-and-build
         strategy:
             matrix:
                 shadow_mode: [native, synthetic]
@@ -110,7 +108,6 @@ jobs:
     integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (singleton batch)
-        needs: install-and-build
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -152,7 +149,6 @@ jobs:
 
     hydration-tests-ssr-v2:
         name: Hydration tests (SSR v2)
-        needs: install-and-build
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
@@ -189,7 +185,6 @@ jobs:
 
     hydration-tests-engine-server:
         name: Hydration tests (engine-server)
-        needs: install-and-build
         runs-on: ubuntu-22.04
         env:
             SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
