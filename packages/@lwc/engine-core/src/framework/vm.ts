@@ -31,6 +31,7 @@ import {
     getTemplateReactiveObserver,
     getComponentAPIVersion,
     resetTemplateObserverAndUnsubscribe,
+    supportsSyntheticElementInternals,
 } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
@@ -972,9 +973,17 @@ export function forceRehydration(vm: VM) {
 }
 
 export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void, args?: any[]) {
-    const { renderMode, shadowMode } = vm;
+    const {
+        renderMode,
+        shadowMode,
+        def: { ctor },
+    } = vm;
 
-    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
+    if (
+        shadowMode === ShadowMode.Synthetic &&
+        renderMode !== RenderMode.Light &&
+        !supportsSyntheticElementInternals(ctor)
+    ) {
         throw new Error(
             'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
         );
