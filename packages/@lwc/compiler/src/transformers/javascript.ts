@@ -33,6 +33,7 @@ export default function scriptTransform(
 ): TransformResult {
     const {
         isExplicitImport,
+        enableSyntheticElementInternals,
         // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
@@ -46,6 +47,7 @@ export default function scriptTransform(
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
         isExplicitImport,
         dynamicImports,
+        enableSyntheticElementInternals,
         namespace,
         name,
         instrumentation,

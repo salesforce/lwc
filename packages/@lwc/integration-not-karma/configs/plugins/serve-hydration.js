@@ -28,6 +28,7 @@ async function compileModule(input, targetSSR, format) {
                     loader: fileURLToPath(new URL('../../helpers/loader.js', import.meta.url)),
                     strict: true,
                 },
+                enableSyntheticElementInternals: true,
                 enableDynamicComponents: true,
                 enableLwcOn: true,
                 enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
