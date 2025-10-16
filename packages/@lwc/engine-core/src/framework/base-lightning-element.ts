@@ -529,6 +529,8 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
                 },
             };
             return new Proxy(internals, handler);
+        } else if (vm.shadowMode === ShadowMode.Synthetic) {
+            throw new Error('attachInternals API is not supported in synthetic shadow.');
         }
         return internals;
     },
