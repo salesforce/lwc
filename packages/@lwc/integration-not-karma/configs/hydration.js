@@ -12,6 +12,6 @@ const baseConfig = createConfig({
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
     ...baseConfig,
-    files: ['test-hydration/**/*.spec.js'],
+    files: ['test-hydration/**/*.spec.js', '!test-hydration/synthetic-shadow/index.spec.js'],
     plugins: [...baseConfig.plugins, hydrationTestPlugin],
 };

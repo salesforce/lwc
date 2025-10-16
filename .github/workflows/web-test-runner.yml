@@ -1,4 +1,4 @@
-name: Run Web Test Runner integration tests
+name: Web Test Runner
 
 on:
     push:
