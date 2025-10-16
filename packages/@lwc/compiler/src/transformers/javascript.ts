@@ -91,7 +91,8 @@ export default function scriptTransform(
         if (
             (e as any).code === 'BABEL_TRANSFORM_ERROR' &&
             (e as any).message?.includes('Decorators are not enabled.') &&
-            /(track|api|wire)/.test((e as any).message) // sniff for track/api/wire
+            // eslint-disable-next-line no-control-regex
+            /(?:\b|\x1b\S*?)(api|wire|track)\b/.test((e as any).message) // sniff for track/api/wire
         ) {
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
