@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { DiagnosticLevel } from '../../shared/types';
+import { DiagnosticLevel, type LWCErrorInfo } from '../../shared/types';
 
 /*
  * For the next available error code, reference (and update!) the value in ./index.ts
@@ -17,4 +17,4 @@ export const SsrCompilerErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-} as const;
+} as const satisfies Record<string, LWCErrorInfo>;

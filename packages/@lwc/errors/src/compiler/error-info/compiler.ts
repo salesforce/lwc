@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { DiagnosticLevel } from '../../shared/types';
+import { DiagnosticLevel, type LWCErrorInfo } from '../../shared/types';
 
 /*
  * For the next available error code, reference (and update!) the value in ./index.ts
@@ -14,6 +14,7 @@ export const GENERIC_COMPILER_ERROR = {
     code: 1001,
     message: 'Unexpected compilation error: {0}',
     level: DiagnosticLevel.Error,
+    strictLevel: DiagnosticLevel.Fatal,
     url: '',
 };
 
@@ -88,13 +89,14 @@ export const CompilerValidationErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-} as const;
+} as const satisfies Record<string, LWCErrorInfo>;
 
 export const ModuleResolutionErrors = {
     MODULE_RESOLUTION_ERROR: {
         code: 1002,
         message: 'Error in module resolution: {0}',
         level: DiagnosticLevel.Warning,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -102,6 +104,7 @@ export const ModuleResolutionErrors = {
         code: 1010,
         message: 'Failed to resolve entry for module "{0}".',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -110,6 +113,7 @@ export const ModuleResolutionErrors = {
         message:
             'Failed to resolve import "{0}" from "{1}". Please add "{2}" file to the component folder.',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -117,6 +121,7 @@ export const ModuleResolutionErrors = {
         code: 1004,
         message: 'No such file {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -149,19 +154,21 @@ export const ModuleResolutionErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-} as const;
+} as const satisfies Record<string, LWCErrorInfo>;
 
 export const TransformerErrors = {
     CSS_TRANSFORMER_ERROR: {
         code: 1009,
         message: '{0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
     CSS_IN_HTML_ERROR: {
         code: 1026,
         message: 'An error occurred parsing inline CSS. {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -169,6 +176,7 @@ export const TransformerErrors = {
         code: 1008,
         message: '{0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -176,6 +184,7 @@ export const TransformerErrors = {
         code: 1027,
         message: 'Expect a string for id. Received {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -183,6 +192,7 @@ export const TransformerErrors = {
         code: 1006,
         message: 'Expect a string for source. Received {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -190,6 +200,7 @@ export const TransformerErrors = {
         code: 1007,
         message: '{0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -197,6 +208,7 @@ export const TransformerErrors = {
         code: 1005,
         message: 'No available transformer for "{0}"',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -207,4 +219,4 @@ export const TransformerErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-} as const;
+} as const satisfies Record<string, LWCErrorInfo>;
