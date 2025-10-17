@@ -31,7 +31,7 @@ jobs:
 
         runs-on: ${{ env.RUNS_ON }}
         env:
-            SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-integration-1
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-integration-${{ matrix.shadow_mode }}-1
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
         defaults:
             run:
@@ -72,7 +72,7 @@ jobs:
 
         runs-on: ${{ env.RUNS_ON }}
         env:
-            SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-integration-2
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-integration-${{ matrix.shadow_mode }}-2
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
         defaults:
             run:
@@ -111,7 +111,7 @@ jobs:
         name: Integration tests (singleton batch)
         runs-on: ${{ env.RUNS_ON }}
         env:
-            SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-integration-3
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-integration-${{ matrix.shadow_mode }}-3
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
         defaults:
             run:
@@ -152,7 +152,7 @@ jobs:
         name: Hydration tests (SSR v2)
         runs-on: ${{ env.RUNS_ON }}
         env:
-            SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-hydration-1
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-hydration-1
         defaults:
             run:
                 working-directory: ./packages/@lwc/integration-not-karma
@@ -188,7 +188,7 @@ jobs:
         name: Hydration tests (engine-server)
         runs-on: ${{ env.RUNS_ON }}
         env:
-            SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-hydration-2
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-hydration-2
             ENGINE_SERVER: 1
         defaults:
             run:
