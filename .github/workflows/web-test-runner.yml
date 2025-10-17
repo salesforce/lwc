@@ -11,11 +11,12 @@ on:
     pull_request:
 
 env:
-    SAUCE_USERNAME: ${{secrets.SAUCE_USERNAME}}
-    SAUCE_ACCESS_KEY: ${{secrets.SAUCE_ACCESS_KEY}}
-    GITHUB_RUN_ID: ${{github.run_id}}
+    SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+    SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
+    GITHUB_RUN_ID: ${{ github.run_id }}
     COVERAGE: '1'
     NODE_VERSION: '20.19.4'
+    RUNS_ON: ubuntu-22.04
 
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
@@ -28,7 +29,7 @@ jobs:
             matrix:
                 shadow_mode: [native, synthetic]
 
-        runs-on: ubuntu-22.04
+        runs-on: ${{ env.RUNS_ON }}
         env:
             SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-integration-1
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
@@ -69,7 +70,7 @@ jobs:
             matrix:
                 shadow_mode: [native, synthetic]
 
-        runs-on: ubuntu-22.04
+        runs-on: ${{ env.RUNS_ON }}
         env:
             SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-integration-2
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
@@ -108,7 +109,7 @@ jobs:
     integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (singleton batch)
-        runs-on: ubuntu-22.04
+        runs-on: ${{ env.RUNS_ON }}
         env:
             SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-integration-3
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
@@ -149,7 +150,7 @@ jobs:
 
     hydration-tests-ssr-v2:
         name: Hydration tests (SSR v2)
-        runs-on: ubuntu-22.04
+        runs-on: ${{ env.RUNS_ON }}
         env:
             SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-hydration-1
         defaults:
@@ -185,7 +186,7 @@ jobs:
 
     hydration-tests-engine-server:
         name: Hydration tests (engine-server)
-        runs-on: ubuntu-22.04
+        runs-on: ${{ env.RUNS_ON }}
         env:
             SAUCE_TUNNEL_ID: github-actions-wtr-${{github.run_id}}-hydration-2
             ENGINE_SERVER: 1
