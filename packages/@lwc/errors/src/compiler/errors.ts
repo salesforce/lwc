@@ -55,10 +55,7 @@ export function generateCompilerDiagnostic(
     const diagnostic: CompilerDiagnostic = {
         code: errorInfo.code,
         message,
-        level:
-            useStrictErrorOverride && errorInfo.strictLevel !== undefined
-                ? errorInfo.strictLevel
-                : errorInfo.level,
+        level: getEffectiveErrorLevel(errorInfo, useStrictErrorOverride),
     };
 
     if (config && config.origin) {
@@ -83,10 +80,7 @@ export function generateCompilerError(
     useStrictErrorOverride = false
 ): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
-    const level =
-        useStrictErrorOverride && errorInfo.strictLevel !== undefined
-            ? errorInfo.strictLevel
-            : errorInfo.level;
+    const level = getEffectiveErrorLevel(errorInfo, useStrictErrorOverride);
     const error = new CompilerError(errorInfo.code, message, undefined, undefined, level);
 
     if (config) {
@@ -150,16 +144,19 @@ export function normalizeToCompilerError(
     return compilerError;
 }
 
+/**
+ * Determines the effective error level based on strict mode override settings.
+ * @param errorInfo The error information containing level and strictLevel properties
+ * @param useStrictErrorOverride Whether to use strict error level override
+ * @returns The effective diagnostic level to use
+ */
 function getEffectiveErrorLevel(
-    error: any,
-    fallbackError: LWCErrorInfo,
-    useStrictErrorOverride = false
+    errorInfo: LWCErrorInfo,
+    useStrictErrorOverride: boolean
 ): DiagnosticLevel {
-    if (useStrictErrorOverride) {
-        return error.strictLevel ?? error.level ?? fallbackError.strictLevel ?? fallbackError.level;
-    }
-
-    return error.level ?? fallbackError.level;
+    return useStrictErrorOverride && errorInfo.strictLevel !== undefined
+        ? errorInfo.strictLevel
+        : errorInfo.level;
 }
 
 /**
@@ -198,7 +195,10 @@ function convertErrorToDiagnostic(
         ? error.message
         : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
-    const level = getEffectiveErrorLevel(error, fallbackErrorInfo, useStrictErrorOverride);
+    const level = getEffectiveErrorLevel(
+        'level' in error ? error : fallbackErrorInfo,
+        useStrictErrorOverride
+    );
     const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 
