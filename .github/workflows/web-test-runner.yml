@@ -1,4 +1,4 @@
-name: Run Web Test Runner integration tests
+name: Web Test Runner
 
 on:
     push:
@@ -18,8 +18,10 @@ env:
     NODE_VERSION: '20.19.4'
 
 jobs:
+    # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
+    # Test grouping is also somewhat arbitrary.
     # TODO: upload result artifacts
-    # TODO: make it saucy 🥫
+
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow)
         strategy:
@@ -28,7 +30,7 @@ jobs:
 
         runs-on: ubuntu-22.04
         env:
-            SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-integration-${{ matrix.shadow_mode }}-1
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
         defaults:
             run:
@@ -47,30 +49,68 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            # - uses: saucelabs/sauce-connect-action@v3.0.0
-            #   with:
-            #       username: ${{ secrets.SAUCE_USERNAME }}
-            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-            #       region: us
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
+            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: yarn test
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
+            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
+            - run: NODE_ENV_FOR_TEST=production yarn test
+
+    integration-tests-api-versions:
+        name: Integration tests (${{ matrix.shadow_mode }} shadow) - API versions
+        strategy:
+            matrix:
+                shadow_mode: [native, synthetic]
+
+        runs-on: ubuntu-22.04
+        env:
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-integration-${{ matrix.shadow_mode }}-2
+            SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-not-karma
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
+
+            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: API_VERSION=58 yarn test
             - run: API_VERSION=59 yarn test
             - run: API_VERSION=60 yarn test
             - run: API_VERSION=61 yarn test
             - run: API_VERSION=62 yarn test
-            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test || true
-            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
-            - run: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1 yarn test
-            - run: NODE_ENV_FOR_TEST=production yarn test
+            - run: API_VERSION=66 yarn test
 
     integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (singleton batch)
         runs-on: ubuntu-22.04
         env:
-            SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-integration-${{ matrix.shadow_mode }}-3
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
         defaults:
             run:
@@ -89,13 +129,14 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            # - uses: saucelabs/sauce-connect-action@v3.0.0
-            #   with:
-            #       username: ${{ secrets.SAUCE_USERNAME }}
-            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-            #       region: us
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
 
+            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             # Synthetic shadow only
             - run: LEGACY_BROWSERS=1 yarn test || true
             - run: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1 yarn test
@@ -106,10 +147,11 @@ jobs:
             - run: SHADOW_MODE_OVERRIDE=native DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 yarn test
             - run: SHADOW_MODE_OVERRIDE=native DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test
 
-    hydration-tests:
+    hydration-tests-ssr-v2:
+        name: Hydration tests (SSR v2)
         runs-on: ubuntu-22.04
         env:
-            SAUCE_TUNNEL_ID: github-action-tunnel-wtr-${{github.run_id}}-group-1
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-hydration-1
         defaults:
             run:
                 working-directory: ./packages/@lwc/integration-not-karma
@@ -127,21 +169,56 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            # - uses: saucelabs/sauce-connect-action@v3.0.0
-            #   with:
-            #       username: ${{ secrets.SAUCE_USERNAME }}
-            #       accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-            #       tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
-            #       region: us
-            - run: ENGINE_SERVER=1 yarn test:hydration
-            - run: ENGINE_SERVER=1 SHADOW_MODE_OVERRIDE=synthetic yarn test:hydration
-            - run: ENGINE_SERVER=1 NODE_ENV_FOR_TEST=production yarn test:hydration
-            - run: ENGINE_SERVER=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test:hydration
-            - run: ENGINE_SERVER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test:hydration
-            - run: ENGINE_SERVER=1 DISABLE_DETACHED_REHYDRATION=1 yarn test:hydration
-            - run: ENGINE_SERVER=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn test:hydration
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
+
+            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: yarn test:hydration
             - run: SHADOW_MODE_OVERRIDE=synthetic yarn test:hydration
             - run: NODE_ENV_FOR_TEST=production yarn test:hydration
             - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test:hydration
             - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test:hydration
+
+    hydration-tests-engine-server:
+        name: Hydration tests (engine-server)
+        runs-on: ubuntu-22.04
+        env:
+            SAUCE_TUNNEL_ID: gha-${{github.run_id}}-wtr-hydration-2
+            ENGINE_SERVER: 1
+        defaults:
+            run:
+                working-directory: ./packages/@lwc/integration-not-karma
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ env.SAUCE_TUNNEL_ID }}
+                  region: us
+
+            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
+            # NOTE: All tests have ENGINE_SERVER=1 already set
+            - run: yarn test:hydration
+            - run: SHADOW_MODE_OVERRIDE=synthetic yarn test:hydration
+            - run: NODE_ENV_FOR_TEST=production yarn test:hydration
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 yarn test:hydration
+            - run: DISABLE_STATIC_CONTENT_OPTIMIZATION=1 yarn test:hydration
+            - run: DISABLE_DETACHED_REHYDRATION=1 yarn test:hydration
+            - run: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 DISABLE_DETACHED_REHYDRATION=1 yarn test:hydration

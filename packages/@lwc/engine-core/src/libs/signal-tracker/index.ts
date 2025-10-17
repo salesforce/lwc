@@ -45,6 +45,19 @@ export function unsubscribeFromSignals(target: object) {
 type CallbackFunction = () => void;
 
 /**
+ * A normalized string representation of an error, because browsers behave differently
+ */
+const errorWithStack = (err: unknown): string => {
+    if (typeof err !== 'object' || err === null) {
+        return String(err);
+    }
+    const stack = 'stack' in err ? String(err.stack) : '';
+    const message = 'message' in err ? String(err.message) : '';
+    const constructor = err.constructor.name;
+    return stack.includes(message) ? stack : `${constructor}: ${message}\n${stack}`;
+};
+
+/**
  * This class is used to keep track of the signals associated to a given object.
  * It is used to prevent the LWC engine from subscribing duplicate callbacks multiple times
  * to the same signal. Additionally, it keeps track of all signal unsubscribe callbacks, handles invoking
@@ -67,9 +80,9 @@ class SignalTracker {
             }
         } catch (err: any) {
             logWarnOnce(
-                `Attempted to subscribe to an object that has the shape of a signal but received the following error: ${
-                    err?.stack ?? err
-                }`
+                `Attempted to subscribe to an object that has the shape of a signal but received the following error: ${errorWithStack(
+                    err
+                )}`
             );
         }
     }
@@ -79,9 +92,9 @@ class SignalTracker {
             this.signalToUnsubscribeMap.forEach((unsubscribe) => unsubscribe());
         } catch (err: any) {
             logWarnOnce(
-                `Attempted to call a signal's unsubscribe callback but received the following error: ${
-                    err?.stack ?? err
-                }`
+                `Attempted to call a signal's unsubscribe callback but received the following error: ${errorWithStack(
+                    err
+                )}`
             );
         }
     }

@@ -11,7 +11,7 @@ import Throws from 'x/throws';
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
 import { Signal } from 'x/signal';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { resetDOM } from '../../../helpers/reset.js';
 
 describe('signal protocol', () => {
@@ -190,7 +190,7 @@ describe('signal protocol', () => {
 
     it('does not subscribe if the signal shape is incorrect', async () => {
         const elm = createElement('x-child', { is: Child });
-        const subscribe = jasmine.createSpy();
+        const subscribe = mockFn();
         // Note the signals property is value's' and not value
         const signal = { values: 'initial value', subscribe };
         elm.signal = signal;
@@ -202,7 +202,7 @@ describe('signal protocol', () => {
 
     it('does not subscribe if the signal is not added as trusted signal', async () => {
         const elm = createElement('x-child', { is: Child });
-        const subscribe = jasmine.createSpy();
+        const subscribe = mockFn();
         // Note this follows the shape of the signal implementation
         // but it's not added as a trusted signal (add using lwc.addTrustedSignal)
         const signal = {

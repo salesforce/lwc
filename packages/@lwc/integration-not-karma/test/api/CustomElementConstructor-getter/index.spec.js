@@ -34,7 +34,9 @@ it('CustomElementConstructor cannot be `new`ed before being defined', () => {
         new UndefinedComponent.CustomElementConstructor();
     };
     expect(func).toThrowError(TypeError);
-    expect(func).toThrowError(/(Illegal constructor|does not define a custom element)/);
+    expect(func).toThrowError(
+        /(Illegal constructor|does not define a custom element|is not a valid custom element constructor)/
+    );
 });
 
 it('CustomElementConstructor can be `new`ed after being defined', () => {
