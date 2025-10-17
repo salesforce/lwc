@@ -23,27 +23,27 @@ export function getBrowsers(options) {
                 browserName: 'chrome',
                 browserVersion: 'latest',
             }),
-            sauceLabsLauncher({
-                browserName: 'firefox',
-                browserVersion: 'latest',
-            }),
-            sauceLabsLauncher({
-                browserName: 'safari',
-                browserVersion: 'latest',
-            }),
-            ...(options.LEGACY_BROWSERS
-                ? [
-                      sauceLabsLauncher({
-                          browserName: 'chrome',
-                          browserVersion: 'latest-2',
-                      }),
-                      sauceLabsLauncher({
-                          browserName: 'safari',
-                          browserVersion: 'latest-2',
-                          platformName: 'Mac 13', // update with new releases
-                      }),
-                  ]
-                : []),
+            // sauceLabsLauncher({
+            //     browserName: 'firefox',
+            //     browserVersion: 'latest',
+            // }),
+            // sauceLabsLauncher({
+            //     browserName: 'safari',
+            //     browserVersion: 'latest',
+            // }),
+            // ...(options.LEGACY_BROWSERS
+            //     ? [
+            //           sauceLabsLauncher({
+            //               browserName: 'chrome',
+            //               browserVersion: 'latest-2',
+            //           }),
+            //           sauceLabsLauncher({
+            //               browserName: 'safari',
+            //               browserVersion: 'latest-2',
+            //               platformName: 'Mac 13', // update with new releases
+            //           }),
+            //       ]
+            //     : []),
         ];
     } else {
         return [
