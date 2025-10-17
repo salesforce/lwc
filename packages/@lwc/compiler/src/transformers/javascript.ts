@@ -11,7 +11,7 @@ import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties
 import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { normalizeToCompilerError, TransformerErrors, type LWCErrorInfo } from '@lwc/errors';
 import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 
 import type { NormalizedTransformOptions } from '../options';
@@ -87,7 +87,7 @@ export default function scriptTransform(
             plugins,
         })!;
     } catch (e) {
-        let transformerError = TransformerErrors.JS_TRANSFORMER_ERROR;
+        let transformerError: LWCErrorInfo = TransformerErrors.JS_TRANSFORMER_ERROR;
 
         // Sniff for a Babel decorator error, so we can provide a more helpful error message.
         if (
