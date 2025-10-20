@@ -6,7 +6,7 @@ export function getBrowsers(options) {
     if (options.SAUCE) {
         if (!options.SAUCE_USERNAME || !options.SAUCE_ACCESS_KEY || !options.SAUCE_TUNNEL_ID) {
             throw new Error(
-                `SAUCE_USERNAME, SAUCE_ACCESS_KEY, and SAUCE_TUNNEL_ID must be configured to use SauceLabs.`
+                'SAUCE_USERNAME, SAUCE_ACCESS_KEY, and SAUCE_TUNNEL_ID must be configured to use SauceLabs.'
             );
         }
         const sauceLabsLauncher = createSauceLabsLauncher(
