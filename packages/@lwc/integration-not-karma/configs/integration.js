@@ -16,6 +16,7 @@ export default {
     files: ['test/**/*.spec.js', '!test/custom-elements/index.spec.js'],
     plugins: [
         ...baseConfig.plugins,
+        // Only used for the `sanitizeAttribute` test
         importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
         testPlugin,
     ],

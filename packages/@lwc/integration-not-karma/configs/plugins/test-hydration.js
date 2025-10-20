@@ -86,13 +86,20 @@ export function runTest(configPath, componentPath, ssrRendered) {
             target = container.querySelector(selector);
             await testConfig.test(target, snapshot, consoleSpy.calls);
         } else if (testConfig.advancedTest) {
-            await testConfig.advancedTest(target, {
-                Component,
-                hydrateComponent: LWC.hydrateComponent.bind(LWC),
-                consoleSpy,
-                container,
-                selector,
-            });
+            const hydrateComponent = spyOn(LWC, 'hydrateComponent');
+            try {
+                await testConfig.advancedTest(target, {
+                    Component,
+                    hydrateComponent,
+                    consoleSpy,
+                    container,
+                    selector,
+                });
+                // Sanity check: if we've never hydrated then we haven't set up the test correctly
+                expect(hydrateComponent).toHaveBeenCalled();
+            } finally {
+                hydrateComponent.mockRestore();
+            }
         } else {
             throw new Error(`Missing test or advancedTest function in ${configPath}.`);
         }
