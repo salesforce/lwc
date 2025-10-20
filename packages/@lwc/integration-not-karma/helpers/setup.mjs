@@ -5,23 +5,6 @@ import * as LWC from 'lwc';
 import { spyOn, fn } from '@vitest/spy';
 import { registerCustomMatchers } from './matchers/index.mjs';
 import * as TestUtils from './utils.mjs';
-//import { initContext } from './context.js';
-
-//initContext();
-
-// Enabling signals by default to increase coverage
-//LWC.setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
-
-export const connectContext = Symbol.for('connectContext');
-export const disconnectContext = Symbol.for('disconnectContext');
-export const trustedContext = new WeakSet();
-
-try {
-    LWC.setTrustedContextSet(trustedContext);
-    LWC.setContextKeys({ connectContext, disconnectContext });
-} catch {
-    // Context already initialized, ignore
-}
 
 // FIXME: As a relic of the Karma tests, some test files rely on the global object,
 // rather than importing from `test-utils`.

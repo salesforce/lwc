@@ -1,6 +1,13 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, setTrustedContextSet, setContextKeys } from 'lwc';
 import templateWithChild from './withChild.html';
 import emptyTemplate from './empty.html';
+
+export const connectContext = Symbol.for('connectContext');
+export const disconnectContext = Symbol.for('disconnectContext');
+export const trustedContext = new WeakSet();
+
+setTrustedContextSet(trustedContext);
+setContextKeys({ connectContext, disconnectContext });
 
 export default class Test extends LightningElement {
     template = templateWithChild;
