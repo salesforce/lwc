@@ -6,7 +6,6 @@
  */
 import {
     isUndefined,
-    getPrototypeOf,
     keys,
     getContextKeys,
     ArrayFilter,
@@ -14,6 +13,7 @@ import {
     isTrustedContext,
     type ContextProvidedCallback,
     type ContextBinding as IContextBinding,
+    getPrototypeOf,
 } from '@lwc/shared';
 import { type VM } from '../vm';
 import { logWarnOnce } from '../../shared/logger';
@@ -81,6 +81,38 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
 }
 
 export function connectContext(vm: VM) {
+    /**
+     * If ENABLE_LEGACY_CONTEXT_CONNECTION is true, enumerates directly on the component
+     * which can result in the component lifecycle observing properties that are not typically observed.
+     * See PR #5536 for more information.
+     */
+    if (lwcRuntimeFlags.ENABLE_LEGACY_CONTEXT_CONNECTION) {
+        connect(vm, keys(getPrototypeOf(vm.component)), vm.component);
+    } else {
+        // Non-decorated objects
+        connect(vm, keys(vm.cmpFields), vm.cmpFields);
+        // Decorated objects like @api context
+        connect(vm, keys(vm.cmpProps), vm.cmpProps);
+    }
+}
+
+export function disconnectContext(vm: VM) {
+    /**
+     * If ENABLE_LEGACY_CONTEXT_CONNECTION is true, enumerates directly on the component
+     * which can result in the component lifecycle observing properties that are not typically observed.
+     * See PR #5536 for more information.
+     */
+    if (lwcRuntimeFlags.ENABLE_LEGACY_CONTEXT_CONNECTION) {
+        connect(vm, keys(getPrototypeOf(vm.component)), vm.component);
+    } else {
+        // Non-decorated objects
+        disconnect(vm, keys(vm.cmpFields), vm.cmpFields);
+        // Decorated objects like @api context
+        disconnect(vm, keys(vm.cmpProps), vm.cmpProps);
+    }
+}
+
+function connect(vm: VM, enumerableKeys: string[], contextContainer: any) {
     const contextKeys = getContextKeys();
 
     if (isUndefined(contextKeys)) {
@@ -90,9 +122,8 @@ export function connectContext(vm: VM) {
     const { connectContext } = contextKeys;
     const { component } = vm;
 
-    const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext((component as any)[enumerableKey])
+        isTrustedContext(contextContainer[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {
@@ -103,7 +134,7 @@ export function connectContext(vm: VM) {
 
     try {
         for (let i = 0; i < contextfulKeys.length; i++) {
-            (component as any)[contextfulKeys[i]][connectContext](
+            contextContainer[contextfulKeys[i]][connectContext](
                 new ContextBinding(vm, component, providedContextVarieties)
             );
         }
@@ -116,7 +147,7 @@ export function connectContext(vm: VM) {
     }
 }
 
-export function disconnectContext(vm: VM) {
+function disconnect(vm: VM, enumerableKeys: string[], contextContainer: any) {
     const contextKeys = getContextKeys();
 
     if (!contextKeys) {
@@ -126,9 +157,8 @@ export function disconnectContext(vm: VM) {
     const { disconnectContext } = contextKeys;
     const { component } = vm;
 
-    const enumerableKeys = keys(getPrototypeOf(component));
     const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
-        isTrustedContext((component as any)[enumerableKey])
+        isTrustedContext(contextContainer[enumerableKey])
     );
 
     if (contextfulKeys.length === 0) {
@@ -137,7 +167,7 @@ export function disconnectContext(vm: VM) {
 
     try {
         for (let i = 0; i < contextfulKeys.length; i++) {
-            (component as any)[contextfulKeys[i]][disconnectContext](component);
+            contextContainer[contextfulKeys[i]][disconnectContext](component);
         }
     } catch (err: any) {
         logWarnOnce(
