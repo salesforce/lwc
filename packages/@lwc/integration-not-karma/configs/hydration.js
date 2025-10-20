@@ -1,5 +1,5 @@
 import * as options from '../helpers/options.js';
-import createConfig from './base.js';
+import createConfig from './shared/base-config.js';
 import hydrationTestPlugin from './plugins/serve-hydration.js';
 
 const SHADOW_MODE = options.SHADOW_MODE_OVERRIDE ?? 'native';
@@ -12,6 +12,6 @@ const baseConfig = createConfig({
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
     ...baseConfig,
-    files: ['test-hydration/**/*.spec.js'],
+    files: ['test-hydration/**/*.spec.js', '!test-hydration/synthetic-shadow/index.spec.js'],
     plugins: [...baseConfig.plugins, hydrationTestPlugin],
 };

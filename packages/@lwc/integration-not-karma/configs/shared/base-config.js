@@ -1,6 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
-import { resolvePathOutsideRoot } from '../helpers/utils.js';
+import { resolvePathOutsideRoot } from '../../helpers/utils.js';
+import { getBrowsers } from './browsers.js';
 
 /**
  * We want to convert from parsed options (true/false) to a `process.env` with only strings.
@@ -18,7 +19,7 @@ const envify = (obj) => {
 const pluck = (obj, keys) => Object.fromEntries(keys.map((k) => [k, obj[k]]));
 const maybeImport = (file, condition) => (condition ? `await import('${file}');` : '');
 
-/** @type {() => import("@web/test-runner").TestRunnerConfig} */
+/** @type {(options: typeof import('../../helpers/options.js')) => import("@web/test-runner").TestRunnerConfig} */
 export default (options) => {
     /** `process.env` to inject into test environment. */
     const env = envify({
@@ -36,14 +37,18 @@ export default (options) => {
         NODE_ENV: options.NODE_ENV_FOR_TEST,
     });
 
+    const browsers = getBrowsers(options);
+
     return {
+        browsers,
+        browserLogs: false,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
         concurrency: 1,
-        browserLogs: false,
+        concurrentBrowsers: browsers.length,
         nodeResolve: true,
-        rootDir: join(import.meta.dirname, '..'),
+        rootDir: join(import.meta.dirname, '../..'),
         plugins: [
             {
                 name: 'lwc-base-plugin',
@@ -64,7 +69,8 @@ export default (options) => {
             },
         ],
         testRunnerHtml: (testFramework) =>
-            `<!DOCTYPE html>
+            `
+        <!DOCTYPE html>
         <html>
           <head>
             <script type="module">
@@ -82,6 +88,7 @@ export default (options) => {
             <script type="module" src="./helpers/setup.js"></script>
             <script type="module" src="${testFramework}"></script>
           </head>
-        </html>`,
+        </html>
+        `,
     };
 };
