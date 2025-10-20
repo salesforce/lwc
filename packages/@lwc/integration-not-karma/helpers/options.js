@@ -70,8 +70,14 @@ export const COVERAGE_DIR_FOR_OPTIONS =
 // --- CI config --- //
 
 export const COVERAGE = Boolean(process.env.COVERAGE);
-export const SAUCE_USERNAME = process.env.SAUCE_USERNAME;
-export const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
-export const SAUCE_TUNNEL_ID = process.env.SAUCE_TUNNEL_ID;
 export const CI = Boolean(process.env.CI);
 export const GITHUB_RUN_ID = process.env.GITHUB_RUN_ID;
+
+// --- SauceLabs config --- //
+
+// We used to use SauceLabs for cross-platform testing in CI. Now we use GitHub Actions,
+// but we've kept the SauceLabs config in place in case we ever need it for local testing.
+// (Requires some local setup, see docs: https://docs.saucelabs.com/secure-connections/sauce-connect-5/quickstart/)
+
+export const SAUCE = Boolean(process.env.SAUCE);
+export const { SAUCE_USERNAME, SAUCE_ACCESS_KEY, SAUCE_TUNNEL_ID } = process.env;
