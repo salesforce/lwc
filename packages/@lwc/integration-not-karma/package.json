@@ -16,7 +16,7 @@
         "@lwc/rollup-plugin": "8.22.6",
         "@lwc/synthetic-shadow": "8.22.6",
         "@types/chai": "^5.2.2",
-        "@types/jasmine": "^5.1.9",
+        "@types/jasmine": "^5.1.12",
         "@vitest/expect": "^3.2.4",
         "@vitest/spy": "^3.2.4",
         "@web/dev-server-import-maps": "^0.2.1",
@@ -25,7 +25,7 @@
         "@web/test-runner-playwright": "^0.11.1",
         "@web/test-runner-saucelabs": "^0.13.0",
         "chai": "^6.2.0",
-        "playwright": "^1.56.0"
+        "playwright": "^1.56.1"
     },
     "volta": {
         "extends": "../../../package.json"
