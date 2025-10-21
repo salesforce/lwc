@@ -5,16 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tabindex-toggle';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('Tab navigation without tabindex', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should support tabindex toggling', async () => {
         const secondOutside = await browser.shadowDeep$(
-            'integration-tabindex-toggle',
+            `integration-${TEST_NAME}`,
             '.second-outside'
         );
         await secondOutside.click();
@@ -26,7 +27,7 @@ describe('Tab navigation without tabindex', () => {
         assert.strictEqual(await activeElement.getAttribute('class'), 'first-inside');
 
         // Toggle the tabindex <x-child tabindex="-1">
-        const toggle = await browser.shadowDeep$('integration-tabindex-toggle', '.toggle');
+        const toggle = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.toggle');
         await toggle.click();
         await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
 

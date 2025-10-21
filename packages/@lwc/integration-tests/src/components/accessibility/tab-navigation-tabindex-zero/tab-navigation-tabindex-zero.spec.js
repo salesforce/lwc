@@ -5,16 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tab-navigation-tabindex-zero';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('Tab navigation when tabindex 0', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should focus on custom element when tabbing forward from a sibling element', async () => {
         const secondOutside = await browser.shadowDeep$(
-            'integration-tab-navigation-tabindex-zero',
+            `integration-${TEST_NAME}`,
             '.second-outside'
         );
         await secondOutside.click();
@@ -31,7 +32,7 @@ describe('Tab navigation when tabindex 0', () => {
 
     it('should focus on internal element when tabbing forward twice from a sibling element', async () => {
         const secondOutside = await browser.shadowDeep$(
-            'integration-tab-navigation-tabindex-zero',
+            `integration-${TEST_NAME}`,
             '.second-outside'
         );
         await secondOutside.click();
@@ -44,7 +45,7 @@ describe('Tab navigation when tabindex 0', () => {
 
     it('should focus on internal element when tabbing backwards from a sibling element', async () => {
         const thirdOutside = await browser.shadowDeep$(
-            'integration-tab-navigation-tabindex-zero',
+            `integration-${TEST_NAME}`,
             '.third-outside'
         );
         await thirdOutside.click();
@@ -56,7 +57,7 @@ describe('Tab navigation when tabindex 0', () => {
 
     it('should focus on custom element when tabbing backwards out of the shadow', async () => {
         const firstInside = await browser.shadowDeep$(
-            'integration-tab-navigation-tabindex-zero',
+            `integration-${TEST_NAME}`,
             'integration-child',
             '.first-inside'
         );

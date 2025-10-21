@@ -6,11 +6,12 @@
  */
 const assert = require('assert');
 
-describe('Tabbing into custom element proceeding an invisible button', () => {
-    const URL = '/delegates-focus-next-sibling-visibility-false';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Tabbing into custom element proceeding an invisible button', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should apply focus to the document body', async () => {

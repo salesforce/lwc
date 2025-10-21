@@ -6,11 +6,12 @@
  */
 const assert = require('assert');
 
-describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable elements after', () => {
-    const URL = '/delegates-focus-tabindex-zero-no-focusable-no-after';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable elements after', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should correctly have no activeelement', async () => {

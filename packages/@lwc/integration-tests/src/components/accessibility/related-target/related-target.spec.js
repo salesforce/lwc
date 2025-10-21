@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/related-target';
-
 function getEvents(elm) {
     return browser.execute(function (elm) {
         // parse/stringify is necessary because this is a Proxy object that doesn't get
@@ -16,16 +14,16 @@ function getEvents(elm) {
 }
 
 async function getRootEvents() {
-    const root = await browser.$('integration-related-target');
+    const root = await browser.$(`integration-${TEST_NAME}`);
     return getEvents(root);
 }
 function getRootInput() {
-    return browser.shadowDeep$('integration-related-target', 'input');
+    return browser.shadowDeep$(`integration-${TEST_NAME}`, 'input');
 }
 
 async function getChildEvents() {
     const child = await browser.shadowDeep$(
-        'integration-related-target',
+        `integration-${TEST_NAME}`,
         'integration-parent',
         'integration-child'
     );
@@ -34,16 +32,19 @@ async function getChildEvents() {
 
 function getChildInput() {
     return browser.shadowDeep$(
-        'integration-related-target',
+        `integration-${TEST_NAME}`,
         'integration-parent',
         'integration-child',
         'input'
     );
 }
 
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
+
 describe('relatedTarget', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     describe('when focus moves downwards in a shadow tree', () => {
@@ -97,7 +98,7 @@ describe('relatedTarget', () => {
     it('should be `undefined` if the event lacks a relatedTarget getter', async () => {
         const relatedTarget = await browser.execute(function () {
             let relatedTarget = null;
-            const container = document.querySelector('integration-related-target');
+            const container = document.querySelector(`integration-${TEST_NAME}`);
             container.addEventListener('foo', function (event) {
                 relatedTarget = event.relatedTarget;
             });

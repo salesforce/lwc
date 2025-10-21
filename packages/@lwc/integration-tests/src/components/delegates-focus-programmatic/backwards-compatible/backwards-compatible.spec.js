@@ -5,19 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-
-const URL = '/backwards-compatible';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('when the component overrides the focus method', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should continue custom focus behavior', async () => {
-        const target = await browser.shadowDeep$(
-            'integration-backwards-compatible',
-            'integration-child'
-        );
+        const target = await browser.shadowDeep$(`integration-${TEST_NAME}`, 'integration-child');
         await target.focus();
 
         const activeElement = await browser.activeElementShadowDeep();

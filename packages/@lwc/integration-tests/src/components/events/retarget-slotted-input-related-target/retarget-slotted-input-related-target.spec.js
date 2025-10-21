@@ -6,11 +6,12 @@
  */
 const assert = require('assert');
 
-describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-slotted-input-related-target';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Retarget relatedTarget', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should have correct relatedTarget from slotted input', async () => {

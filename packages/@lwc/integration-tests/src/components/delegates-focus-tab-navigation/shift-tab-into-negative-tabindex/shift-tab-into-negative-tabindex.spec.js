@@ -5,18 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/shift-tab-into-negative-tabindex';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('Delegates focus', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should focus the input when clicked', async () => {
-        const bottom = await browser.shadowDeep$(
-            'integration-shift-tab-into-negative-tabindex',
-            '.bottom'
-        );
+        const bottom = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.bottom');
         await bottom.click();
 
         await browser.keys(['Shift', 'Tab', 'Shift']); // tab backwards over integration-child

@@ -6,11 +6,12 @@
  */
 const assert = require('assert');
 
-describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-nested-focusable-custom';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Tabbing into custom element with delegates focus', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should apply focus to input in shadow', async () => {

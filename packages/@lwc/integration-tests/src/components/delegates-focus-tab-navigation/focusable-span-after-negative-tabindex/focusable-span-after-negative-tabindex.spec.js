@@ -5,18 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-describe('Delegates focus', () => {
-    const URL = '/focusable-span-after-negative-tabindex';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Delegates focus', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should focus the input when clicked', async () => {
-        const first = await browser.shadowDeep$(
-            'integration-focusable-span-after-negative-tabindex',
-            '.first'
-        );
+        const first = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.first');
         await first.click();
 
         await browser.keys(['Tab']); // tab over integration-child

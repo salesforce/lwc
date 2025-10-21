@@ -6,26 +6,24 @@
  */
 const assert = require('assert');
 
-describe('Composed change event', () => {
-    const URL = '/change-event-composed/';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Composed change event', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should be composed: false', async () => {
         // Force native "change" event to fire
-        const input = await browser.shadowDeep$('integration-change-event-composed', 'input');
+        const input = await browser.shadowDeep$(`integration-${TEST_NAME}`, 'input');
         await input.focus();
 
         await browser.keys('foo');
         const body = await $('body');
         await body.click();
 
-        const div = await browser.shadowDeep$(
-            'integration-change-event-composed',
-            '.verify-not-composed'
-        );
+        const div = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.verify-not-composed');
         assert.strictEqual(await div.getText(), 'Not Composed');
     });
 });

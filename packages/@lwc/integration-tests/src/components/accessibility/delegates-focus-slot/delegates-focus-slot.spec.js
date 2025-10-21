@@ -6,20 +6,18 @@
  */
 const assert = require('assert');
 
-describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-slot';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Tabbing into custom element with delegates focus', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should apply focus to input in shadow', async () => {
         await browser.keys(['Tab']);
         const activeFromDocument = await browser.activeElement();
-        assert.strictEqual(
-            await activeFromDocument.getTagName(),
-            'integration-delegates-focus-slot'
-        );
+        assert.strictEqual(await activeFromDocument.getTagName(), `integration-${TEST_NAME}`);
 
         const activeFromShadow = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeFromShadow.getTagName(), 'input');
@@ -41,10 +39,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         await browser.keys(['Shift', 'Tab', 'Shift']);
 
         const activeFromDocument = await browser.activeElement();
-        assert.strictEqual(
-            await activeFromDocument.getTagName(),
-            'integration-delegates-focus-slot'
-        );
+        assert.strictEqual(await activeFromDocument.getTagName(), `integration-${TEST_NAME}`);
 
         const activeFromShadow = await browser.activeElementShadowDeep();
         assert.strictEqual(await activeFromShadow.getTagName(), 'input');

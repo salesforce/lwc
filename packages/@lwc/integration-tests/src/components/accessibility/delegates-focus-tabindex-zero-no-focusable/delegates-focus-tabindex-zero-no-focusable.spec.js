@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
-    const URL = '/delegates-focus-tabindex-zero-no-focusable';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should correctly skip the custom element', async () => {

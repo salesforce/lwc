@@ -5,23 +5,23 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-
-const URL = '/noop-when-already-focused';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('when the shadow already contains the active element', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should not change the currently focused element', async () => {
         const input = await browser.shadowDeep$(
-            'integration-noop-when-already-focused',
+            `integration-${TEST_NAME}`,
             'integration-child',
             'input'
         );
         await input.click();
 
-        const target = await browser.$('integration-noop-when-already-focused');
+        const target = await browser.$(`integration-${TEST_NAME}`);
         await target.focus();
 
         const activeElement = await browser.activeElementShadowDeep();
@@ -29,7 +29,7 @@ describe('when the shadow already contains the active element', () => {
     });
 
     it('should result in the same focused element when invoked twice', async () => {
-        const target = await browser.$('integration-noop-when-already-focused');
+        const target = await browser.$(`integration-${TEST_NAME}`);
         await target.focus();
         await target.focus();
 

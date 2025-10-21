@@ -23,8 +23,6 @@ const assert = require('assert');
 if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunnelIdentifier) {
     // TODO [#3393]: re-enable once Circle CI can handle CDP again
     describe.skip('Component does not leak', () => {
-        const URL = '/lifecycle-leak';
-
         // Count the number of objects using queryObjects(). Based on:
         // https://media-codings.com/articles/automatically-detect-memory-leaks-with-puppeteer
         async function getObjectsCount() {
@@ -62,19 +60,19 @@ if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunne
         }
 
         before(async () => {
-            await browser.url(URL);
+            await browser.url('/' + TEST_NAME);
         });
 
         it('should not leak', async () => {
-            const addChild = await browser.shadowDeep$('integration-lifecycle-leak', '.add-child');
+            const addChild = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.add-child');
             const removeChildren = await browser.shadowDeep$(
-                'integration-lifecycle-leak',
+                `integration-${TEST_NAME}`,
                 '.remove-children'
             );
 
             const getNumChildren = () => {
                 return document
-                    .querySelector('integration-lifecycle-leak')
+                    .querySelector(`integration-${TEST_NAME}`)
                     .shadowRoot.querySelectorAll('integration-child').length;
             };
 
@@ -96,3 +94,5 @@ if (browser.capabilities.browserName === 'chrome' && !browser.capabilities.tunne
         });
     });
 }
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');

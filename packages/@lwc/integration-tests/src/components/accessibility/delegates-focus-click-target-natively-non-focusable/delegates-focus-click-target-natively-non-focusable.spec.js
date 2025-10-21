@@ -5,24 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-
-const URL = '/delegates-focus-click-target-natively-non-focusable';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('when the click target is natively non-focusable', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should apply focus to natively focusable parent (button) when click target is custom element', async () => {
-        const input = await browser.shadowDeep$(
-            'integration-delegates-focus-click-target-natively-non-focusable',
-            '.head'
-        );
+        const input = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.head');
         await input.click();
 
         // Click on the custom element wrapped by the button
         const child = await browser.shadowDeep$(
-            'integration-delegates-focus-click-target-natively-non-focusable',
+            `integration-${TEST_NAME}`,
             'integration-parent',
             'button > integration-child'
         );
@@ -34,15 +31,12 @@ describe('when the click target is natively non-focusable', () => {
     });
 
     it('should apply focus to natively focusable parent (button) when click target is span element', async () => {
-        const input = await browser.shadowDeep$(
-            'integration-delegates-focus-click-target-natively-non-focusable',
-            '.head'
-        );
+        const input = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.head');
         await input.click();
 
         // Click on the span wrapped by the button
         const span = await browser.shadowDeep$(
-            'integration-delegates-focus-click-target-natively-non-focusable',
+            `integration-${TEST_NAME}`,
             'integration-parent',
             'button > span'
         );

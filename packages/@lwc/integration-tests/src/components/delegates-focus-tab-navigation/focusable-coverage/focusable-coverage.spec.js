@@ -5,12 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-
-const URL = '/focusable-coverage';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('sequential focus navigation coverage', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     describe('should focus', () => {
@@ -41,12 +41,12 @@ describe('sequential focus navigation coverage', () => {
         ].forEach((type) => {
             it.skip(type, async () => {
                 // Click and focus on the first input
-                const start = await browser.shadowDeep$('integration-focusable-coverage', '.start');
+                const start = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.start');
                 await start.click();
 
                 // Set the type
                 await browser.execute(async function (type) {
-                    const container = document.querySelector('integration-focusable-coverage');
+                    const container = document.querySelector(`integration-${TEST_NAME}`);
                     container.type = type;
                     await new Promise(requestAnimationFrame); // wait a tick
                 }, type);

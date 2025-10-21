@@ -5,16 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tabindex-negative-after-inside-click';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('Tab navigation when tabindex -1 after inside click', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should continue skipping elements (forward)', async () => {
         const secondInside = await browser.shadowDeep$(
-            'integration-tabindex-negative-after-inside-click',
+            `integration-${TEST_NAME}`,
             'integration-child[data-id=click-target]',
             '.second-inside'
         );
@@ -22,7 +23,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
         await secondInside.click();
         await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         const secondOutside = await browser.shadowDeep$(
-            'integration-tabindex-negative-after-inside-click',
+            `integration-${TEST_NAME}`,
             '.second-outside'
         );
         await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
@@ -36,7 +37,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
 
     it('should continue skipping elements after navigating out (forward)', async () => {
         const secondInside = await browser.shadowDeep$(
-            'integration-tabindex-negative-after-inside-click',
+            `integration-${TEST_NAME}`,
             'integration-child[data-id=click-target]',
             '.second-inside'
         );
@@ -54,14 +55,14 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
 
     it('should continue skipping elements (backward)', async () => {
         const secondInside = await browser.shadowDeep$(
-            'integration-tabindex-negative-after-inside-click',
+            `integration-${TEST_NAME}`,
             'integration-child[data-id=click-target]',
             '.second-inside'
         );
         await secondInside.click();
         await browser.execute(() => new Promise(requestAnimationFrame)); // wait a tick
         const thirdOutside = await browser.shadowDeep$(
-            'integration-tabindex-negative-after-inside-click',
+            `integration-${TEST_NAME}`,
             '.third-outside'
         );
         await thirdOutside.click();
@@ -75,7 +76,7 @@ describe('Tab navigation when tabindex -1 after inside click', () => {
 
     it('should continue skipping elements after navigating out (backwards)', async () => {
         const secondInside = await browser.shadowDeep$(
-            'integration-tabindex-negative-after-inside-click',
+            `integration-${TEST_NAME}`,
             'integration-child[data-id=click-target]',
             '.second-inside'
         );

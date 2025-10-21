@@ -6,32 +6,33 @@
  */
 const assert = require('assert');
 
-describe('Composed focusout event', () => {
-    const URL = '/focusout-composed-true';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Composed focusout event', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('standard event should be composed', async () => {
-        const input = await browser.shadowDeep$('integration-focusout-composed-true', 'input');
+        const input = await browser.shadowDeep$(`integration-${TEST_NAME}`, 'input');
 
         await input.click();
         const body = await $('body');
         await body.click();
 
         const focusInComposed = await browser.shadowDeep$(
-            'integration-focusout-composed-true',
+            `integration-${TEST_NAME}`,
             '.focus-out-composed'
         );
         assert.strictEqual(await focusInComposed.getText(), 'Focus Out Composed');
     });
     it('custom event should not be composed', async () => {
-        const button = await browser.shadowDeep$('integration-focusout-composed-true', 'button');
+        const button = await browser.shadowDeep$(`integration-${TEST_NAME}`, 'button');
         await button.click();
 
         const customFocusInNotComposed = await browser.shadowDeep$(
-            'integration-focusout-composed-true',
+            `integration-${TEST_NAME}`,
             '.custom-focus-out-not-composed'
         );
         assert.strictEqual(

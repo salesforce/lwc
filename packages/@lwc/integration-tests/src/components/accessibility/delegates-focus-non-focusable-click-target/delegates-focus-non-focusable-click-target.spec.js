@@ -6,16 +6,17 @@
  */
 const assert = require('assert');
 
-describe('focus delegation when clicking on form element label', () => {
-    const URL = '/delegates-focus-non-focusable-click-target';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('focus delegation when clicking on form element label', () => {
     beforeEach(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should apply focus to element associated with label when relatedTarget is null', async () => {
         const label = await browser.shadowDeep$(
-            'integration-delegates-focus-non-focusable-click-target',
+            `integration-${TEST_NAME}`,
             'integration-input',
             'label'
         );
@@ -26,15 +27,12 @@ describe('focus delegation when clicking on form element label', () => {
     });
 
     it('should apply focus to element associated with label when relatedTarget is non-null', async () => {
-        const headInput = await browser.shadowDeep$(
-            'integration-delegates-focus-non-focusable-click-target',
-            '.head'
-        );
+        const headInput = await browser.shadowDeep$(`integration-${TEST_NAME}`, '.head');
         // Focus on input so that relatedTarget will be non-null
         await headInput.click();
 
         const label = await browser.shadowDeep$(
-            'integration-delegates-focus-non-focusable-click-target',
+            `integration-${TEST_NAME}`,
             'integration-input',
             'label'
         );

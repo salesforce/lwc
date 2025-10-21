@@ -6,11 +6,12 @@
  */
 const assert = require('assert');
 
-describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-body-related-target';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Retarget relatedTarget', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should have correct relatedTarget when body was focused', async () => {
@@ -22,7 +23,7 @@ describe('Retarget relatedTarget', () => {
         await browser.keys(['Tab']);
 
         const indicator = await browser.shadowDeep$(
-            'integration-retarget-body-related-target',
+            `integration-${TEST_NAME}`,
             '.related-target-tagname'
         );
         assert.strictEqual(await indicator.getText(), 'body');

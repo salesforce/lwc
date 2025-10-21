@@ -5,16 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-const URL = '/tabindex-zero';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('Tab navigation when tabindex 0', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should delegate focus (forward)', async () => {
         const secondOutside = await browser.shadowDeep$(
-            'integration-tabindex-zero',
+            `integration-${TEST_NAME}`,
             '.second-outside'
         );
         await secondOutside.click();
@@ -28,7 +29,7 @@ describe('Tab navigation when tabindex 0', () => {
 
     it('should delegate focus (backward)', async () => {
         const thirdOutside = await browser.shadowDeep$(
-            'integration-tabindex-zero',
+            `integration-${TEST_NAME}`,
             '.third-outside'
         );
         await thirdOutside.click();

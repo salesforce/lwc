@@ -9,18 +9,19 @@ const assert = require('assert');
 // The bug: Cannot click into the first child of a shadow root when the active element is
 // the previous sibling to the custom element
 
-describe('Delegates focus', () => {
-    const URL = '/delegates-focus-click-input-in-negative-tabindex-prev-sibling-focused';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Delegates focus', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should focus the input when clicked', async () => {
         await browser.keys(['Tab']); // focus first anchor
         await browser.keys(['Tab']); // focus second anchor
         const input = await browser.shadowDeep$(
-            'integration-delegates-focus-click-input-in-negative-tabindex-prev-sibling-focused',
+            `integration-${TEST_NAME}`,
             'integration-child',
             'input'
         );

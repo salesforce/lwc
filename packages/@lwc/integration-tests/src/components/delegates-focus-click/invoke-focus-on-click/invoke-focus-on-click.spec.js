@@ -5,9 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-
-const URL = '/invoke-focus-on-click';
-
 /*
 This regression test reproduces a very specific scenario where an element's focus() method is
 invoked immediately after the mousedown event listener on the global document:
@@ -25,16 +22,19 @@ for focus delegation, and the unexpected invocation of the focus() method was br
 enabling keyboard focus navigation before the subsequent focusin event listener which is used to
 implement shadow semantics for keyboard focus navigation.
 */
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
+
 describe('[W-8350504] focus() method invocation, inside a focus handler, triggered by a click', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should not interfere with focusing the clicked element', async () => {
         await browser.keys(['Tab']); // input.before
 
         const button = await browser.shadowDeep$(
-            'integration-invoke-focus-on-click',
+            `integration-${TEST_NAME}`,
             'integration-child',
             'button'
         );

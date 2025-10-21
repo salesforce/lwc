@@ -4,11 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-describe('Retarget relatedTarget', () => {
-    const URL = '/retarget-null-related-target';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Retarget relatedTarget', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should not throw when relatedTarget is null', async () => {
@@ -16,7 +17,7 @@ describe('Retarget relatedTarget', () => {
         await browser.waitUntil(
             async () => {
                 const target = await browser.shadowDeep$(
-                    'integration-retarget-null-related-target',
+                    `integration-${TEST_NAME}`,
                     '.related-target-tabname'
                 );
                 return (await target.getText()) === 'Related target is null';

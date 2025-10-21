@@ -5,24 +5,25 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-describe('shadow root element from point should return correct element', () => {
-    const URL = '/element-from-point/';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('shadow root element from point should return correct element', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should return correct shadow elements', async () => {
         const target = await browser.shadowDeep$(
-            'integration-element-from-point',
-            '.shadow-element-from-point'
+            `integration-${TEST_NAME}`,
+            `.shadow-${TEST_NAME}`
         );
         await target.click();
 
         await browser.waitUntil(
             async () => {
                 const indicator = await browser.shadowDeep$(
-                    'integration-element-from-point',
+                    `integration-${TEST_NAME}`,
                     '.correct-shadow-element-indicator'
                 );
                 return (await indicator.getText()) === 'Correct shadow element selected';
@@ -35,7 +36,7 @@ describe('shadow root element from point should return correct element', () => {
 
     it('should return correct document elements', async () => {
         const target = await browser.shadowDeep$(
-            'integration-element-from-point',
+            `integration-${TEST_NAME}`,
             '.document-from-point'
         );
         await target.click();
@@ -43,7 +44,7 @@ describe('shadow root element from point should return correct element', () => {
         await browser.waitUntil(
             async () => {
                 const indicator = await browser.shadowDeep$(
-                    'integration-element-from-point',
+                    `integration-${TEST_NAME}`,
                     '.correct-document-element-indicator'
                 );
                 return (await indicator.getText()) === 'Correct document element selected';

@@ -5,19 +5,19 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const assert = require('assert');
-
-const URL = '/nested-tabindex-negative';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
 describe('nested components with negative tabindex', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should focus the input when clicked', async () => {
         await browser.keys(['Tab']); // focus button
 
         const input = await browser.shadowDeep$(
-            'integration-nested-tabindex-negative',
+            `integration-${TEST_NAME}`,
             'integration-parent',
             'integration-child',
             'input'

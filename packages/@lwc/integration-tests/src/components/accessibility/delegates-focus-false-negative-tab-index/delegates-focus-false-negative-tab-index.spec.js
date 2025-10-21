@@ -5,11 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-false-negative-tab-index';
+const { basename } = require('node:path');
+const TEST_NAME = basename(__filename, '.spec.js');
 
+describe('Tabbing into custom element with delegates focus', () => {
     before(async () => {
-        await browser.url(URL);
+        await browser.url('/' + TEST_NAME);
     });
 
     it('should not apply focus to input in shadow', async () => {
@@ -20,14 +21,10 @@ describe('Tabbing into custom element with delegates focus', () => {
             async () => {
                 const activeFromDocument = await browser.activeElement();
 
-                return (
-                    (await activeFromDocument.getTagName()) ===
-                    'integration-delegates-focus-false-negative-tab-index'
-                );
+                return (await activeFromDocument.getTagName()) === `integration-${TEST_NAME}`;
             },
             {
-                timeoutMsg:
-                    'expect integration-delegates-focus-false-negative-tab-index to be focused',
+                timeoutMsg: `expect integration-${TEST_NAME} to be focused`,
             }
         );
 
