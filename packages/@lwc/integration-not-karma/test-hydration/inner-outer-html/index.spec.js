@@ -2,7 +2,7 @@ import { extractDataIds } from '../../helpers/utils.js';
 
 export default {
     props: {},
-    advancedTest(target, { consoleSpy }) {
+    advancedTest(target, { Component, consoleSpy, hydrateComponent }) {
         const ids = Object.entries(extractDataIds(target)).filter(
             ([id]) => !id.endsWith('.shadowRoot')
         );
@@ -14,5 +14,16 @@ export default {
         }
         expect(consoleSpy.calls.warn).toHaveSize(0);
         expect(consoleSpy.calls.error).toHaveSize(0);
+
+        hydrateComponent(target, Component, {});
+
+        for (const [id, node] of ids) {
+            expect(node.childNodes.length).toBe(1);
+            expect(node.firstChild.nodeType).toBe(Node.TEXT_NODE);
+            const expected = id.startsWith('lwc-inner-html-') ? 'injected' : 'original';
+            expect(node.firstChild.nodeValue).toBe(expected);
+        }
+
+        expect(consoleSpy.calls.warn).toHaveSize(10);
     },
 };

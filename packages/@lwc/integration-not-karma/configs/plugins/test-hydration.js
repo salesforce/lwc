@@ -86,20 +86,21 @@ export function runTest(configPath, componentPath, ssrRendered) {
             target = container.querySelector(selector);
             await testConfig.test(target, snapshot, consoleSpy.calls);
         } else if (testConfig.advancedTest) {
-            const hydrateComponent = spyOn(LWC, 'hydrateComponent');
-            try {
-                await testConfig.advancedTest(target, {
-                    Component,
-                    hydrateComponent,
-                    consoleSpy,
-                    container,
-                    selector,
-                });
-                // Sanity check: if we've never hydrated then we haven't set up the test correctly
-                expect(hydrateComponent).toHaveBeenCalled();
-            } finally {
-                hydrateComponent.mockRestore();
-            }
+            let hydrated = false;
+            // We can't spy on LWC because it's an ESM module, so we just wrap it
+            const hydrateComponent = (...args) => {
+                hydrated = true;
+                return LWC.hydrateComponent(...args);
+            };
+            await testConfig.advancedTest(target, {
+                Component,
+                hydrateComponent,
+                consoleSpy,
+                container,
+                selector,
+            });
+            // Sanity check: if we've never hydrated then we haven't set up the test correctly
+            expect(hydrated).toBe(true);
         } else {
             throw new Error(`Missing test or advancedTest function in ${configPath}.`);
         }
