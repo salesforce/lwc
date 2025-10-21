@@ -47,7 +47,7 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
-        experimentalCollectMultipleErrors,
+        experimentalErrorRecoveryMode,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
@@ -77,11 +77,19 @@ export default function scriptTransform(
         );
     }
 
-    let result;
+    const extractLwcErrors = (result: babel.BabelFileResult): CompilerDiagnostic[] => {
+        if (!experimentalErrorRecoveryMode) {
+            return [];
+        }
+
+        const metadata = result.metadata as { lwcErrors?: CompilerDiagnostic[] };
+        return metadata?.lwcErrors ?? [];
+    };
+
     const errors: Array<CompilerDiagnostic> = [];
 
     try {
-        result = babel.transformSync(code, {
+        const result = babel.transformSync(code, {
             filename,
             sourceMaps: sourcemap,
 
@@ -94,17 +102,23 @@ export default function scriptTransform(
             compact: false,
             plugins,
             parserOpts: {
-                ...(experimentalCollectMultipleErrors ? { errorRecovery: true } : {}),
+                ...(experimentalErrorRecoveryMode ? { errorRecovery: true } : {}),
             },
         })!;
 
-        if (experimentalCollectMultipleErrors && result.metadata) {
-            const pluginErrors = (result.metadata as any).lwcErrors;
-            if (pluginErrors && Array.isArray(pluginErrors)) {
-                errors.push(...pluginErrors);
-            }
+        const lwcErrors = extractLwcErrors(result);
+
+        if (!experimentalErrorRecoveryMode || lwcErrors.length === 0) {
+            return {
+                code: result.code!,
+                map: result.map,
+            };
         }
+
+        errors.push(...lwcErrors);
     } catch (e) {
+        // If we are here in errorRecoveryMode then it's most likely that we have run into
+        // an unforeseen error
         let transformerError: LWCErrorInfo = TransformerErrors.JS_TRANSFORMER_ERROR;
 
         // Sniff for a Babel decorator error, so we can provide a more helpful error message.
@@ -115,21 +129,13 @@ export default function scriptTransform(
         ) {
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
-
-        if (experimentalCollectMultipleErrors) {
-            errors.push(normalizeToCompilerError(transformerError, e, { filename }));
-        } else {
-            throw normalizeToCompilerError(transformerError, e, { filename });
-        }
+        throw normalizeToCompilerError(transformerError, e, { filename });
     }
 
-    if (experimentalCollectMultipleErrors && errors.length > 0) {
+    if (experimentalErrorRecoveryMode && errors.length > 0) {
         throw new AggregateError(errors, 'Multiple errors occurred during compilation.');
     }
 
-    //TODO: fix typing
-    return {
-        code: result!.code!,
-        map: result!.map,
-    };
+    // This should never be reached in normal operation, but satisfies TypeScript
+    throw new Error(`Something went wrong, you shouldn't be getting this.`);
 }
