@@ -1,0 +1,11 @@
+<template lwc:render-mode="light">
+    <template for:each={relatedListData} for:item="list" if:true={relatedListData}>
+        <template for:each={list.recordIds} for:item="recordId">
+            <template for:each={list.fields} for:item="field" for:index="index">
+                <x-child key={field}>
+                    <div>{field}</div>
+                </x-child>
+            </template>
+        </template>
+    </template>
+</template>

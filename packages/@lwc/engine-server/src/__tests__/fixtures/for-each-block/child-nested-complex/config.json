@@ -1,0 +1,15 @@
+{
+    "entry": "x/for-each-nested-complex",
+    "props": {
+        "relatedListData": [
+            {
+                "recordIds": ["a", "b", "c"],
+                "fields": ["paris", "london", "rome"]
+            },
+            {
+                "recordIds": ["d", "e", "f"],
+                "fields": ["tokyo", "kuala lumpur", "singapore"]
+            }
+        ]
+    }
+}
