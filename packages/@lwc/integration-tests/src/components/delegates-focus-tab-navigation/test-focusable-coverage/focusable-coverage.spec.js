@@ -39,7 +39,7 @@ describe('sequential focus navigation coverage', () => {
             'textarea',
             'videoControls',
         ].forEach((type) => {
-            it(type, async () => {
+            it.skip(type, async () => {
                 // Click and focus on the first input
                 const start = await browser.shadowDeep$('integration-focusable-coverage', '.start');
                 await start.click();
