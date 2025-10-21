@@ -56,6 +56,9 @@ function computePublicPropsConfig(
 ) {
     return publicPropertyMetas.reduce(
         (acc, { propertyName, decoratedNodeType }) => {
+            // should only happen in errorRecoveryMode
+            if (!decoratedNodeType) return acc;
+
             if (!(propertyName in acc)) {
                 acc[propertyName] = {};
             }

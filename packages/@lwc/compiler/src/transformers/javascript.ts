@@ -11,7 +11,12 @@ import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties
 import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
-import { normalizeToCompilerError, TransformerErrors, type LWCErrorInfo } from '@lwc/errors';
+import {
+    normalizeToCompilerError,
+    TransformerErrors,
+    type CompilerDiagnostic,
+    type LWCErrorInfo,
+} from '@lwc/errors';
 import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 
 import type { NormalizedTransformOptions } from '../options';
@@ -42,6 +47,7 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
+        experimentalCollectMultipleErrors,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
@@ -72,6 +78,8 @@ export default function scriptTransform(
     }
 
     let result;
+    const errors: Array<CompilerDiagnostic> = [];
+
     try {
         result = babel.transformSync(code, {
             filename,
@@ -85,7 +93,17 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
             plugins,
+            parserOpts: {
+                ...(experimentalCollectMultipleErrors ? { errorRecovery: true } : {}),
+            },
         })!;
+
+        if (experimentalCollectMultipleErrors && result.metadata) {
+            const pluginErrors = (result.metadata as any).lwcErrors;
+            if (pluginErrors && Array.isArray(pluginErrors)) {
+                errors.push(...pluginErrors);
+            }
+        }
     } catch (e) {
         let transformerError: LWCErrorInfo = TransformerErrors.JS_TRANSFORMER_ERROR;
 
@@ -97,11 +115,21 @@ export default function scriptTransform(
         ) {
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
-        throw normalizeToCompilerError(transformerError, e, { filename });
+
+        if (experimentalCollectMultipleErrors) {
+            errors.push(normalizeToCompilerError(transformerError, e, { filename }));
+        } else {
+            throw normalizeToCompilerError(transformerError, e, { filename });
+        }
     }
 
+    if (experimentalCollectMultipleErrors && errors.length > 0) {
+        throw new AggregateError(errors, 'Multiple errors occurred during compilation.');
+    }
+
+    //TODO: fix typing
     return {
-        code: result.code!,
-        map: result.map,
+        code: result!.code!,
+        map: result!.map,
     };
 }

@@ -6,7 +6,7 @@
  */
 import { DecoratorErrors } from '@lwc/errors';
 import { AMBIGUOUS_PROP_SET, DISALLOWED_PROP_SET } from '@lwc/shared';
-import { generateError } from '../../utils';
+import { handleError } from '../../utils';
 import { DECORATOR_TYPES, LWC_PACKAGE_EXPORTS } from '../../constants';
 import { isApiDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
@@ -27,7 +27,7 @@ function validateConflict(
     );
 
     if (isPublicFieldTracked) {
-        throw generateError(
+        handleError(
             path,
             {
                 errorInfo: DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT,
@@ -44,7 +44,7 @@ function isBooleanPropDefaultTrue(property: NodePath<types.Node>) {
 
 function validatePropertyValue(property: NodePath<types.ClassMethod>, state: LwcBabelPluginPass) {
     if (isBooleanPropDefaultTrue(property)) {
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY,
@@ -56,7 +56,7 @@ function validatePropertyValue(property: NodePath<types.ClassMethod>, state: Lwc
 
 function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcBabelPluginPass) {
     if (property.node.computed) {
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED,
@@ -68,7 +68,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
     const propertyName = (property.get('key.name') as any).node;
 
     if (propertyName === 'part') {
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
@@ -77,7 +77,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
             state
         );
     } else if (propertyName.startsWith('on')) {
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
@@ -86,7 +86,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
             state
         );
     } else if (propertyName.startsWith('data') && propertyName.length > 4) {
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
@@ -95,7 +95,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
             state
         );
     } else if (DISALLOWED_PROP_SET.has(propertyName)) {
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
@@ -105,7 +105,7 @@ function validatePropertyName(property: NodePath<types.ClassMethod>, state: LwcB
         );
     } else if (AMBIGUOUS_PROP_SET.has(propertyName)) {
         const camelCased = AMBIGUOUS_PROP_SET.get(propertyName);
-        throw generateError(
+        handleError(
             property,
             {
                 errorInfo: DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
@@ -126,6 +126,8 @@ function validateSingleApiDecoratorOnSetterGetterPair(
     decorators.forEach((decorator) => {
         const { path, decoratedNodeType } = decorator;
 
+        if (!decoratedNodeType) return; // Skip invalid decorators
+
         // since we are validating get/set we only look at @api methods
         if (
             isApiDecorator(decorator) &&
@@ -136,7 +138,7 @@ function validateSingleApiDecoratorOnSetterGetterPair(
             const methodName = (methodPath.get('key.name') as any).node as string;
 
             if (visitedMethods.has(methodName)) {
-                throw generateError(
+                handleError(
                     methodPath,
                     {
                         errorInfo: DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
@@ -172,7 +174,7 @@ function validateUniqueness(decorators: DecoratorMeta[], state: LwcBabelPluginPa
                 (currentType === DECORATOR_TYPES.SETTER && compareType === DECORATOR_TYPES.GETTER);
 
             if (haveSameName && isDifferentProperty && !isGetterSetterPair) {
-                throw generateError(
+                handleError(
                     comparePath,
                     {
                         errorInfo: DecoratorErrors.DUPLICATE_API_PROPERTY,
