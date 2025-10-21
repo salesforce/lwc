@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 describe('Delegate focus with tabindex 0 and no tabbable elements', () => {
-    const URL = '/delegates-focus-tabindex-zero-no-focusable-elements';
+    const URL = '/delegates-focus-tabindex-zero-no-focusable';
 
     before(async () => {
         await browser.url(URL);

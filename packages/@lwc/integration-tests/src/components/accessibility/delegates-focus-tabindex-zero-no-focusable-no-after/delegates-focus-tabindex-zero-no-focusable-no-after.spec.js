@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Delegate focus with tabindex 0, no tabbable elements, and no tabbable elements after', () => {
-    const URL = '/delegates-focus-tabindex-zero-no-focusable-elements-no-after-elements';
+    const URL = '/delegates-focus-tabindex-zero-no-focusable-no-after';
 
     before(async () => {
         await browser.url(URL);

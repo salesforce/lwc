@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-nested-focusable-custom-elements';
+    const URL = '/delegates-focus-nested-focusable-custom';
 
     before(async () => {
         await browser.url(URL);
@@ -15,7 +15,7 @@ describe('Tabbing into custom element with delegates focus', () => {
 
     it('should apply focus to input in shadow', async () => {
         const span = await browser.shadowDeep$(
-            'integration-delegates-focus-nested-focusable-custom-elements',
+            'integration-delegates-focus-nested-focusable-custom',
             'integration-parent',
             '.focusable-span'
         );
