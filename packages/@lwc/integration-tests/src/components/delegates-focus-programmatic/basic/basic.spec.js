@@ -9,8 +9,8 @@ const assert = require('assert');
 const URL = '/basic';
 
 describe('basic invocation', () => {
-    beforeEach(() => {
-        browser.url(URL);
+    beforeEach(async () => {
+        await browser.url(URL);
     });
 
     it('should focus on the first programmatically focusable element', async () => {
