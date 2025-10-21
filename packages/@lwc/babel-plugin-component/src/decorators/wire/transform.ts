@@ -22,46 +22,43 @@ function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
 }
 
 function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.ObjectProperty[] {
-    try {
-        const properties = wireConfig.get('properties');
-        if (!Array.isArray(properties)) {
-            // In error recovery mode, return empty array instead of crashing
-            return [];
-        }
-        return properties
-            .filter((property) => !isObservedProperty(property as NodePath<types.ObjectProperty>))
-            .map((path) => path.node) as types.ObjectProperty[];
-    } catch (_error) {
-        // In error recovery mode, return empty array instead of crashing
+    const properties = wireConfig.get('properties');
+
+    // Should only occurs in error recovery mode when config validation has already failed
+    // Skip processing since the error has been logged upstream
+    if (!Array.isArray(properties)) {
         return [];
     }
+
+    return properties
+        .filter((property) => !isObservedProperty(property as NodePath<types.ObjectProperty>))
+        .map((path) => path.node) as types.ObjectProperty[];
 }
 
 function getWiredParams(
     t: BabelTypes,
     wireConfig: NodePath<types.ObjectExpression>
 ): types.ObjectProperty[] {
-    try {
-        const properties = wireConfig.get('properties');
-        if (!Array.isArray(properties)) {
-            // In error recovery mode, return empty array instead of crashing
-            return [];
-        }
-        return properties
-            .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
-            .map((path) => {
-                // Need to clone deep the observed property to remove the param prefix
-                const clonedProperty = t.cloneNode(path.node) as types.ObjectProperty;
-                (clonedProperty.value as types.StringLiteral).value = (
-                    clonedProperty.value as types.StringLiteral
-                ).value.slice(1);
+    const properties = wireConfig.get('properties');
 
-                return clonedProperty;
-            });
-    } catch (_error) {
+    // Should only occurs in error recovery mode when config validation has already failed
+    // Skip processing since the error has been logged upstream
+    if (!Array.isArray(properties)) {
         // In error recovery mode, return empty array instead of crashing
         return [];
     }
+
+    return properties
+        .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
+        .map((path) => {
+            // Need to clone deep the observed property to remove the param prefix
+            const clonedProperty = t.cloneNode(path.node) as types.ObjectProperty;
+            (clonedProperty.value as types.StringLiteral).value = (
+                clonedProperty.value as types.StringLiteral
+            ).value.slice(1);
+
+            return clonedProperty;
+        });
 }
 
 function getGeneratedConfig(t: BabelTypes, wiredValue: WiredValue) {
