@@ -20,7 +20,6 @@ const engineModeFile = require.resolve('@lwc/engine-dom/dist/index.js');
 const shadowModeFile = require.resolve('@lwc/synthetic-shadow/dist/index.js');
 
 const testSufix = '.test.js';
-const testPrefix = 'test-';
 
 const functionalTestDir = path.join(__dirname, '../', 'src/components');
 const functionalTests = fs.readdirSync(functionalTestDir);
@@ -39,9 +38,7 @@ const testEntries = functionalTests.reduce((seed, functionalFolder) => {
 // -- Plugins & Helpers -------------------------------------
 
 function getTestName(absPpath) {
-    return path
-        .basename(absPpath.replace(testPrefix, '').replace(testSufix, '.js'), '.js')
-        .replace(testPrefix, '');
+    return path.basename(absPpath.replace(testSufix, '.js'), '.js');
 }
 
 function entryPointResolverPlugin() {
