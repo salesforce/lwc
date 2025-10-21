@@ -10,7 +10,7 @@ const assert = require('assert');
 // the previous sibling to the custom element
 
 describe('Delegates focus', () => {
-    const URL = '/delegates-focus-click-input-in-negative-tabindex-previous-sibling-focused';
+    const URL = '/delegates-focus-click-input-in-negative-tabindex-prev-sibling-focused';
 
     before(async () => {
         await browser.url(URL);
@@ -20,7 +20,7 @@ describe('Delegates focus', () => {
         await browser.keys(['Tab']); // focus first anchor
         await browser.keys(['Tab']); // focus second anchor
         const input = await browser.shadowDeep$(
-            'integration-delegates-focus-click-input-in-negative-tabindex-previous-sibling-focused',
+            'integration-delegates-focus-click-input-in-negative-tabindex-prev-sibling-focused',
             'integration-child',
             'input'
         );

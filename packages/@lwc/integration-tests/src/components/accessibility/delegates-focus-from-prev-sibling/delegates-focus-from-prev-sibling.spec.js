@@ -7,7 +7,7 @@
 const assert = require('assert');
 
 describe('Tabbing into custom element with delegates focus', () => {
-    const URL = '/delegates-focus-from-previous-sibling';
+    const URL = '/delegates-focus-from-prev-sibling';
 
     before(async () => {
         await browser.url(URL);
@@ -20,7 +20,7 @@ describe('Tabbing into custom element with delegates focus', () => {
         const activeFromDocument = await browser.activeElement();
         assert.strictEqual(
             await activeFromDocument.getTagName(),
-            'integration-delegates-focus-from-previous-sibling'
+            'integration-delegates-focus-from-prev-sibling'
         );
 
         const activeFromShadow = await activeFromDocument.activeElementShadow();
