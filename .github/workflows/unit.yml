@@ -29,6 +29,9 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
+            - if: ${{ runner.os }} == 'Windows'
+              run: git config set core.autocrlf true
+
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
