@@ -253,7 +253,7 @@ function getMetadataObjectPropertyList(
     state: LwcBabelPluginPass
 ) {
     const list = [
-        ...api.transform(t, decoratorMetas, classBodyItems),
+        ...api.transform(t, decoratorMetas, classBodyItems, state),
         ...track.transform(t, decoratorMetas),
         ...wire.transform(t, decoratorMetas, state),
     ];

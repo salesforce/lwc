@@ -144,9 +144,7 @@ function handleError(
     decoratorErrorOpts: DecoratorErrorOptions,
     state: LwcBabelPluginPass
 ) {
-    const errorRecoveryMode = state.file.opts.parserOpts?.errorRecovery ? true : false;
-
-    if (errorRecoveryMode) {
+    if (isErrorRecoveryMode(state)) {
         collectError(source, decoratorErrorOpts, state);
     } else {
         throw generateError(source, decoratorErrorOpts, state);
@@ -157,6 +155,10 @@ function incrementMetricCounter(metric: CompilerMetrics, state: LwcBabelPluginPa
     state.opts.instrumentation?.incrementCounter(metric);
 }
 
+function isErrorRecoveryMode(state: LwcBabelPluginPass): boolean {
+    return state.file.opts.parserOpts?.errorRecovery ?? false;
+}
+
 export {
     isClassMethod,
     isGetterClassMethod,
@@ -164,4 +166,5 @@ export {
     getEngineImportSpecifiers,
     handleError,
     incrementMetricCounter,
+    isErrorRecoveryMode,
 };

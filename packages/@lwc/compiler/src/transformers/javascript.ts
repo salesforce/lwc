@@ -12,6 +12,8 @@ import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spr
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
 import {
+    CompilerAggregateError,
+    CompilerError,
     normalizeToCompilerError,
     TransformerErrors,
     type CompilerDiagnostic,
@@ -86,7 +88,7 @@ export default function scriptTransform(
         return metadata?.lwcErrors ?? [];
     };
 
-    const errors: Array<CompilerDiagnostic> = [];
+    const errors: CompilerError[] = [];
 
     try {
         const result = babel.transformSync(code, {
@@ -115,7 +117,8 @@ export default function scriptTransform(
             };
         }
 
-        errors.push(...lwcErrors);
+        // Convert CompilerDiagnostic[] to CompilerError[]
+        errors.push(...lwcErrors.map((diagnostic) => CompilerError.from(diagnostic)));
     } catch (e) {
         // If we are here in errorRecoveryMode then it's most likely that we have run into
         // an unforeseen error
@@ -133,7 +136,7 @@ export default function scriptTransform(
     }
 
     if (experimentalErrorRecoveryMode && errors.length > 0) {
-        throw new AggregateError(errors, 'Multiple errors occurred during compilation.');
+        throw new CompilerAggregateError(errors, 'Multiple errors occurred during compilation.');
     }
 
     // This should never be reached in normal operation, but satisfies TypeScript

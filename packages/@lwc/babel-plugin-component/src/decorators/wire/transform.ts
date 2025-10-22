@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
+import { isErrorRecoveryMode } from '../../utils';
 import { isWireDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
@@ -19,10 +20,6 @@ function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
     return (
         propertyValue.isStringLiteral() && propertyValue.node.value.startsWith(WIRE_PARAM_PREFIX)
     );
-}
-
-function isErrorRecoveryMode(state: LwcBabelPluginPass) {
-    return state.file.opts.parserOpts?.errorRecovery ? true : false;
 }
 
 function getWiredStatic(

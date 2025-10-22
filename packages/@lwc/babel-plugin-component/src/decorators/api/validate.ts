@@ -126,8 +126,6 @@ function validateSingleApiDecoratorOnSetterGetterPair(
     decorators.forEach((decorator) => {
         const { path, decoratedNodeType } = decorator;
 
-        if (!decoratedNodeType) return; // Skip invalid decorators
-
         // since we are validating get/set we only look at @api methods
         if (
             isApiDecorator(decorator) &&
