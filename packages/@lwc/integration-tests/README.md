@@ -118,7 +118,7 @@ Only 1 repro per test case
 
 ```
 lwc-integration/src/components/<functional-area>
---test-<specific-repro>
+--<specific-repro>
 ----<specific-repro>
 ------<specific-repro>.html
 ------<specific-repro>.js
@@ -143,13 +143,13 @@ If it doesn't require additional components for the repro, you could simply have
 
 ```
 lwc-integration/src/components/<functional-area>
---test-<specific-repro>
+--<specific-repro>
 ----<specific-repro>.html
 ----<specific-repro>.js
 ----<specific-repro>.spec.js
 ```
 
-Note that `<specific-repro>.spec.js` should always be at the top level under `test-<specific-repro>`.
+Note that `<specific-repro>.spec.js` should always be at the top level under `<specific-repro>`.
 
 ### Pro tips
 
