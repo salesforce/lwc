@@ -1,0 +1,6 @@
+{
+    "entry": "x/for-each-block",
+    "props": {
+        "list": ["paris", "london", "tokyo"]
+    }
+}

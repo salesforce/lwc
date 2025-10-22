@@ -1,0 +1,15 @@
+{
+    "entry": "x/for-each-nested-complex",
+    "props": {
+        "lists": [
+            {
+                "recordIds": ["a", "b", "c"],
+                "fields": ["name", "address", "zip"]
+            },
+            {
+                "recordIds": ["d", "e", "f"],
+                "fields": ["name", "address", "zip"]
+            }
+        ]
+    }
+}
