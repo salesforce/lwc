@@ -4,7 +4,7 @@
             <li key={item.continent}>
                 {item.continent}
                 <template for:each={item.cities} for:item="city">
-                    <strong key={city}>city</strong>
+                    <strong key={city}>{city}</strong>
                 </template>
             </li>
         </template>
