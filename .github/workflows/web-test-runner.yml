@@ -16,7 +16,6 @@ env:
 
 defaults:
     run:
-        shell: bash
         working-directory: packages/@lwc/integration-not-karma
 
 jobs:
@@ -47,7 +46,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
-              shell: bash
 
             - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: yarn test
@@ -88,7 +86,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
-              shell: bash
 
             - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: yarn test
@@ -134,7 +131,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
-              shell: bash
 
             - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             # Synthetic shadow only
@@ -184,7 +180,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
-              shell: bash
 
             - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             - run: yarn test:hydration
@@ -224,7 +219,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
-              shell: bash
 
             - run: yarn exec -- playwright install chrome firefox webkit --with-deps
             # NOTE: All tests have ENGINE_SERVER=1 already set
