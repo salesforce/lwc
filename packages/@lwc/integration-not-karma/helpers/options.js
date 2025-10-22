@@ -79,5 +79,5 @@ export const GITHUB_RUN_ID = process.env.GITHUB_RUN_ID;
 // but we've kept the SauceLabs config in place in case we ever need it for local testing.
 // (Requires some local setup, see docs: https://docs.saucelabs.com/secure-connections/sauce-connect-5/quickstart/)
 
-export const SAUCE = Boolean(process.env.SAUCE);
+export const USE_SAUCE = Boolean(process.env.USE_SAUCE);
 export const { SAUCE_USERNAME, SAUCE_ACCESS_KEY, SAUCE_TUNNEL_ID } = process.env;
