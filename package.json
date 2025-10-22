@@ -106,5 +106,6 @@
         "http-cache-semantics": "4.2.0",
         "@types/estree": "^1.0.8"
     },
-    "dependencies": {}
+    "dependencies": {},
+    "packageManager": "yarn@1.22.22"
 }
