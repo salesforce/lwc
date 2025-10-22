@@ -24,6 +24,7 @@ export default {
             expect(node.firstChild.nodeValue).toBe(expected);
         }
 
-        expect(consoleSpy.calls.warn).toHaveSize(10);
+        const warns = process.env.NODE_ENV === 'production' ? 0 : 10;
+        expect(consoleSpy.calls.warn).toHaveSize(warns);
     },
 };
