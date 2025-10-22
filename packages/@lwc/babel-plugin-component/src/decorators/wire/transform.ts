@@ -8,7 +8,7 @@ import { LWC_COMPONENT_PROPERTIES } from '../../constants';
 import { isWireDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
-import type { BabelTypes } from '../../types';
+import type { BabelTypes, LwcBabelPluginPass } from '../../types';
 import type { BindingOptions } from '../types';
 
 const WIRE_PARAM_PREFIX = '$';
@@ -21,12 +21,19 @@ function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
     );
 }
 
-function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.ObjectProperty[] {
+function isErrorRecoveryMode(state: LwcBabelPluginPass) {
+    return state.file.opts.parserOpts?.errorRecovery ? true : false;
+}
+
+function getWiredStatic(
+    wireConfig: NodePath<types.ObjectExpression>,
+    state: LwcBabelPluginPass
+): types.ObjectProperty[] {
     const properties = wireConfig.get('properties');
 
     // Should only occurs in error recovery mode when config validation has already failed
     // Skip processing since the error has been logged upstream
-    if (!Array.isArray(properties)) {
+    if (isErrorRecoveryMode(state) && !Array.isArray(properties)) {
         return [];
     }
 
@@ -37,13 +44,14 @@ function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.Obj
 
 function getWiredParams(
     t: BabelTypes,
-    wireConfig: NodePath<types.ObjectExpression>
+    wireConfig: NodePath<types.ObjectExpression>,
+    state: LwcBabelPluginPass
 ): types.ObjectProperty[] {
     const properties = wireConfig.get('properties');
 
     // Should only occurs in error recovery mode when config validation has already failed
     // Skip processing since the error has been logged upstream
-    if (!Array.isArray(properties)) {
+    if (isErrorRecoveryMode(state) && !Array.isArray(properties)) {
         // In error recovery mode, return empty array instead of crashing
         return [];
     }
@@ -276,7 +284,11 @@ type WiredValue = {
     };
 };
 
-export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]) {
+export default function transform(
+    t: BabelTypes,
+    decoratorMetas: DecoratorMeta[],
+    state: LwcBabelPluginPass
+) {
     const objectProperties = [];
     const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments') as [
@@ -295,8 +307,8 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
         };
 
         if (config) {
-            wiredValue.static = getWiredStatic(config);
-            wiredValue.params = getWiredParams(t, config);
+            wiredValue.static = getWiredStatic(config, state);
+            wiredValue.params = getWiredParams(t, config, state);
         }
 
         const referenceLookup = scopedReferenceLookup(path.scope);

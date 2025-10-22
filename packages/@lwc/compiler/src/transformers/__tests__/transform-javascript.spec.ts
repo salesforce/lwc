@@ -4,10 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { vi, describe, it, expect } from 'vitest';
 import { noop } from '@lwc/shared';
+import { describe, expect, it, vi } from 'vitest';
 import { transform, transformSync } from '../transformer';
 import type { TransformOptions } from '../../options';
+import '../../../scripts/test/types';
 
 const TRANSFORMATION_OPTIONS: TransformOptions = {
     namespace: 'x',
@@ -285,4 +286,62 @@ describe('file extension support', () => {
         });
     }
     ['.js', '.jsx', '.ts', '.tsx'].forEach(testFileExtensionSupport);
+});
+
+describe('errorRecoveryMode', () => {
+    const TRANSFORM_OPTIONS = {
+        ...TRANSFORMATION_OPTIONS,
+        experimentalErrorRecoveryMode: true,
+    };
+
+    it('should return code when compiled successfully', () => {
+        const actual = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+        const { code } = transformSync(actual, 'foo.js', TRANSFORM_OPTIONS);
+
+        expect(code).toMatch(/import \w+ from "\.\/foo.html";/);
+        expect(code).toContain('registerComponent');
+    });
+
+    it('should throw an AggregateError when errors are present', () => {
+        const actual = `
+                import { LightningElement, api } from 'lwc';
+                export default class Foo extends LightningElement {
+                    // Error 1: Invalid property name with numbers (1107 - PROPERTY_NAME_CANNOT_START_WITH_DATA)
+                    @api dataInvalidProperty;
+                }
+            `;
+
+        expect(() => {
+            transformSync(actual, 'foo.js', TRANSFORM_OPTIONS);
+        }).toThrowAggregateError(['LWC1107: Invalid property name "dataInvalidProperty".']);
+    });
+
+    it('should return multiple errors when present', () => {
+        const actual = `
+            import { LightningElement, api, track, wire } from 'lwc';
+            export default class Foo extends LightningElement {
+                // Error 1: Property name starting with "on" (1108 - PROPERTY_NAME_CANNOT_START_WITH_ON)
+                @api onClickHandler;
+                
+                // Error 2: Reserved property name (1110 - PROPERTY_NAME_IS_RESERVED)
+                @api class;
+                
+                // Error 3: Track decorator on non-class property (1113 - TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES)
+                @track someMethod() { return 'invalid'; }
+
+                // Error 4: Wire adapter should be imported (1119 - WIRE_ADAPTER_SHOULD_BE_IMPORTED)
+                @wire(undefinedAdapter, {}) wiredWithUndefinedAdapter;
+            }`;
+        expect(() => {
+            transformSync(actual, 'foo.js', TRANSFORM_OPTIONS);
+        }).toThrowAggregateError([
+            'LWC1108: Invalid property name "onClickHandler". Properties starting with "on" are reserved for event handlers.',
+            'LWC1110: Invalid property name "class". "class" is a reserved attribute.',
+            'LWC1119: Failed to resolve @wire adapter "undefinedAdapter". Ensure it is imported.',
+            'LWC1113: @track decorator can only be applied to class properties.',
+        ]);
+    });
 });

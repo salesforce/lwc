@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import lineColumn from 'line-column';
-import { generateCompilerDiagnostic, generateErrorMessage } from '@lwc/errors';
+import { DiagnosticLevel, generateCompilerDiagnostic, generateErrorMessage } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
 import type { types, NodePath } from '@babel/core';
 import type { CompilerMetrics } from '@lwc/errors';
@@ -117,13 +117,21 @@ function collectError(
     { errorInfo, messageArgs }: DecoratorErrorOptions,
     state: LwcBabelPluginPass
 ) {
-    const diagnostic = generateCompilerDiagnostic(errorInfo, {
-        messageArgs,
-        origin: {
-            filename: state.filename,
-            location: normalizeLocation(source) ?? undefined,
+    const diagnostic = generateCompilerDiagnostic(
+        errorInfo,
+        {
+            messageArgs,
+            origin: {
+                filename: state.filename,
+                location: normalizeLocation(source) ?? undefined,
+            },
         },
-    });
+        true
+    );
+
+    if (diagnostic.level === DiagnosticLevel.Fatal) {
+        throw generateError(source, { errorInfo, messageArgs }, state);
+    }
 
     if (!(state.file.metadata as any).lwcErrors) {
         (state.file.metadata as any).lwcErrors = [];

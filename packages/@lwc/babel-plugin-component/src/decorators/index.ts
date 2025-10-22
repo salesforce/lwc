@@ -249,12 +249,13 @@ function getDecoratorMetadata(
 function getMetadataObjectPropertyList(
     t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[]
+    classBodyItems: NodePath<ClassBodyItem>[],
+    state: LwcBabelPluginPass
 ) {
     const list = [
         ...api.transform(t, decoratorMetas, classBodyItems),
         ...track.transform(t, decoratorMetas),
-        ...wire.transform(t, decoratorMetas),
+        ...wire.transform(t, decoratorMetas, state),
     ];
 
     const fieldNames = classBodyItems
@@ -321,7 +322,8 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             const metaPropertyList = getMetadataObjectPropertyList(
                 t,
                 decoratorMetas,
-                classBodyItems
+                classBodyItems,
+                state
             );
             if (metaPropertyList.length === 0) {
                 return;
