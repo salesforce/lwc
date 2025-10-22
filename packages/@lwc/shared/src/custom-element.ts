@@ -24,7 +24,7 @@ export function generateCustomElementTagName(namespace: string = '', name: strin
                 'Found: namespace=' +
                 JSON.stringify(namespace) +
                 ' and name=' +
-                JSON.stringify(namespace)
+                JSON.stringify(name)
         );
     }
     const kebabCasedName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
