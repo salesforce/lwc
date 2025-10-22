@@ -28,10 +28,10 @@ jobs:
                 working-directory: ./packages/@lwc/integration-tests
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
 
             - name: Setup Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: '20.19.4'
                   cache: 'yarn'
@@ -39,7 +39,7 @@ jobs:
             # Needed for local browser integration tests
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup Chrome
-              uses: browser-actions/setup-chrome@v1
+              uses: browser-actions/setup-chrome@v2
               with:
                   chrome-version: 130
               id: setup-chrome
