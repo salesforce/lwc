@@ -47,7 +47,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
+            - run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test
             - run: yarn test || true
               env:
@@ -87,7 +87,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
+            - run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test
               env:
                   API_VERSION: 58
@@ -132,7 +132,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
+            - run: yarn playwright install chrome firefox webkit --with-deps
             # Synthetic shadow only
             - run: yarn test || true
               env:
@@ -181,7 +181,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
+            - run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test:hydration
             - run: yarn test:hydration
               env:
@@ -220,7 +220,7 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn exec -- playwright install chrome firefox webkit --with-deps
+            - run: yarn playwright install chrome firefox webkit --with-deps
             # NOTE: All tests have ENGINE_SERVER=1 already set
             - run: yarn test:hydration
             - run: yarn test:hydration
