@@ -26,6 +26,8 @@ jobs:
                 runs_on: [ubuntu-22.04, windows-2025]
         runs-on: ${{ matrix.runs_on }}
         steps:
+            - run: git config --global core.eol lf
+            - run: git config --global core.autocrlf true
             - name: Checkout repository
               uses: actions/checkout@v5
 
