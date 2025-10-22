@@ -4042,26 +4042,6 @@
     "@web/test-runner-coverage-v8" "^0.8.0"
     playwright "^1.53.0"
 
-"@web/test-runner-saucelabs@^0.13.0":
-  version "0.13.0"
-  resolved "https://registry.yarnpkg.com/@web/test-runner-saucelabs/-/test-runner-saucelabs-0.13.0.tgz#66b50d4cf6ca29163e8c67e0d6a0b5863ac69172"
-  integrity sha512-RHVDIFVaiOoxydigx1S4wrA20wjjLF9IAxlT7HxYHxO1qx1UIuWLabd6jEGlxluC0xFhuBJLm+zFj8zMEXJNyg==
-  dependencies:
-    "@web/test-runner-webdriver" "^0.9.0"
-    internal-ip "^6.2.0"
-    nanoid "^3.1.25"
-    saucelabs "^9.0.0"
-    webdriver "^9.0.0"
-    webdriverio "^9.0.0"
-
-"@web/test-runner-webdriver@^0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@web/test-runner-webdriver/-/test-runner-webdriver-0.9.0.tgz#18fb3299ddc258a2782028de19f21ee4c27895c5"
-  integrity sha512-G2io6ph0v/sX0U/DEgh/EUHsLsq8/Gs/uUw8N7rcUaXSdIFCUbxlwzx/qZv2ZKY52q84oYUyeOhViNZ2OqYl6Q==
-  dependencies:
-    "@web/test-runner-core" "^0.13.0"
-    webdriverio "^9.0.0"
-
 "@web/test-runner@^0.20.2":
   version "0.20.2"
   resolved "https://registry.yarnpkg.com/@web/test-runner/-/test-runner-0.20.2.tgz#3045de8f14eb9f9b8aa51aa7fd9849dd95bb0a93"
@@ -12210,7 +12190,7 @@ saucelabs@6.2.2:
     tunnel "0.0.6"
     yargs "^17.0.1"
 
-saucelabs@^9.0.0, saucelabs@^9.0.1:
+saucelabs@^9.0.1:
   version "9.0.2"
   resolved "https://registry.yarnpkg.com/saucelabs/-/saucelabs-9.0.2.tgz#99f6170f3d789fcb0be2f270f7d37a9d7cdf5187"
   integrity sha512-37QGEOgp9BP1re6S06qpNcBZ0Hw+ZSkZkDepbXHT9VjYoRQwRzUoLtKqE4yyVeK7dzcQXQapmTGF1kp1jO2VDw==
@@ -13941,7 +13921,7 @@ webdriver@7.19.5:
     ky "^0.30.0"
     lodash.merge "^4.6.1"
 
-webdriver@9.20.0, webdriver@^9.0.0:
+webdriver@9.20.0:
   version "9.20.0"
   resolved "https://registry.yarnpkg.com/webdriver/-/webdriver-9.20.0.tgz#518fa61abd0b0435509548ef54fb0824f0fa04fd"
   integrity sha512-Kk+AGV1xWLNHVpzUynQJDULMzbcO3IjXo3s0BzfC30OpGxhpaNmoazMQodhtv0Lp242Mb1VYXD89dCb4oAHc4w==
@@ -13991,7 +13971,7 @@ webdriverio@7.19.5:
     serialize-error "^8.0.0"
     webdriver "7.19.5"
 
-webdriverio@9.20.0, webdriverio@^9.0.0, webdriverio@^9.19.2:
+webdriverio@9.20.0, webdriverio@^9.19.2:
   version "9.20.0"
   resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-9.20.0.tgz#46f45268f2c4021a18045a7e7dfd738225514ece"
   integrity sha512-cqaXfahTzCFaQLlk++feZaze6tAsW8OSdaVRgmOGJRII1z2A4uh4YGHtusTpqOiZAST7OBPqycOwfh01G/Ktbg==
