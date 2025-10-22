@@ -52,7 +52,7 @@ jobs:
               run: yarn add -W chromedriver@^130
 
             - name: Check package.json integrity
-              run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
+              run: node ./scripts/tasks/check-and-rewrite-package-json.js --test || (git diff && false)
             - name: Check licenses are up to date
               run: node ./scripts/tasks/generate-license-files.mjs --test
             - name: Verify @lwc/shared is tree-shakable
