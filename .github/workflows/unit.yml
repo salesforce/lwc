@@ -21,7 +21,10 @@ env:
 
 jobs:
     run-unit-tests:
-        runs-on: ubuntu-22.04
+        strategy:
+            matrix:
+                runs_on: [ubuntu-22.04, windows-2025]
+        runs-on: ${{ matrix.runs_on }}
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
