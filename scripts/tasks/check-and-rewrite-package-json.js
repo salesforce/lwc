@@ -40,7 +40,7 @@ const expectedPkgJsons = [];
 
 for (const dir of globSync('./packages/@lwc/*')) {
     const filename = path.join('./', dir, 'package.json');
-    const actual = fs.readFileSync(filename, 'utf-8');
+    const actual = fs.readFileSync(filename, 'utf-8').replace(/\r\n/g, '\n'); // Windows compat
     const pkg = JSON.parse(actual);
     // Skip private packages
     if (pkg.private) {
