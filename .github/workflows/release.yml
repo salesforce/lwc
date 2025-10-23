@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             bump:
-                description: 'Version bump type (used if release_version is empty)'
+                description: 'Version bump type'
                 type: choice
                 options:
                     - major
@@ -13,7 +13,7 @@ on:
                     - prerelease
                 required: false
             release_version:
-                description: 'Semver version to release (must be > current root version)'
+                description: 'OR Explicit version number (must be greater than current root version)'
                 required: false
 
 permissions:
@@ -26,42 +26,47 @@ jobs:
     release:
         # Allow only on master, spring*, summer*, winter*;
         if: ${{ github.repository_owner == 'salesforce' && (github.ref_name == 'master' || startsWith(github.ref_name, 'spring') || startsWith(github.ref_name, 'summer') || startsWith(github.ref_name, 'winter')) }}
+        name: Release LWC - ${{ inputs.release_version }} ${{ inputs.bump }}
         environment: release
         runs-on: ubuntu-latest
         steps:
+            - name: Validate input version
+              id: resolve_input
+              run: |
+                  RELEASE_VERSION='${{ inputs.release_version }}'
+                  if [ -z "$RELEASE_VERSION" ]; then
+                    RELEASE_VERSION='${{ inputs.bump }}'
+                    if [ -z "$RELEASE_VERSION" ]; then
+                      echo "An explicit version number or release version type must be specified."
+                      exit 1
+                    fi
+                  fi
+                  echo "resolved=\"$RELEASE_VERSION\"" >> "$GITHUB_OUTPUT"
+
             - name: Checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@v5
               with:
                   fetch-depth: 0
                   token: ${{ secrets.WORKFLOW_PAT }}
                   persist-credentials: true
 
             - name: Setup Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: '20'
                   registry-url: 'https://registry.npmjs.org'
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --frozen-lockfile --ignore-scripts # Building later; can skip for now
 
-            - name: Resolve version input
-              id: resolve_version
+            - name: Update LWC version (${{ steps.resolve_input.outputs.resolved }})
+              id: update_version
               run: |
-                  RELEASE_VERSION='${{ inputs.release_version }}'
-                  if [ -z "$RELEASE_VERSION" ]; then
-                    RELEASE_VERSION='${{ inputs.bump }}'
-                  fi
-                  echo "resolved=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
 
-            - name: Resolve version
-              env:
-                  INPUT_VERSION: ${{ steps.resolve_version.outputs.resolved }}
-              run: |
-                  node ./scripts/release/version.js "$INPUT_VERSION"
+                  node ./scripts/release/version.js '${{ steps.resolve_input.outputs.resolved }}'
                   RESOLVED_VERSION=$(jq -r .version package.json)
-                  echo "RESOLVED_VERSION=$RESOLVED_VERSION" >> "$GITHUB_ENV"
+                  echo "new_version=$RESOLVED_VERSION" >> "$GITHUB_OUTPUT"
 
             - name: Set git identity (Actions bot)
               run: |
@@ -73,7 +78,7 @@ jobs:
               with:
                   github_token: ${{ secrets.WORKFLOW_PAT }}
                   branch: ${{ github.ref_name }}
-                  message: 'chore: release v${{ env.RESOLVED_VERSION }}'
+                  message: 'chore: release v${{ steps.update_version.outputs.new_version }}'
 
             - name: Build
               run: yarn build
@@ -83,7 +88,7 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  VERSION=$(jq -r .version package.json)
+                  VERSION='${{ steps.update_version.outputs.new_version }}'
                   git tag -a "v$VERSION" -m "Release v$VERSION"
                   git push origin tag "v$VERSION"
                   gh release create "v$VERSION" --title "v$VERSION" --generate-notes
