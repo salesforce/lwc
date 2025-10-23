@@ -41,13 +41,23 @@ function normalizeError(err: any) {
     }
 }
 
+function normalizeLwcError(lwcErrors: any) {
+    if (!lwcErrors || !Array.isArray(lwcErrors)) {
+        return;
+    }
+    return lwcErrors.map((err) => normalizeError(err));
+}
+
 function transform(source: string, opts = {}) {
     const testConfig = {
         ...BASE_CONFIG,
+        parserOpts: (opts as any).parserOpts ?? {},
         plugins: [[plugin, { ...BASE_OPTS, ...opts }]],
     };
 
-    let { code } = transformSync(source, testConfig)!;
+    const result = transformSync(source, testConfig)!;
+
+    let { code } = result;
 
     // Replace LWC's version with X.X.X so the snapshots don't frequently change
     code = code!.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
@@ -58,7 +68,10 @@ function transform(source: string, opts = {}) {
         `apiVersion: 9999999`
     );
 
-    return code;
+    return {
+        code,
+        lwcErrors: (result.metadata as any)?.lwcErrors,
+    };
 }
 
 describe('fixtures', () => {
@@ -66,20 +79,27 @@ describe('fixtures', () => {
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.js',
+            ssrVersion: 2,
         },
         ({ src, config }) => {
-            let result;
+            let code;
             let error;
+            let lwcErrors;
 
             try {
-                result = transform(src, config);
+                const result = transform(src, config);
+                code = result.code;
+                lwcErrors = JSON.stringify(normalizeLwcError(result.lwcErrors), null, 4);
             } catch (err) {
                 error = JSON.stringify(normalizeError(err), null, 4);
             }
 
             return {
-                'expected.js': result,
+                'expected.js': code,
                 'error.json': error,
+                ...((config as any)?.parserOpts?.errorRecovery
+                    ? { 'lwcErrors.json': lwcErrors }
+                    : {}),
             };
         }
     );

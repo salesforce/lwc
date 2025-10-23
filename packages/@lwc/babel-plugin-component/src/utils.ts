@@ -156,7 +156,7 @@ function incrementMetricCounter(metric: CompilerMetrics, state: LwcBabelPluginPa
 }
 
 function isErrorRecoveryMode(state: LwcBabelPluginPass): boolean {
-    return state.file.opts.parserOpts?.errorRecovery ?? false;
+    return state.file.opts?.parserOpts?.errorRecovery ?? false;
 }
 
 export {
