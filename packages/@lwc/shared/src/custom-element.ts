@@ -19,12 +19,14 @@ export function generateCustomElementTagName(namespace: string = '', name: strin
         // TODO [#4824]: Make this an error rather than a warning
         // eslint-disable-next-line no-console
         console.warn(
-            'The namespace and name should both be non-empty strings. ' +
-                'You may get unexpected behavior at runtime. ' +
-                'Found: namespace=' +
-                JSON.stringify(namespace) +
-                ' and name=' +
-                JSON.stringify(name)
+            new Error(
+                'The namespace and name should both be non-empty strings. ' +
+                    'You may get unexpected behavior at runtime. ' +
+                    'Found: namespace=' +
+                    JSON.stringify(namespace) +
+                    ' and name=' +
+                    JSON.stringify(name)
+            )
         );
     }
     const kebabCasedName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
