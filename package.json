@@ -89,6 +89,7 @@
     "engines": {
         "node": ">=10"
     },
+    "packageManager": "yarn@1.22.22",
     "volta": {
         "node": "20.19.4",
         "yarn": "1.22.22"
