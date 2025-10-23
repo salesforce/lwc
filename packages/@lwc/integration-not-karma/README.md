@@ -26,67 +26,7 @@ Integration tests are simply `.spec.js` files that run in the browser. LWC compo
 
 ### Hydration Tests
 
-Hydration tests test the SSR packages, and are therefore more complex than the integration tests. While the files are named `index.spec.js`, they are actually _config_ files. The actual test executed is defined in `test-hydration.js`. The hydration tests are transformed by a plugin defined in `serve-hydration.js`.
-
-Each hydration test is expected to define an entrypoint component named `x/main`. Each test config is expected to adhere to this interface:
-
-```ts
-interface HydrationTestConfig<Snapshot extends any> {
-    /** Props to provide for the root `x/main` component. */
-    props?: Record<string, string>;
-    /** Client-side props to hydrate the root `x/main` component. */
-    clientProps?: Record<string, string>;
-    /** List of feature flags that should be enabled for the test. */
-    requiredFeatureFlags?: string[];
-    /**
-     * A function that can be used to capture the pre-hydration state of the page.
-     * Only executed if `test` is defined.
-     * @returns Any data that is needed for assertions in the `test` function.
-     */
-    snapshot?(
-        /** The root element being rendered. */
-        xMain: HTMLElement
-    ): Snapshot;
-    /**
-     * A function that contains assertions, run after hydration. Should be used if
-     * asserting the pre-hydration state is not required.
-     */
-    test?(
-        /** The root element being rendered. */
-        target: HTMLElement,
-        /** Whatever data was returned by the `snapshot` function. */
-        snapshot: Snapshot | undefined,
-        /** Console calls during hydration. */
-        calls: Record<'log' | 'warn' | 'error', unknown[][]>
-    ): void | Promise<void>;
-    /**
-     * A function that contains assertions and is also responsible for hydrating the page.
-     * Should only be used if assertions are required before hydration.
-     */
-    advancedTest?(
-        /** The test root element being rendered. */
-        target: HTMLElement,
-        /** Various utils for test assertions. */
-        utils: {
-            /** The class constructor for the root component. */
-            Component: LightningElement;
-            /** A bound instance of LWC's `hydrateComponent` function. Must be called within `advancedTest`. */
-            hydrateComponent: typeof LWC.hydrateComponent;
-            /** Tracks console calls. */
-            consoleSpy: {
-                /** Console calls during hydration. */
-                calls: Record<'log' | 'warn' | 'error', unknown[][]>;
-                /** Resets the tracked console calls. */
-                reset(): void;
-            };
-            /** The parent of the root element. */
-            container: HTMLDivElement;
-            /** The selector for root element.  */
-            selector: 'x-main';
-        }
-    ): void | Promise<void>;
-}
-```
+Hydration tests test the SSR packages, and are therefore more complex than the integration tests. While the files are named `index.spec.js`, they are actually _config_ files. The actual test executed is defined in `test-hydration.js`, which also contains the interface definition for the config. Each hydration test is also expected to define an entrypoint component named `x/main`. The hydration tests are transformed by a plugin defined in `serve-hydration.js`.
 
 ## Design Goals
 

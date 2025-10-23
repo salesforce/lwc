@@ -2,6 +2,75 @@ import { spyOn } from '@vitest/spy';
 import * as LWC from 'lwc';
 import { setHooks } from '../../helpers/hooks';
 
+/*
+ * Because these tests are written in JS, the type defs below are not enforced. They are provided
+ * solely as documentation. They can be used as IDE autocomplete if the test configs are annotated
+ * with the JSDoc below (the number of ../ may need to be adjusted):
+ /** @type {import('../../../configs/plugins/test-hydration.js').HydrationTestConfig} */
+
+/**
+ * @typedef {object} TestConfig
+ *   Exactly one of `test` or `advancedTest` must be defined. All other properties are optional.
+ *   `snapshot` is ignored if `advancedTest` is defined.
+ * @property {Record<string, string>} [props]
+ *   Props to provide for the root test component.
+ * @property {Record<string, string} [clientProps]
+ *   Client-side props to hydrate the root test component.
+ * @property {string[]} [requiredFeatureFlags]
+ *   List of feature flags that should be enabled for the test.
+ * @property {SnapshotFunc} [snapshot]
+ *   A function that can be used to capture the pre-hydration state of the page.
+ *   Only used if `test` is defined.
+ * @property {TestFunc} [test]
+ *   A function that contains assertions, run after hydration.
+ *   Should be used if asserting the pre-hydration state is not required.
+ * @property {AdvancedTestFunc} [advancedTest]
+ *   A function that contains assertions and is also responsible for hydrating the page.
+ *   Should only be used if assertions are required before hydration.
+ */
+
+/**
+ * @callback SnapshotFunc
+ *   Captures a snapshot of the page before hydration.
+ * @param {HTMLElement} component
+ *   The root test component, corresponding to the `x-main` component.
+ * @returns {unknown}
+ *   Any data required for test assertions.
+ */
+
+/**
+ * @callback TestFunc
+ *   Asserts the state of the page after hydration has occurred.
+ * @param {HTMLElement} target
+ *   The root test element, corresponding to the `x-main` component.
+ * @param {unknown} snapshot
+ *   The result of the `snapshot` function, if defined.
+ * @param {Record<'log' | 'warn' | 'error', unknown[][]>} calls
+ *   Console calls that occurred during hydration.
+ * @returns {void}
+ */
+
+/**
+ * @callback AdvancedTestFunc
+ *   Asserts the state of the page before and after hydration has occurred.
+ *   Is responsible for calling `hydrateComponent`.
+ * @param {HTMLElement} target
+ *   The root test element, corresponding to the `x-main` component.
+ * @param {object} utils
+ *   Various things helpful for making assertions.
+ * @param {import('lwc').LightningElement} utils.Component
+ *   The constructor for the root test component (`x-main`).
+ * @param {import('lwc').hydrateComponent} utils.hydrateComponent
+ *   A bound instance of `hydrateComponent`. Must be called for tests to pass.
+ * @param {Record<'log' | 'warn' | 'error', unknown[][]> & {reset: () => void}} utils.consoleSpy
+ *   A spy on `console` to track calls. Calling `reset` empties the tracked calls.
+ * @param {HTMLDivElement} utils.container
+ *   The parent of the test root element.
+ * @param {'x-main'} utils.selector
+ *   The selector of the root test element.
+ * @returns {void}
+ */
+
 setHooks({ sanitizeHtmlContent: (content) => content });
 
 function parseStringToDom(html) {

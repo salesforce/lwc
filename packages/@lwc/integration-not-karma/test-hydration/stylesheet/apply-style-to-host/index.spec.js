@@ -1,3 +1,4 @@
+/** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     test(elm) {
         // should apply style to the host element
