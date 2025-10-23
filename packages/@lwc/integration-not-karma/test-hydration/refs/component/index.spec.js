@@ -1,3 +1,4 @@
+/** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     test(target, snapshots, consoleCalls) {
         const expected = target.shadowRoot.querySelector('x-child');

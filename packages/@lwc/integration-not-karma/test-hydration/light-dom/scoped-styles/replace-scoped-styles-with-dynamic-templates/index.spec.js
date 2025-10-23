@@ -1,3 +1,4 @@
+/** @type {import('../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     async test(target) {
         const rafPromise = () => new Promise((resolve) => requestAnimationFrame(() => resolve()));
