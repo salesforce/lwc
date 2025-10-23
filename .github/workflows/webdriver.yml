@@ -18,7 +18,6 @@ on:
 
 env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
-    CHROME_VERSION: 130
 
 jobs:
     run-integration-tests:
@@ -36,23 +35,29 @@ jobs:
                   node-version: '20.19.4'
                   cache: 'yarn'
 
+            # Ensure we use the same version of Chrome and chromedriver
+            - name: Get latest chromedriver version
+              id: chromedriver-version
+              run: echo "latest=$(yarn -s info chromedriver version | cut -d. -f1)" >> "$GITHUB_OUTPUT"
+
             # Needed for local browser integration tests
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup Chrome
               uses: browser-actions/setup-chrome@v2
               with:
-                  chrome-version: ${{ env.CHROME_VERSION }}
+                  chrome-version: ${{ steps.chromedriver-version.outputs.latest }}
               id: setup-chrome
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              # Using --ignore-scripts here so we don't rebuild when we install chromedriver
+              # (We need to allow scripts when chromedriver installs so it can set itself up)
+              run: yarn install --frozen-lockfile  --ignore-scripts
               working-directory: ./
 
-            # Pin chromedriver to the same version as Chrome above
             - name: Install chromedriver
               id: install-chromedriver
               run: |
-                  yarn add -W chromedriver@^${{ env.CHROME_VERSION }} --ignore-scripts # Don't need to re-build
+                  yarn add -W chromedriver@${{ steps.chromedriver-version.outputs.latest }}
                   echo "chromedriver-path=\"$(yarn bin chromedriver)\"" >> "$GITHUB_OUTPUT"
               working-directory: ./
 
