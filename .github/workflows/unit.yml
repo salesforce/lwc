@@ -21,18 +21,13 @@ env:
 
 jobs:
     run-unit-tests:
-        strategy:
-            matrix:
-                runs_on: [ubuntu-22.04, windows-2025]
-        runs-on: ${{ matrix.runs_on }}
+        runs-on: ubuntu-22.04
         steps:
-            - run: git config --global core.eol lf
-            - run: git config --global core.autocrlf true
             - name: Checkout repository
-              uses: actions/checkout@v5
+              uses: actions/checkout@v4
 
             - name: Setup Node
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v4
               with:
                   node-version: '20.19.4'
                   cache: 'yarn'
@@ -40,17 +35,21 @@ jobs:
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup chrome
-              uses: browser-actions/setup-chrome@v2
+              uses: browser-actions/setup-chrome@v1
               with:
                   chrome-version: 130
-                  install-chromedriver: true
               id: setup-chrome
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
 
+            # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
+            # See: https://github.com/google/tachometer#on-demand-dependencies
+            - name: Install chromedriver
+              run: yarn add -W chromedriver@^130
+
             - name: Check package.json integrity
-              run: node ./scripts/tasks/check-and-rewrite-package-json.js --test || (git diff && false)
+              run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
             - name: Check licenses are up to date
               run: node ./scripts/tasks/generate-license-files.mjs --test
             - name: Verify @lwc/shared is tree-shakable
