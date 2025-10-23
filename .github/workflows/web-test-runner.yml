@@ -47,18 +47,23 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn playwright install chrome firefox webkit --with-deps
+            - name: Install playwright dependencies
+              run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test
-            - run: yarn test || true
+            - name: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+              run: yarn test || true
               env:
                   DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-            - run: yarn test
+            - name: DISABLE_STATIC_CONTENT_OPTIMIZATION
+              run: yarn test
               env:
                   DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
-            - run: yarn test
+            - name: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL
+              run: yarn test
               env:
                   ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: 1
-            - run: yarn test
+            - name: NODE_ENV_FOR_TEST=production
+              run: yarn test
               env:
                   NODE_ENV_FOR_TEST: production
 
@@ -87,23 +92,31 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn playwright install chrome firefox webkit --with-deps
-            - run: yarn test
+            - name: Install playwright dependencies
+              run: yarn playwright install chrome firefox webkit --with-deps
+            - name: API version 58
+              run: yarn test
               env:
                   API_VERSION: 58
-            - run: yarn test
+            - name: API version 59
+              run: yarn test
               env:
                   API_VERSION: 59
-            - run: yarn test
+            - name: API version 60
+              run: yarn test
               env:
                   API_VERSION: 60
-            - run: yarn test
+            - name: API version 61
+              run: yarn test
               env:
                   API_VERSION: 61
-            - run: yarn test
+            - name: API version 62
+              run: yarn test
               env:
                   API_VERSION: 62
-            - run: yarn test
+            # No new features for API version 63-65
+            - name: API version 66
+              run: yarn test
               env:
                   API_VERSION: 66
 
@@ -130,28 +143,35 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn playwright install chrome firefox webkit --with-deps
+            - name: Install playwright dependencies
+              run: yarn playwright install chrome firefox webkit --with-deps
             # Synthetic shadow only
-            - run: yarn test || true
+            - name: Slightly older browsers
+              run: yarn test || true
               env:
                   LEGACY_BROWSERS: 1
-            - run: yarn test
+            - name: FORCE_NATIVE_SHADOW_MODE_FOR_TEST
+              run: yarn test
               env:
                   FORCE_NATIVE_SHADOW_MODE_FOR_TEST: 1
-            - run: yarn test
+            - name: DISABLE_DETACHED_REHYDRATION
+              run: yarn test
               env:
                   DISABLE_DETACHED_REHYDRATION: 1
-            - run: yarn test || true
+            - name: DISABLE_DETACHED_REHYDRATION DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+              run: yarn test || true
               env:
                   DISABLE_DETACHED_REHYDRATION: 1
                   DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
 
             # Native shadow only -- don't forget SHADOW_MODE_OVERRIDE!
-            - run: yarn test
+            - name: Native shadow DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER
+              run: yarn test
               env:
                   SHADOW_MODE_OVERRIDE: native
                   DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER: 1
-            - run: yarn test
+            - name: Native shadow DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER DISABLE_STATIC_CONTENT_OPTIMIZATION
+              run: yarn test
               env:
                   SHADOW_MODE_OVERRIDE: native
                   DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
@@ -179,18 +199,23 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn playwright install chrome firefox webkit --with-deps
+            - name: Install playwright dependencies
+              run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test:hydration
-            - run: yarn test:hydration
+            - name: Synthetic shadow
+              run: yarn test:hydration
               env:
                   SHADOW_MODE_OVERRIDE: synthetic
-            - run: yarn test:hydration
+            - name: NODE_ENV_FOR_TEST=production
+              run: yarn test:hydration
               env:
                   NODE_ENV_FOR_TEST: production
-            - run: yarn test:hydration
+            - name: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+              run: yarn test:hydration
               env:
                   DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-            - run: yarn test:hydration
+            - name: DISABLE_STATIC_CONTENT_OPTIMIZATION
+              run: yarn test:hydration
               env:
                   DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
 
@@ -218,25 +243,32 @@ jobs:
               run: yarn install --frozen-lockfile
               working-directory: ./
 
-            - run: yarn playwright install chrome firefox webkit --with-deps
+            - name: Install playwright dependencies
+              run: yarn playwright install chrome firefox webkit --with-deps
             # NOTE: All tests have ENGINE_SERVER=1 already set
             - run: yarn test:hydration
-            - run: yarn test:hydration
+            - name: Synthetic shadow
+              run: yarn test:hydration
               env:
                   SHADOW_MODE_OVERRIDE: synthetic
-            - run: yarn test:hydration
+            - name: NODE_ENV_FOR_TEST=production
+              run: yarn test:hydration
               env:
                   NODE_ENV_FOR_TEST: production
-            - run: yarn test:hydration
+            - name: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+              run: yarn test:hydration
               env:
                   DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-            - run: yarn test:hydration
+            - name: DISABLE_STATIC_CONTENT_OPTIMIZATION
+              run: yarn test:hydration
               env:
                   DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
-            - run: yarn test:hydration
+            - name: DISABLE_DETACHED_REHYDRATION
+              run: yarn test:hydration
               env:
                   DISABLE_DETACHED_REHYDRATION: 1
-            - run: yarn test:hydration
+            - name: DISABLE_DETACHED_REHYDRATION DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+              run: yarn test:hydration
               env:
                   DISABLE_DETACHED_REHYDRATION: 1
                   DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
