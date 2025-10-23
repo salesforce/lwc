@@ -115,8 +115,6 @@ jobs:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
 
         runs-on: ${{ matrix.runs_on }}
-        env:
-            SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
 
         steps:
             - name: Checkout repository
