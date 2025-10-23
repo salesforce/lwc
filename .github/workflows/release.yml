@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             bump:
-                description: 'Version bump type'
+                description: 'Version bump type (used if release_version is empty)'
                 type: choice
                 options:
                     - major
@@ -13,7 +13,7 @@ on:
                     - prerelease
                 required: false
             release_version:
-                description: 'OR Explicit version number (must be greater than current root version)'
+                description: 'Semver version to release (must be > current root version)'
                 required: false
 
 permissions:
@@ -30,21 +30,21 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v4
               with:
                   fetch-depth: 0
                   token: ${{ secrets.WORKFLOW_PAT }}
                   persist-credentials: true
 
             - name: Setup Node
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v4
               with:
                   node-version: '20'
                   registry-url: 'https://registry.npmjs.org'
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile --ignore-scripts
+              run: yarn install --frozen-lockfile
 
             - name: Resolve version input
               id: resolve_version
