@@ -72,9 +72,9 @@ export interface RollupLwcOptions {
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
 
-const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
+const IMPLICIT_DEFAULT_HTML_PATH = ['@lwc', 'resources', 'empty_html.js'].join(path.sep);
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
-const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
+const IMPLICIT_DEFAULT_CSS_PATH = ['@lwc', 'resources', 'empty_css.css'].join(path.sep);
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
