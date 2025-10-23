@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
         inputs:
             bump:
-                description: 'Version bump type (used if release_version is empty)'
+                description: 'Version bump type'
                 type: choice
                 options:
                     - major
@@ -13,7 +13,7 @@ on:
                     - prerelease
                 required: false
             release_version:
-                description: 'Semver version to release (must be > current root version)'
+                description: 'OR Explicit version number (must be greater than current root version)'
                 required: false
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
                   cache: 'yarn'
 
             - name: Install dependencies
-              run: yarn install --frozen-lockfile
+              run: yarn install --frozen-lockfile --ignore-scripts
 
             - name: Resolve version input
               id: resolve_version
