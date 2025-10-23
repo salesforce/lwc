@@ -6,6 +6,7 @@ export default mergeConfig(
     defineProject({
         test: {
             name: 'lwc-compiler',
+            setupFiles: ['./scripts/test/setup-test.ts'],
         },
     })
 );

@@ -1,0 +1,8 @@
+[
+    {
+        "message": "LWC1097: @wire expects a function identifier as first parameter."
+    },
+    {
+        "message": "LWC1094: @wire expects a configuration object expression as second parameter."
+    }
+]

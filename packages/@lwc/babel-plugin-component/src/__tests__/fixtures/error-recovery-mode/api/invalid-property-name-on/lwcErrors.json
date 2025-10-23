@@ -1,0 +1,5 @@
+[
+    {
+        "message": "LWC1108: Invalid property name \"onClickHandler\". Properties starting with \"on\" are reserved for event handlers."
+    }
+]

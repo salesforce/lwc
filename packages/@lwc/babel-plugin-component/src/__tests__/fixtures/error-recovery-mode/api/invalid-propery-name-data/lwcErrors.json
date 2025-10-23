@@ -1,0 +1,5 @@
+[
+    {
+        "message": "LWC1107: Invalid property name \"dataProperty\". Properties starting with \"data\" are reserved attributes."
+    }
+]

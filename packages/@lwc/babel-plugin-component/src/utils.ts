@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import lineColumn from 'line-column';
-import { generateErrorMessage } from '@lwc/errors';
+import { DiagnosticLevel, generateCompilerDiagnostic, generateErrorMessage } from '@lwc/errors';
 import { LWC_PACKAGE_ALIAS } from './constants';
 import type { types, NodePath } from '@babel/core';
 import type { CompilerMetrics } from '@lwc/errors';
@@ -112,15 +112,59 @@ function generateError(
     return error;
 }
 
+function collectError(
+    source: NodePath<types.Node>,
+    { errorInfo, messageArgs }: DecoratorErrorOptions,
+    state: LwcBabelPluginPass
+) {
+    const diagnostic = generateCompilerDiagnostic(
+        errorInfo,
+        {
+            messageArgs,
+            origin: {
+                filename: state.filename,
+                location: normalizeLocation(source) ?? undefined,
+            },
+        },
+        true
+    );
+
+    if (diagnostic.level === DiagnosticLevel.Fatal) {
+        throw generateError(source, { errorInfo, messageArgs }, state);
+    }
+
+    if (!(state.file.metadata as any).lwcErrors) {
+        (state.file.metadata as any).lwcErrors = [];
+    }
+    (state.file.metadata as any).lwcErrors.push(diagnostic);
+}
+
+function handleError(
+    source: NodePath<types.Node>,
+    decoratorErrorOpts: DecoratorErrorOptions,
+    state: LwcBabelPluginPass
+) {
+    if (isErrorRecoveryMode(state)) {
+        collectError(source, decoratorErrorOpts, state);
+    } else {
+        throw generateError(source, decoratorErrorOpts, state);
+    }
+}
+
 function incrementMetricCounter(metric: CompilerMetrics, state: LwcBabelPluginPass) {
     state.opts.instrumentation?.incrementCounter(metric);
+}
+
+function isErrorRecoveryMode(state: LwcBabelPluginPass): boolean {
+    return state.file.opts?.parserOpts?.errorRecovery ?? false;
 }
 
 export {
     isClassMethod,
     isGetterClassMethod,
     isSetterClassMethod,
-    generateError,
     getEngineImportSpecifiers,
+    handleError,
     incrementMetricCounter,
+    isErrorRecoveryMode,
 };
