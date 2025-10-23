@@ -1,3 +1,4 @@
+/** @type {import('../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
         const [div1, div2] = target.shadowRoot.querySelectorAll('div');

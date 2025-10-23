@@ -3,6 +3,7 @@ import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 // SSR has `class="null"`, whereas the client has no class at all.
 // This is to test if hydration is smart enough to recognize the difference between a null
 // attribute and the literal string "null".
+/** @type {import('../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     props: {
         className: 'null',

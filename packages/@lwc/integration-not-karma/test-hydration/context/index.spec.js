@@ -1,5 +1,6 @@
 import { expectConsoleCalls } from '../../helpers/utils.js';
 
+/** @type {import('../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     // server is expected to generate the same console error as the client
     expectedSSRConsoleCalls: {
