@@ -22,6 +22,7 @@ packages/@lwc/template-compiler/src/__tests__/fixtures/**/metadata.json
 # Fixture inputs potentially containing deliberate errors
 packages/@lwc/style-compiler/src/__tests__/fixtures/**/actual.css
 packages/@lwc/babel-plugin-component/src/__tests__/fixtures/**/actual.js
+packages/@lwc/babel-plugin-component/src/__tests__/fixtures/**/lwcErrors.json
 
 # TODO: Why do these have JS in them?
 packages/@lwc/module-resolver/src/__tests__/fixtures/no-config/modules/foo/bar/bar.css
