@@ -18,7 +18,7 @@ on:
 
 env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
-    CHROMEDRIVER_BINARY: '../../../node_modules/chromedriver/lib/chromedriver/chromedriver' # pin wdio to local chromedriver
+    CHROME_VERSION: 130
 
 jobs:
     run-integration-tests:
@@ -41,7 +41,7 @@ jobs:
             - name: Setup Chrome
               uses: browser-actions/setup-chrome@v2
               with:
-                  chrome-version: 130
+                  chrome-version: ${{ env.CHROME_VERSION }}
               id: setup-chrome
 
             - name: Install dependencies
@@ -50,8 +50,17 @@ jobs:
 
             # Pin chromedriver to the same version as Chrome above
             - name: Install chromedriver
-              run: yarn add -W chromedriver@^130
+              id: install-chromedriver
+              run: |
+                  yarn add -W chromedriver@^${{ env.CHROME_VERSION }} --ignore-scripts # Don't need to re-build
+                  echo "chromedriver-path=\"$(yarn bin chromedriver)\"" >> "$GITHUB_OUTPUT"
               working-directory: ./
 
-            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:prod:ci
-            - run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} yarn local:dev:ci
+            - run: yarn local:prod:ci
+              env:
+                  CHROME_BINARY: ${{ steps.setup-chrome.outputs.chrome-path }}
+                  CHROMEDRIVER_BINARY: ${{ steps.install-chromedriver.outputs.chromedriver-path}}
+            - run: yarn local:dev:ci
+              env:
+                  CHROME_BINARY: ${{ steps.setup-chrome.outputs.chrome-path }}
+                  CHROMEDRIVER_BINARY: ${{ steps.install-chromedriver.outputs.chromedriver-path}}
