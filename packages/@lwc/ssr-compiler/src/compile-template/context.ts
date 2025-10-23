@@ -33,7 +33,10 @@ export function createNewContext(templateOptions: TemplateOpts): {
         }
         return false;
     };
-    const getLocalVars = () => localVarStack.flatMap((varsSet) => Array.from(varsSet));
+    // Unique local variable names across block scopes, we don't care about block scope order
+    const getLocalVars = () => [
+        ...new Set(localVarStack.flatMap((varsSet) => Array.from(varsSet))),
+    ];
 
     const hoistedStatements = {
         module: [] as EsStatement[],
