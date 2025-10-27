@@ -43,6 +43,8 @@ describe('thows error', () => {
                     return "foo";
                 }`,
             ],
+            // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
+            // eslint-disable-next-line vitest/no-done-callback
         ])(`%s`, ([, body]) => {
             const src = /* js */ `
                 import { api, LightningElement } from "lwc";
@@ -110,6 +112,8 @@ describe('thows error', () => {
             ['tabindex', 'tabIndex'],
             ['maxlength', 'maxLength'],
             ['maxvalue', 'maxValue'],
+            // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
+            // eslint-disable-next-line vitest/no-done-callback
         ] as [prop: string, suggestion: string][])('%s', ([prop, suggestion]) => {
             const src = /* js */ `
                 import { api, LightningElement } from "lwc";
@@ -124,6 +128,8 @@ describe('thows error', () => {
     });
 
     describe('disallowed props', () => {
+        // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
+        // eslint-disable-next-line vitest/no-done-callback
         test.for(['class', 'is', 'slot', 'style'])('%s', (prop) => {
             const src = /* js */ `
                 import { api, LightningElement } from 'lwc'

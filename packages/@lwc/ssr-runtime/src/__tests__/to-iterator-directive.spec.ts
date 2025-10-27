@@ -16,6 +16,8 @@ describe('toIteratorDirective', () => {
         ],
     ] as const;
 
+    // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
+    // eslint-disable-next-line vitest/no-done-callback
     it.for(iterables)('%s is converted', ([_label, iter]) => {
         const generator = toIteratorDirective(iter);
         expect([...generator]).toEqual([
