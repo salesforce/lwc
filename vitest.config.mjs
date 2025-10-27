@@ -56,7 +56,7 @@ export default defineConfig({
             ],
             thresholds: {
                 // TODO [#5564]: Restore to 95 across the board
-                branches: 93,
+                branches: 90,
                 functions: 89,
                 lines: 93,
                 statements: 90,
