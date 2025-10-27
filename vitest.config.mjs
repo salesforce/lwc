@@ -36,7 +36,7 @@ export default defineConfig({
                 '**/scripts/**',
                 '**/vitest.*',
                 // Ignore browser-only modules which are only lightly tested in unit tests
-                // These are mostly tested in integration/karma tests
+                // These are mostly tested in integration tests
                 '**/packages/@lwc/aria-reflection/**',
                 '**/packages/@lwc/engine-dom/**',
                 '**/packages/@lwc/engine-core/**',
@@ -55,20 +55,11 @@ export default defineConfig({
                 '**/packages/lwc/**',
             ],
             thresholds: {
-                // SSR compiler/runtime is relatively newer, so has lower thresholds for now
-                '**/packages/@lwc/ssr-*/**': {
-                    branches: 90,
-                    functions: 90,
-                    lines: 90,
-                    statements: 90,
-                },
-
-                '!**/packages/@lwc/ssr-*/**': {
-                    branches: 95,
-                    functions: 95,
-                    lines: 95,
-                    statements: 95,
-                },
+                // TODO [#5564]: Restore to 95 across the board
+                branches: 93,
+                functions: 89,
+                lines: 93,
+                statements: 90,
             },
             reporter: [
                 'clover',
