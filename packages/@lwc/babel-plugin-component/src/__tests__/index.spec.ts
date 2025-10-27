@@ -89,7 +89,7 @@ describe('fixtures', () => {
             try {
                 const result = transform(src, config);
                 code = result.code;
-                lwcErrors = JSON.stringify(normalizeLwcError(result.lwcErrors), null, 4);
+                lwcErrors = JSON.stringify(normalizeLwcError(result.lwcErrors), null, 4) + '\n';
             } catch (err) {
                 error = JSON.stringify(normalizeError(err), null, 4);
             }
