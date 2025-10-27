@@ -2112,11 +2112,9 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
-  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
-  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -3624,14 +3622,14 @@
     magic-string "^0.30.17"
     pathe "^2.0.3"
 
-"@vitest/spy@3.2.4", "@vitest/spy@^3.2.4":
+"@vitest/spy@3.2.4":
   version "3.2.4"
   resolved "https://registry.yarnpkg.com/@vitest/spy/-/spy-3.2.4.tgz#cc18f26f40f3f028da6620046881f4e4518c2599"
   integrity sha512-vAfasCOe6AIK70iP5UD11Ac4siNUNJ9i/9PZ3NKx07sG6sUxeag1LWdNrMWeKKYBLlzuK+Gn65Yd5nyL6ds+nw==
   dependencies:
     tinyspy "^4.0.3"
 
-"@vitest/spy@4.0.4":
+"@vitest/spy@4.0.4", "@vitest/spy@^4.0.4":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@vitest/spy/-/spy-4.0.4.tgz#b20b8736cdfd1774e38bceeadac1936d9b7653bf"
   integrity sha512-G9L13AFyYECo40QG7E07EdYnZZYCKMTSp83p9W8Vwed0IyCG1GnpDLxObkx8uOGPXfDpdeVf24P1Yka8/q1s9g==
