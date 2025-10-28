@@ -72,8 +72,6 @@ describe('transformSync', () => {
             { name: 'true', config: { enableStaticContentOptimization: true }, expected: true },
             { name: 'unspecified', config: {}, expected: true },
         ];
-        // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
-        // eslint-disable-next-line vitest/no-done-callback
         it.for(configs)('$name', ({ config, expected }) => {
             const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
             const { code, warnings } = transformSync(template, 'foo.html', {

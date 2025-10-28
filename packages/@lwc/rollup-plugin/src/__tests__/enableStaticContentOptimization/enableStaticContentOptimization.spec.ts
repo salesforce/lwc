@@ -47,8 +47,6 @@ describe('enableStaticContentOptimization:', () => {
         { name: 'unspecified', opts: {}, expected: true },
     ];
 
-    // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
-    // eslint-disable-next-line vitest/no-done-callback
     it.for(configs)('$name', async ({ opts, expected }) => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', opts);
         expect(warnings).toEqual([]);

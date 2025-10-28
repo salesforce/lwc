@@ -253,24 +253,19 @@ describe('sourcemaps', () => {
             { name: 'invalid string', sourcemap: 'invalid' },
             { name: 'object', sourcemap: {} },
             { name: 'numbers', sourcemap: 123 },
-        ])(
-            '$name',
-            // False positive: https://github.com/vitest-dev/eslint-plugin-vitest/issues/802
-            // eslint-disable-next-line vitest/no-done-callback
-            ({ sourcemap }) => {
-                expect(() =>
-                    transformSync(source, 'foo.js', {
-                        ...TRANSFORMATION_OPTIONS,
-                        outputConfig: {
-                            // @ts-expect-error Property can be passed from JS environments with no type checking.
-                            sourcemap,
-                        },
-                    })
-                ).toThrow(
-                    `LWC1021: Expected a boolean value or 'inline' for outputConfig.sourcemap, received "${sourcemap}".`
-                );
-            }
-        );
+        ])('$name', ({ sourcemap }) => {
+            expect(() =>
+                transformSync(source, 'foo.js', {
+                    ...TRANSFORMATION_OPTIONS,
+                    outputConfig: {
+                        // @ts-expect-error Property can be passed from JS environments with no type checking.
+                        sourcemap,
+                    },
+                })
+            ).toThrow(
+                `LWC1021: Expected a boolean value or 'inline' for outputConfig.sourcemap, received "${sourcemap}".`
+            );
+        });
     });
 });
 
