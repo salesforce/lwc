@@ -14,7 +14,6 @@ function jasmineSpyAdapter(spy) {
         // Must be non-enumerable for equality checks to work on array literal expected values
         count: { value: () => spy.mock.calls.length },
         reset: { value: () => spy.mockReset() },
-        argsFor: { value: (index) => spy.mock.calls.at(index) },
     });
 
     return spy;
