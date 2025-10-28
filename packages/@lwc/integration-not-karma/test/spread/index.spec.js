@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
-import { jasmine, jasmineSpyOn as spyOn } from '../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 import { getHooks, setHooks } from '../../helpers/hooks.js';
 
 function setSanitizeHtmlContentHookForTest(impl) {
@@ -13,9 +13,19 @@ function setSanitizeHtmlContentHookForTest(impl) {
     return sanitizeHtmlContent;
 }
 describe('lwc:spread', () => {
-    let elm, simpleChild, overriddenChild, trackedChild, innerHTMLChild, originalHook, consoleSpy;
+    let elm,
+        simpleChild,
+        overriddenChild,
+        trackedChild,
+        innerHTMLChild,
+        originalHook,
+        warnSpy,
+        logSpy;
+    beforeAll(() => {
+        warnSpy = spyOn(console, 'warn');
+        logSpy = spyOn(console, 'log');
+    });
     beforeEach(() => {
-        consoleSpy = spyOn(console, 'warn');
         originalHook = setSanitizeHtmlContentHookForTest((x) => x);
         elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
@@ -23,10 +33,15 @@ describe('lwc:spread', () => {
         overriddenChild = elm.shadowRoot.querySelector('.x-child-overridden');
         trackedChild = elm.shadowRoot.querySelector('.x-child-tracked');
         innerHTMLChild = elm.shadowRoot.querySelector('.div-innerhtml');
-        spyOn(console, 'log');
     });
     afterEach(() => {
         setSanitizeHtmlContentHookForTest(originalHook);
+        logSpy.mockReset();
+        warnSpy.mockReset();
+    });
+    afterAll(() => {
+        logSpy.mockRestore();
+        warnSpy.mockRestore();
     });
     it('should render basic test', () => {
         expect(simpleChild.shadowRoot.querySelector('span').textContent).toEqual('Name: LWC');
@@ -35,18 +50,20 @@ describe('lwc:spread', () => {
         expect(innerHTMLChild.innerHTML).toEqual('');
 
         if (process.env.NODE_ENV === 'production') {
-            expect(consoleSpy).not.toHaveBeenCalled();
+            expect(warnSpy).not.toHaveBeenCalled();
         } else {
-            expect(consoleSpy).toHaveBeenCalledTimes(1);
-            expect(consoleSpy.calls.argsFor(0)[0].message).toContain(
-                `Cannot set property "innerHTML". Instead, use lwc:inner-html or lwc:dom-manual.`
+            expect(warnSpy).toHaveBeenCalledExactlyOnceWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        `Cannot set property "innerHTML". Instead, use lwc:inner-html or lwc:dom-manual.`
+                    ),
+                })
             );
         }
     });
     it('should assign onclick', () => {
         simpleChild.click();
-        // eslint-disable-next-line no-console
-        expect(console.log).toHaveBeenCalledWith('spread click called', simpleChild);
+        expect(logSpy).toHaveBeenCalledWith('spread click called', simpleChild);
     });
     it('should override values in template', async () => {
         expect(overriddenChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Aura');
@@ -58,12 +75,10 @@ describe('lwc:spread', () => {
     });
     it('should assign onclick along with the one in template', () => {
         overriddenChild.click();
-        // eslint-disable-next-line no-console
-        expect(console.log).toHaveBeenCalledWith('spread click called', overriddenChild);
-        // eslint-disable-next-line no-console
-        expect(console.log).toHaveBeenCalledWith(
+        expect(logSpy).toHaveBeenCalledWith('spread click called', overriddenChild);
+        expect(logSpy).toHaveBeenCalledWith(
             'template click called',
-            jasmine.any(Object) /* component */
+            expect.any(Object) /* component */
         );
     });
 

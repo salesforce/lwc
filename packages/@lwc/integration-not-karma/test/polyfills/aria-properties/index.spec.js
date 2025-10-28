@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
 import Component from 'x/component';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import {
     ariaPropertiesMapping,
     nonPolyfilledAriaProperties,
@@ -25,7 +25,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
                 let dispatcher;
 
                 beforeEach(() => {
-                    dispatcher = jasmine.createSpy();
+                    dispatcher = mockFn();
                     attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
                 });
 
@@ -52,7 +52,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
 
                 function expectGetterReportIfNonStandard() {
                     if (nonStandardAriaProperties.includes(property)) {
-                        expect(dispatcher.calls.allArgs()).toEqual([
+                        expect(dispatcher.mock.calls).toEqual([
                             [
                                 'NonStandardAriaReflection',
                                 {
@@ -70,7 +70,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
 
                 function expectSetterReportIfNonStandard(setValueType) {
                     if (nonStandardAriaProperties.includes(property)) {
-                        expect(dispatcher.calls.allArgs()).toEqual([
+                        expect(dispatcher.mock.calls).toEqual([
                             [
                                 'NonStandardAriaReflection',
                                 {
@@ -218,7 +218,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
             let dispatcher;
 
             beforeEach(() => {
-                dispatcher = jasmine.createSpy();
+                dispatcher = mockFn();
                 attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
             });
 
