@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Container from 'x/container';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createShadowTree(parentNode) {
@@ -28,7 +28,7 @@ describe('Eventnodes.button.removeEventListener', () => {
             window,
         ];
 
-        const listener = jasmine.createSpy();
+        const listener = mockFn();
         targets.forEach((node) => {
             node.addEventListener('click', listener);
         });
@@ -51,7 +51,7 @@ describe('Eventnodes.button.removeEventListener', () => {
             window,
         ];
 
-        const listener = { handleEvent: jasmine.createSpy() };
+        const listener = { handleEvent: mockFn() };
         targets.forEach((node) => {
             node.addEventListener('click', listener);
         });
