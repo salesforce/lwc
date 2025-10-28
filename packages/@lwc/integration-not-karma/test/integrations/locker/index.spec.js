@@ -3,7 +3,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import LockerIntegration from 'x/lockerIntegration';
 import LockerLiveComponent from 'x/lockerLiveComponent';
 import LockerHooks, { hooks } from 'x/lockerHooks';
-import { jasmine, jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 beforeEach(() => {
     setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
 });
@@ -20,22 +20,25 @@ it('should support Locker integration which uses a wrapped LightningElement base
 });
 
 describe('Locker hooks', () => {
-    const {
-        getHook: originalGetHook,
-        setHook: originalSetHook,
-        callHook: originalCallHook,
-    } = hooks;
-
-    beforeEach(() => {
-        spyOn(hooks, 'getHook').and.callThrough();
-        spyOn(hooks, 'setHook').and.callThrough();
-        spyOn(hooks, 'callHook').and.callThrough();
+    let getHookSpy;
+    let setHookSpy;
+    let callHookSpy;
+    beforeAll(() => {
+        getHookSpy = spyOn(hooks, 'getHook');
+        setHookSpy = spyOn(hooks, 'setHook');
+        callHookSpy = spyOn(hooks, 'callHook');
     });
 
     afterEach(() => {
-        hooks.getHook = originalGetHook;
-        hooks.setHook = originalSetHook;
-        hooks.callHook = originalCallHook;
+        getHookSpy.mockReset();
+        setHookSpy.mockReset();
+        callHookSpy.mockReset();
+    });
+
+    afterAll(() => {
+        getHookSpy.mockRestore();
+        setHookSpy.mockRestore();
+        callHookSpy.mockRestore();
     });
 
     describe('getHook', () => {
@@ -45,8 +48,8 @@ describe('Locker hooks', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.publicProp;
 
-            expect(hooks.getHook).toHaveBeenCalledTimes(1);
-            expect(hooks.getHook).toHaveBeenCalledWith(jasmine.any(Object), 'publicProp');
+            expect(getHookSpy).toHaveBeenCalledTimes(1);
+            expect(getHookSpy).toHaveBeenCalledWith(expect.any(Object), 'publicProp');
         });
 
         it('invokes getHook when reading a public property via an accessor', () => {
@@ -55,8 +58,8 @@ describe('Locker hooks', () => {
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.publicAccessor;
 
-            expect(hooks.getHook).toHaveBeenCalledTimes(1);
-            expect(hooks.getHook).toHaveBeenCalledWith(jasmine.any(Object), 'publicAccessor');
+            expect(getHookSpy).toHaveBeenCalledTimes(1);
+            expect(getHookSpy).toHaveBeenCalledWith(expect.any(Object), 'publicAccessor');
         });
     });
 
@@ -65,16 +68,16 @@ describe('Locker hooks', () => {
             const elm = createElement('x-hooks', { is: LockerHooks });
             elm.publicProp = 1;
 
-            expect(hooks.setHook).toHaveBeenCalledTimes(1);
-            expect(hooks.setHook).toHaveBeenCalledWith(jasmine.any(Object), 'publicProp', 1);
+            expect(setHookSpy).toHaveBeenCalledTimes(1);
+            expect(setHookSpy).toHaveBeenCalledWith(expect.any(Object), 'publicProp', 1);
         });
 
         it('invokes setHook when assigning a public property via an accessor', () => {
             const elm = createElement('x-hooks', { is: LockerHooks });
             elm.publicAccessor = 1;
 
-            expect(hooks.setHook).toHaveBeenCalledTimes(1);
-            expect(hooks.setHook).toHaveBeenCalledWith(jasmine.any(Object), 'publicAccessor', 1);
+            expect(setHookSpy).toHaveBeenCalledTimes(1);
+            expect(setHookSpy).toHaveBeenCalledWith(expect.any(Object), 'publicAccessor', 1);
         });
     });
 
@@ -83,12 +86,11 @@ describe('Locker hooks', () => {
             const elm = createElement('x-hooks', { is: LockerHooks });
             elm.publicMethod(1, 'foo');
 
-            expect(hooks.callHook).toHaveBeenCalledTimes(1);
-            expect(hooks.callHook).toHaveBeenCalledWith(
-                jasmine.any(Object),
-                jasmine.any(Function),
-                [1, 'foo']
-            );
+            expect(callHookSpy).toHaveBeenCalledTimes(1);
+            expect(callHookSpy).toHaveBeenCalledWith(expect.any(Object), expect.any(Function), [
+                1,
+                'foo',
+            ]);
         });
 
         it('should invoke callHook for all the lifecycle hooks', () => {
@@ -97,9 +99,9 @@ describe('Locker hooks', () => {
             document.body.appendChild(elm);
             document.body.removeChild(elm);
 
-            expect(hooks.callHook).toHaveBeenCalledTimes(4);
+            expect(callHookSpy).toHaveBeenCalledTimes(4);
 
-            const invokedMethods = hooks.callHook.calls.allArgs().map(([_, method]) => method.name);
+            const invokedMethods = callHookSpy.mock.calls.map(([_, method]) => method.name);
             expect(invokedMethods).toEqual([
                 'connectedCallback',
                 'render',
@@ -115,11 +117,9 @@ describe('Locker hooks', () => {
             const evt = new CustomEvent('test');
             elm.shadowRoot.querySelector('div').dispatchEvent(evt);
 
-            expect(hooks.callHook).toHaveBeenCalledWith(
-                jasmine.any(Object),
-                jasmine.any(Function),
-                [evt]
-            );
+            expect(callHookSpy).toHaveBeenCalledWith(expect.any(Object), expect.any(Function), [
+                evt,
+            ]);
         });
     });
 });

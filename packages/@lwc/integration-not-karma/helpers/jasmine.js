@@ -7,12 +7,7 @@ import { spyOn, fn } from '@vitest/spy';
  */
 function jasmineSpyAdapter(spy) {
     Object.defineProperties(spy, {
-        and: { get: () => spy },
         calls: { get: () => spy.mock.calls },
-        returnValue: { value: () => spy.mockReturnValue() },
-        // calling mockImplementation() with nothing restores the original
-        callThrough: { value: () => spy.mockImplementation() },
-        callFake: { value: (impl) => spy.mockImplementation(impl) },
     });
 
     Object.defineProperties(spy.mock.calls, {

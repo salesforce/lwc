@@ -1,11 +1,18 @@
 import { createElement } from 'lwc';
 import MixedSlotParent from 'x/mixedSlotParent';
-import { jasmineSpyOn as spyOn } from '../../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/constants.js';
 
 const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 describe('if-block', () => {
+    let consoleErrorSpy;
+    beforeAll(() => {
+        consoleErrorSpy = spyOn(console, 'error');
+    });
+    afterEach(() => consoleErrorSpy.mockReset());
+    afterAll(() => consoleErrorSpy.mockRestore());
+
     it('should work when parent and child have matching slot types', async () => {
         const elm = createElement('x-parent', { is: MixedSlotParent });
         elm.showStandard = true;
@@ -26,7 +33,7 @@ describe('if-block', () => {
 
     it('should throw error when parent and child have mismatched slot types', async () => {
         let errorMsg;
-        const consoleErrorSpy = spyOn(console, 'error').and.callFake((error) => {
+        consoleErrorSpy.mockImplementation((error) => {
             errorMsg = error.message;
         });
         const elm = createElement('x-parent', { is: MixedSlotParent });
