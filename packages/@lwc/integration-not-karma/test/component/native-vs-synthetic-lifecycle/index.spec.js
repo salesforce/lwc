@@ -3,7 +3,7 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 import Parent from 'x/parent';
 import LogsWhenConnected from 'x/logsWhenConnected';
-import { jasmine, jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { fn as mockFn, spyOn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
@@ -13,7 +13,7 @@ let logger;
 let dispatcher;
 
 beforeEach(() => {
-    dispatcher = jasmine.createSpy();
+    dispatcher = mockFn();
     attachReportingControlDispatcher(dispatcher, ['ConnectedCallbackWhileDisconnected']);
     logger = spyOn(console, 'warn');
 });
@@ -26,7 +26,7 @@ const expectLogs = (regexes) => {
     if (process.env.NODE_ENV === 'production') {
         expect(logger).not.toHaveBeenCalled();
     } else {
-        const args = logger.calls.allArgs();
+        const args = logger.mock.calls;
         expect(args.length).toBe(regexes.length);
         for (let i = 0; i < args.length; i++) {
             expect(args[i][0]).toBeInstanceOf(Error);
@@ -48,7 +48,7 @@ describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
             expectLogs([
                 /Element <x-component> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-component' }],
             ]);
         });
@@ -63,7 +63,7 @@ describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
                 /Element <x-parent> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
                 /Element <x-child> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-parent' }],
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-child' }],
             ]);
@@ -107,7 +107,7 @@ describe.skipIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
             expectLogs([
                 /Element <x-logs-when-connected> fired a `connectedCallback` and rendered, but was not connected to the DOM/,
             ]);
-            expect(dispatcher.calls.allArgs()).toEqual([
+            expect(dispatcher.mock.calls).toEqual([
                 ['ConnectedCallbackWhileDisconnected', { tagName: 'x-logs-when-connected' }],
             ]);
         });

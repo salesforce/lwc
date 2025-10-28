@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Light from 'x/light';
 import Shadow from 'x/shadow';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { nonStandardAriaProperties } from '../../../helpers/aria.js';
 import {
     attachReportingControlDispatcher,
@@ -16,7 +16,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
         let dispatcher;
 
         beforeEach(() => {
-            dispatcher = jasmine.createSpy();
+            dispatcher = mockFn();
             attachReportingControlDispatcher(dispatcher, ['NonStandardAriaReflection']);
         });
 
@@ -69,7 +69,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
                                 elm.getPropOnElement(prop);
                             }).toLogWarningDev(inComponentWarning);
 
-                            expect(dispatcher.calls.allArgs()).toEqual([
+                            expect(dispatcher.mock.calls).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {
@@ -100,7 +100,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
                                 return unused; // remove lint warning
                             }).toLogWarningDev(outsideComponentWarning);
 
-                            expect(dispatcher.calls.allArgs()).toEqual([
+                            expect(dispatcher.mock.calls).toEqual([
                                 [
                                     'NonStandardAriaReflection',
                                     {
