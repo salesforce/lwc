@@ -1,6 +1,5 @@
 import { createElement } from 'lwc';
 import Test from 'x/test';
-import { jasmine } from '../../../helpers/jasmine.js';
 
 describe('event.composedPath() of event dispatched from closed shadow root', () => {
     it('should have shadowed elements when invoked inside the shadow root', async () => {
@@ -10,8 +9,8 @@ describe('event.composedPath() of event dispatched from closed shadow root', () 
         await Promise.resolve();
         elm.clickShadowedButton();
         expect(elm.getShadowedComposedPath()).toEqual([
-            jasmine.any(HTMLElement), // button
-            jasmine.any(Object), // #shadow-root(closed)
+            expect.any(HTMLElement), // button
+            expect.any(Object), // #shadow-root(closed)
             elm.child,
             elm.shadowRoot,
             elm,

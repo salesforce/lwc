@@ -21,10 +21,8 @@ function jasmineSpyAdapter(spy) {
 
 export const jasmineSpyOn = (object, prop) => jasmineSpyAdapter(spyOn(object, prop));
 export const jasmine = {
-    any: expect.any,
     arrayWithExactContents: () => {
         throw new Error('TODO: jasmine.arrayWithExactContents');
     },
     createSpy: (name, impl) => jasmineSpyAdapter(fn(impl)),
-    objectContaining: expect.objectContaining,
 };
