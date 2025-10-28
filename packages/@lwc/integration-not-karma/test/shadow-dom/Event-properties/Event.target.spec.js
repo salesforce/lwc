@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
 import Container from 'x/container';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 
 describe('Event.target', () => {
     let globalListener = () => {};
