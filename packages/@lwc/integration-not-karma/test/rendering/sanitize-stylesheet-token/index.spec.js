@@ -12,12 +12,17 @@ catchUnhandledRejectionsAndErrors((error) => {
     caughtError = error;
 });
 
-beforeEach(() => {
+beforeAll(() => {
     logger = spyOn(console, 'warn');
 });
 
 afterEach(() => {
     caughtError = undefined;
+    logger.mockReset();
+});
+
+afterAll(() => {
+    logger.mockRestore();
 });
 
 const props = ['stylesheetToken', 'stylesheetTokens', 'legacyStylesheetToken'];
