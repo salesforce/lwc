@@ -1,4 +1,4 @@
-import path from 'node:path';
+import { posix as ppath, sep } from 'node:path';
 import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
@@ -12,12 +12,12 @@ const LWC_SSR = readFileSync(
     'utf8'
 );
 
-const ROOT_DIR = path.join(import.meta.dirname, '../..');
+const ROOT_DIR = ppath.join(import.meta.dirname, '../..');
 const COMPONENT_NAME = 'c-main';
 const COMPONENT_ENTRYPOINT = 'c/main/main.js';
 
 async function compileModule(input, targetSSR, format) {
-    const modulesDir = path.join(ROOT_DIR, input.slice(0, -COMPONENT_ENTRYPOINT.length));
+    const modulesDir = ppath.join(ROOT_DIR, input.slice(0, -COMPONENT_ENTRYPOINT.length));
     const bundle = await rollup({
         input,
         plugins: [
@@ -25,7 +25,9 @@ async function compileModule(input, targetSSR, format) {
                 targetSSR,
                 modules: [{ dir: modulesDir }],
                 experimentalDynamicComponent: {
-                    loader: fileURLToPath(new URL('../../helpers/loader.js', import.meta.url)),
+                    loader: fileURLToPath(
+                        new URL('../../helpers/loader.js', import.meta.url)
+                    ).replaceAll(sep, ppath.sep),
                     strict: true,
                 },
                 enableSyntheticElementInternals: true,
@@ -108,8 +110,8 @@ async function getSsrMarkup(componentEntrypoint, configPath) {
  * This function wraps those configs in the test code to be executed.
  */
 async function wrapHydrationTest(configPath) {
-    const suiteDir = path.dirname(configPath);
-    const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
+    const suiteDir = ppath.posix.dirname(configPath);
+    const componentEntrypoint = ppath.join(suiteDir, COMPONENT_ENTRYPOINT);
     const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
     return `
