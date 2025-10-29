@@ -2,14 +2,14 @@ import { createElement } from 'lwc';
 import { USE_LIGHT_DOM_SLOT_FORWARDING } from '../../../../../helpers/constants.js';
 import { extractDataIds } from '../../../../../helpers/utils.js';
 
-import LightContainer from './x/lightContainer/lightContainer';
+import LightContainer from './c/lightContainer/lightContainer';
 
 describe('light DOM slot forwarding reactivity', () => {
     let nodes;
     let lightContainer;
 
     beforeEach(() => {
-        lightContainer = createElement('x-light-container', { is: LightContainer });
+        lightContainer = createElement('c-light-container', { is: LightContainer });
         document.body.appendChild(lightContainer);
         nodes = extractDataIds(lightContainer);
     });

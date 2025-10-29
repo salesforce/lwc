@@ -1,41 +1,41 @@
 import { createElement } from 'lwc';
 
-import Container from 'x/container';
-import ParentSpecialized from 'x/parentSpecialized';
+import Container from 'c/container';
+import ParentSpecialized from 'c/parentSpecialized';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 /*
  <div>
-     <x-container>
+     <c-container>
          <p>ctx first text</p>
          <div>
-             <x-slot-container>
+             <c-slot-container>
                  <p>slot-container text</p>
-                 <x-with-slot>
+                 <c-with-slot>
                      <p>with-slot text</p>
                      <slot>
                          <div class="slotted">
                             <p>slotted text</p>
                         </div>
                      </slot>
-                 </x-with-slot>
-             </x-slot-container>
+                 </c-with-slot>
+             </c-slot-container>
              <div class="manual-ctx">
-                 <x-manually-inserted>
+                 <c-manually-inserted>
                      <p>slot-container text</p>
-                     <x-with-slot>
+                     <c-with-slot>
                          <p>with-slot text</p>
                          <slot>
                              <div class="slotted">
                                 <p>slotted text</p>
                              </div>
                          </slot>
-                     </x-with-slot>
-                 </x-manually-inserted>
+                     </c-with-slot>
+                 </c-manually-inserted>
              </div>
          </div>
          <p>ctx last text</p>
-     </x-container>
+     </c-container>
  </div>
  */
 describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OFF', () => {
@@ -49,7 +49,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
         cmpShadow;
     beforeEach(() => {
         spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
-        const elm = createElement('x-container', { is: Container });
+        const elm = createElement('c-container', { is: Container });
 
         elementOutsideLWC = document.createElement('div');
         elementOutsideLWC.appendChild(elm);
@@ -59,9 +59,9 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
         rootLwcElement = elm;
         lwcElementInsideShadow = elm;
         divManuallyApendedToShadow = elm.shadowRoot.querySelector('div.manual-ctx');
-        cmpShadow = elm.shadowRoot.querySelector('x-slot-container').shadowRoot;
+        cmpShadow = elm.shadowRoot.querySelector('c-slot-container').shadowRoot;
         elementInShadow = rootLwcElement.shadowRoot.querySelector('div');
-        slottedComponent = cmpShadow.querySelector('x-with-slot');
+        slottedComponent = cmpShadow.querySelector('c-with-slot');
         slottedNode = cmpShadow.querySelector('.slotted');
     });
 
@@ -71,7 +71,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
             expect(rootLwcElement.innerHTML.length).toBe(0);
             expect(lwcElementInsideShadow.innerHTML.length).toBe(0);
 
-            expect(divManuallyApendedToShadow.innerHTML.length).toBe(176); // <x-manually-inserted><p>slot-container text</p><x-with-slot><p>with
+            expect(divManuallyApendedToShadow.innerHTML.length).toBe(176); // <c-manually-inserted><p>slot-container text</p><c-with-slot><p>with
 
             expect(cmpShadow.innerHTML.length).toBe(99);
 
@@ -84,7 +84,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
             expect(rootLwcElement.outerHTML.length).toBe(27);
             expect(lwcElementInsideShadow.outerHTML.length).toBe(27);
 
-            expect(divManuallyApendedToShadow.outerHTML.length).toBe(206); // <div class="manual-ctx"><x-manually-inserted><p>slot-container text</p><x-with-slot><p>wi ....
+            expect(divManuallyApendedToShadow.outerHTML.length).toBe(206); // <div class="manual-ctx"><c-manually-inserted><p>slot-container text</p><c-with-slot><p>wi ....
 
             expect(cmpShadow.outerHTML).toBe(undefined);
 
@@ -136,10 +136,10 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
         describe('querySelector', () => {
             it('should preserve element outside lwc boundary behavior', () => {
                 expect(elementOutsideLWC.querySelector('p').innerText).toBe('ctx first text');
-                expect(elementOutsideLWC.querySelector('x-with-slot p').innerText).toBe(
+                expect(elementOutsideLWC.querySelector('c-with-slot p').innerText).toBe(
                     'with-slot text'
                 );
-                expect(elementOutsideLWC.querySelector('.manual-ctx x-with-slot p').innerText).toBe(
+                expect(elementOutsideLWC.querySelector('.manual-ctx c-with-slot p').innerText).toBe(
                     'with-slot text'
                 );
                 expect(elementOutsideLWC.querySelector('div.slotted')).not.toBe(null);
@@ -147,27 +147,27 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
 
             it('should preserve root custom element behavior', () => {
                 expect(rootLwcElement.querySelector('p')).toBe(null);
-                expect(rootLwcElement.querySelector('x-with-slot p')).toBe(null);
-                expect(rootLwcElement.querySelector('.manual-ctx x-with-slot p')).toBe(null);
+                expect(rootLwcElement.querySelector('c-with-slot p')).toBe(null);
+                expect(rootLwcElement.querySelector('.manual-ctx c-with-slot p')).toBe(null);
             });
 
             it('should preserve behavior for element inside shadow', () => {
                 const elemInShadow = rootLwcElement.shadowRoot.querySelector('div');
 
-                expect(elemInShadow.querySelector('x-slot-container')).not.toBe(null);
-                expect(elemInShadow.querySelector('x-with-slot p')).toBe(null);
+                expect(elemInShadow.querySelector('c-slot-container')).not.toBe(null);
+                expect(elemInShadow.querySelector('c-with-slot p')).toBe(null);
             });
 
             it('should preserve behavior for shadowRoot', () => {
                 expect(cmpShadow.querySelector('p').innerText).toBe('slot-container text');
-                expect(cmpShadow.querySelector('x-with-slot p').innerText).toBe('slotted text'); // skipped the one in the shadow of x-with-slot.
+                expect(cmpShadow.querySelector('c-with-slot p').innerText).toBe('slotted text'); // skipped the one in the shadow of c-with-slot.
             });
 
             it('should preserve behavior for manually inserted element in shadow and with lwc components', () => {
                 expect(divManuallyApendedToShadow.querySelector('p').innerText).toBe(
                     'slot-container text'
                 );
-                expect(divManuallyApendedToShadow.querySelector('x-with-slot p').innerText).toBe(
+                expect(divManuallyApendedToShadow.querySelector('c-with-slot p').innerText).toBe(
                     'with-slot text'
                 );
                 expect(divManuallyApendedToShadow.querySelector('div.slotted')).not.toBe(null);
@@ -278,7 +278,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
 
             expect(cmpShadow.parentNode).toBe(null);
 
-            const slotContainer = rootLwcElement.shadowRoot.querySelector('x-slot-container');
+            const slotContainer = rootLwcElement.shadowRoot.querySelector('c-slot-container');
             expect(slottedComponent.parentNode).toBe(slotContainer.shadowRoot);
 
             // Note: check, but this is may be difference with the native shadow
@@ -287,7 +287,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
 
         it('should preserve parentNode behavior when node was manually inserted', () => {
             // this is a specialized test only for parentNode and parentElement
-            const lwcElem = createElement('x-parent-specialized', { is: ParentSpecialized });
+            const lwcElem = createElement('c-parent-specialized', { is: ParentSpecialized });
             const containingElement = document.createElement('div');
             containingElement.appendChild(lwcElem);
             document.body.appendChild(containingElement);
@@ -318,7 +318,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
 
         it('should preserve parentElement behavior when node was manually inserted', () => {
             // this is a specialized test only for parentNode and parentElement
-            const lwcElem = createElement('x-parent-specialized', { is: ParentSpecialized });
+            const lwcElem = createElement('c-parent-specialized', { is: ParentSpecialized });
             const containingElement = document.createElement('div');
             containingElement.appendChild(lwcElem);
             document.body.appendChild(containingElement);

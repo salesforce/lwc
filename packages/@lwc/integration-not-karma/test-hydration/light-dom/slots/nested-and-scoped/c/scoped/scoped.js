@@ -6,7 +6,7 @@ export default class scoped extends LightningElement {
 
     get scopedItem() {
         return {
-            msg: `from-x-scoped-${this.instance}`,
+            msg: `from-c-scoped-${this.instance}`,
         };
     }
 }

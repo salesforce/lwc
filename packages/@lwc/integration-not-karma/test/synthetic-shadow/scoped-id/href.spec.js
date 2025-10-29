@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
 
-import HrefStatic from 'x/hrefStatic';
-import HrefDynamic from 'x/hrefDynamic';
-import HrefDangling from 'x/hrefDangling';
-import HrefBooleanTrue from 'x/hrefBooleanTrue';
-import HrefBooleanTrueNoId from 'x/hrefBooleanTrueNoId';
-import HrefDynamicEmptyString from 'x/hrefDynamicEmptyString';
-import HrefDynamicUndefined from 'x/hrefDynamicUndefined';
-import HrefDynamicNull from 'x/hrefDynamicNull';
+import HrefStatic from 'c/hrefStatic';
+import HrefDynamic from 'c/hrefDynamic';
+import HrefDangling from 'c/hrefDangling';
+import HrefBooleanTrue from 'c/hrefBooleanTrue';
+import HrefBooleanTrueNoId from 'c/hrefBooleanTrueNoId';
+import HrefDynamicEmptyString from 'c/hrefDynamicEmptyString';
+import HrefDynamicUndefined from 'c/hrefDynamicUndefined';
+import HrefDynamicNull from 'c/hrefDynamicNull';
 
 function testHref(type, create) {
     describe(`${type} href attribute values`, () => {
@@ -56,13 +56,13 @@ function testHref(type, create) {
     });
 }
 
-testHref('static', () => createElement('x-href-static', { is: HrefStatic }));
-testHref('dynamic', () => createElement('x-href-dynamic', { is: HrefDynamic }));
+testHref('static', () => createElement('c-href-static', { is: HrefStatic }));
+testHref('dynamic', () => createElement('c-href-dynamic', { is: HrefDynamic }));
 
 // Delete this test when we transform all href values with fragment-only urls
 // https://github.com/salesforce/lwc/issues/1150
 it('should not transform fragment-only urls when the template has no ids', () => {
-    const elm = createElement('x-href-dangling', { is: HrefDangling });
+    const elm = createElement('c-href-dangling', { is: HrefDangling });
     document.body.appendChild(elm);
     expect(elm.shadowRoot.querySelector('a').getAttribute('href')).toBe('#foo');
     expect(elm.shadowRoot.querySelector('area').getAttribute('href')).toBe('#bar');
@@ -70,7 +70,7 @@ it('should not transform fragment-only urls when the template has no ids', () =>
 // Enable this test when we transform all href values with fragment-only urls
 // TODO [#1150]: Always mangle frag-id href attribute values
 xit('should transform fragment-only urls even when the template has no ids', () => {
-    const elm = createElement('x-href-dangling', { is: HrefDangling });
+    const elm = createElement('c-href-dangling', { is: HrefDangling });
     document.body.appendChild(elm);
     expect(elm.shadowRoot.querySelector('a').getAttribute('href')).not.toBe('#foo');
     expect(elm.shadowRoot.querySelector('area').getAttribute('href')).not.toBe('#bar');
@@ -81,9 +81,9 @@ describe('boolean true', () => {
         {
             name: 'no id',
             Ctor: HrefBooleanTrueNoId,
-            tagName: 'x-href-boolean-true-no-id',
+            tagName: 'c-href-boolean-true-no-id',
         },
-        { name: 'with id', Ctor: HrefBooleanTrue, tagName: 'x-href-boolean-true' },
+        { name: 'with id', Ctor: HrefBooleanTrue, tagName: 'c-href-boolean-true' },
     ];
 
     scenarios.forEach(({ name, Ctor, tagName }) => {
@@ -105,10 +105,10 @@ describe('dynamic empty value', () => {
         {
             name: 'empty string',
             Ctor: HrefDynamicEmptyString,
-            tagName: 'x-href-dynamic-empty-string',
+            tagName: 'c-href-dynamic-empty-string',
         },
-        { name: 'undefined', Ctor: HrefDynamicUndefined, tagName: 'x-href-dynamic-undefined' },
-        { name: 'null', Ctor: HrefDynamicNull, tagName: 'x-href-dynamic-null' },
+        { name: 'undefined', Ctor: HrefDynamicUndefined, tagName: 'c-href-dynamic-undefined' },
+        { name: 'null', Ctor: HrefDynamicNull, tagName: 'c-href-dynamic-null' },
     ];
 
     scenarios.forEach(({ name, Ctor, tagName }) => {

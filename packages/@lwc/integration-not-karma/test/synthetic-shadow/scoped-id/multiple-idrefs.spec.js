@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import Multiple from 'x/multipleIdrefs';
+import Multiple from 'c/multipleIdrefs';
 
 it('should handle multiple idrefs when set dynamically', () => {
-    const elm = createElement('x-idref', { is: Multiple });
+    const elm = createElement('c-idref', { is: Multiple });
     document.body.appendChild(elm);
 
     const aomori = elm.shadowRoot.querySelector('.aomori');
@@ -23,7 +23,7 @@ it('should handle multiple idrefs when set dynamically', () => {
 });
 
 it('should handle multiple idrefs when set statically', () => {
-    const elm = createElement('x-idref', { is: Multiple });
+    const elm = createElement('c-idref', { is: Multiple });
     document.body.appendChild(elm);
 
     const aomori = elm.shadowRoot.querySelector('.aomori');

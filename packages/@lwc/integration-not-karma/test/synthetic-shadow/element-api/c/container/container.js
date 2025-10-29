@@ -1,5 +1,5 @@
 import { LightningElement, createElement } from 'lwc';
-import SlotContainer from 'x/slotContainer';
+import SlotContainer from 'c/slotContainer';
 
 export default class Container extends LightningElement {
     renderedCallback() {
@@ -7,7 +7,7 @@ export default class Container extends LightningElement {
         const createdDiv = document.createElement('div');
         createdDiv.classList.add('manual-ctx');
 
-        const cmp = createElement('x-manually-inserted', { is: SlotContainer });
+        const cmp = createElement('c-manually-inserted', { is: SlotContainer });
         createdDiv.appendChild(cmp);
 
         // this.template.insertBefore(createdDiv, lastParagraph);

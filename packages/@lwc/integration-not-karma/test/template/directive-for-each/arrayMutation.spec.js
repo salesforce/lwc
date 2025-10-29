@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import XArrayMutation from 'x/arrayMutation';
+import XArrayMutation from 'c/arrayMutation';
 
 describe('Testing array primitives', () => {
     let elm;
     beforeEach(() => {
-        elm = createElement('x-array-mutation', { is: XArrayMutation });
+        elm = createElement('c-array-mutation', { is: XArrayMutation });
         document.body.appendChild(elm);
     });
 

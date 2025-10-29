@@ -1,7 +1,7 @@
 import { api } from 'lwc';
-import Base from 'x/base';
-import { defineContext } from 'x/contextManager';
-import { parentContextFactory, anotherParentContextFactory } from 'x/parentContext';
+import Base from 'c/base';
+import { defineContext } from 'c/contextManager';
+import { parentContextFactory, anotherParentContextFactory } from 'c/parentContext';
 
 export default class Child extends Base {
     @api anotherContext = defineContext(anotherParentContextFactory)();

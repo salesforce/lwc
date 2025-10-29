@@ -13,8 +13,8 @@ const LWC_SSR = readFileSync(
 );
 
 const ROOT_DIR = path.join(import.meta.dirname, '../..');
-const COMPONENT_NAME = 'x-main';
-const COMPONENT_ENTRYPOINT = 'x/main/main.js';
+const COMPONENT_NAME = 'c-main';
+const COMPONENT_ENTRYPOINT = 'c/main/main.js';
 
 async function compileModule(input, targetSSR, format) {
     const modulesDir = path.join(ROOT_DIR, input.slice(0, -COMPONENT_ENTRYPOINT.length));

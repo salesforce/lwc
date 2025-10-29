@@ -33,7 +33,7 @@ const createRollupPlugin = (input, options) => {
         enableStaticContentOptimization: !DISABLE_STATIC_CONTENT_OPTIMIZATION,
         disableSyntheticShadowSupport: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
         apiVersion: API_VERSION,
-        // Assume `ctx.path` is a component file, e.g. modules/x/foo/foo.js
+        // Assume `ctx.path` is a component file, e.g. modules/c/foo/foo.js
         modules: [{ dir: path.resolve(input, '../../..') }],
         ...options,
     });

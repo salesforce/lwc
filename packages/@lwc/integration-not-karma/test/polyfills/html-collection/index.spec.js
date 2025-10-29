@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import XTest from 'x/test';
+import XTest from 'c/test';
 
 describe('HTMLCollection', () => {
     describe('should be returned by getElementsByTagName()', () => {
         it('when calling from div node inside shadow', () => {
-            const elm = createElement('x-test', { is: XTest });
+            const elm = createElement('c-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
             // TODO [#1231]: Add this assertion back once we patch getElementsByTagName
@@ -31,7 +31,7 @@ describe('HTMLCollection', () => {
 
     describe('should be returned by getElementsByTagNameNS()', () => {
         it('when calling from div node inside shadow', () => {
-            const elm = createElement('x-test', { is: XTest });
+            const elm = createElement('c-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
             expect(elm.getElementsByTagNameNS('', ``) instanceof HTMLCollection).toBe(true);
@@ -59,7 +59,7 @@ describe('HTMLCollection', () => {
 
     describe('should be returned by getElementsByClassName()', () => {
         it('when calling from div node inside shadow', () => {
-            const elm = createElement('x-test', { is: XTest });
+            const elm = createElement('c-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
             // TODO [#1231]: Add this assertion back once we patch getElementsByClassName
@@ -86,7 +86,7 @@ describe('HTMLCollection', () => {
 
     describe('should be returned by children getter', () => {
         it('when calling from div node inside shadow', () => {
-            const elm = createElement('x-test', { is: XTest });
+            const elm = createElement('c-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
             // TODO [#1231]: Add this assertion back once we patch children

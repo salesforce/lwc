@@ -1,4 +1,4 @@
-@import 'x/styleLibrary';
+@import 'c/styleLibrary';
 
 div {
     --implicit: 'default';

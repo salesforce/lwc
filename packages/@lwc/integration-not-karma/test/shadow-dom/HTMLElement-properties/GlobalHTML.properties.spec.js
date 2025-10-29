@@ -1,32 +1,32 @@
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
-import Parent from 'x/parent';
-import TabIndexTester from 'x/tabIndexTester';
-import TabIndexSetInConnectedCallback from 'x/tabIndexSetInConnectedCallback';
-import TabIndexSetInRender from 'x/tabIndexSetInRender';
-import TabIndexSetInConstructor from 'x/tabIndexSetInConstructor';
-import NonReflectedTabIndex from 'x/nonReflectedTabIndex';
-import ReflectedTabIndex from 'x/reflectedTabIndex';
-import SetAttribute from 'x/setAttribute';
-import AccessAttributeInConstructor from 'x/accessAttributeInConstructor';
+import Test from 'c/test';
+import Parent from 'c/parent';
+import TabIndexTester from 'c/tabIndexTester';
+import TabIndexSetInConnectedCallback from 'c/tabIndexSetInConnectedCallback';
+import TabIndexSetInRender from 'c/tabIndexSetInRender';
+import TabIndexSetInConstructor from 'c/tabIndexSetInConstructor';
+import NonReflectedTabIndex from 'c/nonReflectedTabIndex';
+import ReflectedTabIndex from 'c/reflectedTabIndex';
+import SetAttribute from 'c/setAttribute';
+import AccessAttributeInConstructor from 'c/accessAttributeInConstructor';
 import AttributeIsReactive, {
     resetRenderCount as resetReactiveRenderCount,
     renderCount as attributeIsReactiveRenderCount,
-} from 'x/attributeIsReactive';
+} from 'c/attributeIsReactive';
 import AttributeMutations, {
     resetCounters as resetAttributeMutationsCounters,
     attributeSetterCounter,
     attributeRenderCounter,
     attributeGetterCounter,
-} from 'x/attributeMutations';
+} from 'c/attributeMutations';
 import AttributeSetInConstructor, {
     propertyAndValueToSetInConstructor,
-} from 'x/attributeSetInConstructor';
+} from 'c/attributeSetInConstructor';
 
 describe('global HTML Properties', () => {
     it('should return null during construction', () => {
-        const elm = createElement('x-foo', { is: Test });
+        const elm = createElement('c-foo', { is: Test });
         elm.setAttribute('title', 'cubano');
         const cmp = elm.componentInstance;
         expect(cmp.titleAttributeAtConstruction).toBeNull();
@@ -34,20 +34,20 @@ describe('global HTML Properties', () => {
     });
 
     it('should set user specified value during setAttribute call', () => {
-        const elm = createElement('x-foo', { is: Test });
+        const elm = createElement('c-foo', { is: Test });
         elm.setAttribute('tabindex', '0');
         document.body.appendChild(elm);
         const cmp = elm.componentInstance;
         expect(cmp.getAttribute('tabindex')).toBe('0');
     });
     it('should not throw when accessing attribute in root elements', () => {
-        const elm = createElement('x-foo', { is: Test });
+        const elm = createElement('c-foo', { is: Test });
         document.body.appendChild(elm);
         elm.setAttribute('tabindex', 1);
     });
 
     it('should delete existing attribute prior rendering', () => {
-        const elm = createElement('x-foo', { is: Test });
+        const elm = createElement('c-foo', { is: Test });
         elm.setAttribute('title', 'parent title');
         elm.removeAttribute('title');
         document.body.appendChild(elm);
@@ -94,7 +94,7 @@ describe('global HTML Properties', () => {
             it('should throw an error when setting default value in constructor', () => {
                 propertyAndValueToSetInConstructor(prop, value);
                 expect(() => {
-                    createElement('x-foo', { is: AttributeSetInConstructor });
+                    createElement('c-foo', { is: AttributeSetInConstructor });
                 }).toLogErrorDev(/The result must not have attributes./);
             });
             describe('attribute custom getter/setter', () => {
@@ -139,14 +139,14 @@ describe('global HTML Properties', () => {
 
 describe('#tabIndex', function () {
     it('should have a valid value during connectedCallback', function () {
-        const elm = createElement('x-foo', { is: TabIndexTester });
+        const elm = createElement('c-foo', { is: TabIndexTester });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
         expect(elm.tabIndexInConnectedCallback).toBe(3);
     });
 
     it('should have a valid value after initial render', function () {
-        const elm = createElement('x-foo', { is: TabIndexTester });
+        const elm = createElement('c-foo', { is: TabIndexTester });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
 
@@ -154,7 +154,7 @@ describe('#tabIndex', function () {
     });
 
     it('should set tabindex correctly', function () {
-        const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
+        const elm = createElement('c-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
 
@@ -163,7 +163,7 @@ describe('#tabIndex', function () {
     });
 
     it('should not trigger render cycle', async function () {
-        const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
+        const elm = createElement('c-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
         await Promise.resolve();
@@ -171,7 +171,7 @@ describe('#tabIndex', function () {
     });
 
     it('should allow parent component to overwrite internally set tabIndex', function () {
-        const elm = createElement('x-foo', { is: TabIndexSetInConnectedCallback });
+        const elm = createElement('c-foo', { is: TabIndexSetInConnectedCallback });
         elm.setAttribute('tabindex', 3);
         document.body.appendChild(elm);
         elm.setAttribute('tabindex', 4);
@@ -181,7 +181,7 @@ describe('#tabIndex', function () {
     });
 
     it('should throw if setting tabIndex during render', function () {
-        const elm = createElement('x-foo', { is: TabIndexSetInRender });
+        const elm = createElement('c-foo', { is: TabIndexSetInRender });
         expect(() => {
             document.body.appendChild(elm);
         }).toLogErrorDev(/render\(\) method has side effects on the state of/);
@@ -189,12 +189,12 @@ describe('#tabIndex', function () {
 
     it('should throw if setting tabIndex during construction', function () {
         expect(() => {
-            createElement('x-foo', { is: TabIndexSetInConstructor });
+            createElement('c-foo', { is: TabIndexSetInConstructor });
         }).toLogErrorDev(/The result must not have attributes./);
     });
 
     it('should not throw when tabIndex is not reflected to element', () => {
-        const elm = createElement('x-foo', { is: NonReflectedTabIndex });
+        const elm = createElement('c-foo', { is: NonReflectedTabIndex });
         document.body.appendChild(elm);
         expect(() => {
             elm.tabIndex = -1;
@@ -202,7 +202,7 @@ describe('#tabIndex', function () {
     });
 
     it('should not throw when tabIndex is reflected to element', () => {
-        const elm = createElement('x-foo', { is: ReflectedTabIndex });
+        const elm = createElement('c-foo', { is: ReflectedTabIndex });
         document.body.appendChild(elm);
         expect(() => {
             elm.tabIndex = -1;
@@ -211,7 +211,7 @@ describe('#tabIndex', function () {
 });
 
 it('should set user specified value during setAttribute call', () => {
-    const elm = createElement('x-foo', { is: SetAttribute });
+    const elm = createElement('c-foo', { is: SetAttribute });
     elm.setAttribute('tabindex', '0');
     document.body.appendChild(elm);
 
@@ -227,7 +227,7 @@ it('should log console error accessing props in constructor', () => {
 });
 
 it('should not log error message when arbitrary attribute is set via elm.setAttribute', () => {
-    const elm = createElement('x-foo', { is: Test });
+    const elm = createElement('c-foo', { is: Test });
     expect(() => {
         elm.setAttribute('foo', 'something');
         document.body.appendChild(elm);
@@ -235,7 +235,7 @@ it('should not log error message when arbitrary attribute is set via elm.setAttr
 });
 
 it('should delete existing attribute prior rendering', () => {
-    const elm = createElement('x-foo', { is: Test });
+    const elm = createElement('c-foo', { is: Test });
     elm.setAttribute('title', 'parent title');
     elm.removeAttribute('title');
     document.body.appendChild(elm);
@@ -244,10 +244,10 @@ it('should delete existing attribute prior rendering', () => {
 });
 
 it('should correctly set child attribute', () => {
-    const parentElm = createElement('x-parent', { is: Parent });
+    const parentElm = createElement('c-parent', { is: Parent });
     parentElm.setAttribute('title', 'parent title');
     document.body.appendChild(parentElm);
-    const childElm = parentElm.shadowRoot.querySelector('x-test');
+    const childElm = parentElm.shadowRoot.querySelector('c-test');
 
     expect(childElm.getAttribute('title')).toBe('child title');
 });

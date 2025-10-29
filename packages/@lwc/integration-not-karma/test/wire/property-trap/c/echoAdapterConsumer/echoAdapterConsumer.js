@@ -1,5 +1,5 @@
 import { LightningElement, wire, api, track } from 'lwc';
-import { EchoWireAdapter } from 'x/echoAdapter';
+import { EchoWireAdapter } from 'c/echoAdapter';
 
 export default class EchoAdapterConsumer extends LightningElement {
     @api recordId = 'default value';

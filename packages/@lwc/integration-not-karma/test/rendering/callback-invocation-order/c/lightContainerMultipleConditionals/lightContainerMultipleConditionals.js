@@ -16,11 +16,11 @@ export default class LightContainerMultipleConditionals extends LightningElement
 
     @api
     getLeaf() {
-        return this.querySelector('x-light-leaf');
+        return this.querySelector('c-light-leaf');
     }
 
     @api
     getSlotCmp() {
-        return this.querySelector('x-light-slot-multiple-conditionals');
+        return this.querySelector('c-light-slot-multiple-conditionals');
     }
 }

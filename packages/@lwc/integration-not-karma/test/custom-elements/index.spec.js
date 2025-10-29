@@ -1,20 +1,20 @@
 import { createElement } from 'lwc';
-import Nonce1 from 'x/nonce1';
-import Nonce4 from 'x/nonce4';
-import Nonce5 from 'x/nonce5';
-import Nonce6 from 'x/nonce6';
-import Nonce7 from 'x/nonce7';
-import Nonce8 from 'x/nonce8';
-import Nonce9 from 'x/nonce9';
-import Nonce10 from 'x/nonce10';
-import Nonce11 from 'x/nonce11';
-import Nonce12 from 'x/nonce12';
-import Nonce13 from 'x/nonce13';
-import Nonce14 from 'x/nonce14';
-import Nonce15 from 'x/nonce15';
-import Nonce16 from 'x/nonce16';
-import Nonce19 from 'x/nonce19';
-import Component from 'x/component';
+import Nonce1 from 'c/nonce1';
+import Nonce4 from 'c/nonce4';
+import Nonce5 from 'c/nonce5';
+import Nonce6 from 'c/nonce6';
+import Nonce7 from 'c/nonce7';
+import Nonce8 from 'c/nonce8';
+import Nonce9 from 'c/nonce9';
+import Nonce10 from 'c/nonce10';
+import Nonce11 from 'c/nonce11';
+import Nonce12 from 'c/nonce12';
+import Nonce13 from 'c/nonce13';
+import Nonce14 from 'c/nonce14';
+import Nonce15 from 'c/nonce15';
+import Nonce16 from 'c/nonce16';
+import Nonce19 from 'c/nonce19';
+import Component from 'c/component';
 
 const invalidTagNameError = /(not a valid custom element name|must contain a hyphen)/;
 
@@ -29,7 +29,7 @@ const undefinedElementError = /(Illegal constructor|does not define a custom ele
 describe('customElements.get and customElements.whenDefined', () => {
     it('using CustomElementConstructor', async () => {
         // Nonce elements should be defined only once in the entire Karma test suite
-        const tagName = 'x-nonce1';
+        const tagName = 'c-nonce1';
         expect(customElements.get(tagName)).toBeUndefined();
         const promise = customElements.whenDefined(tagName);
         expect(customElements.get(tagName)).toBeUndefined();
@@ -48,7 +48,7 @@ describe('customElements.get and customElements.whenDefined', () => {
 
 describe('patched registry', () => {
     it('elements have the same constructor as defined in the registry', () => {
-        const tagName = 'x-same-ctor-as-in-registry';
+        const tagName = 'c-same-ctor-as-in-registry';
         class Component extends HTMLElement {}
         customElements.define(tagName, Component);
 
@@ -60,69 +60,69 @@ describe('patched registry', () => {
     it('throws error for duplicate tag definition', () => {
         class Foo extends HTMLElement {}
 
-        customElements.define('x-string-defined-twice', Foo);
+        customElements.define('c-string-defined-twice', Foo);
 
         expect(() => {
-            customElements.define('x-string-defined-twice', Foo);
+            customElements.define('c-string-defined-twice', Foo);
         }).toThrowError(alreadyDefinedError);
     });
 
     it('throws error for duplicate class definition', () => {
         class Foo extends HTMLElement {}
 
-        customElements.define('x-class-defined-twice', Foo);
+        customElements.define('c-class-defined-twice', Foo);
 
         expect(() => {
-            customElements.define('x-class-defined-twice-2', Foo);
+            customElements.define('c-class-defined-twice-2', Foo);
         }).toThrowError(sameConstructorError);
     });
 
     it('allows two LWC custom elements to use the same tag name', () => {
-        const elm1 = createElement('x-nonce4', { is: Nonce4 });
+        const elm1 = createElement('c-nonce4', { is: Nonce4 });
         document.body.appendChild(elm1);
-        expect(elm1.tagName.toLowerCase()).toEqual('x-nonce4');
-        expect(elm1.expectedTagName).toEqual('x-nonce4');
+        expect(elm1.tagName.toLowerCase()).toEqual('c-nonce4');
+        expect(elm1.expectedTagName).toEqual('c-nonce4');
 
         // deliberately causing a collision
-        const elm2 = createElement('x-nonce4', { is: Nonce5 });
+        const elm2 = createElement('c-nonce4', { is: Nonce5 });
         document.body.appendChild(elm2);
-        expect(elm2.tagName.toLowerCase()).toEqual('x-nonce4');
-        expect(elm2.expectedTagName).toEqual('x-nonce5');
+        expect(elm2.tagName.toLowerCase()).toEqual('c-nonce4');
+        expect(elm2.expectedTagName).toEqual('c-nonce5');
     });
 
     describe('same constructor returned from get/whenDefined', () => {
         it('get() should always return the same constructor', () => {
-            createElement('x-nonce10', { is: Nonce10 });
-            const firstCtor = customElements.get('x-nonce10');
+            createElement('c-nonce10', { is: Nonce10 });
+            const firstCtor = customElements.get('c-nonce10');
             expect(firstCtor).not.toBeUndefined();
-            createElement('x-nonce10', { is: Nonce11 });
-            const secondCtor = customElements.get('x-nonce10');
+            createElement('c-nonce10', { is: Nonce11 });
+            const secondCtor = customElements.get('c-nonce10');
             expect(secondCtor).not.toBeUndefined();
             expect(secondCtor).toBe(firstCtor);
         });
 
         it('whenDefined() should always return the same constructor - defined before whenDefined', async () => {
-            createElement('x-nonce6', { is: Nonce6 });
-            const Ctor = await customElements.whenDefined('x-nonce6');
+            createElement('c-nonce6', { is: Nonce6 });
+            const Ctor = await customElements.whenDefined('c-nonce6');
             expect(Ctor).not.toBeUndefined();
             const firstCtor = Ctor;
             // Create an lwc with same tag but different constructor, this will register a pivot for the same tag
-            createElement('x-nonce6', { is: Nonce7 });
-            const Ctor_1 = await customElements.whenDefined('x-nonce6');
+            createElement('c-nonce6', { is: Nonce7 });
+            const Ctor_1 = await customElements.whenDefined('c-nonce6');
             expect(Ctor_1).not.toBeUndefined();
             expect(Ctor_1).toBe(firstCtor);
         });
 
         it('whenDefined() should always return the same constructor - defined after whenDefined', async () => {
             // Check `cE.whenDefined()` called _before_ `cE.define()`
-            const promise = customElements.whenDefined('x-nonce12');
-            createElement('x-nonce12', { is: Nonce12 });
+            const promise = customElements.whenDefined('c-nonce12');
+            createElement('c-nonce12', { is: Nonce12 });
             const Ctor = await promise;
             expect(Ctor).not.toBeUndefined();
             const firstCtor = Ctor;
             // Check `cE.whenDefined()` called _after_ `cE.define()`
-            const promise_1 = customElements.whenDefined('x-nonce12');
-            createElement('x-nonce12', { is: Nonce13 });
+            const promise_1 = customElements.whenDefined('c-nonce12');
+            createElement('c-nonce12', { is: Nonce13 });
             const Ctor_1 = await promise_1;
             expect(Ctor_1).not.toBeUndefined();
             expect(Ctor_1).toBe(firstCtor);
@@ -130,7 +130,7 @@ describe('patched registry', () => {
     });
 
     it('vanilla element should be an instance of the right class', async () => {
-        const tagName = 'x-check-ctor-instanceof';
+        const tagName = 'c-check-ctor-instanceof';
         class MyElement extends HTMLElement {}
 
         const whenDefinedPromiseBeforeDefine = customElements.whenDefined(tagName);
@@ -193,8 +193,8 @@ describe('patched registry', () => {
 
 describe('constructor', () => {
     it('new-ing an LWC component constructor directly', () => {
-        createElement('x-nonce14', { is: Nonce14 });
-        const Ctor = document.createElement('x-nonce14').constructor; // hack to get the pivot constructor
+        createElement('c-nonce14', { is: Nonce14 });
+        const Ctor = document.createElement('c-nonce14').constructor; // hack to get the pivot constructor
         const elm = new Ctor();
         document.body.appendChild(elm);
 
@@ -202,62 +202,62 @@ describe('constructor', () => {
         expect(elm.shadowRoot).toBeNull();
         expect(elm.expectedTagName).toBeUndefined();
         // expect(elm.shadowRoot).not.toBeNull()
-        // expect(elm.expectedTagName).toEqual('x-nonce14')
+        // expect(elm.expectedTagName).toEqual('c-nonce14')
     });
 
     it('new-ing an LWC component via new CustomElementConstructor()', () => {
-        customElements.define('x-nonce15', Nonce15.CustomElementConstructor);
+        customElements.define('c-nonce15', Nonce15.CustomElementConstructor);
 
         const elm = new Nonce15.CustomElementConstructor();
         document.body.appendChild(elm);
-        expect(elm.expectedTagName).toEqual('x-nonce15');
+        expect(elm.expectedTagName).toEqual('c-nonce15');
     });
 
     it('new-ing an LWC component defined with CustomElementConstructor, constructor from customElements.get()', () => {
-        customElements.define('x-nonce16', Nonce16.CustomElementConstructor);
+        customElements.define('c-nonce16', Nonce16.CustomElementConstructor);
 
-        const Ctor = customElements.get('x-nonce16');
+        const Ctor = customElements.get('c-nonce16');
 
         const elm = new Ctor();
         document.body.appendChild(elm);
-        expect(elm.expectedTagName).toEqual('x-nonce16');
+        expect(elm.expectedTagName).toEqual('c-nonce16');
     });
 });
 
 describe('LWC elements and custom elements', () => {
     it('calling document.createElement after lwc.createElement', () => {
-        const elm1 = createElement('x-nonce8', { is: Nonce8 });
+        const elm1 = createElement('c-nonce8', { is: Nonce8 });
         document.body.appendChild(elm1);
-        const elm2 = document.createElement('x-nonce8');
+        const elm2 = document.createElement('c-nonce8');
         document.body.appendChild(elm2);
-        expect(elm1.expectedTagName).toEqual('x-nonce8');
+        expect(elm1.expectedTagName).toEqual('c-nonce8');
 
         // TODO [#2970]: elm2 is not upgraded
         expect(elm2.shadowRoot).toBeNull();
         expect(elm2.expectedTagName).toBeUndefined();
         // expect(elm2.shadowRoot).not.toBeNull()
-        // expect(elm2.expectedTagName).toEqual('x-nonce8')
+        // expect(elm2.expectedTagName).toEqual('c-nonce8')
     });
 
     it('calling lwc.createElement after document.createElement', () => {
-        const elm1 = document.createElement('x-nonce9');
+        const elm1 = document.createElement('c-nonce9');
         document.body.appendChild(elm1);
-        const elm2 = createElement('x-nonce9', { is: Nonce9 });
+        const elm2 = createElement('c-nonce9', { is: Nonce9 });
         document.body.appendChild(elm2);
-        expect(elm2.expectedTagName).toEqual('x-nonce9');
+        expect(elm2.expectedTagName).toEqual('c-nonce9');
 
         // TODO [#2970]: elm1 is not upgraded
         expect(elm1.shadowRoot).toBeNull();
         expect(elm1.expectedTagName).toBeUndefined();
         // expect(elm1.shadowRoot).not.toBeNull()
-        // expect(elm1.expectedTagName).toEqual('x-nonce9')
+        // expect(elm1.expectedTagName).toEqual('c-nonce9')
     });
 
     it('calling new Ctor() with a sneaky custom upgradeCallback', () => {
-        const elm1 = createElement('x-nonce19', { is: Nonce19 });
+        const elm1 = createElement('c-nonce19', { is: Nonce19 });
         document.body.appendChild(elm1);
         // Sneakily get the constructor in a way that is hard for LWC to block
-        const Ctor = document.createElement('x-nonce19').constructor;
+        const Ctor = document.createElement('c-nonce19').constructor;
         let upgradeCalled = false;
         // Sneakily pass in our own custom upgradeCallback
         const upgradeCallback = () => {
@@ -304,7 +304,7 @@ describe('errors', () => {
                 const define = () => {
                     const NotAConstructor = getConstructor();
                     customElements.define(
-                        `x-will-fail-${Math.round(Math.random() * 1000000)}`,
+                        `c-will-fail-${Math.round(Math.random() * 1000000)}`,
                         NotAConstructor
                     );
                 };
@@ -402,7 +402,7 @@ describe.runIf(supportsFACE)('form-associated custom element (FACE) lifecycle ca
     it('supports FACE callbacks', () => {
         testFormAssociated(
             true,
-            'x-face-callbacks',
+            'c-face-callbacks',
             class extends HTMLElement {
                 static formAssociated = true;
             }
@@ -412,7 +412,7 @@ describe.runIf(supportsFACE)('form-associated custom element (FACE) lifecycle ca
     it('does not call FACE callbacks if not form-associated', () => {
         testFormAssociated(
             false,
-            'x-face-callbacks-not-form-associated',
+            'c-face-callbacks-not-form-associated',
             class extends HTMLElement {
                 static formAssociated = false;
             }
@@ -423,13 +423,13 @@ describe.runIf(supportsFACE)('form-associated custom element (FACE) lifecycle ca
 describe('observedAttributes', () => {
     it('custom element with observedAttributes but no attributeChangedCallback', () => {
         customElements.define(
-            'x-no-attr-change-cb',
+            'c-no-attr-change-cb',
             class extends HTMLElement {
                 static observedAttributes = ['foo'];
             }
         );
 
-        const elm = document.createElement('x-no-attr-change-cb');
+        const elm = document.createElement('c-no-attr-change-cb');
         document.body.appendChild(elm);
 
         // Basically we just want to make sure nothing throws

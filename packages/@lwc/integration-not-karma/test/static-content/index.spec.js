@@ -1,28 +1,28 @@
 import { createElement } from 'lwc';
-import Container from 'x/container';
-import Escape from 'x/escape';
-import MultipleStyles from 'x/multipleStyles';
-import SvgNs from 'x/svgNs';
-import Table from 'x/table';
-import SvgPath from 'x/svgPath';
-import SvgPathInDiv from 'x/svgPathInDiv';
-import SvgPathInG from 'x/svgPathInG';
-import StaticUnsafeTopLevel from 'x/staticUnsafeTopLevel';
-import OnlyEventListener from 'x/onlyEventListener';
-import OnlyEventListenerChild from 'x/onlyEventListenerChild';
-import OnlyEventListenerGrandchild from 'x/onlyEventListenerGrandchild';
-import ListenerStaticWithUpdates from 'x/listenerStaticWithUpdates';
-import DeepListener from 'x/deepListener';
-import Comments from 'x/comments';
-import PreserveComments from 'x/preserveComments';
-import Attribute from 'x/attribute';
-import DeepAttribute from 'x/deepAttribute';
-import IframeOnload from 'x/iframeOnload';
-import WithKey from 'x/withKey';
-import Text from 'x/text';
-import TableWithExpression from 'x/tableWithExpressions';
-import TextWithoutPreserveComments from 'x/textWithoutPreserveComments';
-import TextWithPreserveComments from 'x/textWithPreserveComments';
+import Container from 'c/container';
+import Escape from 'c/escape';
+import MultipleStyles from 'c/multipleStyles';
+import SvgNs from 'c/svgNs';
+import Table from 'c/table';
+import SvgPath from 'c/svgPath';
+import SvgPathInDiv from 'c/svgPathInDiv';
+import SvgPathInG from 'c/svgPathInG';
+import StaticUnsafeTopLevel from 'c/staticUnsafeTopLevel';
+import OnlyEventListener from 'c/onlyEventListener';
+import OnlyEventListenerChild from 'c/onlyEventListenerChild';
+import OnlyEventListenerGrandchild from 'c/onlyEventListenerGrandchild';
+import ListenerStaticWithUpdates from 'c/listenerStaticWithUpdates';
+import DeepListener from 'c/deepListener';
+import Comments from 'c/comments';
+import PreserveComments from 'c/preserveComments';
+import Attribute from 'c/attribute';
+import DeepAttribute from 'c/deepAttribute';
+import IframeOnload from 'c/iframeOnload';
+import WithKey from 'c/withKey';
+import Text from 'c/text';
+import TableWithExpression from 'c/tableWithExpressions';
+import TextWithoutPreserveComments from 'c/textWithoutPreserveComments';
+import TextWithPreserveComments from 'c/textWithPreserveComments';
 import { jasmine } from '../../helpers/jasmine.js';
 import { LOWERCASE_SCOPE_TOKENS } from '../../helpers/constants.js';
 import { extractDataIds } from '../../helpers/utils.js';
@@ -31,19 +31,19 @@ import { resetAlreadyLoggedMessages } from '../../helpers/reset.js';
 describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () => {
     ['native', 'synthetic'].forEach((firstRenderMode) => {
         it(`should set the tokens for synthetic shadow when it renders first in ${firstRenderMode}`, () => {
-            const elm = createElement('x-container', { is: Container });
+            const elm = createElement('c-container', { is: Container });
             elm.syntheticFirst = firstRenderMode === 'synthetic';
             document.body.appendChild(elm);
 
             const syntheticMode = elm.shadowRoot
-                .querySelector('x-component')
+                .querySelector('c-component')
                 .shadowRoot.querySelector('div');
             const nativeMode = elm.shadowRoot
-                .querySelector('x-native')
-                .shadowRoot.querySelector('x-component')
+                .querySelector('c-native')
+                .shadowRoot.querySelector('c-component')
                 .shadowRoot.querySelector('div');
 
-            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
+            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'c-component_component';
             expect(syntheticMode.hasAttribute(token)).toBe(true);
             expect(nativeMode.hasAttribute(token)).toBe(false);
         });
@@ -52,7 +52,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () =
 
 describe('static content when stylesheets change', () => {
     it('should reflect correct token for scoped styles', async () => {
-        const elm = createElement('x-container', { is: MultipleStyles });
+        const elm = createElement('c-container', { is: MultipleStyles });
 
         const stylesheetsWarning =
             /Mutating the "stylesheets" property on a template is deprecated and will be removed in a future version of LWC/;
@@ -84,7 +84,7 @@ describe('static content when stylesheets change', () => {
         const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
         expect(classList).toEqual([
             'foo',
-            LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'x-multipleStyles_b',
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'c-multipleStyles_b',
         ]);
         expect(() => {
             elm.updateTemplate({
@@ -100,7 +100,7 @@ describe('static content when stylesheets change', () => {
 
 describe('svg and static content', () => {
     it('should use correct namespace', () => {
-        const elm = createElement('x-svg-ns', { is: SvgNs });
+        const elm = createElement('c-svg-ns', { is: SvgNs });
         document.body.appendChild(elm);
 
         const allStaticNodes = elm.querySelectorAll('.static');
@@ -122,7 +122,7 @@ describe('svg and static content', () => {
     }
 
     it('should correctly parse <path>', () => {
-        const elm = createElement('x-svg-path', { is: SvgPath });
+        const elm = createElement('c-svg-path', { is: SvgPath });
         document.body.appendChild(elm);
 
         expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
@@ -139,7 +139,7 @@ describe('svg and static content', () => {
     });
 
     it('should correctly parse <path> in div', () => {
-        const elm = createElement('x-svg-path-in-div', { is: SvgPathInDiv });
+        const elm = createElement('c-svg-path-in-div', { is: SvgPathInDiv });
         document.body.appendChild(elm);
 
         expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
@@ -161,7 +161,7 @@ describe('svg and static content', () => {
     });
 
     it('should correctly parse <path> in <g>', () => {
-        const elm = createElement('x-svg-path-in-g', { is: SvgPathInG });
+        const elm = createElement('c-svg-path-in-g', { is: SvgPathInG });
         document.body.appendChild(elm);
 
         expect(getDomStructure(elm.shadowRoot.firstChild)).toEqual({
@@ -185,7 +185,7 @@ describe('svg and static content', () => {
 
 describe('elements that cannot be parsed as top-level', () => {
     it('should work with a static <td>', async () => {
-        const elm = createElement('x-table', { is: Table });
+        const elm = createElement('c-table', { is: Table });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelectorAll('td').length).toEqual(0);
@@ -198,7 +198,7 @@ describe('elements that cannot be parsed as top-level', () => {
     });
 
     it('works for all elements that cannot be safely parsed as top-level', async () => {
-        const elm = createElement('x-static-unsafe-top-level', { is: StaticUnsafeTopLevel });
+        const elm = createElement('c-static-unsafe-top-level', { is: StaticUnsafeTopLevel });
         document.body.appendChild(elm);
 
         const getChildrenTagNames = () => {
@@ -237,7 +237,7 @@ describe('elements that cannot be parsed as top-level', () => {
 
 describe('template literal escaping', () => {
     it('should properly render escaped content', () => {
-        const elm = createElement('x-escape', { is: Escape });
+        const elm = createElement('c-escape', { is: Escape });
         document.body.appendChild(elm);
 
         // "`"
@@ -300,7 +300,7 @@ describe('static optimization with event listeners', () => {
             let button;
 
             beforeEach(async () => {
-                elm = createElement('x-only-event-listener', { is: Component });
+                elm = createElement('c-only-event-listener', { is: Component });
                 document.body.appendChild(elm);
 
                 await Promise.resolve();
@@ -344,7 +344,7 @@ describe('static optimization with event listeners', () => {
 
 describe('event listeners on static nodes when other nodes are updated', () => {
     it('event listeners work after updates', async () => {
-        const elm = createElement('x-listener-static-with-updates', {
+        const elm = createElement('c-listener-static-with-updates', {
             is: ListenerStaticWithUpdates,
         });
         document.body.appendChild(elm);
@@ -371,7 +371,7 @@ describe('event listeners on static nodes when other nodes are updated', () => {
 
 describe('event listeners on deep paths', () => {
     it('handles events correctly', async () => {
-        const elm = createElement('x-deep-listener', {
+        const elm = createElement('c-deep-listener', {
             is: DeepListener,
         });
         document.body.appendChild(elm);
@@ -393,7 +393,7 @@ describe('event listeners on deep paths', () => {
 
 describe('static parts applies to comments correctly', () => {
     it('has correct static parts when lwc:preserve-comments is off', async () => {
-        const elm = createElement('x-comments', {
+        const elm = createElement('c-comments', {
             is: Comments,
         });
         document.body.appendChild(elm);
@@ -413,7 +413,7 @@ describe('static parts applies to comments correctly', () => {
     });
 
     it('has correct static parts when lwc:preserve-comments is on', async () => {
-        const elm = createElement('x-preserve-comments', {
+        const elm = createElement('c-preserve-comments', {
             is: PreserveComments,
         });
         document.body.appendChild(elm);
@@ -438,7 +438,7 @@ describe('static content optimization with attribute', () => {
     let elm;
 
     beforeEach(async () => {
-        elm = createElement('x-attributes', { is: Attribute });
+        elm = createElement('c-attributes', { is: Attribute });
         document.body.appendChild(elm);
         await Promise.resolve();
         nodes = extractDataIds(elm);
@@ -609,7 +609,7 @@ describe('static content optimization with attribute', () => {
     });
 
     it('applies expression to deeply nested data structure', async () => {
-        const elm = createElement('x-deeply-nested', { is: DeepAttribute });
+        const elm = createElement('c-deeply-nested', { is: DeepAttribute });
         document.body.appendChild(elm);
         await Promise.resolve();
 
@@ -646,7 +646,7 @@ describe('static content optimization with attribute', () => {
 
 describe('iframe onload event listener', () => {
     it('works with iframe onload listener', async () => {
-        const elm = createElement('x-iframe-onload', { is: IframeOnload });
+        const elm = createElement('c-iframe-onload', { is: IframeOnload });
         document.body.appendChild(elm);
         // Oddly Firefox requires two macrotasks before the load event fires. Chrome/Safari only require a microtask.
         await new Promise((resolve) => setTimeout(resolve));
@@ -657,7 +657,7 @@ describe('iframe onload event listener', () => {
 
 describe('key directive', () => {
     it('works with a key directive on top-level static content', async () => {
-        const elm = createElement('x-with-key', { is: WithKey });
+        const elm = createElement('c-with-key', { is: WithKey });
         document.body.appendChild(elm);
         await Promise.resolve();
         const tbody = elm.shadowRoot.querySelector('tbody');
@@ -702,7 +702,7 @@ describe('key directive', () => {
 
 describe('static content dynamic text', () => {
     it('renders expressions on mount', async () => {
-        const elm = createElement('x-text', { is: Text });
+        const elm = createElement('c-text', { is: Text });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -719,7 +719,7 @@ describe('static content dynamic text', () => {
     });
 
     it('updates expressions on mount', async () => {
-        const elm = createElement('x-text', { is: Text });
+        const elm = createElement('c-text', { is: Text });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -744,7 +744,7 @@ describe('static content dynamic text', () => {
 
 describe('table with static content containing expressions', () => {
     it('renders static content correctly', async () => {
-        const table = createElement('x-table', { is: TableWithExpression });
+        const table = createElement('c-table', { is: TableWithExpression });
         document.body.appendChild(table);
 
         await Promise.resolve();
@@ -769,7 +769,7 @@ describe('table with static content containing expressions', () => {
 describe('text containing comments', () => {
     [
         {
-            tagName: 'x-text-without-preserve-comments',
+            tagName: 'c-text-without-preserve-comments',
             preserveComments: false,
             ctor: TextWithoutPreserveComments,
             expected: {
@@ -781,7 +781,7 @@ describe('text containing comments', () => {
             },
         },
         {
-            tagName: 'x-text-with-preserve-comments',
+            tagName: 'c-text-with-preserve-comments',
             preserveComments: true,
             ctor: TextWithPreserveComments,
             expected: {

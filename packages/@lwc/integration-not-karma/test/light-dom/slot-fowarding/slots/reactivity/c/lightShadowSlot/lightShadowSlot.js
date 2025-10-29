@@ -14,6 +14,6 @@ export default class extends LightningElement {
 
     @api
     get leaf() {
-        return this.querySelector('x-shadow-leaf');
+        return this.querySelector('c-shadow-leaf');
     }
 }

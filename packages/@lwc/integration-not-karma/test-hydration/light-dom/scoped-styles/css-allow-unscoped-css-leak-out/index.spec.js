@@ -2,8 +2,8 @@
 export default {
     snapshot(target) {
         return {
-            basicElement: target.shadowRoot.querySelector('x-basic'),
-            otherElement: target.shadowRoot.querySelector('x-other'),
+            basicElement: target.shadowRoot.querySelector('c-basic'),
+            otherElement: target.shadowRoot.querySelector('c-other'),
         };
     },
     test(target, snapshots) {

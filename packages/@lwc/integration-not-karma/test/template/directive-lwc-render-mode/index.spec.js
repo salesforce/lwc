@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import Shadow from 'x/shadow';
-import Light from 'x/light';
+import Shadow from 'c/shadow';
+import Light from 'c/light';
 import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
@@ -21,17 +21,17 @@ describe('lwc:render-mode', () => {
 
     it('should throw error if shadow template is passed to light component', () => {
         expect(() => {
-            const root = createElement('x-test', { is: Light });
+            const root = createElement('c-test', { is: Light });
             document.body.appendChild(root);
         }).toLogErrorDev(
-            /Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of <x-test>./
+            /Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of <c-test>./
         );
 
         expect(dispatcher.calls.allArgs()).toEqual([
             [
                 'RenderModeMismatch',
                 {
-                    tagName: 'x-test',
+                    tagName: 'c-test',
                     mode: 0, // RenderMode.Light
                 },
             ],
@@ -39,17 +39,17 @@ describe('lwc:render-mode', () => {
     });
     it('should throw error if light template is passed to shadow component', () => {
         expect(() => {
-            const root = createElement('x-test', { is: Shadow });
+            const root = createElement('c-test', { is: Shadow });
             document.body.appendChild(root);
         }).toLogErrorDev(
-            /Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from <x-test> or set it to 'lwc:render-mode="shadow"/
+            /Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from <c-test> or set it to 'lwc:render-mode="shadow"/
         );
 
         expect(dispatcher.calls.allArgs()).toEqual([
             [
                 'RenderModeMismatch',
                 {
-                    tagName: 'x-test',
+                    tagName: 'c-test',
                     mode: 1, // RenderMode.Shadow
                 },
             ],

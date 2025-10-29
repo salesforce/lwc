@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import XTest from 'x/test';
+import XTest from 'c/test';
 
 describe('Node.textContent', () => {
     it('should not return comment text when Node.nodeType is ELEMENT_NODE', () => {
@@ -38,7 +38,7 @@ describe('Node.textContent', () => {
     });
 
     it('should not return comment text from the shadowRoot', () => {
-        const elm = createElement('x-parent', { is: XTest });
+        const elm = createElement('c-parent', { is: XTest });
         document.body.appendChild(elm);
 
         // since we remove the comments from the template, we need to add it manually

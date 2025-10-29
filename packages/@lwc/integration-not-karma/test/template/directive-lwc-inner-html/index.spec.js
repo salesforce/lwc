@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import XInnerHtml from 'x/innerHtml';
+import XInnerHtml from 'c/innerHtml';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 import { resetDOM } from '../../../helpers/reset.js';
 
@@ -17,7 +17,7 @@ afterAll(() => {
 afterEach(resetDOM);
 
 it('renders the content as HTML', async () => {
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = 'Hello <b>World</b>';
     document.body.appendChild(elm);
 
@@ -31,7 +31,7 @@ it('renders the content as HTML', async () => {
 });
 
 it('re-renders the content on update', async () => {
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = 'Hello <b>World</b>';
     document.body.appendChild(elm);
 
@@ -55,7 +55,7 @@ describe('type conversion', () => {
 
     cases.forEach(([actual, expected]) => {
         it(`renders properly when passing type ${typeof actual}`, () => {
-            const elm = createElement('x-inner-html', { is: XInnerHtml });
+            const elm = createElement('c-inner-html', { is: XInnerHtml });
             elm.content = actual;
             document.body.appendChild(elm);
 
@@ -66,7 +66,7 @@ describe('type conversion', () => {
 });
 
 it('applies styles to injected content', async () => {
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = '<b>Test</b>';
     document.body.appendChild(elm);
 

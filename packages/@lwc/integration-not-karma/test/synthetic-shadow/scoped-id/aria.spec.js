@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import AriaStatic from 'x/ariaStatic';
-import AriaDynamic from 'x/ariaDynamic';
-import AriaBooleanTrue from 'x/ariaBooleanTrue';
-import AriaEmptyString from 'x/ariaEmptyString';
+import AriaStatic from 'c/ariaStatic';
+import AriaDynamic from 'c/ariaDynamic';
+import AriaBooleanTrue from 'c/ariaBooleanTrue';
+import AriaEmptyString from 'c/ariaEmptyString';
 
 // https://github.com/salesforce/lwc/blob/67512dfea33ef529836d3fd483f56f72d3debc5c/packages/%40lwc/template-compiler/src/parser/constants.ts#L18-L28
 const ID_REFERENCING_ARIA_ATTRS = new Set([
@@ -53,7 +53,7 @@ function testAria(type, create) {
     });
 }
 
-testAria('static', () => createElement('x-aria-static', { is: AriaStatic }));
-testAria('dynamic', () => createElement('x-aria-dynamic', { is: AriaDynamic }));
-testAria('boolean-true', () => createElement('x-aria-boolean-true', { is: AriaBooleanTrue }));
-testAria('empty-string', () => createElement('x-aria-empty-string', { is: AriaEmptyString }));
+testAria('static', () => createElement('c-aria-static', { is: AriaStatic }));
+testAria('dynamic', () => createElement('c-aria-dynamic', { is: AriaDynamic }));
+testAria('boolean-true', () => createElement('c-aria-boolean-true', { is: AriaBooleanTrue }));
+testAria('empty-string', () => createElement('c-aria-empty-string', { is: AriaEmptyString }));

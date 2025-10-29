@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 
-import Component from 'x/component';
+import Component from 'c/component';
 import { jasmine } from '../../../helpers/jasmine.js';
 import {
     ariaPropertiesMapping,
@@ -229,7 +229,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
             nonStandardAriaProperties.forEach((prop) => {
                 describe(prop, () => {
                     it('LightningElement (internal)', () => {
-                        const elm = createElement('x-component', { is: Component });
+                        const elm = createElement('c-component', { is: Component });
                         document.body.appendChild(elm);
 
                         expect(() => {
@@ -239,7 +239,7 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
                     });
 
                     it('BaseBridgeElement (external)', () => {
-                        const elm = createElement('x-component', { is: Component });
+                        const elm = createElement('c-component', { is: Component });
                         document.body.appendChild(elm);
 
                         expect(() => {

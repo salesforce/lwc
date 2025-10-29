@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import Container from 'x/container';
+import Container from 'c/container';
 
 /**
  * https://github.com/salesforce/lwc/issues/720
  */
 describe('Issue 720: Wrap all string literal variables with toString method', () => {
     it('should not have have an error accessing state.foo', async () => {
-        const elm = createElement('x-container', { is: Container });
+        const elm = createElement('c-container', { is: Container });
         document.body.appendChild(elm);
 
         await Promise.resolve();

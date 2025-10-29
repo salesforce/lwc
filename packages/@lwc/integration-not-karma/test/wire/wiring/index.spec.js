@@ -1,15 +1,15 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import AdapterConsumer from 'x/adapterConsumer';
-import { EchoWireAdapter } from 'x/echoAdapter';
+import AdapterConsumer from 'c/adapterConsumer';
+import { EchoWireAdapter } from 'c/echoAdapter';
 
-import BroadcastConsumer from 'x/broadcastConsumer';
-import { BroadcastAdapter } from 'x/broadcastAdapter';
+import BroadcastConsumer from 'c/broadcastConsumer';
+import { BroadcastAdapter } from 'c/broadcastAdapter';
 
-import InheritedMethods from 'x/inheritedMethods';
+import InheritedMethods from 'c/inheritedMethods';
 
-import ContextAwareConsumer from 'x/contextAwareConsumer';
-import { ContextAwareWireAdapter } from 'x/contextAwareAdapter';
+import ContextAwareConsumer from 'c/contextAwareConsumer';
+import { ContextAwareWireAdapter } from 'c/contextAwareAdapter';
 
 const ComponentClass = AdapterConsumer;
 const AdapterId = EchoWireAdapter;
@@ -23,7 +23,7 @@ describe('wiring', () => {
     describe('component lifecycle and wire adapter', () => {
         it('should call a connect when component is connected', async () => {
             const spy = [];
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             AdapterId.setSpy(spy);
             document.body.appendChild(elm);
 
@@ -33,7 +33,7 @@ describe('wiring', () => {
         it('should call a disconnect when component is disconnected', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
 
             document.body.appendChild(elm);
             document.body.removeChild(elm);
@@ -42,7 +42,7 @@ describe('wiring', () => {
 
         it('should call a connect and disconnect when component is connected, disconnected twice', async () => {
             const spy = [];
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             AdapterId.setSpy(spy);
 
             document.body.appendChild(elm);
@@ -64,7 +64,7 @@ describe('wiring', () => {
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
 
-            const elm = createElement('x-echo-adapter-consumer', { is: InheritedMethods });
+            const elm = createElement('c-echo-adapter-consumer', { is: InheritedMethods });
             document.body.appendChild(elm);
 
             const updateCalls = filterCalls(spy, 'update');
@@ -88,7 +88,7 @@ describe('wiring', () => {
                 AdapterId.setSpy(spy);
                 expect(spy.length).toBe(0);
 
-                const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+                const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
                 document.body.appendChild(elm);
 
                 expect(spy).toHaveSize(2);
@@ -101,7 +101,7 @@ describe('wiring', () => {
                 AdapterId.setSpy(spy);
                 expect(spy.length).toBe(0);
 
-                const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+                const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
                 elm.setDynamicParamSource(1);
                 document.body.appendChild(elm);
 
@@ -117,7 +117,7 @@ describe('wiring', () => {
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
 
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
             expect(spy).toHaveSize(1);
@@ -134,7 +134,7 @@ describe('wiring', () => {
             AdapterId.setSpy(spy);
             expect(spy.length).toBe(0);
 
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             elm.setDynamicParamSource(1);
             document.body.appendChild(elm);
 
@@ -148,7 +148,7 @@ describe('wiring', () => {
         it('should be called only once during multiple renders when the wire config does not change', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
             await Promise.resolve();
@@ -161,7 +161,7 @@ describe('wiring', () => {
         it('should be called when the wire parameters change its value.', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
             await Promise.resolve();
@@ -176,7 +176,7 @@ describe('wiring', () => {
         it('should be called for common parameter when shared among wires', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
-            const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
+            const elm = createElement('c-bc-consumer', { is: BroadcastConsumer });
             document.body.appendChild(elm);
 
             await Promise.resolve();
@@ -194,7 +194,7 @@ describe('wiring', () => {
 
         it('should not update when setting parameter with same value', async () => {
             const spy = [];
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
             AdapterId.setSpy(spy);
@@ -213,7 +213,7 @@ describe('wiring', () => {
         });
 
         it('should trigger component rerender when field is updated', async () => {
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
             await Promise.resolve();
@@ -237,7 +237,7 @@ describe('wiring', () => {
         it('should not call update when component is disconnected.', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
 
             await Promise.resolve();
@@ -251,7 +251,7 @@ describe('wiring', () => {
         it('should call update when component is re-connected.', async () => {
             const spy = [];
             AdapterId.setSpy(spy);
-            const elm = createElement('x-echo-adapter-consumer', { is: ComponentClass });
+            const elm = createElement('c-echo-adapter-consumer', { is: ComponentClass });
             document.body.appendChild(elm);
             await Promise.resolve();
 
@@ -278,7 +278,7 @@ describe('wiring', () => {
 describe('wired fields', () => {
     it('should rerender component when adapter pushes data', async () => {
         BroadcastAdapter.clearInstances();
-        const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
+        const elm = createElement('c-bc-consumer', { is: BroadcastConsumer });
         document.body.appendChild(elm);
         BroadcastAdapter.broadcastData('expected value');
 
@@ -293,7 +293,7 @@ describe('wired fields', () => {
 
     it('should rerender component when wired field is mutated from within the component', async () => {
         BroadcastAdapter.clearInstances();
-        const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
+        const elm = createElement('c-bc-consumer', { is: BroadcastConsumer });
         document.body.appendChild(elm);
         BroadcastAdapter.broadcastData('expected value');
 
@@ -311,7 +311,7 @@ describe('wired fields', () => {
 describe('wired methods', () => {
     it('should call component method when wired to a method', async () => {
         BroadcastAdapter.clearInstances();
-        const elm = createElement('x-bc-consumer', { is: BroadcastConsumer });
+        const elm = createElement('c-bc-consumer', { is: BroadcastConsumer });
         document.body.appendChild(elm);
         BroadcastAdapter.broadcastData('expected value');
 
@@ -323,7 +323,7 @@ describe('wired methods', () => {
     it('should support method override', async () => {
         const spy = [];
         EchoWireAdapter.setSpy(spy);
-        const elm = createElement('x-inherited-methods', { is: InheritedMethods });
+        const elm = createElement('c-inherited-methods', { is: InheritedMethods });
         document.body.appendChild(elm);
 
         // No need to wait for next tick, the wire only has static config.
@@ -345,8 +345,8 @@ describe('context aware', () => {
         const spy = [];
         ContextLog.setSpy(spy);
 
-        const hostTagNameA = 'x-context-aware-a';
-        const hostTagNameB = 'x-context-aware-b';
+        const hostTagNameA = 'c-context-aware-a';
+        const hostTagNameB = 'c-context-aware-b';
 
         createElement(hostTagNameA, { is: ContextAwareConsumer });
         createElement(hostTagNameB, { is: ContextAwareConsumer });

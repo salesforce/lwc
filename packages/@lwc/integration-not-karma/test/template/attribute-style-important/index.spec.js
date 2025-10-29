@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Component from 'x/component';
+import Component from 'c/component';
 
 describe('important style attribute', () => {
     it('renders important styles correctly', () => {
-        const elm = createElement('x-component', { is: Component });
+        const elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('div');

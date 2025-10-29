@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import Source from 'x/source';
-import Target from 'x/target';
+import Source from 'c/source';
+import Target from 'c/target';
 
 describe.skipIf(process.env.NATIVE_SHADOW)('activeElement', () => {
     it('can call shadowRoot.activeElement on transported node with no lwc:dom=manual', async () => {
-        const source = createElement('x-source', { is: Source });
-        const target = createElement('x-target', { is: Target });
+        const source = createElement('c-source', { is: Source });
+        const target = createElement('c-target', { is: Target });
         document.body.appendChild(source);
         document.body.appendChild(target);
         await Promise.resolve();

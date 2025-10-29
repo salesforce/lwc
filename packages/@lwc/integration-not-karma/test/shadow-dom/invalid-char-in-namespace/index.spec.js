@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import ComponentAtX from '@x/component';
+import ComponentAtX from '@c/component';
 import ComponentXHashY from 'x#y/component';
 
 describe('invalid character @ in namespace', () => {
     let elm;
     beforeEach(() => {
-        elm = createElement('x-component', { is: ComponentAtX });
+        elm = createElement('c-component', { is: ComponentAtX });
         document.body.appendChild(elm);
     });
 

@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import LWCParent from 'x/lwcParent';
-import NativeSlottedBasic from './x/NativeBasic/NativeBasic';
+import LWCParent from 'c/lwcParent';
+import NativeSlottedBasic from './c/NativeBasic/NativeBasic';
 
 function testAssignedElements(testDescription, getContainer) {
     let container;
@@ -41,7 +41,7 @@ testAssignedElements(
 testAssignedElements(
     'assignedElements() retains behavior in native shadow tree nested in lwc parent',
     () => {
-        const lwcParent = createElement('x-lwc-parent', { is: LWCParent });
+        const lwcParent = createElement('c-lwc-parent', { is: LWCParent });
         document.body.appendChild(lwcParent);
 
         return lwcParent.shadowRoot.querySelector('div');

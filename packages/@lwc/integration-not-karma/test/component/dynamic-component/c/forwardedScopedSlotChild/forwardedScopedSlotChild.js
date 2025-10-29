@@ -1,6 +1,6 @@
 import { LightningElement } from 'lwc';
-import Baz from 'x/baz';
-import Slottable from 'x/slottable';
+import Baz from 'c/baz';
+import Slottable from 'c/slottable';
 
 export default class extends LightningElement {
     static renderMode = 'light';

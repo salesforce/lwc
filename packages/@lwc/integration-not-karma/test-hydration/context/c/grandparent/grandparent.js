@@ -1,6 +1,6 @@
 import { api } from 'lwc';
-import Base from 'x/base';
-import { grandparentContextFactory, anotherGrandparentContextFactory } from 'x/grandparentContext';
+import Base from 'c/base';
+import { grandparentContextFactory, anotherGrandparentContextFactory } from 'c/grandparentContext';
 
 export default class Grandparent extends Base {
     @api anotherContext = anotherGrandparentContextFactory('another grandparent provided value');

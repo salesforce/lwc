@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import ComplexSlotted from 'x/complexSlotted';
+import ComplexSlotted from 'c/complexSlotted';
 
 describe('Node.compareDocumentPosition', () => {
     it('should return the right value for node outside the shadow tree', () => {
-        const elm = createElement('x-slotted', { is: ComplexSlotted });
+        const elm = createElement('c-slotted', { is: ComplexSlotted });
         document.body.appendChild(elm);
 
         const { shadowRoot } = elm;
@@ -32,7 +32,7 @@ describe('Node.compareDocumentPosition', () => {
     });
 
     it('should return the right value for nodes in the same shadow tree', () => {
-        const elm = createElement('x-slotted', { is: ComplexSlotted });
+        const elm = createElement('c-slotted', { is: ComplexSlotted });
         document.body.appendChild(elm);
 
         const { shadowRoot } = elm;
@@ -40,7 +40,7 @@ describe('Node.compareDocumentPosition', () => {
         const before = shadowRoot.querySelector('.before');
         const after = shadowRoot.querySelector('.after');
         const outer = shadowRoot.querySelector('.outer');
-        const xContainer = shadowRoot.querySelector('x-container');
+        const xContainer = shadowRoot.querySelector('c-container');
         const slotted = shadowRoot.querySelector('.slotted');
 
         expect(shadowRoot.compareDocumentPosition(before)).toBe(
@@ -101,10 +101,10 @@ describe('Node.compareDocumentPosition', () => {
     });
 
     it('should return the right value for slotted node', () => {
-        const elm = createElement('x-slotted', { is: ComplexSlotted });
+        const elm = createElement('c-slotted', { is: ComplexSlotted });
         document.body.appendChild(elm);
 
-        const container = elm.shadowRoot.querySelector('x-container');
+        const container = elm.shadowRoot.querySelector('c-container');
         const slot = container.shadowRoot.querySelector('slot');
         const slotted = elm.shadowRoot.querySelector('.slotted');
 

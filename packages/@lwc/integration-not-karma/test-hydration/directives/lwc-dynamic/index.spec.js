@@ -4,7 +4,7 @@ export default {
         label: 'dynamic',
     },
     snapshot(target) {
-        const cmp = target.shadowRoot.querySelector('x-child');
+        const cmp = target.shadowRoot.querySelector('c-child');
         const p = cmp.shadowRoot.querySelector('p');
 
         return {
@@ -13,7 +13,7 @@ export default {
         };
     },
     test(target, snapshots) {
-        const cmp = target.shadowRoot.querySelector('x-child');
+        const cmp = target.shadowRoot.querySelector('c-child');
         const p = cmp.shadowRoot.querySelector('p');
 
         expect(cmp).toBe(snapshots.cmp);

@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
-import XNested from 'x/nested';
-import XTest from 'x/test';
-import XForEach from 'x/forEach';
-import XparentWithSlot from 'x/parentWithSlot';
-import XparentWithNamedSlot from 'x/parentWithNamedSlot';
-import XSlottedForEach from 'x/slottedForEach';
+import XNested from 'c/nested';
+import XTest from 'c/test';
+import XForEach from 'c/forEach';
+import XparentWithSlot from 'c/parentWithSlot';
+import XparentWithNamedSlot from 'c/parentWithNamedSlot';
+import XSlottedForEach from 'c/slottedForEach';
 
 describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     it('should render if branch if the value for lwc:if is truthy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.showIf = true;
         document.body.appendChild(elm);
 
@@ -16,7 +16,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     });
 
     it('should render elseif branch if the value for lwc:if is falsy and the value for lwc:elseif is truthy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.showElseif = true;
         document.body.appendChild(elm);
 
@@ -24,14 +24,14 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     });
 
     it('should render else branch if the values for lwc:if and lwc:elseif are all falsy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('.else')).not.toBeNull();
     });
 
     it('should update which branch is rendered if the value changes', async () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.showIf = true;
         document.body.appendChild(elm);
 
@@ -49,7 +49,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     });
 
     it('should render content when nested inside another if branch', () => {
-        const element = createElement('x-nested', { is: XNested });
+        const element = createElement('c-nested', { is: XNested });
         element.showContent = true;
         element.showNestedContent = true;
         document.body.appendChild(element);
@@ -58,7 +58,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
     });
 
     it('should rerender content when nested inside another if branch', async () => {
-        const element = createElement('x-nested', { is: XNested });
+        const element = createElement('c-nested', { is: XNested });
         element.showContent = true;
         document.body.appendChild(element);
 
@@ -71,7 +71,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
 
     describe('foreach', () => {
         it('should render list content properly', () => {
-            const element = createElement('x-for-each', { is: XForEach });
+            const element = createElement('c-for-each', { is: XForEach });
             element.showList = true;
             document.body.appendChild(element);
 
@@ -79,7 +79,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         });
 
         it('should rerender list content when updated', async () => {
-            const element = createElement('x-for-each', { is: XForEach });
+            const element = createElement('c-for-each', { is: XForEach });
             element.showList = true;
             document.body.appendChild(element);
 
@@ -109,7 +109,7 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         });
 
         it('should rerender list items when conditional expressions change', async () => {
-            const element = createElement('x-for-each', { is: XForEach });
+            const element = createElement('c-for-each', { is: XForEach });
             element.showList = true;
             document.body.appendChild(element);
 
@@ -155,10 +155,10 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         }
 
         it('should properly assign content for slots', async () => {
-            const element = createElement('x-parent', { is: XparentWithSlot });
+            const element = createElement('c-parent', { is: XparentWithSlot });
             document.body.appendChild(element);
 
-            const child = element.shadowRoot.querySelector('x-child-with-slot');
+            const child = element.shadowRoot.querySelector('c-child-with-slot');
 
             // When if condition is false, no slot content is provided by parent
             verifyExpectedSlotContent(child, false);
@@ -169,11 +169,11 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         });
 
         it('should properly rerender content for slots', async () => {
-            const element = createElement('x-parent', { is: XparentWithSlot });
+            const element = createElement('c-parent', { is: XparentWithSlot });
             element.condition = true;
             document.body.appendChild(element);
 
-            const child = element.shadowRoot.querySelector('x-child-with-slot');
+            const child = element.shadowRoot.querySelector('c-child-with-slot');
 
             verifyExpectedSlotContent(child, true);
 
@@ -186,11 +186,11 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
         });
 
         it('should properly rerender list content nested inside slots', async () => {
-            const element = createElement('x-slotted-for-each', { is: XSlottedForEach });
+            const element = createElement('c-slotted-for-each', { is: XSlottedForEach });
             element.showList = true;
             document.body.appendChild(element);
 
-            const child = element.shadowRoot.querySelector('x-child-with-slot');
+            const child = element.shadowRoot.querySelector('c-child-with-slot');
 
             expect(child.textContent).toBe('Hh123fF');
 
@@ -248,10 +248,10 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             }
 
             it('should properly assign content for named slots', async () => {
-                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                const element = createElement('c-parent', { is: XparentWithNamedSlot });
                 document.body.appendChild(element);
 
-                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const child = element.shadowRoot.querySelector('c-child-with-named-slot');
 
                 // When if condition is false, no slot content is provided by parent
                 verifyExpectedNamedSlotContent(child, false);
@@ -261,11 +261,11 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             });
 
             it('should properly rerender content for named slots', async () => {
-                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                const element = createElement('c-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
 
                 document.body.appendChild(element);
-                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const child = element.shadowRoot.querySelector('c-child-with-named-slot');
 
                 verifyExpectedNamedSlotContent(child, true);
                 verifyDefaultSlotContent(child);
@@ -281,11 +281,11 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             });
 
             it('should not override default slot content when no elements are explicitly passed to the default slot', async () => {
-                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                const element = createElement('c-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
                 document.body.appendChild(element);
 
-                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const child = element.shadowRoot.querySelector('c-child-with-named-slot');
                 verifyDefaultSlotContent(child);
 
                 element.nestedNamedSlot = true;
@@ -294,12 +294,12 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             });
 
             it('should override default slot content when nested conditional elements are passed to the default slot', () => {
-                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                const element = createElement('c-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
                 element.nestedDefaultSlot = true;
                 document.body.appendChild(element);
 
-                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const child = element.shadowRoot.querySelector('c-child-with-named-slot');
                 const assignedNodes = child.shadowRoot.querySelectorAll('slot')[1].assignedNodes();
 
                 expect(assignedNodes.length).toBe(2);
@@ -308,12 +308,12 @@ describe('lwc:if, lwc:elseif, lwc:else directives', () => {
             });
 
             it('should properly rerender nested conditional slot content', async () => {
-                const element = createElement('x-parent', { is: XparentWithNamedSlot });
+                const element = createElement('c-parent', { is: XparentWithNamedSlot });
                 element.condition = true;
                 element.nestedDefaultSlot = true;
                 document.body.appendChild(element);
 
-                const child = element.shadowRoot.querySelector('x-child-with-named-slot');
+                const child = element.shadowRoot.querySelector('c-child-with-named-slot');
                 const assignedNodes = child.shadowRoot.querySelector('slot').assignedNodes();
 
                 expect(assignedNodes.length).toBe(3);

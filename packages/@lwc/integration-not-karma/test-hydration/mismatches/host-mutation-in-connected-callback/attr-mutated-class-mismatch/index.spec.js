@@ -9,7 +9,7 @@ export default {
         ssr: false,
     },
     snapshot(target) {
-        const child = target.shadowRoot.querySelector('x-child');
+        const child = target.shadowRoot.querySelector('c-child');
         const div = child.shadowRoot.querySelector('div');
 
         return {
@@ -30,7 +30,7 @@ export default {
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: <x-child> - rendered on server: class="is-server" - expected on client: class="is-client"',
+                'Hydration attribute mismatch on: <c-child> - rendered on server: class="is-server" - expected on client: class="is-client"',
                 'Hydration completed with errors.',
             ],
         });

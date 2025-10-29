@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import Static from 'x/static';
-import Dynamic from 'x/dynamic';
+import Static from 'c/static';
+import Dynamic from 'c/dynamic';
 
 describe('static style attribute', () => {
     it('renders the style attribute', () => {
-        const elm = createElement('x-static', { is: Static });
+        const elm = createElement('c-static', { is: Static });
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('div');
@@ -19,7 +19,7 @@ describe('static style attribute', () => {
 describe('dynamic style attribute', () => {
     function testRenderStyleAttribute(type, value, expectedValue) {
         it(`renders the style attribute for ${type}`, () => {
-            const elm = createElement('x-dynamic', { is: Dynamic });
+            const elm = createElement('c-dynamic', { is: Dynamic });
             elm.dynamicStyle = value;
             document.body.appendChild(elm);
 
@@ -39,7 +39,7 @@ describe('dynamic style attribute', () => {
 
     function testUpdateStyleAttribute(type, value, expectedValue) {
         it(`updates the style attribute for ${type}`, async () => {
-            const elm = createElement('x-dynamic', { is: Dynamic });
+            const elm = createElement('c-dynamic', { is: Dynamic });
             elm.dynamicStyle = 'position: relative;';
             document.body.appendChild(elm);
 

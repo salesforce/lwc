@@ -1,13 +1,13 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import Reactive from 'x/reactive';
-import NonReactive from 'x/nonReactive';
-import ExplicitSubscribe from 'x/explicitSubscribe';
-import List from 'x/list';
+import Reactive from 'c/reactive';
+import NonReactive from 'c/nonReactive';
+import ExplicitSubscribe from 'c/explicitSubscribe';
+import List from 'c/list';
 
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
-import { Signal } from 'x/signal';
+import { Signal } from 'c/signal';
 
 const createElementSignalAndInsertIntoDom = async (tagName, ctor, signalInitialValue) => {
     const elm = createElement(tagName, { is: ctor });
@@ -30,7 +30,7 @@ describe('signal reaction in lwc', () => {
 
     it('should render signal value', async () => {
         const { elm } = await createElementSignalAndInsertIntoDom(
-            'x-reactive',
+            'c-reactive',
             Reactive,
             'initial value'
         );
@@ -40,7 +40,7 @@ describe('signal reaction in lwc', () => {
 
     it('should re-render when signal notification is sent', async () => {
         const { elm, signal } = await createElementSignalAndInsertIntoDom(
-            'x-reactive',
+            'c-reactive',
             Reactive,
             'initial value'
         );
@@ -55,7 +55,7 @@ describe('signal reaction in lwc', () => {
     });
 
     it('does not re-render when signal is not bound to an LWC', async () => {
-        const elm = createElement('x-non-reactive', { is: NonReactive });
+        const elm = createElement('c-non-reactive', { is: NonReactive });
         document.body.appendChild(elm);
         await Promise.resolve();
 
@@ -69,7 +69,7 @@ describe('signal reaction in lwc', () => {
 
     it('should be able to re-render when manually subscribing to signal', async () => {
         const { elm, signal } = await createElementSignalAndInsertIntoDom(
-            'x-manual-subscribe',
+            'c-manual-subscribe',
             ExplicitSubscribe,
             'initial value'
         );
@@ -83,7 +83,7 @@ describe('signal reaction in lwc', () => {
 
     it('render lists properly', async () => {
         const { elm, signal } = await createElementSignalAndInsertIntoDom(
-            'x-reactive-list',
+            'c-reactive-list',
             List,
             [1, 2, 3]
         );

@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import DynamicContainer from 'x/dynamic';
-import LwcDynamicContainer from 'x/lwcDynamic';
-import DynamicCtor from 'x/ctor';
-import AlterCtor from 'x/alter';
+import DynamicContainer from 'c/dynamic';
+import LwcDynamicContainer from 'c/lwcDynamic';
+import DynamicCtor from 'c/ctor';
+import AlterCtor from 'c/alter';
 
-import DynamicSlotted from 'x/dynamicSlotted';
-import LwcDynamicSlotted from 'x/lwcDynamicSlotted';
-import ContainerFoo from 'x/containerFoo';
-import ContainerBar from 'x/containerBar';
+import DynamicSlotted from 'c/dynamicSlotted';
+import LwcDynamicSlotted from 'c/lwcDynamicSlotted';
+import ContainerFoo from 'c/containerFoo';
+import ContainerBar from 'c/containerBar';
 
 import { spyOn } from '@vitest/spy';
 import { registerForLoad, clearRegister } from '../../../helpers/dynamic-loader.js';
@@ -30,23 +30,23 @@ async function macroTask() {
 // TODO [#3331]: remove lwc:dynamic portion of these tests in 246
 
 it('should call the loader using lwc:dynamic', async () => {
-    // note, using `x-` prefix instead of `x/` because these are
+    // note, using `c-` prefix instead of `c/` because these are
     // handled by `registerForLoad`
-    registerForLoad('x-ctor', DynamicCtor);
-    registerForLoad('x-alter', AlterCtor);
+    registerForLoad('c-ctor', DynamicCtor);
+    registerForLoad('c-alter', AlterCtor);
 
-    const elm = createElement('x-dynamic', { is: LwcDynamicContainer });
+    const elm = createElement('c-dynamic', { is: LwcDynamicContainer });
     document.body.appendChild(elm);
 
-    const child = elm.shadowRoot.querySelector('x-ctor');
+    const child = elm.shadowRoot.querySelector('c-ctor');
     expect(child).toBeNull();
     // first rendered with ctor set to undefined (nothing)
     elm.enableCtor();
 
     await macroTask();
 
-    // second rendered with ctor set to x-ctor
-    const ctorElm = elm.shadowRoot.querySelector('x-ctor');
+    // second rendered with ctor set to c-ctor
+    const ctorElm = elm.shadowRoot.querySelector('c-ctor');
     expect(ctorElm).not.toBeNull();
     const ctorElmSpan = ctorElm.shadowRoot.querySelector('span');
     expect(ctorElmSpan).not.toBeNull();
@@ -55,8 +55,8 @@ it('should call the loader using lwc:dynamic', async () => {
 
     await macroTask();
 
-    // third rendered with ctor set to x-alter
-    const alterElm = elm.shadowRoot.querySelector('x-ctor');
+    // third rendered with ctor set to c-alter
+    const alterElm = elm.shadowRoot.querySelector('c-ctor');
     expect(alterElm).not.toBeNull();
     const afterElmSpan = alterElm.shadowRoot.querySelector('span');
     expect(afterElmSpan).not.toBeNull();
@@ -66,41 +66,41 @@ it('should call the loader using lwc:dynamic', async () => {
     await macroTask();
 
     // third rendered with ctor set to null (nothing)
-    expect(elm.shadowRoot.querySelector('x-ctor')).toBeNull();
+    expect(elm.shadowRoot.querySelector('c-ctor')).toBeNull();
 });
 
 it('should not reuse DOM elements using lwc:dynamic', async () => {
-    registerForLoad('x-ctor', DynamicCtor);
-    registerForLoad('x-alter', AlterCtor);
+    registerForLoad('c-ctor', DynamicCtor);
+    registerForLoad('c-alter', AlterCtor);
 
-    const elm = createElement('x-dynamic', { is: LwcDynamicContainer });
+    const elm = createElement('c-dynamic', { is: LwcDynamicContainer });
     elm.enableCtor();
     document.body.appendChild(elm);
 
     await macroTask();
 
-    const childElm = elm.shadowRoot.querySelector('x-ctor');
+    const childElm = elm.shadowRoot.querySelector('c-ctor');
     expect(childElm).not.toBeNull();
     elm.enableAlter();
 
     await macroTask();
 
-    const alterElm = elm.shadowRoot.querySelector('x-ctor');
+    const alterElm = elm.shadowRoot.querySelector('c-ctor');
     expect(alterElm).not.toBe(childElm);
 });
 
 it('should not cache DOM elements using lwc:dynamic', async () => {
-    registerForLoad('x-ctor', DynamicCtor);
-    registerForLoad('x-alter', AlterCtor);
+    registerForLoad('c-ctor', DynamicCtor);
+    registerForLoad('c-alter', AlterCtor);
 
-    const elm = createElement('x-dynamic', { is: LwcDynamicContainer });
+    const elm = createElement('c-dynamic', { is: LwcDynamicContainer });
     elm.enableCtor();
     document.body.appendChild(elm);
 
     // from ctor to alter back to ctor, new elements should be created
     await macroTask();
 
-    const childElm = elm.shadowRoot.querySelector('x-ctor');
+    const childElm = elm.shadowRoot.querySelector('c-ctor');
     expect(childElm).not.toBeNull();
     elm.enableAlter();
 
@@ -110,7 +110,7 @@ it('should not cache DOM elements using lwc:dynamic', async () => {
 
     await macroTask();
 
-    const secondCtorElm = elm.shadowRoot.querySelector('x-ctor');
+    const secondCtorElm = elm.shadowRoot.querySelector('c-ctor');
     expect(secondCtorElm).not.toBe(childElm);
 });
 
@@ -122,7 +122,7 @@ describe('slotted content using lwc:dynamic', () => {
     afterAll(() => consoleSpy.mockRestore());
 
     it('reallocate slotted content after changing constructor', async () => {
-        const elm = createElement('x-dynamic-slotted', { is: LwcDynamicSlotted });
+        const elm = createElement('c-dynamic-slotted', { is: LwcDynamicSlotted });
         elm.ctor = ContainerFoo;
 
         document.body.appendChild(elm);
@@ -155,25 +155,25 @@ describe('slotted content using lwc:dynamic', () => {
 // Using <lwc:component lwc:is={}>
 
 it('should call the loader', async () => {
-    // note, using `x-` prefix instead of `x/` because these are
+    // note, using `c-` prefix instead of `c/` because these are
     // handled by `registerForLoad`
-    registerForLoad('x-ctor', DynamicCtor);
-    registerForLoad('x-alter', AlterCtor);
+    registerForLoad('c-ctor', DynamicCtor);
+    registerForLoad('c-alter', AlterCtor);
 
-    const elm = createElement('x-dynamic', { is: DynamicContainer });
+    const elm = createElement('c-dynamic', { is: DynamicContainer });
     document.body.appendChild(elm);
 
     await microTask();
 
-    const child = elm.shadowRoot.querySelector('x-ctor');
+    const child = elm.shadowRoot.querySelector('c-ctor');
     expect(child).toBeNull();
     // first rendered with ctor set to undefined (nothing)
     elm.enableCtor();
 
     await macroTask();
 
-    // second rendered with ctor set to x-ctor
-    const ctorElm = elm.shadowRoot.querySelector('x-ctor');
+    // second rendered with ctor set to c-ctor
+    const ctorElm = elm.shadowRoot.querySelector('c-ctor');
     expect(ctorElm).not.toBeNull();
     const ctorElmSpan = ctorElm.shadowRoot.querySelector('span');
     expect(ctorElmSpan).not.toBeNull();
@@ -182,8 +182,8 @@ it('should call the loader', async () => {
 
     await macroTask();
 
-    // third rendered with ctor set to x-alter
-    const alterElm = elm.shadowRoot.querySelector('x-alter');
+    // third rendered with ctor set to c-alter
+    const alterElm = elm.shadowRoot.querySelector('c-alter');
     expect(alterElm).not.toBeNull();
     const afterElmSpan = alterElm.shadowRoot.querySelector('span');
     expect(afterElmSpan).not.toBeNull();
@@ -193,38 +193,38 @@ it('should call the loader', async () => {
     await macroTask();
 
     // third rendered with ctor set to null (nothing)
-    expect(elm.shadowRoot.querySelector('x-ctor')).toBeNull();
+    expect(elm.shadowRoot.querySelector('c-ctor')).toBeNull();
 });
 
 it('should not reuse DOM elements', async () => {
-    registerForLoad('x-ctor', DynamicCtor);
-    registerForLoad('x-alter', AlterCtor);
+    registerForLoad('c-ctor', DynamicCtor);
+    registerForLoad('c-alter', AlterCtor);
 
-    const elm = createElement('x-dynamic', { is: DynamicContainer });
+    const elm = createElement('c-dynamic', { is: DynamicContainer });
     elm.enableCtor();
     document.body.appendChild(elm);
 
     await macroTask();
-    const childElm = elm.shadowRoot.querySelector('x-ctor');
+    const childElm = elm.shadowRoot.querySelector('c-ctor');
     expect(childElm).not.toBeNull();
     elm.enableAlter();
     await macroTask();
-    const alterElm = elm.shadowRoot.querySelector('x-alter');
+    const alterElm = elm.shadowRoot.querySelector('c-alter');
     expect(alterElm).not.toBe(childElm);
 });
 
 it('should not cache DOM elements', async () => {
-    registerForLoad('x-ctor', DynamicCtor);
-    registerForLoad('x-alter', AlterCtor);
+    registerForLoad('c-ctor', DynamicCtor);
+    registerForLoad('c-alter', AlterCtor);
 
-    const elm = createElement('x-dynamic', { is: DynamicContainer });
+    const elm = createElement('c-dynamic', { is: DynamicContainer });
     elm.enableCtor();
     document.body.appendChild(elm);
     // from ctor to alter back to ctor, new elements should be created
 
     await macroTask();
 
-    const childElm = elm.shadowRoot.querySelector('x-ctor');
+    const childElm = elm.shadowRoot.querySelector('c-ctor');
     expect(childElm).not.toBeNull();
     elm.enableAlter();
 
@@ -234,7 +234,7 @@ it('should not cache DOM elements', async () => {
 
     await macroTask();
 
-    const secondCtorElm = elm.shadowRoot.querySelector('x-ctor');
+    const secondCtorElm = elm.shadowRoot.querySelector('c-ctor');
     expect(secondCtorElm).not.toBe(childElm);
 });
 
@@ -246,7 +246,7 @@ describe('slotted content', () => {
     afterAll(() => consoleSpy.mockRestore());
 
     it('reallocate slotted content after changing constructor', async () => {
-        const elm = createElement('x-dynamic-slotted', { is: DynamicSlotted });
+        const elm = createElement('c-dynamic-slotted', { is: DynamicSlotted });
         elm.ctor = ContainerFoo;
 
         document.body.appendChild(elm);

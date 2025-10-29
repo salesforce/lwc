@@ -1,10 +1,10 @@
 <template>
     <template lwc:if={flag}>
-        <x-child>
+        <c-child>
             <template lwc:slot-data="item">
-                <x-slotted attr={attr} label={item.name}></x-slotted>
+                <c-slotted attr={attr} label={item.name}></c-slotted>
             </template>
-        </x-child>
+        </c-child>
     </template>
     <template lwc:else>
         Statement2

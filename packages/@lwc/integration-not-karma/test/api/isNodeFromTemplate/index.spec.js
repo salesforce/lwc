@@ -1,5 +1,5 @@
 import { createElement, isNodeFromTemplate } from 'lwc';
-import Test from 'x/test';
+import Test from 'c/test';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 function testNonNodes(type, obj) {
@@ -18,21 +18,21 @@ it('should return false for nodes not rendered in LWC', () => {
 });
 
 it('should return false on host element', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     expect(isNodeFromTemplate(elm)).toBe(false);
 });
 
 it('should return false on the shadow root', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     expect(isNodeFromTemplate(elm.shadowRoot)).toBe(false);
 });
 
 it('should return true on elements rendered from the template', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     const div = elm.shadowRoot.querySelector('div');
@@ -40,7 +40,7 @@ it('should return true on elements rendered from the template', () => {
 });
 
 it('should return true on elements manually inserted in the DOM inside an element with lwc:dom="manual"', async () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     const div = document.createElement('div');
@@ -63,7 +63,7 @@ it('should return true on elements manually inserted in the DOM inside an elemen
 it.skipIf(process.env.NATIVE_SHADOW)(
     'should return false on elements manually inserted in the DOM inside an element NOT marked with lwc:dom="manual"',
     async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual"
 

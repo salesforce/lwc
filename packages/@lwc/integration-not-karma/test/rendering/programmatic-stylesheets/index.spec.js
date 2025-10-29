@@ -1,22 +1,22 @@
 import { createElement } from 'lwc';
-import Basic from 'x/basic';
-import Direct from 'x/direct';
-import Scoped from 'x/scoped';
-import InheritFromLightningElement from 'x/inheritFromLightningElement';
-import Invalid from 'x/invalid';
-import Invalid2 from 'x/invalid2';
-import Invalid3 from 'x/invalid3';
-import Inherit from 'x/inherit';
-import Implicit from 'x/implicit';
-import Multi from 'x/multi';
-import MultiScoped from 'x/multiScoped';
-import MultiStyles from 'x/multiStyles';
-import MixedScopedAndUnscoped from 'x/mixedScopedAndUnscoped';
-import StylesheetsMutation from 'x/stylesheetsMutation';
+import Basic from 'c/basic';
+import Direct from 'c/direct';
+import Scoped from 'c/scoped';
+import InheritFromLightningElement from 'c/inheritFromLightningElement';
+import Invalid from 'c/invalid';
+import Invalid2 from 'c/invalid2';
+import Invalid3 from 'c/invalid3';
+import Inherit from 'c/inherit';
+import Implicit from 'c/implicit';
+import Multi from 'c/multi';
+import MultiScoped from 'c/multiScoped';
+import MultiStyles from 'c/multiStyles';
+import MixedScopedAndUnscoped from 'c/mixedScopedAndUnscoped';
+import StylesheetsMutation from 'c/stylesheetsMutation';
 
 describe('programmatic stylesheets', () => {
     it('works for a basic usage of static stylesheets', async () => {
-        const elm = createElement('x-basic', { is: Basic });
+        const elm = createElement('c-basic', { is: Basic });
         document.body.appendChild(elm);
         const h1 = document.createElement('h1');
         document.body.appendChild(h1);
@@ -30,7 +30,7 @@ describe('programmatic stylesheets', () => {
     });
 
     it('works for scoped stylesheets in light DOM', async () => {
-        const elm = createElement('x-scoped', { is: Scoped });
+        const elm = createElement('c-scoped', { is: Scoped });
         document.body.appendChild(elm);
         const h1 = document.createElement('h1');
         document.body.appendChild(h1);
@@ -42,7 +42,7 @@ describe('programmatic stylesheets', () => {
     });
 
     it('works if you do not wrap stylesheets in an explicit array', async () => {
-        const elm = createElement('x-direct', { is: Direct });
+        const elm = createElement('c-direct', { is: Direct });
         document.body.appendChild(elm);
 
         await new Promise(requestAnimationFrame);
@@ -52,7 +52,7 @@ describe('programmatic stylesheets', () => {
     });
 
     it('works with multiple stylesheets', async () => {
-        const elm = createElement('x-multi-styles', { is: MultiStyles });
+        const elm = createElement('c-multi-styles', { is: MultiStyles });
         document.body.appendChild(elm);
 
         await new Promise(requestAnimationFrame);
@@ -64,7 +64,7 @@ describe('programmatic stylesheets', () => {
     });
 
     it('works with mixed scoped and unscoped in light dom', async () => {
-        const elm = createElement('x-mixed-scoped-and-unscoped', { is: MixedScopedAndUnscoped });
+        const elm = createElement('c-mixed-scoped-and-unscoped', { is: MixedScopedAndUnscoped });
         document.body.appendChild(elm);
         const h1 = document.createElement('h1');
         document.body.appendChild(h1);
@@ -83,7 +83,7 @@ describe('programmatic stylesheets', () => {
 
     describe('inheritance', () => {
         it('can attempt to inherit from lightning element which has no stylesheets', async () => {
-            const elm = createElement('x-inherit-from-lightning-element', {
+            const elm = createElement('c-inherit-from-lightning-element', {
                 is: InheritFromLightningElement,
             });
             document.body.appendChild(elm);
@@ -95,7 +95,7 @@ describe('programmatic stylesheets', () => {
         });
 
         it('can inherit from superclass', async () => {
-            const elm = createElement('x-inherit', {
+            const elm = createElement('c-inherit', {
                 is: Inherit,
             });
             document.body.appendChild(elm);
@@ -107,7 +107,7 @@ describe('programmatic stylesheets', () => {
         });
 
         it('can override implicit styles due to ordering', async () => {
-            const elm = createElement('x-implicit', {
+            const elm = createElement('c-implicit', {
                 is: Implicit,
             });
             document.body.appendChild(elm);
@@ -121,7 +121,7 @@ describe('programmatic stylesheets', () => {
 
     describe('multi-template components', () => {
         it('can override styles in a multi-template component', async () => {
-            const elm = createElement('x-multi', {
+            const elm = createElement('c-multi', {
                 is: Multi,
             });
             document.body.appendChild(elm);
@@ -148,7 +148,7 @@ describe('programmatic stylesheets', () => {
         });
 
         it('can override scoped styles in a multi-template component', async () => {
-            const elm = createElement('x-multi-scoped', {
+            const elm = createElement('c-multi-scoped', {
                 is: MultiScoped,
             });
             document.body.appendChild(elm);
@@ -175,11 +175,11 @@ describe('programmatic stylesheets', () => {
         it('throws error if stylesheets is a string', () => {
             let elm;
             expect(() => {
-                elm = createElement('x-invalid', {
+                elm = createElement('c-invalid', {
                     is: Invalid,
                 });
             }).toLogErrorDev(
-                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid>/
+                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <c-invalid>/
             );
 
             document.body.appendChild(elm);
@@ -189,11 +189,11 @@ describe('programmatic stylesheets', () => {
         it('throws error if stylesheets is an array of strings', () => {
             let elm;
             expect(() => {
-                elm = createElement('x-invalid2', {
+                elm = createElement('c-invalid2', {
                     is: Invalid2,
                 });
             }).toLogErrorDev(
-                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <x-invalid2>/
+                /\[LWC error]: static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <c-invalid2>/
             );
 
             document.body.appendChild(elm);
@@ -203,7 +203,7 @@ describe('programmatic stylesheets', () => {
         it('warn if stylesheets is mutated', () => {
             let elm;
             expect(() => {
-                elm = createElement('x-stylesheets-mutation', {
+                elm = createElement('c-stylesheets-mutation', {
                     is: StylesheetsMutation,
                 });
                 document.body.appendChild(elm);
@@ -218,7 +218,7 @@ describe('programmatic stylesheets', () => {
         it('no error thrown if stylesheets is an array of arbitrary functions', () => {
             let elm;
             expect(() => {
-                elm = createElement('x-invalid3', {
+                elm = createElement('c-invalid3', {
                     is: Invalid3,
                 });
             }).not.toLogErrorDev();

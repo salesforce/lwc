@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import XTest from 'x/test';
-import XWithLwcDomManual from 'x/withLwcDomManual';
+import XTest from 'c/test';
+import XWithLwcDomManual from 'c/withLwcDomManual';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 import { resetDOM } from '../../../helpers/reset.js';
 
 describe('should not provide access to elements inside shadow tree', () => {
     beforeEach(() => {
-        const elm = createElement('x-test-document-properties', { is: XTest });
+        const elm = createElement('c-test-document-properties', { is: XTest });
         document.body.appendChild(elm);
     });
 
@@ -20,13 +20,13 @@ describe('should not provide access to elements inside shadow tree', () => {
 
     testMethodReturnsEmptyNodeList('querySelectorAll', '.in-the-shadow');
     testMethodReturnsEmptyNodeList('getElementsByClassName', 'in-the-shadow');
-    testMethodReturnsEmptyNodeList('getElementsByTagName', 'x-unique-tag-name');
+    testMethodReturnsEmptyNodeList('getElementsByTagName', 'c-unique-tag-name');
     testMethodReturnsEmptyNodeList('getElementsByName', 'in-the-shadow');
 
     it('document.getElementById', () => {
         // get the dynamic id
         const id = document
-            .querySelector('x-test-document-properties')
+            .querySelector('c-test-document-properties')
             .shadowRoot.querySelector('.in-the-shadow').id;
         expect(document.getElementById(`in-the-shadow-${id}`)).toBe(null);
     });
@@ -35,7 +35,7 @@ describe('should not provide access to elements inside shadow tree', () => {
     });
     it('document.getElementsByTagNameNS', () => {
         expect(
-            document.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'x-unique-tag-name')
+            document.getElementsByTagNameNS('http://www.w3.org/1999/xhtml', 'c-unique-tag-name')
                 .length
         ).toBe(0);
     });
@@ -45,7 +45,7 @@ describe('dynamic nodes', () => {
     afterEach(resetDOM);
 
     it('if parent node has lwc:dom="manual", child node is not accessible', async () => {
-        const elm = createElement('x-test-with-lwc-dom-manual', { is: XWithLwcDomManual });
+        const elm = createElement('c-test-with-lwc-dom-manual', { is: XWithLwcDomManual });
         document.body.appendChild(elm);
         const span = document.createElement('span');
         span.classList.add('manual-span');
@@ -62,7 +62,7 @@ describe('dynamic nodes', () => {
     it.skipIf(process.env.NATIVE_SHADOW)(
         'if parent node does not have lwc:dom="manual", child node is accessible',
         async () => {
-            const elm = createElement('x-test', { is: XTest });
+            const elm = createElement('c-test', { is: XTest });
             document.body.appendChild(elm);
             spyOn(console, 'warn'); // ignore warning about manipulating node without lwc:dom="manual
 
@@ -87,7 +87,7 @@ describe('should provide access to elements outside shadow tree', () => {
         document.body.appendChild(container);
         container.innerHTML = `<div class='in-the-shadow-${random}' id='in-the-shadow-${random}'></div>
                                <input name='in-the-shadow-${random}'>`;
-        container.appendChild(document.createElement(`x-unique-tag-name-${random}`));
+        container.appendChild(document.createElement(`c-unique-tag-name-${random}`));
     });
 
     afterEach(resetDOM);
@@ -100,7 +100,7 @@ describe('should provide access to elements outside shadow tree', () => {
 
     testMethodReturnsNode('querySelectorAll', `.in-the-shadow-${random}`);
     testMethodReturnsNode('getElementsByClassName', `in-the-shadow-${random}`);
-    testMethodReturnsNode('getElementsByTagName', `x-unique-tag-name-${random}`);
+    testMethodReturnsNode('getElementsByTagName', `c-unique-tag-name-${random}`);
     testMethodReturnsNode('getElementsByName', `in-the-shadow-${random}`);
 
     it('document.getElementById', () => {
@@ -113,7 +113,7 @@ describe('should provide access to elements outside shadow tree', () => {
         expect(
             document.getElementsByTagNameNS(
                 'http://www.w3.org/1999/xhtml',
-                `x-unique-tag-name-${random}`
+                `c-unique-tag-name-${random}`
             ).length
         ).toBe(1);
     });

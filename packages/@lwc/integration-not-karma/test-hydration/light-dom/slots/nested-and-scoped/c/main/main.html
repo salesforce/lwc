@@ -1,14 +1,14 @@
 <template lwc:render-mode="light">
-    <div>&lt;x-main&gt;</div>
-    <x-scoped instance="1">
+    <div>&lt;c-main&gt;</div>
+    <c-scoped instance="1">
         <template lwc:slot-data="item1">
-            <x-scoped instance="2">
+            <c-scoped instance="2">
                 <template lwc:slot-data="item2">
                     <span>main: {item1.msg} {item2.msg}</span>
-                    <x-child></x-child>
+                    <c-child></c-child>
                 </template>
-            </x-scoped>
+            </c-scoped>
         </template>
-    </x-scoped>
-    <div>&lt;/x-main&gt;</div>
+    </c-scoped>
+    <div>&lt;/c-main&gt;</div>
 </template>

@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 function testRenderedAttribute(type, value, expectedValue) {
     it(`should render the attribute in the DOM for ${type}`, () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         elm.attr = value;
         document.body.appendChild(elm);
 
@@ -18,7 +18,7 @@ testRenderedAttribute('number', 1, '1');
 testRenderedAttribute('string', 'foo', 'foo');
 
 it(`should remove the existing attribute if set to null`, async () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     elm.attr = 'initial value';
     document.body.appendChild(elm);
 
@@ -31,7 +31,7 @@ it(`should remove the existing attribute if set to null`, async () => {
 });
 
 it(`should remove the existing attribute if set to undefined`, async () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     elm.attr = 'initial value';
     document.body.appendChild(elm);
 

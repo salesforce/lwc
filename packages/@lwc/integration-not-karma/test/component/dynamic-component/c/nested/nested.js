@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
-import Parent from 'x/slottable';
-import Foo from 'x/foo';
+import Parent from 'c/slottable';
+import Foo from 'c/foo';
 
 export default class extends LightningElement {
     parentCtor;

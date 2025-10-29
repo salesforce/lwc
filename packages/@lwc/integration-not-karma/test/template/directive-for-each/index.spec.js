@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
-import XTest from 'x/test';
-import XTestStatic from 'x/testStatic';
-import XTestCustomElement from 'x/testCustomElement';
-import ArrayNullPrototype from 'x/arrayNullPrototype';
+import XTest from 'c/test';
+import XTestStatic from 'c/testStatic';
+import XTestCustomElement from 'c/testCustomElement';
+import ArrayNullPrototype from 'c/arrayNullPrototype';
 import { spyOn } from '@vitest/spy';
 
 function testForEach(type, obj) {
     it(`should render ${type}`, async () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('ul').childElementCount).toBe(0);
@@ -58,7 +58,7 @@ function iterator() {
 testForEach('Iterator', { [Symbol.iterator]: iterator });
 
 it('should throw an error when the passing a non iterable', () => {
-    const elm = createElement('x-test', { is: XTest });
+    const elm = createElement('c-test', { is: XTest });
     elm.items = {};
 
     // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
@@ -76,7 +76,7 @@ describe('null/undefined values', () => {
 
     [undefined, null].forEach((value) => {
         it(`should log an error when passing in ${value}`, async () => {
-            const elm = createElement('x-test', { is: XTest });
+            const elm = createElement('c-test', { is: XTest });
             elm.items = null;
 
             document.body.appendChild(elm);
@@ -101,7 +101,7 @@ describe('null/undefined values', () => {
 });
 
 it('should render an array of objects with null prototype', () => {
-    const elm = createElement('x-array-null-prototype', { is: ArrayNullPrototype });
+    const elm = createElement('c-array-null-prototype', { is: ArrayNullPrototype });
     document.body.appendChild(elm);
 
     expect(elm.shadowRoot.querySelector('span').textContent).toBe('text');
@@ -111,17 +111,17 @@ const scenarios = [
     {
         testName: 'dynamic text node',
         Ctor: XTest,
-        tagName: 'x-test',
+        tagName: 'c-test',
     },
     {
         testName: 'static text node',
         Ctor: XTestStatic,
-        tagName: 'x-test-static',
+        tagName: 'c-test-static',
     },
     {
         testName: 'custom element',
         Ctor: XTestCustomElement,
-        tagName: 'x-test-custom-element',
+        tagName: 'c-test-custom-element',
     },
 ];
 scenarios.forEach(({ testName, Ctor, tagName }) => {
@@ -133,7 +133,7 @@ scenarios.forEach(({ testName, Ctor, tagName }) => {
             // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
             expect(() => document.body.appendChild(elm)).toLogErrorDev([
                 /Invalid key value "null" in \[object:vm (TestStatic|TestCustomElement|Test) \(\d+\)]. Key must be a string or number\./,
-                /Invalid "key" attribute value in "<(x-test|x-test-static|x-test-custom-element)>"/,
+                /Invalid "key" attribute value in "<(c-test|c-test-static|c-test-custom-element)>"/,
             ]);
         });
 
@@ -146,7 +146,7 @@ scenarios.forEach(({ testName, Ctor, tagName }) => {
 
             // TODO [#1283]: Improve this error message. The vm should not be exposed and the message is not helpful.
             expect(() => document.body.appendChild(elm)).toLogErrorDev(
-                /Duplicated "key" attribute value in "<(x-test|x-test-static|x-test-custom-element)>" for item number 1\. A key with value "\d:xyz" appears more than once in the iteration\. Key values must be unique numbers or strings\./
+                /Duplicated "key" attribute value in "<(c-test|c-test-static|c-test-custom-element)>" for item number 1\. A key with value "\d:xyz" appears more than once in the iteration\. Key values must be unique numbers or strings\./
             );
         });
     });

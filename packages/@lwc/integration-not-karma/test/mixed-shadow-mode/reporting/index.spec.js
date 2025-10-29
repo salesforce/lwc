@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import Component from 'x/component';
-import Parent from 'x/parent';
-import Light from 'x/light';
+import Component from 'c/component';
+import Parent from 'c/parent';
+import Light from 'c/light';
 import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
@@ -28,64 +28,64 @@ describe('ShadowModeUsage', () => {
     });
 
     it('should report the shadow mode for the rendered component', () => {
-        const element = createElement('x-component', { is: Component });
+        const element = createElement('c-component', { is: Component });
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'x-component',
+            tagName: 'c-component',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
     });
 
     it('should report the shadow mode for all rendered components', () => {
-        const element = createElement('x-parent', { is: Parent });
+        const element = createElement('c-parent', { is: Parent });
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledTimes(3);
-        // x-parent depends on environment
+        // c-parent depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'x-parent',
+            tagName: 'c-parent',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
-        // x-native should be set to native always
+        // c-native should be set to native always
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'x-native',
+            tagName: 'c-native',
             mode: ShadowMode.Native,
         });
-        // x-component depends on environment
+        // c-component depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'x-component',
+            tagName: 'c-component',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
     });
 
     it('should report the shadow mode for components when created using CustomElementConstructor', () => {
         const ParentCustomElement = Parent.CustomElementConstructor;
-        customElements.define('x-parent-custom-element', ParentCustomElement);
+        customElements.define('c-parent-custom-element', ParentCustomElement);
 
-        const element = document.createElement('x-parent-custom-element');
+        const element = document.createElement('c-parent-custom-element');
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledTimes(3);
-        // x-parent depends on environment
+        // c-parent depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
             tagName: 'X-PARENT-CUSTOM-ELEMENT',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
-        // x-native should be set to native always
+        // c-native should be set to native always
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'x-native',
+            tagName: 'c-native',
             mode: ShadowMode.Native,
         });
-        // x-component depends on environment
+        // c-component depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'x-component',
+            tagName: 'c-component',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
     });
 
     it('should report no shadow mode for light DOM components', () => {
-        const element = createElement('x-light', { is: Light });
+        const element = createElement('c-light', { is: Light });
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledTimes(0);

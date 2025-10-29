@@ -1,11 +1,11 @@
-x-parent::part(text) {
+c-parent::part(text) {
     color: blue;
 }
 
-x-parent::part(overlay) {
+c-parent::part(overlay) {
     color: red;
 }
 
-x-parent::part(badge) {
+c-parent::part(badge) {
     color: green;
 }

@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import Test from 'x/test';
+import Test from 'c/test';
 import { ENABLE_THIS_DOT_STYLE } from '../../../helpers/constants.js';
 
 it.runIf(ENABLE_THIS_DOT_STYLE)(
     'this.style should return the CSSStyleDeclaration of host element',
     async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
 
         const assertColor = async (color) => {
@@ -36,7 +36,7 @@ it.runIf(ENABLE_THIS_DOT_STYLE)(
 );
 
 it.skipIf(ENABLE_THIS_DOT_STYLE)('this.style should be undefined for older API versions', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     expect(elm.style.color).toEqual('');

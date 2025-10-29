@@ -9,7 +9,7 @@ export default {
         showA: true,
     },
     snapshot(target) {
-        const child = target.shadowRoot.querySelector('x-child');
+        const child = target.shadowRoot.querySelector('c-child');
         return {
             child,
             classList: new Set([...child.classList]),
@@ -17,10 +17,10 @@ export default {
         };
     },
     test(target, snapshots, consoleCalls) {
-        const child = target.shadowRoot.querySelector('x-child');
+        const child = target.shadowRoot.querySelector('c-child');
         const h1 = child.shadowRoot.querySelector('h1');
 
-        // <x-child> is not considered mismatched but its children are
+        // <c-child> is not considered mismatched but its children are
         expect(child).toBe(snapshots.child);
         expect(h1).not.toBe(snapshots.h1);
 

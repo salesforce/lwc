@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import SuperSuperClass from 'x/superSuperClass';
-import SuperClass from 'x/superClass';
-import SubClass from 'x/subClass';
+import SuperSuperClass from 'c/superSuperClass';
+import SuperClass from 'c/superClass';
+import SubClass from 'c/subClass';
 
 describe('api decorator with superclasses', () => {
     let superSuperClass;
@@ -9,9 +9,9 @@ describe('api decorator with superclasses', () => {
     let subClass;
 
     beforeEach(() => {
-        superSuperClass = createElement('x-super-super-class', { is: SuperSuperClass });
-        superClass = createElement('x-super-class', { is: SuperClass });
-        subClass = createElement('x-sub-class', { is: SubClass });
+        superSuperClass = createElement('c-super-super-class', { is: SuperSuperClass });
+        superClass = createElement('c-super-class', { is: SuperClass });
+        subClass = createElement('c-sub-class', { is: SubClass });
 
         document.body.appendChild(superSuperClass);
         document.body.appendChild(superClass);

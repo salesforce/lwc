@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import Static from 'x/static';
-import Dynamic from 'x/dynamic';
+import Static from 'c/static';
+import Dynamic from 'c/dynamic';
 
 describe('static class attribute', () => {
     it('simple', () => {
-        const elm = createElement('x-static', { is: Static });
+        const elm = createElement('c-static', { is: Static });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('div').className).toBe('foo bar');
@@ -14,7 +14,7 @@ describe('static class attribute', () => {
 
 describe('dynamic class attribute', () => {
     function createDynamicClass(value) {
-        const elm = createElement('x-dynamic', { is: Dynamic });
+        const elm = createElement('c-dynamic', { is: Dynamic });
         elm.dynamicClass = value;
         document.body.appendChild(elm);
 
@@ -77,7 +77,7 @@ describe('dynamic class attribute', () => {
     describe('updating with null/undefined/empty string', () => {
         function testRenderClassAttribute(type, value, expectedValue) {
             it(`renders the class attribute for ${type}`, () => {
-                const elm = createElement('x-dynamic', { is: Dynamic });
+                const elm = createElement('c-dynamic', { is: Dynamic });
                 elm.dynamicClass = value;
                 document.body.appendChild(elm);
 
@@ -94,7 +94,7 @@ describe('dynamic class attribute', () => {
 
         function testUpdateClassAttribute(type, value, expectedValue) {
             it(`updates the class attribute for ${type}`, async () => {
-                const elm = createElement('x-dynamic', { is: Dynamic });
+                const elm = createElement('c-dynamic', { is: Dynamic });
                 elm.dynamicClass = 'my-class';
                 document.body.appendChild(elm);
 

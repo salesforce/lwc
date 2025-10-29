@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Container from 'x/container';
+import Container from 'c/container';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function dispatchEventWithLog(target, nodes, event) {
@@ -16,8 +16,8 @@ function dispatchEventWithLog(target, nodes, event) {
 }
 
 function createTestElement() {
-    const elm = createElement('x-container', { is: Container });
-    elm.setAttribute('data-id', 'x-container');
+    const elm = createElement('c-container', { is: Container });
+    elm.setAttribute('data-id', 'c-container');
     document.body.appendChild(elm);
     return extractDataIds(elm);
 }
@@ -34,8 +34,8 @@ describe('Event.stopPropagation', () => {
         const logs = dispatchEventWithLog(nodes.child_div, nodes, event);
         expect(logs).toEqual([
             nodes.child_div,
-            nodes['x-child.shadowRoot'],
-            nodes['x-child'],
+            nodes['c-child.shadowRoot'],
+            nodes['c-child'],
             nodes.container_div,
         ]);
     });
@@ -44,17 +44,17 @@ describe('Event.stopPropagation', () => {
         const nodes = createTestElement();
         const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        nodes['x-container.shadowRoot'].addEventListener('test', (event) => {
+        nodes['c-container.shadowRoot'].addEventListener('test', (event) => {
             event.stopPropagation();
         });
 
         const logs = dispatchEventWithLog(nodes.child_div, nodes, event);
         expect(logs).toEqual([
             nodes.child_div,
-            nodes['x-child.shadowRoot'],
-            nodes['x-child'],
+            nodes['c-child.shadowRoot'],
+            nodes['c-child'],
             nodes.container_div,
-            nodes['x-container.shadowRoot'],
+            nodes['c-container.shadowRoot'],
         ]);
     });
 
@@ -62,18 +62,18 @@ describe('Event.stopPropagation', () => {
         const nodes = createTestElement();
         const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        nodes['x-container'].addEventListener('test', (event) => {
+        nodes['c-container'].addEventListener('test', (event) => {
             event.stopPropagation();
         });
 
         const logs = dispatchEventWithLog(nodes.child_div, nodes, event);
         expect(logs).toEqual([
             nodes.child_div,
-            nodes['x-child.shadowRoot'],
-            nodes['x-child'],
+            nodes['c-child.shadowRoot'],
+            nodes['c-child'],
             nodes.container_div,
-            nodes['x-container.shadowRoot'],
-            nodes['x-container'],
+            nodes['c-container.shadowRoot'],
+            nodes['c-container'],
         ]);
     });
 });
@@ -88,22 +88,22 @@ describe('Event.stopImmediatePropagation', () => {
         });
 
         const logs = dispatchEventWithLog(nodes.child_div, nodes, event);
-        expect(logs).toEqual([nodes.child_div, nodes['x-child.shadowRoot'], nodes['x-child']]);
+        expect(logs).toEqual([nodes.child_div, nodes['c-child.shadowRoot'], nodes['c-child']]);
     });
 
     it('shadow root', () => {
         const nodes = createTestElement();
         const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        nodes['x-container.shadowRoot'].addEventListener('test', (event) => {
+        nodes['c-container.shadowRoot'].addEventListener('test', (event) => {
             event.stopImmediatePropagation();
         });
 
         const logs = dispatchEventWithLog(nodes.child_div, nodes, event);
         expect(logs).toEqual([
             nodes.child_div,
-            nodes['x-child.shadowRoot'],
-            nodes['x-child'],
+            nodes['c-child.shadowRoot'],
+            nodes['c-child'],
             nodes.container_div,
         ]);
     });
@@ -112,17 +112,17 @@ describe('Event.stopImmediatePropagation', () => {
         const nodes = createTestElement();
         const event = new CustomEvent('test', { bubbles: true, composed: true });
 
-        nodes['x-container'].addEventListener('test', (event) => {
+        nodes['c-container'].addEventListener('test', (event) => {
             event.stopImmediatePropagation();
         });
 
         const logs = dispatchEventWithLog(nodes.child_div, nodes, event);
         expect(logs).toEqual([
             nodes.child_div,
-            nodes['x-child.shadowRoot'],
-            nodes['x-child'],
+            nodes['c-child.shadowRoot'],
+            nodes['c-child'],
             nodes.container_div,
-            nodes['x-container.shadowRoot'],
+            nodes['c-container.shadowRoot'],
         ]);
     });
 });
@@ -133,7 +133,7 @@ describe('Event.composedPath', () => {
         const event = new CustomEvent('test', { bubbles: true, composed: true });
 
         let _event;
-        nodes['x-container'].addEventListener(event.type, (event) => {
+        nodes['c-container'].addEventListener(event.type, (event) => {
             _event = event;
         });
 
@@ -167,6 +167,6 @@ describe('Event.composedPath', () => {
             textNode.dispatchEvent(event);
         });
 
-        expect(composedPath).toEqual([textNode, nodes.child_div, nodes['x-child.shadowRoot']]);
+        expect(composedPath).toEqual([textNode, nodes.child_div, nodes['c-child.shadowRoot']]);
     });
 });

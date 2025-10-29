@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Container from 'x/container';
+import Container from 'c/container';
 
 describe('Event.currentTarget', () => {
     it('should be null when accessed asynchronously', async () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
         const [first, second] = await new Promise((resolve) => {
@@ -24,7 +24,7 @@ describe('Event.currentTarget', () => {
     });
 
     it('should reference the host element', async () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
         const currentTarget = await new Promise((resolve) => {
@@ -32,7 +32,7 @@ describe('Event.currentTarget', () => {
                 resolve(event.currentTarget);
             });
 
-            const child = container.shadowRoot.querySelector('x-child');
+            const child = container.shadowRoot.querySelector('c-child');
             child.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
 
@@ -40,7 +40,7 @@ describe('Event.currentTarget', () => {
     });
 
     it('should reference the shadow root', async () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
         const currentTarget = await new Promise((resolve) => {
@@ -48,7 +48,7 @@ describe('Event.currentTarget', () => {
                 resolve(event.currentTarget);
             });
 
-            const child = container.shadowRoot.querySelector('x-child');
+            const child = container.shadowRoot.querySelector('c-child');
             child.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
 

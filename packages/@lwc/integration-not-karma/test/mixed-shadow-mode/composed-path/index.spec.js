@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import Test from 'x/test';
+import Test from 'c/test';
 import { jasmine } from '../../../helpers/jasmine.js';
 
 describe('event.composedPath() of event dispatched from closed shadow root', () => {
     it('should have shadowed elements when invoked inside the shadow root', async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -23,7 +23,7 @@ describe('event.composedPath() of event dispatched from closed shadow root', () 
     });
 
     it('should not have shadowed elements when invoked outside the shadow root', async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
 
         await Promise.resolve();

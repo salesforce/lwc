@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 
-import Container from 'x/container';
+import Container from 'c/container';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 
 describe('Event.target', () => {
@@ -10,10 +10,10 @@ describe('Event.target', () => {
     });
 
     it('should retarget', async () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
-        const child = container.shadowRoot.querySelector('x-child');
+        const child = container.shadowRoot.querySelector('c-child');
         const target = await new Promise((resolve) => {
             child.addEventListener('test', (event) => {
                 resolve(event.target);
@@ -26,7 +26,7 @@ describe('Event.target', () => {
     });
 
     it('should patch the prototype instead of the instance', () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
         function dispatchEventWithAssertions(target, event) {
@@ -39,7 +39,7 @@ describe('Event.target', () => {
             target.dispatchEvent(event);
         }
         dispatchEventWithAssertions(
-            container.shadowRoot.querySelector('x-child'),
+            container.shadowRoot.querySelector('c-child'),
             new CustomEvent('test', { bubbles: true, composed: true })
         );
 
@@ -47,11 +47,11 @@ describe('Event.target', () => {
     });
 
     it('should retarget to the root component when accessed asynchronously', () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
         let event;
-        const child = container.shadowRoot.querySelector('x-child');
+        const child = container.shadowRoot.querySelector('c-child');
         child.addEventListener('test', (e) => {
             event = e;
         });
@@ -63,7 +63,7 @@ describe('Event.target', () => {
     });
 
     it('should retarget when accessed in a document event listener', async () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         document.body.appendChild(container);
 
         const target = await new Promise((resolve) => {
@@ -72,7 +72,7 @@ describe('Event.target', () => {
             };
             document.addEventListener('test', globalListener);
 
-            const child = container.shadowRoot.querySelector('x-child');
+            const child = container.shadowRoot.querySelector('c-child');
             const div = child.shadowRoot.querySelector('div');
             div.dispatchEvent(new CustomEvent('test', { bubbles: true, composed: true }));
         });
@@ -87,10 +87,10 @@ describe('Event.target', () => {
         });
 
         it('should not retarget when the target was manually added without lwc:dom="manual" and accessed asynchronously [W-6626752]', async () => {
-            const container = createElement('x-container', { is: Container });
+            const container = createElement('c-container', { is: Container });
             document.body.appendChild(container);
 
-            const child = container.shadowRoot.querySelector('x-child');
+            const child = container.shadowRoot.querySelector('c-child');
             const span = child.appendSpanAndReturn();
 
             const [first, second] = await new Promise((resolve) => {
@@ -109,10 +109,10 @@ describe('Event.target', () => {
         });
 
         it('should not retarget when the target was manually added without lwc:dom="manual" and accessed in a document event listener [W-6626752]', async () => {
-            const container = createElement('x-container', { is: Container });
+            const container = createElement('c-container', { is: Container });
             document.body.appendChild(container);
 
-            const child = container.shadowRoot.querySelector('x-child');
+            const child = container.shadowRoot.querySelector('c-child');
             const span = child.appendSpanAndReturn();
 
             const target = await new Promise((resolve) => {

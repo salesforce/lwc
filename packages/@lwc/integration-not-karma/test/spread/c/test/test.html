@@ -1,9 +1,9 @@
 <template>
-    <x-child class="x-child-simple" lwc:spread={simpleProps}></x-child>
-    <x-child class="x-child-overridden" name="lwc" onclick={templateClick} lwc:spread={overriddenProps}></x-child>
+    <c-child class="c-child-simple" lwc:spread={simpleProps}></c-child>
+    <c-child class="c-child-overridden" name="lwc" onclick={templateClick} lwc:spread={overriddenProps}></c-child>
     <span lwc:spread={spanProps}>Hello</span>
-    <x-cmp lwc:dynamic={dynamicCtor} lwc:spread={dynamicProps}></x-cmp>
+    <c-cmp lwc:dynamic={dynamicCtor} lwc:spread={dynamicProps}></c-cmp>
     <lwc:component data-id="lwc-component" lwc:is={dynamicCtor} lwc:spread={dynamicProps}></lwc:component>
-    <x-child class="x-child-tracked" lwc:spread={trackedProps}></x-child>
+    <c-child class="c-child-tracked" lwc:spread={trackedProps}></c-child>
     <div class="div-innerhtml" lwc:dom="manual" lwc:spread={innerHTMLProps} lwc:inner-html={innerHTML}></div>
 </template>

@@ -1,19 +1,19 @@
 import { createElement } from 'lwc';
-import Observes from 'x/observes';
+import Observes from 'c/observes';
 
 describe('observed attributes', () => {
     const constructorMethods = {
         CustomElementConstructor: () => {
             customElements.define(
-                'x-observes-as-custom-element',
+                'c-observes-as-custom-element',
                 Observes.CustomElementConstructor
             );
-            const elm = document.createElement('x-observes-as-custom-element');
+            const elm = document.createElement('c-observes-as-custom-element');
             document.body.appendChild(elm);
             return elm;
         },
         createElement: () => {
-            const elm = createElement('x-observes', { is: Observes });
+            const elm = createElement('c-observes', { is: Observes });
             document.body.appendChild(elm);
             return elm;
         },

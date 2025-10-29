@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Native from 'x/native';
-import Synthetic from 'x/synthetic';
-import StyledLight from 'x/styledLight';
+import Native from 'c/native';
+import Synthetic from 'c/synthetic';
+import StyledLight from 'c/styledLight';
 
 async function doubleMicrotask() {
     // wait for applyShadowMigrateMode()
@@ -40,7 +40,7 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
             });
 
             it('uses global styles for synthetic components', async () => {
-                const elm = createElement('x-synthetic', { is: Synthetic });
+                const elm = createElement('c-synthetic', { is: Synthetic });
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
@@ -53,7 +53,7 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
             });
 
             it('does not use global styles for native components', async () => {
-                const elm = createElement('x-native', { is: Native });
+                const elm = createElement('c-native', { is: Native });
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
@@ -65,10 +65,10 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
             });
 
             it('does not apply styles from global light DOM components to synthetic components', async () => {
-                const light = createElement('x-styled-light', { is: StyledLight });
+                const light = createElement('c-styled-light', { is: StyledLight });
                 document.body.appendChild(light);
 
-                const elm = createElement('x-synthetic', { is: Synthetic });
+                const elm = createElement('c-synthetic', { is: Synthetic });
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
@@ -78,7 +78,7 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
             });
 
             it('uses new styles added to the head after component is rendered', async () => {
-                const elm = createElement('x-synthetic', { is: Synthetic });
+                const elm = createElement('c-synthetic', { is: Synthetic });
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
@@ -98,7 +98,7 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
             });
 
             it('local styles are defined after global styles', async () => {
-                const elm = createElement('x-synthetic', { is: Synthetic });
+                const elm = createElement('c-synthetic', { is: Synthetic });
                 document.body.appendChild(elm);
 
                 const style = document.createElement('style');
@@ -115,7 +115,7 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
 
         describe('flag off', () => {
             it('does not use global styles for synthetic components', async () => {
-                const elm = createElement('x-synthetic', { is: Synthetic });
+                const elm = createElement('c-synthetic', { is: Synthetic });
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();
@@ -126,7 +126,7 @@ describe.runIf(process.env.NATIVE_SHADOW && !process.env.FORCE_NATIVE_SHADOW_MOD
             });
 
             it('does not use global styles for native components', async () => {
-                const elm = createElement('x-native', { is: Native });
+                const elm = createElement('c-native', { is: Native });
                 document.body.appendChild(elm);
 
                 await doubleMicrotask();

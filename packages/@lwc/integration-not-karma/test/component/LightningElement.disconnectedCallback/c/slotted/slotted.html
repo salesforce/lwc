@@ -1,16 +1,16 @@
 <template>
     <div>
         <template if:false={hideChildAcceptsSlots}>
-            <x-accepting-slots>
+            <c-accepting-slots>
                 <div class="slotted"></div>
-                <x-test class="slotted"></x-test>
-            </x-accepting-slots>            
+                <c-test class="slotted"></c-test>
+            </c-accepting-slots>            
         </template>
         <template if:false={hideChildIgnoresSlots}>
-            <x-ignoring-slots>
+            <c-ignoring-slots>
                 <div class="ignored-slot"></div>
-                <x-test class="ignored-slot"></x-test>
-            </x-ignoring-slots>            
+                <c-test class="ignored-slot"></c-test>
+            </c-ignoring-slots>            
         </template>
     </div>
 </template>

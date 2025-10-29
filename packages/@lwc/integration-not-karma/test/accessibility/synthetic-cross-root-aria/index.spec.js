@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
-import AriaContainer from 'x/ariaContainer';
-import Valid from 'x/valid';
+import AriaContainer from 'c/ariaContainer';
+import Valid from 'c/valid';
 import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
@@ -10,13 +10,13 @@ import {
 import { resetAlreadyLoggedMessages, resetDOM } from '../../../helpers/reset.js';
 
 const expectedMessageForCrossRoot =
-    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-source>';
+    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<c-aria-source>';
 const expectedMessageForCrossRootWithTargetAsVM =
-    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-target>';
+    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <label>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<c-aria-target>';
 const expectedMessageForCrossRootForSecondTarget =
-    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <div>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<x-aria-source>';
+    'Error: [LWC warn]: Element <input> uses attribute "aria-labelledby" to reference element <div>, which is not in the same shadow root. This will break in native shadow DOM. For details, see: https://sfdc.co/synthetic-aria\n<c-aria-source>';
 const expectedMessageForNonStandardAria =
-    'Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria';
+    'Error: [LWC warn]: Element <input> owned by <c-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria';
 
 // These tests are designed to detect non-standard cross-root ARIA usage in synthetic shadow DOM
 describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', () => {
@@ -42,10 +42,10 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
         let targetElm;
 
         beforeEach(() => {
-            elm = createElement('x-aria-container', { is: AriaContainer });
+            elm = createElement('c-aria-container', { is: AriaContainer });
             document.body.appendChild(elm);
-            sourceElm = elm.shadowRoot.querySelector('x-aria-source');
-            targetElm = elm.shadowRoot.querySelector('x-aria-target');
+            sourceElm = elm.shadowRoot.querySelector('c-aria-source');
+            targetElm = elm.shadowRoot.querySelector('c-aria-target');
         });
 
         const usePropertyAccessValues = [false].map((value) => ({ value }));
@@ -69,7 +69,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                           [
                               'NonStandardAriaReflection',
                               {
-                                  tagName: 'x-aria-source',
+                                  tagName: 'c-aria-source',
                                   propertyName: 'ariaLabelledBy',
                                   isSetter,
                                   setValueType: isSetter ? 'string' : undefined,
@@ -80,7 +80,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                 [
                     'CrossRootAriaInSyntheticShadow',
                     {
-                        tagName: 'x-aria-source',
+                        tagName: 'c-aria-source',
                         attributeName: 'aria-labelledby',
                     },
                 ],
@@ -93,7 +93,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                     expected = expected.not;
                 }
                 expected.toLogWarningDev(
-                    `Error: [LWC warn]: Element <input> owned by <x-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
+                    `Error: [LWC warn]: Element <input> owned by <c-aria-source> uses non-standard property "ariaLabelledBy". This will be removed in a future version of LWC. See https://sfdc.co/deprecated-aria`
                 );
             }
 
@@ -139,7 +139,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                         [
                             'CrossRootAriaInSyntheticShadow',
                             {
-                                tagName: 'x-aria-target',
+                                tagName: 'c-aria-target',
                                 attributeName: 'aria-labelledby',
                             },
                         ],
@@ -162,7 +162,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                                 [
                                     'NonStandardAriaReflection',
                                     {
-                                        tagName: 'x-aria-source',
+                                        tagName: 'c-aria-source',
                                         propertyName: 'ariaLabelledBy',
                                         isSetter: true,
                                         setValueType: value === null ? 'null' : typeof value,
@@ -185,7 +185,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                             [
                                 'NonStandardAriaReflection',
                                 {
-                                    tagName: 'x-aria-source',
+                                    tagName: 'c-aria-source',
                                     propertyName: 'ariaLabelledBy',
                                     isSetter: true,
                                     setValueType: 'string',
@@ -228,7 +228,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
                                 [
                                     'CrossRootAriaInSyntheticShadow',
                                     {
-                                        tagName: 'x-aria-source',
+                                        tagName: 'c-aria-source',
                                         attributeName: 'aria-labelledby',
                                     },
                                 ],
@@ -241,8 +241,8 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
     });
 
     it('does not log duplicates warnings', () => {
-        const elm1 = createElement('x-aria-container', { is: AriaContainer });
-        const elm2 = createElement('x-aria-container', { is: AriaContainer });
+        const elm1 = createElement('c-aria-container', { is: AriaContainer });
+        const elm2 = createElement('c-aria-container', { is: AriaContainer });
         document.body.appendChild(elm1);
         document.body.appendChild(elm2);
 
@@ -257,14 +257,14 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
             [
                 'CrossRootAriaInSyntheticShadow',
                 {
-                    tagName: 'x-aria-source',
+                    tagName: 'c-aria-source',
                     attributeName: 'aria-labelledby',
                 },
             ],
             [
                 'CrossRootAriaInSyntheticShadow',
                 {
-                    tagName: 'x-aria-source',
+                    tagName: 'c-aria-source',
                     attributeName: 'aria-labelledby',
                 },
             ],
@@ -274,7 +274,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow cross-root ARIA', (
     [false, true].forEach((reverseOrder) => {
         describe(`reverseOrder: ${reverseOrder}`, () => {
             it('ignores valid usage', () => {
-                const valid = createElement('x-valid', { is: Valid });
+                const valid = createElement('c-valid', { is: Valid });
                 document.body.appendChild(valid);
                 valid.linkElements({ reverseOrder });
 

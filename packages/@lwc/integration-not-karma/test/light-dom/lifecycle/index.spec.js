@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import SlotForwarding from 'x/slotForwarding';
-import DynamicSlotForwarding from 'x/dynamicSlotForwarding';
-import StandardSlotting from 'x/standardSlotting';
-import BasicContainer from 'x/basicContainer';
+import SlotForwarding from 'c/slotForwarding';
+import DynamicSlotForwarding from 'c/dynamicSlotForwarding';
+import StandardSlotting from 'c/standardSlotting';
+import BasicContainer from 'c/basicContainer';
 import { USE_LIGHT_DOM_SLOT_FORWARDING } from '../../../helpers/constants.js';
 import { extractDataIds } from '../../../helpers/utils.js';
 
@@ -24,7 +24,7 @@ afterEach(() => {
 
 describe('basic lifecycle hooks', () => {
     it('should invoke connectedCallback/disconnectedCallback at all', async () => {
-        const elm = createElement('x-basic-container', { is: BasicContainer });
+        const elm = createElement('c-basic-container', { is: BasicContainer });
         document.body.appendChild(elm);
         await Promise.resolve();
 
@@ -54,7 +54,7 @@ describe('standard slotting', () => {
     let elm;
 
     const setup = async () => {
-        elm = createElement('x-standard-slotting', { is: StandardSlotting });
+        elm = createElement('c-standard-slotting', { is: StandardSlotting });
         elm.show = true;
         document.body.appendChild(elm);
         await Promise.resolve();
@@ -102,7 +102,7 @@ describe.runIf(USE_LIGHT_DOM_SLOT_FORWARDING)('slot forwarding', () => {
     describe('static', () => {
         let elm;
         const setup = async () => {
-            elm = createElement('x-slot-forwarding', { is: SlotForwarding });
+            elm = createElement('c-slot-forwarding', { is: SlotForwarding });
             document.body.appendChild(elm);
             await Promise.resolve();
 
@@ -163,7 +163,7 @@ describe.runIf(USE_LIGHT_DOM_SLOT_FORWARDING)('slot forwarding', () => {
     describe('dynamic', () => {
         let elm;
         const setup = async () => {
-            elm = createElement('x-dynamic-slot-forwarding', { is: DynamicSlotForwarding });
+            elm = createElement('c-dynamic-slot-forwarding', { is: DynamicSlotForwarding });
             document.body.appendChild(elm);
             await Promise.resolve();
 

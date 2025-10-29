@@ -1,16 +1,16 @@
 <template lwc:render-mode="light">
     <template lwc:if={showTop}>
-        <x-dynamic-forwarded-slottable data-id="topSlot">
-            <x-slotee slot={topTop}></x-slotee>
-            <x-slotee></x-slotee>
-            <x-slotee slot={topBottom}></x-slotee>
-        </x-dynamic-forwarded-slottable>
+        <c-dynamic-forwarded-slottable data-id="topSlot">
+            <c-slotee slot={topTop}></c-slotee>
+            <c-slotee></c-slotee>
+            <c-slotee slot={topBottom}></c-slotee>
+        </c-dynamic-forwarded-slottable>
     </template>
     <template lwc:else>
-        <x-dynamic-forwarded-slottable data-id="bottomSlot">
-            <x-slotee slot={bottomTop}></x-slotee>
-            <x-slotee></x-slotee>
-            <x-slotee slot={bottomBottom}></x-slotee>
-        </x-dynamic-forwarded-slottable>
+        <c-dynamic-forwarded-slottable data-id="bottomSlot">
+            <c-slotee slot={bottomTop}></c-slotee>
+            <c-slotee></c-slotee>
+            <c-slotee slot={bottomBottom}></c-slotee>
+        </c-dynamic-forwarded-slottable>
     </template>
 </template>

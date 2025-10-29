@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import BasicParent from 'x/basicParent';
-import ParentOfChildWithForEach from 'x/parentOfChildWithForEach';
-import ParentWNoSlotContent from 'x/parentWNoSlotContent';
-import ParentOfChildWithNamedSlots from 'x/parentOfChildWithNamedSlots';
-import NestedSlots from 'x/nestedSlots';
+import BasicParent from 'c/basicParent';
+import ParentOfChildWithForEach from 'c/parentOfChildWithForEach';
+import ParentWNoSlotContent from 'c/parentWNoSlotContent';
+import ParentOfChildWithNamedSlots from 'c/parentOfChildWithNamedSlots';
+import NestedSlots from 'c/nestedSlots';
 import {
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
@@ -14,17 +14,17 @@ const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 describe('scoped slots', () => {
     it('scoped slots work with default slots', () => {
-        const elm = createElement('x-component', { is: BasicParent });
+        const elm = createElement('c-component', { is: BasicParent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-basic-child');
+        const child = elm.shadowRoot.querySelector('c-basic-child');
         expect(child.querySelector('span').innerHTML).toBe('1234 - Test');
         expect(elm.shadowRoot.querySelector('span').innerHTML).toBe('1234 - Test');
     });
 
     it('works with for:each iterator', () => {
-        const elm = createElement('x-component', { is: ParentOfChildWithForEach });
+        const elm = createElement('c-component', { is: ParentOfChildWithForEach });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-child-with-for-each');
+        const child = elm.shadowRoot.querySelector('c-child-with-for-each');
         const spans = elm.shadowRoot.querySelectorAll('span');
         // Verify that parent's slot content was created multiple times
         expect(spans.length).toBe(2);
@@ -39,18 +39,18 @@ describe('scoped slots', () => {
     });
 
     it('fallback to default content when no slot content provided by parent', () => {
-        const elm = createElement('x-component', { is: ParentWNoSlotContent });
+        const elm = createElement('c-component', { is: ParentWNoSlotContent });
         document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('x-child-w-default-content');
+        const child = elm.shadowRoot.querySelector('c-child-w-default-content');
         expect(child.querySelector('span').innerHTML).toBe('default - Fallback Content');
     });
 
     it('scoped slots work with named slots', () => {
-        const elm = createElement('x-component', { is: ParentOfChildWithNamedSlots });
+        const elm = createElement('c-component', { is: ParentOfChildWithNamedSlots });
         document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('x-child-with-named-slots');
+        const child = elm.shadowRoot.querySelector('c-child-with-named-slots');
         // Verify scoped slots
         expect(child.querySelector('.slotname1').innerHTML).toBe(
             `${vFragBookend}${vFragBookend}<p>2021 World Series</p>${vFragBookend}${vFragBookend}`
@@ -72,10 +72,10 @@ describe('scoped slots', () => {
     });
 
     it('scoped slot content can be nested inside another', () => {
-        const elm = createElement('x-nested', { is: NestedSlots });
+        const elm = createElement('c-nested', { is: NestedSlots });
         document.body.appendChild(elm);
 
-        const rows = elm.shadowRoot.querySelectorAll('x-row');
+        const rows = elm.shadowRoot.querySelectorAll('c-row');
         expect(rows.length).toBe(4);
         expect(elm.shadowRoot.querySelectorAll('span.cell').length).toBe(7);
         // spot check one row

@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
-import ServerCtor from 'x/server';
-import ClientCtor from 'x/client';
+import ServerCtor from 'c/server';
+import ClientCtor from 'c/client';
 
 const ctors = {
     server: ServerCtor,

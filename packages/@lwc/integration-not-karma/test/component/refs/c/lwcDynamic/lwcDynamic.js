@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import Basic from 'x/basic';
+import Basic from 'c/basic';
 
 export default class extends LightningElement {
     ctor;

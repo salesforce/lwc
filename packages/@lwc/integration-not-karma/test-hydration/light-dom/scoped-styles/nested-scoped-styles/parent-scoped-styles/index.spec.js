@@ -3,7 +3,7 @@ export default {
     snapshot(target) {
         return {
             parent: target,
-            child: target.querySelector('x-child'),
+            child: target.querySelector('c-child'),
         };
     },
     advancedTest(target, { Component, hydrateComponent, consoleSpy }) {
@@ -14,6 +14,6 @@ export default {
         expect(consoleCalls.error).toHaveSize(0);
         // Validate there is no hydration mismatch
         expect(parent).toBe(target);
-        expect(child).toBe(target.querySelector('x-child'));
+        expect(child).toBe(target.querySelector('c-child'));
     },
 };

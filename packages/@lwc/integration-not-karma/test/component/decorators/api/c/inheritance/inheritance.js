@@ -1,5 +1,5 @@
 import { api } from 'lwc';
-import InheritanceBase from 'x/inheritanceBase';
+import InheritanceBase from 'c/inheritanceBase';
 
 export default class Inheritance extends InheritanceBase {
     @api child = 'child';

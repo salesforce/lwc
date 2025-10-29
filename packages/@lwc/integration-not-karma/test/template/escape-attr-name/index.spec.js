@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import BooleanValue from 'x/booleanValue';
-import StringValue from 'x/stringValue';
+import BooleanValue from 'c/booleanValue';
+import StringValue from 'c/stringValue';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 // Browsers treat attribute names containing the ` (backtick) character differently
@@ -34,13 +34,13 @@ const scenarios = [
         name: 'boolean-true-value',
         expectedValue: '',
         Ctor: BooleanValue,
-        tagName: 'x-boolean-value',
+        tagName: 'c-boolean-value',
     },
     {
         name: 'string-value',
         expectedValue: 'yolo',
         Ctor: StringValue,
-        tagName: 'x-string-value',
+        tagName: 'c-string-value',
     },
 ];
 

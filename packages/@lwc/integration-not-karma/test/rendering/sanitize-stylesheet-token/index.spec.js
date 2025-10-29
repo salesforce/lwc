@@ -1,6 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Component from 'x/component';
-import Scoping from 'x/scoping';
+import Component from 'c/component';
+import Scoping from 'c/scoping';
 import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
@@ -24,12 +24,12 @@ const props = ['stylesheetToken', 'stylesheetTokens', 'legacyStylesheetToken'];
 
 const components = [
     {
-        tagName: 'x-component',
+        tagName: 'c-component',
         Ctor: Component,
         name: 'unscoped styles',
     },
     {
-        tagName: 'x-scoping',
+        tagName: 'c-scoping',
         Ctor: Scoping,
         name: 'scoped styles',
     },

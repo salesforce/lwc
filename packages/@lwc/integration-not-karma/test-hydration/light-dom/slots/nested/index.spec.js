@@ -6,8 +6,8 @@ export default {
         slotText: 'initial',
     },
     snapshot(target) {
-        const cmpWithSlot = target.querySelector('x-with-slots');
-        const cmpChild = target.querySelector('x-child');
+        const cmpWithSlot = target.querySelector('c-with-slots');
+        const cmpChild = target.querySelector('c-child');
         const cmpWithSlotParagraphs = cmpWithSlot.querySelectorAll('p');
         const childParagraphs = cmpChild.querySelectorAll('p');
 

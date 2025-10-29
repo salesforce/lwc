@@ -1,5 +1,5 @@
 import { LightningElement, wire, api } from 'lwc';
-import { WireAdapter } from 'x/advancedProvider';
+import { WireAdapter } from 'c/advancedProvider';
 
 export default class ConsumerElement extends LightningElement {
     @wire(WireAdapter) context;

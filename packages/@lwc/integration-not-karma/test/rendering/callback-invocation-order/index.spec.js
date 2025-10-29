@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import ShadowParent from 'x/shadowParent';
-import ShadowLightParent from 'x/shadowLightParent';
-import LightParent from 'x/lightParent';
-import LightShadowParent from 'x/lightShadowParent';
-import ToggleContainer from 'x/toggleContainer';
-import MultiTemplateConditionals from 'x/multiTemplateConditionals';
-import ShadowContainerMultipleConditionals from 'x/shadowContainerMultipleConditionals';
-import LightContainerMultipleConditionals from 'x/lightContainerMultipleConditionals';
+import ShadowParent from 'c/shadowParent';
+import ShadowLightParent from 'c/shadowLightParent';
+import LightParent from 'c/lightParent';
+import LightShadowParent from 'c/lightShadowParent';
+import ToggleContainer from 'c/toggleContainer';
+import MultiTemplateConditionals from 'c/multiTemplateConditionals';
+import ShadowContainerMultipleConditionals from 'c/shadowContainerMultipleConditionals';
+import LightContainerMultipleConditionals from 'c/lightContainerMultipleConditionals';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 function resetTimingBuffer() {
@@ -19,7 +19,7 @@ beforeEach(() => {
 
 const fixtures = [
     {
-        tagName: 'x-shadow-parent',
+        tagName: 'c-shadow-parent',
         ctor: ShadowParent,
         connect: process.env.NATIVE_SHADOW
             ? !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
@@ -65,7 +65,7 @@ const fixtures = [
         ],
     },
     {
-        tagName: 'x-shadow-light-parent',
+        tagName: 'c-shadow-light-parent',
         ctor: ShadowLightParent,
         connect: process.env.NATIVE_SHADOW
             ? [
@@ -91,7 +91,7 @@ const fixtures = [
         ],
     },
     {
-        tagName: 'x-light-parent',
+        tagName: 'c-light-parent',
         ctor: LightParent,
         connect: [
             'lightParent:connectedCallback',
@@ -115,7 +115,7 @@ const fixtures = [
         ],
     },
     {
-        tagName: 'x-light-shadow-parent',
+        tagName: 'c-light-shadow-parent',
         ctor: LightShadowParent,
         connect: process.env.NATIVE_SHADOW
             ? !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
@@ -165,7 +165,7 @@ for (const { tagName, ctor, connect, disconnect } of fixtures) {
 }
 
 it('should invoke callbacks on the right order (issue #1199 and #1198)', async () => {
-    const elm = createElement('x-toggle-container', { is: ToggleContainer });
+    const elm = createElement('c-toggle-container', { is: ToggleContainer });
 
     document.body.appendChild(elm);
     expect(window.timingBuffer).toEqual(
@@ -228,11 +228,11 @@ it('should invoke callbacks on the right order (issue #1199 and #1198)', async (
 });
 
 it('should invoke callbacks on the right order when multiple templates are used with lwc:if', async () => {
-    const elm = createElement('x-multi-template-conditionals', { is: MultiTemplateConditionals });
+    const elm = createElement('c-multi-template-conditionals', { is: MultiTemplateConditionals });
     elm.show = true;
     document.body.appendChild(elm);
 
-    // initial load is x-shadow-parent
+    // initial load is c-shadow-parent
     expect(window.timingBuffer).toEqual([
         'leaf:T1-1:connectedCallback',
         'leaf:T1-2:connectedCallback',
@@ -246,8 +246,8 @@ it('should invoke callbacks on the right order when multiple templates are used 
     elm.next();
 
     await Promise.resolve();
-    // disconnect x-shadow-parent +
-    // connect x-shadow-container with 2 parents, 'a' and 'b'
+    // disconnect c-shadow-parent +
+    // connect c-shadow-container with 2 parents, 'a' and 'b'
     expect(window.timingBuffer).toEqual(
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
             ? [
@@ -312,7 +312,7 @@ describe('regression test (#3827)', () => {
     const fixtures = [
         {
             fixtureName: 'shadow DOM',
-            tagName: 'x-shadow-container-multiple-conditionals',
+            tagName: 'c-shadow-container-multiple-conditionals',
             ctor: ShadowContainerMultipleConditionals,
             elseBlock: (currentLeafName) => [
                 'shadowContainer:connectedCallback',
@@ -340,7 +340,7 @@ describe('regression test (#3827)', () => {
         },
         {
             fixtureName: 'light DOM',
-            tagName: 'x-light-container-multiple-conditionals',
+            tagName: 'c-light-container-multiple-conditionals',
             ctor: LightContainerMultipleConditionals,
             elseBlock: (currentLeafName) => [
                 'lightContainer:connectedCallback',

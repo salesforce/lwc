@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Component from 'x/component';
+import Component from 'c/component';
 
 // TODO [#2922]: remove this test when we can support document.adoptedStyleSheets.
 // Currently we can't, due to backwards compat.
@@ -7,7 +7,7 @@ import Component from 'x/component';
 describe.skipIf(process.env.NATIVE_SHADOW)('global styles', () => {
     it('injects global styles in document.head in synthetic shadow', async () => {
         const numStyleSheetsBefore = document.styleSheets.length;
-        const elm = createElement('x-component', { is: Component });
+        const elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
         await Promise.resolve();
         const numStyleSheetsAfter = document.styleSheets.length;

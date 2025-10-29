@@ -14,7 +14,7 @@ testInvalidComponentInstance('HTMLElement', document.createElement('div'));
 
 it('should return the component constructor for the created element', () => {
     class Component extends LightningElement {}
-    const elm = createElement('x-component', { is: Component });
+    const elm = createElement('c-component', { is: Component });
 
     expect(getComponentConstructor(elm)).toBe(Component);
 });

@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import NoPropDeclared from 'x/noPropDeclared';
-import PropDeclared from 'x/propDeclared';
-import ApiPropDeclared from 'x/apiPropDeclared';
-import TrackPropDeclared from 'x/trackPropDeclared';
-import NoPropDeclaredNoSuper from 'x/noPropDeclaredNoSuper';
-import PropDeclaredNoSuper from 'x/propDeclaredNoSuper';
-import ApiPropDeclaredNoSuper from 'x/apiPropDeclaredNoSuper';
-import TrackPropDeclaredNoSuper from 'x/trackPropDeclaredNoSuper';
+import NoPropDeclared from 'c/noPropDeclared';
+import PropDeclared from 'c/propDeclared';
+import ApiPropDeclared from 'c/apiPropDeclared';
+import TrackPropDeclared from 'c/trackPropDeclared';
+import NoPropDeclaredNoSuper from 'c/noPropDeclaredNoSuper';
+import PropDeclaredNoSuper from 'c/propDeclaredNoSuper';
+import ApiPropDeclaredNoSuper from 'c/apiPropDeclaredNoSuper';
+import TrackPropDeclaredNoSuper from 'c/trackPropDeclaredNoSuper';
 import { ariaPropertiesMapping } from '../../../helpers/aria.js';
 import { extractDataIds } from '../../../helpers/utils.js';
 
@@ -17,19 +17,19 @@ describe('aria reflection', () => {
             name: 'has custom superclass',
             components: {
                 NoPropDeclared: {
-                    tagName: 'x-no-prop-declared',
+                    tagName: 'c-no-prop-declared',
                     Ctor: NoPropDeclared,
                 },
                 PropDeclared: {
-                    tagName: 'x-prop-declared',
+                    tagName: 'c-prop-declared',
                     Ctor: PropDeclared,
                 },
                 ApiPropDeclared: {
-                    tagName: 'x-api-prop-declared',
+                    tagName: 'c-api-prop-declared',
                     Ctor: ApiPropDeclared,
                 },
                 TrackPropDeclared: {
-                    tagName: 'x-track-prop-declared',
+                    tagName: 'c-track-prop-declared',
                     Ctor: TrackPropDeclared,
                 },
             },
@@ -38,19 +38,19 @@ describe('aria reflection', () => {
             name: 'no custom superclass',
             components: {
                 NoPropDeclared: {
-                    tagName: 'x-no-prop-declared-no-super',
+                    tagName: 'c-no-prop-declared-no-super',
                     Ctor: NoPropDeclaredNoSuper,
                 },
                 PropDeclared: {
-                    tagName: 'x-prop-declared-no-super',
+                    tagName: 'c-prop-declared-no-super',
                     Ctor: PropDeclaredNoSuper,
                 },
                 ApiPropDeclared: {
-                    tagName: 'x-api-prop-declared-no-super',
+                    tagName: 'c-api-prop-declared-no-super',
                     Ctor: ApiPropDeclaredNoSuper,
                 },
                 TrackPropDeclared: {
-                    tagName: 'x-track-prop-declared-no-super',
+                    tagName: 'c-track-prop-declared-no-super',
                     Ctor: TrackPropDeclaredNoSuper,
                 },
             },

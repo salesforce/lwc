@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import Any from 'x/any';
-import Reset from 'x/reset';
-import None from 'x/none';
-import NativeOnly from 'x/native';
+import Any from 'c/any';
+import Reset from 'c/reset';
+import None from 'c/none';
+import NativeOnly from 'c/native';
 import { jasmine } from '../../../helpers/jasmine.js';
 import {
     attachReportingControlDispatcher,
@@ -29,7 +29,7 @@ describe('shadow support mode reporting', () => {
 
     it('should report use of value "any"', () => {
         expect(() => {
-            createElement('x-any', { is: Any });
+            createElement('c-any', { is: Any });
         }).toLogWarningDev(/Invalid value 'any' for static property shadowSupportMode/);
 
         expect(dispatcher).toHaveBeenCalledTimes(1);
@@ -40,7 +40,7 @@ describe('shadow support mode reporting', () => {
     });
 
     it('should report use of value "native"', () => {
-        createElement('x-native', { is: NativeOnly });
+        createElement('c-native', { is: NativeOnly });
 
         expect(dispatcher).toHaveBeenCalledTimes(1);
         expect(dispatcher).toHaveBeenCalledWith('ShadowSupportModeUsage', {
@@ -50,13 +50,13 @@ describe('shadow support mode reporting', () => {
     });
 
     it('should not report use of value "reset"', () => {
-        createElement('x-reset', { is: Reset });
+        createElement('c-reset', { is: Reset });
 
         expect(dispatcher).toHaveBeenCalledTimes(0);
     });
 
     it('should not report when no value is provided', () => {
-        createElement('x-none', { is: None });
+        createElement('c-none', { is: None });
 
         expect(dispatcher).toHaveBeenCalledTimes(0);
     });

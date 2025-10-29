@@ -1,14 +1,14 @@
 import { LightningElement } from 'lwc';
 
-import ReflectElement from 'x/reflect';
-import LifecycleParent from 'x/lifecycleParent';
-import WithChildElms from 'x/withChildElms';
-import DefinedComponent from 'x/definedComponent';
-import UndefinedComponent from 'x/undefinedComponent';
-import AttrChanged from 'x/attrChanged';
-import ReflectCamel from 'x/reflectCamel';
-import WithChildElmsHasSlot from 'x/withChildElmsHasSlot';
-import WithChildElmsHasSlotLight from 'x/withChildElmsHasSlotLight';
+import ReflectElement from 'c/reflect';
+import LifecycleParent from 'c/lifecycleParent';
+import WithChildElms from 'c/withChildElms';
+import DefinedComponent from 'c/definedComponent';
+import UndefinedComponent from 'c/undefinedComponent';
+import AttrChanged from 'c/attrChanged';
+import ReflectCamel from 'c/reflectCamel';
+import WithChildElmsHasSlot from 'c/withChildElmsHasSlot';
+import WithChildElmsHasSlotLight from 'c/withChildElmsHasSlotLight';
 import { spyOn } from '@vitest/spy';
 import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../helpers/constants.js';
 
@@ -40,9 +40,9 @@ it('CustomElementConstructor cannot be `new`ed before being defined', () => {
 });
 
 it('CustomElementConstructor can be `new`ed after being defined', () => {
-    customElements.define('x-my-defined-component', DefinedComponent.CustomElementConstructor);
+    customElements.define('c-my-defined-component', DefinedComponent.CustomElementConstructor);
     const elm = new DefinedComponent.CustomElementConstructor();
-    expect(elm.tagName.toLowerCase()).toEqual('x-my-defined-component');
+    expect(elm.tagName.toLowerCase()).toEqual('c-my-defined-component');
 });
 
 it('should create a custom element with shadow mode set to "open" by default', () => {

@@ -1,4 +1,4 @@
-import { grandparentContextFactory } from 'x/grandparentContext';
+import { grandparentContextFactory } from 'c/grandparentContext';
 import { LightningElement } from 'lwc';
 
 export default class TooMuchContext extends LightningElement {

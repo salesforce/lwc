@@ -1,16 +1,16 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Reactive from 'x/reactive';
-import NonReactive from 'x/nonReactive';
-import Container from 'x/container';
-import Parent from 'x/parent';
-import Child from 'x/child';
-import DuplicateSignalOnTemplate from 'x/duplicateSignalOnTemplate';
-import List from 'x/list';
-import Throws from 'x/throws';
+import Reactive from 'c/reactive';
+import NonReactive from 'c/nonReactive';
+import Container from 'c/container';
+import Parent from 'c/parent';
+import Child from 'c/child';
+import DuplicateSignalOnTemplate from 'c/duplicateSignalOnTemplate';
+import List from 'c/list';
+import Throws from 'c/throws';
 
 // Note for testing purposes the signal implementation uses LWC module resolution to simplify things.
 // In production the signal will come from a 3rd party library.
-import { Signal } from 'x/signal';
+import { Signal } from 'c/signal';
 import { fn as mockFn } from '@vitest/spy';
 import { resetDOM } from '../../../helpers/reset.js';
 
@@ -54,7 +54,7 @@ describe('signal protocol', () => {
         ].forEach(({ testName, flag }) => {
             // Test all ways of binding signal to an LWC + template that cause re-rendering
             it(testName, async () => {
-                const elm = createElement('x-reactive', { is: Reactive });
+                const elm = createElement('c-reactive', { is: Reactive });
                 document.body.appendChild(elm);
                 await Promise.resolve();
 
@@ -69,7 +69,7 @@ describe('signal protocol', () => {
     });
 
     it('lwc engine should automatically unsubscribe the re-render callback if signal is not used on a template', async () => {
-        const elm = createElement('x-reactive', { is: Reactive });
+        const elm = createElement('c-reactive', { is: Reactive });
         elm.showObservedFieldSignal = true;
         document.body.appendChild(elm);
         await Promise.resolve();
@@ -83,7 +83,7 @@ describe('signal protocol', () => {
     });
 
     it('lwc engine does not subscribe re-render callback if signal is not used on a template', async () => {
-        const elm = createElement('x-non-reactive', { is: NonReactive });
+        const elm = createElement('c-non-reactive', { is: NonReactive });
         document.body.appendChild(elm);
         await Promise.resolve();
 
@@ -91,12 +91,12 @@ describe('signal protocol', () => {
     });
 
     it('only the components referencing a signal should re-render', async () => {
-        const container = createElement('x-container', { is: Container });
+        const container = createElement('c-container', { is: Container });
         // append the container first to avoid error message with native lifecycle
         document.body.appendChild(container);
         await Promise.resolve();
 
-        const signalElm = createElement('x-signal-elm', { is: Child });
+        const signalElm = createElement('c-signal-elm', { is: Child });
         const signal = new Signal('initial value');
         signalElm.signal = signal;
         container.appendChild(signalElm);
@@ -115,7 +115,7 @@ describe('signal protocol', () => {
     });
 
     it('only subscribes the re-render callback a single time when signal is referenced multiple times on a template', async () => {
-        const elm = createElement('x-duplicate-signals-on-template', {
+        const elm = createElement('c-duplicate-signals-on-template', {
             is: DuplicateSignalOnTemplate,
         });
         document.body.appendChild(elm);
@@ -134,7 +134,7 @@ describe('signal protocol', () => {
     });
 
     it('only subscribes re-render callback a single time when signal is referenced multiple times in a list', async () => {
-        const elm = createElement('x-list', { is: List });
+        const elm = createElement('c-list', { is: List });
         const signal = new Signal('initial value');
         elm.signal = signal;
         document.body.appendChild(elm);
@@ -151,7 +151,7 @@ describe('signal protocol', () => {
     });
 
     it('unsubscribes when element is removed from the dom', async () => {
-        const elm = createElement('x-child', { is: Child });
+        const elm = createElement('c-child', { is: Child });
         const signal = new Signal('initial value');
         elm.signal = signal;
         document.body.appendChild(elm);
@@ -168,7 +168,7 @@ describe('signal protocol', () => {
     });
 
     it('on template re-render unsubscribes all components where signal is not present on the template', async () => {
-        const elm = createElement('x-parent', { is: Parent });
+        const elm = createElement('c-parent', { is: Parent });
         elm.showChild = true;
 
         document.body.appendChild(elm);
@@ -189,7 +189,7 @@ describe('signal protocol', () => {
     });
 
     it('does not subscribe if the signal shape is incorrect', async () => {
-        const elm = createElement('x-child', { is: Child });
+        const elm = createElement('c-child', { is: Child });
         const subscribe = mockFn();
         // Note the signals property is value's' and not value
         const signal = { values: 'initial value', subscribe };
@@ -201,7 +201,7 @@ describe('signal protocol', () => {
     });
 
     it('does not subscribe if the signal is not added as trusted signal', async () => {
-        const elm = createElement('x-child', { is: Child });
+        const elm = createElement('c-child', { is: Child });
         const subscribe = mockFn();
         // Note this follows the shape of the signal implementation
         // but it's not added as a trusted signal (add using lwc.addTrustedSignal)
@@ -219,7 +219,7 @@ describe('signal protocol', () => {
     });
 
     it('does not throw an error for objects that throw upon "in" checks', async () => {
-        const elm = createElement('x-throws', { is: Throws });
+        const elm = createElement('c-throws', { is: Throws });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -234,7 +234,7 @@ describe('ENABLE_EXPERIMENTAL_SIGNALS not set', () => {
     });
 
     it('does not subscribe or unsubscribe if feature flag is disabled', async () => {
-        const elm = createElement('x-child', { is: Child });
+        const elm = createElement('c-child', { is: Child });
         const signal = new Signal('initial value');
         elm.signal = signal;
         document.body.appendChild(elm);

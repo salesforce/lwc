@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import Component from 'x/component';
-import ShadowContainer from 'x/shadowContainer';
-import Light from 'x/light';
+import Component from 'c/component';
+import ShadowContainer from 'c/shadowContainer';
+import Light from 'c/light';
 
 function supportsDirPseudoclass() {
     const div = document.createElement('div');
@@ -22,7 +22,7 @@ function supportsDirPseudoclass() {
 // In native shadow we delegate to the browser, so it has to support :dir()
 describe.runIf(!process.env.NATIVE_SHADOW || supportsDirPseudoclass())(':dir() pseudoclass', () => {
     it('can apply styles based on :dir()', async () => {
-        const elm = createElement('x-parent', { is: Component });
+        const elm = createElement('c-parent', { is: Component });
         document.body.appendChild(elm);
 
         elm.setAttribute('dir', 'ltr');
@@ -58,7 +58,7 @@ describe.runIf(!process.env.NATIVE_SHADOW || supportsDirPseudoclass())(':dir() p
     });
 
     it('can apply styles based on :dir() for light-within-shadow', async () => {
-        const elm = createElement('x-shadow-container', { is: ShadowContainer });
+        const elm = createElement('c-shadow-container', { is: ShadowContainer });
         document.body.appendChild(elm);
 
         elm.setAttribute('dir', 'ltr');
@@ -73,7 +73,7 @@ describe.runIf(!process.env.NATIVE_SHADOW || supportsDirPseudoclass())(':dir() p
 it.runIf(process.env.NATIVE_SHADOW && supportsDirPseudoclass())(
     'can apply styles based on :dir() for light-at-root',
     async () => {
-        const elm = createElement('x-light', { is: Light });
+        const elm = createElement('c-light', { is: Light });
         document.body.appendChild(elm);
 
         await Promise.resolve();

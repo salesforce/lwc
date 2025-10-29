@@ -1,6 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Light from 'x/light';
-import Shadow from 'x/shadow';
+import Light from 'c/light';
+import Shadow from 'c/shadow';
 import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
 import { resetFragmentCache } from '../../../helpers/reset.js';
 
@@ -53,7 +53,7 @@ describe('legacy scope tokens', () => {
             }
 
             it('light dom', async () => {
-                const elm = createElement('x-light', { is: Light });
+                const elm = createElement('c-light', { is: Light });
                 document.body.appendChild(elm);
 
                 const verify = () => {
@@ -62,17 +62,17 @@ describe('legacy scope tokens', () => {
                     const expressionDiv = elm.querySelector('.expression');
 
                     expect(getClasses(elm)).toEqual(
-                        expectTokens('lwc-1kadf5igpar-host', 'x-light_light-host')
+                        expectTokens('lwc-1kadf5igpar-host', 'c-light_light-host')
                     );
                     expect(getClasses(staticDiv)).toEqual(
-                        expectTokens('lwc-1kadf5igpar', 'x-light_light')
+                        expectTokens('lwc-1kadf5igpar', 'c-light_light')
                     );
                     expect(getClasses(dynamicDiv)).toEqual(
-                        expectTokens('lwc-1kadf5igpar', 'x-light_light')
+                        expectTokens('lwc-1kadf5igpar', 'c-light_light')
                     );
 
                     expect(getClasses(expressionDiv)).toEqual(
-                        expectTokens('lwc-1kadf5igpar', 'x-light_light')
+                        expectTokens('lwc-1kadf5igpar', 'c-light_light')
                     );
 
                     expect(getAttributes(elm)).toEqual([]);
@@ -93,7 +93,7 @@ describe('legacy scope tokens', () => {
             });
 
             it.skipIf(process.env.NATIVE_SHADOW)('shadow dom', async () => {
-                const elm = createElement('x-shadow', { is: Shadow });
+                const elm = createElement('c-shadow', { is: Shadow });
                 document.body.appendChild(elm);
 
                 const verify = () => {
@@ -104,39 +104,39 @@ describe('legacy scope tokens', () => {
                     const expressionDiv = elm.shadowRoot.querySelector('.expression');
 
                     expect(getClasses(elm)).toEqual(
-                        expectTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
+                        expectTokens('lwc-2idtulmc17f-host', 'c-shadow_shadow-host')
                     );
                     expect(getClasses(staticDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getClasses(dynamicDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getClasses(manualDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getClasses(span)).toEqual([]);
                     expect(getClasses(expressionDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
 
                     expect(getAttributes(elm)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
+                        expectShadowAttrTokens('lwc-2idtulmc17f-host', 'c-shadow_shadow-host')
                     );
                     expect(getAttributes(staticDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getAttributes(dynamicDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getClasses(manualDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getAttributes(span)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                     expect(getAttributes(expressionDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
                     );
                 };
 

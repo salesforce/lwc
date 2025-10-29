@@ -1,6 +1,6 @@
 import { api } from 'lwc';
 
-import SuperSuperClass from 'x/superSuperClass';
+import SuperSuperClass from 'c/superSuperClass';
 export default class extends SuperSuperClass {
     @api
     methodOmitPublicOmit() {}

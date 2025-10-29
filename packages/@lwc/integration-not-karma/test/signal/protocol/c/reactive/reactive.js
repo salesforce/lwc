@@ -1,5 +1,5 @@
 import { LightningElement, api, track } from 'lwc';
-import { Signal } from 'x/signal';
+import { Signal } from 'c/signal';
 
 const signal = new Signal('initial value');
 

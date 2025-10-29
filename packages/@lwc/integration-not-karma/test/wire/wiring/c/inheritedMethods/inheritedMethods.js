@@ -1,5 +1,5 @@
 import { LightningElement, wire } from 'lwc';
-import { EchoWireAdapter } from 'x/echoAdapter';
+import { EchoWireAdapter } from 'c/echoAdapter';
 
 class Base extends LightningElement {
     @wire(EchoWireAdapter, { name: 'parentMethod', parent: true }) parentMethod() {}

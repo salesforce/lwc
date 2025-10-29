@@ -1,6 +1,6 @@
 import { LightningElement, wire, api } from 'lwc';
-import { BroadcastAdapter } from 'x/broadcastAdapter';
-import { EchoWireAdapter } from 'x/echoAdapter';
+import { BroadcastAdapter } from 'c/broadcastAdapter';
+import { EchoWireAdapter } from 'c/echoAdapter';
 
 export default class BroadcastConsumer extends LightningElement {
     @wire(BroadcastAdapter) wiredProp;

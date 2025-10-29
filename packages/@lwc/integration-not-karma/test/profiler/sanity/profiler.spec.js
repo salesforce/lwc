@@ -3,8 +3,8 @@ import {
     hydrateComponent,
     __unstable__ProfilerControl as profilerControl,
 } from 'lwc';
-import Container from 'x/container';
-import Simple from 'x/simple';
+import Container from 'c/container';
+import Simple from 'c/simple';
 
 describe('Profiler Sanity Test', () => {
     // Count the number of marks/measures before and after the test to ensure the profiler
@@ -185,7 +185,7 @@ describe('Profiler Sanity Test', () => {
 
     it('hydrateComponent', () => {
         // Inject a minimal HTML snapshot, manually crafted
-        const ssrElement = document.createElement('x-simple');
+        const ssrElement = document.createElement('c-simple');
         ssrElement.attachShadow({ mode: 'open' });
         const div = document.createElement('div');
         div.textContent = 'hello world';

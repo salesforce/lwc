@@ -12,6 +12,6 @@ export default class extends LightningElement {
 
     @api
     get leaf() {
-        return this.template.querySelector('x-light-leaf');
+        return this.template.querySelector('c-light-leaf');
     }
 }

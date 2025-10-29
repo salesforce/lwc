@@ -4,7 +4,7 @@ export default {
         label: 'dynamic',
     },
     snapshot(target) {
-        const cmp = target.querySelector('x-child');
+        const cmp = target.querySelector('c-child');
         const p = cmp.querySelector('p');
 
         return {
@@ -13,7 +13,7 @@ export default {
         };
     },
     test(target, snapshots) {
-        const cmp = target.querySelector('x-child');
+        const cmp = target.querySelector('c-child');
         const p = cmp.querySelector('p');
 
         expect(cmp).toBe(snapshots.cmp);

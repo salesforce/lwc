@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Container from 'x/container';
+import Container from 'c/container';
 
 // Note that focusin events are not fired in Chrome and Firefox if the browser content window is not focused.
 // Test for yourself: https://bl.ocks.org/nolanlawson/raw/d8ddc518041e9bf12498b8b50b39df95/
@@ -7,7 +7,7 @@ import Container from 'x/container';
 // the DevTools instead).
 it('should retarget relatedTarget', function () {
     expect(document.hasFocus(), 'Browser window must be focused for test to work').toBe(true);
-    const elm = createElement('x-container', { is: Container });
+    const elm = createElement('c-container', { is: Container });
     document.body.appendChild(elm);
 
     elm.focusFirstInput();

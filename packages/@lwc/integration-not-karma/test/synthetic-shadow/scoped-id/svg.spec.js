@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import SVG from 'x/svg';
+import SVG from 'c/svg';
 
 describe('svg element', () => {
     it('should preserve relationship between graphical objects and their references (href)', () => {
-        const elm = createElement('x-svg', { is: SVG });
+        const elm = createElement('c-svg', { is: SVG });
         document.body.appendChild(elm);
 
         const href = elm.shadowRoot.querySelector('.blk-circle-use').getAttribute('href');
@@ -13,7 +13,7 @@ describe('svg element', () => {
     });
 
     it('should preserve relationship between graphical objects and their references (xlink:href)', () => {
-        const elm = createElement('x-svg', { is: SVG });
+        const elm = createElement('c-svg', { is: SVG });
         document.body.appendChild(elm);
 
         const href = elm.shadowRoot.querySelector('.red-circle-use').getAttribute('xlink:href');

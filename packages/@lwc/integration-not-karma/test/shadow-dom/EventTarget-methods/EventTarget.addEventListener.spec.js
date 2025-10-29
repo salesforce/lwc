@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import Container from 'x/container';
+import Container from 'c/container';
 import { jasmine } from '../../../helpers/jasmine.js';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createShadowTree(parentNode) {
-    const elm = createElement('x-container', { is: Container });
-    elm.setAttribute('data-id', 'x-container');
+    const elm = createElement('c-container', { is: Container });
+    elm.setAttribute('data-id', 'c-container');
     parentNode.appendChild(elm);
     return extractDataIds(elm);
 }
@@ -20,8 +20,8 @@ describe('EventTarget.addEventListener', () => {
         const targets = [
             nodes.button,
             nodes['container_div'],
-            nodes['x-container'].shadowRoot,
-            nodes['x-container'],
+            nodes['c-container'].shadowRoot,
+            nodes['c-container'],
             document.body,
             document.documentElement,
             document,
@@ -44,8 +44,8 @@ describe('EventTarget.addEventListener', () => {
             nodes['container_div'],
             /*
             TODO [#2134]: These are valid cases but currently fail.
-            nodes['x-container'].shadowRoot,
-            nodes['x-container'],
+            nodes['c-container'].shadowRoot,
+            nodes['c-container'],
             */
             document.body,
             document.documentElement,
@@ -150,7 +150,7 @@ describe('EventTarget.addEventListener', () => {
         describe('without options', () => {
             let container;
             beforeEach(() => {
-                container = createElement('x-container', { is: Container });
+                container = createElement('c-container', { is: Container });
                 document.body.appendChild(container);
             });
 
@@ -177,7 +177,7 @@ describe('EventTarget.addEventListener', () => {
         describe('with options', () => {
             let container;
             beforeEach(() => {
-                container = createElement('x-container', { is: Container });
+                container = createElement('c-container', { is: Container });
                 document.body.appendChild(container);
             });
 
@@ -229,7 +229,7 @@ describe('EventTarget.addEventListener', () => {
         describe('with different options', () => {
             let container;
             beforeEach(() => {
-                container = createElement('x-container', { is: Container });
+                container = createElement('c-container', { is: Container });
                 document.body.appendChild(container);
             });
 
@@ -286,9 +286,9 @@ describe('EventTarget.addEventListener', () => {
                 id = this.id;
             }
 
-            const firstContainer = createElement('x-container', { is: Container });
+            const firstContainer = createElement('c-container', { is: Container });
             firstContainer.setAttribute('id', 'first-container');
-            const secondContainer = createElement('x-container', { is: Container });
+            const secondContainer = createElement('c-container', { is: Container });
             secondContainer.setAttribute('id', 'second-container');
 
             firstContainer.addEventListener('test', handleTest);
@@ -305,10 +305,10 @@ describe('EventTarget.addEventListener', () => {
                 id = this.host.id;
             }
 
-            const firstContainer = createElement('x-container', { is: Container });
+            const firstContainer = createElement('c-container', { is: Container });
             firstContainer.setAttribute('id', 'first-container');
             const firstContainerShadowRoot = firstContainer.shadowRoot;
-            const secondContainer = createElement('x-container', { is: Container });
+            const secondContainer = createElement('c-container', { is: Container });
             secondContainer.setAttribute('id', 'second-container');
             const secondContainerShadowRoot = secondContainer.shadowRoot;
 

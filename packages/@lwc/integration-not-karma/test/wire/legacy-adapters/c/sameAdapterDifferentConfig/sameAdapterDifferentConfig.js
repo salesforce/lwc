@@ -1,5 +1,5 @@
 import { LightningElement, wire, api } from 'lwc';
-import { EchoWireAdapter } from 'x/echoWireAdapter';
+import { EchoWireAdapter } from 'c/echoWireAdapter';
 import { FOO, BAR } from './constants';
 
 export default class SameAdapterDifferentConfig extends LightningElement {

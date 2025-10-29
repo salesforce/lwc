@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import LightElement from 'x/light';
+import LightElement from 'c/light';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createTestElement(tag, component) {
@@ -39,7 +39,7 @@ function dispatchEventWithLog(target, nodes, event) {
 
 describe('root light element', () => {
     it('should throw events properly', () => {
-        const nodes = createTestElement('x-root', LightElement);
+        const nodes = createTestElement('c-root', LightElement);
 
         const log = dispatchEventWithLog(
             nodes.button,
@@ -50,9 +50,9 @@ describe('root light element', () => {
         const composedPath = [
             nodes.button,
             nodes.slot,
-            nodes['x-list'].shadowRoot,
-            nodes['x-list'],
-            nodes['x-root'],
+            nodes['c-list'].shadowRoot,
+            nodes['c-list'],
+            nodes['c-root'],
             document.body,
             document.documentElement,
             document,
@@ -61,9 +61,9 @@ describe('root light element', () => {
         expect(log).toEqual([
             [nodes.button, nodes.button, composedPath],
             [nodes.slot, nodes.button, composedPath],
-            [nodes['x-list'].shadowRoot, nodes.button, composedPath],
-            [nodes['x-list'], nodes.button, composedPath],
-            [nodes['x-root'], nodes.button, composedPath],
+            [nodes['c-list'].shadowRoot, nodes.button, composedPath],
+            [nodes['c-list'], nodes.button, composedPath],
+            [nodes['c-root'], nodes.button, composedPath],
             [document.body, nodes.button, composedPath],
             [document.documentElement, nodes.button, composedPath],
             [document, nodes.button, composedPath],
@@ -72,12 +72,12 @@ describe('root light element', () => {
     });
 
     it('querySelector should return slotted elements', () => {
-        const nodes = createTestElement('x-root', LightElement);
-        expect(nodes['x-list'].querySelectorAll('button')[0]).toEqual(nodes.button);
-        expect(nodes['x-list'].querySelector('button')).toEqual(nodes.button);
-        expect(nodes['x-list'].getElementsByTagName('button')[0]).toEqual(nodes.button);
-        expect(nodes['x-list'].getElementsByClassName('button')[0]).toEqual(nodes.button);
-        expect(nodes['x-list'].childNodes[0]).toEqual(nodes.button);
-        expect(nodes['x-list'].children[0]).toEqual(nodes.button);
+        const nodes = createTestElement('c-root', LightElement);
+        expect(nodes['c-list'].querySelectorAll('button')[0]).toEqual(nodes.button);
+        expect(nodes['c-list'].querySelector('button')).toEqual(nodes.button);
+        expect(nodes['c-list'].getElementsByTagName('button')[0]).toEqual(nodes.button);
+        expect(nodes['c-list'].getElementsByClassName('button')[0]).toEqual(nodes.button);
+        expect(nodes['c-list'].childNodes[0]).toEqual(nodes.button);
+        expect(nodes['c-list'].children[0]).toEqual(nodes.button);
     });
 });

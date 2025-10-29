@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import EventHandler from 'x/eventHandler';
-import EventHandlerOptions from 'x/eventHandlerOptions';
-import AdditionWhileDispatch from 'x/additionWhileDispatch';
+import EventHandler from 'c/eventHandler';
+import EventHandlerOptions from 'c/eventHandlerOptions';
+import AdditionWhileDispatch from 'c/additionWhileDispatch';
 import { spyOn } from '@vitest/spy';
 
 it('should be able to attach an event listener on the host element', () => {
@@ -15,7 +15,7 @@ it('should be able to attach an event listener on the host element', () => {
         args = handlerArgs;
     };
 
-    const elm = createElement('x-event-handler', { is: EventHandler });
+    const elm = createElement('c-event-handler', { is: EventHandler });
     elm.clickHandler = clickHandler;
     document.body.appendChild(elm);
 
@@ -28,7 +28,7 @@ it('should be able to attach an event listener on the host element', () => {
 });
 
 it('should warn when passing a 3rd parameter to the event handler', () => {
-    const elm = createElement('x-event-handler-options', { is: EventHandlerOptions });
+    const elm = createElement('c-event-handler-options', { is: EventHandlerOptions });
 
     expect(() => {
         document.body.appendChild(elm);
@@ -46,7 +46,7 @@ describe('event handler is not a function', () => {
     afterAll(() => consoleSpy.mockRestore());
 
     it('should log an error if event handler is not a function', () => {
-        const elm = createElement('x-event-handler', { is: EventHandler });
+        const elm = createElement('c-event-handler', { is: EventHandler });
 
         expect(() => {
             document.body.appendChild(elm);
@@ -68,7 +68,7 @@ describe('event handler is not a function', () => {
 });
 
 it('should not invoke newly added event listeners in the middle of the dispatch', () => {
-    const elm = createElement('x-addition-while-dispatch', { is: AdditionWhileDispatch });
+    const elm = createElement('c-addition-while-dispatch', { is: AdditionWhileDispatch });
 
     let evt;
     elm.addEventListener('test', (e) => (evt = e));

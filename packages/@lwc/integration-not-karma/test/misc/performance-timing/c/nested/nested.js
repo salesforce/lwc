@@ -1,10 +1,10 @@
 import { LightningElement, createElement } from 'lwc';
 
-import Child from 'x/child';
+import Child from 'c/child';
 
 export default class Nested extends LightningElement {
     renderedCallback() {
-        const elm = createElement('x-child', { is: Child });
+        const elm = createElement('c-child', { is: Child });
         document.body.appendChild(elm);
     }
 }

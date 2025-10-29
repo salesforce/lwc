@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import XInnerHtml from 'x/innerHtml';
+import XInnerHtml from 'c/innerHtml';
 import { jasmine } from '../../../helpers/jasmine.js';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 
@@ -10,7 +10,7 @@ const override = (content) => content;
 
 it('throws when not overridden', () => {
     expect(() => {
-        const elm = createElement('x-inner-html', { is: XInnerHtml });
+        const elm = createElement('c-inner-html', { is: XInnerHtml });
         elm.content = ACTUAL_CONTENT;
         document.body.appendChild(elm);
     }).toThrowCallbackReactionError(Error, /sanitizeHtmlContent hook must be implemented/);
@@ -30,7 +30,7 @@ it('receives the right parameters', () => {
     const spy = jasmine.createSpy('sanitizeHook', override);
     const original = setSanitizeHtmlContentHookForTest(spy);
 
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
 
@@ -42,7 +42,7 @@ it('does not call sanitizeHtmlContent when raw value does not change', async () 
     const spy = jasmine.createSpy('sanitizeHook', override);
     const original = setSanitizeHtmlContentHookForTest(spy);
 
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.message = 'initial';
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
@@ -59,7 +59,7 @@ it('does not call sanitizeHtmlContent when raw value does not change', async () 
 it('replace the original attribute value with the returned value', () => {
     const original = setSanitizeHtmlContentHookForTest(() => ALTERNATIVE_CONTENT);
 
-    const elm = createElement('x-inner-html', { is: XInnerHtml });
+    const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
 

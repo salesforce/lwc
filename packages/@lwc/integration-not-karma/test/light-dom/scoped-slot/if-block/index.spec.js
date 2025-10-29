@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import MixedSlotParent from 'x/mixedSlotParent';
+import MixedSlotParent from 'c/mixedSlotParent';
 import { jasmineSpyOn as spyOn } from '../../../../helpers/jasmine.js';
 import { USE_COMMENTS_FOR_FRAGMENT_BOOKENDS } from '../../../../helpers/constants.js';
 
@@ -7,10 +7,10 @@ const vFragBookend = USE_COMMENTS_FOR_FRAGMENT_BOOKENDS ? '<!---->' : '';
 
 describe('if-block', () => {
     it('should work when parent and child have matching slot types', async () => {
-        const elm = createElement('x-parent', { is: MixedSlotParent });
+        const elm = createElement('c-parent', { is: MixedSlotParent });
         elm.showStandard = true;
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-mixed-slot-child');
+        const child = elm.shadowRoot.querySelector('c-mixed-slot-child');
         expect(child.innerHTML).toBe(
             `${vFragBookend}${vFragBookend}<span>Slotted content from parent</span>${vFragBookend}${vFragBookend}`
         );
@@ -29,10 +29,10 @@ describe('if-block', () => {
         const consoleErrorSpy = spyOn(console, 'error').and.callFake((error) => {
             errorMsg = error.message;
         });
-        const elm = createElement('x-parent', { is: MixedSlotParent });
+        const elm = createElement('c-parent', { is: MixedSlotParent });
         elm.showStandard = true;
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-mixed-slot-child');
+        const child = elm.shadowRoot.querySelector('c-mixed-slot-child');
 
         // Switch off the if branch and switch on the elseif branch
         elm.showStandard = false;
