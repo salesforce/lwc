@@ -31,8 +31,8 @@ export default {
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: <style> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
-                'Hydration attribute mismatch on: <h1> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
+                'Hydration attribute mismatch on: <style> - rendered on server: class="lwc-7qfdo66i6mp" - expected on client: class="lwc-2kgvov93avb"',
+                'Hydration attribute mismatch on: <h1> - rendered on server: class="lwc-7qfdo66i6mp" - expected on client: class="lwc-2kgvov93avb"',
                 'Hydration completed with errors.',
             ],
         });

@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import ComponentAtX from '@c/component';
+import ComponentAtX from '@x/component';
 import ComponentXHashY from 'x#y/component';
 
 describe('invalid character @ in namespace', () => {

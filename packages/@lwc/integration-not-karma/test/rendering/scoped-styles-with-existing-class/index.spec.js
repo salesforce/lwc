@@ -18,7 +18,7 @@ import { resetFragmentCache } from '../../../helpers/reset.js';
         });
 
         const expectedScopeTokens = [
-            LOWERCASE_SCOPE_TOKENS && 'lwc-6a8uqob2ku4',
+            LOWERCASE_SCOPE_TOKENS && 'lwc-lsk3ii3ajr',
             (enableLegacyScopeTokens || !LOWERCASE_SCOPE_TOKENS) && 'c-component_component',
         ].filter(Boolean);
 

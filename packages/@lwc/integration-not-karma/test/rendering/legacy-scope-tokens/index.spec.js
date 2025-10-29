@@ -62,17 +62,17 @@ describe('legacy scope tokens', () => {
                     const expressionDiv = elm.querySelector('.expression');
 
                     expect(getClasses(elm)).toEqual(
-                        expectTokens('lwc-1kadf5igpar-host', 'c-light_light-host')
+                        expectTokens('lwc-68ifpkpsa2r-host', 'c-light_light-host')
                     );
                     expect(getClasses(staticDiv)).toEqual(
-                        expectTokens('lwc-1kadf5igpar', 'c-light_light')
+                        expectTokens('lwc-68ifpkpsa2r', 'c-light_light')
                     );
                     expect(getClasses(dynamicDiv)).toEqual(
-                        expectTokens('lwc-1kadf5igpar', 'c-light_light')
+                        expectTokens('lwc-68ifpkpsa2r', 'c-light_light')
                     );
 
                     expect(getClasses(expressionDiv)).toEqual(
-                        expectTokens('lwc-1kadf5igpar', 'c-light_light')
+                        expectTokens('lwc-68ifpkpsa2r', 'c-light_light')
                     );
 
                     expect(getAttributes(elm)).toEqual([]);
@@ -104,39 +104,39 @@ describe('legacy scope tokens', () => {
                     const expressionDiv = elm.shadowRoot.querySelector('.expression');
 
                     expect(getClasses(elm)).toEqual(
-                        expectTokens('lwc-2idtulmc17f-host', 'c-shadow_shadow-host')
+                        expectTokens('lwc-5p1s6fg3ri-host', 'c-shadow_shadow-host')
                     );
                     expect(getClasses(staticDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getClasses(dynamicDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getClasses(manualDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getClasses(span)).toEqual([]);
                     expect(getClasses(expressionDiv)).toEqual(
-                        expectTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
 
                     expect(getAttributes(elm)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f-host', 'c-shadow_shadow-host')
+                        expectShadowAttrTokens('lwc-5p1s6fg3ri-host', 'c-shadow_shadow-host')
                     );
                     expect(getAttributes(staticDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectShadowAttrTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getAttributes(dynamicDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectShadowAttrTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getClasses(manualDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectShadowAttrTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getAttributes(span)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectShadowAttrTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                     expect(getAttributes(expressionDiv)).toEqual(
-                        expectShadowAttrTokens('lwc-2idtulmc17f', 'c-shadow_shadow')
+                        expectShadowAttrTokens('lwc-5p1s6fg3ri', 'c-shadow_shadow')
                     );
                 };
 

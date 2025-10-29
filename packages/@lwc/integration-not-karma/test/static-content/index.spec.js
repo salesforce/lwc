@@ -43,7 +43,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () =
                 .shadowRoot.querySelector('c-component')
                 .shadowRoot.querySelector('div');
 
-            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'c-component_component';
+            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-lsk3ii3ajr' : 'c-component_component';
             expect(syntheticMode.hasAttribute(token)).toBe(true);
             expect(nativeMode.hasAttribute(token)).toBe(false);
         });
@@ -84,7 +84,7 @@ describe('static content when stylesheets change', () => {
         const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
         expect(classList).toEqual([
             'foo',
-            LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'c-multipleStyles_b',
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-28h7mip0uc' : 'c-multipleStyles_b',
         ]);
         expect(() => {
             elm.updateTemplate({
