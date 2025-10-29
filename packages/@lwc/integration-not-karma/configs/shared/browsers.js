@@ -16,16 +16,16 @@ export function getBrowsers(options) {
             },
             {
                 tunnelName: options.SAUCE_TUNNEL_ID,
-                idleTimeout: 1e9,
-                commandTimeout: 1e9,
-                sessionCreationTimeout: 1e9,
+                idleTimeout: 600,
+                commandTimeout: 600,
+                sessionCreationTimeout: 600,
             }
         );
 
         const timeouts = {
-            implicit: 1e9,
-            pageLoad: 1e9,
-            script: 1e9,
+            implicit: 600,
+            pageLoad: 600,
+            script: 600,
         };
 
         // "Legacy" isn't actually all that old...
