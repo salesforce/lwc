@@ -40,6 +40,13 @@ export default (options) => {
     const browsers = getBrowsers(options);
 
     return {
+        ...(options.CI
+            ? {
+                  testsStartTimeout: 1e9,
+                  testsFinishTimeout: 1e9,
+                  browserStartTimeout: 1e9,
+              }
+            : {}),
         browsers,
         browserLogs: false,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often

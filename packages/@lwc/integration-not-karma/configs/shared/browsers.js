@@ -16,35 +16,50 @@ export function getBrowsers(options) {
             },
             {
                 tunnelName: options.SAUCE_TUNNEL_ID,
+                idleTimeout: 1e9,
+                commandTimeout: 1e9,
+                sessionCreationTimeout: 1e9,
             }
         );
-        return [
-            sauceLabsLauncher({
-                browserName: 'chrome',
-                browserVersion: 'latest',
-            }),
-            // sauceLabsLauncher({
-            //     browserName: 'firefox',
-            //     browserVersion: 'latest',
-            // }),
-            // sauceLabsLauncher({
-            //     browserName: 'safari',
-            //     browserVersion: 'latest',
-            // }),
-            // ...(options.LEGACY_BROWSERS
-            //     ? [
-            //           sauceLabsLauncher({
-            //               browserName: 'chrome',
-            //               browserVersion: 'latest-2',
-            //           }),
-            //           sauceLabsLauncher({
-            //               browserName: 'safari',
-            //               browserVersion: 'latest-2',
-            //               platformName: 'Mac 13', // update with new releases
-            //           }),
-            //       ]
-            //     : []),
-        ];
+
+        const timeouts = {
+            implicit: 1e9,
+            pageLoad: 1e9,
+            script: 1e9,
+        };
+
+        // "Legacy" isn't actually all that old...
+        return options.LEGACY_BROWSERS
+            ? [
+                  sauceLabsLauncher({
+                      timeouts,
+                      browserName: 'chrome',
+                      browserVersion: 'latest-2',
+                  }),
+                  sauceLabsLauncher({
+                      timeouts,
+                      browserName: 'safari',
+                      browserVersion: 'latest-2',
+                      platformName: 'Mac 13', // update with new releases
+                  }),
+              ]
+            : [
+                  sauceLabsLauncher({
+                      timeouts,
+                      browserName: 'chrome',
+                      browserVersion: 'latest',
+                  }),
+                  sauceLabsLauncher({
+                      timeouts,
+                      browserName: 'firefox',
+                      browserVersion: 'latest',
+                  }),
+                  sauceLabsLauncher({
+                      timeouts,
+                      browserName: 'safari',
+                      browserVersion: 'latest',
+                  }),
+              ];
     } else {
         return [
             playwrightLauncher({ product: 'chromium' }),
