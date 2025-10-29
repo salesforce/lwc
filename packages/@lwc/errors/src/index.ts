@@ -7,3 +7,4 @@
 export * from './compiler/errors';
 export * from './shared/types';
 export * from './compiler/instrumentation';
+export { CompilerAggregateError } from './compiler/utils';

@@ -6,7 +6,7 @@
  */
 import { addNamed } from '@babel/helper-module-imports';
 import { CompilerMetrics, LWCClassErrors } from '@lwc/errors';
-import { generateError, incrementMetricCounter } from './utils';
+import { handleError, incrementMetricCounter } from './utils';
 import type { types, Visitor, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from './types';
 
@@ -16,7 +16,7 @@ function getImportSource(path: NodePath<types.Import>): NodePath<types.Node> {
 
 function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginPass) {
     if (!sourcePath.isStringLiteral()) {
-        throw generateError(
+        handleError(
             sourcePath,
             {
                 errorInfo: LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
