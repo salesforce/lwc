@@ -42,9 +42,9 @@ export default (options) => {
     return {
         ...(options.CI
             ? {
-                  testsStartTimeout: 1e9,
-                  testsFinishTimeout: 1e9,
-                  browserStartTimeout: 1e9,
+                  testsStartTimeout: 600,
+                  testsFinishTimeout: 600,
+                  browserStartTimeout: 600,
               }
             : {}),
         browsers,
