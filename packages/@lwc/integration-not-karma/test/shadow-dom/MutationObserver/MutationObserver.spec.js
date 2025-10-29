@@ -34,7 +34,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords.length).toBe(1);
                 expect(actualMutationRecords[0].target).toBe(container);
                 expect(actualMutationRecords[0].addedNodes.length).toBe(1);
-                expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('X-PARENT');
+                expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('C-PARENT');
             };
             const containerObserver = new MutationObserver(callback);
             // Attach to container node instead of document or body to not affect other tests

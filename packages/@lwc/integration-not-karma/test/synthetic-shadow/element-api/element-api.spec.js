@@ -106,12 +106,12 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
         });
 
         it('should keep behavior for firstElementChild', () => {
-            expect(elementOutsideLWC.firstElementChild.tagName).toBe('X-CONTAINER');
+            expect(elementOutsideLWC.firstElementChild.tagName).toBe('C-CONTAINER');
             expect(rootLwcElement.firstElementChild).toBe(null);
             expect(lwcElementInsideShadow.firstElementChild).toBe(null);
 
             expect(divManuallyApendedToShadow.firstElementChild.tagName).toBe(
-                'X-MANUALLY-INSERTED'
+                'C-MANUALLY-INSERTED'
             );
 
             expect(cmpShadow.firstElementChild.tagName).toBe('P');
@@ -121,13 +121,13 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
         });
 
         it('should keep behavior for lastElementChild', () => {
-            expect(elementOutsideLWC.lastElementChild.tagName).toBe('X-CONTAINER');
+            expect(elementOutsideLWC.lastElementChild.tagName).toBe('C-CONTAINER');
             expect(rootLwcElement.lastElementChild).toBe(null);
             expect(lwcElementInsideShadow.lastElementChild).toBe(null);
 
-            expect(divManuallyApendedToShadow.lastElementChild.tagName).toBe('X-MANUALLY-INSERTED');
+            expect(divManuallyApendedToShadow.lastElementChild.tagName).toBe('C-MANUALLY-INSERTED');
 
-            expect(cmpShadow.lastElementChild.tagName).toBe('X-WITH-SLOT');
+            expect(cmpShadow.lastElementChild.tagName).toBe('C-WITH-SLOT');
 
             expect(slottedComponent.lastElementChild.tagName).toBe('DIV');
             expect(slottedNode.lastElementChild.tagName).toBe('P');
@@ -227,12 +227,12 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
 
     describe('Node.prototype API', () => {
         it('should preserve behaviour for firstChild', () => {
-            expect(elementOutsideLWC.firstChild.tagName).toBe('X-CONTAINER');
+            expect(elementOutsideLWC.firstChild.tagName).toBe('C-CONTAINER');
             expect(rootLwcElement.firstChild).toBe(null);
             expect(lwcElementInsideShadow.firstChild).toBe(null);
 
-            expect(elementInShadow.firstChild.tagName).toBe('X-SLOT-CONTAINER');
-            expect(divManuallyApendedToShadow.firstChild.tagName).toBe('X-MANUALLY-INSERTED');
+            expect(elementInShadow.firstChild.tagName).toBe('C-SLOT-CONTAINER');
+            expect(divManuallyApendedToShadow.firstChild.tagName).toBe('C-MANUALLY-INSERTED');
 
             expect(cmpShadow.firstChild.tagName).toBe('P');
 
@@ -241,14 +241,14 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
         });
 
         it('should preserve behaviour for lastChild', () => {
-            expect(elementOutsideLWC.lastChild.tagName).toBe('X-CONTAINER');
+            expect(elementOutsideLWC.lastChild.tagName).toBe('C-CONTAINER');
             expect(rootLwcElement.lastChild).toBe(null);
             expect(lwcElementInsideShadow.lastChild).toBe(null);
 
             expect(elementInShadow.lastChild.tagName).toBe('DIV');
-            expect(divManuallyApendedToShadow.lastChild.tagName).toBe('X-MANUALLY-INSERTED');
+            expect(divManuallyApendedToShadow.lastChild.tagName).toBe('C-MANUALLY-INSERTED');
 
-            expect(cmpShadow.lastChild.tagName).toBe('X-WITH-SLOT');
+            expect(cmpShadow.lastChild.tagName).toBe('C-WITH-SLOT');
 
             expect(slottedComponent.lastChild.tagName).toBe('DIV');
             expect(slottedNode.lastChild.tagName).toBe('P');
@@ -282,7 +282,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
             expect(slottedComponent.parentNode).toBe(slotContainer.shadowRoot);
 
             // Note: check, but this is may be difference with the native shadow
-            expect(slottedNode.parentNode.tagName).toBe('X-WITH-SLOT');
+            expect(slottedNode.parentNode.tagName).toBe('C-WITH-SLOT');
         });
 
         it('should preserve parentNode behavior when node was manually inserted', () => {
@@ -313,7 +313,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic shadow with patch flags OF
             expect(slottedComponent.parentElement).toBe(null);
 
             // Note: check, but this is may be difference with the native shadow
-            expect(slottedNode.parentElement.tagName).toBe('X-WITH-SLOT');
+            expect(slottedNode.parentElement.tagName).toBe('C-WITH-SLOT');
         });
 
         it('should preserve parentElement behavior when node was manually inserted', () => {

@@ -33,10 +33,10 @@ describe('Profiler Sanity Test', () => {
         }
     });
 
-    const X_CONTAINER = 'X-CONTAINER';
-    const X_ERROR_CHILD = 'X-ERROR-CHILD';
-    const X_ITEM = 'X-ITEM';
-    const X_LIGHT = 'X-LIGHT';
+    const X_CONTAINER = 'C-CONTAINER';
+    const X_ERROR_CHILD = 'C-ERROR-CHILD';
+    const X_ITEM = 'C-ITEM';
+    const X_LIGHT = 'C-LIGHT';
 
     const OperationId = {
         constructor: 0,
@@ -196,7 +196,7 @@ describe('Profiler Sanity Test', () => {
         // hydrate
         const profilerEvents = enableProfilerAndRegisterBuffer();
         hydrateComponent(ssrElement, Simple);
-        const name = 'X-SIMPLE';
+        const name = 'C-SIMPLE';
         const shadowMode = ShadowMode.Native; // ssr is always native
         const renderMode = RenderMode.Shadow;
         const expectedEvents = [

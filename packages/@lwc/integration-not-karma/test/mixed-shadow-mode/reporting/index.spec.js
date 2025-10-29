@@ -69,7 +69,7 @@ describe('ShadowModeUsage', () => {
         expect(dispatcher).toHaveBeenCalledTimes(3);
         // c-parent depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'X-PARENT-CUSTOM-ELEMENT',
+            tagName: 'C-PARENT-CUSTOM-ELEMENT',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
         // c-native should be set to native always

@@ -18,7 +18,7 @@ it.runIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
         const hostElement = lightElement.getHostElement();
 
         expect(hostElement).toBeTruthy();
-        expect(hostElement.tagName).toEqual('X-LIGHT');
+        expect(hostElement.tagName).toEqual('C-LIGHT');
         expect(hostElement.dataset.name).toEqual('lightElement');
 
         expect(hostElement).toEqual(lightElement);
@@ -36,7 +36,7 @@ it.runIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
         const hostElement = shadowElement.getHostElement();
 
         expect(hostElement).toBeTruthy();
-        expect(hostElement.tagName).toEqual('X-SHADOW');
+        expect(hostElement.tagName).toEqual('C-SHADOW');
         expect(hostElement.dataset.name).toEqual('shadowElement');
 
         expect(hostElement).toEqual(shadowElement);

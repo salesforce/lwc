@@ -5,7 +5,7 @@ import Test from 'c/test';
 
 it('should return the tag name', () => {
     const elm = createElement('c-test', { is: Test });
-    expect(elm.test).toEqual('X-TEST');
+    expect(elm.test).toEqual('C-TEST');
 });
 
 it('should be overrideable', () => {
