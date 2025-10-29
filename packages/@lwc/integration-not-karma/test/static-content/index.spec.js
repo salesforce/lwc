@@ -81,11 +81,12 @@ describe('static content when stylesheets change', () => {
         resetAlreadyLoggedMessages();
 
         await Promise.resolve();
-        const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
-        expect(classList).toEqual([
-            'foo',
-            LOWERCASE_SCOPE_TOKENS ? 'lwc-28h7mip0uc' : 'c-multipleStyles_b',
-        ]);
+        const classList = Array.from(elm.shadowRoot.querySelector('div').classList);
+        expect(classList.length).toEqual(2);
+        expect(classList).toContain('foo');
+        expect(classList).toContain(
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-28h7mip0uc' : 'c-multipleStyles_b'
+        );
         expect(() => {
             elm.updateTemplate({
                 name: 'a',
