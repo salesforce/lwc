@@ -1,12 +1,21 @@
 import { createElement } from 'lwc';
 import XInnerHtml from 'c/innerHtml';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 
 const ACTUAL_CONTENT = 'Hello <b>World</b>';
 const ALTERNATIVE_CONTENT = 'Hello <b>LWC</b>';
 
-const override = (content) => content;
+function setSanitizeHtmlContentHook(sanitizeHtmlContent) {
+    setHooks({ sanitizeHtmlContent });
+}
+
+let original;
+
+beforeAll(() => {
+    original = getHooks().sanitizeHtmlContent;
+});
+afterEach(() => setSanitizeHtmlContentHook(original));
 
 it('throws when not overridden', () => {
     expect(() => {
@@ -16,31 +25,20 @@ it('throws when not overridden', () => {
     }).toThrowCallbackReactionError(Error, /sanitizeHtmlContent hook must be implemented/);
 });
 
-function setSanitizeHtmlContentHookForTest(impl) {
-    const { sanitizeHtmlContent } = getHooks();
-
-    setHooks({
-        sanitizeHtmlContent: impl,
-    });
-
-    return sanitizeHtmlContent;
-}
-
 it('receives the right parameters', () => {
-    const spy = jasmine.createSpy('sanitizeHook', override);
-    const original = setSanitizeHtmlContentHookForTest(spy);
+    const spy = mockFn();
+    setSanitizeHtmlContentHook(spy);
 
     const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
 
     expect(spy).toHaveBeenCalledWith(ACTUAL_CONTENT);
-    setSanitizeHtmlContentHookForTest(original);
 });
 
 it('does not call sanitizeHtmlContent when raw value does not change', async () => {
-    const spy = jasmine.createSpy('sanitizeHook', override);
-    const original = setSanitizeHtmlContentHookForTest(spy);
+    const spy = mockFn();
+    setSanitizeHtmlContentHook(spy);
 
     const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.message = 'initial';
@@ -53,11 +51,10 @@ it('does not call sanitizeHtmlContent when raw value does not change', async () 
     await Promise.resolve();
     expect(spy).toHaveBeenCalledTimes(1);
     expect(elm.shadowRoot.querySelector('p').innerText).toBe('modified');
-    setSanitizeHtmlContentHookForTest(original);
 });
 
 it('replace the original attribute value with the returned value', () => {
-    const original = setSanitizeHtmlContentHookForTest(() => ALTERNATIVE_CONTENT);
+    setSanitizeHtmlContentHook(() => ALTERNATIVE_CONTENT);
 
     const elm = createElement('c-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
@@ -65,6 +62,4 @@ it('replace the original attribute value with the returned value', () => {
 
     const div = elm.shadowRoot.querySelector('div');
     expect(div.innerHTML).toBe(ALTERNATIVE_CONTENT);
-
-    setSanitizeHtmlContentHookForTest(original);
 });

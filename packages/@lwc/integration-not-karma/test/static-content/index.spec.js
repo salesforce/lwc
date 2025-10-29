@@ -23,7 +23,7 @@ import Text from 'c/text';
 import TableWithExpression from 'c/tableWithExpressions';
 import TextWithoutPreserveComments from 'c/textWithoutPreserveComments';
 import TextWithPreserveComments from 'c/textWithPreserveComments';
-import { jasmine } from '../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { LOWERCASE_SCOPE_TOKENS } from '../../helpers/constants.js';
 import { extractDataIds } from '../../helpers/utils.js';
 import { resetAlreadyLoggedMessages } from '../../helpers/reset.js';
@@ -324,11 +324,11 @@ describe('static optimization with event listeners', () => {
             });
 
             it('can have manual listeners too', async () => {
-                const dispatcher = jasmine.createSpy();
+                const dispatcher = mockFn();
 
                 button.addEventListener('baz', dispatcher);
                 button.dispatchEvent(new CE('baz'));
-                expect(dispatcher.calls.count()).toBe(1);
+                expect(dispatcher).toHaveBeenCalledTimes(1);
 
                 // trigger re-render
                 elm.dynamic = 'yolo';
@@ -336,7 +336,7 @@ describe('static optimization with event listeners', () => {
                 await Promise.resolve();
 
                 button.dispatchEvent(new CE('baz'));
-                expect(dispatcher.calls.count()).toBe(2);
+                expect(dispatcher).toHaveBeenCalledTimes(2);
             });
         });
     });

@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import Component from 'c/component';
 import Parent from 'c/parent';
 import Light from 'c/light';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
@@ -19,7 +19,7 @@ describe('ShadowModeUsage', () => {
     let dispatcher;
 
     beforeEach(() => {
-        dispatcher = jasmine.createSpy();
+        dispatcher = mockFn();
         attachReportingControlDispatcher(dispatcher, ['ShadowModeUsage']);
     });
 

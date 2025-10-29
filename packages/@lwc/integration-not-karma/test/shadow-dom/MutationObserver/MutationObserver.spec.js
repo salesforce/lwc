@@ -3,7 +3,7 @@ import XParent from 'c/parent';
 import XSlottedChild from 'c/slottedChild';
 import XNestedSlotContainer from 'c/nestedSlotContainer';
 import XTemplateMutations from 'c/templateMutations';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 
 const observerConfig = { childList: true, subtree: true };
 
@@ -16,7 +16,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
         let globalObserverSpy;
         let container;
         beforeEach(() => {
-            globalObserverSpy = jasmine.createSpy();
+            globalObserverSpy = mockFn();
             const globalObserver = new MutationObserver(globalObserverSpy);
             container = document.createElement('div');
             document.body.appendChild(container);
@@ -48,7 +48,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             container.appendChild(host);
             await waitForMutationObservedToBeInvoked();
             // The first call will be when c-parent is appended to the container
-            globalObserverSpy.calls.reset();
+            globalObserverSpy.mockReset();
             // Mutate the shadow tree of c-parent
             const parentDiv = host.shadowRoot.querySelector('div');
             parentDiv.appendChild(document.createElement('p'));
@@ -67,7 +67,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             container.appendChild(parent);
             await waitForMutationObservedToBeInvoked();
             // The first call will be when c-slotted-child is appended to the container
-            globalObserverSpy.calls.reset();
+            globalObserverSpy.mockReset();
             const slottedDiv = parent.shadowRoot.querySelector('div.manual');
             slottedDiv.appendChild(document.createElement('p'));
             await waitForMutationObservedToBeInvoked();
@@ -89,11 +89,11 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].addedNodes[0].tagName).toBe('P');
             };
             // Start observing the parent and child shadow trees
-            const parentHostSpy = jasmine.createSpy();
+            const parentHostSpy = mockFn();
             new MutationObserver(parentHostSpy).observe(parent, observerConfig);
             const parentSRObserver = new MutationObserver(callback);
             parentSRObserver.observe(parent.shadowRoot, observerConfig);
-            const childSRSpy = jasmine.createSpy();
+            const childSRSpy = mockFn();
             new MutationObserver(childSRSpy).observe(
                 parent.shadowRoot.querySelector('c-child').shadowRoot,
                 observerConfig
@@ -126,15 +126,15 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             const parentSRObserver = new MutationObserver(callback);
             parentSRObserver.observe(parent.shadowRoot, observerConfig);
             // c-nested-slot
-            const childSRSpy = jasmine.createSpy();
+            const childSRSpy = mockFn();
             const child = parent.shadowRoot.querySelector('c-nested-slot');
             new MutationObserver(childSRSpy).observe(child.shadowRoot, observerConfig);
             // c-child
-            const grandChildSRSpy = jasmine.createSpy();
+            const grandChildSRSpy = mockFn();
             const grandChild = child.shadowRoot.querySelector('c-child');
             new MutationObserver(grandChildSRSpy).observe(grandChild.shadowRoot, observerConfig);
             // c-child > slot
-            const grandChildSlotSpy = jasmine.createSpy();
+            const grandChildSlotSpy = mockFn();
             const grandChildSlot = grandChild.shadowRoot.querySelector('slot');
             new MutationObserver(grandChildSlotSpy).observe(grandChildSlot, observerConfig);
 
@@ -152,7 +152,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             container.appendChild(parent);
 
             // Start observing the parent and child shadow trees
-            const parentSpy = jasmine.createSpy();
+            const parentSpy = mockFn();
             new MutationObserver(parentSpy).observe(parent.shadowRoot, observerConfig);
 
             const childElm = parent.shadowRoot.querySelector('c-child');
@@ -304,7 +304,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
             it('should not get notifications after disconnecting observer', async () => {
                 const parent = createElement('c-parent', { is: XParent });
                 container.appendChild(parent);
-                const parentSRSpy = jasmine.createSpy();
+                const parentSRSpy = mockFn();
                 const observer = new MutationObserver(parentSRSpy);
                 observer.observe(parent.shadowRoot, observerConfig);
                 const parentDiv = parent.shadowRoot.querySelector('div');
@@ -315,7 +315,7 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 await waitForMutationObservedToBeInvoked();
                 // Make sure the spy is getting called
                 expect(parentSRSpy).toHaveBeenCalledTimes(1);
-                parentSRSpy.calls.reset();
+                parentSRSpy.mockReset();
                 // disconnect and verify that spy does not get invoked after
                 observer.disconnect();
                 parentDiv.appendChild(document.createElement('ul'));
@@ -357,10 +357,10 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].type).toBe('childList');
             };
 
-            const globalObserverSpy = jasmine.createSpy();
+            const globalObserverSpy = mockFn();
             const globalObserver = new MutationObserver(globalObserverSpy);
             globalObserver.observe(container, observerConfig);
-            const hostSpy = jasmine.createSpy();
+            const hostSpy = mockFn();
             new MutationObserver(hostSpy).observe(host, observerConfig);
             const shadowRootObserver = new MutationObserver(callback);
             shadowRootObserver.observe(host.shadowRoot, observerConfig);
@@ -385,10 +385,10 @@ describe('MutationObserver is synthetic shadow dom aware.', () => {
                 expect(actualMutationRecords[0].removedNodes[0].tagName).toBe('DIV');
             };
 
-            const globalObserverSpy = jasmine.createSpy();
+            const globalObserverSpy = mockFn();
             const globalObserver = new MutationObserver(globalObserverSpy);
             globalObserver.observe(container, observerConfig);
-            const hostSpy = jasmine.createSpy();
+            const hostSpy = mockFn();
             new MutationObserver(hostSpy).observe(host, observerConfig);
             const shadowRootObserver = new MutationObserver(callback);
             shadowRootObserver.observe(host.shadowRoot, observerConfig);

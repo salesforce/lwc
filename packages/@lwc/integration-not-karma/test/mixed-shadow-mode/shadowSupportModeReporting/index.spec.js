@@ -4,7 +4,7 @@ import Any from 'c/any';
 import Reset from 'c/reset';
 import None from 'c/none';
 import NativeOnly from 'c/native';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
@@ -19,7 +19,7 @@ describe('shadow support mode reporting', () => {
     let dispatcher;
 
     beforeEach(() => {
-        dispatcher = jasmine.createSpy();
+        dispatcher = mockFn();
         attachReportingControlDispatcher(dispatcher, ['ShadowSupportModeUsage']);
     });
 

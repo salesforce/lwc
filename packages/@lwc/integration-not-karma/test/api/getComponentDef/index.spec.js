@@ -7,7 +7,6 @@ import PublicPropertiesInheritance from 'c/publicPropertiesInheritance';
 import PublicMethodsInheritance from 'c/publicMethodsInheritance';
 import PrivateAccessors from 'c/privateAccessors';
 import HtmlElementProps from 'c/htmlElementProps';
-import { jasmine } from '../../../helpers/jasmine.js';
 import { ariaProperties } from '../../../helpers/aria.js';
 
 function testInvalidComponentConstructor(name, ctor) {
@@ -53,7 +52,7 @@ describe('@api', () => {
     it('should return the public properties in the props object', () => {
         const { props } = getComponentDef(PublicProperties);
         expect(props).toEqual(
-            jasmine.objectContaining({
+            expect.objectContaining({
                 foo: {
                     config: 0,
                     type: 'any',
@@ -71,7 +70,7 @@ describe('@api', () => {
     it('should return the public accessors in the props object', () => {
         const { props } = getComponentDef(PublicAccessors);
         expect(props).toEqual(
-            jasmine.objectContaining({
+            expect.objectContaining({
                 getterOnly: {
                     config: 1,
                     type: 'any',
@@ -97,7 +96,7 @@ describe('@api', () => {
     it('should return also the public properties inherited from the base class', () => {
         const { props } = getComponentDef(PublicPropertiesInheritance);
         expect(props).toEqual(
-            jasmine.objectContaining({
+            expect.objectContaining({
                 parentProp: {
                     config: 3,
                     type: 'any',
@@ -231,7 +230,7 @@ describe('circular dependencies', () => {
 
         const { props } = getComponentDef(Component);
         expect(props).toEqual(
-            jasmine.objectContaining({
+            expect.objectContaining({
                 foo: {
                     config: 0,
                     type: 'any',
@@ -275,7 +274,7 @@ describe('circular dependencies', () => {
             }
             const { props } = getComponentDef(Component);
             expect(props).toEqual(
-                jasmine.objectContaining({
+                expect.objectContaining({
                     bar: {
                         config: 0,
                         type: 'any',

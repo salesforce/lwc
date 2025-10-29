@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Container from 'c/container';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createShadowTree(parentNode) {
@@ -65,7 +65,7 @@ describe('EventTarget.addEventListener', () => {
 
     it('should accept a function listener as second parameter for a non-node EventTarget', () => {
         const target = new EventTarget();
-        const listener = jasmine.createSpy();
+        const listener = mockFn();
         target.addEventListener('dummy', listener);
         target.dispatchEvent(new CustomEvent('dummy'));
         expect(listener).toHaveBeenCalled();
@@ -73,7 +73,7 @@ describe('EventTarget.addEventListener', () => {
 
     it('should accept a listener config as second parameter for a non-node EventTarget', () => {
         const target = new EventTarget();
-        const listener = jasmine.createSpy();
+        const listener = mockFn();
         target.addEventListener('dummy', { handleEvent: listener });
         target.dispatchEvent(new CustomEvent('dummy'));
         expect(listener).toHaveBeenCalled();

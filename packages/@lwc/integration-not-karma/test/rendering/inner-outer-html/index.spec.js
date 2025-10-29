@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Inner from 'c/inner';
 import Outer from 'c/outer';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 beforeAll(() => {
@@ -9,8 +9,14 @@ beforeAll(() => {
 });
 
 let consoleSpy;
-beforeEach(() => {
+beforeAll(() => {
     consoleSpy = spyOn(console, 'warn');
+});
+afterEach(() => {
+    consoleSpy.mockReset();
+});
+afterAll(() => {
+    consoleSpy.mockRestore();
 });
 
 for (const whatter of ['inner', 'outer']) {
@@ -38,9 +44,9 @@ for (const whatter of ['inner', 'outer']) {
             ).length;
             expect(consoleSpy).toHaveBeenCalledTimes(len);
 
-            const calls = consoleSpy.calls;
+            const calls = consoleSpy.mock.calls;
             for (let i = 0; i < len; i += 1) {
-                expect(calls.argsFor(i)[0].message).toContain(
+                expect(calls[i][0].message).toContain(
                     `Cannot set property "${whatter}HTML". Instead, use lwc:inner-html or lwc:dom-manual.`
                 );
             }

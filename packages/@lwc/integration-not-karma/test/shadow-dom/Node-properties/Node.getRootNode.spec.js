@@ -6,7 +6,7 @@ import WithLwcDomManualNested from 'c/withLwcDomManualNested';
 import WithLwcDomManual from 'c/withLwcDomManual';
 import WithoutLwcDomManual from 'c/withoutLwcDomManual';
 import Text from 'c/text';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 
 const composedTrueConfig = { composed: true };
 describe('Node.getRootNode', () => {

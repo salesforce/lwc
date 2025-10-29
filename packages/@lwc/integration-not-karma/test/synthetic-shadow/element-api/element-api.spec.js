@@ -2,7 +2,7 @@ import { createElement } from 'lwc';
 
 import Container from 'c/container';
 import ParentSpecialized from 'c/parentSpecialized';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 
 /*
  <div>

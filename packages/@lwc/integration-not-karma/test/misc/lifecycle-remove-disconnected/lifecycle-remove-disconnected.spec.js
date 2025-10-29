@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 import Parent from 'c/parent';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 
 describe('vdom removes component while it is already disconnected', () => {
     let spy;

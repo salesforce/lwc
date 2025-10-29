@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import { installCustomContext, setCustomContext } from 'c/simpleProvider';
 import Consumer from 'c/simpleConsumer';
-import { jasmine } from '../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 
 describe('Simple Custom Context Provider', () => {
     it('should be install-able on any dom element', function () {
@@ -20,8 +20,8 @@ describe('Simple Custom Context Provider', () => {
         document.body.appendChild(div);
 
         const spy = {
-            connected: jasmine.createSpy('connected'),
-            disconnected: jasmine.createSpy('disconnected'),
+            connected: mockFn(),
+            disconnected: mockFn(),
         };
 
         installCustomContext(div, spy, true);
@@ -39,7 +39,7 @@ describe('Simple Custom Context Provider', () => {
         document.body.appendChild(div);
 
         const spy = {
-            disconnected: jasmine.createSpy('disconnected'),
+            disconnected: mockFn(),
         };
         installCustomContext(div, spy);
         setCustomContext(div, 'almost ready');
