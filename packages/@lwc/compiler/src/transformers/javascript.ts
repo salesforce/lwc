@@ -79,19 +79,9 @@ export default function scriptTransform(
         );
     }
 
-    const extractLwcErrors = (result: babel.BabelFileResult): CompilerDiagnostic[] => {
-        if (!experimentalErrorRecoveryMode) {
-            return [];
-        }
-
-        const metadata = result.metadata as { lwcErrors?: CompilerDiagnostic[] };
-        return metadata?.lwcErrors ?? [];
-    };
-
-    const errors: CompilerError[] = [];
-
+    let result;
     try {
-        const result = babel.transformSync(code, {
+        result = babel.transformSync(code, {
             filename,
             sourceMaps: sourcemap,
 
@@ -107,18 +97,6 @@ export default function scriptTransform(
                 ...(experimentalErrorRecoveryMode ? { errorRecovery: true } : {}),
             },
         })!;
-
-        const lwcErrors = extractLwcErrors(result);
-
-        if (!experimentalErrorRecoveryMode || lwcErrors.length === 0) {
-            return {
-                code: result.code!,
-                map: result.map,
-            };
-        }
-
-        // Convert CompilerDiagnostic[] to CompilerError[]
-        errors.push(...lwcErrors.map((diagnostic) => CompilerError.from(diagnostic)));
     } catch (e) {
         // If we are here in errorRecoveryMode then it's most likely that we have run into
         // an unforeseen error
@@ -135,10 +113,20 @@ export default function scriptTransform(
         throw normalizeToCompilerError(transformerError, e, { filename });
     }
 
-    if (experimentalErrorRecoveryMode && errors.length > 0) {
-        throw new CompilerAggregateError(errors, 'Multiple errors occurred during compilation.');
+    if (experimentalErrorRecoveryMode) {
+        const metadata = result.metadata as { lwcErrors?: CompilerDiagnostic[] };
+        const errors = metadata?.lwcErrors;
+
+        if (errors) {
+            throw new CompilerAggregateError(
+                errors.map((diagnostic) => CompilerError.from(diagnostic)),
+                'Multiple errors occurred during compilation.'
+            );
+        }
     }
 
-    // This should never be reached in normal operation, but satisfies TypeScript
-    throw new Error(`Something went wrong, you shouldn't be getting this.`);
+    return {
+        code: result.code!,
+        map: result.map,
+    };
 }

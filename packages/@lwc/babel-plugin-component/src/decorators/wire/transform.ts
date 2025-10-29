@@ -46,7 +46,7 @@ function getWiredParams(
 ): types.ObjectProperty[] {
     const properties = wireConfig.get('properties');
 
-    // Should only occurs in error recovery mode when config validation has already failed
+    // Should only occur in error recovery mode when config validation has already failed
     // Skip processing since the error has been logged upstream
     if (isErrorRecoveryMode(state) && !Array.isArray(properties)) {
         // In error recovery mode, return empty array instead of crashing

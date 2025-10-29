@@ -221,7 +221,7 @@ function collectDecoratorPaths(bodyItems: NodePath<types.Node>[]): NodePath<type
 function getDecoratorMetadata(
     decoratorPath: NodePath<types.Decorator>,
     state: LwcBabelPluginPass
-): DecoratorMeta {
+): DecoratorMeta | null {
     const expressionPath = decoratorPath.get('expression') as NodePath<types.Node>;
 
     let name: LwcDecoratorName;
@@ -230,9 +230,8 @@ function getDecoratorMetadata(
     } else if (expressionPath.isCallExpression()) {
         name = (expressionPath.node.callee as types.V8IntrinsicIdentifier).name as LwcDecoratorName;
     } else {
-        //TODO: Add a fallback assignment
-        name = 'unknown' as LwcDecoratorName;
         handleInvalidDecoratorError(decoratorPath, state);
+        return null;
     }
 
     const propertyName = ((decoratorPath.parent as types.ClassMethod).key as types.Identifier).name;
@@ -315,7 +314,7 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             const decoratorPaths = collectDecoratorPaths(classBodyItems);
             const decoratorMetas = decoratorPaths
                 .map((path) => getDecoratorMetadata(path, state))
-                .filter((meta) => meta.decoratedNodeType !== null);
+                .filter((meta) => meta !== null);
 
             validate(decoratorMetas, state);
 

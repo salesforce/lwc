@@ -59,7 +59,7 @@ function computePublicPropsConfig(
     return publicPropertyMetas.reduce(
         (acc, { propertyName, decoratedNodeType }) => {
             // This should never happen as we filter null in class visitor and
-            // collect appropriate errors in erroRecoveryMode || throw otherwise
+            // collect appropriate errors in errorRecoveryMode || throw otherwise
             if (isErrorRecoveryMode(state) && !decoratedNodeType) return acc;
 
             if (!(propertyName in acc)) {
