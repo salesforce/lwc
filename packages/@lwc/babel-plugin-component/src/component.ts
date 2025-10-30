@@ -15,8 +15,8 @@ import {
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
-    FEATURE_FLAG_KEY,
-    FEATURE_FLAG_PATH_KEY,
+    COMPONENT_FEATURE_FLAG_KEY,
+    COMPONENT_FEATURE_FLAG_MODULE_PATH_KEY,
 } from './constants';
 import type { types, NodePath, Visitor } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
@@ -62,11 +62,15 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         // Optionally import feature flag module if provided via compiler options
-        let featureFlagIdentifier: types.Identifier | undefined;
-        if (state.opts.featureFlag) {
-            featureFlagIdentifier = addDefault(declarationPath, state.opts.featureFlag, {
-                nameHint: 'featureFlag',
-            }) as types.Identifier;
+        let componentFeatureFlagIdentifier: types.Identifier | undefined;
+        if (state.opts.componentFeatureFlagModulePath) {
+            componentFeatureFlagIdentifier = addDefault(
+                declarationPath,
+                state.opts.componentFeatureFlagModulePath,
+                {
+                    nameHint: COMPONENT_FEATURE_FLAG_KEY,
+                }
+            );
         }
         const statementPath = declarationPath.getStatementParent();
         const componentRegisteredName = getComponentRegisteredName(t, state);
@@ -98,15 +102,18 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             // The client needs to trust the server that it's providing an actual known API version
             t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
         ];
-        if (featureFlagIdentifier) {
+        if (componentFeatureFlagIdentifier) {
             properties.push(
-                t.objectProperty(t.identifier(FEATURE_FLAG_KEY), featureFlagIdentifier)
+                t.objectProperty(
+                    t.identifier(COMPONENT_FEATURE_FLAG_KEY),
+                    t.callExpression(t.identifier('Boolean'), [componentFeatureFlagIdentifier])
+                )
             );
             // Also store the feature flag path for error messages
             properties.push(
                 t.objectProperty(
-                    t.identifier(FEATURE_FLAG_PATH_KEY),
-                    t.stringLiteral(state.opts.featureFlag!)
+                    t.identifier(COMPONENT_FEATURE_FLAG_MODULE_PATH_KEY),
+                    t.stringLiteral(state.opts.componentFeatureFlagModulePath!)
                 )
             );
         }

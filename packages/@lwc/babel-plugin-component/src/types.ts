@@ -22,7 +22,7 @@ export interface LwcBabelPluginOptions {
     instrumentation?: InstrumentationObject;
     apiVersion?: number;
     enableSyntheticElementInternals?: boolean;
-    featureFlag?: string;
+    componentFeatureFlagModulePath?: string;
 }
 
 export interface LwcBabelPluginPass extends PluginPass {

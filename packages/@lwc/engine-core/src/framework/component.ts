@@ -25,8 +25,8 @@ type ComponentConstructorMetadata = {
     sel: string;
     apiVersion: APIVersion;
     enableSyntheticElementInternals?: boolean | undefined;
-    featureFlag?: boolean | undefined;
-    featureFlagPath?: string | undefined;
+    componentFeatureFlag?: boolean | undefined;
+    componentFeatureFlagModulePath?: string | undefined;
 };
 const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
     new Map();
@@ -84,7 +84,7 @@ export function supportsSyntheticElementInternals(Ctor: LightningElementConstruc
 }
 
 export function isComponentFeatureEnabled(Ctor: LightningElementConstructor): boolean {
-    const flag = registeredComponentMap.get(Ctor)?.featureFlag;
+    const flag = registeredComponentMap.get(Ctor)?.componentFeatureFlag;
     // Default to true if not provided
     return flag !== false;
 }

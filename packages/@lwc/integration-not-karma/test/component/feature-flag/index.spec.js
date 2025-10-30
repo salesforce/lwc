@@ -4,16 +4,10 @@ import Enabled from 'x/enabled';
 import Disabled from 'x/disabled';
 import NoFlag from 'x/no-flag';
 
-describe('Component feature flag enforcement', () => {
-    beforeEach(() => {
-        // Clean up after each test
-        document.body.innerHTML = '';
-    });
+import { resetDOM } from '../../../helpers/reset.js';
 
-    afterEach(() => {
-        // Clean up after each test
-        document.body.innerHTML = '';
-    });
+describe('Component feature flag enforcement', () => {
+    afterEach(resetDOM);
 
     it('should render component when feature flag is enabled (true)', () => {
         const elm = createElement('x-enabled', { is: Enabled });
@@ -30,7 +24,7 @@ describe('Component feature flag enforcement', () => {
             const elm = createElement('x-disabled', { is: Disabled });
             document.body.appendChild(elm);
         }).toThrow(
-            'Component Disabled is disabled by the feature flag @salesforce/featureFlag/TEST_FLAG_DISABLED.'
+            'Component Disabled is disabled by the feature flag at @salesforce/featureFlag/TEST_FLAG_DISABLED.'
         );
     });
 

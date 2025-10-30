@@ -35,8 +35,8 @@ const COMPONENT_NAME_KEY = 'sel';
 const API_VERSION_KEY = 'apiVersion';
 const COMPONENT_CLASS_ID = '__lwc_component_class_internal';
 const SYNTHETIC_ELEMENT_INTERNALS_KEY = 'enableSyntheticElementInternals';
-const FEATURE_FLAG_KEY = 'featureFlag';
-const FEATURE_FLAG_PATH_KEY = 'featureFlagPath';
+const COMPONENT_FEATURE_FLAG_KEY = 'componentFeatureFlag';
+const COMPONENT_FEATURE_FLAG_MODULE_PATH_KEY = 'componentFeatureFlagModulePath';
 
 export {
     DECORATOR_TYPES,
@@ -50,6 +50,6 @@ export {
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
-    FEATURE_FLAG_KEY,
-    FEATURE_FLAG_PATH_KEY,
+    COMPONENT_FEATURE_FLAG_KEY,
+    COMPONENT_FEATURE_FLAG_MODULE_PATH_KEY,
 };

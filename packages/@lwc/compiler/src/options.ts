@@ -40,7 +40,7 @@ const DEFAULT_OPTIONS = {
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
     ssrMode: DEFAULT_SSR_MODE,
-    featureFlag: '',
+    componentFeatureFlagModulePath: '',
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -146,7 +146,7 @@ export interface TransformOptions {
     targetSSR?: boolean;
     ssrMode?: CompilationMode;
     /** Full module path for a feature flag to import and enforce at runtime (e.g., '@salesforce/featureFlag/name'). */
-    featureFlag?: string;
+    componentFeatureFlagModulePath?: string;
 }
 
 type OptionalTransformKeys =
@@ -161,7 +161,7 @@ type OptionalTransformKeys =
     | 'enableSyntheticElementInternals'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
-    | 'featureFlag'
+    | 'componentFeatureFlagModulePath'
     | 'instrumentation';
 
 type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;

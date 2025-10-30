@@ -68,8 +68,12 @@ export interface RollupLwcOptions {
     apiVersion?: APIVersion;
     /** True if the static content optimization should be enabled. Defaults to true */
     enableStaticContentOptimization?: boolean;
-    /** Full module path for a feature flag to import and enforce at runtime (e.g., '@salesforce/featureFlag/name'). */
-    featureFlag?: string;
+    /**
+     * Full module path for a feature flag to import and enforce at runtime.
+     * The module should provide a boolean value as a default export.
+     * @example '@salesforce/featureFlag/name'
+     */
+    componentFeatureFlagModulePath?: string;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -193,7 +197,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         disableSyntheticShadowSupport,
         apiVersion,
         defaultModules = DEFAULT_MODULES,
-        featureFlag,
+        componentFeatureFlagModulePath,
     } = pluginOptions;
 
     return {
@@ -389,7 +393,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                         : true,
                 targetSSR,
                 ssrMode,
-                featureFlag,
+                componentFeatureFlagModulePath,
             });
 
             if (warnings) {
