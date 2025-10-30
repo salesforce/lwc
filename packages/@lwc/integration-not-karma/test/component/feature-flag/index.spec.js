@@ -29,7 +29,9 @@ describe('Component feature flag enforcement', () => {
         expect(() => {
             const elm = createElement('x-disabled', { is: Disabled });
             document.body.appendChild(elm);
-        }).toThrow('This component is disabled by a feature flag and cannot be rendered.');
+        }).toThrow(
+            'Component Disabled is disabled by the feature flag @salesforce/featureFlag/TEST_FLAG_DISABLED.'
+        );
     });
 
     it('should render component normally when no feature flag is specified', () => {

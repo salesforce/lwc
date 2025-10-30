@@ -15,6 +15,8 @@ import {
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
+    FEATURE_FLAG_KEY,
+    FEATURE_FLAG_PATH_KEY,
 } from './constants';
 import type { types, NodePath, Visitor } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
@@ -97,7 +99,16 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
         ];
         if (featureFlagIdentifier) {
-            properties.push(t.objectProperty(t.identifier('featureFlag'), featureFlagIdentifier));
+            properties.push(
+                t.objectProperty(t.identifier(FEATURE_FLAG_KEY), featureFlagIdentifier)
+            );
+            // Also store the feature flag path for error messages
+            properties.push(
+                t.objectProperty(
+                    t.identifier(FEATURE_FLAG_PATH_KEY),
+                    t.stringLiteral(state.opts.featureFlag!)
+                )
+            );
         }
         // Only include enableSyntheticElementInternals if set to true
         if (state.opts.enableSyntheticElementInternals === true) {
