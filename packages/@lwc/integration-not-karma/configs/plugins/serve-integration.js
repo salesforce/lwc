@@ -39,6 +39,8 @@ const createRollupPlugin = (input, options) => {
     });
 };
 
+const VIRTUAL_FLAG_PREFIX = '\0feature-flag:';
+
 const transform = async (ctx) => {
     const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
     const defaultRollupPlugin = createRollupPlugin(input);
@@ -65,27 +67,58 @@ const transform = async (ctx) => {
     const customLwcRollupPlugin = {
         ...defaultRollupPlugin,
         transform(src, id) {
-            const { apiVersion, nativeOnly } = parseConfig(src, id);
-
+            const { apiVersion, nativeOnly, featureFlag } = parseConfig(src, id);
             let transform;
             if (apiVersion) {
-                transform = createRollupPlugin(input, { apiVersion }).transform;
+                transform = createRollupPlugin(input, {
+                    apiVersion,
+                    featureFlag,
+                }).transform;
             } else if (nativeOnly) {
                 transform = createRollupPlugin(input, {
                     disableSyntheticShadowSupport: true,
+                    featureFlag,
                 }).transform;
             } else {
-                transform = defaultRollupPlugin.transform;
+                // Default path: if a featureFlag was provided via directive, pass it through
+                transform = featureFlag
+                    ? createRollupPlugin(input, { featureFlag }).transform
+                    : defaultRollupPlugin.transform;
             }
 
             return transform.call(this, src, id);
         },
     };
 
+    const featureFlagResolver = {
+        name: 'feature-flag-virtual',
+        resolveId(source) {
+            if (source && source.startsWith('@salesforce/featureFlag/')) {
+                // Store the full path in the virtual ID
+                return `${VIRTUAL_FLAG_PREFIX}${source}`;
+            }
+        },
+        load(id) {
+            if (id && id.startsWith(VIRTUAL_FLAG_PREFIX)) {
+                const flagPath = id.slice(VIRTUAL_FLAG_PREFIX.length);
+                // Extract flag name from path like '@salesforce/featureFlag/TEST_FLAG_ENABLED'
+                const flagName = flagPath.split('/').pop();
+                // Simple mapping for our tests; extend as needed
+                const value =
+                    flagName === 'TEST_FLAG_ENABLED'
+                        ? 'true'
+                        : flagName === 'TEST_FLAG_DISABLED'
+                          ? 'false'
+                          : 'false';
+                return `export default ${value};`;
+            }
+        },
+    };
+
     const bundle = await rollup({
         input,
         cache,
-        plugins: [customLwcRollupPlugin],
+        plugins: [customLwcRollupPlugin, featureFlagResolver],
 
         external: [
             '@vitest/expect',

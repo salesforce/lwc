@@ -35,7 +35,7 @@ import {
 import { logError, logWarn } from '../shared/logger';
 import { instrumentDef } from './runtime-instrumentation';
 import { EmptyObject } from './utils';
-import { getComponentRegisteredTemplate } from './component';
+import { getComponentRegisteredTemplate, isComponentFeatureEnabled } from './component';
 import { LightningElement } from './base-lightning-element';
 import { lightningBasedDescriptors } from './base-lightning-element';
 import { getDecoratorsMeta } from './decorators/register';
@@ -102,6 +102,10 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
 }
 
 function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
+    // Enforce component-level feature flag if provided at compile time
+    if (!isComponentFeatureEnabled(Ctor)) {
+        throw new Error(`This component is disabled by a feature flag and cannot be rendered.`);
+    }
     const {
         shadowSupportMode: ctorShadowSupportMode,
         renderMode: ctorRenderMode,

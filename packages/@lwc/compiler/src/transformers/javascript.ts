@@ -42,6 +42,7 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
+        featureFlag,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
@@ -52,6 +53,7 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
+        featureFlag,
     };
 
     const plugins: babel.PluginItem[] = [

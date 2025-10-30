@@ -25,6 +25,7 @@ type ComponentConstructorMetadata = {
     sel: string;
     apiVersion: APIVersion;
     enableSyntheticElementInternals?: boolean | undefined;
+    featureFlag?: boolean | undefined;
 };
 const registeredComponentMap: Map<LightningElementConstructor, ComponentConstructorMetadata> =
     new Map();
@@ -79,6 +80,12 @@ export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVe
 
 export function supportsSyntheticElementInternals(Ctor: LightningElementConstructor): boolean {
     return registeredComponentMap.get(Ctor)?.enableSyntheticElementInternals || false;
+}
+
+export function isComponentFeatureEnabled(Ctor: LightningElementConstructor): boolean {
+    const flag = registeredComponentMap.get(Ctor)?.featureFlag;
+    // Default to true if not provided
+    return flag !== false;
 }
 
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {

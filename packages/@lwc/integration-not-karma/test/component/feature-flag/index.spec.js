@@ -1,0 +1,44 @@
+import { createElement } from 'lwc';
+
+import Enabled from 'x/enabled';
+import Disabled from 'x/disabled';
+import NoFlag from 'x/no-flag';
+
+describe('Component feature flag enforcement', () => {
+    beforeEach(() => {
+        // Clean up after each test
+        document.body.innerHTML = '';
+    });
+
+    afterEach(() => {
+        // Clean up after each test
+        document.body.innerHTML = '';
+    });
+
+    it('should render component when feature flag is enabled (true)', () => {
+        const elm = createElement('x-enabled', { is: Enabled });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot).not.toBeNull();
+        const div = elm.shadowRoot.querySelector('div');
+        expect(div).not.toBeNull();
+        expect(div.textContent).toBe('Feature flag enabled component');
+    });
+
+    it('should throw error when feature flag is disabled (false)', () => {
+        expect(() => {
+            const elm = createElement('x-disabled', { is: Disabled });
+            document.body.appendChild(elm);
+        }).toThrow('This component is disabled by a feature flag and cannot be rendered.');
+    });
+
+    it('should render component normally when no feature flag is specified', () => {
+        const elm = createElement('x-no-flag', { is: NoFlag });
+        document.body.appendChild(elm);
+
+        expect(elm.shadowRoot).not.toBeNull();
+        const div = elm.shadowRoot.querySelector('div');
+        expect(div).not.toBeNull();
+        expect(div.textContent).toBe('Component without feature flag');
+    });
+});

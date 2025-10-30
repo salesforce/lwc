@@ -59,6 +59,13 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             LWC_PACKAGE_ALIAS
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
+        // Optionally import feature flag module if provided via compiler options
+        let featureFlagIdentifier: types.Identifier | undefined;
+        if (state.opts.featureFlag) {
+            featureFlagIdentifier = addDefault(declarationPath, state.opts.featureFlag, {
+                nameHint: 'featureFlag',
+            }) as types.Identifier;
+        }
         const statementPath = declarationPath.getStatementParent();
         const componentRegisteredName = getComponentRegisteredName(t, state);
         let node = declarationPath.node;
@@ -89,6 +96,9 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             // The client needs to trust the server that it's providing an actual known API version
             t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
         ];
+        if (featureFlagIdentifier) {
+            properties.push(t.objectProperty(t.identifier('featureFlag'), featureFlagIdentifier));
+        }
         // Only include enableSyntheticElementInternals if set to true
         if (state.opts.enableSyntheticElementInternals === true) {
             properties.push(
