@@ -41,6 +41,8 @@ const createRollupPlugin = (input, options) => {
     });
 };
 
+const VIRTUAL_FLAG_PREFIX = '\0feature-flag:';
+
 const transform = async (ctx) => {
     const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
     const defaultRollupPlugin = createRollupPlugin(input);
@@ -72,10 +74,33 @@ const transform = async (ctx) => {
         },
     };
 
+    /**
+     * Transforms `@salesforce/featureFlag/*` imports into modules that export a boolean.
+     */
+    const featureFlagResolver = {
+        name: 'feature-flag-virtual',
+        resolveId(source) {
+            if (!source || !source.startsWith('@salesforce/featureFlag/')) return;
+            // Store the full path in the virtual ID
+            return `${VIRTUAL_FLAG_PREFIX}${source}`;
+        },
+        load(id) {
+            if (!id || !id.startsWith(VIRTUAL_FLAG_PREFIX)) return;
+            const flagPath = id.slice(VIRTUAL_FLAG_PREFIX.length);
+            // Extract flag name from path like '@salesforce/featureFlag/TEST_FLAG_ENABLED'
+            const flagName = flagPath.split('/').pop();
+            const flags = {
+                TEST_FLAG_ENABLED: true,
+                TEST_FLAG_DISABLED: false,
+            };
+            return `export default ${flags[flagName] ?? false};`;
+        },
+    };
+
     const bundle = await rollup({
         input,
         cache,
-        plugins: [customLwcRollupPlugin],
+        plugins: [customLwcRollupPlugin, featureFlagResolver],
 
         external: [
             '@vitest/expect',

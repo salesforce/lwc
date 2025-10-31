@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "build": "playwright install || true",
-        "start": "web-test-runner --manual",
+        "start": "web-test-runner --config configs/integration.js --manual",
         "test": "web-test-runner --config configs/integration.js",
         "test:hydration": "web-test-runner --config configs/hydration.js"
     },
