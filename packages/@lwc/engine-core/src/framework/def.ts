@@ -110,10 +110,9 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     if (!isComponentFeatureEnabled(Ctor)) {
         const metadata = getComponentMetadata(Ctor);
         const componentName = Ctor.name || metadata?.sel || 'Unknown';
-        const componentFeatureFlagModulePath =
-            metadata?.componentFeatureFlagModulePath || 'Unknown';
+        const componentFeatureFlagPath = metadata?.componentFeatureFlag?.path || 'Unknown';
         throw new Error(
-            `Component ${componentName} is disabled by the feature flag at ${componentFeatureFlagModulePath}.`
+            `Component ${componentName} is disabled by the feature flag at ${componentFeatureFlagPath}.`
         );
     }
     const {

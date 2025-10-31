@@ -16,7 +16,6 @@ import {
     COMPONENT_CLASS_ID,
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
     COMPONENT_FEATURE_FLAG_KEY,
-    COMPONENT_FEATURE_FLAG_MODULE_PATH_KEY,
 } from './constants';
 import type { types, NodePath, Visitor } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
@@ -106,14 +105,18 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             properties.push(
                 t.objectProperty(
                     t.identifier(COMPONENT_FEATURE_FLAG_KEY),
-                    t.callExpression(t.identifier('Boolean'), [componentFeatureFlagIdentifier])
-                )
-            );
-            // Also store the feature flag path for error messages
-            properties.push(
-                t.objectProperty(
-                    t.identifier(COMPONENT_FEATURE_FLAG_MODULE_PATH_KEY),
-                    t.stringLiteral(state.opts.componentFeatureFlagModulePath!)
+                    t.objectExpression([
+                        t.objectProperty(
+                            t.identifier('value'),
+                            t.callExpression(t.identifier('Boolean'), [
+                                componentFeatureFlagIdentifier,
+                            ])
+                        ),
+                        t.objectProperty(
+                            t.identifier('path'),
+                            t.stringLiteral(state.opts.componentFeatureFlagModulePath!)
+                        ),
+                    ])
                 )
             );
         }
