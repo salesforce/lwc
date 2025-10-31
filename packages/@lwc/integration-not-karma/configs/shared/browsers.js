@@ -23,9 +23,9 @@ export function getBrowsers(options) {
         );
 
         const timeouts = {
-            implicit: 600,
-            pageLoad: 600,
-            script: 600,
+            implicit: 600_000,
+            pageLoad: 600_000,
+            script: 600_000,
         };
 
         // "Legacy" isn't actually all that old...
