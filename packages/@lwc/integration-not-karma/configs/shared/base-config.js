@@ -41,7 +41,7 @@ export default (options) => {
 
     return {
         browsers,
-        browserLogs: false,
+        browserLogs: true,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
