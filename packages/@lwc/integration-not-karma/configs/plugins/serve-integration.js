@@ -13,6 +13,8 @@ import {
 /** Cache reused between each compilation to speed up the compilation time. */
 let cache;
 
+const configDirective = /(?:\/\*|<!--)\s*!WTR\s*(.*?)(?:\*\/|-->)/s;
+
 const createRollupPlugin = (input, options) => {
     const suiteDir = path.dirname(input);
 
@@ -46,8 +48,7 @@ const transform = async (ctx) => {
     // Override the LWC rollup plugin config on a per-file basis by searching for a comment
     // directive /*!WTR {...}*/ and parsing the content as JSON. The spec file acts as a default
     // location to update the config for every component file.
-    let rootConfig = {};
-    const configDirective = /(?:\/\*|<!--)!WTR\s*(.*?)(?:\*\/|-->)/s;
+    let rootConfig = null;
     const parseConfig = (src, id) => {
         const configStr = src.match(configDirective)?.[1];
         if (!configStr) {
@@ -65,19 +66,8 @@ const transform = async (ctx) => {
     const customLwcRollupPlugin = {
         ...defaultRollupPlugin,
         transform(src, id) {
-            const { apiVersion, nativeOnly } = parseConfig(src, id);
-
-            let transform;
-            if (apiVersion) {
-                transform = createRollupPlugin(input, { apiVersion }).transform;
-            } else if (nativeOnly) {
-                transform = createRollupPlugin(input, {
-                    disableSyntheticShadowSupport: true,
-                }).transform;
-            } else {
-                transform = defaultRollupPlugin.transform;
-            }
-
+            const config = parseConfig(src, id);
+            const { transform } = config ? createRollupPlugin(input, config) : defaultRollupPlugin;
             return transform.call(this, src, id);
         },
     };
