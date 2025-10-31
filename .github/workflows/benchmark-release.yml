@@ -1,4 +1,4 @@
-name: Run Performance Benchmarks
+name: Run Performance Benchmarks (Release)
 
 on:
     push:
@@ -6,6 +6,13 @@ on:
             - winter*
             - spring*
             - summer*
+
+    workflow_dispatch:
+        inputs:
+            old_version:
+                description: Old version to compare
+                type: string
+                required: true
 
 jobs:
     run-performance-tests:
@@ -15,17 +22,15 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
-            - name: Setup Node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: '20.19.4'
-                  cache: 'yarn'
+            - name: Set old version (manual)
+              if: github.event_name == 'workflow_dispatch'
+              run: |
+                  COMMIT="$(git rev-parse "${{ inputs.old_version }}")"
+                  echo "Parsed ${{ inputs.old_version }} to commit $COMMIT."
+                  echo "BENCHMARK_REF=$COMMIT" >> "$GITHUB_ENV"
 
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-
-            - name: Get Previous Release
-              id: previous_release
+            - name: Set old version (release)
+              if: github.event_name == 'push'
               run: |
                   # Parse current season and year from branch name
                   [[ "$GITHUB_REF_NAME" =~ ^(winter|spring|summer)([0-9]+)$ ]]
@@ -39,17 +44,22 @@ jobs:
                       summer) previous="spring$year";;
                   esac
                   # Expose to GitHub Actions
-                  echo "branch=$previous" >> "$GITHUB_OUTPUT"
+                  echo "BENCHMARK_REF=$previous" >> "$GITHUB_ENV"
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20.19.4'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
 
             - name: Build benchmarks
-              env:
-                  BENCHMARK_REF: ${{steps.previous_release.outputs.branch}}
               run: yarn build:performance
 
             - name: Run benchmarks
               working-directory: ./packages/@lwc/perf-benchmarks
-              env:
-                  BENCHMARK_REF: ${{steps.previous_release.outputs.branch}}
               run: |
                   echo "Running benchmarks for $GITHUB_REF_NAME against $BENCHMARK_REF"
                   yarn test:run
