@@ -1,3 +1,4 @@
+/** @type {import('../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
         const span = target.shadowRoot.querySelector('span');

@@ -1,5 +1,6 @@
 import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 
+/** @type {import('../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     advancedTest(target, { Component, hydrateComponent, consoleSpy }) {
         // This simulates a condition where the server-rendered markup has

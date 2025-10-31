@@ -2,6 +2,7 @@ function getAllDivs(target) {
     const childs = [...target.shadowRoot.querySelectorAll('x-child')];
     return childs.flatMap((child) => [...child.shadowRoot.querySelectorAll('div')]);
 }
+/** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
         const divs = getAllDivs(target);

@@ -5,7 +5,7 @@ import Test from 'x/test';
 import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
 import DualTemplate from 'x/dualTemplate';
 import ExplicitRender from 'x/explicitRender';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import { customElementCallbackReactionErrorListener } from '../../../helpers/matchers/errors.js';
 
 function testDisconnectSlot(name, fn) {
@@ -94,9 +94,9 @@ describe('disconnectedCallback for host with slots', () => {
     let parent;
 
     beforeEach(() => {
-        parentDisconnectSpy = jasmine.createSpy();
-        slotIgnoringChildSpy = jasmine.createSpy();
-        slotAcceptingChildSpy = jasmine.createSpy();
+        parentDisconnectSpy = mockFn();
+        slotIgnoringChildSpy = mockFn();
+        slotAcceptingChildSpy = mockFn();
         parent = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(parent);
         parent.disconnect = parentDisconnectSpy;
@@ -128,7 +128,7 @@ describe('disconnectedCallback for host with slots', () => {
 
     it('should invoke disconnectedCallback on child that has rendered slot content', () => {
         const slotContent = parent.shadowRoot.querySelector('x-test.slotted');
-        const slotContentDisconnectSpy = jasmine.createSpy();
+        const slotContentDisconnectSpy = mockFn();
         slotContent.disconnect = slotContentDisconnectSpy;
         parent.hideChildAcceptsSlots = true;
         return Promise.resolve(() => {

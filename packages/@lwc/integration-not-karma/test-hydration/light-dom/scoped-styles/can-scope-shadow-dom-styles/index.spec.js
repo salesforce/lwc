@@ -1,3 +1,4 @@
+/** @type {import('../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     async test(target) {
         expect(getComputedStyle(target).backgroundColor).toEqual('rgb(0, 0, 255)');

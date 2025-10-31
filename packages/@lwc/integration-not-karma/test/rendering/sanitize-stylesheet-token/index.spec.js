@@ -1,7 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 import Scoping from 'x/scoping';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
 
@@ -12,12 +12,17 @@ catchUnhandledRejectionsAndErrors((error) => {
     caughtError = error;
 });
 
-beforeEach(() => {
+beforeAll(() => {
     logger = spyOn(console, 'warn');
 });
 
 afterEach(() => {
     caughtError = undefined;
+    logger.mockReset();
+});
+
+afterAll(() => {
+    logger.mockRestore();
 });
 
 const props = ['stylesheetToken', 'stylesheetTokens', 'legacyStylesheetToken'];
@@ -91,12 +96,12 @@ props.forEach((prop) => {
                             expect(logger).not.toHaveBeenCalled();
                         } else {
                             // dev mode
-                            expect(logger).toHaveBeenCalledTimes(1);
-                            const loggedError = logger.calls.allArgs()[0][0];
-                            expect(loggedError.message).toMatch(
-                                new RegExp(
-                                    `Mutating the "${prop}" property on a template is deprecated`
-                                )
+                            expect(logger).toHaveBeenCalledExactlyOnceWith(
+                                expect.objectContaining({
+                                    message: expect.stringContaining(
+                                        `Mutating the "${prop}" property on a template is deprecated`
+                                    ),
+                                })
                             );
                         }
                     }

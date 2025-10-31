@@ -3,7 +3,7 @@ import { createElement, LightningElement, registerTemplate, registerComponent } 
 import Component from 'x/component';
 import ComponentWithProp from 'x/componentWithProp';
 import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
@@ -48,7 +48,7 @@ describe('compiler version mismatch', () => {
 
         beforeEach(() => {
             resetWarnedOnVersionMismatch();
-            dispatcher = jasmine.createSpy();
+            dispatcher = mockFn();
             attachReportingControlDispatcher(dispatcher, 'CompilerRuntimeVersionMismatch');
         });
 
@@ -86,7 +86,7 @@ describe('compiler version mismatch', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toEqual([
+                expect(dispatcher.mock.calls).toEqual([
                     [
                         'CompilerRuntimeVersionMismatch',
                         {
@@ -128,7 +128,7 @@ describe('compiler version mismatch', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toEqual([
+                expect(dispatcher.mock.calls).toEqual([
                     [
                         'CompilerRuntimeVersionMismatch',
                         {
@@ -166,7 +166,7 @@ describe('compiler version mismatch', () => {
             if (process.env.NODE_ENV === 'production') {
                 expect(dispatcher).not.toHaveBeenCalled();
             } else {
-                expect(dispatcher.calls.allArgs()).toEqual([
+                expect(dispatcher.mock.calls).toEqual([
                     [
                         'CompilerRuntimeVersionMismatch',
                         {
