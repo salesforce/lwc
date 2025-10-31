@@ -1,18 +1,18 @@
 import { createElement } from 'lwc';
-import ParentAnyChildAny from 'x/parentAnyChildAny';
-import ParentAnyChildReset from 'x/parentAnyChildReset';
-import ParentResetChildAny from 'x/parentResetChildAny';
-import ParentResetChildReset from 'x/parentResetChildReset';
-import ParentLightChildAny from 'x/parentLightChildAny';
-import ParentLightChildReset from 'x/parentLightChildReset';
-import GrandparentAnyParentAnyChildAny from 'x/grandparentAnyParentAnyChildAny';
-import GrandparentAnyParentAnyChildReset from 'x/grandparentAnyParentAnyChildReset';
-import GrandparentAnyParentResetChildAny from 'x/grandparentAnyParentResetChildAny';
-import GrandparentAnyParentResetChildReset from 'x/grandparentAnyParentResetChildReset';
-import GrandparentResetParentAnyChildAny from 'x/grandparentResetParentAnyChildAny';
-import GrandparentResetParentAnyChildReset from 'x/grandparentResetParentAnyChildReset';
-import GrandparentResetParentResetChildAny from 'x/grandparentResetParentResetChildAny';
-import GrandparentResetParentResetChildReset from 'x/grandparentResetParentResetChildReset';
+import ParentAnyChildAny from 'c/parentAnyChildAny';
+import ParentAnyChildReset from 'c/parentAnyChildReset';
+import ParentResetChildAny from 'c/parentResetChildAny';
+import ParentResetChildReset from 'c/parentResetChildReset';
+import ParentLightChildAny from 'c/parentLightChildAny';
+import ParentLightChildReset from 'c/parentLightChildReset';
+import GrandparentAnyParentAnyChildAny from 'c/grandparentAnyParentAnyChildAny';
+import GrandparentAnyParentAnyChildReset from 'c/grandparentAnyParentAnyChildReset';
+import GrandparentAnyParentResetChildAny from 'c/grandparentAnyParentResetChildAny';
+import GrandparentAnyParentResetChildReset from 'c/grandparentAnyParentResetChildReset';
+import GrandparentResetParentAnyChildAny from 'c/grandparentResetParentAnyChildAny';
+import GrandparentResetParentAnyChildReset from 'c/grandparentResetParentAnyChildReset';
+import GrandparentResetParentResetChildAny from 'c/grandparentResetParentResetChildAny';
+import GrandparentResetParentResetChildReset from 'c/grandparentResetParentResetChildReset';
 import { extractDataIds, isNativeShadowRootInstance } from '../../../helpers/utils.js';
 import { resetDOM } from '../../../helpers/reset.js';
 
@@ -22,72 +22,72 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic behavior', () => {
     const scenarios = [
         {
             Component: ParentAnyChildAny,
-            tagName: 'x-parent-any-child-any',
+            tagName: 'c-parent-any-child-any',
             nativeLeaf: true,
         },
         {
             Component: ParentAnyChildReset,
-            tagName: 'x-parent-any-child-reset',
+            tagName: 'c-parent-any-child-reset',
             nativeLeaf: true,
         },
         {
             Component: ParentResetChildAny,
-            tagName: 'x-parent-reset-child-any',
+            tagName: 'c-parent-reset-child-any',
             nativeLeaf: true,
         },
         {
             Component: ParentResetChildReset,
-            tagName: 'x-parent-reset-child-reset',
+            tagName: 'c-parent-reset-child-reset',
             nativeLeaf: false,
         },
         {
             Component: ParentLightChildAny,
-            tagName: 'x-parent-light-child-any',
+            tagName: 'c-parent-light-child-any',
             nativeLeaf: true,
         },
         {
             Component: ParentLightChildReset,
-            tagName: 'x-parent-light-child-reset',
+            tagName: 'c-parent-light-child-reset',
             nativeLeaf: false,
         },
         {
             Component: GrandparentAnyParentAnyChildAny,
-            tagName: 'x-grandparent-any-parent-any-child-any',
+            tagName: 'c-grandparent-any-parent-any-child-any',
             nativeLeaf: true,
         },
         {
             Component: GrandparentAnyParentAnyChildReset,
-            tagName: 'x-grandparent-any-parent-any-child-reset',
+            tagName: 'c-grandparent-any-parent-any-child-reset',
             nativeLeaf: true,
         },
         {
             Component: GrandparentAnyParentResetChildAny,
-            tagName: 'x-grandparent-any-parent-reset-child-any',
+            tagName: 'c-grandparent-any-parent-reset-child-any',
             nativeLeaf: true,
         },
         {
             Component: GrandparentAnyParentResetChildReset,
-            tagName: 'x-grandparent-any-parent-reset-child-reset',
+            tagName: 'c-grandparent-any-parent-reset-child-reset',
             nativeLeaf: true,
         },
         {
             Component: GrandparentResetParentAnyChildAny,
-            tagName: 'x-grandparent-reset-parent-any-child-any',
+            tagName: 'c-grandparent-reset-parent-any-child-any',
             nativeLeaf: true,
         },
         {
             Component: GrandparentResetParentAnyChildReset,
-            tagName: 'x-grandparent-reset-parent-any-child-reset',
+            tagName: 'c-grandparent-reset-parent-any-child-reset',
             nativeLeaf: true,
         },
         {
             Component: GrandparentResetParentResetChildAny,
-            tagName: 'x-grandparent-reset-parent-reset-child-any',
+            tagName: 'c-grandparent-reset-parent-reset-child-any',
             nativeLeaf: true,
         },
         {
             Component: GrandparentResetParentResetChildReset,
-            tagName: 'x-grandparent-reset-parent-reset-child-reset',
+            tagName: 'c-grandparent-reset-parent-reset-child-reset',
             nativeLeaf: false,
         },
     ];

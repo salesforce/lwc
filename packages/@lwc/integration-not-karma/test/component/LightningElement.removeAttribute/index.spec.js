@@ -1,21 +1,21 @@
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 it('should not throw if the attribute is not present', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     expect(() => {
         elm.removeComponentAttribute('foo');
     }).not.toThrowError();
 });
 
 it('should return undefined', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     expect(elm.removeComponentAttribute('foo')).toBeUndefined();
 });
 
 it('should remove the attribute if present on the host element', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     elm.setAttribute('foo', 'bar');
     elm.removeComponentAttribute('foo');
 
@@ -23,7 +23,7 @@ it('should remove the attribute if present on the host element', () => {
 });
 
 it('should lowercase the attribute name', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     elm.setAttribute('foo', 'bar');
     elm.removeComponentAttribute('FOO');
 

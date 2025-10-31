@@ -9,7 +9,7 @@ export default {
         //
         // Outside of this test, the tested condition should never be reached
         // unless something in SSR or hydration logic is broken.
-        target.shadowRoot.querySelector('x-child').classList.add('foo');
+        target.shadowRoot.querySelector('c-child').classList.add('foo');
 
         hydrateComponent(target, Component, {});
 
@@ -17,7 +17,7 @@ export default {
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: <x-child> - rendered on server: class="foo" - expected on client: class=""',
+                'Hydration attribute mismatch on: <c-child> - rendered on server: class="foo" - expected on client: class=""',
                 'Hydration completed with errors.',
             ],
         });

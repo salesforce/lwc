@@ -2,9 +2,9 @@
 export default {
     props: {},
     snapshot(target) {
-        const cmpChild = target.querySelector('x-child');
-        const cmpChildDiv = target.querySelector('x-child div');
-        const [cmpScopedOuter, cmpScopedInner] = target.querySelectorAll('x-scoped');
+        const cmpChild = target.querySelector('c-child');
+        const cmpChildDiv = target.querySelector('c-child div');
+        const [cmpScopedOuter, cmpScopedInner] = target.querySelectorAll('c-scoped');
 
         return {
             target,

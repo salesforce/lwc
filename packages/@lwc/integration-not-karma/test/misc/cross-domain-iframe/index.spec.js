@@ -1,10 +1,10 @@
 import { unwrap } from 'lwc';
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 it('should not throw when unwrapping contentWindow', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     const iframe = elm.shadowRoot.querySelector('iframe');
@@ -17,7 +17,7 @@ describe('HTMLIFrameElement.contentWindow patching', () => {
     let iframe, sameOriginFrame;
 
     beforeEach(() => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
 
         iframe = elm.shadowRoot.querySelector('iframe');

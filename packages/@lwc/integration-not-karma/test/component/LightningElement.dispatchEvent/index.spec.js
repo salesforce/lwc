@@ -1,12 +1,12 @@
 import { createElement, LightningElement } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 function testDispatchEvent(type, name, dispatchedEvent) {
     it(`should allow to dispatch ${type}`, () => {
         let receivedEvent;
 
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
 
         elm.addEventListener(name, (event) => {
@@ -23,7 +23,7 @@ testDispatchEvent('CustomEvent', 'testcustom', new CustomEvent('testcustom'));
 testDispatchEvent('FocusEvent', 'testfocus', new CustomEvent('testfocus'));
 
 it('should throw an error if the parameter is not an instance of Event', () => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
 
     expect(() => {
@@ -39,6 +39,6 @@ it('should not throw when event is dispatched during construction', function () 
         }
     }
     expect(() => {
-        createElement('x-test', { is: Test });
+        createElement('c-test', { is: Test });
     }).not.toThrow();
 });

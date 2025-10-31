@@ -9,7 +9,7 @@ export default {
         showA: true,
     },
     snapshot(target) {
-        const child = target.shadowRoot.querySelector('x-child');
+        const child = target.shadowRoot.querySelector('c-child');
         return {
             child,
             classList: new Set([...child.classList]),
@@ -17,10 +17,10 @@ export default {
         };
     },
     test(target, snapshots, consoleCalls) {
-        const child = target.shadowRoot.querySelector('x-child');
+        const child = target.shadowRoot.querySelector('c-child');
         const h1 = child.shadowRoot.querySelector('h1');
 
-        // <x-child> is not considered mismatched but its children are
+        // <c-child> is not considered mismatched but its children are
         expect(child).toBe(snapshots.child);
         expect(h1).not.toBe(snapshots.h1);
 
@@ -31,8 +31,8 @@ export default {
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: <style> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
-                'Hydration attribute mismatch on: <h1> - rendered on server: class="lwc-3hsmkt14797" - expected on client: class="lwc-2fs4h5b0o15"',
+                'Hydration attribute mismatch on: <style> - rendered on server: class="lwc-7qfdo66i6mp" - expected on client: class="lwc-2kgvov93avb"',
+                'Hydration attribute mismatch on: <h1> - rendered on server: class="lwc-7qfdo66i6mp" - expected on client: class="lwc-2kgvov93avb"',
                 'Hydration completed with errors.',
             ],
         });

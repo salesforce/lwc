@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import XTest from 'x/test';
-import XSlotted from 'x/slotted';
-import NestedRenderConditional from 'x/nestedRenderConditional';
-import MultipleSlot from 'x/multipleSlot';
+import XTest from 'c/test';
+import XSlotted from 'c/slotted';
+import NestedRenderConditional from 'c/nestedRenderConditional';
+import MultipleSlot from 'c/multipleSlot';
 
 describe('if:true directive', () => {
     it('should render if the value is truthy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.isVisible = true;
         document.body.appendChild(elm);
 
@@ -14,7 +14,7 @@ describe('if:true directive', () => {
     });
 
     it('should not render if the value is falsy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.isVisible = false;
         document.body.appendChild(elm);
 
@@ -22,7 +22,7 @@ describe('if:true directive', () => {
     });
 
     it('should remove element within a nested conditional', async () => {
-        const elm = createElement('x-nested-render-conditional', { is: NestedRenderConditional });
+        const elm = createElement('c-nested-render-conditional', { is: NestedRenderConditional });
         document.body.appendChild(elm);
 
         const elementToggler = elm.shadowRoot.querySelector('.click-me');
@@ -35,7 +35,7 @@ describe('if:true directive', () => {
     });
 
     it('should update if the value change', async () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.isVisible = true;
         document.body.appendChild(elm);
 
@@ -65,10 +65,10 @@ describe('if:true directive', () => {
     it.runIf(process.env.NATIVE_SHADOW)(
         'should update child with slot content if value changes',
         async () => {
-            const elm = createElement('x-test', { is: XSlotted });
+            const elm = createElement('c-test', { is: XSlotted });
             document.body.appendChild(elm);
             const assignedSlotContent = elm.shadowRoot.querySelector('div.content');
-            const child = elm.shadowRoot.querySelector('x-child');
+            const child = elm.shadowRoot.querySelector('c-child');
             expect(child).not.toBeNull();
             expect(child.shadowRoot.querySelector('slot')).toBeNull();
 
@@ -95,9 +95,9 @@ describe('if:true directive', () => {
     it.skipIf(process.env.NATIVE_SHADOW)(
         'should update child with slot content if value changes',
         async () => {
-            const elm = createElement('x-test', { is: XSlotted });
+            const elm = createElement('c-test', { is: XSlotted });
             document.body.appendChild(elm);
-            const child = elm.shadowRoot.querySelector('x-child');
+            const child = elm.shadowRoot.querySelector('c-child');
             expect(child).not.toBeNull();
             expect(child.querySelector('.content')).toBeNull();
 
@@ -115,9 +115,9 @@ describe('if:true directive', () => {
     );
 
     it('should continue rendering content for nested slots after multiple rehydrations', async () => {
-        const elm = createElement('x-multiple-slot', { is: MultipleSlot });
+        const elm = createElement('c-multiple-slot', { is: MultipleSlot });
         document.body.appendChild(elm);
-        const multipleSlotLevel1 = elm.shadowRoot.querySelector('x-multiple-slot-level1');
+        const multipleSlotLevel1 = elm.shadowRoot.querySelector('c-multiple-slot-level1');
         const textToggleButton = elm.shadowRoot.querySelector('.textToggle');
 
         textToggleButton.click();
@@ -144,7 +144,7 @@ describe('if:true directive', () => {
 
 describe('if:false directive', () => {
     it('should not render if the value is truthy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.isVisible = true;
         document.body.appendChild(elm);
 
@@ -152,7 +152,7 @@ describe('if:false directive', () => {
     });
 
     it('should render if the value is falsy', () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.isVisible = false;
         document.body.appendChild(elm);
 
@@ -160,7 +160,7 @@ describe('if:false directive', () => {
     });
 
     it('should update if the value change', async () => {
-        const elm = createElement('x-test', { is: XTest });
+        const elm = createElement('c-test', { is: XTest });
         elm.isVisible = true;
         document.body.appendChild(elm);
 

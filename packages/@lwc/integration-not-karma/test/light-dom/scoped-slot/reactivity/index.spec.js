@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import ListParentApiData from 'x/listParentApiData';
-import WithParentBindings from 'x/withParentBindings';
-import ParentBindingsOutsideSlotContent from 'x/parentBindingsOutsideSlotContent';
-import ListParentTrackedData from 'x/listParentTrackedData';
-import ParentWithConditionalSlotContent from 'x/parentWithConditionalSlotContent';
+import ListParentApiData from 'c/listParentApiData';
+import WithParentBindings from 'c/withParentBindings';
+import ParentBindingsOutsideSlotContent from 'c/parentBindingsOutsideSlotContent';
+import ListParentTrackedData from 'c/listParentTrackedData';
+import ParentWithConditionalSlotContent from 'c/parentWithConditionalSlotContent';
 
 describe('reactivity in scoped slots', () => {
     beforeEach(() => {
@@ -20,7 +20,7 @@ describe('reactivity in scoped slots', () => {
     }
 
     it('rerenders slotted content when mutating value passed from parent to child', async () => {
-        const elm = createElement('x-list-parent', { is: ListParentApiData });
+        const elm = createElement('c-list-parent', { is: ListParentApiData });
         elm.reactivityTestCaseEnabled = true;
         document.body.appendChild(elm);
 
@@ -47,11 +47,11 @@ describe('reactivity in scoped slots', () => {
     });
 
     it("rerenders slotted content when mutating value of child's tracked field", async () => {
-        const elm = createElement('x-list-parent', { is: ListParentTrackedData });
+        const elm = createElement('c-list-parent', { is: ListParentTrackedData });
         document.body.appendChild(elm);
 
         resetTimingBuffer();
-        const child = elm.shadowRoot.querySelector('x-list-child-tracked-data');
+        const child = elm.shadowRoot.querySelector('c-list-child-tracked-data');
         child.changeItemsNestedKey();
         await Promise.resolve();
         const spans = elm.shadowRoot.querySelectorAll('span');
@@ -73,13 +73,13 @@ describe('reactivity in scoped slots', () => {
     it('<slot> tag with key attribute: rerenders slotted content only when iteration key changes', async () => {
         function verifyContentAndCallbacks(expectedContent, expectedCallbacks) {
             expect(
-                [...elm.shadowRoot.querySelectorAll('x-slotted-with-callbacks')].map(
+                [...elm.shadowRoot.querySelectorAll('c-slotted-with-callbacks')].map(
                     (_) => _.shadowRoot.innerHTML
                 )
             ).toEqual(expectedContent);
             expect(window.timingBuffer).toEqual(expectedCallbacks);
         }
-        const elm = createElement('x-list-parent', { is: ListParentApiData });
+        const elm = createElement('c-list-parent', { is: ListParentApiData });
         elm.callbacksTestCaseEnabled = true;
         resetTimingBuffer();
         document.body.appendChild(elm);
@@ -131,7 +131,7 @@ describe('reactivity in scoped slots', () => {
 
     describe('slot content containing parent bindings', () => {
         it('is reactive when parent binding value is changed', async () => {
-            const elm = createElement('x-parent', { is: WithParentBindings });
+            const elm = createElement('c-parent', { is: WithParentBindings });
             document.body.appendChild(elm);
 
             const div = elm.shadowRoot.querySelectorAll('div');
@@ -151,7 +151,7 @@ describe('reactivity in scoped slots', () => {
         });
 
         it("rerenders parent and child when bindings are used in parent's non slot content", async () => {
-            const elm = createElement('x-parent', { is: ParentBindingsOutsideSlotContent });
+            const elm = createElement('c-parent', { is: ParentBindingsOutsideSlotContent });
             document.body.appendChild(elm);
 
             const div = elm.shadowRoot.querySelectorAll('div');
@@ -181,9 +181,9 @@ describe('reactivity in scoped slots', () => {
                     expectedContent
                 );
             }
-            const elm = createElement('x-parent', { is: ParentWithConditionalSlotContent });
+            const elm = createElement('c-parent', { is: ParentWithConditionalSlotContent });
             document.body.appendChild(elm);
-            const child = elm.shadowRoot.querySelector('x-child-for-conditional-slot-content');
+            const child = elm.shadowRoot.querySelector('c-child-for-conditional-slot-content');
 
             verifySlotContent([]);
             await Promise.resolve();

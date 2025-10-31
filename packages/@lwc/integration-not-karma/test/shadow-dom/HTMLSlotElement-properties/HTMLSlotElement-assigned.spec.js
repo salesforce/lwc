@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import NoDirectChild from 'x/noDirectChild';
-import Basic from 'x/basic';
-import SlotsInSlots from 'x/slotsInSlots';
-import Complex from 'x/complex';
+import NoDirectChild from 'c/noDirectChild';
+import Basic from 'c/basic';
+import SlotsInSlots from 'c/slotsInSlots';
+import Complex from 'c/complex';
 import { extractShadowDataIds } from '../../../helpers/utils.js';
 
 describe('ignore non direct host children', () => {
@@ -11,7 +11,7 @@ describe('ignore non direct host children', () => {
     let nodes;
 
     beforeEach(() => {
-        elm = createElement('x-no-direct-child', { is: NoDirectChild });
+        elm = createElement('c-no-direct-child', { is: NoDirectChild });
         document.body.appendChild(elm);
 
         nodes = extractShadowDataIds(elm.shadowRoot);
@@ -45,7 +45,7 @@ describe('fallback content basic', () => {
     let nodes;
 
     beforeEach(() => {
-        elm = createElement('x-basic', { is: Basic });
+        elm = createElement('c-basic', { is: Basic });
         document.body.appendChild(elm);
 
         nodes = extractShadowDataIds(elm.shadowRoot);
@@ -77,7 +77,7 @@ describe('fallback content slots in slots', () => {
     let nodes;
 
     beforeEach(() => {
-        elm = createElement('x-slots-in-slots', { is: SlotsInSlots });
+        elm = createElement('c-slots-in-slots', { is: SlotsInSlots });
         document.body.appendChild(elm);
 
         nodes = extractShadowDataIds(elm.shadowRoot);
@@ -105,7 +105,7 @@ describe('fallback content complex', () => {
     let nodes;
 
     beforeEach(() => {
-        elm = createElement('x-complex', { is: Complex });
+        elm = createElement('c-complex', { is: Complex });
         document.body.appendChild(elm);
 
         nodes = extractShadowDataIds(elm.shadowRoot);

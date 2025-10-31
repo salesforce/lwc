@@ -10,7 +10,7 @@ const advancedBaseTemplate = Advanced.baseTemplate;
 // Swapping is only enabled in dev mode
 describe.skipIf(process.env.NODE_ENV === 'production')('template swapping', () => {
     it('should work with components with implicit template definition', async () => {
-        const elm = createElement('x-simple', { is: Simple });
+        const elm = createElement('c-simple', { is: Simple });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="simple">simple</p>');
         swapTemplate(simpleBaseTemplate, first);
@@ -22,7 +22,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('template swapping', () =
     });
 
     it('should work with components with explict template definition', async () => {
-        const elm = createElement('x-advanced', { is: Advanced });
+        const elm = createElement('c-advanced', { is: Advanced });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstChild.outerHTML).toBe('<p class="advanced">advanced</p>');
         swapTemplate(advancedBaseTemplate, second);

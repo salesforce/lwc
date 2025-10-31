@@ -1,25 +1,25 @@
 import { createElement } from 'lwc';
 
-import Parent from 'x/parent';
+import Parent from 'c/parent';
 
-import RoleTester, { roleSetterCallCount } from 'x/roleTester';
+import RoleTester, { roleSetterCallCount } from 'c/roleTester';
 
 describe('aom-setter', () => {
     let parent;
 
     beforeEach(() => {
-        parent = createElement('x-parent', { is: Parent });
+        parent = createElement('c-parent', { is: Parent });
         document.body.appendChild(parent);
     });
 
     it('should override native AOM setter and render text content', () => {
-        const child = parent.shadowRoot.querySelector('x-child');
+        const child = parent.shadowRoot.querySelector('c-child');
         const elm = child.shadowRoot.querySelector('span');
         expect(elm.textContent).toBe('KIX to HKG');
     });
 
     it('should disable default behavior of DOM reflection when invoking a custom AOM setter', () => {
-        const child = parent.shadowRoot.querySelector('x-child');
+        const child = parent.shadowRoot.querySelector('c-child');
         expect(child.hasAttribute('aria-label')).toBe(false);
     });
 

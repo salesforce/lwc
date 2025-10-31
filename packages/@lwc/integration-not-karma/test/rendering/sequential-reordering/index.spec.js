@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 describe('vfragment sequential reordering', () => {
     it('move fragment left', async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         await Promise.resolve();
 
@@ -28,7 +28,7 @@ describe('vfragment sequential reordering', () => {
     });
 
     it('move fragment right', async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         await Promise.resolve();
 

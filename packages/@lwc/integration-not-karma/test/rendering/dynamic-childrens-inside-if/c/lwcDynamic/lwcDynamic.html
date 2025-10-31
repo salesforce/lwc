@@ -1,0 +1,10 @@
+<template>
+    <button onclick={toggleSection}>toggle section</button>
+
+    <div>
+        <template if:true={sectionOpen}>
+            <p>item</p>
+            <c-dynamic-cmp lwc:dynamic={ctor}></c-dynamic-cmp>
+        </template>
+    </div>
+</template>

@@ -1,24 +1,24 @@
 import { createElement } from 'lwc';
-import Container from 'x/container';
+import Container from 'c/container';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('shadow parent with light child', () => {
     it('should render properly', () => {
-        const element = createElement('x-container', { is: Container });
-        element.setAttribute('data-id', 'x-container');
+        const element = createElement('c-container', { is: Container });
+        element.setAttribute('data-id', 'c-container');
         document.body.appendChild(element);
         const nodes = extractDataIds(element);
         expect(Object.keys(nodes)).toEqual([
-            'x-container',
-            'x-container.shadowRoot',
+            'c-container',
+            'c-container.shadowRoot',
             'container-text',
-            'x-test',
+            'c-test',
             'test-text',
         ]);
 
         expect(element.shadowRoot).not.toBeNull();
         expect(nodes['container-text'].innerText).toEqual('Hello, Shadow DOM');
-        expect(nodes['x-test'].shadowRoot).toBeNull();
+        expect(nodes['c-test'].shadowRoot).toBeNull();
         expect(nodes['test-text'].innerText).toEqual('Hello, Light DOM');
     });
 });

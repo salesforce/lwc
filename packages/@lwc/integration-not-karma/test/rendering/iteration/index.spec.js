@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
-import ForEach from 'x/forEach';
-import Iterator from 'x/iterator';
-import InlineForEach from 'x/inlineForEach';
-import InlineIterator from 'x/inlineIterator';
+import ForEach from 'c/forEach';
+import Iterator from 'c/iterator';
+import InlineForEach from 'c/inlineForEach';
+import InlineIterator from 'c/inlineIterator';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('iteration rendering', () => {
@@ -49,19 +49,19 @@ describe('iteration rendering', () => {
     ];
 
     components.forEach(({ Ctor, type, iterationType }) => {
-        const tag = `x-${type}-${iterationType}`;
+        const tag = `c-${type}-${iterationType}`;
 
         it(`${type} ${iterationType}`, async () => {
             const elm = createElement(tag, { is: Ctor });
             elm.items = [1, 2, 3, 4];
             document.body.appendChild(elm);
             validateRenderedChildren(elm, iterationType);
-            const [c1, c2, c3, c4] = elm.shadowRoot.querySelectorAll('x-item');
+            const [c1, c2, c3, c4] = elm.shadowRoot.querySelectorAll('c-item');
 
             elm.items = [3, 1, 2, 4];
             await Promise.resolve();
             validateRenderedChildren(elm, iterationType);
-            const [c3b, c1b, c2b, c4b] = elm.shadowRoot.querySelectorAll('x-item');
+            const [c3b, c1b, c2b, c4b] = elm.shadowRoot.querySelectorAll('c-item');
             expect(c1).toBe(c1b);
             expect(c2).toBe(c2b);
             expect(c3).toBe(c3b);

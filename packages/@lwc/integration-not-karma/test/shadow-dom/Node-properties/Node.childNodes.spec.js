@@ -1,17 +1,17 @@
 import { createElement } from 'lwc';
 
-import Slotted from 'x/slotted';
-import SlottedParent from 'x/slottedParent';
-import TextSlottedParent from 'x/textSlottedParent';
-import UnslottedParent from 'x/unslottedParent';
-import HasNoSlot from 'x/hasNoSlot';
-import Parent from 'x/parent';
-import SimpleParent from 'x/simpleParent';
+import Slotted from 'c/slotted';
+import SlottedParent from 'c/slottedParent';
+import TextSlottedParent from 'c/textSlottedParent';
+import UnslottedParent from 'c/unslottedParent';
+import HasNoSlot from 'c/hasNoSlot';
+import Parent from 'c/parent';
+import SimpleParent from 'c/simpleParent';
 import { getHostChildNodes } from '../../../helpers/utils.js';
 
 describe('Node.childNodes', () => {
-    it('should return the right children Nodes - x-slotted', () => {
-        const elm = createElement('x-slotted', { is: Slotted });
+    it('should return the right children Nodes - c-slotted', () => {
+        const elm = createElement('c-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         const hostChildNodes = getHostChildNodes(elm);
@@ -29,11 +29,11 @@ describe('Node.childNodes', () => {
         );
     });
 
-    it('should return the right children Nodes - x-container', () => {
-        const elm = createElement('x-slotted', { is: Slotted });
+    it('should return the right children Nodes - c-container', () => {
+        const elm = createElement('c-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        const container = elm.shadowRoot.querySelector('x-container');
+        const container = elm.shadowRoot.querySelector('c-container');
 
         const hostChildNodes = getHostChildNodes(container);
         expect(hostChildNodes.length).toBe(1);
@@ -57,10 +57,10 @@ describe('Node.childNodes', () => {
     it.runIf(process.env.NATIVE_SHADOW)(
         'should always return an default content for slots not rendering default content',
         () => {
-            const elm = createElement('x-slotted-parent', { is: SlottedParent });
+            const elm = createElement('c-slotted-parent', { is: SlottedParent });
             document.body.appendChild(elm);
             const slot = elm.shadowRoot
-                .querySelector('x-has-slot')
+                .querySelector('c-has-slot')
                 .shadowRoot.querySelector('slot');
             // Per spec, slot elements will retain default content
             expect(slot.childNodes.length).toBe(1);
@@ -69,14 +69,14 @@ describe('Node.childNodes', () => {
     );
 
     it('should return correct elements for slots rendering default content', () => {
-        const elm = createElement('x-unslotted-parent', { is: UnslottedParent });
+        const elm = createElement('c-unslotted-parent', { is: UnslottedParent });
         document.body.appendChild(elm);
-        const slot = elm.shadowRoot.querySelector('x-has-slot').shadowRoot.querySelector('slot');
+        const slot = elm.shadowRoot.querySelector('c-has-slot').shadowRoot.querySelector('slot');
         expect(slot.childNodes.length).toBe(1);
     });
 
     it('should return correct elements for non-slot elements', () => {
-        const elm = createElement('x-has-no-slot', { is: HasNoSlot });
+        const elm = createElement('c-has-no-slot', { is: HasNoSlot });
         document.body.appendChild(elm);
         const child = elm.shadowRoot.querySelector('div');
         const childNodes = getHostChildNodes(child);
@@ -85,25 +85,25 @@ describe('Node.childNodes', () => {
     });
 
     it('should return correct elements for custom elements when no children present', () => {
-        const elm = createElement('x-parent', { is: Parent });
+        const elm = createElement('c-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-has-no-slot');
+        const child = elm.shadowRoot.querySelector('c-has-no-slot');
         const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(0);
     });
 
     it('should return correct elements for custom elements when children present', () => {
-        const elm = createElement('x-slotted-parent', { is: SlottedParent });
+        const elm = createElement('c-slotted-parent', { is: SlottedParent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-has-slot');
+        const child = elm.shadowRoot.querySelector('c-has-slot');
         const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(2);
     });
 
     it('should return child text content passed via slot', () => {
-        const elm = createElement('x-parent', { is: TextSlottedParent });
+        const elm = createElement('c-parent', { is: TextSlottedParent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-has-slot');
+        const child = elm.shadowRoot.querySelector('c-has-slot');
         const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(1);
         expect(childNodes[0].nodeType).toBe(3);
@@ -111,22 +111,22 @@ describe('Node.childNodes', () => {
     });
 
     it('should not return child text from within template', () => {
-        const elm = createElement('x-parent', { is: Parent });
+        const elm = createElement('c-parent', { is: Parent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('x-text');
+        const child = elm.shadowRoot.querySelector('c-text');
         const childNodes = getHostChildNodes(child);
         expect(childNodes.length).toBe(0);
     });
 
     it('should not return dynamic child text from within template', () => {
-        const elm = createElement('x-parent', { is: Parent });
+        const elm = createElement('c-parent', { is: Parent });
         document.body.appendChild(elm);
-        const childNodes = getHostChildNodes(elm.shadowRoot.querySelector('x-dynamic-text'));
+        const childNodes = getHostChildNodes(elm.shadowRoot.querySelector('c-dynamic-text'));
         expect(childNodes.length).toBe(0);
     });
 
     it('should return correct childNodes from shadowRoot', () => {
-        const elm = createElement('x-parent', { is: SimpleParent });
+        const elm = createElement('c-parent', { is: SimpleParent });
         document.body.appendChild(elm);
         const childNodes = elm.shadowRoot.childNodes;
         expect(childNodes.length).toBe(2);

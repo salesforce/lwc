@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import Test from 'x/test';
+import Test from 'c/test';
 
 describe('issue-3396', () => {
     it('should render lwc:if in correct order', async () => {
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
 
         elm.show = true;

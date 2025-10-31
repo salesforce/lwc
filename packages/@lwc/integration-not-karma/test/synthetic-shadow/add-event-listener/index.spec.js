@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Test from 'x/test';
+import Test from 'c/test';
 
 describe('add handleEvent support', () => {
     describe('basic', () => {
@@ -16,7 +16,7 @@ describe('add handleEvent support', () => {
         }
 
         it('lwc host element', () => {
-            test(createElement('x-test', { is: Test }));
+            test(createElement('c-test', { is: Test }));
         });
 
         it('native element', () => {
@@ -24,7 +24,7 @@ describe('add handleEvent support', () => {
         });
 
         it('lwc shadow root', () => {
-            test(createElement('x-test', { is: Test }).shadowRoot);
+            test(createElement('c-test', { is: Test }).shadowRoot);
         });
 
         it('native shadow root', () => {
@@ -50,7 +50,7 @@ describe('add handleEvent support', () => {
         }
 
         it('lwc host element', () => {
-            test(createElement('x-test', { is: Test }));
+            test(createElement('c-test', { is: Test }));
         });
 
         it('native element', () => {
@@ -58,7 +58,7 @@ describe('add handleEvent support', () => {
         });
 
         it('lwc shadow root', () => {
-            test(createElement('x-test', { is: Test }).shadowRoot);
+            test(createElement('c-test', { is: Test }).shadowRoot);
         });
 
         it('native shadow root', () => {
@@ -88,7 +88,7 @@ describe('remove handleEvent support', () => {
         }
 
         it('lwc host element', () => {
-            test(createElement('x-test', { is: Test }));
+            test(createElement('c-test', { is: Test }));
         });
 
         it('native element', () => {
@@ -96,7 +96,7 @@ describe('remove handleEvent support', () => {
         });
 
         it('lwc shadow root', () => {
-            test(createElement('x-test', { is: Test }).shadowRoot);
+            test(createElement('c-test', { is: Test }).shadowRoot);
         });
 
         it('native shadow root', () => {
@@ -117,7 +117,7 @@ describe('remove handleEvent support', () => {
         }
 
         it('lwc host element', () => {
-            test(createElement('x-test', { is: Test }));
+            test(createElement('c-test', { is: Test }));
         });
 
         it('native element', () => {
@@ -125,7 +125,7 @@ describe('remove handleEvent support', () => {
         });
 
         it('lwc shadow root', () => {
-            test(createElement('x-test', { is: Test }).shadowRoot);
+            test(createElement('c-test', { is: Test }).shadowRoot);
         });
 
         it('native shadow root', () => {
@@ -155,7 +155,7 @@ describe('dedupe behavior for add handleEvent', () => {
         }
 
         it('lwc host element', () => {
-            test(createElement('x-test', { is: Test }));
+            test(createElement('c-test', { is: Test }));
         });
 
         it('native element', () => {
@@ -163,7 +163,7 @@ describe('dedupe behavior for add handleEvent', () => {
         });
 
         it('lwc shadow root', () => {
-            test(createElement('x-test', { is: Test }).shadowRoot);
+            test(createElement('c-test', { is: Test }).shadowRoot);
         });
 
         it('native shadow root', () => {
@@ -184,7 +184,7 @@ describe('dedupe behavior for add handleEvent', () => {
         }
 
         it('lwc host element', () => {
-            test(createElement('x-test', { is: Test }));
+            test(createElement('c-test', { is: Test }));
         });
 
         it('native element', () => {
@@ -192,7 +192,7 @@ describe('dedupe behavior for add handleEvent', () => {
         });
 
         it('lwc shadow root', () => {
-            test(createElement('x-test', { is: Test }).shadowRoot);
+            test(createElement('c-test', { is: Test }).shadowRoot);
         });
 
         it('native shadow root', () => {

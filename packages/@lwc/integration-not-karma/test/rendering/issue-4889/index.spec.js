@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import Table from 'x/table';
-import { dataStatesVariant1, dataStatesVariant2, dataStatesVariant3 } from 'x/data';
+import Table from 'c/table';
+import { dataStatesVariant1, dataStatesVariant2, dataStatesVariant3 } from 'c/data';
 
 // TODO [#4889]: fix issue with nested for:each loops and colliding keys
 xdescribe('issue-4889 - should render for:each correctly when nested', () => {
     [dataStatesVariant1, dataStatesVariant2, dataStatesVariant3].forEach((dataStates, i) => {
         it(`variant ${i + 1}`, async () => {
-            const elm = createElement('x-table', { is: Table });
+            const elm = createElement('c-table', { is: Table });
             document.body.appendChild(elm);
 
             for (const dataState of dataStates) {
@@ -19,7 +19,7 @@ xdescribe('issue-4889 - should render for:each correctly when nested', () => {
 
             // whatever state the DOM is in now, it should be the same as if we rendered
             // the last data state from scratch
-            const elm2 = createElement('x-table', { is: Table });
+            const elm2 = createElement('c-table', { is: Table });
             elm2.items = dataStates[dataStates.length - 1];
             document.body.appendChild(elm2);
 

@@ -1,7 +1,7 @@
 import { unwrap, readonly } from 'lwc';
 import { createElement } from 'lwc';
 
-import Wrap from 'x/wrap';
+import Wrap from 'c/wrap';
 
 function testUnwrapIdentity(type, obj) {
     it(`should return the same object if it not wrapped: ${type}`, () => {
@@ -23,7 +23,7 @@ testUnwrapIdentity('Map', new Map([['key', 'value']]));
 it('unwraps api objects', () => {
     const obj = { foo: true };
 
-    const elm = createElement('x-wrap', { is: Wrap });
+    const elm = createElement('c-wrap', { is: Wrap });
     elm.apiWrap = obj;
 
     const wrapObj = elm.getApiWrap();
@@ -35,7 +35,7 @@ it('unwraps api objects', () => {
 it('unwraps track objects', () => {
     const obj = { foo: true };
 
-    const elm = createElement('x-wrap', { is: Wrap });
+    const elm = createElement('c-wrap', { is: Wrap });
 
     const wrapObj = elm.getTrackWrap(obj);
 

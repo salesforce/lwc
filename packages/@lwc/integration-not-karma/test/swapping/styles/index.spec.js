@@ -8,10 +8,10 @@ import LightSimple from 'light/simple';
 import LightStaleProp from 'light/staleProp';
 import LightGlobalSimple from 'light-global/simple';
 import LightGlobalStaleProp from 'light-global/staleProp';
-import LibraryUserA from 'x/libraryUserA';
-import LibraryUserB from 'x/libraryUserB';
-import libraryStyle from 'x/library';
-import libraryStyleV2 from 'x/libraryV2';
+import LibraryUserA from 'c/libraryUserA';
+import LibraryUserB from 'c/libraryUserB';
+import libraryStyle from 'c/library';
+import libraryStyleV2 from 'c/libraryV2';
 import IdenticalStylesheets from 'shadow/identicalStylesheets';
 import IdenticalStylesheetsContainer from 'shadow/identicalStylesheetsContainer';
 import { extractDataIds } from '../../../helpers/utils.js';
@@ -260,8 +260,8 @@ describe.skipIf(process.env.NODE_ENV === 'production')('style swapping', () => {
         let elmB;
 
         beforeEach(async () => {
-            elmA = createElement('x-library-user-a', { is: LibraryUserA });
-            elmB = createElement(`x-library-user-b`, { is: LibraryUserB });
+            elmA = createElement('c-library-user-a', { is: LibraryUserA });
+            elmB = createElement(`c-library-user-b`, { is: LibraryUserB });
             document.body.appendChild(elmA);
             document.body.appendChild(elmB);
 

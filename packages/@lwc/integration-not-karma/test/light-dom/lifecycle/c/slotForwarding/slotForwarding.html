@@ -1,0 +1,16 @@
+<template lwc:render-mode="light">
+    <template lwc:if={showTop}>
+        <c-forwarded-slottable>
+            <c-slotee slot="top"></c-slotee>
+            <c-slotee></c-slotee>
+            <c-slotee slot="bottom"></c-slotee>
+        </c-forwarded-slottable>
+    </template>
+    <template lwc:else>
+        <c-forwarded-slottable>
+            <c-slotee slot="top"></c-slotee>
+            <c-slotee></c-slotee>
+            <c-slotee slot="bottom"></c-slotee>
+        </c-forwarded-slottable>
+    </template>
+</template>

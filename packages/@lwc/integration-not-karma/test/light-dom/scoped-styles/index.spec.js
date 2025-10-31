@@ -1,16 +1,16 @@
 import { createElement } from 'lwc';
-import Basic from 'x/basic';
-import Other from 'x/other';
-import Switchable from 'x/switchable';
-import Unscoped from 'x/unscoped';
-import ShadowWithScoped from 'x/shadowWithScoped';
-import PseudoParent from 'x/pseudoParent';
+import Basic from 'c/basic';
+import Other from 'c/other';
+import Switchable from 'c/switchable';
+import Unscoped from 'c/unscoped';
+import ShadowWithScoped from 'c/shadowWithScoped';
+import PseudoParent from 'c/pseudoParent';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('Light DOM scoped CSS', () => {
     it('should scope scoped CSS and allow unscoped CSS to leak out', () => {
-        const basicElement = createElement('x-basic', { is: Basic });
-        const otherElement = createElement('x-other', { is: Other });
+        const basicElement = createElement('c-basic', { is: Basic });
+        const otherElement = createElement('c-other', { is: Other });
         document.body.appendChild(basicElement);
         document.body.appendChild(otherElement);
 
@@ -27,7 +27,7 @@ describe('Light DOM scoped CSS', () => {
     });
 
     it('should replace scoped styles correctly with dynamic templates', async () => {
-        const elm = createElement('x-switchable', { is: Switchable });
+        const elm = createElement('c-switchable', { is: Switchable });
 
         document.body.appendChild(elm);
 
@@ -51,7 +51,7 @@ describe('Light DOM scoped CSS', () => {
     });
 
     it('only applies styling tokens if scoped styles are present', () => {
-        const elm = createElement('x-unscoped', { is: Unscoped });
+        const elm = createElement('c-unscoped', { is: Unscoped });
 
         document.body.appendChild(elm);
 
@@ -60,19 +60,19 @@ describe('Light DOM scoped CSS', () => {
     });
 
     it('can scope shadow DOM styles as well', () => {
-        const elm = createElement('x-shadow-with-scoped', { is: ShadowWithScoped });
+        const elm = createElement('c-shadow-with-scoped', { is: ShadowWithScoped });
         document.body.appendChild(elm);
         expect(getComputedStyle(elm).backgroundColor).toEqual('rgb(0, 0, 255)');
         expect(getComputedStyle(elm.shadowRoot.querySelector('div')).color).toEqual(
             'rgb(255, 0, 0)'
         );
         expect(
-            getComputedStyle(elm.shadowRoot.querySelector('x-light-child div')).color
+            getComputedStyle(elm.shadowRoot.querySelector('c-light-child div')).color
         ).not.toEqual('rgb(255, 0, 0)');
     });
 
     it('properly scopes pseudo-elements', () => {
-        const elm = createElement('x-pseudo-parent', { is: PseudoParent });
+        const elm = createElement('c-pseudo-parent', { is: PseudoParent });
         document.body.appendChild(elm);
         const ids = extractDataIds(elm);
 

@@ -8,36 +8,36 @@ import {
     sanitizeAttribute as sanitizeAttributeSpy,
 } from 'lwc';
 
-import XlinkStatic from 'x/xlinkStatic';
-import XlinkDynamic from 'x/xlinkDynamic';
-import XlinkBooleanTrue from 'x/xlinkBooleanTrue';
-import HrefStatic from 'x/hrefStatic';
-import HrefDynamic from 'x/hrefDynamic';
-import HrefBooleanTrue from 'x/hrefBooleanTrue';
+import XlinkStatic from 'c/xlinkStatic';
+import XlinkDynamic from 'c/xlinkDynamic';
+import XlinkBooleanTrue from 'c/xlinkBooleanTrue';
+import HrefStatic from 'c/hrefStatic';
+import HrefDynamic from 'c/hrefDynamic';
+import HrefBooleanTrue from 'c/hrefBooleanTrue';
 
 const scenarios = [
     {
         type: 'static',
         attrName: 'xlink:href',
-        tagName: 'x-xlink-static',
+        tagName: 'c-xlink-static',
         Ctor: XlinkStatic,
     },
     {
         type: 'dynamic',
         attrName: 'xlink:href',
-        tagName: 'x-xlink-dynamic',
+        tagName: 'c-xlink-dynamic',
         Ctor: XlinkDynamic,
     },
     {
         type: 'static',
         attrName: 'href',
-        tagName: 'x-href-static',
+        tagName: 'c-href-static',
         Ctor: HrefStatic,
     },
     {
         type: 'dynamic',
         attrName: 'href',
-        tagName: 'x-href-dynamic',
+        tagName: 'c-href-dynamic',
         Ctor: HrefDynamic,
     },
 ];
@@ -94,12 +94,12 @@ scenarios.forEach(({ type, attrName, tagName, Ctor }) => {
 const booleanTrueScenarios = [
     {
         attrName: 'xlink:href',
-        tagName: 'x-xlink-boolean-true',
+        tagName: 'c-xlink-boolean-true',
         Ctor: XlinkBooleanTrue,
     },
     {
         attrName: 'href',
-        tagName: 'x-href-boolean-true',
+        tagName: 'c-href-boolean-true',
         Ctor: HrefBooleanTrue,
     },
 ];

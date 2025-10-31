@@ -2,7 +2,7 @@
 // https://github.com/web-platform-tests/wpt/blob/master/shadow-dom/event-post-dispatch.html
 
 import { createElement } from 'lwc';
-import Container from 'x/container';
+import Container from 'c/container';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function assertEventStateReset(evt) {
@@ -12,8 +12,8 @@ function assertEventStateReset(evt) {
 }
 
 function createComponent() {
-    const element = createElement('x-container', { is: Container });
-    element.setAttribute('data-id', 'x-container');
+    const element = createElement('c-container', { is: Container });
+    element.setAttribute('data-id', 'c-container');
     document.body.appendChild(element);
     return extractDataIds(element);
 }
@@ -26,7 +26,7 @@ describe('post-dispatch event state', () => {
             nodes.container_div.dispatchEvent(event);
 
             assertEventStateReset(event);
-            expect(event.target).toBe(nodes['x-container']);
+            expect(event.target).toBe(nodes['c-container']);
         });
 
         it('{ bubbles: true, composed: false }', () => {
@@ -48,7 +48,7 @@ describe('post-dispatch event state', () => {
             // lwc:dom=manual is async due to MutationObserver
             await new Promise(setTimeout);
             assertEventStateReset(event);
-            expect(event.target).toBe(nodes['x-container']);
+            expect(event.target).toBe(nodes['c-container']);
         });
 
         it('{ bubbles: true, composed: false }', async () => {
@@ -67,19 +67,19 @@ describe('post-dispatch event state', () => {
         it('{ bubbles: true, composed: true }', () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: true });
-            nodes['x-container'].dispatchEventComponent(event);
+            nodes['c-container'].dispatchEventComponent(event);
 
             assertEventStateReset(event);
-            expect(event.target).toBe(nodes['x-container']);
+            expect(event.target).toBe(nodes['c-container']);
         });
 
         it('{ bubbles: true, composed: false }', () => {
             const nodes = createComponent();
             const event = new CustomEvent('test', { bubbles: true, composed: false });
-            nodes['x-container'].dispatchEventComponent(event);
+            nodes['c-container'].dispatchEventComponent(event);
 
             assertEventStateReset(event);
-            expect(event.target).toBe(nodes['x-container']);
+            expect(event.target).toBe(nodes['c-container']);
         });
     });
 });

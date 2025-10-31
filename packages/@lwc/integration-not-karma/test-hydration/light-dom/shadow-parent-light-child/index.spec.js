@@ -1,7 +1,7 @@
 /** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
-        const lightChild = target.shadowRoot.querySelector('[data-id="x-light-child"]');
+        const lightChild = target.shadowRoot.querySelector('[data-id="c-light-child"]');
 
         return {
             lightParent: target,

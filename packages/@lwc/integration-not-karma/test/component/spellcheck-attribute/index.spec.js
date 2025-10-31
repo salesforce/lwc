@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
-import Container from 'x/container';
-import Dynamic from 'x/dynamic';
+import Container from 'c/container';
+import Dynamic from 'c/dynamic';
 
 function getSpellcheckValue(container, selector) {
     const elm = container.shadowRoot.querySelector(selector);
@@ -17,7 +17,7 @@ function getSpellcheckPropertyValue(container, selector) {
 
 describe('setting static values on custom elements', () => {
     it('should render the correct attribute value', () => {
-        const elm = createElement('x-container', { is: Container });
+        const elm = createElement('c-container', { is: Container });
         document.body.appendChild(elm);
 
         expect(getSpellcheckValue(elm, '.ce.boolean-true-v')).toBe('true');
@@ -31,7 +31,7 @@ describe('setting static values on custom elements', () => {
     });
 
     it('should have the correct property value', () => {
-        const elm = createElement('x-container', { is: Container });
+        const elm = createElement('c-container', { is: Container });
         document.body.appendChild(elm);
 
         expect(getSpellcheckPropertyValue(elm, '.ce.boolean-true-v')).toBe(true);
@@ -47,7 +47,7 @@ describe('setting static values on custom elements', () => {
 
 describe('setting static values on non custom elements', () => {
     it('should have the correct property value', () => {
-        const elm = createElement('x-container', { is: Container });
+        const elm = createElement('c-container', { is: Container });
         document.body.appendChild(elm);
 
         expect(getSpellcheckValue(elm, 'div.boolean-true-v')).toBe('');
@@ -61,7 +61,7 @@ describe('setting static values on non custom elements', () => {
     });
 
     it('should render the correct attribute value', () => {
-        const elm = createElement('x-container', { is: Container });
+        const elm = createElement('c-container', { is: Container });
         document.body.appendChild(elm);
 
         // We explicitly don't test the prop value for `.ce.boolean-true-v` here,
@@ -78,7 +78,7 @@ describe('setting static values on non custom elements', () => {
 
 describe('dynamically updating the spellcheck attribute', () => {
     it('sets the initial value', async () => {
-        const elm = createElement('x-dynamic', { is: Dynamic });
+        const elm = createElement('c-dynamic', { is: Dynamic });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -101,7 +101,7 @@ describe('dynamically updating the spellcheck attribute', () => {
 
     for (const [setValue, expectedAttrValue] of valuesAndExpectations) {
         it(`sets the value to ${JSON.stringify(setValue)}`, async () => {
-            const elm = createElement('x-dynamic', { is: Dynamic });
+            const elm = createElement('c-dynamic', { is: Dynamic });
             document.body.appendChild(elm);
 
             elm.theSpellcheck = setValue;

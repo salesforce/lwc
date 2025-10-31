@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
-import Computed from 'x/computed';
+import Test from 'c/test';
+import Computed from 'c/computed';
 
 function assertPropAndAttribute(testElement) {
     const expectedPropertyValue = testElement.hasAttribute('data-expected');
@@ -13,7 +13,7 @@ function assertPropAndAttribute(testElement) {
 
 describe('boolean attribute', () => {
     it('should set the right property and attribute value', () => {
-        const host = createElement('x-test', { is: Test });
+        const host = createElement('c-test', { is: Test });
         document.body.appendChild(host);
 
         const elms = host.shadowRoot.querySelectorAll('.test-case');
@@ -28,7 +28,7 @@ describe('boolean attribute', () => {
     });
 
     it('should be added/removed when used with computed value in html element', async () => {
-        const elm = createElement('x-computed', { is: Computed });
+        const elm = createElement('c-computed', { is: Computed });
         document.body.appendChild(elm);
 
         await Promise.resolve();

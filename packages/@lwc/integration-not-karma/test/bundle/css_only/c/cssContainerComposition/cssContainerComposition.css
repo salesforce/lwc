@@ -1,0 +1,5 @@
+@import 'c/onlyCssComposition';
+
+div {
+    border: 1px dashed blue;
+}

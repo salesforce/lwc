@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import ResetExtendsAny from 'x/resetExtendsAny';
-import LightContainer from 'x/lightContainer';
-import NativeContainer from 'x/nativeContainer';
+import ResetExtendsAny from 'c/resetExtendsAny';
+import LightContainer from 'c/lightContainer';
+import NativeContainer from 'c/nativeContainer';
 import {
     isNativeShadowRootInstance,
     isSyntheticShadowRootInstance,
@@ -13,7 +13,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
         let elm;
 
         beforeEach(() => {
-            elm = createElement('x-native-container', { is: NativeContainer });
+            elm = createElement('c-native-container', { is: NativeContainer });
             document.body.appendChild(elm);
         });
 
@@ -22,25 +22,25 @@ describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
         });
 
         it('should not attach shadow root for child light component', () => {
-            const light = elm.shadowRoot.querySelector('x-light-container');
+            const light = elm.shadowRoot.querySelector('c-light-container');
             expect(light.shadowRoot).toBeNull();
         });
 
         it('should attach a native shadow root when possible for child synthetic component', () => {
-            const light = elm.shadowRoot.querySelector('x-light-container');
-            const synthetic = light.querySelector('x-synthetic');
+            const light = elm.shadowRoot.querySelector('c-light-container');
+            const synthetic = light.querySelector('c-synthetic');
             expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
 
         it('should attach a native shadow root when possible for child synthetic component with shadowSupportMode="reset"', () => {
-            const light = elm.shadowRoot.querySelector('x-light-container');
-            const synthetic = light.querySelector('x-synthetic-reset');
+            const light = elm.shadowRoot.querySelector('c-light-container');
+            const synthetic = light.querySelector('c-synthetic-reset');
             expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
 
         it('should attach a native shadow root when possible for slotted synthetic', () => {
-            const light = elm.shadowRoot.querySelector('x-light-container');
-            const synthetic = light.querySelector('x-synthetic.slot-slotted');
+            const light = elm.shadowRoot.querySelector('c-light-container');
+            const synthetic = light.querySelector('c-synthetic.slot-slotted');
             expect(isNativeShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
     });
@@ -49,7 +49,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
         let elm;
 
         beforeEach(() => {
-            elm = createElement('x-light-container', { is: LightContainer });
+            elm = createElement('c-light-container', { is: LightContainer });
             document.body.appendChild(elm);
         });
 
@@ -58,17 +58,17 @@ describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
         });
 
         it('should attach a synthetic shadow root for child synthetic component', () => {
-            const synthetic = elm.querySelector('x-synthetic');
+            const synthetic = elm.querySelector('c-synthetic');
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
 
         it('should attach a synthetic shadow root for slotted synthetic component', () => {
-            const synthetic = elm.querySelector('x-synthetic.slot-slotted');
+            const synthetic = elm.querySelector('c-synthetic.slot-slotted');
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
 
         it('should attach a synthetic shadow root to child component slotted into native component', () => {
-            const synthetic = elm.querySelector('x-synthetic.native-slotted');
+            const synthetic = elm.querySelector('c-synthetic.native-slotted');
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
     });
@@ -77,7 +77,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
         let elm;
 
         beforeEach(() => {
-            elm = createElement('x-reset-extends-any', {
+            elm = createElement('c-reset-extends-any', {
                 is: ResetExtendsAny,
             });
             document.body.appendChild(elm);
@@ -88,8 +88,8 @@ describe.skipIf(process.env.NATIVE_SHADOW)('transitivity', () => {
         });
 
         it('should attach synthetic shadow root for descendant synthetic component', () => {
-            const light = elm.shadowRoot.querySelector('x-light-container');
-            const synthetic = light.querySelector('x-synthetic');
+            const light = elm.shadowRoot.querySelector('c-light-container');
+            const synthetic = light.querySelector('c-synthetic');
             expect(isSyntheticShadowRootInstance(synthetic.shadowRoot)).toBeTrue();
         });
     });

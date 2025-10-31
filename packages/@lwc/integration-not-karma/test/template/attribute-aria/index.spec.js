@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Parent from 'x/parent';
+import Parent from 'c/parent';
 import { ariaAttributes, ariaProperties, ariaPropertiesMapping } from '../../../helpers/aria.js';
 
 describe('setting aria attributes', () => {
@@ -7,10 +7,10 @@ describe('setting aria attributes', () => {
     let childDiv;
 
     beforeEach(() => {
-        const elm = createElement('x-parent', { is: Parent });
+        const elm = createElement('c-parent', { is: Parent });
         document.body.appendChild(elm);
 
-        childComponent = elm.shadowRoot.querySelector('x-child');
+        childComponent = elm.shadowRoot.querySelector('c-child');
         childDiv = elm.shadowRoot.querySelector('div');
     });
 

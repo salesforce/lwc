@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import LightContainer from 'x/lightContainer';
-import ShadowContainer from 'x/shadowContainer';
+import LightContainer from 'c/lightContainer';
+import ShadowContainer from 'c/shadowContainer';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('Light DOM + Synthetic Shadow DOM', () => {
     describe('light -> shadow', () => {
         let elm, nodes;
         beforeEach(() => {
-            elm = createElement('x-light-container', {
+            elm = createElement('c-light-container', {
                 is: LightContainer,
             });
             document.body.appendChild(elm);
@@ -57,24 +57,24 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
                 '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
             );
             expect(elm.innerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<c-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</c-consumer>'
             );
         });
         // TODO [#2425]: Incorrect serialization
         xit('outerHTML', () => {
             expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');
             expect(nodes.consumer.outerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<c-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</c-consumer>'
             );
             expect(elm.outerHTML).toEqual(
-                '<x-light-container><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
+                '<c-light-container><c-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</c-consumer></c-light-container>'
             );
         });
 
         describe('light -> shadow getRootNode()', () => {
             let elm, nodes;
             beforeEach(() => {
-                elm = createElement('x-light-container', {
+                elm = createElement('c-light-container', {
                     is: LightContainer,
                 });
                 document.body.appendChild(elm);
@@ -90,7 +90,7 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
     describe('shadow -> light -> shadow', () => {
         let elm, nodes;
         beforeEach(() => {
-            elm = createElement('x-shadow-container', {
+            elm = createElement('c-shadow-container', {
                 is: ShadowContainer,
             });
             document.body.appendChild(elm);
@@ -136,16 +136,16 @@ describe('Light DOM + Synthetic Shadow DOM', () => {
                 '<p data-id="p">I am an assigned element.</p>I am an assigned text.'
             );
             expect(nodes['light-container'].innerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<c-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</c-consumer>'
             );
         });
         it('outerHTML', () => {
             expect(nodes.p.outerHTML).toEqual('<p data-id="p">I am an assigned element.</p>');
             expect(nodes.consumer.outerHTML).toEqual(
-                '<x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer>'
+                '<c-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</c-consumer>'
             );
             expect(nodes['light-container'].outerHTML).toEqual(
-                '<x-light-container data-id="light-container"><x-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</x-consumer></x-light-container>'
+                '<c-light-container data-id="light-container"><c-consumer data-id="consumer"><p data-id="p">I am an assigned element.</p>I am an assigned text.</c-consumer></c-light-container>'
             );
         });
 

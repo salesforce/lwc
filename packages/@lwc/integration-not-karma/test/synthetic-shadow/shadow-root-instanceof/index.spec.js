@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Component from 'x/component';
+import Component from 'c/component';
 
 describe('shadowRoot instanceof', () => {
     it('div.attachShadow() should have instanceof ShadowRoot === true', () => {
@@ -10,7 +10,7 @@ describe('shadowRoot instanceof', () => {
     });
 
     it('element.shadowRoot should have instanceof ShadowRoot === true', () => {
-        const el = createElement('x-component', { is: Component });
+        const el = createElement('c-component', { is: Component });
         document.body.appendChild(el);
         expect(el.shadowRoot instanceof ShadowRoot).toEqual(true);
     });

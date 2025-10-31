@@ -1,6 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 // A bug (W-19830319) has shown that if child component properties are incorrectly marked for observation by the lifecycle, they can trigger the parent component to re-render
 // and this will cause undesired effects. This bug manifested due to context connection/disconnection erroneously accessing properties, but it could theoretically occur in any instance where
@@ -11,7 +11,7 @@ describe('Unobserved properties should trigger additional re-renders', () => {
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
         setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', true);
 
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         // Specific sequence (it is rather nuanced and requires 1. parent to switch templates and 2. child to mutate a property in a setTimeout function or similar):
         // 1. The template change results in the parent component being marked as dirty.
@@ -35,7 +35,7 @@ describe('Unobserved properties should trigger additional re-renders', () => {
         setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', true);
         setFeatureFlagForTest('DISABLE_DETACHED_REHYDRATION', true);
 
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         elm.switchToEmptyTemplate();
 
@@ -58,7 +58,7 @@ describe('Unobserved properties should NOT trigger additional re-renders', () =>
         setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', false);
         setFeatureFlagForTest('DISABLE_DETACHED_REHYDRATION', true);
 
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         elm.switchToEmptyTemplate();
 
@@ -72,7 +72,7 @@ describe('Unobserved properties should NOT trigger additional re-renders', () =>
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
         setFeatureFlagForTest('ENABLE_LEGACY_CONTEXT_CONNECTION', false);
 
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         elm.switchToEmptyTemplate();
 
@@ -85,7 +85,7 @@ describe('Unobserved properties should NOT trigger additional re-renders', () =>
     it('when signals is disabled', async () => {
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
 
-        const elm = createElement('x-test', { is: Test });
+        const elm = createElement('c-test', { is: Test });
         document.body.appendChild(elm);
         elm.switchToEmptyTemplate();
 

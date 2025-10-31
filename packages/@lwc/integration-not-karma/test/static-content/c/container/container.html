@@ -1,0 +1,22 @@
+<template>
+  <template if:true={syntheticFirst}>
+    <h1>
+      Synthetic:
+    </h1>
+    <c-component></c-component>
+    <h1>
+      Native:
+    </h1>
+    <c-native></c-native>
+  </template>
+  <template if:false={syntheticFirst}>
+    <h1>
+      Native:
+    </h1>
+    <c-native></c-native>
+    <h1>
+      Synthetic:
+    </h1>
+    <c-component></c-component>
+  </template>
+</template>

@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import Container from 'x/cssContainer';
-import ContainerComposition from 'x/cssContainerComposition';
+import Container from 'c/cssContainer';
+import ContainerComposition from 'c/cssContainerComposition';
 
 describe('CSS only modules', () => {
     it('CSS should be applied', async function () {
-        const elm = createElement('x-css-container', { is: Container });
+        const elm = createElement('c-css-container', { is: Container });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -18,7 +18,7 @@ describe('CSS only modules', () => {
     });
 
     it('should support CSS only module referencing other CSS only modules', async () => {
-        const elm = createElement('x-css-container-composition', { is: ContainerComposition });
+        const elm = createElement('c-css-container-composition', { is: ContainerComposition });
         document.body.appendChild(elm);
 
         await Promise.resolve();

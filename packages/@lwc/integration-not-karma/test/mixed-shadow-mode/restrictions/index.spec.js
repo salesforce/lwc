@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import Component from 'x/component';
+import Component from 'c/component';
 
 describe('restrictions', () => {
     let elm;
     beforeEach(() => {
-        elm = createElement('x-component', { is: Component });
+        elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
     });
 

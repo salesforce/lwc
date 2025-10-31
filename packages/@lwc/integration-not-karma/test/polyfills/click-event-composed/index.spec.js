@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 
-import Test from 'x/test';
+import Test from 'c/test';
 
 it('should set the composed property to true when invoking click() on an element', () => {
     let clickEvent;
@@ -21,7 +21,7 @@ it('should set the composed property to true when invoking click() on an element
 it('should let the event bubble throws the shadow root when invoking click() on an element in the shadow', () => {
     let clickEvent;
 
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     document.body.appendChild(elm);
     elm.addEventListener('click', (evt) => {
         clickEvent = evt;

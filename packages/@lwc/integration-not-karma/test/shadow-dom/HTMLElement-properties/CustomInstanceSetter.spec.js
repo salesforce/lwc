@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import CustomInstanceSetter from 'x/customInstanceSetter';
+import CustomInstanceSetter from 'c/customInstanceSetter';
 
 describe('accessing public properties defined on component', () => {
     it('should allow redefining a public property on component instance', () => {
-        const elm = createElement('x-foo', { is: CustomInstanceSetter });
+        const elm = createElement('c-foo', { is: CustomInstanceSetter });
         elm.foo = 1;
         document.body.appendChild(elm);
         elm.setFoo();

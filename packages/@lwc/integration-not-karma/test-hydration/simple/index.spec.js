@@ -16,7 +16,7 @@ export default {
         expect(p.firstChild).toBe(snapshots.text);
         expect(p.textContent).toBe('hello!');
         expect(customElements.get(target.tagName.toLowerCase())).not.toBeUndefined();
-        expect(customElements.get('x-child')).not.toBeUndefined();
+        expect(customElements.get('c-child')).not.toBeUndefined();
 
         target.greeting = 'bye!';
 

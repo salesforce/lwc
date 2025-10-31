@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import Component from 'x/component';
+import Component from 'c/component';
 
 describe('host pseudo', () => {
     // TODO [#3225]: we should  not support selector lists in :host()
     it(`supports :host() pseudo class`, async () => {
-        const elm = createElement('x-component', { is: Component });
+        const elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
         const div = elm.querySelector('.quux');
 

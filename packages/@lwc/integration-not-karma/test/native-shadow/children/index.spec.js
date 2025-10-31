@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Slottable from 'x/slottable';
+import Slottable from 'c/slottable';
 
 describe('children', () => {
     function expectOneSpanChild(slot) {
@@ -24,7 +24,7 @@ describe('children', () => {
     });
 
     it('should have correct HTMLSlotElement.prototype.children behavior for LWC-created slots', () => {
-        const el = createElement('x-slottable', { is: Slottable });
+        const el = createElement('c-slottable', { is: Slottable });
         document.body.appendChild(el);
 
         const slot = el.shadowRoot.querySelector('slot');

@@ -1,12 +1,12 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import Test from 'x/test';
-import { Signal } from 'x/signal';
+import Test from 'c/test';
+import { Signal } from 'c/signal';
 import { spyOn } from '@vitest/spy';
 import { resetTrustedSignals } from '../../../helpers/reset';
 
 const createElementSignalAndInsertIntoDom = async (object) => {
-    const elm = createElement('x-test', { is: Test });
+    const elm = createElement('c-test', { is: Test });
     elm.object = object;
     document.body.appendChild(elm);
     await Promise.resolve();

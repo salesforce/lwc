@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import A from 'x/a';
-import B from 'x/b';
+import A from 'c/a';
+import B from 'c/b';
 
 describe('keyframes', () => {
     it('animation applies to element with local keyframes', () => {
-        const el = createElement('x-a', { is: A });
+        const el = createElement('c-a', { is: A });
         document.body.appendChild(el);
 
         const div = el.shadowRoot.querySelector('div');
@@ -14,7 +14,7 @@ describe('keyframes', () => {
     });
 
     it('animation does not apply to element with keyframes from outside element', () => {
-        const el = createElement('x-b', { is: B });
+        const el = createElement('c-b', { is: B });
         document.body.appendChild(el);
 
         const div = el.shadowRoot.querySelector('div');

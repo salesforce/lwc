@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import Component from 'x/component';
+import Component from 'c/component';
 import { resetDOM } from '../../../helpers/reset';
 
 afterEach(resetDOM);
 
 describe('important styling and style override', () => {
     it('should render !important styles correctly', async () => {
-        const elm = createElement('x-component', { is: Component });
+        const elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -19,7 +19,7 @@ describe('important styling and style override', () => {
     });
 
     it('should render inline styles correctly', async () => {
-        const elm = createElement('x-component', { is: Component });
+        const elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -32,7 +32,7 @@ describe('important styling and style override', () => {
     });
 
     it('should render untouched styles correctly', async () => {
-        const elm = createElement('x-component', { is: Component });
+        const elm = createElement('c-component', { is: Component });
         document.body.appendChild(elm);
 
         await Promise.resolve();

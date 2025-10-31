@@ -12,12 +12,12 @@ export default {
     },
     requiredFeatureFlags: ['ENABLE_EXPERIMENTAL_SIGNALS'],
     snapshot(target) {
-        const grandparent = target.shadowRoot.querySelector('x-grandparent');
-        const detachedChild = target.shadowRoot.querySelector('x-child');
-        const firstParent = grandparent.shadowRoot.querySelectorAll('x-parent')[0];
-        const secondParent = grandparent.shadowRoot.querySelectorAll('x-parent')[1];
-        const childOfFirstParent = firstParent.shadowRoot.querySelector('x-child');
-        const childOfSecondParent = secondParent.shadowRoot.querySelector('x-child');
+        const grandparent = target.shadowRoot.querySelector('c-grandparent');
+        const detachedChild = target.shadowRoot.querySelector('c-child');
+        const firstParent = grandparent.shadowRoot.querySelectorAll('c-parent')[0];
+        const secondParent = grandparent.shadowRoot.querySelectorAll('c-parent')[1];
+        const childOfFirstParent = firstParent.shadowRoot.querySelector('c-child');
+        const childOfSecondParent = secondParent.shadowRoot.querySelector('c-child');
 
         return {
             components: {

@@ -1,0 +1,14 @@
+<template>
+    <template lwc:if={show}>
+        <c-leaf name="T1-1"></c-leaf>
+        <template lwc:if={show}>
+            <c-leaf name="T1-2"></c-leaf>
+            <template lwc:if={show}>
+                <c-leaf name="T1-3"></c-leaf>
+                <c-leaf name="T1-4"></c-leaf>
+            </template>
+            <c-leaf name="T1-5"></c-leaf>
+        </template>
+        <c-leaf name="T1-6"></c-leaf>
+    </template>
+</template>

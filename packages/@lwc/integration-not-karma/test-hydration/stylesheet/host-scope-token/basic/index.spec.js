@@ -1,7 +1,7 @@
 /** @type {import('../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
-        const child = target.querySelector('x-child');
+        const child = target.querySelector('c-child');
         return {
             child,
             classList: new Set([...child.classList]),
@@ -9,7 +9,7 @@ export default {
         };
     },
     test(target, snapshots, consoleCalls) {
-        const child = target.querySelector('x-child');
+        const child = target.querySelector('c-child');
         const h1 = target.querySelector('h1');
         expect(child).toBe(snapshots.child);
         expect(h1).toBe(snapshots.h1);

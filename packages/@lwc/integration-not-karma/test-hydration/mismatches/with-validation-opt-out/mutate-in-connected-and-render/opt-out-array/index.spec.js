@@ -2,7 +2,7 @@
 export default {
     snapshot(target) {
         return {
-            child: target.shadowRoot.querySelector('x-child'),
+            child: target.shadowRoot.querySelector('c-child'),
         };
     },
     test(target, snapshots, consoleCalls) {

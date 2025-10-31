@@ -1,0 +1,8 @@
+<template>
+    <template if:true={state.error}>
+        <div class='constructor-alternative'>constructor alternative view</div>
+    </template>
+    <template if:false={state.error}>
+        <c-child-constructor-wrapper></c-child-constructor-wrapper>
+    </template>
+</template>

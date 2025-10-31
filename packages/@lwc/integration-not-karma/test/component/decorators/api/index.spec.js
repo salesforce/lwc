@@ -1,23 +1,23 @@
 import { createElement, LightningElement, api } from 'lwc';
 
-import GetterSetterAndProp from 'x/getterSetterAndProp';
-import Properties from 'x/properties';
-import Mutate from 'x/mutate';
-import GetterSetter from 'x/getterSetter';
-import ConstructorGetterAccess from 'x/constructorGetterAccess';
-import Reactivity from 'x/reactivity';
-import Methods from 'x/methods';
-import Inheritance from 'x/inheritance';
-import NullInitialValue from 'x/nullInitialValue';
-import ExtendsMixin from 'x/extendsMixin';
-import StaticProperty from 'x/staticProperty';
-import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
-import NoSetter from 'x/noSetter';
+import GetterSetterAndProp from 'c/getterSetterAndProp';
+import Properties from 'c/properties';
+import Mutate from 'c/mutate';
+import GetterSetter from 'c/getterSetter';
+import ConstructorGetterAccess from 'c/constructorGetterAccess';
+import Reactivity from 'c/reactivity';
+import Methods from 'c/methods';
+import Inheritance from 'c/inheritance';
+import NullInitialValue from 'c/nullInitialValue';
+import ExtendsMixin from 'c/extendsMixin';
+import StaticProperty from 'c/staticProperty';
+import duplicatePropertyTemplate from 'c/duplicatePropertyTemplate';
+import NoSetter from 'c/noSetter';
 import { getPropertyDescriptor } from '../../../../helpers/utils.js';
 
 describe('properties', () => {
     it('should expose class properties with the api decorator', () => {
-        const elm = createElement('x-properties', { is: Properties });
+        const elm = createElement('c-properties', { is: Properties });
         document.body.appendChild(elm);
 
         expect(elm.publicProp).toBeDefined();
@@ -27,7 +27,7 @@ describe('properties', () => {
     });
 
     it('should make the public property reactive if used in the template', async () => {
-        const elm = createElement('x-reactive', { is: Reactivity });
+        const elm = createElement('c-reactive', { is: Reactivity });
         document.body.appendChild(elm);
 
         expect(elm.getRenderCount()).toBe(1);
@@ -38,7 +38,7 @@ describe('properties', () => {
     });
 
     it('should make the public property not reactive if not used in the template', async () => {
-        const elm = createElement('x-reactive', { is: Reactivity });
+        const elm = createElement('c-reactive', { is: Reactivity });
         document.body.appendChild(elm);
 
         expect(elm.getRenderCount()).toBe(1);
@@ -49,7 +49,7 @@ describe('properties', () => {
     });
 
     it('throws an error when attempting set a property of a public property', () => {
-        const elm = createElement('x-mutate', { is: Mutate });
+        const elm = createElement('c-mutate', { is: Mutate });
         elm.publicProp = { x: 0 };
         document.body.appendChild(elm);
 
@@ -61,7 +61,7 @@ describe('properties', () => {
     });
 
     it("probably shouldn't work on a static prop, but it does", () => {
-        const elm = createElement('x-static-property', { is: StaticProperty });
+        const elm = createElement('c-static-property', { is: StaticProperty });
         expect(StaticProperty.staticProperty).toBe('wot');
         expect(elm.staticProperty).toBe(undefined);
         elm.staticProperty = 'weird';
@@ -72,7 +72,7 @@ describe('properties', () => {
 
 describe('getter/setter', () => {
     it('should expose public getters and setters', () => {
-        const elm = createElement('x-getter-setter', { is: GetterSetter });
+        const elm = createElement('c-getter-setter', { is: GetterSetter });
 
         elm.publicAccessor = 'test';
         expect(elm.publicAccessor).toBe('test:setter:getter');
@@ -80,14 +80,14 @@ describe('getter/setter', () => {
 
     it('should allow calling the getter and setter during construction', () => {
         expect(() => {
-            createElement('x-constructor-getter-access', { is: ConstructorGetterAccess });
+            createElement('c-constructor-getter-access', { is: ConstructorGetterAccess });
         }).not.toThrow();
     });
 });
 
 describe('methods', () => {
     it('should only expose methods with the api decorator', () => {
-        const elm = createElement('x-methods', { is: Methods });
+        const elm = createElement('c-methods', { is: Methods });
 
         expect(elm.publicMethod).toBeDefined();
         expect(() => {
@@ -97,7 +97,7 @@ describe('methods', () => {
 
     it('should invoke the method with the right this value and arguments', () => {
         const param = {};
-        const elm = createElement('x-methods', { is: Methods });
+        const elm = createElement('c-methods', { is: Methods });
 
         const { thisValue, args } = elm.publicMethod(param);
         expect(thisValue instanceof Methods).toBe(true);
@@ -119,7 +119,7 @@ describe('inheritance', () => {
     cases.forEach(({ type, Component }) => {
         describe(type, () => {
             it('should inherit the public props from the base class', () => {
-                const elm = createElement('x-inheritance', { is: Component });
+                const elm = createElement('c-inheritance', { is: Component });
 
                 expect(elm.base).toBe('base');
                 expect(elm.child).toBe('child');
@@ -127,7 +127,7 @@ describe('inheritance', () => {
             });
 
             it('should inherit the public methods from the base class', () => {
-                const elm = createElement('x-inheritance', { is: Component });
+                const elm = createElement('c-inheritance', { is: Component });
 
                 expect(elm.baseMethod()).toBe('base');
                 expect(elm.childMethod()).toBe('child');
@@ -138,7 +138,7 @@ describe('inheritance', () => {
 });
 
 it('should not log an error when initializing api value to null', () => {
-    const elm = createElement('x-foo-init-api', { is: NullInitialValue });
+    const elm = createElement('c-foo-init-api', { is: NullInitialValue });
 
     expect(() => document.body.appendChild(elm)).not.toLogErrorDev();
 });
@@ -198,7 +198,7 @@ describe('non-LightningElement `this` when calling accessor', () => {
     let elm;
 
     beforeEach(() => {
-        elm = createElement('x-getter-setter-and-prop', { is: GetterSetterAndProp });
+        elm = createElement('c-getter-setter-and-prop', { is: GetterSetterAndProp });
         document.body.appendChild(elm);
     });
 
@@ -274,7 +274,7 @@ describe('regression [W-9927596]', () => {
                 /Invalid observed foo field\. Found a duplicate accessor with the same name\./
             );
 
-            const elm = createElement('x-duplicate-property', { is: Ctor });
+            const elm = createElement('c-duplicate-property', { is: Ctor });
             document.body.appendChild(elm);
 
             expect(elm.shadowRoot.querySelector('p').textContent).toBe('public');
@@ -315,7 +315,7 @@ describe('regression [W-9927596]', () => {
                 /Invalid @api foo field\. Found a duplicate accessor with the same name\./
             );
 
-            const elm = createElement('x-duplicate-property', { is: Ctor });
+            const elm = createElement('c-duplicate-property', { is: Ctor });
             elm.foo = 'test';
 
             document.body.appendChild(elm);
@@ -357,7 +357,7 @@ describe('regression [W-9927596]', () => {
                     /Invalid observed foo field\. Found a duplicate accessor with the same name\./
                 );
 
-                const elm = createElement('x-duplicate-accessor', { is: Ctor });
+                const elm = createElement('c-duplicate-accessor', { is: Ctor });
                 elm.foo = 'test';
 
                 document.body.appendChild(elm);
@@ -398,7 +398,7 @@ describe('regression [W-9927596]', () => {
                     /Invalid observed foo field\. Found a duplicate accessor with the same name\./
                 );
 
-                const elm = createElement('x-duplicate-accessor', { is: Ctor });
+                const elm = createElement('c-duplicate-accessor', { is: Ctor });
                 elm.foo = 'test';
 
                 document.body.appendChild(elm);
@@ -410,7 +410,7 @@ describe('regression [W-9927596]', () => {
     });
 
     it('logs an error when attempting to set property when there is no setter', () => {
-        const elm = createElement('x-no-setter', { is: NoSetter });
+        const elm = createElement('c-no-setter', { is: NoSetter });
 
         document.body.appendChild(elm);
 

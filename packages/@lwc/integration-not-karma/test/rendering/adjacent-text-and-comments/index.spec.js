@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import Preserve from 'x/preserve';
-import Ignore from 'x/ignore';
+import Preserve from 'c/preserve';
+import Ignore from 'c/ignore';
 
 it('renders adjacent text/comments without lwc:preserve-comments', async () => {
-    const elm = createElement('x-ignore', { is: Ignore });
+    const elm = createElement('c-ignore', { is: Ignore });
     document.body.appendChild(elm);
 
     await Promise.resolve();
@@ -16,7 +16,7 @@ it('renders adjacent text/comments without lwc:preserve-comments', async () => {
 });
 
 it('renders adjacent text/comments with lwc:preserve-comments', async () => {
-    const elm = createElement('x-preserve', { is: Preserve });
+    const elm = createElement('c-preserve', { is: Preserve });
     document.body.appendChild(elm);
 
     await Promise.resolve();

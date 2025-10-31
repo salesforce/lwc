@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
 
-import BasicSlot from 'x/basicSlot';
-import DynamicChildren from 'x/dynamicChildren';
-import LightConsumer from 'x/lightConsumer';
-import ShadowConsumer from 'x/shadowConsumer';
-import ConditionalSlot from 'x/conditionalSlot';
-import ConditionalSlotted from 'x/conditionalSlotted';
-import ForwardedSlotConsumer from 'x/forwardedSlotConsumer';
+import BasicSlot from 'c/basicSlot';
+import DynamicChildren from 'c/dynamicChildren';
+import LightConsumer from 'c/lightConsumer';
+import ShadowConsumer from 'c/shadowConsumer';
+import ConditionalSlot from 'c/conditionalSlot';
+import ConditionalSlotted from 'c/conditionalSlotted';
+import ForwardedSlotConsumer from 'c/forwardedSlotConsumer';
 import {
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
     USE_LIGHT_DOM_SLOT_FORWARDING,
@@ -25,9 +25,9 @@ function createTestElement(tag, component) {
 
 describe('Slotting', () => {
     it('should render properly', () => {
-        const nodes = createTestElement('x-default-slot', BasicSlot);
+        const nodes = createTestElement('c-default-slot', BasicSlot);
 
-        expect(Array.from(nodes['x-container'].children)).toEqual([
+        expect(Array.from(nodes['c-container'].children)).toEqual([
             nodes['upper-text'],
             nodes['default-text'],
             nodes['lower-text'],
@@ -35,8 +35,8 @@ describe('Slotting', () => {
     });
 
     it('should render dynamic children', async () => {
-        const nodes = createTestElement('x-dynamic-children', DynamicChildren);
-        expect(Array.from(nodes['x-light-container'].children)).toEqual([
+        const nodes = createTestElement('c-dynamic-children', DynamicChildren);
+        expect(Array.from(nodes['c-light-container'].children)).toEqual([
             nodes['container-upper-slot-default'],
             nodes['1'],
             nodes['2'],
@@ -49,7 +49,7 @@ describe('Slotting', () => {
         nodes.button.click();
         await Promise.resolve();
 
-        expect(Array.from(nodes['x-light-container'].children)).toEqual([
+        expect(Array.from(nodes['c-light-container'].children)).toEqual([
             nodes['container-upper-slot-default'],
             nodes['5'],
             nodes['4'],
@@ -61,32 +61,32 @@ describe('Slotting', () => {
     });
 
     it('should return null for assignedSlot of default slotted content', () => {
-        const nodes = createTestElement('x-dynamic-children', DynamicChildren);
+        const nodes = createTestElement('c-dynamic-children', DynamicChildren);
 
         expect(nodes['container-upper-slot-default'].assignedSlot).toBeNull();
         expect(nodes['container-lower-slot-default'].assignedSlot).toBeNull();
     });
 
     it('shadow container, light consumer', () => {
-        const nodes = createTestElement('x-light-consumer', LightConsumer);
+        const nodes = createTestElement('c-light-consumer', LightConsumer);
 
         const expected = process.env.NATIVE_SHADOW // native shadow doesn't output slots in innerHTML
-            ? '<x-shadow-container><p data-id="light-consumer-text">Hello from Light DOM</p></x-shadow-container>'
-            : '<x-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></x-shadow-container>';
-        expect(nodes['x-light-consumer'].innerHTML).toEqual(expected);
+            ? '<c-shadow-container><p data-id="light-consumer-text">Hello from Light DOM</p></c-shadow-container>'
+            : '<c-shadow-container><slot><p data-id="light-consumer-text">Hello from Light DOM</p></slot></c-shadow-container>';
+        expect(nodes['c-light-consumer'].innerHTML).toEqual(expected);
     });
 
     it('light container, shadow consumer', () => {
-        const nodes = createTestElement('x-shadow-consumer', ShadowConsumer);
+        const nodes = createTestElement('c-shadow-consumer', ShadowConsumer);
 
-        expect(nodes['x-shadow-consumer'].shadowRoot.innerHTML).toEqual(
-            `<x-light-container>${vFragBookend}<p data-id="container-upper-slot-default">Upper slot default</p>${vFragBookend}${vFragBookend}<p data-id="shadow-consumer-text">Hello from Shadow DOM</p>${vFragBookend}${vFragBookend}<p data-id="container-lower-slot-default">Lower slot default</p>${vFragBookend}</x-light-container>`
+        expect(nodes['c-shadow-consumer'].shadowRoot.innerHTML).toEqual(
+            `<c-light-container>${vFragBookend}<p data-id="container-upper-slot-default">Upper slot default</p>${vFragBookend}${vFragBookend}<p data-id="shadow-consumer-text">Hello from Shadow DOM</p>${vFragBookend}${vFragBookend}<p data-id="container-lower-slot-default">Lower slot default</p>${vFragBookend}</c-light-container>`
         );
     });
 
     it('removes slots properly', async () => {
-        const nodes = createTestElement('x-conditional-slot', ConditionalSlot);
-        const elm = nodes['x-conditional-slot'];
+        const nodes = createTestElement('c-conditional-slot', ConditionalSlot);
+        const elm = nodes['c-conditional-slot'];
         expect(Array.from(elm.children)).toEqual([nodes['default-slotted-text'], nodes.button]);
         nodes.button.click();
         await Promise.resolve();
@@ -94,43 +94,43 @@ describe('Slotting', () => {
     });
 
     it('removes slotted content properly', async () => {
-        const nodes = createTestElement('x-conditional-slotted', ConditionalSlotted);
-        const elm = nodes['x-conditional-slotted'];
+        const nodes = createTestElement('c-conditional-slotted', ConditionalSlotted);
+        const elm = nodes['c-conditional-slotted'];
         expect(elm.innerHTML).toEqual(
-            `<x-conditional-slot data-id="conditional-slot">${vFragBookend}<p data-id="slotted-text">Slotted content</p>${vFragBookend}<button data-id="button">Toggle</button></x-conditional-slot>`
+            `<c-conditional-slot data-id="conditional-slot">${vFragBookend}<p data-id="slotted-text">Slotted content</p>${vFragBookend}<button data-id="button">Toggle</button></c-conditional-slot>`
         );
         nodes.button.click();
         await Promise.resolve();
         expect(elm.innerHTML).toEqual(
-            '<x-conditional-slot data-id="conditional-slot"><button data-id="button">Toggle</button></x-conditional-slot>'
+            '<c-conditional-slot data-id="conditional-slot"><button data-id="button">Toggle</button></c-conditional-slot>'
         );
     });
 
     it('should forward slots', () => {
-        const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
-        const elm = nodes['x-forwarded-slot-consumer'];
+        const nodes = createTestElement('c-forwarded-slot-consumer', ForwardedSlotConsumer);
+        const elm = nodes['c-forwarded-slot-consumer'];
         expect(elm.innerHTML).toEqual(
             USE_LIGHT_DOM_SLOT_FORWARDING
-                ? `<x-forwarded-slot><x-light-container>${vFragBookend}<p>Upper slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p>Lower slot content forwarded</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
-                : `<x-forwarded-slot><x-light-container>${vFragBookend}<p slot="upper">Upper slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p slot="lower">Lower slot content forwarded</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
+                ? `<c-forwarded-slot><c-light-container>${vFragBookend}<p>Upper slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p>Lower slot content forwarded</p>${vFragBookend}</c-light-container></c-forwarded-slot>`
+                : `<c-forwarded-slot><c-light-container>${vFragBookend}<p slot="upper">Upper slot content forwarded</p>${vFragBookend}${vFragBookend}<p>Default slot forwarded</p>${vFragBookend}${vFragBookend}<p slot="lower">Lower slot content forwarded</p>${vFragBookend}</c-light-container></c-forwarded-slot>`
         );
     });
     it('should render default content in forwarded slots', async () => {
-        const nodes = createTestElement('x-forwarded-slot-consumer', ForwardedSlotConsumer);
-        const elm = nodes['x-forwarded-slot-consumer'];
+        const nodes = createTestElement('c-forwarded-slot-consumer', ForwardedSlotConsumer);
+        const elm = nodes['c-forwarded-slot-consumer'];
         elm.shouldSlot(false);
 
         await Promise.resolve();
         expect(elm.innerHTML).toEqual(
-            `<x-forwarded-slot><x-light-container>${vFragBookend}<p data-id="container-upper-slot-default">Upper slot default</p>${vFragBookend}${vFragBookend}Default slot not yet forwarded${vFragBookend}${vFragBookend}<p data-id="container-lower-slot-default">Lower slot default</p>${vFragBookend}</x-light-container></x-forwarded-slot>`
+            `<c-forwarded-slot><c-light-container>${vFragBookend}<p data-id="container-upper-slot-default">Upper slot default</p>${vFragBookend}${vFragBookend}Default slot not yet forwarded${vFragBookend}${vFragBookend}<p data-id="container-lower-slot-default">Lower slot default</p>${vFragBookend}</c-light-container></c-forwarded-slot>`
         );
     });
 
     it('should only generate empty text nodes for APIVersion >=60', async () => {
-        const elm = createElement('x-default-slot', { is: BasicSlot });
+        const elm = createElement('c-default-slot', { is: BasicSlot });
         document.body.appendChild(elm);
         await Promise.resolve();
-        const container = elm.querySelector('x-light-container');
+        const container = elm.querySelector('c-light-container');
         const commentNodes = [...container.childNodes].filter(
             (_) => _.nodeType === Node.COMMENT_NODE
         );
