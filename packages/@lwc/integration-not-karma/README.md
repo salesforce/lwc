@@ -24,6 +24,10 @@ Environment variables are used as controls to run tests in different modes (e.g 
 
 Integration tests are simply `.spec.js` files that run in the browser. LWC components are transformed by a plugin defined in `serve-integration.js`.
 
+## Custom Compiler Config
+
+To specify custom compiler config on a per test or per component basis, use a custom comment directive, `/* !WTR { ... } */`. This can be applied for an entire test directory by including it in the `.spec.js` file, or on a per-file basis by including it in individual files. Note that individual configs must be included per _file_, not per _component_. You must include the directive in _every_ JS/CSS/HTML file that needs to use a different config. HTML files should use HTML comments, e.g. `<!-- !WTR { "apiVersion": 60 } -->`.
+
 ### Hydration Tests
 
 Hydration tests test the SSR packages, and are therefore more complex than the integration tests. While the files are named `index.spec.js`, they are actually _config_ files. The actual test executed is defined in `test-hydration.js`, which also contains the interface definition for the config. Each hydration test is also expected to define an entrypoint component named `x/main`. The hydration tests are transformed by a plugin defined in `serve-hydration.js`.
