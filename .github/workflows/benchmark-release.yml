@@ -1,4 +1,4 @@
-name: Run Performance Benchmarks (Release)
+name: Run Performance Benchmarks
 
 on:
     push:
