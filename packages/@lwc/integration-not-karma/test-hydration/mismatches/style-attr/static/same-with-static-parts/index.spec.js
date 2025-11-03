@@ -1,3 +1,4 @@
+/** @type {import('../../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     props: {
         c1: 'c1',

@@ -41,6 +41,7 @@ const DEFAULT_OPTIONS = {
     targetSSR: false,
     ssrMode: DEFAULT_SSR_MODE,
     experimentalErrorRecoveryMode: false,
+    componentFeatureFlagModulePath: '',
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -147,6 +148,8 @@ export interface TransformOptions {
     ssrMode?: CompilationMode;
     /** Flag to enable collecting multiple errors rather than failing at the first error. */
     experimentalErrorRecoveryMode?: boolean;
+    /** Full module path for a feature flag to import and enforce at runtime (e.g., '@salesforce/featureFlag/name'). */
+    componentFeatureFlagModulePath?: string;
 }
 
 type OptionalTransformKeys =
@@ -161,6 +164,7 @@ type OptionalTransformKeys =
     | 'enableSyntheticElementInternals'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
+    | 'componentFeatureFlagModulePath'
     | 'instrumentation';
 
 type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;

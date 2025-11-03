@@ -20,6 +20,7 @@ function getRelevantInputProps(input) {
     };
 }
 
+/** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
         const inputs = target.shadowRoot.querySelectorAll('input');

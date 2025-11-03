@@ -1,0 +1,5 @@
+{
+    "namespace": "x",
+    "name": "test",
+    "componentFeatureFlagModulePath": "@salesforce/featureFlag/TEST_FLAG"
+}

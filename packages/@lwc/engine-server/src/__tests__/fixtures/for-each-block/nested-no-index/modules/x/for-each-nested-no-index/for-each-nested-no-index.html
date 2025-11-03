@@ -1,0 +1,12 @@
+<template>
+    <ol>
+        <template for:each={list} for:item="item">
+            <li key={item.continent}>
+                {item.continent}
+                <template for:each={item.cities} for:item="city">
+                    <strong key={city}>{city}</strong>
+                </template>
+            </li>
+        </template>
+    </ol>
+</template>

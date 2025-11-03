@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 import Shadow from 'x/shadow';
 import Light from 'x/light';
-import { jasmine } from '../../../helpers/jasmine.js';
+import { fn as mockFn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
     detachReportingControlDispatcher,
@@ -11,7 +11,7 @@ describe('lwc:render-mode', () => {
     let dispatcher;
 
     beforeEach(() => {
-        dispatcher = jasmine.createSpy();
+        dispatcher = mockFn();
         attachReportingControlDispatcher(dispatcher, ['RenderModeMismatch']);
     });
 
@@ -27,7 +27,7 @@ describe('lwc:render-mode', () => {
             /Light DOM components can't render shadow DOM templates. Add an 'lwc:render-mode="light"' directive to the root template tag of <x-test>./
         );
 
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             [
                 'RenderModeMismatch',
                 {
@@ -45,7 +45,7 @@ describe('lwc:render-mode', () => {
             /Shadow DOM components template can't render light DOM templates. Either remove the 'lwc:render-mode' directive from <x-test> or set it to 'lwc:render-mode="shadow"/
         );
 
-        expect(dispatcher.calls.allArgs()).toEqual([
+        expect(dispatcher.mock.calls).toEqual([
             [
                 'RenderModeMismatch',
                 {

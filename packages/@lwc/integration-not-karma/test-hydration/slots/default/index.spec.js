@@ -1,5 +1,6 @@
 // NOTE: Disconnected callback is not triggered by Node.remove, see: https://github.com/salesforce/lwc/issues/1102
 // That's why we trick it by removing a component via the diffing algo.
+/** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     props: {
         slotText: 'initial',

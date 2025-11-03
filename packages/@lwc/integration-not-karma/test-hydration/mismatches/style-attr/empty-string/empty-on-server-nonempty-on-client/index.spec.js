@@ -1,5 +1,6 @@
 import { expectConsoleCallsDev } from '../../../../../helpers/utils.js';
 
+/** @type {import('../../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     props: {
         styles: '',

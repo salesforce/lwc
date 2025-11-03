@@ -1,3 +1,4 @@
+/** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     async test(elm) {
         let div = elm.shadowRoot.querySelector('div');

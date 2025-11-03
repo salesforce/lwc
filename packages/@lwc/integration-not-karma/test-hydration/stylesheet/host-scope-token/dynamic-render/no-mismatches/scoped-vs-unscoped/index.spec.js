@@ -1,3 +1,4 @@
+/** @type {import('../../../../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     snapshot(target) {
         const child = target.shadowRoot.querySelector('x-child');

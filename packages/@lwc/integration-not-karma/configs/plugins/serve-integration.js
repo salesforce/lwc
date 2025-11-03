@@ -13,6 +13,8 @@ import {
 /** Cache reused between each compilation to speed up the compilation time. */
 let cache;
 
+const configDirective = /(?:\/\*|<!--)\s*!WTR\s*(.*?)(?:\*\/|-->)/s;
+
 const createRollupPlugin = (input, options) => {
     const suiteDir = path.dirname(input);
 
@@ -39,6 +41,8 @@ const createRollupPlugin = (input, options) => {
     });
 };
 
+const VIRTUAL_FLAG_PREFIX = '\0feature-flag:';
+
 const transform = async (ctx) => {
     const input = ctx.path.slice(1); // strip leading / from URL path to get relative file path
     const defaultRollupPlugin = createRollupPlugin(input);
@@ -46,8 +50,7 @@ const transform = async (ctx) => {
     // Override the LWC rollup plugin config on a per-file basis by searching for a comment
     // directive /*!WTR {...}*/ and parsing the content as JSON. The spec file acts as a default
     // location to update the config for every component file.
-    let rootConfig = {};
-    const configDirective = /(?:\/\*|<!--)!WTR\s*(.*?)(?:\*\/|-->)/s;
+    let rootConfig = null;
     const parseConfig = (src, id) => {
         const configStr = src.match(configDirective)?.[1];
         if (!configStr) {
@@ -65,27 +68,39 @@ const transform = async (ctx) => {
     const customLwcRollupPlugin = {
         ...defaultRollupPlugin,
         transform(src, id) {
-            const { apiVersion, nativeOnly } = parseConfig(src, id);
-
-            let transform;
-            if (apiVersion) {
-                transform = createRollupPlugin(input, { apiVersion }).transform;
-            } else if (nativeOnly) {
-                transform = createRollupPlugin(input, {
-                    disableSyntheticShadowSupport: true,
-                }).transform;
-            } else {
-                transform = defaultRollupPlugin.transform;
-            }
-
+            const config = parseConfig(src, id);
+            const { transform } = config ? createRollupPlugin(input, config) : defaultRollupPlugin;
             return transform.call(this, src, id);
+        },
+    };
+
+    /**
+     * Transforms `@salesforce/featureFlag/*` imports into modules that export a boolean.
+     */
+    const featureFlagResolver = {
+        name: 'feature-flag-virtual',
+        resolveId(source) {
+            if (!source || !source.startsWith('@salesforce/featureFlag/')) return;
+            // Store the full path in the virtual ID
+            return `${VIRTUAL_FLAG_PREFIX}${source}`;
+        },
+        load(id) {
+            if (!id || !id.startsWith(VIRTUAL_FLAG_PREFIX)) return;
+            const flagPath = id.slice(VIRTUAL_FLAG_PREFIX.length);
+            // Extract flag name from path like '@salesforce/featureFlag/TEST_FLAG_ENABLED'
+            const flagName = flagPath.split('/').pop();
+            const flags = {
+                TEST_FLAG_ENABLED: true,
+                TEST_FLAG_DISABLED: false,
+            };
+            return `export default ${flags[flagName] ?? false};`;
         },
     };
 
     const bundle = await rollup({
         input,
         cache,
-        plugins: [customLwcRollupPlugin],
+        plugins: [customLwcRollupPlugin, featureFlagResolver],
 
         external: [
             '@vitest/expect',

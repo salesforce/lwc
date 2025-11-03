@@ -3,7 +3,7 @@ import { createElement } from 'lwc';
 import withLwcDomManual from 'x/withLwcDomManual';
 import withoutLwcDomManual from 'x/withoutLwcDomManual';
 import SvgWithLwcDomManual from 'x/svgWithLwcDomManual';
-import { jasmineSpyOn as spyOn } from '../../../helpers/jasmine.js';
+import { spyOn } from '@vitest/spy';
 import { resetDOM } from '../../../helpers/reset.js';
 
 function waitForStyleToBeApplied() {
