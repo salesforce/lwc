@@ -94,7 +94,7 @@ export default function scriptTransform(
             compact: false,
             plugins,
             parserOpts: {
-                ...(experimentalErrorRecoveryMode ? { errorRecovery: true } : {}),
+                errorRecovery: experimentalErrorRecoveryMode,
             },
         })!;
     } catch (e) {

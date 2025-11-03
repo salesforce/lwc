@@ -11,6 +11,10 @@ import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
 import plugin, { type LwcBabelPluginOptions } from '../index';
 
+interface TestConfig extends LwcBabelPluginOptions {
+    experimentalErrorRecoveryMode?: boolean;
+}
+
 const BASE_OPTS = {
     namespace: 'lwc',
     name: 'test',
@@ -75,7 +79,7 @@ function transform(source: string, opts = {}) {
 }
 
 describe('fixtures', () => {
-    testFixtureDir<LwcBabelPluginOptions>(
+    testFixtureDir<TestConfig>(
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.js',
