@@ -22,6 +22,21 @@ jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
     # TODO: upload result artifacts
 
+    test-matrix:
+        runs-on: ubuntu-22.04
+        strategy:
+            matrix:
+                env:
+                    - foo: 1
+                      bar: 2
+                include:
+                    - env:
+                          - foo: FOO
+                            bar: BAR
+        steps:
+            - env: ${{ matrix.env }}
+              run: echo "foo=$foo bar=$bar"
+
     integration-tests:
         name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow)
         strategy:
