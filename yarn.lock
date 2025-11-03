@@ -2177,11 +2177,9 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
-  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
-  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -2654,10 +2652,10 @@
     unbzip2-stream "^1.4.3"
     yargs "^17.7.2"
 
-"@rollup/plugin-commonjs@^28.0.9":
-  version "28.0.9"
-  resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-28.0.9.tgz#b875cd1590617a40c4916d561d75761c6ca3c6d1"
-  integrity sha512-PIR4/OHZ79romx0BVVll/PkwWpJ7e5lsqFa3gFfcrFPWwLXLV39JVUzQV9RKjWerE7B845Hqjj9VYlQeieZ2dA==
+"@rollup/plugin-commonjs@^29.0.0":
+  version "29.0.0"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-commonjs/-/plugin-commonjs-29.0.0.tgz#42a6cc0eeb8ae7aabfc6f9bdc28fe22d65abd15a"
+  integrity sha512-U2YHaxR2cU/yAiwKJtJRhnyLk7cifnQw0zUpISsocBDoHDJn+HTV74ABqnwr5bEgWUwFZC9oFL6wLe21lHu5eQ==
   dependencies:
     "@rollup/pluginutils" "^5.0.1"
     commondir "^1.0.1"
@@ -10080,14 +10078,7 @@ macos-release@^2.2.0:
   resolved "https://registry.yarnpkg.com/macos-release/-/macos-release-2.5.1.tgz#bccac4a8f7b93163a8d163b8ebf385b3c5f55bf9"
   integrity sha512-DXqXhEM7gW59OjZO8NIjBCz9AQ1BEMrfiOAl4AYByHCtVHRF4KoGNO8mqQeM8lRCtQe/UnJ4imO/d2HdkKsd+A==
 
-magic-string@^0.30.12, magic-string@^0.30.17, magic-string@^0.30.19, magic-string@^0.30.3:
-  version "0.30.19"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.19.tgz#cebe9f104e565602e5d2098c5f2e79a77cc86da9"
-  integrity sha512-2N21sPY9Ws53PZvsEpVtNuSW+ScYbQdp4b9qUaL+9QkHUrGFKo56Lg9Emg5s9V/qrtNBmiR01sYhUOwu3H+VOw==
-  dependencies:
-    "@jridgewell/sourcemap-codec" "^1.5.5"
-
-magic-string@^0.30.21:
+magic-string@^0.30.12, magic-string@^0.30.17, magic-string@^0.30.19, magic-string@^0.30.21, magic-string@^0.30.3:
   version "0.30.21"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.30.21.tgz#56763ec09a0fa8091df27879fd94d19078c00d91"
   integrity sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==
