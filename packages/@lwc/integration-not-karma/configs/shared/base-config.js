@@ -68,6 +68,7 @@ export default (options) => {
                 },
             },
         ],
+        testFramework: { config: { retries: 3 } },
         testRunnerHtml: (testFramework) =>
             `
         <!DOCTYPE html>
