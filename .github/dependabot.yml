@@ -12,7 +12,7 @@ updates:
       ignore:
           # As a library, we want to avoid bumping TypeScript, so that we don't accidentally use
           # language features from a version newer than our downstream users have installed
-          - dependency-name: typescript
+          - dependency-name: 'typescript'
       groups:
           babel:
               patterns:
@@ -25,6 +25,15 @@ updates:
                   - '@best/*'
               update-types:
                   - 'major'
+          lint:
+              patterns:
+                  - 'prettier'
+                  # eslint packages probably have rules that require manual updates
+                  - '*eslint*'
+              update-types:
+                  - 'major'
+                  - 'minor'
+                  - 'patch'
           nx:
               patterns:
                   - 'nx'
@@ -37,22 +46,19 @@ updates:
                   - '@rollup/*'
               update-types:
                   - 'major'
-          prettier:
-              patterns:
-                  - 'prettier'
-              update-types:
-                  - 'major'
-                  # Prettier can introduce formatting differences in minor versions,
-                  # which causes formatting checks to fail in CI.
-                  - 'minor'
           webdriverio:
               patterns:
                   - 'webdriverio'
                   - '@wdio/*'
+              update-types:
+                  - 'major'
+                  - 'minor'
           vitest:
               patterns:
                   - 'vitest'
                   - '@vitest/*'
+              update-types:
+                  - 'major'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:
