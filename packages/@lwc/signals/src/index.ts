@@ -16,7 +16,11 @@ export interface Signal<T> {
     subscribe(onUpdate: OnUpdate): Unsubscribe;
 }
 
+export const lwcSignal = Symbol('lwcSignal');
+
 export abstract class SignalBaseClass<T> implements Signal<T> {
+    [lwcSignal] = true;
+
     constructor() {
         // Add the signal to the set of trusted signals
         // that rendering engine can track

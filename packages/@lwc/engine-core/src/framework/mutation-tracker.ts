@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isObject, isTrustedSignal, legacyIsTrustedSignal } from '@lwc/shared';
+import { isNull, isObject } from '@lwc/shared';
+import { type Signal, lwcSignal } from '@lwc/signals';
 import { ReactiveObserver, valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
-import type { Signal } from '@lwc/signals';
 import type { JobFunction, CallbackFunction } from '../libs/mutation-tracker';
 import type { VM } from './vm';
 
@@ -43,24 +43,11 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
         !isNull(target) &&
         process.env.IS_BROWSER &&
         // Only subscribe if a template is being rendered by the engine
-        tro.isObserving()
+        tro.isObserving() &&
+        (target as any)[lwcSignal]
     ) {
-        /**
-         * The legacy validation behavior was that this check should only
-         * be performed for runtimes that have provided a trustedSignals set.
-         * However, this resulted in a bug as all object values were
-         * being considered signals in environments where the trustedSignals
-         * set had not been defined. The runtime flag has been added as a killswitch
-         * in case the fix needs to be reverted.
-         */
-        if (
-            lwcRuntimeFlags.ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION
-                ? legacyIsTrustedSignal(target)
-                : isTrustedSignal(target)
-        ) {
-            // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
-            subscribeToSignal(component, target as Signal<unknown>, tro.notify.bind(tro));
-        }
+        // Subscribe the template reactive observer's notify method, which will mark the vm as dirty and schedule hydration.
+        subscribeToSignal(component, target as Signal<unknown>, tro.notify.bind(tro));
     }
 }
 
