@@ -23,15 +23,56 @@ jobs:
     # TODO: upload result artifacts
 
     integration-tests:
-        name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow)
+        name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow; ${{ matrix.env }})
         strategy:
             matrix:
                 shadow_mode: [native, synthetic]
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
+                env:
+                    - ''
+                    # - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 # currently borked
+                    - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
+                    - ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1
+                    - NODE_ENV_FOR_TEST=1
 
         runs-on: ${{ matrix.runs_on }}
         env:
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+              working-directory: ./
+
+            - name: Install playwright dependencies
+              run: yarn playwright install chrome firefox webkit --with-deps
+            - name: Set env vars
+              run: echo '${{ matrix.env }}' >> "$GITHUB_ENV"
+            - name: Sanity check
+              run: env
+            - run: yarn test
+
+    integration-tests-api-versions:
+        name: Integration tests (${{ matrix.runs_on }}; ${{ matrix.shadow_mode }} shadow; API version ${{ matrix.api_version }})
+        strategy:
+            matrix:
+                shadow_mode: [native, synthetic]
+                runs_on: [ubuntu-22.04, macos-15, windows-2025]
+                api_version: [58, 59, 60, 61, 62, 66] # No new features for 63-65
+
+        runs-on: ${{ matrix.runs_on }}
+        env:
+            SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
+            API_VERSION: ${{ matrix.api_version }}
 
         steps:
             - name: Checkout repository
@@ -50,75 +91,6 @@ jobs:
             - name: Install playwright dependencies
               run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test
-            - name: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-              run: yarn test || true
-              env:
-                  DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-            - name: DISABLE_STATIC_CONTENT_OPTIMIZATION
-              run: yarn test
-              env:
-                  DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
-            - name: ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL
-              run: yarn test
-              env:
-                  ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL: 1
-            - name: NODE_ENV_FOR_TEST=production
-              run: yarn test
-              env:
-                  NODE_ENV_FOR_TEST: production
-
-    integration-tests-api-versions:
-        name: Integration tests (${{ matrix.runs_on }}; ${{ matrix.shadow_mode }} shadow) - API versions
-        strategy:
-            matrix:
-                shadow_mode: [native, synthetic]
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
-
-        runs-on: ${{ matrix.runs_on }}
-        env:
-            SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
-
-            - name: Setup Node
-              uses: actions/setup-node@v6
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: 'yarn'
-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-              working-directory: ./
-
-            - name: Install playwright dependencies
-              run: yarn playwright install chrome firefox webkit --with-deps
-            - name: API version 58
-              run: yarn test
-              env:
-                  API_VERSION: 58
-            - name: API version 59
-              run: yarn test
-              env:
-                  API_VERSION: 59
-            - name: API version 60
-              run: yarn test
-              env:
-                  API_VERSION: 60
-            - name: API version 61
-              run: yarn test
-              env:
-                  API_VERSION: 61
-            - name: API version 62
-              run: yarn test
-              env:
-                  API_VERSION: 62
-            # No new features for API version 63-65
-            - name: API version 66
-              run: yarn test
-              env:
-                  API_VERSION: 66
 
     integration-tests-not-both-modes:
         # Tests that should run in only synthetic or native shadow, not both
