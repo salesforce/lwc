@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { addTrustedSignal } from '@lwc/shared';
 export { setTrustedSignalSet } from '@lwc/shared';
 
 export type OnUpdate = () => void;
@@ -20,12 +19,6 @@ export const lwcSignal = Symbol('lwcSignal');
 
 export abstract class SignalBaseClass<T> implements Signal<T> {
     [lwcSignal] = true;
-
-    constructor() {
-        // Add the signal to the set of trusted signals
-        // that rendering engine can track
-        addTrustedSignal(this);
-    }
 
     abstract get value(): T;
 
