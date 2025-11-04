@@ -8,7 +8,7 @@ import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
 import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
 import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
-import { generateError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
+import { handleError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
 import api from './api';
 import wire from './wire';
 import track from './track';
@@ -25,7 +25,7 @@ export interface DecoratorMeta {
     name: LwcDecoratorName;
     propertyName: string;
     path: NodePath<types.Decorator>;
-    decoratedNodeType: DecoratorType;
+    decoratedNodeType: DecoratorType | null;
     type?: DecoratorType;
 }
 
@@ -49,7 +49,7 @@ function getReferences(identifier: NodePath<types.Identifier>) {
 function getDecoratedNodeType(
     decoratorPath: NodePath<types.Decorator>,
     state: LwcBabelPluginPass
-): DecoratorType {
+): DecoratorType | null {
     const propertyOrMethod = decoratorPath.parentPath;
     if (isClassMethod(propertyOrMethod)) {
         return DECORATOR_TYPES.METHOD;
@@ -59,15 +59,21 @@ function getDecoratedNodeType(
         return DECORATOR_TYPES.SETTER;
     } else if (propertyOrMethod.isClassProperty()) {
         return DECORATOR_TYPES.PROPERTY;
-    } else {
-        throw generateError(
-            propertyOrMethod,
-            {
-                errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
-            },
-            state
-        );
     }
+
+    handleError(
+        propertyOrMethod,
+        {
+            errorInfo: DecoratorErrors.INVALID_DECORATOR_TYPE,
+        },
+        state
+    );
+
+    // We should only be here when we are running in errorRecoveryMode
+    // otherwise, the handleError method should already "throw"
+    // since, we couldn't determine a node type, we will return a null here
+    // so we can filter out this node and attempt to proceed with the compilation process
+    return null;
 }
 
 function validateImportedLwcDecoratorUsage(
@@ -102,7 +108,7 @@ function validateImportedLwcDecoratorUsage(
                 : reference.parentPath!.parentPath!;
 
             if (!decorator.isDecorator()) {
-                throw generateError(
+                handleError(
                     decorator,
                     {
                         errorInfo: DecoratorErrors.IS_NOT_DECORATOR,
@@ -113,9 +119,12 @@ function validateImportedLwcDecoratorUsage(
             }
 
             const propertyOrMethod = decorator.parentPath;
-            if (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod()) {
-                throw generateError(
-                    propertyOrMethod,
+            if (
+                propertyOrMethod === null ||
+                (!propertyOrMethod.isClassProperty() && !propertyOrMethod.isClassMethod())
+            ) {
+                handleError(
+                    propertyOrMethod === null ? decorator : propertyOrMethod,
                     {
                         errorInfo: DecoratorErrors.IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD,
                         messageArgs: [name],
@@ -142,7 +151,7 @@ function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
     for (const { name, path } of decorators) {
         const binding = path.scope.getBinding(name);
         if (binding === undefined || !isImportedFromLwcSource(binding.path)) {
-            throw generateInvalidDecoratorError(path, state);
+            handleInvalidDecoratorError(path, state);
         }
     }
     DECORATOR_TRANSFORMS.forEach(({ validate }) => validate(decorators, state));
@@ -166,7 +175,7 @@ function removeImportedDecoratorSpecifiers(
         });
 }
 
-function generateInvalidDecoratorError(path: NodePath<types.Decorator>, state: LwcBabelPluginPass) {
+function handleInvalidDecoratorError(path: NodePath<types.Decorator>, state: LwcBabelPluginPass) {
     const expressionPath = path.get('expression');
     const { node } = path;
     const { expression } = node;
@@ -179,7 +188,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>, state: L
     }
 
     if (name) {
-        return generateError(
+        handleError(
             path.parentPath,
             {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR_WITH_NAME,
@@ -188,7 +197,7 @@ function generateInvalidDecoratorError(path: NodePath<types.Decorator>, state: L
             state
         );
     } else {
-        return generateError(
+        handleError(
             path.parentPath,
             {
                 errorInfo: DecoratorErrors.INVALID_DECORATOR,
@@ -212,7 +221,7 @@ function collectDecoratorPaths(bodyItems: NodePath<types.Node>[]): NodePath<type
 function getDecoratorMetadata(
     decoratorPath: NodePath<types.Decorator>,
     state: LwcBabelPluginPass
-): DecoratorMeta {
+): DecoratorMeta | null {
     const expressionPath = decoratorPath.get('expression') as NodePath<types.Node>;
 
     let name: LwcDecoratorName;
@@ -221,7 +230,8 @@ function getDecoratorMetadata(
     } else if (expressionPath.isCallExpression()) {
         name = (expressionPath.node.callee as types.V8IntrinsicIdentifier).name as LwcDecoratorName;
     } else {
-        throw generateInvalidDecoratorError(decoratorPath, state);
+        handleInvalidDecoratorError(decoratorPath, state);
+        return null;
     }
 
     const propertyName = ((decoratorPath.parent as types.ClassMethod).key as types.Identifier).name;
@@ -238,12 +248,13 @@ function getDecoratorMetadata(
 function getMetadataObjectPropertyList(
     t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[]
+    classBodyItems: NodePath<ClassBodyItem>[],
+    state: LwcBabelPluginPass
 ) {
     const list = [
-        ...api.transform(t, decoratorMetas, classBodyItems),
+        ...api.transform(t, decoratorMetas, classBodyItems, state),
         ...track.transform(t, decoratorMetas),
-        ...wire.transform(t, decoratorMetas),
+        ...wire.transform(t, decoratorMetas, state),
     ];
 
     const fieldNames = classBodyItems
@@ -301,14 +312,17 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             }
 
             const decoratorPaths = collectDecoratorPaths(classBodyItems);
-            const decoratorMetas = decoratorPaths.map((path) => getDecoratorMetadata(path, state));
+            const decoratorMetas = decoratorPaths
+                .map((path) => getDecoratorMetadata(path, state))
+                .filter((meta) => meta !== null);
 
             validate(decoratorMetas, state);
 
             const metaPropertyList = getMetadataObjectPropertyList(
                 t,
                 decoratorMetas,
-                classBodyItems
+                classBodyItems,
+                state
             );
             if (metaPropertyList.length === 0) {
                 return;

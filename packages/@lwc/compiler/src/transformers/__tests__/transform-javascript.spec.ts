@@ -4,12 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { vi, describe, it, expect } from 'vitest';
 import { noop } from '@lwc/shared';
+import { describe, expect, it, vi } from 'vitest';
 import { transform, transformSync } from '../transformer';
 import type { TransformOptions } from '../../options';
+import '../../../scripts/test/types';
 
-const TRANSFORMATION_OPTIONS: TransformOptions = {
+const BASE_TRANSFORM_OPTIONS: TransformOptions = {
     namespace: 'x',
     name: 'foo',
 };
@@ -19,7 +20,7 @@ function stripWhitespace(string: string) {
 }
 
 it('should throw when processing an invalid javascript file', async () => {
-    await expect(transform(`const`, 'foo.js', TRANSFORMATION_OPTIONS)).rejects.toMatchObject({
+    await expect(transform(`const`, 'foo.js', BASE_TRANSFORM_OPTIONS)).rejects.toMatchObject({
         filename: 'foo.js',
         message: expect.stringContaining('foo.js: Unexpected token (1:5)'),
     });
@@ -30,7 +31,7 @@ it('should apply transformation for valid javascript file', async () => {
         import { LightningElement } from 'lwc';
         export default class Foo extends LightningElement {}
     `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    const { code } = await transform(actual, 'foo.js', BASE_TRANSFORM_OPTIONS);
 
     expect(code).toMatch(/import \w+ from "\.\/foo.html";/);
     expect(code).toContain('registerComponent');
@@ -42,7 +43,7 @@ it('should transform class fields', async () => {
             foo;
         }
     `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    const { code } = await transform(actual, 'foo.js', BASE_TRANSFORM_OPTIONS);
 
     expect(code).not.toContain('foo;');
 });
@@ -54,7 +55,7 @@ describe('object rest spread', () => {
                 export const test = { ...a, b: 1 }
             `;
             const { code } = await transform(actual, 'foo.js', {
-                ...TRANSFORMATION_OPTIONS,
+                ...BASE_TRANSFORM_OPTIONS,
                 apiVersion,
             });
 
@@ -86,7 +87,7 @@ it('should apply babel plugins when Lightning Web Security is on', async () => {
     `;
 
     const { code } = await transform(actual, 'foo.js', {
-        ...TRANSFORMATION_OPTIONS,
+        ...BASE_TRANSFORM_OPTIONS,
         enableLightningWebSecurityTransforms: true,
     });
 
@@ -116,7 +117,7 @@ it('should not apply babel plugins when Lightning Web Security is off', async ()
             }
         })();
     `;
-    const { code } = await transform(actual, 'foo.js', TRANSFORMATION_OPTIONS);
+    const { code } = await transform(actual, 'foo.js', BASE_TRANSFORM_OPTIONS);
     expect(stripWhitespace(code)).toMatch(stripWhitespace(actual));
 });
 
@@ -132,7 +133,7 @@ describe('instrumentation', () => {
             }
         `;
         await transform(actual, 'foo.js', {
-            ...TRANSFORMATION_OPTIONS,
+            ...BASE_TRANSFORM_OPTIONS,
             experimentalDynamicComponent: {
                 loader: '@custom/loader',
                 strictSpecifier: true,
@@ -162,7 +163,7 @@ describe('unnecessary registerDecorators', () => {
         let error;
         try {
             transformSync(actual, 'foo.js', {
-                ...TRANSFORMATION_OPTIONS,
+                ...BASE_TRANSFORM_OPTIONS,
             });
         } catch (err) {
             error = err;
@@ -184,7 +185,7 @@ describe('unnecessary registerDecorators', () => {
         let error;
         try {
             transformSync(actual, 'foo.js', {
-                ...TRANSFORMATION_OPTIONS,
+                ...BASE_TRANSFORM_OPTIONS,
             });
         } catch (err) {
             error = err;
@@ -204,7 +205,7 @@ describe('unnecessary registerDecorators', () => {
             }
         `;
         const { code } = transformSync(actual, 'foo.js', {
-            ...TRANSFORMATION_OPTIONS,
+            ...BASE_TRANSFORM_OPTIONS,
             apiVersion: 59,
         });
         expect(code).toContain('registerDecorators');
@@ -219,7 +220,7 @@ describe('sourcemaps', () => {
         `;
 
         const { code, map } = transformSync(source, 'foo.js', {
-            ...TRANSFORMATION_OPTIONS,
+            ...BASE_TRANSFORM_OPTIONS,
             outputConfig: {
                 sourcemap: 'inline',
             },
@@ -235,7 +236,7 @@ describe('sourcemaps', () => {
         `;
 
         const { map } = transformSync(source, 'foo.js', {
-            ...TRANSFORMATION_OPTIONS,
+            ...BASE_TRANSFORM_OPTIONS,
             outputConfig: {
                 sourcemap: true,
             },
@@ -256,7 +257,7 @@ describe('sourcemaps', () => {
         ])('$name', ({ sourcemap }) => {
             expect(() =>
                 transformSync(source, 'foo.js', {
-                    ...TRANSFORMATION_OPTIONS,
+                    ...BASE_TRANSFORM_OPTIONS,
                     outputConfig: {
                         // @ts-expect-error Property can be passed from JS environments with no type checking.
                         sourcemap,
@@ -285,4 +286,62 @@ describe('file extension support', () => {
         });
     }
     ['.js', '.jsx', '.ts', '.tsx'].forEach(testFileExtensionSupport);
+});
+
+describe('errorRecoveryMode', () => {
+    const TRANSFORM_OPTIONS = {
+        ...BASE_TRANSFORM_OPTIONS,
+        experimentalErrorRecoveryMode: true,
+    };
+
+    it('should return code when compiled successfully', () => {
+        const actual = `
+            import { LightningElement } from 'lwc';
+            export default class Foo extends LightningElement {}
+        `;
+        const { code } = transformSync(actual, 'foo.js', TRANSFORM_OPTIONS);
+
+        expect(code).toMatch(/import \w+ from "\.\/foo.html";/);
+        expect(code).toContain('registerComponent');
+    });
+
+    it('should throw an AggregateError when errors are present', () => {
+        const actual = `
+                import { LightningElement, api } from 'lwc';
+                export default class Foo extends LightningElement {
+                    // Error 1: Invalid property name with numbers (1107 - PROPERTY_NAME_CANNOT_START_WITH_DATA)
+                    @api dataInvalidProperty;
+                }
+            `;
+
+        expect(() => {
+            transformSync(actual, 'foo.js', TRANSFORM_OPTIONS);
+        }).toThrowAggregateError(['LWC1107: Invalid property name "dataInvalidProperty".']);
+    });
+
+    it('should return multiple errors when present', () => {
+        const actual = `
+            import { LightningElement, api, track, wire } from 'lwc';
+            export default class Foo extends LightningElement {
+                // Error 1: Property name starting with "on" (1108 - PROPERTY_NAME_CANNOT_START_WITH_ON)
+                @api onClickHandler;
+                
+                // Error 2: Reserved property name (1110 - PROPERTY_NAME_IS_RESERVED)
+                @api class;
+                
+                // Error 3: Track decorator on non-class property (1113 - TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES)
+                @track someMethod() { return 'invalid'; }
+
+                // Error 4: Wire adapter should be imported (1119 - WIRE_ADAPTER_SHOULD_BE_IMPORTED)
+                @wire(undefinedAdapter, {}) wiredWithUndefinedAdapter;
+            }`;
+        expect(() => {
+            transformSync(actual, 'foo.js', TRANSFORM_OPTIONS);
+        }).toThrowAggregateError([
+            'LWC1108: Invalid property name "onClickHandler". Properties starting with "on" are reserved for event handlers.',
+            'LWC1110: Invalid property name "class". "class" is a reserved attribute.',
+            'LWC1119: Failed to resolve @wire adapter "undefinedAdapter". Ensure it is imported.',
+            'LWC1113: @track decorator can only be applied to class properties.',
+        ]);
+    });
 });

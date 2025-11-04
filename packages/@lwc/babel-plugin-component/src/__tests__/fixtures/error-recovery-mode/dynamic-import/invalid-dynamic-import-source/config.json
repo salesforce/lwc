@@ -1,0 +1,9 @@
+{
+    "parserOpts": {
+        "errorRecovery": true
+    },
+    "dynamicImports": {
+        "loader": null,
+        "strictSpecifier": true
+    }
+}

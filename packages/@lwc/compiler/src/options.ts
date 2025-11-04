@@ -40,6 +40,7 @@ const DEFAULT_OPTIONS = {
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
     ssrMode: DEFAULT_SSR_MODE,
+    experimentalErrorRecoveryMode: false,
     componentFeatureFlagModulePath: '',
 } as const;
 
@@ -145,6 +146,8 @@ export interface TransformOptions {
     apiVersion?: number;
     targetSSR?: boolean;
     ssrMode?: CompilationMode;
+    /** Flag to enable collecting multiple errors rather than failing at the first error. */
+    experimentalErrorRecoveryMode?: boolean;
     /** Full module path for a feature flag to import and enforce at runtime (e.g., '@salesforce/featureFlag/name'). */
     componentFeatureFlagModulePath?: string;
 }

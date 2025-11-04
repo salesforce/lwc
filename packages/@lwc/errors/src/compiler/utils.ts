@@ -66,6 +66,15 @@ export class CompilerError extends Error implements CompilerDiagnostic {
     }
 }
 
+export class CompilerAggregateError extends AggregateError {
+    public readonly errors: CompilerError[];
+
+    constructor(errors: CompilerError[], message?: string) {
+        super(errors, message);
+        this.errors = errors;
+    }
+}
+
 /**
  * Extracts an error code from the given error.
  * @param error The error to check.

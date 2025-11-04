@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { DECORATOR_TYPES, LWC_COMPONENT_PROPERTIES } from '../../constants';
+import { isErrorRecoveryMode } from '../../utils';
 import { isApiDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
-import type { BabelTypes } from '../../types';
+import type { BabelTypes, LwcBabelPluginPass } from '../../types';
 import type { ClassBodyItem } from '../types';
 
 const { PUBLIC_PROPS, PUBLIC_METHODS } = LWC_COMPONENT_PROPERTIES;
@@ -52,14 +53,19 @@ function getSiblingGetSetPairType(
 
 function computePublicPropsConfig(
     publicPropertyMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[]
+    classBodyItems: NodePath<ClassBodyItem>[],
+    state: LwcBabelPluginPass
 ) {
     return publicPropertyMetas.reduce(
         (acc, { propertyName, decoratedNodeType }) => {
+            // This should never happen as we filter null in class visitor and
+            // collect appropriate errors in errorRecoveryMode || throw otherwise
+            if (isErrorRecoveryMode(state) && !decoratedNodeType) return acc;
+
             if (!(propertyName in acc)) {
                 acc[propertyName] = {};
             }
-            acc[propertyName].config |= getPropertyBitmask(decoratedNodeType);
+            acc[propertyName].config |= getPropertyBitmask(decoratedNodeType!);
 
             if (
                 decoratedNodeType === DECORATOR_TYPES.GETTER ||
@@ -86,7 +92,8 @@ function computePublicPropsConfig(
 export default function transform(
     t: BabelTypes,
     decoratorMetas: DecoratorMeta[],
-    classBodyItems: NodePath<ClassBodyItem>[]
+    classBodyItems: NodePath<ClassBodyItem>[],
+    state: LwcBabelPluginPass
 ) {
     const objectProperties = [];
     const apiDecoratorMetas = decoratorMetas.filter(isApiDecorator);
@@ -94,7 +101,7 @@ export default function transform(
         ({ decoratedNodeType }) => decoratedNodeType !== DECORATOR_TYPES.METHOD
     );
     if (publicPropertyMetas.length) {
-        const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems);
+        const propsConfig = computePublicPropsConfig(publicPropertyMetas, classBodyItems, state);
         objectProperties.push(
             t.objectProperty(t.identifier(PUBLIC_PROPS), t.valueToNode(propsConfig))
         );
