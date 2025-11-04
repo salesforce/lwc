@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-types",
     "private": true,
-    "version": "8.23.0",
+    "version": "8.24.0",
     "description": "Type validation for LWC packages",
     "type": "module",
     "scripts": {
@@ -9,11 +9,11 @@
         "playground": "rollup -c src/playground/rollup.config.js --watch"
     },
     "dependencies": {
-        "@lwc/rollup-plugin": "8.23.0",
-        "lwc": "8.23.0"
+        "@lwc/rollup-plugin": "8.24.0",
+        "lwc": "8.24.0"
     },
     "devDependencies": {
-        "@rollup/plugin-replace": "^6.0.2",
+        "@rollup/plugin-replace": "^6.0.3",
         "@rollup/plugin-typescript": "^12.3.0",
         "rollup": "^4.52.5",
         "rollup-plugin-livereload": "^2.0.5",
