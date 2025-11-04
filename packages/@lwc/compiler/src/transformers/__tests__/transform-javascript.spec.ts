@@ -152,49 +152,98 @@ describe('instrumentation', () => {
 });
 
 describe('unnecessary registerDecorators', () => {
-    it('should provide helpful error for decorator outside of LightningElement, apiVersion=latest', () => {
-        const actual = `
-            import { track } from 'lwc'
-            class Foo {
-              @track bar = 'baz';
+    it.for([
+        {
+            name: '@api decorator',
+            code: `
+                import { api } from 'lwc'
+                export default class NotComponent {
+                  @api prop
+                }
+            `,
+        },
+        {
+            name: '@api decorator with comment between import and usage',
+            code: `
+                import { api } from 'lwc'
+                // the error message should not include the above import
+                export default class NotComponent {
+                  @api prop
+                }
+            `,
+        },
+    ])(
+        'should provide helpful error for decorator outside of LightningElement, apiVersion=latest',
+        ({ code }) => {
+            let error;
+            try {
+                transformSync(code, 'foo.js', {
+                    ...TRANSFORMATION_OPTIONS,
+                });
+            } catch (err) {
+                error = err;
             }
-        `;
-        let error;
-        try {
-            transformSync(actual, 'foo.js', {
-                ...TRANSFORMATION_OPTIONS,
-            });
-        } catch (err) {
-            error = err;
+
+            expect(error).not.toBeUndefined();
+            expect((error as any).message).toContain(
+                'Decorators like @api, @track, and @wire are only supported in LightningElement classes.'
+            );
         }
+    );
 
-        expect(error).not.toBeUndefined();
-        expect((error as any).message).toContain(
-            'Decorators like @api, @track, and @wire are only supported in LightningElement classes.'
-        );
-    });
-
-    it('should not customize the error message for non-@track/@wire/@api decorators, apiVersion=latest', () => {
-        const actual = `
-            const thisIsNotASupportedDecorator = {};
-            class Foo {
-              @thisIsNotASupportedDecorator bar = 'baz';
+    it.for([
+        {
+            name: 'non-LWC decorator',
+            code: `
+                const thisIsNotASupportedDecorator = {};
+                class Foo {
+                  @thisIsNotASupportedDecorator bar = 'baz';
+                }
+            `,
+        },
+        {
+            name: 'almost-LWC decorator name (@apitrackwire)',
+            code: `
+                const apitrackwire = () => {}
+                export default class NotComponent {
+                  @apitrackwire prop
+                }
+            `,
+        },
+        {
+            name: 'decorator from non-lwc import',
+            code: `import { eschatology } from 'vermont'
+                export default class Bananaphone {
+                  @eschatology prewire
+                }`,
+        },
+        {
+            name: 'generic decorator',
+            code: `
+                const decorator = () => {}
+                export default class NotComponent {
+                  @decorator prop
+                }
+            `,
+        },
+    ])(
+        'should not customize the error message for non-@track/@wire/@api decorators, apiVersion=latest',
+        ({ code }) => {
+            let error;
+            try {
+                transformSync(code, 'foo.js', {
+                    ...TRANSFORMATION_OPTIONS,
+                });
+            } catch (err) {
+                error = err;
             }
-        `;
-        let error;
-        try {
-            transformSync(actual, 'foo.js', {
-                ...TRANSFORMATION_OPTIONS,
-            });
-        } catch (err) {
-            error = err;
-        }
 
-        expect(error).not.toBeUndefined();
-        expect((error as any).message).not.toContain(
-            'Decorators like @api, @track, and @wire are only supported in LightningElement classes.'
-        );
-    });
+            expect(error).not.toBeUndefined();
+            expect((error as any).message).not.toContain(
+                'Decorators like @api, @track, and @wire are only supported in LightningElement classes.'
+            );
+        }
+    );
 
     it('should allow decorator outside of LightningElement, apiVersion=59', () => {
         const actual = `
