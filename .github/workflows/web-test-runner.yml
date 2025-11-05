@@ -83,6 +83,7 @@ jobs:
 
             - name: Get SauceLabs tunnel ID
               id: saucelabs-tunnel
+              shell: bash
               run: |
                   hash=$('${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
                   echo "hash=$hash" >> "$GITHUB_OUTPUT"
