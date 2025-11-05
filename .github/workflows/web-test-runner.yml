@@ -112,6 +112,7 @@ jobs:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
                 engine_server: ['', 1]
                 env:
+                    - ''
                     - SHADOW_MODE_OVERRIDE=synthetic
                     - NODE_ENV_FOR_TEST=production
                     - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
