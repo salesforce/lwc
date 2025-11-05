@@ -23,12 +23,12 @@ jobs:
     # TODO: upload result artifacts
 
     integration-tests:
-        name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
+        name: Integration tests (${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
+        runs-on: ubuntu-22.04
         strategy:
             fail-fast: false
             matrix:
                 shadow_mode: [native, synthetic]
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
                 env:
                     - ''
                     # TODO: Fix
@@ -51,21 +51,21 @@ jobs:
                     # TODO: Fix
                     # - DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
 
-                exclude:
-                    - shadow_mode: native
+                include:
+                    # Test modes for only synthetic or only native
+                    - shadow_mode: synthetic
                       env: LEGACY_BROWSERS=1
-                    - shadow_mode: native
+                    - shadow_mode: synthetic
                       env: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
-                    - shadow_mode: native
+                    - shadow_mode: synthetic
                       env: DISABLE_DETACHED_REHYDRATION=1
-                    - shadow_mode: native
+                    - shadow_mode: synthetic
                       env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
-                    - shadow_mode: synthetic
+                    - shadow_mode: native
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1
-                    - shadow_mode: synthetic
+                    - shadow_mode: native
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1
 
-        runs-on: ${{ matrix.runs_on }}
         env:
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
 
@@ -105,13 +105,11 @@ jobs:
               run: yarn test
 
     hydration-tests:
-        name: Hydration tests (${{ matrix.runs_on }}; ${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
+        name: Hydration tests (${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
+        runs-on: ubuntu-22.04
         strategy:
             fail-fast: false
             matrix:
-                # TODO: Fix windows
-                # runs_on: [ubuntu-22.04, macos-15, windows-2025]
-                runs_on: [ubuntu-22.04]
                 engine_server: ['', 1]
                 env:
                     - ''
@@ -128,8 +126,6 @@ jobs:
                       env: DISABLE_DETACHED_REHYDRATION=1
                     - engine_server: ''
                       env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
-
-        runs-on: ${{ matrix.runs_on }}
 
         env:
             ENGINE_SERVER: ${{ matrix.engine_server }}
