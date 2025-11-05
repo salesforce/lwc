@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import LWCParent from 'c/lwcParent';
-import NativeShadowParent from './c/NativeParent/NativeParent';
-import NativeShadowChild from './c/NativeChild/NativeChild';
+import LWCParent from 'x/lwcParent';
+import NativeShadowParent from './x/NativeParent/NativeParent';
+import NativeShadowChild from './x/NativeChild/NativeChild';
 
 describe('Event target retains native behavior in native shadow dom tree', () => {
     let parent;
@@ -47,7 +47,7 @@ describe('Event target retains native behavior in native shadow dom tree', () =>
                 targetAtContainer = evt.target;
             });
             const event = new CustomEvent('test', { bubbles: true });
-            const innerElm = parent.shadowRoot.querySelector('c-native-child');
+            const innerElm = parent.shadowRoot.querySelector('x-native-child');
             innerElm.dispatchEvent(event);
 
             // bubbling event in shadow tree
@@ -102,7 +102,7 @@ describe('Event target retains native behavior in native shadow dom tree', () =>
                 targetAtContainer = evt.target;
             });
             const event = new CustomEvent('test', { bubbles: true, composed: true });
-            const innerElm = parent.shadowRoot.querySelector('c-native-child');
+            const innerElm = parent.shadowRoot.querySelector('x-native-child');
             innerElm.dispatchEvent(event);
 
             // bubbling event in shadow tree
@@ -152,7 +152,7 @@ describe('Event target retains native behavior in mixed shadow dom tree(syntheti
         document.body.addEventListener('test', listener);
 
         // LWC tree
-        lwcParent = createElement('c-lwc-parent', { is: LWCParent });
+        lwcParent = createElement('x-lwc-parent', { is: LWCParent });
         document.body.appendChild(lwcParent);
         const domManual = lwcParent.shadowRoot.querySelector('div');
         domManual.appendChild(parent);
@@ -190,7 +190,7 @@ describe('Event target retains native behavior in mixed shadow dom tree(syntheti
                 targetAtContainer = evt.target;
             });
             const event = new CustomEvent('test', { bubbles: true });
-            const innerElm = parent.shadowRoot.querySelector('c-native-child');
+            const innerElm = parent.shadowRoot.querySelector('x-native-child');
             innerElm.dispatchEvent(event);
 
             // bubbling event in shadow tree
@@ -245,7 +245,7 @@ describe('Event target retains native behavior in mixed shadow dom tree(syntheti
                 targetAtContainer = evt.target;
             });
             const event = new CustomEvent('test', { bubbles: true, composed: true });
-            const innerElm = parent.shadowRoot.querySelector('c-native-child');
+            const innerElm = parent.shadowRoot.querySelector('x-native-child');
             innerElm.dispatchEvent(event);
 
             // bubbling event in shadow tree

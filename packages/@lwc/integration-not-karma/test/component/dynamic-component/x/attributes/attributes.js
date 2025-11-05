@@ -1,6 +1,6 @@
 import { LightningElement, api } from 'lwc';
-import Bar from 'c/bar';
-import Foo from 'c/foo';
+import Bar from 'x/bar';
+import Foo from 'x/foo';
 
 export default class extends LightningElement {
     fooCtor;

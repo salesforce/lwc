@@ -1,25 +1,25 @@
 import { createElement } from 'lwc';
 
-import Parent from 'c/parent';
-import Host from 'c/host';
-import MultiTemplates from 'c/multiTemplates';
+import Parent from 'x/parent';
+import Host from 'x/host';
+import MultiTemplates from 'x/multiTemplates';
 import { resetDOM } from '../../../helpers/reset';
 
 afterEach(resetDOM);
 
 describe('shadow encapsulation', () => {
     it('should not style children elements', () => {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
 
         const parentDiv = elm.shadowRoot.querySelector('div');
         expect(window.getComputedStyle(parentDiv).marginLeft).toBe('10px');
-        const childDiv = elm.shadowRoot.querySelector('c-child').shadowRoot.querySelector('div');
+        const childDiv = elm.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
         expect(window.getComputedStyle(childDiv).marginLeft).toBe('0px');
     });
 
     it('should work with multiple templates', async () => {
-        const elm = createElement('c-multi-template', { is: MultiTemplates });
+        const elm = createElement('x-multi-template', { is: MultiTemplates });
         document.body.appendChild(elm);
 
         const div = elm.shadowRoot.querySelector('div');
@@ -36,14 +36,14 @@ describe('shadow encapsulation', () => {
 
 describe(':host', () => {
     it('should apply style to the host element', () => {
-        const elm = createElement('c-host', { is: Host });
+        const elm = createElement('x-host', { is: Host });
         document.body.appendChild(elm);
 
         expect(window.getComputedStyle(elm).marginLeft).toBe('10px');
     });
 
     it('should apply style to the host element with the matching attributes', () => {
-        const elm = createElement('c-host', { is: Host });
+        const elm = createElement('x-host', { is: Host });
         elm.setAttribute('data-styled', true);
         document.body.appendChild(elm);
 

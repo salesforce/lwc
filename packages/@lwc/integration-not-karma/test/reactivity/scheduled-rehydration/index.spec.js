@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
 
-import Parent from 'c/parent';
+import Parent from 'x/parent';
 
 describe('detached rehydration', () => {
     it(`should${lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION ? ' not ' : ' '}schedule rehydration for detached nodes`, async () => {
-        const parent = createElement('c-parent', { is: Parent });
+        const parent = createElement('x-parent', { is: Parent });
         document.body.appendChild(parent);
 
-        const children = parent.shadowRoot.querySelectorAll('c-child');
+        const children = parent.shadowRoot.querySelectorAll('x-child');
         expect(children.length).toEqual(3);
         children.forEach((child) => expect(child.called).toEqual(1));
 

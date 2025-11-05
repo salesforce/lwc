@@ -3,15 +3,15 @@ export default class DynamicCtor extends LightningElement {
     @track customCtor = undefined;
 
     async loadCtor() {
-        // note, using `c-` prefix instead of `c/` because these are
+        // note, using `x-` prefix instead of `x/` because these are
         // handled by `registerForLoad`
-        const ctor = await import('c-ctor');
+        const ctor = await import('x-ctor');
         this.customCtor = ctor;
     }
     async loadAlter() {
-        // note, using `c-` prefix instead of `c/` because these are
+        // note, using `x-` prefix instead of `x/` because these are
         // handled by `registerForLoad`
-        const alter = await import('c-alter');
+        const alter = await import('x-alter');
         this.customCtor = alter;
     }
 

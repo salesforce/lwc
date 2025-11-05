@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import SideEffectDuringRender from 'c/sideEffectDuringRender';
-import SideEffectDuringTemplate from 'c/sideEffectDuringTemplate';
-import SideEffectDuringRenderExternal from 'c/sideEffectDuringRenderExternal';
-import SideEffectDuringTemplateExternal from 'c/sideEffectDuringTemplateExternal';
+import SideEffectDuringRender from 'x/sideEffectDuringRender';
+import SideEffectDuringTemplate from 'x/sideEffectDuringTemplate';
+import SideEffectDuringRenderExternal from 'x/sideEffectDuringRenderExternal';
+import SideEffectDuringTemplateExternal from 'x/sideEffectDuringTemplateExternal';
 import { spyOn } from '@vitest/spy';
 
 describe('side effects', () => {
@@ -16,7 +16,7 @@ describe('side effects', () => {
     });
 
     it('logs error for side effect during render', async () => {
-        const elm = createElement('c-side-effect-during-render', { is: SideEffectDuringRender });
+        const elm = createElement('x-side-effect-during-render', { is: SideEffectDuringRender });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -36,7 +36,7 @@ describe('side effects', () => {
     });
 
     it('logs error for side effect during template updating', async () => {
-        const elm = createElement('c-side-effect-during-template', {
+        const elm = createElement('x-side-effect-during-template', {
             is: SideEffectDuringTemplate,
         });
         document.body.appendChild(elm);
@@ -58,7 +58,7 @@ describe('side effects', () => {
     });
 
     it('logs error for side effect on external component during render', async () => {
-        const elm = createElement('c-side-effect-during-render-external', {
+        const elm = createElement('x-side-effect-during-render-external', {
             is: SideEffectDuringRenderExternal,
         });
         document.body.appendChild(elm);
@@ -86,7 +86,7 @@ describe('side effects', () => {
     });
 
     it('logs error for side effect on external component during template updating', async () => {
-        const elm = createElement('c-side-effect-during-template-external', {
+        const elm = createElement('x-side-effect-during-template-external', {
             is: SideEffectDuringTemplateExternal,
         });
         document.body.appendChild(elm);

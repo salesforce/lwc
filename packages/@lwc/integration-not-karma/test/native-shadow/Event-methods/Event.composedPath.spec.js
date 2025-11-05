@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Synthetic from 'c/synthetic';
+import Synthetic from 'x/synthetic';
 
 /**
  * Returns a promise that resolves with the composed path of an event dispatched from `fromTarget` to `toTarget`.
@@ -24,9 +24,9 @@ describe('[W-9846457] event access when using native shadow dom', () => {
     const noop = () => {};
 
     beforeEach(() => {
-        nativeParent = document.createElement('c-native-parent');
+        nativeParent = document.createElement('x-native-parent');
         nativeParent.attachShadow({ mode: 'open' });
-        nativeChild = document.createElement('c-native-child');
+        nativeChild = document.createElement('x-native-child');
         nativeChild.attachShadow({ mode: 'open' });
 
         nativeParent.shadowRoot.appendChild(nativeChild);
@@ -94,7 +94,7 @@ describe('[W-9846457] event access when using native shadow dom', () => {
     });
 
     it('should handle composed bubbling events (synthetic above native)', async () => {
-        const synthetic = createElement('c-synthetic', { is: Synthetic });
+        const synthetic = createElement('x-synthetic', { is: Synthetic });
         const div = document.createElement('div');
 
         div.attachShadow({ mode: 'open' });
@@ -135,7 +135,7 @@ describe('[W-9846457] event access when using native shadow dom', () => {
     });
 
     it('should handle composed bubbling events (native above synthetic)', async () => {
-        const synthetic = createElement('c-synthetic', { is: Synthetic });
+        const synthetic = createElement('x-synthetic', { is: Synthetic });
         const native = document.createElement('div');
 
         native.attachShadow({ mode: 'open' });
@@ -170,7 +170,7 @@ describe('[W-9846457] event access when using native shadow dom', () => {
 describe('Event.composedPath() method', () => {
     describe('dispatched on shadow root', () => {
         it('{bubbles: true, composed: true}', async () => {
-            const native = document.createElement('c-native-name-unique-to-this-test-1');
+            const native = document.createElement('x-native-name-unique-to-this-test-1');
             native.attachShadow({ mode: 'open' });
             document.body.appendChild(native);
 
@@ -188,7 +188,7 @@ describe('Event.composedPath() method', () => {
     });
     describe('dispatched on shadowed element', () => {
         it('{bubbles: true, composed: true}', async () => {
-            const native = document.createElement('c-native-name-unique-to-this-test-2');
+            const native = document.createElement('x-native-name-unique-to-this-test-2');
             const span = document.createElement('span');
             const sr = native.attachShadow({ mode: 'open' });
             sr.appendChild(span);

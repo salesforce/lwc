@@ -9,21 +9,21 @@ export default {
         ctor: 'client',
     },
     snapshot(target) {
-        const cmp = target.shadowRoot.querySelector('c-server');
+        const cmp = target.shadowRoot.querySelector('x-server');
         return {
             tagName: cmp.tagName.toLowerCase(),
         };
     },
     test(target, snapshots, consoleCalls) {
         // Server side constructor
-        expect(snapshots.tagName).toBe('c-server');
+        expect(snapshots.tagName).toBe('x-server');
         // Client side constructor
-        expect(target.shadowRoot.querySelector('c-client')).not.toBeNull();
+        expect(target.shadowRoot.querySelector('x-client')).not.toBeNull();
 
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration node mismatch on: <c-client> - rendered on server: <c-server> - expected on client: <c-client>',
+                'Hydration node mismatch on: <x-client> - rendered on server: <x-server> - expected on client: <x-client>',
                 'Hydration completed with errors.',
             ],
         });

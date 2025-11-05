@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import Component from 'c/component';
+import Component from 'x/component';
 
 describe('attribute with namespace', () => {
     it('correctly renders xml:* and xlink:* attributes', async () => {
-        const elm = createElement('c-component', { is: Component });
+        const elm = createElement('x-component', { is: Component });
         elm.title = 'foo';
         elm.lang = 'en-US';
         document.body.appendChild(elm);

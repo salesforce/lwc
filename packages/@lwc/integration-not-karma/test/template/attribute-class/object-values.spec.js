@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import Dynamic from 'c/dynamic';
-import Reactive from 'c/reactive';
+import Dynamic from 'x/dynamic';
+import Reactive from 'x/reactive';
 import { TEMPLATE_CLASS_NAME_OBJECT_BINDING } from '../../../helpers/constants.js';
 
 function createDynamicClass(value) {
-    const elm = createElement('c-dynamic', { is: Dynamic });
+    const elm = createElement('x-dynamic', { is: Dynamic });
     elm.dynamicClass = value;
     document.body.appendChild(elm);
 
@@ -24,7 +24,7 @@ function testClassNameValue(name, value, expected, test = it) {
 
 function testReactiveClassNameValue(name, setupFn, updateFn, expected) {
     it(name, async () => {
-        const elm = createElement('c-reactive', { is: Reactive });
+        const elm = createElement('x-reactive', { is: Reactive });
         elm.updateDynamicClass(setupFn);
         document.body.appendChild(elm);
 

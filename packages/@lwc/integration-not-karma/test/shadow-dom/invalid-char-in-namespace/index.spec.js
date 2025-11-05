@@ -5,7 +5,7 @@ import ComponentXHashY from 'x#y/component';
 describe('invalid character @ in namespace', () => {
     let elm;
     beforeEach(() => {
-        elm = createElement('c-component', { is: ComponentAtX });
+        elm = createElement('x-component', { is: ComponentAtX });
         document.body.appendChild(elm);
     });
 

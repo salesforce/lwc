@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import ConditionalList from 'c/conditionalList';
+import ConditionalList from 'x/conditionalList';
 import { spyOn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
 
@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 it('W-15885661 - renders list when key is invalid (preserve backwards compat)', async () => {
-    const elm = createElement('c-conditional-list', { is: ConditionalList });
+    const elm = createElement('x-conditional-list', { is: ConditionalList });
     document.body.appendChild(elm);
     await Promise.resolve();
 

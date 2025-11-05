@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import WithInput from 'c/withInput';
-import WithInputDeep from 'c/withInputDeep';
-import WithLwcDomManual from 'c/withLwcDomManual';
-import SlottedInput from 'c/slottedInput';
+import WithInput from 'x/withInput';
+import WithInputDeep from 'x/withInputDeep';
+import WithLwcDomManual from 'x/withLwcDomManual';
+import SlottedInput from 'x/slottedInput';
 
 beforeEach(() => {
     // Reset the active element if needed
@@ -14,7 +14,7 @@ beforeEach(() => {
 
 describe('Document', () => {
     it('should return the host element', () => {
-        const elm = createElement('c-with-input', { is: WithInput });
+        const elm = createElement('x-with-input', { is: WithInput });
         document.body.appendChild(elm);
 
         const input = elm.shadowRoot.querySelector('input');
@@ -24,10 +24,10 @@ describe('Document', () => {
     });
 
     it('should return the most outer host element', () => {
-        const elm = createElement('c-with-input-deep', { is: WithInputDeep });
+        const elm = createElement('x-with-input-deep', { is: WithInputDeep });
         document.body.appendChild(elm);
 
-        const withInput = elm.shadowRoot.querySelector('c-with-input');
+        const withInput = elm.shadowRoot.querySelector('x-with-input');
         const input = withInput.shadowRoot.querySelector('input');
         input.focus();
 
@@ -37,7 +37,7 @@ describe('Document', () => {
 
 describe('ShadowRoot', () => {
     it('should return the focused element in the shadow tree', () => {
-        const elm = createElement('c-with-input', { is: WithInput });
+        const elm = createElement('x-with-input', { is: WithInput });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.activeElement).toBe(null);
@@ -52,10 +52,10 @@ describe('ShadowRoot', () => {
     });
 
     it('should retarget the active element in the context of the current shadow', () => {
-        const elm = createElement('c-with-input-deep', { is: WithInputDeep });
+        const elm = createElement('x-with-input-deep', { is: WithInputDeep });
         document.body.appendChild(elm);
 
-        const withInput = elm.shadowRoot.querySelector('c-with-input');
+        const withInput = elm.shadowRoot.querySelector('x-with-input');
         const input = withInput.shadowRoot.querySelector('input');
         input.focus();
 
@@ -63,7 +63,7 @@ describe('ShadowRoot', () => {
     });
 
     it("should return the focus element even if it's added manually in the DOM", () => {
-        const elm = createElement('c-with-lwc-dom-manual', { is: WithLwcDomManual });
+        const elm = createElement('x-with-lwc-dom-manual', { is: WithLwcDomManual });
         document.body.appendChild(elm);
 
         const input = document.createElement('input');
@@ -74,14 +74,14 @@ describe('ShadowRoot', () => {
     });
 
     it('should return null if no element is active', () => {
-        const elm = createElement('c-with-lwc-dom-manual', { is: WithLwcDomManual });
+        const elm = createElement('x-with-lwc-dom-manual', { is: WithLwcDomManual });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.activeElement).toBe(null);
     });
 
     it('should return null if the active element is outside the shadow tree', () => {
-        const elm = createElement('c-with-lwc-dom-manual', { is: WithLwcDomManual });
+        const elm = createElement('x-with-lwc-dom-manual', { is: WithLwcDomManual });
         document.body.appendChild(elm);
 
         const input = document.createElement('input');
@@ -92,11 +92,11 @@ describe('ShadowRoot', () => {
     });
 
     it('should return the right active element when slotted', () => {
-        const elm = createElement('c-slotted-input', { is: SlottedInput });
+        const elm = createElement('x-slotted-input', { is: SlottedInput });
         document.body.appendChild(elm);
 
-        const container = elm.shadowRoot.querySelector('c-container');
-        const withInput = elm.shadowRoot.querySelector('c-with-input');
+        const container = elm.shadowRoot.querySelector('x-container');
+        const withInput = elm.shadowRoot.querySelector('x-with-input');
         const input = withInput.shadowRoot.querySelector('input');
 
         input.focus();

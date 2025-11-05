@@ -1,14 +1,14 @@
 import { createElement, LightningElement } from 'lwc';
 
-import Simple from 'c/simple';
-import SideEffect from 'c/fieldWithSideEffect';
-import FieldForCache from 'c/fieldForCache';
+import Simple from 'x/simple';
+import SideEffect from 'x/fieldWithSideEffect';
+import FieldForCache from 'x/fieldForCache';
 
-import duplicatePropertyTemplate from 'c/duplicatePropertyTemplate';
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 describe('observed-fields', () => {
     it('should rerender component when field is mutated', async () => {
-        const elm = createElement('c-simple', { is: Simple });
+        const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);
 
         elm.setValue('simpleValue', 'mutated');
@@ -17,7 +17,7 @@ describe('observed-fields', () => {
     });
 
     it('should not rerender component when expando field is mutated', async () => {
-        const elm = createElement('c-simple', { is: Simple });
+        const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);
 
         elm.setValue('expandoField', 'mutated');
@@ -26,7 +26,7 @@ describe('observed-fields', () => {
     });
 
     it('should preserve object identity when saving object in fields', () => {
-        const elm = createElement('c-simple', { is: Simple });
+        const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);
 
         const testObj = { name: 'jonh', lastName: 'doe' };
@@ -39,7 +39,7 @@ describe('observed-fields', () => {
     });
 
     it('should not rerender component when field value is mutated', async () => {
-        const elm = createElement('c-simple', { is: Simple });
+        const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);
 
         elm.mutateComplexValue();
@@ -55,8 +55,8 @@ describe('observed-fields', () => {
     });
 
     it('should have same behavior as an expando field when has side effects during render', async () => {
-        const elm = createElement('c-side-effect', { is: SideEffect });
-        const elmUsingExpando = createElement('c-side-effect', { is: SideEffect });
+        const elm = createElement('x-side-effect', { is: SideEffect });
+        const elmUsingExpando = createElement('x-side-effect', { is: SideEffect });
         elmUsingExpando.useExpando = true;
 
         elm.label = 'label txt';
@@ -78,7 +78,7 @@ describe('observed-fields', () => {
     });
 
     it('should not throw when has side effects in a getter during render', async () => {
-        const elm = createElement('c-field-for-cache', { is: FieldForCache });
+        const elm = createElement('x-field-for-cache', { is: FieldForCache });
         elm.label = 'label txt';
 
         document.body.appendChild(elm);
@@ -97,7 +97,7 @@ describe('observed-fields', () => {
     });
 
     it('should rerender component when inherited field is mutated', async () => {
-        const elm = createElement('c-simple', { is: Simple });
+        const elm = createElement('x-simple', { is: Simple });
         document.body.appendChild(elm);
 
         elm.setValue('inheritedValue', 'mutated');
@@ -106,7 +106,7 @@ describe('observed-fields', () => {
     });
 
     it('should allow decorated reserved words as field names', async () => {
-        const elm = createElement('c-simple', { is: Simple });
+        const elm = createElement('x-simple', { is: Simple });
         elm.static = 'static value';
         document.body.appendChild(elm);
 
@@ -167,7 +167,7 @@ describe('regression [W-9927596] - observed field with duplicate accessor', () =
             /Invalid observed foo field\. Found a duplicate accessor with the same name\./
         );
 
-        const elm = createElement('c-duplicate-accessor', { is: Ctor });
+        const elm = createElement('x-duplicate-accessor', { is: Ctor });
 
         document.body.appendChild(elm);
 

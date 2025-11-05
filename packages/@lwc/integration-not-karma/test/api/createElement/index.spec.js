@@ -1,7 +1,7 @@
 import { createElement, LightningElement, setFeatureFlagForTest } from 'lwc';
 
-import Test from 'c/test';
-import ShadowRootGetter from 'c/shadowRootGetter';
+import Test from 'x/test';
+import ShadowRootGetter from 'x/shadowRootGetter';
 import {
     isNativeShadowRootInstance,
     isSyntheticShadowRootInstance,
@@ -9,7 +9,7 @@ import {
 
 function testInvalidOptions(type, option) {
     it(`throws a TypeError if option is a ${type}`, () => {
-        expect(() => createElement('c-component', option)).toThrowError(
+        expect(() => createElement('x-component', option)).toThrowError(
             TypeError,
             /"createElement" function expects an object as second parameter but received/
         );
@@ -18,12 +18,12 @@ function testInvalidOptions(type, option) {
 
 testInvalidOptions('undefined', undefined);
 testInvalidOptions('null', null);
-testInvalidOptions('String', 'c-component');
+testInvalidOptions('String', 'x-component');
 testInvalidOptions('Class not extending LightningElement', class Component {});
 
 function testInvalidIsValue(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
-        expect(() => createElement('c-component', { is: isValue })).toThrowError(
+        expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
             '"createElement" function expects an "is" option with a valid component constructor.'
         );
@@ -32,11 +32,11 @@ function testInvalidIsValue(type, isValue) {
 
 testInvalidIsValue('undefined', undefined);
 testInvalidIsValue('null', null);
-testInvalidIsValue('String', 'c-component');
+testInvalidIsValue('String', 'x-component');
 
 function testInvalidComponentConstructor(type, isValue) {
     it(`throws a TypeError if option.is is a ${type}`, () => {
-        expect(() => createElement('c-component', { is: isValue })).toThrowError(
+        expect(() => createElement('x-component', { is: isValue })).toThrowError(
             TypeError,
             /.+ is not a valid component, or does not extends LightningElement from "lwc". You probably forgot to add the extend clause on the class declaration./
         );
@@ -47,14 +47,14 @@ testInvalidComponentConstructor('Function', function () {});
 testInvalidComponentConstructor('Class not extending LightningElement', class Component {});
 
 it('returns an HTMLElement', () => {
-    const elm = createElement('c-component', { is: Test });
+    const elm = createElement('x-component', { is: Test });
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
 it.skipIf(process.env.NATIVE_SHADOW)(
     'should create an element with a synthetic shadow root by default',
     () => {
-        const elm = createElement('c-component', { is: Test });
+        const elm = createElement('x-component', { is: Test });
         expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBeTrue();
         expect(elm.isSynthetic()).toBeTrue();
     }
@@ -66,26 +66,26 @@ it('supports component constructors in circular dependency', () => {
     }
     Circular.__circular__ = true;
 
-    const elm = createElement('c-component', { is: Circular });
+    const elm = createElement('x-component', { is: Circular });
     expect(elm instanceof HTMLElement).toBe(true);
 });
 
 describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
     it('should create an element with a native shadow root if fallback is false', () => {
-        const elm = createElement('c-component', { is: Test });
+        const elm = createElement('x-component', { is: Test });
         expect(isNativeShadowRootInstance(elm.shadowRoot)).toBeTrue();
         expect(elm.isSynthetic()).toBeFalse();
     });
 
     it('should create a shadowRoot in open mode when mode in not specified', () => {
-        const elm = createElement('c-component', {
+        const elm = createElement('x-component', {
             is: Test,
         });
         expect(elm.shadowRoot.mode).toBe('open');
     });
 
     it('should create a shadowRoot in closed mode if the mode is passed as closed', () => {
-        const elm = createElement('c-shadow-root-getter', {
+        const elm = createElement('x-shadow-root-getter', {
             is: ShadowRootGetter,
             mode: 'closed',
         });
@@ -117,7 +117,7 @@ describe('locker integration', () => {
         SecureBaseClass.__circular__ = true;
 
         class Component extends SecureBaseClass {}
-        const elm = createElement('c-component', { is: Component });
+        const elm = createElement('x-component', { is: Component });
         expect(elm instanceof HTMLElement).toBe(true);
     });
 });

@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import Test from 'c/test';
-import ConstructorInvocation from 'c/constructorInvocation';
+import Test from 'x/test';
+import ConstructorInvocation from 'x/constructorInvocation';
 
 function testConvertValueToString(type, value) {
     it(`should convert attribute value to string ${type}`, () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         elm.setComponentAttribute('foo', value);
 
         expect(elm.getAttribute('foo')).toBe(String(value));
@@ -14,14 +14,14 @@ function testConvertValueToString(type, value) {
 
 it('should log an error when invoking setAttribute in constructor', () => {
     expect(() => {
-        createElement('c-constructor-invocation', { is: ConstructorInvocation });
+        createElement('x-constructor-invocation', { is: ConstructorInvocation });
     }).toLogErrorDev(
-        /Failed to construct '<c-constructor-invocation>': The result must not have attributes\./
+        /Failed to construct '<x-constructor-invocation>': The result must not have attributes\./
     );
 });
 
 it('should return undefined', () => {
-    const elm = createElement('c-test', { is: Test });
+    const elm = createElement('x-test', { is: Test });
     expect(elm.setComponentAttribute('foo', 'bar')).toBeUndefined();
 });
 

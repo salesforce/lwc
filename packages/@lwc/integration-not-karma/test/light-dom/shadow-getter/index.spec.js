@@ -1,10 +1,10 @@
 import { createElement, LightningElement } from 'lwc';
 
-import Test from 'c/test';
+import Test from 'x/test';
 
 describe('Light DOM shadow getter', () => {
     it('should render properly', () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot).toBeNull();

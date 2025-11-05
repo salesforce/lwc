@@ -1,5 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Component from 'c/component';
+import Component from 'x/component';
 import { IS_SYNTHETIC_SHADOW_LOADED } from '../../../helpers/constants.js';
 import { isSyntheticShadowRootInstance } from '../../../helpers/utils.js';
 
@@ -8,7 +8,7 @@ describe.runIf(IS_SYNTHETIC_SHADOW_LOADED && !process.env.FORCE_NATIVE_SHADOW_MO
     () => {
         describe('flag disabled', () => {
             it('renders synthetic shadow', () => {
-                const elm = createElement('c-component', { is: Component });
+                const elm = createElement('x-component', { is: Component });
                 document.body.appendChild(elm);
                 expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBe(true);
             });
@@ -24,7 +24,7 @@ describe.runIf(IS_SYNTHETIC_SHADOW_LOADED && !process.env.FORCE_NATIVE_SHADOW_MO
             });
 
             it('renders native shadow', () => {
-                const elm = createElement('c-component', { is: Component });
+                const elm = createElement('x-component', { is: Component });
                 document.body.appendChild(elm);
                 expect(isSyntheticShadowRootInstance(elm.shadowRoot)).toBe(false);
             });

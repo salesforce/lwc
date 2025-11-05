@@ -1,9 +1,9 @@
 <template>
     <div>Profiler Sanity</div>
     <div>
-        <c-error-child class="profiler-error">
+        <x-error-child class="profiler-error">
             Make child throw error
-        </c-error-child>
+        </x-error-child>
     </div>
     <button class="profiler-renderList" onclick={enableList}>
         Render Children List
@@ -11,9 +11,9 @@
     <ul if:true={renderList}>
         <template for:each={items} for:item="item">
             <li key={item.id}>
-                <c-item id={item.id}></c-item>
+                <x-item id={item.id}></x-item>
             </li>
         </template>
     </ul>
-    <c-light></c-light>
+    <x-light></x-light>
 </template>

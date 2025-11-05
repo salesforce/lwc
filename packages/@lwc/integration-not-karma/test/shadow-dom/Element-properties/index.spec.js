@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import Slotted from 'c/slotted';
-import Nested from 'c/nested';
-import NestedFallback from 'c/nestedFallback';
-import TestWithDiv from 'c/testWithDiv';
+import Slotted from 'x/slotted';
+import Nested from 'x/nested';
+import NestedFallback from 'x/nestedFallback';
+import TestWithDiv from 'x/testWithDiv';
 import { spyOn } from '@vitest/spy';
 
 describe('Element.querySelector', () => {
     it('should return null if no Element match', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         expect(elm.querySelector('.foo')).toBe(null);
@@ -17,7 +17,7 @@ describe('Element.querySelector', () => {
     });
 
     it('should return the first matching element', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         const slotted1 = elm.shadowRoot.firstChild.firstChild;
@@ -25,7 +25,7 @@ describe('Element.querySelector', () => {
     });
 
     it('should return matching elements when are manually inserted in same shadow', () => {
-        const elm = createElement('c-test-with-div', { is: TestWithDiv });
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
         document.body.appendChild(elm);
 
         const divInsideShadow = elm.shadowRoot.querySelector('div');
@@ -42,7 +42,7 @@ describe('Element.querySelector', () => {
 
 describe('Element.querySelectorAll', () => {
     it('should return an empty NodeList if no Elements match', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         const hostQuery = elm.querySelectorAll('.foo');
@@ -59,7 +59,7 @@ describe('Element.querySelectorAll', () => {
     });
 
     it('should return the all the matching elements', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         const slotted1 = elm.shadowRoot.firstChild.firstChild;
@@ -72,7 +72,7 @@ describe('Element.querySelectorAll', () => {
     });
 
     it('should return matching elements when are manually inserted in same shadow', () => {
-        const elm = createElement('c-test-with-div', { is: TestWithDiv });
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
         document.body.appendChild(elm);
 
         const divInsideShadow = elm.shadowRoot.querySelector('div');
@@ -90,7 +90,7 @@ describe('Element.querySelectorAll', () => {
 
 describe('Element.getElementsByTagName', () => {
     it('should return matching elements when are manually inserted in same shadow', () => {
-        const elm = createElement('c-test-with-div', { is: TestWithDiv });
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
         document.body.appendChild(elm);
 
         const divInsideShadow = elm.shadowRoot.querySelector('div');
@@ -108,7 +108,7 @@ describe('Element.getElementsByTagName', () => {
 
 describe('Element.getElementsByClassName', () => {
     it('should return matching elements when are manually inserted in same shadow', () => {
-        const elm = createElement('c-test-with-div', { is: TestWithDiv });
+        const elm = createElement('x-test-with-div', { is: TestWithDiv });
         document.body.appendChild(elm);
 
         const divInsideShadow = elm.shadowRoot.querySelector('div');
@@ -126,26 +126,26 @@ describe('Element.getElementsByClassName', () => {
 });
 
 it('should not match on elements in a different shadow tree', () => {
-    const elm = createElement('c-slotted', { is: Slotted });
+    const elm = createElement('x-slotted', { is: Slotted });
     document.body.appendChild(elm);
 
-    expect(elm.querySelector('c-slot')).toBe(null);
-    expect([...elm.querySelectorAll('c-slot')]).toEqual([]);
+    expect(elm.querySelector('x-slot')).toBe(null);
+    expect([...elm.querySelectorAll('x-slot')]).toEqual([]);
 
     expect(elm.shadowRoot.querySelector('slot')).toBe(null);
     expect([...elm.shadowRoot.querySelectorAll('slot')]).toEqual([]);
 });
 
 it('should match on elements in the same shadow tree', () => {
-    const elm = createElement('c-slotted', { is: Slotted });
+    const elm = createElement('x-slotted', { is: Slotted });
     document.body.appendChild(elm);
 
     const slotHost = elm.shadowRoot.firstChild;
     const slotted1 = elm.shadowRoot.firstChild.firstChild;
     const slotted2 = elm.shadowRoot.firstChild.lastChild;
 
-    expect(elm.shadowRoot.querySelector('c-slot')).toBe(slotHost);
-    expect([...elm.shadowRoot.querySelectorAll('c-slot')]).toEqual([slotHost]);
+    expect(elm.shadowRoot.querySelector('x-slot')).toBe(slotHost);
+    expect([...elm.shadowRoot.querySelectorAll('x-slot')]).toEqual([slotHost]);
 
     expect(elm.shadowRoot.querySelector('.slotted')).toBe(slotted1);
     expect([...elm.shadowRoot.querySelectorAll('.slotted')]).toEqual([slotted1, slotted2]);
@@ -155,7 +155,7 @@ it('should match on elements in the same shadow tree', () => {
 });
 
 it('should not match on slotted content', () => {
-    const elm = createElement('c-slotted', { is: Slotted });
+    const elm = createElement('x-slotted', { is: Slotted });
     document.body.appendChild(elm);
 
     const slotHost = elm.shadowRoot.firstChild;
@@ -169,16 +169,16 @@ it('should not match on slotted content', () => {
 });
 
 it('should support chaining querySelectors', () => {
-    const elm = createElement('c-slotted', { is: Slotted });
+    const elm = createElement('x-slotted', { is: Slotted });
     document.body.appendChild(elm);
 
     const slotted = elm.shadowRoot.firstChild.firstChild;
 
-    expect(elm.shadowRoot.querySelector('c-slot').querySelector('.slotted')).toBe(slotted);
+    expect(elm.shadowRoot.querySelector('x-slot').querySelector('.slotted')).toBe(slotted);
 });
 
 it('should support nested slots - multi-level', () => {
-    const elm = createElement('c-nested', { is: Nested });
+    const elm = createElement('x-nested', { is: Nested });
     document.body.appendChild(elm);
 
     const slotHost = elm.shadowRoot.firstChild;
@@ -195,7 +195,7 @@ it('should support nested slots - multi-level', () => {
 });
 
 it('should support nested slots - slotted fallback content', () => {
-    const elm = createElement('c-nested-fallback', { is: NestedFallback });
+    const elm = createElement('x-nested-fallback', { is: NestedFallback });
     document.body.appendChild(elm);
 
     const slotHost = elm.shadowRoot.firstChild;

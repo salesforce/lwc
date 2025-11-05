@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { Signal } from 'c/signal';
+import { Signal } from 'x/signal';
 
 const externalSignal = new Signal('external signal value');
 

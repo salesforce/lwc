@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import Static from 'c/static';
-import Dynamic from 'c/dynamic';
-import Updatable from 'c/updatable';
+import Static from 'x/static';
+import Dynamic from 'x/dynamic';
+import Updatable from 'x/updatable';
 
 // `<input checked="...">` and `<input value="...">` have a peculiar attr/prop relationship, so the engine
 // has historically treated them as props rather than attributes:
@@ -27,7 +27,7 @@ function getRelevantInputProps(input) {
 
 describe('renders <input> the same whether static-optimized or not', () => {
     it('static values', async () => {
-        const elm = createElement('c-static', { is: Static });
+        const elm = createElement('x-static', { is: Static });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -246,7 +246,7 @@ describe('renders <input> the same whether static-optimized or not', () => {
     });
 
     it('dynamic values', async () => {
-        const elm = createElement('c-dynamic', { is: Dynamic });
+        const elm = createElement('x-dynamic', { is: Dynamic });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -641,7 +641,7 @@ describe('renders <input> the same whether static-optimized or not', () => {
     });
 
     it('updatable values', async () => {
-        const elm = createElement('c-updatable', { is: Updatable });
+        const elm = createElement('x-updatable', { is: Updatable });
         document.body.appendChild(elm);
 
         await Promise.resolve();

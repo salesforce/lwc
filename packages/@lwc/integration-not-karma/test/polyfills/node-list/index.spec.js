@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
-import XTest from 'c/test';
+import XTest from 'x/test';
 
 describe('NodeList', () => {
     describe('should be returned by querySelectorAll()', () => {
         it('when calling from div node inside shadow', () => {
-            const elm = createElement('c-test', { is: XTest });
+            const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
             expect(elm.querySelectorAll('*').length).toBe(0);
@@ -30,7 +30,7 @@ describe('NodeList', () => {
 
     describe('should be returned by childNodes getter', () => {
         it('when calling from div node inside shadow', () => {
-            const elm = createElement('c-test', { is: XTest });
+            const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
             // Note: we can check for the length of childNodes on custom elements

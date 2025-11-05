@@ -1,40 +1,40 @@
 import { createElement } from 'lwc';
-import XBoundaryChildConstructorThrow from 'c/boundaryChildConstructorThrow';
-import XBoundaryChildConnectedThrow from 'c/boundaryChildConnectedThrow';
-import XBoundaryChildRenderThrow from 'c/boundaryChildRenderThrow';
-import XBoundaryChildRenderedThrow from 'c/boundaryChildRenderedThrow';
-import XBoundaryChildSlotThrow from 'c/boundaryChildSlotThrow';
-import XNestedBoundaryChildThrow from 'c/nestedBoundaryChildThrow';
-import XBoundaryChildSelfRehydrateThrow from 'c/boundaryChildSelfRehydrateThrow';
-import XBoundaryAlternativeViewThrow from 'c/boundaryAlternativeViewThrow';
-import XBoundaryRenderedThrowFrozen from 'c/boundaryChildRenderedThrowFrozen';
+import XBoundaryChildConstructorThrow from 'x/boundaryChildConstructorThrow';
+import XBoundaryChildConnectedThrow from 'x/boundaryChildConnectedThrow';
+import XBoundaryChildRenderThrow from 'x/boundaryChildRenderThrow';
+import XBoundaryChildRenderedThrow from 'x/boundaryChildRenderedThrow';
+import XBoundaryChildSlotThrow from 'x/boundaryChildSlotThrow';
+import XNestedBoundaryChildThrow from 'x/nestedBoundaryChildThrow';
+import XBoundaryChildSelfRehydrateThrow from 'x/boundaryChildSelfRehydrateThrow';
+import XBoundaryAlternativeViewThrow from 'x/boundaryAlternativeViewThrow';
+import XBoundaryRenderedThrowFrozen from 'x/boundaryChildRenderedThrowFrozen';
 
-import XChildConstructorThrowDuringInit from 'c/childConstructorThrowDuringInit';
-import XChildRenderThrowDuringInit from 'c/childRenderThrowDuringInit';
-import XChildRenderedThrowDuringInit from 'c/childRenderedThrowDuringInit';
-import XChildConnectedThrowDuringInit from 'c/childConnectedThrowDuringInit';
+import XChildConstructorThrowDuringInit from 'x/childConstructorThrowDuringInit';
+import XChildRenderThrowDuringInit from 'x/childRenderThrowDuringInit';
+import XChildRenderedThrowDuringInit from 'x/childRenderedThrowDuringInit';
+import XChildConnectedThrowDuringInit from 'x/childConnectedThrowDuringInit';
 
-import XParentThrowsChildConnectedThrows from 'c/parentThrowsChildConnectedThrows';
-import XParentThrowsChildConstructorThrows from 'c/parentThrowsChildConstructorThrows';
-import XParentThrowsChildRenderThrows from 'c/parentThrowsChildRenderThrows';
-import XParentThrowsChildRenderedThrows from 'c/parentThrowsChildRenderedThrows';
+import XParentThrowsChildConnectedThrows from 'x/parentThrowsChildConnectedThrows';
+import XParentThrowsChildConstructorThrows from 'x/parentThrowsChildConstructorThrows';
+import XParentThrowsChildRenderThrows from 'x/parentThrowsChildRenderThrows';
+import XParentThrowsChildRenderedThrows from 'x/parentThrowsChildRenderedThrows';
 
-import XGrandparentThrowsChildConnectedThrows from 'c/grandparentThrowsChildConnectedThrows';
-import XGrandparentThrowsChildConstructorThrows from 'c/grandparentThrowsChildConstructorThrows';
-import XGrandparentThrowsChildRenderThrows from 'c/grandparentThrowsChildRenderThrows';
-import XGrandparentThrowsChildRenderedThrows from 'c/grandparentThrowsChildRenderedThrows';
+import XGrandparentThrowsChildConnectedThrows from 'x/grandparentThrowsChildConnectedThrows';
+import XGrandparentThrowsChildConstructorThrows from 'x/grandparentThrowsChildConstructorThrows';
+import XGrandparentThrowsChildRenderThrows from 'x/grandparentThrowsChildRenderThrows';
+import XGrandparentThrowsChildRenderedThrows from 'x/grandparentThrowsChildRenderedThrows';
 
-import XParentThrowsOnMutateChildConstructorThrows from 'c/parentThrowsOnMutateChildConstructorThrows';
-import XParentThrowsOnMutateChildRenderThrows from 'c/parentThrowsOnMutateChildRenderThrows';
-import XParentThrowsOnMutateChildRenderedThrows from 'c/parentThrowsOnMutateChildRenderedThrows';
-import XParentThrowsOnMutateChildConnectedThrows from 'c/parentThrowsOnMutateChildConnectedThrows';
+import XParentThrowsOnMutateChildConstructorThrows from 'x/parentThrowsOnMutateChildConstructorThrows';
+import XParentThrowsOnMutateChildRenderThrows from 'x/parentThrowsOnMutateChildRenderThrows';
+import XParentThrowsOnMutateChildRenderedThrows from 'x/parentThrowsOnMutateChildRenderedThrows';
+import XParentThrowsOnMutateChildConnectedThrows from 'x/parentThrowsOnMutateChildConnectedThrows';
 
-import XNoThrowOnMutate from 'c/noThrowOnMutate';
+import XNoThrowOnMutate from 'x/noThrowOnMutate';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 describe('error boundary', () => {
     it('should propagate frozen error to errorCallback()', async () => {
-        const elm = createElement('c-boundary-rendered-throw-frozen', {
+        const elm = createElement('x-boundary-rendered-throw-frozen', {
             is: XBoundaryRenderedThrowFrozen,
         });
         document.body.appendChild(elm);
@@ -44,7 +44,7 @@ describe('error boundary', () => {
     });
 
     it('should not add web component stack trace to frozen error', async () => {
-        const elm = createElement('c-boundary-rendered-throw-frozen', {
+        const elm = createElement('x-boundary-rendered-throw-frozen', {
             is: XBoundaryRenderedThrowFrozen,
         });
         document.body.appendChild(elm);
@@ -54,7 +54,7 @@ describe('error boundary', () => {
     });
 
     it('should render alternative view if child throws in renderedCallback()', async () => {
-        const elm = createElement('c-boundary-child-rendered-throw', {
+        const elm = createElement('x-boundary-child-rendered-throw', {
             is: XBoundaryChildRenderedThrow,
         });
         document.body.appendChild(elm);
@@ -62,11 +62,11 @@ describe('error boundary', () => {
         await Promise.resolve();
         const alternativeView = elm.shadowRoot.querySelector('.rendered-callback-alternative');
         expect(alternativeView.textContent).toEqual('renderedCallback alternative view');
-        expect(elm.shadowRoot.querySelector('c-child-rendered-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-rendered-throw')).toBe(null);
     });
 
     it('should render alternative view if child throws in render()', async () => {
-        const elm = createElement('c-boundary-child-render-throw', {
+        const elm = createElement('x-boundary-child-render-throw', {
             is: XBoundaryChildRenderThrow,
         });
         document.body.appendChild(elm);
@@ -74,11 +74,11 @@ describe('error boundary', () => {
         await Promise.resolve();
         const alternativeView = elm.shadowRoot.querySelector('.render-alternative');
         expect(alternativeView.textContent).toEqual('render alternative view');
-        expect(elm.shadowRoot.querySelector('c-child-render-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-render-throw')).toBe(null);
     });
 
     it('should render alternative view if child throws in constructor()', async () => {
-        const elm = createElement('c-boundary-child-constructor-throw', {
+        const elm = createElement('x-boundary-child-constructor-throw', {
             is: XBoundaryChildConstructorThrow,
         });
         document.body.appendChild(elm);
@@ -86,12 +86,12 @@ describe('error boundary', () => {
         await Promise.resolve();
         const alternativeView = elm.shadowRoot.querySelector('.constructor-alternative');
         expect(alternativeView.textContent).toEqual('constructor alternative view');
-        expect(elm.shadowRoot.querySelector('c-child-constructor-throw')).toBe(null);
-        expect(elm.shadowRoot.querySelector('c-child-constructor-wrapper')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-constructor-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-constructor-wrapper')).toBe(null);
     });
 
     it('should render alternative view if child throws in connectedCallback()', async () => {
-        const elm = createElement('c-boundary-child-connected-throw', {
+        const elm = createElement('x-boundary-child-connected-throw', {
             is: XBoundaryChildConnectedThrow,
         });
         document.body.appendChild(elm);
@@ -99,21 +99,21 @@ describe('error boundary', () => {
         await Promise.resolve();
         const alternativeView = elm.shadowRoot.querySelector('.connected-callback-alternative');
         expect(alternativeView.textContent).toEqual('connectedCallback alternative view');
-        expect(elm.shadowRoot.querySelector('c-child-connected-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-connected-throw')).toBe(null);
     });
 
     it('should render alternative view if child slot throws in render()', async () => {
-        const elm = createElement('c-boundary-child-slot-throw', { is: XBoundaryChildSlotThrow });
+        const elm = createElement('x-boundary-child-slot-throw', { is: XBoundaryChildSlotThrow });
         document.body.appendChild(elm);
 
         await Promise.resolve();
         const alternativeView = elm.shadowRoot.querySelector('.slot-alternative');
         expect(alternativeView.textContent).toEqual('slot alternative view');
-        expect(elm.shadowRoot.querySelector('c-child-slot-host')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-slot-host')).toBe(null);
     });
 
     it('should render alternative view if nested child throws in render()', async () => {
-        const elm = createElement('c-nested-boundary-child-throw', {
+        const elm = createElement('x-nested-boundary-child-throw', {
             is: XNestedBoundaryChildThrow,
         });
         document.body.appendChild(elm);
@@ -121,16 +121,16 @@ describe('error boundary', () => {
         await Promise.resolve();
         const alternativeView = elm.shadowRoot.querySelector('.boundary-alt-view');
         expect(alternativeView.textContent).toEqual('alternative view');
-        expect(elm.shadowRoot.querySelector('c-nested-grand-child-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-nested-grand-child-throw')).toBe(null);
     });
 
     it('should render alternative view if child throws during self rehydration cycle', async () => {
-        const elm = createElement('c-boundary-child-self-rehydrate-throw', {
+        const elm = createElement('x-boundary-child-self-rehydrate-throw', {
             is: XBoundaryChildSelfRehydrateThrow,
         });
         document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('c-child-self-rehydrate-throw');
+        const child = elm.shadowRoot.querySelector('x-child-self-rehydrate-throw');
         child.incrementCounter();
 
         // Using a setTimeout instead of a Promise here because it takes multiple microtasks for the engine to render
@@ -140,11 +140,11 @@ describe('error boundary', () => {
         const alternativeView = elm.shadowRoot.querySelector('.self-rehydrate-alternative');
 
         expect(alternativeView.textContent).toEqual('self rehydrate alternative view');
-        expect(elm.shadowRoot.querySelector('c-child-self-rehydrate-throw')).toBe(null);
+        expect(elm.shadowRoot.querySelector('x-child-self-rehydrate-throw')).toBe(null);
     });
 
     it('should fail to unmount alternative offender when root element is not a boundary', async () => {
-        const elm = createElement('c-boundary-alternative-view-throw', {
+        const elm = createElement('x-boundary-alternative-view-throw', {
             is: XBoundaryAlternativeViewThrow,
         });
         document.body.appendChild(elm);
@@ -153,8 +153,8 @@ describe('error boundary', () => {
         // ensure offender still exists since boundary failed to recover
         expect(
             elm.shadowRoot
-                .querySelector('c-alt-child-boundary-view-throw')
-                .shadowRoot.querySelector('c-post-error-child-view')
+                .querySelector('x-alt-child-boundary-view-throw')
+                .shadowRoot.querySelector('x-post-error-child-view')
         ).not.toBe(null);
     });
 });
@@ -178,30 +178,30 @@ describe('error boundary during initial component construction', () => {
     }
     testStub(
         'when child throws in constructor',
-        'c-child-constructor-throw-during-init',
+        'x-child-constructor-throw-during-init',
         XChildConstructorThrowDuringInit,
-        'c-child-constructor-throw',
+        'x-child-constructor-throw',
         'child-constructor-throw: triggered error'
     );
     testStub(
         'when child throws in render',
-        'c-child-render-throw-during-init',
+        'x-child-render-throw-during-init',
         XChildRenderThrowDuringInit,
-        'c-child-render-throw',
+        'x-child-render-throw',
         'Child threw an error during rendering'
     );
     testStub(
         'when child throws in renderedCallback',
-        'c-child-rendered-throw-during-init',
+        'x-child-rendered-throw-during-init',
         XChildRenderedThrowDuringInit,
-        'c-child-rendered-throw',
+        'x-child-rendered-throw',
         'Child threw in renderedCallback'
     );
     testStub(
         'when child throws in connectedCallback',
-        'c-child-connected-throw-during-init',
+        'x-child-connected-throw-during-init',
         XChildConnectedThrowDuringInit,
-        'c-child-connected-throw',
+        'x-child-connected-throw',
         'Child threw in connectedCallback'
     );
 });
@@ -220,22 +220,22 @@ describe('error thrown in errorCallback', () => {
 
     testStub(
         'when child throws in connectedCallback',
-        'c-parent-throws-child-connected-throws',
+        'x-parent-throws-child-connected-throws',
         XParentThrowsChildConnectedThrows
     );
     testStub(
         'when child throws in constructor',
-        'c-parent-throws-child-constructor-throws',
+        'x-parent-throws-child-constructor-throws',
         XParentThrowsChildConstructorThrows
     );
     testStub(
         'when child throws in render',
-        'c-parent-throws-child-render-throws',
+        'x-parent-throws-child-render-throws',
         XParentThrowsChildRenderThrows
     );
     testStub(
         'when child throws in renderedCallback',
-        'c-parent-throws-child-rendered-throws',
+        'x-parent-throws-child-rendered-throws',
         XParentThrowsChildRenderedThrows
     );
 });
@@ -252,22 +252,22 @@ describe('errorCallback error caught by another errorCallback', () => {
 
     testStub(
         'when child throws in connectedCallback',
-        'c-grandparent-throws-child-connected-throws',
+        'x-grandparent-throws-child-connected-throws',
         XGrandparentThrowsChildConnectedThrows
     );
     testStub(
         'when child throws in constructor',
-        'c-grandparent-throws-child-constructor-throws',
+        'x-grandparent-throws-child-constructor-throws',
         XGrandparentThrowsChildConstructorThrows
     );
     testStub(
         'when child throws in render',
-        'c-grandparent-throws-child-render-throws',
+        'x-grandparent-throws-child-render-throws',
         XGrandparentThrowsChildRenderThrows
     );
     testStub(
         'when child throws in renderedCallback',
-        'c-grandparent-throws-child-rendered-throws',
+        'x-grandparent-throws-child-rendered-throws',
         XGrandparentThrowsChildRenderedThrows
     );
 });
@@ -290,7 +290,7 @@ describe('errorCallback throws after value mutation', () => {
     function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {
         it(`parent errorCallback throws after value mutation ${testcase}`, async () => {
             const throwElm = createElement(hostSelector, { is: hostClass });
-            const noThrowElm = createElement('c-no-throw-on-mutate', { is: XNoThrowOnMutate });
+            const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
             document.body.appendChild(throwElm);
             document.body.appendChild(noThrowElm);
             await Promise.resolve();
@@ -305,7 +305,7 @@ describe('errorCallback throws after value mutation', () => {
             );
             // child after the throwing child is not rendered
             // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
-            const afterThrowingChild = throwElm.shadowRoot.querySelector('c-after-throwing-child');
+            const afterThrowingChild = throwElm.shadowRoot.querySelector('x-after-throwing-child');
             if (expectAfterThrowingChildToExist) {
                 expect(afterThrowingChild).not.toBeNull();
             } else {
@@ -319,25 +319,25 @@ describe('errorCallback throws after value mutation', () => {
 
     testStub(
         'when child throws in connectedCallback',
-        'c-parent-throws-on-mutate-child-connected-throws',
+        'x-parent-throws-on-mutate-child-connected-throws',
         XParentThrowsOnMutateChildConnectedThrows,
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
     );
     testStub(
         'when child throws in constructor',
-        'c-parent-throws-on-mutate-child-constructor-throws',
+        'x-parent-throws-on-mutate-child-constructor-throws',
         XParentThrowsOnMutateChildConstructorThrows,
         false
     );
     testStub(
         'when child throws in render',
-        'c-parent-throws-on-mutate-child-render-throws',
+        'x-parent-throws-on-mutate-child-render-throws',
         XParentThrowsOnMutateChildRenderThrows,
         false
     );
     testStub(
         'when child throws in renderedCallback',
-        'c-parent-throws-on-mutate-child-rendered-throws',
+        'x-parent-throws-on-mutate-child-rendered-throws',
         XParentThrowsOnMutateChildRenderedThrows,
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
     );

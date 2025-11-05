@@ -1,4 +1,4 @@
-import Base from 'c/base';
+import Base from 'x/base';
 
 export default class Bar extends Base {
     // not need to define render method

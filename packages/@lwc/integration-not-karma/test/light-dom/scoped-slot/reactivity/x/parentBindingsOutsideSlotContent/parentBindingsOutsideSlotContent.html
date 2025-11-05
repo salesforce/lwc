@@ -1,9 +1,9 @@
 <template>
     <p>{label}</p>
-    <c-list-child-api-data items={items}>
+    <x-list-child-api-data items={items}>
         <template lwc:slot-data="item">
             <div>{label}</div>
             <span>{item.id} - {item.name}</span>
         </template>
-    </c-list-child-api-data>
+    </x-list-child-api-data>
 </template>

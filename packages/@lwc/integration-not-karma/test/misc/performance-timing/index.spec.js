@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
-import Child from 'c/child';
-import Parent from 'c/parent';
-import Lifecycle from 'c/lifecycle';
-import Nested from 'c/nested';
+import Child from 'x/child';
+import Parent from 'x/parent';
+import Lifecycle from 'x/lifecycle';
+import Nested from 'x/nested';
 
 import {
     isUserTimingSupported,
@@ -14,7 +14,7 @@ import {
 
 function testConstructor(expected) {
     it('captures component constructor', () => {
-        const elm = createElement('c-child', { is: Child });
+        const elm = createElement('x-child', { is: Child });
         document.body.appendChild(elm);
         expectMeasureEquals(expected);
     });
@@ -22,7 +22,7 @@ function testConstructor(expected) {
 
 function testRerender(expected) {
     it('component rerender', async () => {
-        const elm = createElement('c-child', { is: Child });
+        const elm = createElement('x-child', { is: Child });
         document.body.appendChild(elm);
 
         resetMeasures();
@@ -35,7 +35,7 @@ function testRerender(expected) {
 
 function testNestedTree(expected) {
     it('captures component nested component tree', () => {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
 
         expectMeasureEquals(expected);
@@ -44,7 +44,7 @@ function testNestedTree(expected) {
 
 function testNestedRerender(expected) {
     it('captures component nested component tree rerender', async () => {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
 
         resetMeasures();
@@ -57,7 +57,7 @@ function testNestedRerender(expected) {
 
 function testLifecycleHooks(expected) {
     it('should capture all the component lifecycle hooks', () => {
-        const elm = createElement('c-lifecycle', { is: Lifecycle });
+        const elm = createElement('x-lifecycle', { is: Lifecycle });
         document.body.appendChild(elm);
         document.body.removeChild(elm);
 
@@ -67,7 +67,7 @@ function testLifecycleHooks(expected) {
 
 function testNestedComponentCreation(expected) {
     it('should support nested component creation', () => {
-        const elm = createElement('c-nested', { is: Nested });
+        const elm = createElement('x-nested', { is: Nested });
         document.body.appendChild(elm);
 
         expectMeasureEquals(expected);
@@ -133,16 +133,16 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
         describe.skipIf(process.env.NODE_ENV === 'production')('development mode', () => {
             testConstructor([
                 {
-                    label: /<c-child> - constructor/,
+                    label: /<x-child> - constructor/,
                 },
                 {
                     label: /lwc-render/,
                     children: [
                         {
-                            label: /<c-child> - render/,
+                            label: /<x-child> - render/,
                         },
                         {
-                            label: /<c-child> - patch/,
+                            label: /<x-child> - patch/,
                         },
                     ],
                 },
@@ -153,10 +153,10 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                     label: /lwc-rerender/,
                     children: [
                         {
-                            label: /<c-child> - render/,
+                            label: /<x-child> - render/,
                         },
                         {
-                            label: /<c-child> - patch/,
+                            label: /<x-child> - patch/,
                         },
                     ],
                 },
@@ -166,28 +166,28 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
             testNestedTree(
                 !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
                     ? [
-                          { label: '<c-parent> - constructor', children: [] },
+                          { label: '<x-parent> - constructor', children: [] },
                           {
                               label: 'lwc-render',
                               children: [
-                                  { label: '<c-parent> - render', children: [] },
+                                  { label: '<x-parent> - render', children: [] },
                                   {
-                                      label: '<c-parent> - patch',
+                                      label: '<x-parent> - patch',
                                       children: [
-                                          { label: '<c-child> - constructor', children: [] },
+                                          { label: '<x-child> - constructor', children: [] },
                                           {
                                               label: 'lwc-render',
                                               children: [
-                                                  { label: '<c-child> - render', children: [] },
-                                                  { label: '<c-child> - patch', children: [] },
+                                                  { label: '<x-child> - render', children: [] },
+                                                  { label: '<x-child> - patch', children: [] },
                                               ],
                                           },
-                                          { label: '<c-child> - constructor', children: [] },
+                                          { label: '<x-child> - constructor', children: [] },
                                           {
                                               label: 'lwc-render',
                                               children: [
-                                                  { label: '<c-child> - render', children: [] },
-                                                  { label: '<c-child> - patch', children: [] },
+                                                  { label: '<x-child> - render', children: [] },
+                                                  { label: '<x-child> - patch', children: [] },
                                               ],
                                           },
                                       ],
@@ -197,34 +197,34 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                       ]
                     : [
                           {
-                              label: /<c-parent> - constructor/,
+                              label: /<x-parent> - constructor/,
                           },
                           {
                               label: /lwc-render/,
                               children: [
                                   {
-                                      label: /<c-parent> - render/,
+                                      label: /<x-parent> - render/,
                                   },
                                   {
-                                      label: /<c-parent> - patch/,
+                                      label: /<x-parent> - patch/,
                                       children: [
                                           {
-                                              label: /<c-child> - constructor/,
+                                              label: /<x-child> - constructor/,
                                           },
                                           {
-                                              label: /<c-child> - render/,
+                                              label: /<x-child> - render/,
                                           },
                                           {
-                                              label: /<c-child> - patch/,
+                                              label: /<x-child> - patch/,
                                           },
                                           {
-                                              label: /<c-child> - constructor/,
+                                              label: /<x-child> - constructor/,
                                           },
                                           {
-                                              label: /<c-child> - render/,
+                                              label: /<x-child> - render/,
                                           },
                                           {
-                                              label: /<c-child> - patch/,
+                                              label: /<x-child> - patch/,
                                           },
                                       ],
                                   },
@@ -238,22 +238,22 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                     label: /lwc-rerender/,
                     children: [
                         {
-                            label: /<c-parent> - render/,
+                            label: /<x-parent> - render/,
                         },
                         {
-                            label: /<c-parent> - patch/,
+                            label: /<x-parent> - patch/,
                             children: [
                                 {
-                                    label: /<c-child> - render/,
+                                    label: /<x-child> - render/,
                                 },
                                 {
-                                    label: /<c-child> - patch/,
+                                    label: /<x-child> - patch/,
                                 },
                                 {
-                                    label: /<c-child> - render/,
+                                    label: /<x-child> - render/,
                                 },
                                 {
-                                    label: /<c-child> - patch/,
+                                    label: /<x-child> - patch/,
                                 },
                             ],
                         },
@@ -263,54 +263,54 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
 
             testLifecycleHooks([
                 {
-                    label: /<c-lifecycle> - constructor/,
+                    label: /<x-lifecycle> - constructor/,
                 },
                 {
                     label: /lwc-render/,
                     children: [
                         {
-                            label: /<c-lifecycle> - connectedCallback/,
+                            label: /<x-lifecycle> - connectedCallback/,
                         },
                         {
-                            label: /<c-lifecycle> - render/,
+                            label: /<x-lifecycle> - render/,
                         },
                         {
-                            label: /<c-lifecycle> - patch/,
+                            label: /<x-lifecycle> - patch/,
                         },
                         {
-                            label: /<c-lifecycle> - renderedCallback/,
+                            label: /<x-lifecycle> - renderedCallback/,
                         },
                     ],
                 },
                 {
-                    label: /<c-lifecycle> - disconnectedCallback/,
+                    label: /<x-lifecycle> - disconnectedCallback/,
                 },
             ]);
 
             testNestedComponentCreation([
                 {
-                    label: /<c-nested> - constructor/,
+                    label: /<x-nested> - constructor/,
                 },
                 {
                     label: /lwc-render/,
                     children: [
                         {
-                            label: /<c-nested> - render/,
+                            label: /<x-nested> - render/,
                         },
                         {
-                            label: /<c-nested> - renderedCallback/,
+                            label: /<x-nested> - renderedCallback/,
                             children: [
                                 {
-                                    label: /<c-child> - constructor/,
+                                    label: /<x-child> - constructor/,
                                 },
                                 {
                                     label: /lwc-render/,
                                     children: [
                                         {
-                                            label: /<c-child> - render/,
+                                            label: /<x-child> - render/,
                                         },
                                         {
-                                            label: /<c-child> - patch/,
+                                            label: /<x-child> - patch/,
                                         },
                                     ],
                                 },

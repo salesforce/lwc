@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import Basic from 'c/basic';
+import Basic from 'x/basic';
 
 it('should return the slot name attribute in the DOM', () => {
-    const elm = createElement('c-basic', { is: Basic });
+    const elm = createElement('x-basic', { is: Basic });
     document.body.appendChild(elm);
 
     const slots = elm.shadowRoot.querySelectorAll('slot');
@@ -12,7 +12,7 @@ it('should return the slot name attribute in the DOM', () => {
 });
 
 it('should have property reflecting the attribute', () => {
-    const elm = createElement('c-basic', { is: Basic });
+    const elm = createElement('x-basic', { is: Basic });
     document.body.appendChild(elm);
 
     const slots = elm.shadowRoot.querySelectorAll('slot');

@@ -1,8 +1,8 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 
-import LockerIntegration from 'c/lockerIntegration';
-import LockerLiveComponent from 'c/lockerLiveComponent';
-import LockerHooks, { hooks } from 'c/lockerHooks';
+import LockerIntegration from 'x/lockerIntegration';
+import LockerLiveComponent from 'x/lockerLiveComponent';
+import LockerHooks, { hooks } from 'x/lockerHooks';
 import { spyOn } from '@vitest/spy';
 beforeEach(() => {
     setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
@@ -11,7 +11,7 @@ afterEach(() => {
     setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
 });
 it('should support Locker integration which uses a wrapped LightningElement base class', () => {
-    const elm = createElement('c-secure-parent', { is: LockerIntegration });
+    const elm = createElement('x-secure-parent', { is: LockerIntegration });
     document.body.appendChild(elm);
 
     // Verifying that shadow tree was created to ensure the component class was successfully processed
@@ -43,7 +43,7 @@ describe('Locker hooks', () => {
 
     describe('getHook', () => {
         it('invokes getHook when reading a public property', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
             // Testing the getter; don't need to use the return value
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.publicProp;
@@ -53,7 +53,7 @@ describe('Locker hooks', () => {
         });
 
         it('invokes getHook when reading a public property via an accessor', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
             // Testing the getter; don't need to use the return value
             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
             elm.publicAccessor;
@@ -65,7 +65,7 @@ describe('Locker hooks', () => {
 
     describe('setHook', () => {
         it('invokes setHook when assigning a public property', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
             elm.publicProp = 1;
 
             expect(setHookSpy).toHaveBeenCalledTimes(1);
@@ -73,7 +73,7 @@ describe('Locker hooks', () => {
         });
 
         it('invokes setHook when assigning a public property via an accessor', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
             elm.publicAccessor = 1;
 
             expect(setHookSpy).toHaveBeenCalledTimes(1);
@@ -83,7 +83,7 @@ describe('Locker hooks', () => {
 
     describe('callHook', () => {
         it('invokes callHook when invoking a public method', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
             elm.publicMethod(1, 'foo');
 
             expect(callHookSpy).toHaveBeenCalledTimes(1);
@@ -94,7 +94,7 @@ describe('Locker hooks', () => {
         });
 
         it('should invoke callHook for all the lifecycle hooks', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
 
             document.body.appendChild(elm);
             document.body.removeChild(elm);
@@ -111,7 +111,7 @@ describe('Locker hooks', () => {
         });
 
         it('should invoke callHook when invoking event handlers', () => {
-            const elm = createElement('c-hooks', { is: LockerHooks });
+            const elm = createElement('x-hooks', { is: LockerHooks });
             document.body.appendChild(elm);
 
             const evt = new CustomEvent('test');
@@ -126,7 +126,7 @@ describe('Locker hooks', () => {
 
 describe('Locker live objects', () => {
     it('should report the component instance as live to support expandos', () => {
-        const elm = createElement('c-live', { is: LockerLiveComponent });
+        const elm = createElement('x-live', { is: LockerLiveComponent });
         document.body.appendChild(elm);
         expect(elm.hasMarker()).toBe(true);
     });

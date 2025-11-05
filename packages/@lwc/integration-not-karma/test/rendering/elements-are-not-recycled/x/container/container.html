@@ -1,17 +1,17 @@
 <template>
     <template if:true={isStyleCheck}>
-        <c-simple></c-simple>
-        <c-simple></c-simple>
-        <c-simple></c-simple>
+        <x-simple></x-simple>
+        <x-simple></x-simple>
+        <x-simple></x-simple>
     </template>
-    <c-child>
+    <x-child>
         <template if:true={isElement}>
             <button onclick={dispatchHandlerCalledEvent}>click me</button>
         </template>
 
         <template if:true={isCustomElement}>
-            <c-simple></c-simple>
-            <p class="mark">rendering c-simple may asynchronously throw during 2nd render, this is used to verify render went well.</p>
+            <x-simple></x-simple>
+            <p class="mark">rendering x-simple may asynchronously throw during 2nd render, this is used to verify render went well.</p>
         </template>
-    </c-child>
+    </x-child>
 </template>

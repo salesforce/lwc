@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import FirstShadow from 'c/firstShadow';
-import SecondShadow from 'c/secondShadow';
+import FirstShadow from 'x/firstShadow';
+import SecondShadow from 'x/secondShadow';
 
 describe('style', () => {
     it('styles do not leak out of shadow elements', () => {
@@ -8,8 +8,8 @@ describe('style', () => {
         style.textContent = 'div { color: blue }';
         const div = document.createElement('div');
         div.textContent = 'hello';
-        const firstShadow = createElement('c-first-shadow', { is: FirstShadow });
-        const secondShadow = createElement('c-second-shadow', { is: SecondShadow });
+        const firstShadow = createElement('x-first-shadow', { is: FirstShadow });
+        const secondShadow = createElement('x-second-shadow', { is: SecondShadow });
         document.body.appendChild(style);
         document.body.appendChild(div);
         document.body.appendChild(firstShadow);

@@ -30,7 +30,7 @@ To specify custom compiler config on a per test or per component basis, use a cu
 
 ### Hydration Tests
 
-Hydration tests test the SSR packages, and are therefore more complex than the integration tests. While the files are named `index.spec.js`, they are actually _config_ files. The actual test executed is defined in `test-hydration.js`, which also contains the interface definition for the config. Each hydration test is also expected to define an entrypoint component named `c/main`. The hydration tests are transformed by a plugin defined in `serve-hydration.js`.
+Hydration tests test the SSR packages, and are therefore more complex than the integration tests. While the files are named `index.spec.js`, they are actually _config_ files. The actual test executed is defined in `test-hydration.js`, which also contains the interface definition for the config. Each hydration test is also expected to define an entrypoint component named `x/main`. The hydration tests are transformed by a plugin defined in `serve-hydration.js`.
 
 ## Design Goals
 

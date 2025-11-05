@@ -1,6 +1,6 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Component from 'c/component';
-import Scoping from 'c/scoping';
+import Component from 'x/component';
+import Scoping from 'x/scoping';
 import { spyOn } from '@vitest/spy';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
@@ -29,12 +29,12 @@ const props = ['stylesheetToken', 'stylesheetTokens', 'legacyStylesheetToken'];
 
 const components = [
     {
-        tagName: 'c-component',
+        tagName: 'x-component',
         Ctor: Component,
         name: 'unscoped styles',
     },
     {
-        tagName: 'c-scoping',
+        tagName: 'x-scoping',
         Ctor: Scoping,
         name: 'scoped styles',
     },

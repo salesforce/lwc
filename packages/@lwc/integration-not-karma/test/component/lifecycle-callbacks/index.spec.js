@@ -1,16 +1,16 @@
 import { createElement } from 'lwc';
-import Single from 'c/single';
-import Parent from 'c/parent';
-import ParentIf from 'c/parentIf';
-import ParentProp from 'c/parentProp';
+import Single from 'x/single';
+import Parent from 'x/parent';
+import ParentIf from 'x/parentIf';
+import ParentProp from 'x/parentProp';
 import Container from 'invocationorder/container';
 import LightContainer from 'invocationorder/lightContainer';
-import DispatchEvents from 'c/dispatchEvents';
+import DispatchEvents from 'x/dispatchEvents';
 import TimingParent from 'timing/parent';
 import TimingParentLight from 'timing/parentLight';
 import ReorderingList from 'reordering/list';
 import ReorderingListLight from 'reordering/listLight';
-import Details from 'c/details';
+import Details from 'x/details';
 import MutationsParent from 'mutations/parent';
 import MutationsParentLight from 'mutations/parentLight';
 
@@ -29,12 +29,12 @@ afterEach(() => {
 });
 
 it('should only invoke constructor when the component is created', () => {
-    createElement('c-single', { is: Single });
+    createElement('x-single', { is: Single });
     expect(window.timingBuffer).toEqual(['single:constructor']);
 });
 
 it('should invoke all the lifecycle callback synchronously when the element is appended in the DOM', () => {
-    const elm = createElement('c-single', { is: Single });
+    const elm = createElement('x-single', { is: Single });
 
     resetTimingBuffer();
     document.body.appendChild(elm);
@@ -43,7 +43,7 @@ it('should invoke all the lifecycle callback synchronously when the element is a
 });
 
 it('should the disconnectedCallback synchronously when removing the element from the DOM', () => {
-    const elm = createElement('c-single', { is: Single });
+    const elm = createElement('x-single', { is: Single });
     document.body.appendChild(elm);
 
     resetTimingBuffer();
@@ -53,7 +53,7 @@ it('should the disconnectedCallback synchronously when removing the element from
 });
 
 it('should invoke the component lifecycle hooks in the right order when appending in the parent in the DOM', () => {
-    const elm = createElement('c-parent', { is: Parent });
+    const elm = createElement('x-parent', { is: Parent });
 
     resetTimingBuffer();
     document.body.appendChild(elm);
@@ -71,7 +71,7 @@ it('should invoke the component lifecycle hooks in the right order when appendin
 });
 
 it('should invoke the component lifecycle hooks in the right order when removing the parent from the DOM', () => {
-    const elm = createElement('c-parent', { is: Parent });
+    const elm = createElement('x-parent', { is: Parent });
     document.body.appendChild(elm);
 
     resetTimingBuffer();
@@ -85,7 +85,7 @@ it('should invoke the component lifecycle hooks in the right order when removing
 });
 
 it('should call children component lifecycle hooks when rendered dynamically via the template', async () => {
-    const elm = createElement('c-parent-if', { is: ParentIf });
+    const elm = createElement('x-parent-if', { is: ParentIf });
     document.body.appendChild(elm);
 
     expect(window.timingBuffer).toEqual([
@@ -113,7 +113,7 @@ it('should call children component lifecycle hooks when rendered dynamically via
 });
 
 it('should call children component lifecycle hooks when a public property change', async () => {
-    const elm = createElement('c-parent-prop', { is: ParentProp });
+    const elm = createElement('x-parent-prop', { is: ParentProp });
     document.body.appendChild(elm);
 
     expect(window.timingBuffer).toEqual([
@@ -400,7 +400,7 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
     });
 
     it('behaves the same regardless of native/synthetic lifecycle', () => {
-        const elm = createElement('c-dispatch-events', { is: DispatchEvents });
+        const elm = createElement('x-dispatch-events', { is: DispatchEvents });
 
         let connected = false;
         let disconnected = false;
@@ -428,7 +428,7 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
 
 describe('attributeChangedCallback', () => {
     it('W-17420330 - only fires for registered component', async () => {
-        const root = createElement('c-details', { is: Details });
+        const root = createElement('x-details', { is: Details });
         document.body.appendChild(root);
         await Promise.resolve();
 

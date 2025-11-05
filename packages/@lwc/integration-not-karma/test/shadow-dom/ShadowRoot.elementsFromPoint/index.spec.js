@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import Container from 'c/container';
-import Grandparent from 'c/grandparent';
+import Container from 'x/container';
+import Grandparent from 'x/grandparent';
 import { extractShadowDataIds } from '../../../helpers/utils.js';
 import { resetDOM } from '../../../helpers/reset.js';
 
@@ -59,7 +59,7 @@ it('non-shadow example', () => {
 });
 
 it('shadow example', () => {
-    const elm = createElement('c-container', { is: Container });
+    const elm = createElement('x-container', { is: Container });
     document.body.appendChild(elm);
     const nodes = extractShadowDataIds(elm.shadowRoot);
 
@@ -98,7 +98,7 @@ it('shadow example', () => {
 });
 
 it('host elements are not all visible', () => {
-    const grandparent = createElement('c-grandparent', { is: Grandparent });
+    const grandparent = createElement('x-grandparent', { is: Grandparent });
     document.body.appendChild(grandparent);
     const nodes = extractShadowDataIds(grandparent.shadowRoot);
     const { child, childDiv, parent, parentDiv, grandparentDiv } = nodes;

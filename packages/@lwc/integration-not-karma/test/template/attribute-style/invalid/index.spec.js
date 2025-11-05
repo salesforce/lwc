@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
 
-import Dynamic from 'c/dynamic';
-import Static from 'c/staticallyOptimized';
+import Dynamic from 'x/dynamic';
+import Static from 'x/staticallyOptimized';
 
 describe('dynamic style attributes', () => {
     const scenarios = [
@@ -14,7 +14,7 @@ describe('dynamic style attributes', () => {
             it(`throws an error when ${dataType} value used - statically optimized ${
                 ctor === Static
             }`, () => {
-                const elm = createElement('c-invalid-style', { is: ctor });
+                const elm = createElement('x-invalid-style', { is: ctor });
                 elm[test] = true;
                 expect(() => {
                     document.body.appendChild(elm);

@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import { installCustomContext, getValueForIdentity } from 'c/advancedProvider';
-import Consumer from 'c/advancedConsumer';
-import { setValueForIdentity } from './c/advancedProvider/advancedProvider';
+import { installCustomContext, getValueForIdentity } from 'x/advancedProvider';
+import Consumer from 'x/advancedConsumer';
+import { setValueForIdentity } from './x/advancedProvider/advancedProvider';
 
 describe('Advanced Custom Context Provider', () => {
     it('should be install-able on any dom element', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
         installCustomContext(div);
         div.appendChild(elm);
@@ -15,14 +15,14 @@ describe('Advanced Custom Context Provider', () => {
     });
     it('should provide identity as null when missing provider', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
         div.appendChild(elm);
         expect(elm.getIdentity()).toBe(null);
     });
     it('should allow setting value associated to identity', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
         installCustomContext(div);
         div.appendChild(elm);

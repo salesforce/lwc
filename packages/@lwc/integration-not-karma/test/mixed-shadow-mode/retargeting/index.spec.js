@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import SyntheticParent from 'c/syntheticParent';
+import SyntheticParent from 'x/syntheticParent';
 
 function testSelector(name, selector) {
     it(name, async () => {
-        const elm = createElement('c-synthetic-parent', { is: SyntheticParent });
+        const elm = createElement('x-synthetic-parent', { is: SyntheticParent });
         document.body.appendChild(elm);
         await Promise.resolve();
         let target;
@@ -22,8 +22,8 @@ describe('should resolve to the outermost host element', () => {
         testSelector('native web component', '.native-wc-slotted-button');
     });
     describe('when event dispatched on an element inside a native shadow root', () => {
-        testSelector('lwc component native shadow', 'c-native-child');
-        testSelector('lwc component native shadow', 'c-synthetic-child');
+        testSelector('lwc component native shadow', 'x-native-child');
+        testSelector('lwc component native shadow', 'x-synthetic-child');
         testSelector('native web component', 'mixed-shadow-mode-retargeting');
     });
 });

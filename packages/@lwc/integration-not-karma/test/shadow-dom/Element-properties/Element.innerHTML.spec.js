@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import Test from 'c/test';
+import Test from 'x/test';
 
 describe('Element.innerHTML - get', () => {
-    it('should enforce the shadow DOM semantic - c-test', () => {
-        const elm = createElement('c-test', { is: Test });
+    it('should enforce the shadow DOM semantic - x-test', () => {
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(elm.innerHTML).toBe('');
-        expect(elm.shadowRoot.querySelector('c-container').innerHTML).toBe(
+        expect(elm.shadowRoot.querySelector('x-container').innerHTML).toBe(
             '<div>Slotted Text<input name="slotted"></div>'
         );
         expect(elm.shadowRoot.querySelector('div').innerHTML).toBe(
@@ -16,11 +16,11 @@ describe('Element.innerHTML - get', () => {
         );
     });
 
-    it('should enforce the shadow DOM semantic - c-container', () => {
-        const elm = createElement('c-test', { is: Test });
+    it('should enforce the shadow DOM semantic - x-container', () => {
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
-        const container = elm.shadowRoot.querySelector('c-container');
+        const container = elm.shadowRoot.querySelector('x-container');
         expect(container.shadowRoot.querySelector('div').innerHTML).toBe(
             'Before[<slot></slot>]After'
         );
@@ -30,7 +30,7 @@ describe('Element.innerHTML - get', () => {
 
 describe('Element.innerHTML - set', () => {
     it('should throw when invoking setter on the host element', () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -39,7 +39,7 @@ describe('Element.innerHTML - set', () => {
     });
 
     it('should log a warning when invoking setter for an element in the shadow only in synthetic mode', () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         const div = elm.shadowRoot.querySelector('div');

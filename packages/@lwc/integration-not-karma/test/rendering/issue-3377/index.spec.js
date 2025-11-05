@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import Test from 'c/test';
+import Test from 'x/test';
 
 describe('issue-3377', () => {
     it('should render lwc:if content after iteration', async () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         elm.addItem();

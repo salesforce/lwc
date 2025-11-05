@@ -5,18 +5,18 @@ import {
 } from '../../../../../helpers/constants.js';
 import { extractDataIds } from '../../../../../helpers/utils.js';
 
-import LightContainer from './c/lightContainer/lightContainer';
+import LightContainer from './x/lightContainer/lightContainer';
 
 const commentNode = document.createComment(' comments being forwarded ');
 
 const slotAssignmentWithForwarding = {
     expectedUpperSlot: {
-        tagName: 'c-shadow-dom-element',
+        tagName: 'x-shadow-dom-element',
         content: 'Lower slot forwarded content',
         slotAttr: null,
     },
     expectedLowerSlot: {
-        tagName: 'c-light-dom-element',
+        tagName: 'x-light-dom-element',
         content: 'Upper slot forwarded content',
         slotAttr: null,
     },
@@ -28,12 +28,12 @@ const slotAssignmentWithForwarding = {
 
 const slotAssignmentWithoutForwarding = {
     expectedUpperSlot: {
-        tagName: 'c-light-dom-element',
+        tagName: 'x-light-dom-element',
         content: 'Upper slot forwarded content',
         slotAttr: 'upper',
     },
     expectedLowerSlot: {
-        tagName: 'c-shadow-dom-element',
+        tagName: 'x-shadow-dom-element',
         content: 'Lower slot forwarded content',
         slotAttr: 'lower',
     },
@@ -51,7 +51,7 @@ describe('slot forwarding', () => {
     let nodes;
     let lightContainer;
     beforeAll(() => {
-        lightContainer = createElement('c-light-container', { is: LightContainer });
+        lightContainer = createElement('x-light-container', { is: LightContainer });
         document.body.appendChild(lightContainer);
         nodes = extractDataIds(lightContainer);
     });
@@ -216,7 +216,7 @@ describe('slot forwarding', () => {
         const upperSlotContent = upperForwardedSlot[0].assignedNodes();
         expect(upperSlotContent.length).toEqual(2);
         expect(upperSlotContent[0].getAttribute('slot')).toBe('lower');
-        expect(upperSlotContent[0].tagName.toLowerCase()).toBe('c-shadow-dom-element');
+        expect(upperSlotContent[0].tagName.toLowerCase()).toBe('x-shadow-dom-element');
         expect(upperSlotContent[1].getAttribute('slot')).toBe('lower');
         expect(upperSlotContent[1].innerText).toEqual('Lower slot forwarded content');
 
@@ -236,7 +236,7 @@ describe('slot forwarding', () => {
         const lowerSlotContent = lowerForwardedSlot[0].assignedNodes();
         expect(lowerSlotContent.length).toEqual(2);
         expect(lowerSlotContent[0].getAttribute('slot')).toBe('upper');
-        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual('c-light-dom-element');
+        expect(lowerSlotContent[0].tagName.toLowerCase()).toEqual('x-light-dom-element');
         expect(lowerSlotContent[1].getAttribute('slot')).toBe('upper');
         expect(lowerSlotContent[1].innerText).toEqual('Upper slot forwarded content');
 

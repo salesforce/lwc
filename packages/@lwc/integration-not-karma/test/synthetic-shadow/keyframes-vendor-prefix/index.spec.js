@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import A from 'c/a';
+import A from 'x/a';
 
 describe('keyframes with vendor prefix', () => {
     it('animation applies to element with local vendor-prefixed keyframes', () => {
-        const el = createElement('c-a', { is: A });
+        const el = createElement('x-a', { is: A });
         document.body.appendChild(el);
 
         const div = el.shadowRoot.querySelector('div');

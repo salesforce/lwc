@@ -1,8 +1,8 @@
 <template>
     <template if:true={state.error}>
-        <c-post-error-child-view></c-post-error-child-view>
+        <x-post-error-child-view></x-post-error-child-view>
     </template>
     <template if:false={state.error}>
-        <c-pre-error-child-view></c-pre-error-child-view>
+        <x-pre-error-child-view></x-pre-error-child-view>
     </template>
 </template>

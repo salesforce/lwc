@@ -1,12 +1,12 @@
 <template lwc:render-mode="light">
-    <c-synthetic></c-synthetic>
-    <c-synthetic-reset></c-synthetic-reset>
+    <x-synthetic></x-synthetic>
+    <x-synthetic-reset></x-synthetic-reset>
 
     <slot>
-        <c-synthetic class="slot-slotted"></c-synthetic>
+        <x-synthetic class="slot-slotted"></x-synthetic>
     </slot>
 
-    <c-native>
-        <c-synthetic class="native-slotted"></c-synthetic>
-    </c-native>
+    <x-native>
+        <x-synthetic class="native-slotted"></x-synthetic>
+    </x-native>
 </template>

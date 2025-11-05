@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Component from 'c/component';
+import Component from 'x/component';
 
 // Originally taken from @lwc/engine-core. This is used in testing to avoid regressing these HTML properties. Via:
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
@@ -84,7 +84,7 @@ describe('global html properties', () => {
     let elm;
 
     beforeEach(() => {
-        elm = createElement('c-component', { is: Component });
+        elm = createElement('x-component', { is: Component });
         document.body.appendChild(elm);
     });
 

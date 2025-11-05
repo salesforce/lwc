@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
-import Parent from 'c/parent';
-import LightParent from 'c/lightParent';
-import Symbol from 'c/symbol';
-import EmptyObject from 'c/emptyobject';
-import BigintCmp from 'c/bigint';
+import Parent from 'x/parent';
+import LightParent from 'x/lightParent';
+import Symbol from 'x/symbol';
+import EmptyObject from 'x/emptyobject';
+import BigintCmp from 'x/bigint';
 
 describe('dynamic slotting', () => {
     it('should render all slots', function () {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
             'Default slotNamed 1Overridden default contentBoolean slotBoolean false slotNumber slotNumberObjectFunction'
@@ -16,9 +16,9 @@ describe('dynamic slotting', () => {
     describe('should handle', () => {
         let elm, childElm, defaultSlot, altSlot;
         beforeEach(() => {
-            elm = createElement('c-parent', { is: Parent });
+            elm = createElement('x-parent', { is: Parent });
             document.body.appendChild(elm);
-            childElm = elm.shadowRoot.querySelector('c-child');
+            childElm = elm.shadowRoot.querySelector('x-child');
             defaultSlot = childElm.shadowRoot.querySelector('slot:not([name])');
             altSlot = childElm.shadowRoot.querySelector('slot[name="altdefault"]');
         });
@@ -48,7 +48,7 @@ describe('dynamic slotting', () => {
         });
     });
     it('should rerender slots', async function () {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual(
             'Default slotNamed 1Overridden default contentBoolean slotBoolean false slotNumber slotNumberObjectFunction'
@@ -62,13 +62,13 @@ describe('dynamic slotting', () => {
     });
 
     it('should render in light DOM', () => {
-        const elm = createElement('c-light-parent', { is: LightParent });
+        const elm = createElement('x-light-parent', { is: LightParent });
         document.body.appendChild(elm);
         expect(elm.textContent).toEqual('Default slotNamed 1Hi lwc');
     });
 
     it('should render BigInt', () => {
-        const elm = createElement('c-bigint', { is: BigintCmp });
+        const elm = createElement('x-bigint', { is: BigintCmp });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.textContent).toEqual('BigInt');
     });
@@ -79,14 +79,14 @@ describe('dynamic slotting', () => {
             // it actually throws in this scenario as well, but in a different callstack, so we can't assert
             it('should throw on symbol', () => {
                 expect(() => {
-                    const elm = createElement('c-symbol', { is: Symbol });
+                    const elm = createElement('x-symbol', { is: Symbol });
                     document.body.appendChild(elm);
                 }).toThrowError(/convert.*symbol.*string.*/i); // cannot convert symbol to string (and variations of this message across browsers)
             });
 
             it('should throw on empty object', () => {
                 expect(() => {
-                    const elm = createElement('c-emptyobject', { is: EmptyObject });
+                    const elm = createElement('x-emptyobject', { is: EmptyObject });
                     document.body.appendChild(elm);
                 }).toThrowError(TypeError);
             });

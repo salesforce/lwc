@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import { installCustomContext, setCustomContext } from 'c/simpleProvider';
-import Consumer from 'c/simpleConsumer';
+import { installCustomContext, setCustomContext } from 'x/simpleProvider';
+import Consumer from 'x/simpleConsumer';
 import { fn as mockFn } from '@vitest/spy';
 
 describe('Simple Custom Context Provider', () => {
     it('should be install-able on any dom element', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
         installCustomContext(div);
         setCustomContext(div, 'ready');
@@ -16,7 +16,7 @@ describe('Simple Custom Context Provider', () => {
 
     it('should call disconnect when no context value is provided', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
 
         const spy = {
@@ -35,7 +35,7 @@ describe('Simple Custom Context Provider', () => {
 
     it('should not call disconnect with same consumer when multiple contexts are set', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
 
         const spy = {
@@ -54,14 +54,14 @@ describe('Simple Custom Context Provider', () => {
 
     it('should provide "missing" as the default value when no provider is installed', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
         div.appendChild(elm);
         expect(elm.shadowRoot.textContent).toBe('missing');
     });
     it('should provide "pending" when provide is installed by no value was provided', function () {
         const div = document.createElement('div');
-        const elm = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
         document.body.appendChild(div);
         installCustomContext(div);
         div.appendChild(elm);
@@ -70,8 +70,8 @@ describe('Simple Custom Context Provider', () => {
     it('should use closest context when installed in a hierarchy of targets', function () {
         const div = document.createElement('div');
         div.innerHTML = '<div class="parent-ctx"><div class="child-ctx"></div></div>';
-        const elm = createElement('c-consumer', { is: Consumer });
-        const elm2 = createElement('c-consumer', { is: Consumer });
+        const elm = createElement('x-consumer', { is: Consumer });
+        const elm2 = createElement('x-consumer', { is: Consumer });
         const childTarget = div.querySelector('.child-ctx');
 
         document.body.appendChild(div);

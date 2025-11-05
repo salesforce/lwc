@@ -1,5 +1,5 @@
 import { LightningElement, wire, api } from 'lwc';
-import { EchoWireAdapter } from 'c/echoAdapter';
+import { EchoWireAdapter } from 'x/echoAdapter';
 
 export default class AdapterConsumer extends LightningElement {
     renderId;

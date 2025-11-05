@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Outer from 'c/outer';
+import Outer from 'x/outer';
 import {
     USE_LIGHT_DOM_SLOT_FORWARDING,
     USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
@@ -8,7 +8,7 @@ import { expectEquivalentDOM } from '../../../../../helpers/utils.js';
 
 // `expectEquivalentDOM` requires `Document.parseHTMLUnsafe`
 it.runIf(Document.parseHTMLUnsafe)('renders slots not at the top level', async () => {
-    const elm = createElement('c-outer', { is: Outer });
+    const elm = createElement('x-outer', { is: Outer });
     document.body.appendChild(elm);
 
     await Promise.resolve();
@@ -16,12 +16,12 @@ it.runIf(Document.parseHTMLUnsafe)('renders slots not at the top level', async (
     let expected;
     if (USE_LIGHT_DOM_SLOT_FORWARDING) {
         expected =
-            '<c-outer><c-inner>a<!---->fallback for default<!---->b<!----><div>I am the foo slot</div><div>I am also the foo slot</div><!---->c</c-inner></c-outer>';
+            '<x-outer><x-inner>a<!---->fallback for default<!---->b<!----><div>I am the foo slot</div><div>I am also the foo slot</div><!---->c</x-inner></x-outer>';
     } else if (USE_COMMENTS_FOR_FRAGMENT_BOOKENDS) {
-        expected = `<c-outer><c-inner>a<!---->fallback for default<!---->b<!----><div slot="foo">I am the foo slot</div><div slot="foo">I am also the foo slot</div><!---->c</c-inner></c-outer>`;
+        expected = `<x-outer><x-inner>a<!---->fallback for default<!---->b<!----><div slot="foo">I am the foo slot</div><div slot="foo">I am also the foo slot</div><!---->c</x-inner></x-outer>`;
     } else {
         expected =
-            '<c-outer><c-inner>afallback for defaultb<div slot="foo">I am the foo slot</div><div slot="foo">I am also the foo slot</div>c</c-inner></c-outer>';
+            '<x-outer><x-inner>afallback for defaultb<div slot="foo">I am the foo slot</div><div slot="foo">I am also the foo slot</div>c</x-inner></x-outer>';
     }
 
     expectEquivalentDOM(elm, expected);

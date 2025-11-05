@@ -1,7 +1,7 @@
 import { createElement, LightningElement, wire } from 'lwc';
 
-import { adapter } from 'c/adapter';
-import duplicatePropertyTemplate from 'c/duplicatePropertyTemplate';
+import { adapter } from 'x/adapter';
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 describe('restrictions', () => {
     it('logs a property error when a wired field conflicts with a method', () => {
@@ -40,7 +40,7 @@ describe('regression [W-9927596] - wired field with duplicate observed field', (
             /Invalid observed foo field\. Found a duplicate accessor with the same name\./
         );
 
-        const elm = createElement('c-duplicate-property', { is: Ctor });
+        const elm = createElement('x-duplicate-property', { is: Ctor });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('p').textContent).toBe('wired');

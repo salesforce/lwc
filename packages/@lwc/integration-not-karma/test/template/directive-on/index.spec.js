@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
 
-import Click from 'c/click';
-import Test from 'c/test';
+import Click from 'x/click';
+import Test from 'x/test';
 
 it('adds supports standard events', () => {
     let event;
 
-    const elm = createElement('c-click', { is: Click });
+    const elm = createElement('x-click', { is: Click });
     elm.eventCallback = (e) => (event = e);
     document.body.appendChild(elm);
 
@@ -20,7 +20,7 @@ it('adds supports standard events', () => {
 it('adds supports custom events', () => {
     let event;
 
-    const elm = createElement('c-test', { is: Test });
+    const elm = createElement('x-test', { is: Test });
     elm.eventCallback = (e) => (event = e);
     document.body.appendChild(elm);
 

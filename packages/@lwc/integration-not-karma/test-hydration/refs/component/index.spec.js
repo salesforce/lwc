@@ -1,7 +1,7 @@
 /** @type {import('../../../configs/plugins/test-hydration.js').TestConfig} */
 export default {
     test(target, snapshots, consoleCalls) {
-        const expected = target.shadowRoot.querySelector('c-child');
+        const expected = target.shadowRoot.querySelector('x-child');
         const actual = target.getRef('foo');
 
         expect(expected).toBe(actual);

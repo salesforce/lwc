@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
 
-import Parent from 'c/parent';
+import Parent from 'x/parent';
 
 // Macro-task timing is used because MutationObserver used in
 // slotchange implementation is not exactly micro-task timing.
@@ -12,9 +12,9 @@ let parent;
 let child;
 
 beforeEach(async () => {
-    parent = createElement('c-parent', { is: Parent });
+    parent = createElement('x-parent', { is: Parent });
     document.body.appendChild(parent);
-    child = parent.shadowRoot.querySelector('c-child');
+    child = parent.shadowRoot.querySelector('x-child');
 
     await waitForSlotChange();
 });

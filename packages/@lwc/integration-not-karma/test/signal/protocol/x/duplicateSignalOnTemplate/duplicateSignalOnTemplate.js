@@ -1,5 +1,5 @@
 import { LightningElement, api } from 'lwc';
-import { Signal } from 'c/signal';
+import { Signal } from 'x/signal';
 
 export default class extends LightningElement {
     signal = new Signal('initial value');

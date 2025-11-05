@@ -1,22 +1,22 @@
 import { createElement } from 'lwc';
-import Basic from 'c/basic';
-import ExecutionContext from 'c/executionContext';
-import Ignored from 'c/ignored';
-import CaseVariants from 'c/caseVariants';
-import Spread from 'c/spread';
-import Lifecycle from 'c/lifecycle';
-import ValueNotFunction from 'c/valueNotFunction';
-import Rerender from 'c/rerender';
-import RerenderLoop from 'c/rerenderLoop';
-import PublicProp from 'c/publicProp';
-import ComputedKey from 'c/computedKey';
-import ValueEvaluationThrows from 'c/valueEvaluationThrows';
+import Basic from 'x/basic';
+import ExecutionContext from 'x/executionContext';
+import Ignored from 'x/ignored';
+import CaseVariants from 'x/caseVariants';
+import Spread from 'x/spread';
+import Lifecycle from 'x/lifecycle';
+import ValueNotFunction from 'x/valueNotFunction';
+import Rerender from 'x/rerender';
+import RerenderLoop from 'x/rerenderLoop';
+import PublicProp from 'x/publicProp';
+import ComputedKey from 'x/computedKey';
+import ValueEvaluationThrows from 'x/valueEvaluationThrows';
 import { spyOn, fn as mockFn } from '@vitest/spy';
 import { catchUnhandledRejectionsAndErrors } from '../../helpers/utils.js';
 
 describe('lwc:on', () => {
     it('adds multiple event listeners', () => {
-        const element = createElement('c-basic', { is: Basic });
+        const element = createElement('x-basic', { is: Basic });
         element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
@@ -28,7 +28,7 @@ describe('lwc:on', () => {
     });
 
     it('event listeners added by lwc:on are bound to the owner component', () => {
-        const element = createElement('c-execution-context', { is: ExecutionContext });
+        const element = createElement('x-execution-context', { is: ExecutionContext });
         element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
@@ -43,7 +43,7 @@ describe('lwc:on', () => {
         let button;
 
         function setup(propType) {
-            element = createElement('c-ignored', { is: Ignored });
+            element = createElement('x-ignored', { is: Ignored });
             element.testFn = mockFn();
             element.propType = propType;
             document.body.appendChild(element);
@@ -74,7 +74,7 @@ describe('lwc:on', () => {
         let button;
 
         function setup(propCase) {
-            element = createElement('c-case-variants', { is: CaseVariants });
+            element = createElement('x-case-variants', { is: CaseVariants });
             element.testFn = mockFn();
             element.propCase = propCase;
             document.body.appendChild(element);
@@ -119,7 +119,7 @@ describe('lwc:on', () => {
     });
 
     it('event listeners are added independently from lwc:on and lwc:spread', () => {
-        const element = createElement('c-spread', { is: Spread });
+        const element = createElement('x-spread', { is: Spread });
         element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
@@ -131,7 +131,7 @@ describe('lwc:on', () => {
     });
 
     it("event listeners are added before child's connectedCallback", () => {
-        const element = createElement('c-lifecycle', { is: Lifecycle });
+        const element = createElement('x-lifecycle', { is: Lifecycle });
         element.testFn = mockFn();
         document.body.appendChild(element);
 
@@ -155,7 +155,7 @@ describe('lwc:on', () => {
         });
 
         function setup(handlerType) {
-            element = createElement('c-value-not-function', { is: ValueNotFunction });
+            element = createElement('x-value-not-function', { is: ValueNotFunction });
             element.handlerType = handlerType;
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');
@@ -208,7 +208,7 @@ describe('lwc:on', () => {
 
         describe('without for:each loop', () => {
             beforeEach(() => {
-                element = createElement('c-rerender', { is: Rerender });
+                element = createElement('x-rerender', { is: Rerender });
                 element.testFn = mockFn();
                 document.body.appendChild(element);
                 button = element.shadowRoot.querySelector('button');
@@ -310,7 +310,7 @@ describe('lwc:on', () => {
 
         describe('with for:each loop and local variable passed as argument to lwc:on', () => {
             beforeEach(() => {
-                element = createElement('c-rerender-loop', { is: RerenderLoop });
+                element = createElement('x-rerender-loop', { is: RerenderLoop });
                 element.testFn = mockFn();
                 document.body.appendChild(element);
                 button = element.shadowRoot.querySelector('button');
@@ -413,7 +413,7 @@ describe('lwc:on', () => {
 
     it('works when the object is passed as public property to component', () => {
         // In this test, we are implicitly asserting that no error is thrown if the test passes
-        const element = createElement('c-public-prop', { is: PublicProp });
+        const element = createElement('x-public-prop', { is: PublicProp });
         const testFn = mockFn();
         element.eventHandlers = { click: testFn };
         document.body.appendChild(element);
@@ -424,7 +424,7 @@ describe('lwc:on', () => {
     });
 
     it('works properly with objects whose keys are computed', () => {
-        const element = createElement('c-computed-key', { is: ComputedKey });
+        const element = createElement('x-computed-key', { is: ComputedKey });
         element.testFn = mockFn();
         document.body.appendChild(element);
         const button = element.shadowRoot.querySelector('button');
@@ -448,7 +448,7 @@ describe('lwc:on', () => {
         });
 
         function setup(handlerType) {
-            element = createElement('c-value-evaluation-throws', { is: ValueEvaluationThrows });
+            element = createElement('x-value-evaluation-throws', { is: ValueEvaluationThrows });
             element.handlerType = handlerType;
             document.body.appendChild(element);
             button = element.shadowRoot.querySelector('button');

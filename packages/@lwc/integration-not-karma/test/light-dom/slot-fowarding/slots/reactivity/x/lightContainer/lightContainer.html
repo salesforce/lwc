@@ -1,25 +1,25 @@
 <template lwc:render-mode="light">
-    <c-light-light-slot data-id="lightLight">
+    <x-light-light-slot data-id="lightLight">
         <p slot={lightLightUpper}>Upper slot content</p>
         <p slot={lightLightLower}>Lower slot content</p>
         <p>Default slot content</p>
         <!-- if:true triggers static diffing algo -->
         <p slot="upper" if:true={lightLightConditionalSlot}>Conditional slot content</p>
-    </c-light-light-slot>
+    </x-light-light-slot>
 
-    <c-light-shadow-slot data-id="lightShadow">
+    <x-light-shadow-slot data-id="lightShadow">
         <p slot={lightShadowUpper}>Upper slot content</p>
         <p slot={lightShadowLower}>Lower slot content</p>
         <p>Default slot content</p>
         <!-- if:true triggers static diffing algo -->
         <p slot="upper" if:true={lightShadowConditionalSlot}>Conditional slot content</p>
-    </c-light-shadow-slot>
+    </x-light-shadow-slot>
 
-    <c-shadow-light-slot data-id="shadowLight">
+    <x-shadow-light-slot data-id="shadowLight">
         <p slot={shadowLightUpper}>Upper slot content</p>
         <p slot={shadowLightLower}>Lower slot content</p>
         <p>Default slot content</p>
         <!-- if:true triggers static diffing algo -->
         <p slot="upper" if:true={shadowLightConditionalSlot}>Conditional slot content</p>
-    </c-shadow-light-slot>
+    </x-shadow-light-slot>
 </template>

@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Container from 'c/container';
+import Container from 'x/container';
 
 function test(eventInit, expectedLogs) {
     it(`should invoke listeners as expected for ${JSON.stringify(eventInit)}`, () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         elm.rootDispatchEvent(eventInit);
         expect(elm.getLogs()).toEqual(expectedLogs);

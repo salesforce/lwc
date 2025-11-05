@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import StaticWiredProps from 'c/staticWiredProps';
-import DynamicWiredProps from 'c/dynamicWiredProps';
-import SameConfigCase from 'c/sameConfigCase';
-import SameAdapterDifferentConfig from 'c/sameAdapterDifferentConfig';
+import StaticWiredProps from 'x/staticWiredProps';
+import DynamicWiredProps from 'x/dynamicWiredProps';
+import SameConfigCase from 'x/sameConfigCase';
+import SameAdapterDifferentConfig from 'x/sameAdapterDifferentConfig';
 
 describe('legacy wire adapters (register call)', () => {
     describe('with static config', () => {
         it('should call config when config is empty (@wire(foo)...)', () => {
-            const elm = createElement('c-simple-wire', { is: StaticWiredProps });
+            const elm = createElement('x-simple-wire', { is: StaticWiredProps });
             document.body.appendChild(elm);
 
             const calls = elm.emptyConfigCalls;
@@ -17,7 +17,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should call config when config is empty object', () => {
-            const elm = createElement('c-simple-wire', { is: StaticWiredProps });
+            const elm = createElement('x-simple-wire', { is: StaticWiredProps });
             document.body.appendChild(elm);
 
             const calls = elm.emptyObjectConfigCalls;
@@ -26,7 +26,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should call config when all props of config are undefined', () => {
-            const elm = createElement('c-simple-wire', { is: StaticWiredProps });
+            const elm = createElement('x-simple-wire', { is: StaticWiredProps });
             document.body.appendChild(elm);
 
             const calls = elm.allUndefinedPropsInConfigCalls;
@@ -34,7 +34,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should call config when at least one prop in config is defined', () => {
-            const elm = createElement('c-simple-wire', { is: StaticWiredProps });
+            const elm = createElement('x-simple-wire', { is: StaticWiredProps });
             document.body.appendChild(elm);
 
             const calls = elm.someUndefinedPropsInConfigCalls;
@@ -45,7 +45,7 @@ describe('legacy wire adapters (register call)', () => {
 
     describe('with dynamic config', () => {
         it('should not call config when all initially all props of config are undefined', async () => {
-            const elm = createElement('c-simple-d-wire', { is: DynamicWiredProps });
+            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
             document.body.appendChild(elm);
 
             await new Promise(setTimeout);
@@ -55,7 +55,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should call config when at least one prop in config is defined', async () => {
-            const elm = createElement('c-simple-d-wire', { is: DynamicWiredProps });
+            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
             document.body.appendChild(elm);
 
             await new Promise(setTimeout);
@@ -66,7 +66,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should call config when all props become undefined after initialization', async () => {
-            const elm = createElement('c-simple-d-wire', { is: DynamicWiredProps });
+            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
             document.body.appendChild(elm);
 
             await new Promise(setTimeout);
@@ -85,7 +85,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should call config when initially all props of config are undefined and some change', async () => {
-            const elm = createElement('c-simple-d-wire', { is: DynamicWiredProps });
+            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
             document.body.appendChild(elm);
 
             await new Promise(setTimeout);
@@ -105,7 +105,7 @@ describe('legacy wire adapters (register call)', () => {
 
     describe('with dynamic and static config', () => {
         it('should not call config when initially all props from params in config are undefined', async () => {
-            const elm = createElement('c-simple-d-wire', { is: DynamicWiredProps });
+            const elm = createElement('x-simple-d-wire', { is: DynamicWiredProps });
             document.body.appendChild(elm);
 
             await new Promise(setTimeout);
@@ -128,7 +128,7 @@ describe('legacy wire adapters (register call)', () => {
         //    now is possible, existing adapters may behave incorrectly.
         // 2) was handled at the wire-protocol level and existing adapters may behave incorrectly.
         it('should not call config when the generated config is the same as the last one (case 1)', async () => {
-            const elm = createElement('c-same-config', { is: SameConfigCase });
+            const elm = createElement('x-same-config', { is: SameConfigCase });
             elm.a = 3;
             elm.b = 2;
             document.body.appendChild(elm);
@@ -151,7 +151,7 @@ describe('legacy wire adapters (register call)', () => {
         });
 
         it('should not call config when the generated config is the same as the last one (case 2)', async () => {
-            const elm = createElement('c-same-config', { is: SameConfigCase });
+            const elm = createElement('x-same-config', { is: SameConfigCase });
             elm.a = 3;
             document.body.appendChild(elm);
 
@@ -173,7 +173,7 @@ describe('legacy wire adapters (register call)', () => {
 
     describe('with multiple same adapters and different configs', () => {
         it('should invoke multiple wires when component is created', () => {
-            const elm = createElement('c-same-adapter-different-config', {
+            const elm = createElement('x-same-adapter-different-config', {
                 is: SameAdapterDifferentConfig,
             });
             document.body.appendChild(elm);

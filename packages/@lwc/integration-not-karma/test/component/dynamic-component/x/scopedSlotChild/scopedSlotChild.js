@@ -1,7 +1,7 @@
 import { LightningElement } from 'lwc';
-import Foo from 'c/foo';
-import Bar from 'c/bar';
-import Fred from 'c/fred';
+import Foo from 'x/foo';
+import Bar from 'x/bar';
+import Fred from 'x/fred';
 
 export default class extends LightningElement {
     static renderMode = 'light';

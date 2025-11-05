@@ -9,11 +9,11 @@
     <p class="test-case" hidden={computedFalse}>should be false when set to a computed value (false)</p>
     <p class="test-case" hidden=3 data-expected="3">should be true when set to an integer</p>
 
-    <c-child class="ce-test-case">should be false when missing</c-child>
-    <c-child class="ce-test-case" hidden data-expected>should be true when is used as boolean attribute(present)</c-child>
-    <c-child class="ce-test-case" hidden="" data-expected>should be true when set to empty string</c-child>
-    <c-child class="ce-test-case" hidden="string value" data-expected>should be true when set to a truthy string</c-child>
-    <c-child class="ce-test-case" hidden={computedTrue} data-expected>should be true when set to a computed value (true)</c-child>
-    <c-child class="ce-test-case" hidden={computedFalse}>should be false when set to a computed value (false)</c-child>
-    <c-child class="ce-test-case" hidden=3 data-expected>should be true when set to an integer</c-child>
+    <x-child class="ce-test-case">should be false when missing</x-child>
+    <x-child class="ce-test-case" hidden data-expected>should be true when is used as boolean attribute(present)</x-child>
+    <x-child class="ce-test-case" hidden="" data-expected>should be true when set to empty string</x-child>
+    <x-child class="ce-test-case" hidden="string value" data-expected>should be true when set to a truthy string</x-child>
+    <x-child class="ce-test-case" hidden={computedTrue} data-expected>should be true when set to a computed value (true)</x-child>
+    <x-child class="ce-test-case" hidden={computedFalse}>should be false when set to a computed value (false)</x-child>
+    <x-child class="ce-test-case" hidden=3 data-expected>should be true when set to an integer</x-child>
 </template>

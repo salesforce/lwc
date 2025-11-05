@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import LightChild from 'c/lightChild';
-import ShadowContainer from 'c/shadowContainer';
-import LightContainer from 'c/lightContainer';
+import LightChild from 'x/lightChild';
+import ShadowContainer from 'x/shadowContainer';
+import LightContainer from 'x/lightContainer';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createTestElement(tag, component) {
@@ -43,7 +43,7 @@ function dispatchEventWithLog(target, nodes, event) {
 describe('single light child', () => {
     let nodes;
     beforeEach(() => {
-        nodes = createTestElement('c-light-child', LightChild);
+        nodes = createTestElement('x-light-child', LightChild);
     });
 
     it('{ bubbles: true, composed: false }', () => {
@@ -55,7 +55,7 @@ describe('single light child', () => {
 
         const composedPath = [
             nodes.button,
-            nodes['c-light-child'],
+            nodes['x-light-child'],
             document.body,
             document.documentElement,
             document,
@@ -64,7 +64,7 @@ describe('single light child', () => {
 
         expect(log).toEqual([
             [nodes.button, nodes.button, composedPath],
-            [nodes['c-light-child'], nodes.button, composedPath],
+            [nodes['x-light-child'], nodes.button, composedPath],
             [document.body, nodes.button, composedPath],
             [document.documentElement, nodes.button, composedPath],
             [document, nodes.button, composedPath],
@@ -81,7 +81,7 @@ describe('single light child', () => {
 
         const composedPath = [
             nodes.button,
-            nodes['c-light-child'],
+            nodes['x-light-child'],
             document.body,
             document.documentElement,
             document,
@@ -95,7 +95,7 @@ describe('single light child', () => {
 describe('shadow container, light child', () => {
     let nodes;
     beforeEach(() => {
-        nodes = createTestElement('c-shadow-container', ShadowContainer);
+        nodes = createTestElement('x-shadow-container', ShadowContainer);
     });
 
     it('{ bubbles: true, composed: true }', () => {
@@ -107,9 +107,9 @@ describe('shadow container, light child', () => {
 
         const composedPath = [
             nodes.button,
-            nodes['c-light-child'],
-            nodes['c-shadow-container'].shadowRoot,
-            nodes['c-shadow-container'],
+            nodes['x-light-child'],
+            nodes['x-shadow-container'].shadowRoot,
+            nodes['x-shadow-container'],
             document.body,
             document.documentElement,
             document,
@@ -118,13 +118,13 @@ describe('shadow container, light child', () => {
 
         expect(log).toEqual([
             [nodes.button, nodes.button, composedPath],
-            [nodes['c-light-child'], nodes.button, composedPath],
-            [nodes['c-shadow-container'].shadowRoot, nodes.button, composedPath],
-            [nodes['c-shadow-container'], nodes['c-shadow-container'], composedPath],
-            [document.body, nodes['c-shadow-container'], composedPath],
-            [document.documentElement, nodes['c-shadow-container'], composedPath],
-            [document, nodes['c-shadow-container'], composedPath],
-            [window, nodes['c-shadow-container'], composedPath],
+            [nodes['x-light-child'], nodes.button, composedPath],
+            [nodes['x-shadow-container'].shadowRoot, nodes.button, composedPath],
+            [nodes['x-shadow-container'], nodes['x-shadow-container'], composedPath],
+            [document.body, nodes['x-shadow-container'], composedPath],
+            [document.documentElement, nodes['x-shadow-container'], composedPath],
+            [document, nodes['x-shadow-container'], composedPath],
+            [window, nodes['x-shadow-container'], composedPath],
         ]);
     });
 
@@ -137,14 +137,14 @@ describe('shadow container, light child', () => {
 
         const composedPath = [
             nodes.button,
-            nodes['c-light-child'],
-            nodes['c-shadow-container'].shadowRoot,
+            nodes['x-light-child'],
+            nodes['x-shadow-container'].shadowRoot,
         ];
 
         expect(log).toEqual([
             [nodes.button, nodes.button, composedPath],
-            [nodes['c-light-child'], nodes.button, composedPath],
-            [nodes['c-shadow-container'].shadowRoot, nodes.button, composedPath],
+            [nodes['x-light-child'], nodes.button, composedPath],
+            [nodes['x-shadow-container'].shadowRoot, nodes.button, composedPath],
         ]);
     });
 });
@@ -152,7 +152,7 @@ describe('shadow container, light child', () => {
 describe('light container, shadow child', () => {
     let nodes;
     beforeEach(() => {
-        nodes = createTestElement('c-light-container', LightContainer);
+        nodes = createTestElement('x-light-container', LightContainer);
     });
 
     it('{ bubbles: true, composed: true }', () => {
@@ -164,9 +164,9 @@ describe('light container, shadow child', () => {
 
         const composedPath = [
             nodes.button,
-            nodes['c-shadow-child'].shadowRoot,
-            nodes['c-shadow-child'],
-            nodes['c-light-container'],
+            nodes['x-shadow-child'].shadowRoot,
+            nodes['x-shadow-child'],
+            nodes['x-light-container'],
             document.body,
             document.documentElement,
             document,
@@ -175,13 +175,13 @@ describe('light container, shadow child', () => {
 
         expect(log).toEqual([
             [nodes.button, nodes.button, composedPath],
-            [nodes['c-shadow-child'].shadowRoot, nodes.button, composedPath],
-            [nodes['c-shadow-child'], nodes['c-shadow-child'], composedPath],
-            [nodes['c-light-container'], nodes['c-shadow-child'], composedPath],
-            [document.body, nodes['c-shadow-child'], composedPath],
-            [document.documentElement, nodes['c-shadow-child'], composedPath],
-            [document, nodes['c-shadow-child'], composedPath],
-            [window, nodes['c-shadow-child'], composedPath],
+            [nodes['x-shadow-child'].shadowRoot, nodes.button, composedPath],
+            [nodes['x-shadow-child'], nodes['x-shadow-child'], composedPath],
+            [nodes['x-light-container'], nodes['x-shadow-child'], composedPath],
+            [document.body, nodes['x-shadow-child'], composedPath],
+            [document.documentElement, nodes['x-shadow-child'], composedPath],
+            [document, nodes['x-shadow-child'], composedPath],
+            [window, nodes['x-shadow-child'], composedPath],
         ]);
     });
 
@@ -192,11 +192,11 @@ describe('light container, shadow child', () => {
             new CustomEvent('test', { bubbles: true, composed: false })
         );
 
-        const composedPath = [nodes.button, nodes['c-shadow-child'].shadowRoot];
+        const composedPath = [nodes.button, nodes['x-shadow-child'].shadowRoot];
 
         expect(log).toEqual([
             [nodes.button, nodes.button, composedPath],
-            [nodes['c-shadow-child'].shadowRoot, nodes.button, composedPath],
+            [nodes['x-shadow-child'].shadowRoot, nodes.button, composedPath],
         ]);
     });
 });

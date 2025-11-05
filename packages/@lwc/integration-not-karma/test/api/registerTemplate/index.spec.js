@@ -15,7 +15,7 @@ it('should throw if a component tries to use a template that is not registered',
         }
     }
 
-    const elm = createElement('c-test', { is: Test });
+    const elm = createElement('x-test', { is: Test });
 
     const func = () => {
         document.body.appendChild(elm);
@@ -26,7 +26,7 @@ it('should throw if a component tries to use a template that is not registered',
     // version, and thus defaults to the oldest (i.e. synthetic custom element lifecycle events).
     expect(func).toThrowCallbackReactionError(
         TypeError,
-        /Invalid template returned by the render\(\) method on c-test/
+        /Invalid template returned by the render\(\) method on x-test/
     );
 });
 
@@ -40,7 +40,7 @@ it('should not throw if the template is registered first', () => {
         }
     }
 
-    const elm = createElement('c-test', { is: Test });
+    const elm = createElement('x-test', { is: Test });
 
     expect(() => {
         document.body.appendChild(elm);

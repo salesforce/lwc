@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Container from 'c/container';
+import Container from 'x/container';
 
 describe('Event.defaultPrevented', () => {
     it('should return true if cancelable and preventDefault() was invoked', async () => {
-        const container = createElement('c-container', { is: Container });
+        const container = createElement('x-container', { is: Container });
         document.body.appendChild(container);
 
         container.shadowRoot.addEventListener('test', (event) => {
@@ -30,7 +30,7 @@ describe('Event.defaultPrevented', () => {
     });
 
     it('should return false if cancelable and preventDefault() was not invoked', async () => {
-        const container = createElement('c-container', { is: Container });
+        const container = createElement('x-container', { is: Container });
         document.body.appendChild(container);
 
         const defaultPrevented = await new Promise((resolve) => {
@@ -52,7 +52,7 @@ describe('Event.defaultPrevented', () => {
     });
 
     it('should return false if not cancelable and preventDefault() was invoked', async () => {
-        const container = createElement('c-container', { is: Container });
+        const container = createElement('x-container', { is: Container });
         document.body.appendChild(container);
 
         container.shadowRoot.addEventListener('test', (event) => {

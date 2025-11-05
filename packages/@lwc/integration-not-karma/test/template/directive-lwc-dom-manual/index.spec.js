@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import withLwcDomManual from 'c/withLwcDomManual';
-import withoutLwcDomManual from 'c/withoutLwcDomManual';
-import SvgWithLwcDomManual from 'c/svgWithLwcDomManual';
+import withLwcDomManual from 'x/withLwcDomManual';
+import withoutLwcDomManual from 'x/withoutLwcDomManual';
+import SvgWithLwcDomManual from 'x/svgWithLwcDomManual';
 import { spyOn } from '@vitest/spy';
 import { resetDOM } from '../../../helpers/reset.js';
 
@@ -15,7 +15,7 @@ afterEach(resetDOM);
 describe('dom mutation without the lwc:dom="manual" directive', () => {
     function testErrorOnDomMutation(method, fn) {
         it(`should log a warning when calling ${method} on an element without the lwc:dom="manual" directive only in synthetic mode`, () => {
-            const root = createElement('c-without-lwc-dom-manual', { is: withoutLwcDomManual });
+            const root = createElement('x-without-lwc-dom-manual', { is: withoutLwcDomManual });
             document.body.appendChild(root);
             const elm = root.shadowRoot.querySelector('div');
             const mutate = () => fn(elm);
@@ -57,7 +57,7 @@ describe('dom mutation without the lwc:dom="manual" directive', () => {
 describe('dom mutation with the lwc:dom="manual" directive', () => {
     function testAllowDomMutationWithLwcDomDirective(method, fn) {
         it(`should not log an error when calling ${method} on an element with the lwc:dom="manual" directive`, () => {
-            const root = createElement('c-with-lwc-dom-manual', { is: withLwcDomManual });
+            const root = createElement('x-with-lwc-dom-manual', { is: withLwcDomManual });
             document.body.appendChild(root);
 
             spyOn(console, 'error');
@@ -80,7 +80,7 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
     });
 
     it('#874 - should not warn when removing a node previously inserted in an element with the lwc:dom="manual" directive', () => {
-        const root = createElement('c-test', { is: withLwcDomManual });
+        const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
 
         spyOn(console, 'error');
@@ -96,7 +96,7 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
     });
 
     it('#879 - should not throw when a mutated child was removed sync after being updated', () => {
-        const root = createElement('c-test', { is: withLwcDomManual });
+        const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
 
         spyOn(console, 'error');
@@ -118,7 +118,7 @@ describe('dom mutation with the lwc:dom="manual" directive', () => {
 
 describe('adopt node in the shadow', () => {
     it('should returns the return the inserted elements when querying using querySelector', () => {
-        const root = createElement('c-test', { is: withLwcDomManual });
+        const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
 
         const elm = root.shadowRoot.querySelector('div');
@@ -134,7 +134,7 @@ describe('adopt node in the shadow', () => {
     });
 
     it('should apply the component styles to inserted elements', async () => {
-        const root = createElement('c-test', { is: withLwcDomManual });
+        const root = createElement('x-test', { is: withLwcDomManual });
         document.body.appendChild(root);
 
         const elm = root.shadowRoot.querySelector('div');
@@ -145,7 +145,7 @@ describe('adopt node in the shadow', () => {
     });
 
     it('#871 - should apply style to inserted SVG elements', async () => {
-        const root = createElement('c-test', { is: SvgWithLwcDomManual });
+        const root = createElement('x-test', { is: SvgWithLwcDomManual });
         document.body.appendChild(root);
 
         const svgElm = root.shadowRoot.querySelector('svg');

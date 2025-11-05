@@ -3,7 +3,7 @@ export default {
     props: {},
     snapshot(target) {
         const parentP = target.shadowRoot.querySelector('p');
-        const childP = target.shadowRoot.querySelector('c-child').shadowRoot.querySelector('p');
+        const childP = target.shadowRoot.querySelector('x-child').shadowRoot.querySelector('p');
         return {
             parentP,
             childP,
@@ -11,7 +11,7 @@ export default {
     },
     test(target, snapshots, consoleCalls) {
         const parentP = target.shadowRoot.querySelector('p');
-        const child = target.shadowRoot.querySelector('c-child');
+        const child = target.shadowRoot.querySelector('x-child');
         const childP = child.shadowRoot.querySelector('p');
         expect(parentP).toBe(snapshots.parentP);
         expect(childP).toBe(snapshots.childP);

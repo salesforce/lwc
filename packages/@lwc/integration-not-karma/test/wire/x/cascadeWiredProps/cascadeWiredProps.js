@@ -1,5 +1,5 @@
 import { LightningElement, wire } from 'lwc';
-import { EchoWireAdapter } from 'c/echoWireAdapter';
+import { EchoWireAdapter } from 'x/echoWireAdapter';
 
 export default class CascadeWiredProps extends LightningElement {
     firstParamValue = 'first-param-value';

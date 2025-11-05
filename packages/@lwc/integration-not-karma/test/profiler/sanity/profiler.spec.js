@@ -3,8 +3,8 @@ import {
     hydrateComponent,
     __unstable__ProfilerControl as profilerControl,
 } from 'lwc';
-import Container from 'c/container';
-import Simple from 'c/simple';
+import Container from 'x/container';
+import Simple from 'x/simple';
 
 describe('Profiler Sanity Test', () => {
     // Count the number of marks/measures before and after the test to ensure the profiler
@@ -33,10 +33,10 @@ describe('Profiler Sanity Test', () => {
         }
     });
 
-    const X_CONTAINER = 'C-CONTAINER';
-    const X_ERROR_CHILD = 'C-ERROR-CHILD';
-    const X_ITEM = 'C-ITEM';
-    const X_LIGHT = 'C-LIGHT';
+    const X_CONTAINER = 'X-CONTAINER';
+    const X_ERROR_CHILD = 'X-ERROR-CHILD';
+    const X_ITEM = 'X-ITEM';
+    const X_LIGHT = 'X-LIGHT';
 
     const OperationId = {
         constructor: 0,
@@ -185,7 +185,7 @@ describe('Profiler Sanity Test', () => {
 
     it('hydrateComponent', () => {
         // Inject a minimal HTML snapshot, manually crafted
-        const ssrElement = document.createElement('c-simple');
+        const ssrElement = document.createElement('x-simple');
         ssrElement.attachShadow({ mode: 'open' });
         const div = document.createElement('div');
         div.textContent = 'hello world';
@@ -196,7 +196,7 @@ describe('Profiler Sanity Test', () => {
         // hydrate
         const profilerEvents = enableProfilerAndRegisterBuffer();
         hydrateComponent(ssrElement, Simple);
-        const name = 'C-SIMPLE';
+        const name = 'X-SIMPLE';
         const shadowMode = ShadowMode.Native; // ssr is always native
         const renderMode = RenderMode.Shadow;
         const expectedEvents = [

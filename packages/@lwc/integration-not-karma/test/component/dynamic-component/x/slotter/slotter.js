@@ -1,5 +1,5 @@
 import { LightningElement } from 'lwc';
-import Slottable from 'c/slottable';
+import Slottable from 'x/slottable';
 
 export default class extends LightningElement {
     ctor;

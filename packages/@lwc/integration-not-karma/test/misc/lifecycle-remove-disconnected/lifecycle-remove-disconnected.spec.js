@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Parent from 'c/parent';
+import Parent from 'x/parent';
 import { spyOn } from '@vitest/spy';
 
 describe('vdom removes component while it is already disconnected', () => {
@@ -29,7 +29,7 @@ describe('vdom removes component while it is already disconnected', () => {
     });
 
     it('repro "must have been connected" error W-14037619', async () => {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
         document.body.appendChild(elm);
         elm.showChild = true;
         document.body.removeChild(elm);

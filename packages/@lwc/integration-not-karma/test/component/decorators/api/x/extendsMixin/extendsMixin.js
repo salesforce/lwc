@@ -1,5 +1,5 @@
 import { api, LightningElement } from 'lwc';
-import Mixin from 'c/mixin';
+import Mixin from 'x/mixin';
 
 export default class extends Mixin(LightningElement) {
     @api child = 'child';

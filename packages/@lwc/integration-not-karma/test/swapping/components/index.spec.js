@@ -13,7 +13,7 @@ import Z from 'base/libraryz';
 describe.skipIf(process.env.NODE_ENV === 'production')('component swapping', () => {
     it('should work before and after instantiation', async () => {
         expect(swapComponent(A, B)).toBe(true);
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         expect(elm.shadowRoot.firstChild.shadowRoot.firstChild.outerHTML).toBe(
             '<p class="b">b</p>'
@@ -26,7 +26,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('component swapping', () 
     });
 
     it('should return false for root elements', () => {
-        const elm = createElement('c-d', { is: D });
+        const elm = createElement('x-d', { is: D });
         document.body.appendChild(elm);
         expect(swapComponent(D, E)).toBe(false); // meaning you can reload the page
     });
@@ -50,7 +50,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('component swapping', () 
     });
 
     it('should be a no-op for non components', async () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
         expect(elm.testValue).toBe('I may look like a component');
         expect(swapComponent(Z, X)).toBe(false);

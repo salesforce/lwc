@@ -1,17 +1,17 @@
 import { createElement } from 'lwc';
-import Slotted from 'c/slotted';
-import Container from 'c/container';
-import ManualNodes from 'c/manualNodes';
-import WithLwcDomManualNested from 'c/withLwcDomManualNested';
-import WithLwcDomManual from 'c/withLwcDomManual';
-import WithoutLwcDomManual from 'c/withoutLwcDomManual';
-import Text from 'c/text';
+import Slotted from 'x/slotted';
+import Container from 'x/container';
+import ManualNodes from 'x/manualNodes';
+import WithLwcDomManualNested from 'x/withLwcDomManualNested';
+import WithLwcDomManual from 'x/withLwcDomManual';
+import WithoutLwcDomManual from 'x/withoutLwcDomManual';
+import Text from 'x/text';
 import { spyOn } from '@vitest/spy';
 
 const composedTrueConfig = { composed: true };
 describe('Node.getRootNode', () => {
     it('root element', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         expect(elm.getRootNode()).toBe(document);
@@ -19,7 +19,7 @@ describe('Node.getRootNode', () => {
     });
 
     it('shadowRoot', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
         const shadowRoot = elm.shadowRoot;
 
@@ -28,14 +28,14 @@ describe('Node.getRootNode', () => {
     });
 
     it('disconnected root element', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
 
         expect(elm.getRootNode()).toBe(elm);
         expect(elm.getRootNode(composedTrueConfig)).toBe(elm);
     });
 
     it('root element in a disconnected DOM tree', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         const frag = document.createDocumentFragment();
         const doAppend = () => frag.appendChild(elm);
 
@@ -54,7 +54,7 @@ describe('Node.getRootNode', () => {
     });
 
     it('shadowRoot', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot;
@@ -63,15 +63,15 @@ describe('Node.getRootNode', () => {
     });
 
     it('element in the shadow', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
-        const target = elm.shadowRoot.querySelector('c-container');
+        const target = elm.shadowRoot.querySelector('x-container');
         expect(target.getRootNode()).toBe(elm.shadowRoot);
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
     });
 
     it('slotted element', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('.slotted');
@@ -80,17 +80,17 @@ describe('Node.getRootNode', () => {
     });
 
     it('element in a nested shadow', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        const container = elm.shadowRoot.querySelector('c-container');
+        const container = elm.shadowRoot.querySelector('x-container');
         const target = container.shadowRoot.querySelector('.container');
         expect(target.getRootNode()).toBe(container.shadowRoot);
         expect(target.getRootNode(composedTrueConfig)).toBe(document);
     });
 
     it('default slot content', () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         document.body.appendChild(elm);
 
         const target = elm.shadowRoot.querySelector('.default-slotted');
@@ -100,7 +100,7 @@ describe('Node.getRootNode', () => {
 
     describe('manual dom mutations', () => {
         it('nodes appended to parent with lwc:dom="manual" directive', async () => {
-            const host = createElement('c-manual-nodes', { is: ManualNodes });
+            const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
             const elm = host.shadowRoot.querySelector('div.manual');
             const span = document.createElement('span');
@@ -131,7 +131,7 @@ describe('Node.getRootNode', () => {
         });
 
         it('node appended to parent without lwc:dom="manual" directive', () => {
-            const host = createElement('c-manual-nodes', { is: ManualNodes });
+            const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
             const elm = host.shadowRoot.querySelector('div.withoutManual');
             const span = document.createElement('span');
@@ -147,10 +147,10 @@ describe('Node.getRootNode', () => {
         });
 
         it('dynamic lwc element appended to parent without lwc:dom="manual" directive', () => {
-            const host = createElement('c-manual-nodes', { is: ManualNodes });
+            const host = createElement('x-manual-nodes', { is: ManualNodes });
             document.body.appendChild(host);
             const elm = host.shadowRoot.querySelector('div.withoutManual');
-            const nestedElem = createElement('c-text', { is: Text });
+            const nestedElem = createElement('x-text', { is: Text });
 
             spyOn(console, 'warn'); // Ignore the engine warning
             elm.appendChild(nestedElem);
@@ -170,9 +170,9 @@ describe('Node.getRootNode', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
-                outerElem = createElement('c-outer', { is: WithLwcDomManual });
+                outerElem = createElement('x-outer', { is: WithLwcDomManual });
                 document.body.appendChild(outerElem);
-                innerElem = createElement('c-inner', { is: WithLwcDomManualNested });
+                innerElem = createElement('x-inner', { is: WithLwcDomManualNested });
                 const div = outerElem.shadowRoot.querySelector('div');
                 div.appendChild(innerElem);
             });
@@ -205,9 +205,9 @@ describe('Node.getRootNode', () => {
             let outerElem;
             let innerElem;
             beforeEach(() => {
-                outerElem = createElement('c-outer', { is: WithLwcDomManual });
+                outerElem = createElement('x-outer', { is: WithLwcDomManual });
                 document.body.appendChild(outerElem);
-                innerElem = createElement('c-inner', { is: WithoutLwcDomManual });
+                innerElem = createElement('x-inner', { is: WithoutLwcDomManual });
                 const div = outerElem.shadowRoot.querySelector('div');
                 div.appendChild(innerElem);
                 // Ignore the engine warning that a node without lwc:dom="manual" is being manually changed
@@ -336,9 +336,9 @@ describe('Node.getRootNode', () => {
                 const shadowHost = document.createElement('div');
                 document.body.appendChild(shadowHost);
                 const nativeShadowRoot = shadowHost.attachShadow({ mode: 'open' });
-                const lwcElem = createElement('c-text', { is: Text });
+                const lwcElem = createElement('x-text', { is: Text });
                 nativeShadowRoot.appendChild(lwcElem);
-                const shadowChild = nativeShadowRoot.querySelector('c-text');
+                const shadowChild = nativeShadowRoot.querySelector('x-text');
 
                 expect(shadowChild.getRootNode(composedTrueConfig)).toBe(document);
                 expect(shadowChild.getRootNode()).toBe(nativeShadowRoot);

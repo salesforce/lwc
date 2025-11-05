@@ -1,43 +1,43 @@
 import { createElement } from 'lwc';
 
-import StaticSvg from 'c/staticSvg';
-import StaticSvgInDiv from 'c/staticSvgInDiv';
-import StaticSvgInDivScoped from 'c/staticSvgInDivScoped';
-import StaticSvgScoped from 'c/staticSvgScoped';
-import StaticText from 'c/staticText';
-import StaticTextScoped from 'c/staticTextScoped';
+import StaticSvg from 'x/staticSvg';
+import StaticSvgInDiv from 'x/staticSvgInDiv';
+import StaticSvgInDivScoped from 'x/staticSvgInDivScoped';
+import StaticSvgScoped from 'x/staticSvgScoped';
+import StaticText from 'x/staticText';
+import StaticTextScoped from 'x/staticTextScoped';
 
 describe('styling svg', () => {
     const scenarios = [
         {
             name: 'static svg',
             Ctor: StaticSvg,
-            tag: 'c-static-svg',
+            tag: 'x-static-svg',
         },
         {
             name: 'static svg in div',
             Ctor: StaticSvgInDiv,
-            tag: 'c-static-svg-in-div',
+            tag: 'x-static-svg-in-div',
         },
         {
             name: 'static text',
             Ctor: StaticText,
-            tag: 'c-static-text',
+            tag: 'x-static-text',
         },
         {
             name: 'static svg - scoped css',
             Ctor: StaticSvgScoped,
-            tag: 'c-static-svg',
+            tag: 'x-static-svg',
         },
         {
             name: 'static svg in div - scoped css',
             Ctor: StaticSvgInDivScoped,
-            tag: 'c-static-svg-in-div',
+            tag: 'x-static-svg-in-div',
         },
         {
             name: 'static text - scoped css',
             Ctor: StaticTextScoped,
-            tag: 'c-static-text',
+            tag: 'x-static-text',
         },
     ];
 

@@ -1,8 +1,8 @@
 import { LightningElement, api, track } from 'lwc';
-import Foo from 'c/foo';
-import Bar from 'c/bar';
-import Baz from 'c/baz';
-import Fred from 'c/fred';
+import Foo from 'x/foo';
+import Bar from 'x/bar';
+import Baz from 'x/baz';
+import Fred from 'x/fred';
 
 export default class extends LightningElement {
     @track

@@ -6,7 +6,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.delegatesFocus', () => {
     it('ShadowRoot.delegatesFocus should be false by default', () => {
         class NoDelegatesFocus extends LightningElement {}
 
-        const elm = createElement('c-test', { is: NoDelegatesFocus });
+        const elm = createElement('x-test', { is: NoDelegatesFocus });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.delegatesFocus).toBe(false);
@@ -16,7 +16,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.delegatesFocus', () => {
             static delegatesFocus = true;
         }
 
-        const elm = createElement('c-test', { is: DelegatesFocus });
+        const elm = createElement('x-test', { is: DelegatesFocus });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.delegatesFocus).toBe(true);

@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Container from 'c/container';
+import Container from 'x/container';
 
 // Note: originally these tests tested the runtime flag `ENABLE_INNER_OUTER_TEXT_PATCH`.
 // After https://github.com/salesforce/lwc/pull/3103 though, this became tests for existing
@@ -10,7 +10,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('innerText and outerText', () => {
     describe('innerText', () => {
         let elm;
         beforeEach(() => {
-            elm = createElement('c-container', { is: Container });
+            elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
         });
 
@@ -121,7 +121,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('innerText and outerText', () => {
         describe('slot element', () => {
             it('should return default slot content when no content is passed into the slot', () => {
                 const testElement = elm.shadowRoot
-                    .querySelector('.without-slotted-content c-slotable')
+                    .querySelector('.without-slotted-content x-slotable')
                     .shadowRoot.querySelector('slot');
 
                 expect(testElement.innerText).toBe('default slot content');
@@ -129,7 +129,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('innerText and outerText', () => {
 
             it('should not be empty when default slot content is overwritten', () => {
                 const testElement = elm.shadowRoot
-                    .querySelector('.with-slotted-content c-slotable')
+                    .querySelector('.with-slotted-content x-slotable')
                     .shadowRoot.querySelector('slot');
 
                 expect(testElement.innerText).toBe('slotted element');
@@ -143,7 +143,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('innerText and outerText', () => {
     describe.runIf(outerTextDescriptor)('outerText', () => {
         let elm;
         beforeEach(() => {
-            elm = createElement('c-container', { is: Container });
+            elm = createElement('x-container', { is: Container });
             document.body.appendChild(elm);
         });
 

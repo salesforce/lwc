@@ -1,7 +1,7 @@
 import { createElement } from 'lwc';
-import Deep from 'c/deep';
-import List from 'c/list';
-import Mixed from 'c/mixed';
+import Deep from 'x/deep';
+import List from 'x/list';
+import Mixed from 'x/mixed';
 
 describe('deep listener', () => {
     beforeEach(() => {
@@ -16,7 +16,7 @@ describe('deep listener', () => {
     // scoped to the component, so the event listener memoization optimization causes
     // the listener to be bound once and never redefined
     it('does not redefine the onClick for a single deep listener', async () => {
-        const elm = createElement('c-deep', { is: Deep });
+        const elm = createElement('x-deep', { is: Deep });
         document.body.appendChild(elm);
 
         elm.logger = { onClick: () => window.clickBuffer.push(1) }; // never called
@@ -34,7 +34,7 @@ describe('deep listener', () => {
     // listener is scoped inside a <template for:each>
     // TODO [#4467]: consider optimizing locally-scoped listeners
     it('does redefine the onClick for a list of deep click listeners', async () => {
-        const elm = createElement('c-list', { is: List });
+        const elm = createElement('x-list', { is: List });
         document.body.appendChild(elm);
 
         elm.loggers = [{ id: 1, onClick: () => window.clickBuffer.push(1) }];
@@ -52,7 +52,7 @@ describe('deep listener', () => {
     // listener is scoped inside a <template for:each>. However, `mainLogger.onChange` is
     // never re-bound because the `mainLogger` is scoped to the component.
     it('does redefine onClick for a list of deep click listeners but not the onChange for a single deep listener', async () => {
-        const elm = createElement('c-mixed', { is: Mixed });
+        const elm = createElement('x-mixed', { is: Mixed });
         document.body.appendChild(elm);
 
         elm.loggers = [{ id: 1, onClick: () => window.clickBuffer.push(1) }];

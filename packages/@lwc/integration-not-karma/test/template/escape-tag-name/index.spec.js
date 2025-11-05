@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Component from 'c/component';
+import Component from 'x/component';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
 // Browsers treat tag names containing the \ (backslash) character differently
@@ -29,7 +29,7 @@ afterEach(() => {
 });
 
 it('should render tag names with proper escaping', async () => {
-    const elm = createElement('c-component', { is: Component });
+    const elm = createElement('x-component', { is: Component });
     document.body.appendChild(elm);
 
     await Promise.resolve();

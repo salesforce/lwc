@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import Light from 'c/light';
-import Shadow from 'c/shadow';
+import Light from 'x/light';
+import Shadow from 'x/shadow';
 
 function getRelevantStyles(node) {
     const props = [
@@ -48,7 +48,7 @@ const expectedNativeOrLightStyles = {
 
 describe('skips native-only css in synthetic mode only', () => {
     it('shadow', async () => {
-        const elm = createElement('c-shadow', { is: Shadow });
+        const elm = createElement('x-shadow', { is: Shadow });
         document.body.appendChild(elm);
         await Promise.resolve();
 
@@ -59,7 +59,7 @@ describe('skips native-only css in synthetic mode only', () => {
     });
 
     it('light', async () => {
-        const elm = createElement('c-light', { is: Light });
+        const elm = createElement('x-light', { is: Light });
         document.body.appendChild(elm);
         await Promise.resolve();
 

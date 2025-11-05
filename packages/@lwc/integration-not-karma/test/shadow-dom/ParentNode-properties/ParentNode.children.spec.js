@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
 
-import Test from 'c/test';
-import Text from 'c/text';
-import Slotted from 'c/slotted';
+import Test from 'x/test';
+import Text from 'x/text';
+import Slotted from 'x/slotted';
 
 describe('ParentNode.children', () => {
     it('should return all the element children', () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
 
         expect(elm.children.length).toBe(0);
@@ -18,7 +18,7 @@ describe('ParentNode.children', () => {
     });
 
     it('should omit nodes that are node elements', () => {
-        const elm = createElement('c-text', { is: Text });
+        const elm = createElement('x-text', { is: Text });
         document.body.appendChild(elm);
 
         const { children } = elm.shadowRoot;
@@ -26,10 +26,10 @@ describe('ParentNode.children', () => {
     });
 
     it('should return the right elements for slotted children', () => {
-        const elm = createElement('c-slotted', { is: Slotted });
+        const elm = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(elm);
 
-        const container = elm.shadowRoot.querySelector('c-container');
+        const container = elm.shadowRoot.querySelector('x-container');
         expect(container.children.length).toBe(1);
         expect(container.shadowRoot.querySelector('slot').children.length).toBe(0);
     });

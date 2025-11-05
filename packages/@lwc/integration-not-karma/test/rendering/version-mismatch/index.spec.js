@@ -1,8 +1,8 @@
 import { createElement, LightningElement, registerTemplate, registerComponent } from 'lwc';
 
-import Component from 'c/component';
-import ComponentWithProp from 'c/componentWithProp';
-import ComponentWithTemplateAndStylesheet from 'c/componentWithTemplateAndStylesheet';
+import Component from 'x/component';
+import ComponentWithProp from 'x/componentWithProp';
+import ComponentWithTemplateAndStylesheet from 'x/componentWithTemplateAndStylesheet';
 import { fn as mockFn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
@@ -23,7 +23,7 @@ describe('compiler version mismatch', () => {
         });
 
         it('template', () => {
-            const elm = createElement('c-component-with-template-and-stylesheet', {
+            const elm = createElement('x-component-with-template-and-stylesheet', {
                 is: ComponentWithTemplateAndStylesheet,
             });
 
@@ -33,7 +33,7 @@ describe('compiler version mismatch', () => {
         });
 
         it('stylesheet', () => {
-            const elm = createElement('c-component-with-template-and-stylesheet', {
+            const elm = createElement('x-component-with-template-and-stylesheet', {
                 is: ComponentWithTemplateAndStylesheet,
             });
 
@@ -103,7 +103,7 @@ describe('compiler version mismatch', () => {
                 return [];
             }
 
-            tmpl.stylesheetToken = 'c-component_component';
+            tmpl.stylesheetToken = 'x-component_component';
             tmpl.stylesheets = [
                 function stylesheet() {
                     return '';
@@ -116,7 +116,7 @@ describe('compiler version mismatch', () => {
 
             registerComponent(CustomElement, { tmpl });
 
-            const elm = createElement('c-component', { is: CustomElement });
+            const elm = createElement('x-component', { is: CustomElement });
 
             expect(() => {
                 document.body.appendChild(elm);

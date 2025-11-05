@@ -1,13 +1,13 @@
 <template>
-    <c-table items={data}>
+    <x-table items={data}>
         <template lwc:slot-data="row">
-            <c-row row={row.data}>
+            <x-row row={row.data}>
                 <template lwc:slot-data="column">
                     <span style="border-style: solid;" class="cell">
                         Cell: {row.number} - {column.number}
                     </span>
                 </template>
-            </c-row>
+            </x-row>
         </template>
-    </c-table> 
+    </x-table> 
 </template>

@@ -1,17 +1,17 @@
 import { createElement } from 'lwc';
 
-import NativeScopedStyles from 'c/nativeScopedStyles';
-import NativeStyles from 'c/nativeStyles';
-import NoStyles from 'c/noStyles';
-import ScopedStyles from 'c/scopedStyles';
-import Styles from 'c/styles';
+import NativeScopedStyles from 'x/nativeScopedStyles';
+import NativeStyles from 'x/nativeStyles';
+import NoStyles from 'x/noStyles';
+import ScopedStyles from 'x/scopedStyles';
+import Styles from 'x/styles';
 import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
 
 const scenarios = [
     {
         name: 'no styles',
         Ctor: NoStyles,
-        tagName: 'c-no-styles',
+        tagName: 'x-no-styles',
         expectedColor: 'rgb(0, 0, 0)',
         expectClass: false,
         expectAttribute: false,
@@ -19,7 +19,7 @@ const scenarios = [
     {
         name: 'styles',
         Ctor: Styles,
-        tagName: 'c-styles',
+        tagName: 'x-styles',
         expectedColor: 'rgb(255, 0, 0)',
         expectClass: false,
         expectAttribute: !process.env.NATIVE_SHADOW,
@@ -27,7 +27,7 @@ const scenarios = [
     {
         name: 'scoped styles',
         Ctor: ScopedStyles,
-        tagName: 'c-scoped-styles',
+        tagName: 'x-scoped-styles',
         expectedColor: 'rgb(0, 128, 0)',
         expectClass: true,
         expectAttribute: !process.env.NATIVE_SHADOW,
@@ -35,7 +35,7 @@ const scenarios = [
     {
         name: 'native styles',
         Ctor: NativeStyles,
-        tagName: 'c-native-styles',
+        tagName: 'x-native-styles',
         expectedColor: 'rgb(255, 0, 0)',
         expectClass: false,
         expectAttribute: false,
@@ -43,7 +43,7 @@ const scenarios = [
     {
         name: 'native scoped styles',
         Ctor: NativeScopedStyles,
-        tagName: 'c-native-scoped-styles',
+        tagName: 'x-native-scoped-styles',
         expectedColor: 'rgb(0, 128, 0)',
         expectClass: true,
         expectAttribute: false,
@@ -71,7 +71,7 @@ scenarios.forEach(({ name, Ctor, tagName, expectedColor, expectClass, expectAttr
         });
 
         it('renders the correct attributes/classes', () => {
-            const scopeToken = LOWERCASE_SCOPE_TOKENS ? 'lwc-33sqfpfooub' : 'c-template_template';
+            const scopeToken = LOWERCASE_SCOPE_TOKENS ? 'lwc-33sqfpfooub' : 'x-template_template';
 
             expect(h1.getAttribute('class')).toBe(expectClass ? scopeToken : null);
             expect(h1.hasAttribute(scopeToken)).toBe(expectAttribute);

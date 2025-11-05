@@ -1,5 +1,5 @@
 <template>
-    <c-mixed-slot-child show-standard={showStandard} show-variant={showVariant}>
+    <x-mixed-slot-child show-standard={showStandard} show-variant={showVariant}>
         <template lwc:if={showStandard}>
             <span>Slotted content from parent</span>
         </template>
@@ -8,5 +8,5 @@
                 <span>{data.id} - {data.name}</span>
             </template>    
         </template>
-    </c-mixed-slot-child>
+    </x-mixed-slot-child>
 </template>

@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import Inner from 'c/inner';
-import Outer from 'c/outer';
+import Inner from 'x/inner';
+import Outer from 'x/outer';
 import { spyOn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
 
@@ -23,7 +23,7 @@ for (const whatter of ['inner', 'outer']) {
     // See W-16614337
     it(`does not render ${whatter} HTML from attributes`, async () => {
         const Whatter = whatter === 'inner' ? Inner : Outer;
-        const elm = createElement(`c-${whatter}`, { is: Whatter });
+        const elm = createElement(`x-${whatter}`, { is: Whatter });
         document.body.appendChild(elm);
         await Promise.resolve();
 

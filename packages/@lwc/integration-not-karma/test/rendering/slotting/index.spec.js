@@ -1,39 +1,39 @@
 import { createElement } from 'lwc';
-import RenderCountParent from 'c/renderCountParent';
-import FallbackContentReuseParent from 'c/fallbackContentReuseParent';
-import RegressionContainer from 'c/regressionContainer';
-import FallbackContentReuseDynamicKeyParent from 'c/fallbackContentReuseDynamicKeyParent';
-import UnknownSlotShadow from 'c/unknownSlotShadow';
-import UnknownSlotLight from 'c/unknownSlotLight';
+import RenderCountParent from 'x/renderCountParent';
+import FallbackContentReuseParent from 'x/fallbackContentReuseParent';
+import RegressionContainer from 'x/regressionContainer';
+import FallbackContentReuseDynamicKeyParent from 'x/fallbackContentReuseDynamicKeyParent';
+import UnknownSlotShadow from 'x/unknownSlotShadow';
+import UnknownSlotLight from 'x/unknownSlotLight';
 import { spyOn } from '@vitest/spy';
 
 // TODO [#1617]: Engine currently has trouble with slotting and invocation of the renderedCallback.
 xit('should not render if the slotted content changes', async () => {
-    const elm = createElement('c-render-count-parent', { is: RenderCountParent });
+    const elm = createElement('x-render-count-parent', { is: RenderCountParent });
     elm.value = 'initial';
     document.body.appendChild(elm);
 
     expect(elm.getRenderCount()).toBe(1);
-    expect(elm.shadowRoot.querySelector('c-render-count-child').getRenderCount()).toBe(1);
+    expect(elm.shadowRoot.querySelector('x-render-count-child').getRenderCount()).toBe(1);
     expect(elm.shadowRoot.querySelector('div').textContent).toBe('initial');
 
     elm.value = 'updated';
 
     await Promise.resolve();
     expect(elm.getRenderCount()).toBe(2);
-    expect(elm.shadowRoot.querySelector('c-render-count-child').getRenderCount()).toBe(1);
+    expect(elm.shadowRoot.querySelector('x-render-count-child').getRenderCount()).toBe(1);
     expect(elm.shadowRoot.querySelector('div').textContent).toBe('updated');
 });
 
 [
     {
         type: 'static',
-        tag: 'c-fallback-content-reuse-parent',
+        tag: 'x-fallback-content-reuse-parent',
         Ctor: FallbackContentReuseParent,
     },
     {
         type: 'dynamic',
-        tag: 'c-fallback-content-reuse-dynamic-key-parent',
+        tag: 'x-fallback-content-reuse-dynamic-key-parent',
         Ctor: FallbackContentReuseDynamicKeyParent,
     },
 ].forEach(({ type, tag, Ctor }) => {
@@ -56,7 +56,7 @@ xit('should not render if the slotted content changes', async () => {
 
 it('should not throw error when updating slotted content triggers next tick re-render in component receiving the slotted content', async () => {
     // Regression introduced in #1617 refactor(engine): improving the diffing algo for slotted elements
-    const elm = createElement('c-regression-container', {
+    const elm = createElement('x-regression-container', {
         is: RegressionContainer,
     });
     document.body.appendChild(elm);
@@ -88,7 +88,7 @@ describe('does not log an error/warning on unknown slot name', () => {
     });
 
     it('shadow dom', async () => {
-        const elm = createElement('c-unknown-slot-shadow', { is: UnknownSlotShadow });
+        const elm = createElement('x-unknown-slot-shadow', { is: UnknownSlotShadow });
         document.body.appendChild(elm);
 
         await Promise.resolve();
@@ -96,7 +96,7 @@ describe('does not log an error/warning on unknown slot name', () => {
         // nothing slotted into the child
         expect(
             elm.shadowRoot
-                .querySelector('c-unknown-slot-shadow-child')
+                .querySelector('x-unknown-slot-shadow-child')
                 .shadowRoot.querySelector('slot')
                 .assignedNodes().length
         ).toEqual(0);
@@ -106,13 +106,13 @@ describe('does not log an error/warning on unknown slot name', () => {
     });
 
     it('light dom', async () => {
-        const elm = createElement('c-unknown-slot-light', { is: UnknownSlotLight });
+        const elm = createElement('x-unknown-slot-light', { is: UnknownSlotLight });
         document.body.appendChild(elm);
 
         await Promise.resolve();
 
         // nothing slotted into the child
-        expect(elm.querySelector('c-unknown-slot-light-child').children.length).toEqual(0);
+        expect(elm.querySelector('x-unknown-slot-light-child').children.length).toEqual(0);
 
         expect(warnSpy).not.toHaveBeenCalled();
         expect(errorSpy).not.toHaveBeenCalled();

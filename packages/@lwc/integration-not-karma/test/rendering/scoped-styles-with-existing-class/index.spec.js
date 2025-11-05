@@ -1,5 +1,5 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
-import Component from 'c/component';
+import Component from 'x/component';
 import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
 import { resetFragmentCache } from '../../../helpers/reset.js';
 
@@ -19,11 +19,11 @@ import { resetFragmentCache } from '../../../helpers/reset.js';
 
         const expectedScopeTokens = [
             LOWERCASE_SCOPE_TOKENS && 'lwc-lsk3ii3ajr',
-            (enableLegacyScopeTokens || !LOWERCASE_SCOPE_TOKENS) && 'c-component_component',
+            (enableLegacyScopeTokens || !LOWERCASE_SCOPE_TOKENS) && 'x-component_component',
         ].filter(Boolean);
 
         it('consistent classes for scoped styles with class attribute #4714', async () => {
-            const elm = createElement('c-component', { is: Component });
+            const elm = createElement('x-component', { is: Component });
             document.body.appendChild(elm);
             await Promise.resolve();
 

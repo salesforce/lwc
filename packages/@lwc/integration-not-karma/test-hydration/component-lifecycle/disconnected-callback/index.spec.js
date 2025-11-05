@@ -12,11 +12,11 @@ export default {
     },
     snapshot(target) {
         return {
-            xFoo: target.shadowRoot.querySelector('c-foo'),
+            xFoo: target.shadowRoot.querySelector('x-foo'),
         };
     },
     async test(target, snapshots) {
-        const xFoo = target.shadowRoot.querySelector('c-foo');
+        const xFoo = target.shadowRoot.querySelector('x-foo');
         expect(xFoo).not.toBe(null);
         expect(xFoo).toBe(snapshots.xFoo);
 

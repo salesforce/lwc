@@ -1,5 +1,5 @@
 import { LightningElement, wire, api } from 'lwc';
-import { EchoWireAdapter } from 'c/echoWireAdapter';
+import { EchoWireAdapter } from 'x/echoWireAdapter';
 
 export default class SameConfigCase extends LightningElement {
     @api a;

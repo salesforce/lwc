@@ -1,32 +1,32 @@
 import { createElement } from 'lwc';
-import Basic from 'c/basic';
-import BasicDynamic from 'c/basicDynamic';
-import None from 'c/none';
-import NoneActive from 'c/noneActive';
-import Multi from 'c/multi';
-import MultiNoRefsInOne from 'c/multiNoRefsInOne';
-import MultiParent from 'c/multiParent';
-import Overwrite from 'c/overwrite';
-import Conflict from 'c/conflict';
-import ConflictDynamic from 'c/conflictDynamic';
-import ConflictFullyStatic from 'c/conflictFullyStatic';
-import Parent from 'c/parent';
-import Light from 'c/light';
-import Dynamic from 'c/dynamic';
-import LwcDynamic from 'c/lwcDynamic';
-import Conditional from 'c/conditional';
-import Construct from 'c/construct';
-import Connect from 'c/connect';
-import Rendered from 'c/rendered';
-import Disconnect from 'c/disconnect';
-import Render from 'c/render';
-import Expando from 'c/expando';
-import ExpandoCheck from 'c/expandoCheck';
-import Slotter from 'c/slotter';
-import AccessDuringRender from 'c/accessDuringRender';
-import RerenderElement from 'c/rerenderElement';
-import RerenderComponent from 'c/rerenderComponent';
-import RerenderElementStaticRef from 'c/rerenderElementStaticRef';
+import Basic from 'x/basic';
+import BasicDynamic from 'x/basicDynamic';
+import None from 'x/none';
+import NoneActive from 'x/noneActive';
+import Multi from 'x/multi';
+import MultiNoRefsInOne from 'x/multiNoRefsInOne';
+import MultiParent from 'x/multiParent';
+import Overwrite from 'x/overwrite';
+import Conflict from 'x/conflict';
+import ConflictDynamic from 'x/conflictDynamic';
+import ConflictFullyStatic from 'x/conflictFullyStatic';
+import Parent from 'x/parent';
+import Light from 'x/light';
+import Dynamic from 'x/dynamic';
+import LwcDynamic from 'x/lwcDynamic';
+import Conditional from 'x/conditional';
+import Construct from 'x/construct';
+import Connect from 'x/connect';
+import Rendered from 'x/rendered';
+import Disconnect from 'x/disconnect';
+import Render from 'x/render';
+import Expando from 'x/expando';
+import ExpandoCheck from 'x/expandoCheck';
+import Slotter from 'x/slotter';
+import AccessDuringRender from 'x/accessDuringRender';
+import RerenderElement from 'x/rerenderElement';
+import RerenderComponent from 'x/rerenderComponent';
+import RerenderElementStaticRef from 'x/rerenderElementStaticRef';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('refs', () => {
@@ -35,12 +35,12 @@ describe('refs', () => {
             {
                 name: 'static',
                 Ctor: Basic,
-                tagName: 'c-basic',
+                tagName: 'x-basic',
             },
             {
                 name: 'dynamic',
                 Ctor: BasicDynamic,
-                tagName: 'c-basic-dynamic',
+                tagName: 'x-basic-dynamic',
             },
         ];
 
@@ -58,7 +58,7 @@ describe('refs', () => {
     });
 
     it('refs object shape', () => {
-        const elm = createElement('c-basic', { is: Basic });
+        const elm = createElement('x-basic', { is: Basic });
         document.body.appendChild(elm);
 
         const refs = elm.getRefs();
@@ -70,7 +70,7 @@ describe('refs', () => {
     });
 
     it('no refs', () => {
-        const elm = createElement('c-none', { is: None });
+        const elm = createElement('x-none', { is: None });
         document.body.appendChild(elm);
 
         const refs = elm.getRefs();
@@ -79,7 +79,7 @@ describe('refs', () => {
     });
 
     it('no active refs', () => {
-        const elm = createElement('c-none-active', { is: NoneActive });
+        const elm = createElement('x-none-active', { is: NoneActive });
         document.body.appendChild(elm);
 
         const refs = elm.getRefs();
@@ -91,7 +91,7 @@ describe('refs', () => {
     });
 
     it('multi templates', async () => {
-        const elm = createElement('c-multi', { is: Multi });
+        const elm = createElement('x-multi', { is: Multi });
 
         document.body.appendChild(elm);
 
@@ -115,7 +115,7 @@ describe('refs', () => {
     });
 
     it('multi templates - no refs in one', async () => {
-        const elm = createElement('c-multi-no-refs-in-one', { is: MultiNoRefsInOne });
+        const elm = createElement('x-multi-no-refs-in-one', { is: MultiNoRefsInOne });
 
         document.body.appendChild(elm);
 
@@ -130,7 +130,7 @@ describe('refs', () => {
     });
 
     it('can overwrite refs', async () => {
-        const elm = createElement('c-overwrite', { is: Overwrite });
+        const elm = createElement('x-overwrite', { is: Overwrite });
 
         document.body.appendChild(elm);
 
@@ -141,7 +141,7 @@ describe('refs', () => {
     });
 
     it('can overwrite refs with an expando', () => {
-        const elm = createElement('c-expando', { is: Expando });
+        const elm = createElement('x-expando', { is: Expando });
 
         document.body.appendChild(elm);
         elm.setRefs('foo');
@@ -153,7 +153,7 @@ describe('refs', () => {
     });
 
     it('can overwrite refs with an expando after checking the expando for truthiness', () => {
-        const elm = createElement('c-expando-check', { is: ExpandoCheck });
+        const elm = createElement('x-expando-check', { is: ExpandoCheck });
 
         document.body.appendChild(elm);
         elm.checkAndSet();
@@ -161,7 +161,7 @@ describe('refs', () => {
     });
 
     it('refs not accessible externally', () => {
-        const elm = createElement('c-basic', { is: Basic });
+        const elm = createElement('x-basic', { is: Basic });
 
         document.body.appendChild(elm);
 
@@ -172,17 +172,17 @@ describe('refs', () => {
         const scenarios = [
             {
                 name: 'Basic',
-                tagName: 'c-conflict',
+                tagName: 'x-conflict',
                 Ctor: Conflict,
             },
             {
                 name: 'Dynamic',
-                tagName: 'c-dynamic',
+                tagName: 'x-dynamic',
                 Ctor: ConflictDynamic,
             },
             {
                 name: 'Fully static',
-                tagName: 'c-fully-static',
+                tagName: 'x-fully-static',
                 Ctor: ConflictFullyStatic,
             },
         ];
@@ -202,7 +202,7 @@ describe('refs', () => {
     });
 
     it('multiple copies of same component, refs do not collide', () => {
-        const elm = createElement('c-multi-parent', { is: MultiParent });
+        const elm = createElement('x-multi-parent', { is: MultiParent });
 
         document.body.appendChild(elm);
 
@@ -215,24 +215,24 @@ describe('refs', () => {
     });
 
     it('ref on a component', () => {
-        const elm = createElement('c-parent', { is: Parent });
+        const elm = createElement('x-parent', { is: Parent });
 
         document.body.appendChild(elm);
 
         const child = elm.getRef('child');
-        expect(child.tagName.toLowerCase()).toEqual('c-child');
+        expect(child.tagName.toLowerCase()).toEqual('x-child');
         expect(child.shadowRoot.querySelector('h1').textContent).toEqual('child');
     });
 
     it('light dom', () => {
-        const elm = createElement('c-light', { is: Light });
+        const elm = createElement('x-light', { is: Light });
         document.body.appendChild(elm);
 
         expect(elm.getRefTextContent('foo')).toEqual('foo');
     });
 
     it('ref on a dynamic component - lwc:dynamic', async () => {
-        const elm = createElement('c-dynamic', { is: LwcDynamic });
+        const elm = createElement('x-dynamic', { is: LwcDynamic });
         document.body.appendChild(elm);
 
         // Constructor not set
@@ -244,12 +244,12 @@ describe('refs', () => {
         await Promise.resolve();
         const dynamic = elm.getRef('dynamic');
         // Ref is available after constructor set
-        expect(dynamic.tagName.toLowerCase()).toEqual('c-dynamic-cmp');
+        expect(dynamic.tagName.toLowerCase()).toEqual('x-dynamic-cmp');
         expect(dynamic.getRefTextContent('first')).toEqual('first');
     });
 
     it('ref on a dynamic component - <lwc:component lwc:is={}>', async () => {
-        const elm = createElement('c-dynamic', { is: Dynamic });
+        const elm = createElement('x-dynamic', { is: Dynamic });
         document.body.appendChild(elm);
 
         // Constructor not set
@@ -261,12 +261,12 @@ describe('refs', () => {
         await Promise.resolve();
         const dynamic = elm.getRef('dynamic');
         // Ref is available after constructor set
-        expect(dynamic.tagName.toLowerCase()).toEqual('c-basic');
+        expect(dynamic.tagName.toLowerCase()).toEqual('x-basic');
         expect(dynamic.getRefTextContent('first')).toEqual('first');
     });
 
     it('ref with conditional', async () => {
-        const elm = createElement('c-conditional', { is: Conditional });
+        const elm = createElement('x-conditional', { is: Conditional });
         document.body.appendChild(elm);
 
         expect(elm.getRef('coinflip').textContent).toEqual('tails');
@@ -288,7 +288,7 @@ describe('refs', () => {
     });
 
     it('ref with slot', () => {
-        const elm = createElement('c-slotter', { is: Slotter });
+        const elm = createElement('x-slotter', { is: Slotter });
         document.body.appendChild(elm);
 
         const ids = extractDataIds(elm);
@@ -304,7 +304,7 @@ describe('refs', () => {
 
     describe('re-rendering a vnode with a ref', () => {
         it('element', async () => {
-            const elm = createElement('c-rerender-element', { is: RerenderElement });
+            const elm = createElement('x-rerender-element', { is: RerenderElement });
             document.body.appendChild(elm);
 
             expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('div'));
@@ -317,20 +317,20 @@ describe('refs', () => {
         });
 
         it('component', async () => {
-            const elm = createElement('c-rerender-component', { is: RerenderComponent });
+            const elm = createElement('x-rerender-component', { is: RerenderComponent });
             document.body.appendChild(elm);
 
-            expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('c-rerender-element'));
+            expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
             for (let i = 0; i < 3; i++) {
                 elm.version = i;
-                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('c-rerender-element'));
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
                 await Promise.resolve();
-                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('c-rerender-element'));
+                expect(elm.getRef('foo')).toBe(elm.shadowRoot.querySelector('x-rerender-element'));
             }
         });
 
         it('element with a different static ref', async () => {
-            const elm = createElement('c-rerender-element-static-ref', {
+            const elm = createElement('x-rerender-element-static-ref', {
                 is: RerenderElementStaticRef,
             });
             document.body.appendChild(elm);
@@ -355,43 +355,43 @@ describe('refs', () => {
             let elm;
 
             expect(() => {
-                elm = createElement('c-construct', { is: Construct });
+                elm = createElement('x-construct', { is: Construct });
             }).toLogErrorDev(
-                /Error: \[LWC error]: this.refs should not be called during the construction of the custom element for <c-construct> because the element is not yet in the DOM or has no children yet\./
+                /Error: \[LWC error]: this.refs should not be called during the construction of the custom element for <x-construct> because the element is not yet in the DOM or has no children yet\./
             );
             document.body.appendChild(elm);
             expect(elm.result).toBeUndefined();
         });
 
         it('logs error in connectedCallback', () => {
-            const elm = createElement('c-connect', { is: Connect });
+            const elm = createElement('x-connect', { is: Connect });
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogErrorDev(
-                /Error: \[LWC error]: this\.refs is undefined for <c-connect>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
+                /Error: \[LWC error]: this\.refs is undefined for <x-connect>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
             );
             expect(elm.result).toBeUndefined();
         });
 
         it('works in renderedCallback', () => {
-            const elm = createElement('c-rendered', { is: Rendered });
+            const elm = createElement('x-rendered', { is: Rendered });
             document.body.appendChild(elm);
             expect(elm.result).toEqual('foo');
         });
 
         it('works in disconnectedCallback', () => {
-            const elm = createElement('c-disconnect', { is: Disconnect });
+            const elm = createElement('x-disconnect', { is: Disconnect });
             document.body.appendChild(elm);
             document.body.removeChild(elm);
             expect(elm.result).toEqual('foo');
         });
 
         it('works in render', async () => {
-            const elm = createElement('c-render', { is: Render });
+            const elm = createElement('x-render', { is: Render });
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogErrorDev(
-                /Error: \[LWC error]: this\.refs is undefined for <c-render>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
+                /Error: \[LWC error]: this\.refs is undefined for <x-render>\. This is either because the attached template has no "lwc:ref" directive, or this.refs was invoked before renderedCallback\(\). Use this\.refs only when the referenced HTML elements have been rendered to the DOM, such as within renderedCallback\(\) or disconnectedCallback\(\)\./
             );
             await Promise.resolve();
             expect(elm.results).toEqual([undefined]);
@@ -401,11 +401,11 @@ describe('refs', () => {
         });
 
         it('logs error if this.refs is accessed during render', async () => {
-            const elm = createElement('c-access-during-render', { is: AccessDuringRender });
+            const elm = createElement('x-access-during-render', { is: AccessDuringRender });
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogErrorDev(
-                /Error: \[LWC error]: this\.refs should not be called while <c-access-during-render> is rendering\. Use this\.refs only when the DOM is stable, e\.g\. in renderedCallback\(\)\./
+                /Error: \[LWC error]: this\.refs should not be called while <x-access-during-render> is rendering\. Use this\.refs only when the DOM is stable, e\.g\. in renderedCallback\(\)\./
             );
             const ids = extractDataIds(elm);
 

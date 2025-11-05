@@ -1,25 +1,25 @@
 import { createElement } from 'lwc';
 
-import XTest from 'c/test';
-import XAccessDuringConstruction from 'c/accessDuringConstruction';
+import XTest from 'x/test';
+import XAccessDuringConstruction from 'x/accessDuringConstruction';
 
 it('should log an error when trying to access classList during construction', () => {
     expect(() => {
-        createElement('c-access-during-construction', { is: XAccessDuringConstruction });
+        createElement('x-access-during-construction', { is: XAccessDuringConstruction });
     }).toLogErrorDev(
         /The result must not have attributes. Adding or tampering with classname in constructor is not allowed in a web component, use connectedCallback\(\) instead./
     );
 });
 
 it('should return an instance of DOMTokenList', () => {
-    const elm = createElement('c-test', { is: XTest });
+    const elm = createElement('x-test', { is: XTest });
     document.body.appendChild(elm);
 
     expect(elm.getClassList()).toBeInstanceOf(DOMTokenList);
 });
 
 it('should return of classed applied from the outside', () => {
-    const elm = createElement('c-test', { is: XTest });
+    const elm = createElement('x-test', { is: XTest });
     elm.className = 'foo bar';
     document.body.appendChild(elm);
 
@@ -29,7 +29,7 @@ it('should return of classed applied from the outside', () => {
 });
 
 it('should allow adding a class set outside from within the component', () => {
-    const elm = createElement('c-test', { is: XTest });
+    const elm = createElement('x-test', { is: XTest });
     elm.className = 'bar';
     document.body.appendChild(elm);
 
@@ -41,7 +41,7 @@ it('should allow adding a class set outside from within the component', () => {
 });
 
 it('should allow deleting a class set outside from within the component', () => {
-    const elm = createElement('c-test', { is: XTest });
+    const elm = createElement('x-test', { is: XTest });
     elm.className = 'foo bar';
     document.body.appendChild(elm);
 

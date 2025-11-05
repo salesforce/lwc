@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import Parent from 'c/dualTemplate1506';
+import Parent from 'x/dualTemplate1506';
 
 it('setting tracked value in disconnectedCallback should not throw', async () => {
-    const elm = createElement('c-parent', { is: Parent });
+    const elm = createElement('x-parent', { is: Parent });
     document.body.appendChild(elm);
     expect(
-        elm.shadowRoot.querySelector('c-disconnected-callback-sets-tracked-value')
+        elm.shadowRoot.querySelector('x-disconnected-callback-sets-tracked-value')
     ).not.toBeNull();
     elm.toggleTemplate();
 

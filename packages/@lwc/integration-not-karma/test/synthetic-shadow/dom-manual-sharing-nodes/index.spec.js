@@ -1,15 +1,15 @@
 import { createElement } from 'lwc';
 
-import Unstyled from 'c/unstyled';
-import Styled from 'c/styled';
+import Unstyled from 'x/unstyled';
+import Styled from 'x/styled';
 import { resetDOM } from '../../../helpers/reset';
 
 afterEach(resetDOM);
 
 describe('dom manual sharing nodes', () => {
     it('has correct styles when sharing nodes from styled to unstyled component', async () => {
-        const unstyled = createElement('c-unstyled', { is: Unstyled });
-        const styled = createElement('c-styled', { is: Styled });
+        const unstyled = createElement('x-unstyled', { is: Unstyled });
+        const styled = createElement('x-styled', { is: Styled });
         document.body.appendChild(unstyled);
         document.body.appendChild(styled);
 
@@ -28,8 +28,8 @@ describe('dom manual sharing nodes', () => {
     });
 
     it('has correct styles when sharing nodes from unstyled to styled component', async () => {
-        const unstyled = createElement('c-unstyled', { is: Unstyled });
-        const styled = createElement('c-styled', { is: Styled });
+        const unstyled = createElement('x-unstyled', { is: Unstyled });
+        const styled = createElement('x-styled', { is: Styled });
         document.body.appendChild(unstyled);
         document.body.appendChild(styled);
 

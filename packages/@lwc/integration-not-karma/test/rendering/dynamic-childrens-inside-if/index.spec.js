@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import ForEachCmp from 'c/forEachCmp';
-import LwcDynamic from 'c/lwcDynamic';
-import Dynamic from 'c/dynamic';
+import ForEachCmp from 'x/forEachCmp';
+import LwcDynamic from 'x/lwcDynamic';
+import Dynamic from 'x/dynamic';
 
 describe('for:each', () => {
     it('should remove/add elements when if is toggled', async () => {
-        const elm = createElement('c-container', { is: ForEachCmp });
+        const elm = createElement('x-container', { is: ForEachCmp });
         document.body.appendChild(elm);
         const divWithChildrenWrappedByIf = elm.shadowRoot.querySelector('div');
 
@@ -24,7 +24,7 @@ describe('for:each', () => {
 
 describe('lwc:dynamic', () => {
     it('should remove/add elements when if is toggled', async () => {
-        const elm = createElement('c-container', { is: LwcDynamic });
+        const elm = createElement('x-container', { is: LwcDynamic });
         document.body.appendChild(elm);
 
         const divWithChildrenWrappedByIf = elm.shadowRoot.querySelector('div');
@@ -43,7 +43,7 @@ describe('lwc:dynamic', () => {
 
 describe('dynamic components', () => {
     it('should remove/add elements when if is toggled', async () => {
-        const elm = createElement('c-container', { is: Dynamic });
+        const elm = createElement('x-container', { is: Dynamic });
         document.body.appendChild(elm);
 
         const divWithChildrenWrappedByIf = elm.shadowRoot.querySelector('div');

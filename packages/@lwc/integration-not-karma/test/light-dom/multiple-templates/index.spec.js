@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import Multi from 'c/multi';
-import MultiNoStyleInFirst from 'c/multiNoStyleInFirst';
+import Multi from 'x/multi';
+import MultiNoStyleInFirst from 'x/multiNoStyleInFirst';
 import { resetDOM } from '../../../helpers/reset';
 
 describe('multiple templates', () => {
     afterEach(resetDOM);
 
     it('can render multiple templates with different styles', async () => {
-        const element = createElement('c-multi', { is: Multi });
+        const element = createElement('x-multi', { is: Multi });
 
         document.body.appendChild(element);
 
@@ -26,7 +26,7 @@ describe('multiple templates', () => {
     });
 
     it('works when first template has no scoped style but second template does', async () => {
-        const element = createElement('c-multi-no-style-in-first', { is: MultiNoStyleInFirst });
+        const element = createElement('x-multi-no-style-in-first', { is: MultiNoStyleInFirst });
         document.body.appendChild(element);
         await Promise.resolve();
         expect(getComputedStyle(element.querySelector('.red')).color).toEqual('rgb(0, 0, 0)');

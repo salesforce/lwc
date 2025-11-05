@@ -1,6 +1,6 @@
 import { createElement } from 'lwc';
-import Light from 'c/light';
-import Shadow from 'c/shadow';
+import Light from 'x/light';
+import Shadow from 'x/shadow';
 import { fn as mockFn } from '@vitest/spy';
 import { nonStandardAriaProperties } from '../../../helpers/aria.js';
 import {
@@ -28,8 +28,8 @@ describe.runIf(process.env.ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL)(
         nonStandardAriaProperties.forEach((prop) => {
             describe(prop, () => {
                 const scenarios = [
-                    { name: 'light', Ctor: Light, tagName: 'c-light' },
-                    { name: 'shadow', Ctor: Shadow, tagName: 'c-shadow' },
+                    { name: 'light', Ctor: Light, tagName: 'x-light' },
+                    { name: 'shadow', Ctor: Shadow, tagName: 'x-shadow' },
                 ];
 
                 scenarios.forEach(({ name, Ctor, tagName }) => {

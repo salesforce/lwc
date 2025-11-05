@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import Valid from 'c/valid';
-import Invalid from 'c/invalid';
+import Valid from 'x/valid';
+import Invalid from 'x/invalid';
 
 describe('host pseudo', () => {
     function testComponent(Component, name, test = it) {
         test(`supports :host() pseudo class - ${name}`, async () => {
-            const elm = createElement('c-component', { is: Component });
+            const elm = createElement('x-component', { is: Component });
             document.body.appendChild(elm);
             const div = elm.shadowRoot.querySelector('.quux');
 

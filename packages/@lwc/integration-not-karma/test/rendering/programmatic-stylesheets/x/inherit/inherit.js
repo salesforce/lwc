@@ -1,4 +1,4 @@
-import Super from 'c/super';
+import Super from 'x/super';
 import stylesheet from './stylesheet.css';
 
 export default class extends Super {

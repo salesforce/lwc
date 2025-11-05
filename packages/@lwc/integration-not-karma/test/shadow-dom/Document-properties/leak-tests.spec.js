@@ -1,15 +1,15 @@
 import { createElement } from 'lwc';
 
-import Leak from 'c/leak';
+import Leak from 'x/leak';
 
 let elm;
 beforeEach(() => {
-    elm = createElement('c-leak', { is: Leak });
+    elm = createElement('x-leak', { is: Leak });
     document.body.appendChild(elm);
 });
 
 it('Sanity check', () => {
-    expect(document.querySelector('c-leak')).toBe(elm);
+    expect(document.querySelector('x-leak')).toBe(elm);
 });
 
 describe('Document.getElementById()', () => {

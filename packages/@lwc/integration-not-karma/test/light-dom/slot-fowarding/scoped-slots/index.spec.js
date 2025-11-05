@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import LightContainer from './c/lightContainer/lightContainer';
+import LightContainer from './x/lightContainer/lightContainer';
 
 describe('scoped slots, slot forwarding', () => {
     let lightContainer;
     beforeAll(() => {
-        lightContainer = createElement('c-light-container', { is: LightContainer });
+        lightContainer = createElement('x-light-container', { is: LightContainer });
         document.body.appendChild(lightContainer);
     });
 
@@ -15,7 +15,7 @@ describe('scoped slots, slot forwarding', () => {
 
     // TODO [#3889]: This test should be updated once a fix is ready.
     it('does not reassign slot content', () => {
-        const leaf = lightContainer.querySelector('c-leaf');
+        const leaf = lightContainer.querySelector('x-leaf');
         expect(leaf.shadowRoot.children.length).toEqual(2);
 
         const defaultSlot = leaf.shadowRoot.querySelector('slot');

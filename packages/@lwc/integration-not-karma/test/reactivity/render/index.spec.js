@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
 
-import Test from 'c/test';
+import Test from 'x/test';
 
 it('computes reactivity graph per render cycle', async () => {
-    const elm = createElement('c-test', { is: Test });
+    const elm = createElement('x-test', { is: Test });
     elm.dynamicValue = 1;
     elm.renderDynamic = false;
     document.body.appendChild(elm);

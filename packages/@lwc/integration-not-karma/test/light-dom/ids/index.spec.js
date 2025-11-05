@@ -1,32 +1,32 @@
 import { createElement } from 'lwc';
 
-import One from 'c/one';
-import Two from 'c/two';
-import Shadow from 'c/shadow';
+import One from 'x/one';
+import Two from 'x/two';
+import Shadow from 'x/shadow';
 
 describe('Light DOM IDs and fragment links', () => {
     it('should not mangle IDs or hrefs in light DOM', () => {
-        document.body.appendChild(createElement('c-one', { is: One }));
-        document.body.appendChild(createElement('c-two', { is: Two }));
+        document.body.appendChild(createElement('x-one', { is: One }));
+        document.body.appendChild(createElement('x-two', { is: Two }));
 
-        expect(document.body.querySelector('c-one .foo').id).toEqual('foo');
-        expect(document.body.querySelector('c-one .bar').id).toEqual('bar');
-        expect(document.body.querySelector('c-two .foo').id).toEqual('foo');
-        expect(document.body.querySelector('c-two .quux').id).toEqual('quux');
+        expect(document.body.querySelector('x-one .foo').id).toEqual('foo');
+        expect(document.body.querySelector('x-one .bar').id).toEqual('bar');
+        expect(document.body.querySelector('x-two .foo').id).toEqual('foo');
+        expect(document.body.querySelector('x-two .quux').id).toEqual('quux');
 
-        expect(document.body.querySelector('c-one .go-to-foo').href).toMatch(/#foo$/);
-        expect(document.body.querySelector('c-one .go-to-bar').href).toMatch(/#bar$/);
-        expect(document.body.querySelector('c-one .go-to-quux').href).toMatch(/#quux$/);
+        expect(document.body.querySelector('x-one .go-to-foo').href).toMatch(/#foo$/);
+        expect(document.body.querySelector('x-one .go-to-bar').href).toMatch(/#bar$/);
+        expect(document.body.querySelector('x-one .go-to-quux').href).toMatch(/#quux$/);
 
-        expect(document.body.querySelector('c-two .go-to-foo').href).toMatch(/#foo$/);
-        expect(document.body.querySelector('c-two .go-to-bar').href).toMatch(/#bar$/);
-        expect(document.body.querySelector('c-two .go-to-quux').href).toMatch(/#quux$/);
+        expect(document.body.querySelector('x-two .go-to-foo').href).toMatch(/#foo$/);
+        expect(document.body.querySelector('x-two .go-to-bar').href).toMatch(/#bar$/);
+        expect(document.body.querySelector('x-two .go-to-quux').href).toMatch(/#quux$/);
     });
 
     // Remove this test when this is fixed: https://github.com/salesforce/lwc/issues/1150
     it('should only mangle non-dangling hrefs in shadow DOM', () => {
-        const light = createElement('c-one', { is: One });
-        const shadow = createElement('c-shadow', { is: Shadow });
+        const light = createElement('x-one', { is: One });
+        const shadow = createElement('x-shadow', { is: Shadow });
         document.body.appendChild(light);
         document.body.appendChild(shadow);
 

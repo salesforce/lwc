@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
-import XWithoutChildren from 'c/withoutChildren';
-import XWithChildren from 'c/withChildren';
-import XWithDeclarativeEvent from 'c/withDeclarativeEvent';
-import XWithDelayedUpgrade from 'c/withDelayedUpgrade';
-import XWithDifferentViews from 'c/withDifferentViews';
-import XWithImperativeEvent from 'c/withImperativeEvent';
-import XWithProperty from 'c/withProperty';
-import XWithCamelCaseProperty from 'c/withCamelCaseProperty';
-import XWithUnregisteredWC from 'c/withUnregisteredWC';
+import XWithoutChildren from 'x/withoutChildren';
+import XWithChildren from 'x/withChildren';
+import XWithDeclarativeEvent from 'x/withDeclarativeEvent';
+import XWithDelayedUpgrade from 'x/withDelayedUpgrade';
+import XWithDifferentViews from 'x/withDifferentViews';
+import XWithImperativeEvent from 'x/withImperativeEvent';
+import XWithProperty from 'x/withProperty';
+import XWithCamelCaseProperty from 'x/withCamelCaseProperty';
+import XWithUnregisteredWC from 'x/withUnregisteredWC';
 
 import './custom-elements/ce-without-children';
 import './custom-elements/ce-with-children';
@@ -20,14 +20,14 @@ const unknownPropTokyo =
 
 describe('lwc:external directive basic tests', () => {
     it('should render a Custom Element without children', () => {
-        const elm = createElement('c-without-children', { is: XWithoutChildren });
+        const elm = createElement('x-without-children', { is: XWithoutChildren });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('ce-without-children')).not.toBeNull();
     });
 
     it('should render a Custom Element with children', () => {
-        const elm = createElement('c-with-children', { is: XWithChildren });
+        const elm = createElement('x-with-children', { is: XWithChildren });
         document.body.appendChild(elm);
 
         const ce = elm.shadowRoot.querySelector('ce-with-children');
@@ -44,7 +44,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should render a Custom Element and handle hiding and showing the element', async () => {
-        const elm = createElement('c-with-different-views', { is: XWithDifferentViews });
+        const elm = createElement('x-with-different-views', { is: XWithDifferentViews });
         document.body.appendChild(elm);
 
         let ce = elm.shadowRoot.querySelector('ce-with-children');
@@ -57,7 +57,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should imperatively listen to a DOM event dispatched by a Custom Element', async () => {
-        const elm = createElement('c-with-imperative-event', { is: XWithImperativeEvent });
+        const elm = createElement('x-with-imperative-event', { is: XWithImperativeEvent });
         document.body.appendChild(elm);
 
         const handled = elm.shadowRoot.querySelector('div');
@@ -70,7 +70,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should declaratively listen to a DOM event dispatched by a Custom Element', async () => {
-        const elm = createElement('c-with-declarative-event', { is: XWithDeclarativeEvent });
+        const elm = createElement('x-with-declarative-event', { is: XWithDeclarativeEvent });
         document.body.appendChild(elm);
 
         const handled = elm.shadowRoot.querySelector('div');
@@ -83,7 +83,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should use unresolved HTMLElement if Custom Element is not registered', () => {
-        const elm = createElement('c-with-unregsitered-wc', { is: XWithUnregisteredWC });
+        const elm = createElement('x-with-unregsitered-wc', { is: XWithUnregisteredWC });
         document.body.appendChild(elm);
 
         const ce = elm.shadowRoot.querySelector('ce-not-registered');
@@ -93,7 +93,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should distribute slotted content', () => {
-        const elm = createElement('c-with-children', { is: XWithChildren });
+        const elm = createElement('x-with-children', { is: XWithChildren });
         document.body.appendChild(elm);
 
         const ce = elm.shadowRoot.querySelector('ce-with-children');
@@ -108,7 +108,7 @@ describe('lwc:external directive basic tests', () => {
         let elm;
 
         beforeEach(() => {
-            elm = createElement('c-with-property', { is: XWithProperty });
+            elm = createElement('x-with-property', { is: XWithProperty });
             expect(() => {
                 document.body.appendChild(elm);
             }).toLogWarningDev(unknownPropTokyo);
@@ -133,7 +133,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should work with lwc:spread', async () => {
-        const elm = createElement('c-with-property', { is: XWithProperty });
+        const elm = createElement('x-with-property', { is: XWithProperty });
         expect(() => {
             document.body.appendChild(elm);
         }).toLogWarningDev(unknownPropTokyo);
@@ -146,7 +146,7 @@ describe('lwc:external directive basic tests', () => {
     });
 
     it('should work with camel case properties', async () => {
-        const elm = createElement('c-with-camel-case-property', { is: XWithCamelCaseProperty });
+        const elm = createElement('x-with-camel-case-property', { is: XWithCamelCaseProperty });
         const propValue = '-1';
         elm.prop = propValue;
         document.body.appendChild(elm);
@@ -168,7 +168,7 @@ describe('lwc:external directive basic tests', () => {
         let elm;
 
         beforeEach(() => {
-            elm = createElement('c-with-unregsitered-wc', { is: XWithUnregisteredWC });
+            elm = createElement('x-with-unregsitered-wc', { is: XWithUnregisteredWC });
             document.body.appendChild(elm);
         });
 
@@ -194,7 +194,7 @@ describe('lwc:external directive basic tests', () => {
         // you define a custom element, there is no way to undefine it and the assertions meant
         // for before the upgrade must run first.
         it('should set property instead of attribute', async () => {
-            const elm = createElement('c-with-delayed-upgrade', { is: XWithDelayedUpgrade });
+            const elm = createElement('x-with-delayed-upgrade', { is: XWithDelayedUpgrade });
             document.body.appendChild(elm);
             const ce = elm.shadowRoot.querySelector('ce-with-delayed-upgrade');
 

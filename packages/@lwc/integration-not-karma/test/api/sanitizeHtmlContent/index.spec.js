@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import XInnerHtml from 'c/innerHtml';
+import XInnerHtml from 'x/innerHtml';
 import { fn as mockFn } from '@vitest/spy';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 
@@ -19,7 +19,7 @@ afterEach(() => setSanitizeHtmlContentHook(original));
 
 it('throws when not overridden', () => {
     expect(() => {
-        const elm = createElement('c-inner-html', { is: XInnerHtml });
+        const elm = createElement('x-inner-html', { is: XInnerHtml });
         elm.content = ACTUAL_CONTENT;
         document.body.appendChild(elm);
     }).toThrowCallbackReactionError(Error, /sanitizeHtmlContent hook must be implemented/);
@@ -29,7 +29,7 @@ it('receives the right parameters', () => {
     const spy = mockFn();
     setSanitizeHtmlContentHook(spy);
 
-    const elm = createElement('c-inner-html', { is: XInnerHtml });
+    const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
 
@@ -40,7 +40,7 @@ it('does not call sanitizeHtmlContent when raw value does not change', async () 
     const spy = mockFn();
     setSanitizeHtmlContentHook(spy);
 
-    const elm = createElement('c-inner-html', { is: XInnerHtml });
+    const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.message = 'initial';
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
@@ -56,7 +56,7 @@ it('does not call sanitizeHtmlContent when raw value does not change', async () 
 it('replace the original attribute value with the returned value', () => {
     setSanitizeHtmlContentHook(() => ALTERNATIVE_CONTENT);
 
-    const elm = createElement('c-inner-html', { is: XInnerHtml });
+    const elm = createElement('x-inner-html', { is: XInnerHtml });
     elm.content = ACTUAL_CONTENT;
     document.body.appendChild(elm);
 

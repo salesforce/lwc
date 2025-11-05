@@ -2,6 +2,6 @@ import { api, LightningElement } from 'lwc';
 
 export default class extends LightningElement {
     @api get expectedTagName() {
-        return 'c-nonce16';
+        return 'x-nonce16';
     }
 }

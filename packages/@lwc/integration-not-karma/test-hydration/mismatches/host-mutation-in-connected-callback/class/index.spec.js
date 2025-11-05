@@ -4,7 +4,7 @@ import { expectConsoleCallsDev } from '../../../../helpers/utils.js';
 export default {
     props: {},
     snapshot(target) {
-        const div = target.shadowRoot.querySelector('c-child').shadowRoot.querySelector('div');
+        const div = target.shadowRoot.querySelector('x-child').shadowRoot.querySelector('div');
 
         return {
             div,
@@ -13,7 +13,7 @@ export default {
     test(target, snapshots, consoleCalls) {
         const snapshotAfterHydration = this.snapshot(target);
         expect(snapshotAfterHydration.div).toBe(snapshots.div);
-        expect(target.shadowRoot.querySelector('c-child').getAttribute('class')).toBe(
+        expect(target.shadowRoot.querySelector('x-child').getAttribute('class')).toBe(
             'static mutatis'
         );
 

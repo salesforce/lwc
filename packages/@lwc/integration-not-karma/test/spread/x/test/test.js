@@ -1,5 +1,5 @@
 import { api, LightningElement, track } from 'lwc';
-import Child from 'c/child';
+import Child from 'x/child';
 
 export default class Test extends LightningElement {
     simpleProps = { name: 'LWC', onclick: this.spreadClick };

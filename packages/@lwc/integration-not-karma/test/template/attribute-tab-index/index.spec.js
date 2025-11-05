@@ -1,10 +1,10 @@
 import { createElement } from 'lwc';
 
-import Test from 'c/test';
+import Test from 'x/test';
 
 function validAttribute(value, expectedValue) {
     it(`should render the tabindex attribute in the DOM when set to ${value}`, () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         elm.tabIndexValue = value;
         document.body.appendChild(elm);
 
@@ -14,7 +14,7 @@ function validAttribute(value, expectedValue) {
 
 function invalidAttribute(value) {
     it(`should log an error when tabindex attribute is set to ${value}`, () => {
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         elm.tabIndexValue = value;
 
         expect(() => document.body.appendChild(elm)).toLogErrorDev(

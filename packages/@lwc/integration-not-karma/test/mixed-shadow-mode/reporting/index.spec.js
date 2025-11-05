@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import Component from 'c/component';
-import Parent from 'c/parent';
-import Light from 'c/light';
+import Component from 'x/component';
+import Parent from 'x/parent';
+import Light from 'x/light';
 import { fn as mockFn } from '@vitest/spy';
 import {
     attachReportingControlDispatcher,
@@ -28,64 +28,64 @@ describe('ShadowModeUsage', () => {
     });
 
     it('should report the shadow mode for the rendered component', () => {
-        const element = createElement('c-component', { is: Component });
+        const element = createElement('x-component', { is: Component });
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'c-component',
+            tagName: 'x-component',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
     });
 
     it('should report the shadow mode for all rendered components', () => {
-        const element = createElement('c-parent', { is: Parent });
+        const element = createElement('x-parent', { is: Parent });
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledTimes(3);
-        // c-parent depends on environment
+        // x-parent depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'c-parent',
+            tagName: 'x-parent',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
-        // c-native should be set to native always
+        // x-native should be set to native always
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'c-native',
+            tagName: 'x-native',
             mode: ShadowMode.Native,
         });
-        // c-component depends on environment
+        // x-component depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'c-component',
+            tagName: 'x-component',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
     });
 
     it('should report the shadow mode for components when created using CustomElementConstructor', () => {
         const ParentCustomElement = Parent.CustomElementConstructor;
-        customElements.define('c-parent-custom-element', ParentCustomElement);
+        customElements.define('x-parent-custom-element', ParentCustomElement);
 
-        const element = document.createElement('c-parent-custom-element');
+        const element = document.createElement('x-parent-custom-element');
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledTimes(3);
-        // c-parent depends on environment
+        // x-parent depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'C-PARENT-CUSTOM-ELEMENT',
+            tagName: 'X-PARENT-CUSTOM-ELEMENT',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
-        // c-native should be set to native always
+        // x-native should be set to native always
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'c-native',
+            tagName: 'x-native',
             mode: ShadowMode.Native,
         });
-        // c-component depends on environment
+        // x-component depends on environment
         expect(dispatcher).toHaveBeenCalledWith('ShadowModeUsage', {
-            tagName: 'c-component',
+            tagName: 'x-component',
             mode: process.env.NATIVE_SHADOW ? ShadowMode.Native : ShadowMode.Synthetic,
         });
     });
 
     it('should report no shadow mode for light DOM components', () => {
-        const element = createElement('c-light', { is: Light });
+        const element = createElement('x-light', { is: Light });
         document.body.appendChild(element);
 
         expect(dispatcher).toHaveBeenCalledTimes(0);

@@ -1,8 +1,8 @@
 import { createElement } from 'lwc';
 
-import Test from 'c/test';
-import ConnectedCallbackThrow from 'c/connectedCallbackThrow';
-import XSlottedParent from 'c/slottedParent';
+import Test from 'x/test';
+import ConnectedCallbackThrow from 'x/connectedCallbackThrow';
+import XSlottedParent from 'x/slottedParent';
 import { customElementCallbackReactionErrorListener } from '../../../helpers/matchers/errors.js';
 
 function testConnectSlot(name, fn) {
@@ -10,7 +10,7 @@ function testConnectSlot(name, fn) {
         let isConnected = false;
         let thisValue;
 
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         elm.connect = function (context) {
             isConnected = true;
             thisValue = context;
@@ -40,7 +40,7 @@ testConnectSlot('Node.replaceChild', (elm) => {
 });
 
 it('should associate the component stack when the invocation throws', () => {
-    const elm = createElement('c-connected-callback-throw', { is: ConnectedCallbackThrow });
+    const elm = createElement('x-connected-callback-throw', { is: ConnectedCallbackThrow });
 
     const error = customElementCallbackReactionErrorListener(() => {
         document.body.appendChild(elm);
@@ -48,14 +48,14 @@ it('should associate the component stack when the invocation throws', () => {
 
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in connected');
-    expect(error.wcStack).toBe('<c-connected-callback-throw>');
+    expect(error.wcStack).toBe('<x-connected-callback-throw>');
 });
 
 describe('addEventListner in `connectedCallback`', () => {
     it('clicking force button should update value', async () => {
-        const elm = createElement('c-slotted-parent', { is: XSlottedParent });
+        const elm = createElement('x-slotted-parent', { is: XSlottedParent });
         document.body.appendChild(elm);
-        const child = elm.shadowRoot.querySelector('c-child');
+        const child = elm.shadowRoot.querySelector('x-child');
         child.dispatchEventOnHost();
         await Promise.resolve();
         expect(elm.eventHandled).toBe(true);

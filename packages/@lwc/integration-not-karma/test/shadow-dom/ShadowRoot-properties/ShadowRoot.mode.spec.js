@@ -12,7 +12,7 @@ describe('ShadowRoot.mode', () => {
                 }
             }
 
-            const elm = createElement('c-test', { is: Test, mode });
+            const elm = createElement('x-test', { is: Test, mode });
             document.body.appendChild(elm);
 
             expect(shadowRoot.mode).toBe(expectMode);

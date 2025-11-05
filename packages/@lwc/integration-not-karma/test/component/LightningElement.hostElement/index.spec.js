@@ -1,9 +1,9 @@
 import { createElement } from 'lwc';
-import Wrapper from 'c/wrapper';
+import Wrapper from 'x/wrapper';
 import { ENABLE_THIS_DOT_HOST_ELEMENT } from '../../../helpers/constants.js';
 
 function createWrapper() {
-    const elm = createElement('c-wrapper', { is: Wrapper });
+    const elm = createElement('x-wrapper', { is: Wrapper });
     document.body.appendChild(elm);
     return elm;
 }
@@ -18,7 +18,7 @@ it.runIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
         const hostElement = lightElement.getHostElement();
 
         expect(hostElement).toBeTruthy();
-        expect(hostElement.tagName).toEqual('C-LIGHT');
+        expect(hostElement.tagName).toEqual('X-LIGHT');
         expect(hostElement.dataset.name).toEqual('lightElement');
 
         expect(hostElement).toEqual(lightElement);
@@ -36,7 +36,7 @@ it.runIf(ENABLE_THIS_DOT_HOST_ELEMENT)(
         const hostElement = shadowElement.getHostElement();
 
         expect(hostElement).toBeTruthy();
-        expect(hostElement.tagName).toEqual('C-SHADOW');
+        expect(hostElement.tagName).toEqual('X-SHADOW');
         expect(hostElement.dataset.name).toEqual('shadowElement');
 
         expect(hostElement).toEqual(shadowElement);

@@ -1,17 +1,17 @@
 import { createElement } from 'lwc';
 
-import Slotted from 'c/slotted';
-import Test from 'c/test';
-import DisconnectedCallbackThrow from 'c/disconnectedCallbackThrow';
-import DualTemplate from 'c/dualTemplate';
-import ExplicitRender from 'c/explicitRender';
+import Slotted from 'x/slotted';
+import Test from 'x/test';
+import DisconnectedCallbackThrow from 'x/disconnectedCallbackThrow';
+import DualTemplate from 'x/dualTemplate';
+import ExplicitRender from 'x/explicitRender';
 import { fn as mockFn } from '@vitest/spy';
 import { customElementCallbackReactionErrorListener } from '../../../helpers/matchers/errors.js';
 
 function testDisconnectSlot(name, fn) {
     it(`should invoke the disconnectedCallback when root element is removed from the DOM via ${name}`, () => {
         return new Promise((resolve) => {
-            const elm = createElement('c-test', { is: Test });
+            const elm = createElement('x-test', { is: Test });
             elm.disconnect = function (context) {
                 expect(context instanceof Test).toBe(true);
                 resolve();
@@ -97,11 +97,11 @@ describe('disconnectedCallback for host with slots', () => {
         parentDisconnectSpy = mockFn();
         slotIgnoringChildSpy = mockFn();
         slotAcceptingChildSpy = mockFn();
-        parent = createElement('c-slotted', { is: Slotted });
+        parent = createElement('x-slotted', { is: Slotted });
         document.body.appendChild(parent);
         parent.disconnect = parentDisconnectSpy;
-        parent.shadowRoot.querySelector('c-accepting-slots').disconnect = slotAcceptingChildSpy;
-        parent.shadowRoot.querySelector('c-ignoring-slots').disconnect = slotIgnoringChildSpy;
+        parent.shadowRoot.querySelector('x-accepting-slots').disconnect = slotAcceptingChildSpy;
+        parent.shadowRoot.querySelector('x-ignoring-slots').disconnect = slotIgnoringChildSpy;
     });
 
     it('should invoke disconnectedCallback on host and all children components', () => {
@@ -127,7 +127,7 @@ describe('disconnectedCallback for host with slots', () => {
     });
 
     it('should invoke disconnectedCallback on child that has rendered slot content', () => {
-        const slotContent = parent.shadowRoot.querySelector('c-test.slotted');
+        const slotContent = parent.shadowRoot.querySelector('x-test.slotted');
         const slotContentDisconnectSpy = mockFn();
         slotContent.disconnect = slotContentDisconnectSpy;
         parent.hideChildAcceptsSlots = true;
@@ -141,7 +141,7 @@ describe('disconnectedCallback for host with slots', () => {
 });
 
 it('should associate the component stack when the invocation throws', () => {
-    const elm = createElement('c-disconnected-callback-throw', { is: DisconnectedCallbackThrow });
+    const elm = createElement('x-disconnected-callback-throw', { is: DisconnectedCallbackThrow });
     document.body.appendChild(elm);
 
     const error = customElementCallbackReactionErrorListener(() => {
@@ -150,7 +150,7 @@ it('should associate the component stack when the invocation throws', () => {
 
     expect(error).not.toBe(undefined);
     expect(error.message).toBe('throw in disconnected');
-    expect(error.wcStack).toBe('<c-disconnected-callback-throw>');
+    expect(error.wcStack).toBe('<x-disconnected-callback-throw>');
 });
 
 describe('disconnectedCallback for components with a explicit render()', () => {
@@ -162,9 +162,9 @@ describe('disconnectedCallback for components with a explicit render()', () => {
         disconnectedCallbackInvoked = false;
     });
     it('should invoke disconnectedCallback for children when parent is removed', () => {
-        const parent = createElement('c-explicitrender', { is: ExplicitRender });
+        const parent = createElement('x-explicitrender', { is: ExplicitRender });
         document.body.appendChild(parent);
-        const child = parent.shadowRoot.querySelector('c-test');
+        const child = parent.shadowRoot.querySelector('x-test');
         child.disconnect = disconnectedCallback;
 
         document.body.removeChild(parent);
@@ -172,9 +172,9 @@ describe('disconnectedCallback for components with a explicit render()', () => {
     });
 
     it('should invoke disconnectedCallback for children when parent switches template', async () => {
-        const parent = createElement('c-parent', { is: DualTemplate });
+        const parent = createElement('x-parent', { is: DualTemplate });
         document.body.appendChild(parent);
-        const child = parent.shadowRoot.querySelector('c-test');
+        const child = parent.shadowRoot.querySelector('x-test');
         child.disconnect = disconnectedCallback;
         parent.hideChild = true;
         await Promise.resolve();

@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import Multi from 'c/multi';
-import MultiNoStyleInFirst from 'c/multiNoStyleInFirst';
+import Multi from 'x/multi';
+import MultiNoStyleInFirst from 'x/multiNoStyleInFirst';
 
 describe.runIf(process.env.NATIVE_SHADOW)(
     'Shadow DOM styling - multiple shadow DOM components',
     () => {
         it('Does not duplicate styles if template is re-rendered', async () => {
-            const element = createElement('c-multi', { is: Multi });
+            const element = createElement('x-multi', { is: Multi });
 
             const getNumStyleSheets = () => {
                 let count = 0;
@@ -41,7 +41,7 @@ describe.runIf(process.env.NATIVE_SHADOW)(
 
 describe('multiple stylesheets rendered in same component', () => {
     it('works when first template has no style but second template does', async () => {
-        const element = createElement('c-multi-no-style-in-first', { is: MultiNoStyleInFirst });
+        const element = createElement('x-multi-no-style-in-first', { is: MultiNoStyleInFirst });
         document.body.appendChild(element);
         await Promise.resolve();
         expect(getComputedStyle(element.shadowRoot.querySelector('.red')).color).toEqual(

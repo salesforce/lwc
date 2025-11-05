@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
-import Container from 'c/container';
+import Container from 'x/container';
 import { fn as mockFn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 function createShadowTree(parentNode) {
-    const elm = createElement('c-container', { is: Container });
-    elm.setAttribute('data-id', 'c-container');
+    const elm = createElement('x-container', { is: Container });
+    elm.setAttribute('data-id', 'x-container');
     parentNode.appendChild(elm);
     return extractDataIds(elm);
 }
@@ -20,8 +20,8 @@ describe('Eventnodes.button.removeEventListener', () => {
         const targets = [
             nodes.button,
             nodes['container_div'],
-            nodes['c-container'].shadowRoot,
-            nodes['c-container'],
+            nodes['x-container'].shadowRoot,
+            nodes['x-container'],
             document.body,
             document.documentElement,
             document,

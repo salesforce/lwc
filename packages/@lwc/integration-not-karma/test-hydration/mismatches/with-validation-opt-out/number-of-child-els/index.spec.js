@@ -20,7 +20,7 @@ export default {
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration child node mismatch on: <c-child> - rendered on server: <div> - expected on client: <div>,<div>',
+                'Hydration child node mismatch on: <x-child> - rendered on server: <div> - expected on client: <div>,<div>',
                 'Hydration completed with errors.',
             ],
         });

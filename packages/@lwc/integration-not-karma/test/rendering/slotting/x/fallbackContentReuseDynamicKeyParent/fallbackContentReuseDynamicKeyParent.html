@@ -1,10 +1,10 @@
 <template>
-    <c-fallback-content-reuse-dynamic-key-child>
+    <x-fallback-content-reuse-dynamic-key-child>
         <template if:true={renderSlotted}>
             <div>Default slotted</div>
         </template>
         <template if:true={renderSlotted}>
             <div slot="foo">Named slotted</div>
         </template>
-    </c-fallback-content-reuse-dynamic-key-child>
+    </x-fallback-content-reuse-dynamic-key-child>
 </template>

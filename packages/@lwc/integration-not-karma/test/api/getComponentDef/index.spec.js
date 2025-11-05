@@ -1,12 +1,12 @@
 import { LightningElement, api, getComponentDef, createElement } from 'lwc';
 
-import PublicProperties from 'c/publicProperties';
-import PublicAccessors from 'c/publicAccessors';
-import PublicMethods from 'c/publicMethods';
-import PublicPropertiesInheritance from 'c/publicPropertiesInheritance';
-import PublicMethodsInheritance from 'c/publicMethodsInheritance';
-import PrivateAccessors from 'c/privateAccessors';
-import HtmlElementProps from 'c/htmlElementProps';
+import PublicProperties from 'x/publicProperties';
+import PublicAccessors from 'x/publicAccessors';
+import PublicMethods from 'x/publicMethods';
+import PublicPropertiesInheritance from 'x/publicPropertiesInheritance';
+import PublicMethodsInheritance from 'x/publicMethodsInheritance';
+import PrivateAccessors from 'x/privateAccessors';
+import HtmlElementProps from 'x/htmlElementProps';
 import { ariaProperties } from '../../../helpers/aria.js';
 
 function testInvalidComponentConstructor(name, ctor) {
@@ -126,7 +126,7 @@ describe('@api', () => {
     });
 
     it('should log warning when accessing a private prop', () => {
-        const elm = createElement('c-private-accessor', { is: PrivateAccessors });
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -137,7 +137,7 @@ describe('@api', () => {
     });
 
     it('should log warning when setting a private prop', () => {
-        const elm = createElement('c-private-accessor', { is: PrivateAccessors });
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -146,7 +146,7 @@ describe('@api', () => {
     });
 
     it('should not log warning when accessing a public prop', () => {
-        const elm = createElement('c-private-accessor', { is: PrivateAccessors });
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -157,7 +157,7 @@ describe('@api', () => {
     });
 
     it('should not log warning when setting a public prop', () => {
-        const elm = createElement('c-private-accessor', { is: PrivateAccessors });
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -166,7 +166,7 @@ describe('@api', () => {
     });
 
     it('should log warning when accessing a private prop without a getter', () => {
-        const elm = createElement('c-private-accessor', { is: PrivateAccessors });
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -177,7 +177,7 @@ describe('@api', () => {
     });
 
     it('should log warning when accessing a tracked private prop', () => {
-        const elm = createElement('c-private-accessor', { is: PrivateAccessors });
+        const elm = createElement('x-private-accessor', { is: PrivateAccessors });
         document.body.appendChild(elm);
 
         expect(() => {
@@ -188,7 +188,7 @@ describe('@api', () => {
     });
 
     it('should not log a warning on HTMLElement props', () => {
-        const elm = createElement('c-html-element-props', { is: HtmlElementProps });
+        const elm = createElement('x-html-element-props', { is: HtmlElementProps });
         document.body.appendChild(elm);
 
         expect(() => {

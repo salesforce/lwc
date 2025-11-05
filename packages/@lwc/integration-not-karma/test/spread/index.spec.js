@@ -1,5 +1,5 @@
 import { createElement } from 'lwc';
-import Test from 'c/test';
+import Test from 'x/test';
 import { spyOn } from '@vitest/spy';
 import { getHooks, setHooks } from '../../helpers/hooks.js';
 
@@ -27,11 +27,11 @@ describe('lwc:spread', () => {
     });
     beforeEach(() => {
         originalHook = setSanitizeHtmlContentHookForTest((x) => x);
-        elm = createElement('c-test', { is: Test });
+        elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
-        simpleChild = elm.shadowRoot.querySelector('.c-child-simple');
-        overriddenChild = elm.shadowRoot.querySelector('.c-child-overridden');
-        trackedChild = elm.shadowRoot.querySelector('.c-child-tracked');
+        simpleChild = elm.shadowRoot.querySelector('.x-child-simple');
+        overriddenChild = elm.shadowRoot.querySelector('.x-child-overridden');
+        trackedChild = elm.shadowRoot.querySelector('.x-child-tracked');
         innerHTMLChild = elm.shadowRoot.querySelector('.div-innerhtml');
     });
     afterEach(() => {
@@ -111,7 +111,7 @@ describe('lwc:spread', () => {
     });
     it('should assign props to dynamic elements using lwc:dynamic', () => {
         expect(
-            elm.shadowRoot.querySelector('c-cmp').shadowRoot.querySelector('span').textContent
+            elm.shadowRoot.querySelector('x-cmp').shadowRoot.querySelector('span').textContent
         ).toEqual('Name: Dynamic');
     });
     it('should assign props to dynamic elements', () => {

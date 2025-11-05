@@ -1,11 +1,11 @@
 import { createElement } from 'lwc';
 
-import NotFormAssociated from 'c/notFormAssociated';
-import FormAssociated from 'c/formAssociated';
-import FormAssociatedFalse from 'c/formAssociatedFalse';
-import NotFormAssociatedNoAttachInternals from 'c/notFormAssociatedNoAttachInternals';
-import FormAssociatedNoAttachInternals from 'c/formAssociatedNoAttachInternals';
-import FormAssociatedFalseNoAttachInternals from 'c/formAssociatedFalseNoAttachInternals';
+import NotFormAssociated from 'x/notFormAssociated';
+import FormAssociated from 'x/formAssociated';
+import FormAssociatedFalse from 'x/formAssociatedFalse';
+import NotFormAssociatedNoAttachInternals from 'x/notFormAssociatedNoAttachInternals';
+import FormAssociatedNoAttachInternals from 'x/formAssociatedNoAttachInternals';
+import FormAssociatedFalseNoAttachInternals from 'x/formAssociatedFalseNoAttachInternals';
 import { ENABLE_ELEMENT_INTERNALS_AND_FACE } from '../../../../../helpers/constants.js';
 
 const readOnlyProperties = [
@@ -22,7 +22,7 @@ const formAssociatedFalsyTest = (tagName, ctor) => {
     const form = document.createElement('form');
     document.body.appendChild(form);
 
-    const elm = createElement(`c-${tagName}`, { is: ctor });
+    const elm = createElement(`x-${tagName}`, { is: ctor });
     form.appendChild(elm);
 
     const { internals } = elm;
@@ -44,41 +44,41 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
     () => {
         it('with different formAssociated value', () => {
             // Register tag with formAssociated = true
-            createElement('c-form-associated', { is: FormAssociated });
+            createElement('x-form-associated', { is: FormAssociated });
             // Try to register again with formAssociated = false
             expect(() =>
-                createElement('c-form-associated', { is: FormAssociatedFalse })
+                createElement('x-form-associated', { is: FormAssociatedFalse })
             ).toThrowError(
-                /<c-form-associated> was already registered with formAssociated=true. It cannot be re-registered with formAssociated=false. Please rename your component to have a different name than <c-form-associated>/
+                /<x-form-associated> was already registered with formAssociated=true. It cannot be re-registered with formAssociated=false. Please rename your component to have a different name than <x-form-associated>/
             );
         });
 
         it('should not throw when duplicate tag name used with the same formAssociated value', () => {
             // formAssociated = true
-            createElement('c-form-associated', { is: FormAssociated });
-            expect(() => createElement('c-form-associated', { is: FormAssociated })).not.toThrow();
+            createElement('x-form-associated', { is: FormAssociated });
+            expect(() => createElement('x-form-associated', { is: FormAssociated })).not.toThrow();
             // formAssociated = false
-            createElement('c-form-associated-false', { is: FormAssociatedFalse });
+            createElement('x-form-associated-false', { is: FormAssociatedFalse });
             expect(() =>
-                createElement('c-form-associated-false', { is: FormAssociatedFalse })
+                createElement('x-form-associated-false', { is: FormAssociatedFalse })
             ).not.toThrow();
             // formAssociated = undefined
-            createElement('c-not-form-associated', { is: NotFormAssociated });
+            createElement('x-not-form-associated', { is: NotFormAssociated });
             expect(() =>
-                createElement('c-not-form-associated', { is: NotFormAssociated })
+                createElement('x-not-form-associated', { is: NotFormAssociated })
             ).not.toThrow();
         });
 
         it('should throw an error when accessing form related properties when formAssociated is false', () => {
-            formAssociatedFalsyTest('c-form-associated-false', FormAssociatedFalse);
+            formAssociatedFalsyTest('x-form-associated-false', FormAssociatedFalse);
         });
 
         it('should throw an error when accessing form related properties when formAssociated is undefined', () => {
-            formAssociatedFalsyTest('c-not-form-associated', NotFormAssociated);
+            formAssociatedFalsyTest('x-not-form-associated', NotFormAssociated);
         });
 
         it('should be able to use internals to validate form associated component', () => {
-            const elm = createElement('c-form-associated', { is: FormAssociated });
+            const elm = createElement('x-form-associated', { is: FormAssociated });
             const { internals } = elm;
             expect(internals.willValidate).toBe(true);
             expect(internals.validity.valid).toBe(true);
@@ -98,7 +98,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
             const form = document.createElement('form');
             document.body.appendChild(form);
 
-            const elm = createElement('c-form-associated', { is: FormAssociated });
+            const elm = createElement('x-form-associated', { is: FormAssociated });
             const { internals } = elm;
             form.appendChild(elm);
 
@@ -106,7 +106,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
 
             elm.setAttribute('name', 'date');
             const inputElm = elm.shadowRoot
-                .querySelector('c-input')
+                .querySelector('x-input')
                 .shadowRoot.querySelector('input');
             internals.setFormValue('2019-03-15', '3/15/2019', inputElm);
             const formData = new FormData(form);
@@ -114,7 +114,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
         });
 
         it('should be able to associate labels to a form associated component', () => {
-            const elm = createElement('c-form-associated', { is: FormAssociated });
+            const elm = createElement('x-form-associated', { is: FormAssociated });
             document.body.appendChild(elm);
             const { internals } = elm;
 
@@ -129,7 +129,7 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE && typeof ElementInternals !== 
 
         for (const prop of readOnlyProperties) {
             it(`should throw error when trying to set readonly ${prop} on form associated component`, () => {
-                const elm = createElement('c-form-associated', { is: FormAssociated });
+                const elm = createElement('x-form-associated', { is: FormAssociated });
                 document.body.appendChild(elm);
                 const { internals } = elm;
                 expect(() => (internals[prop] = 'test')).toThrow();
@@ -154,7 +154,7 @@ it.runIf(typeof ElementInternals !== 'undefined')(
 
         // formAssociated = true
         const createFormAssociatedTrue = () => {
-            elm = createElement('c-form-associated-no-attach-internals', {
+            elm = createElement('x-form-associated-no-attach-internals', {
                 is: FormAssociatedNoAttachInternals,
             });
         };
@@ -163,19 +163,19 @@ it.runIf(typeof ElementInternals !== 'undefined')(
             expect(isFormAssociated(elm)).toBe(true);
         } else {
             expect(createFormAssociatedTrue).toLogWarningDev(
-                /Component <c-form-associated-no-attach-internals> set static formAssociated to true, but form association is not enabled/
+                /Component <x-form-associated-no-attach-internals> set static formAssociated to true, but form association is not enabled/
             );
             expect(isFormAssociated(elm)).toBe(false);
         }
 
         // formAssociated = false
-        elm = createElement('c-form-associated-false-no-attach-internals', {
+        elm = createElement('x-form-associated-false-no-attach-internals', {
             is: FormAssociatedFalseNoAttachInternals,
         });
         expect(isFormAssociated(elm)).toBe(false);
 
         // formAssociated = undefined
-        elm = createElement('c-not-form-associated-no-attach-internals', {
+        elm = createElement('x-not-form-associated-no-attach-internals', {
             is: NotFormAssociatedNoAttachInternals,
         });
         expect(isFormAssociated(elm)).toBe(false);
@@ -187,21 +187,21 @@ it.skipIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)(
     () => {
         // formAssociated = true
         expect(() => {
-            expect(() => createElement('c-form-associated', { is: FormAssociated })).toThrowError(
+            expect(() => createElement('x-form-associated', { is: FormAssociated })).toThrowError(
                 /The attachInternals API is only supported in API version 61 and above/
             );
         }).toLogWarningDev(
-            /Component <c-form-associated> set static formAssociated to true, but form association is not enabled/
+            /Component <x-form-associated> set static formAssociated to true, but form association is not enabled/
         );
 
         // formAssociated = false
         expect(() =>
-            createElement('c-form-associated-false', { is: FormAssociatedFalse })
+            createElement('x-form-associated-false', { is: FormAssociatedFalse })
         ).toThrowError(/The attachInternals API is only supported in API version 61 and above/);
 
         // formAssociated = undefined
         expect(() =>
-            createElement('c-not-form-associated', { is: NotFormAssociated })
+            createElement('x-not-form-associated', { is: NotFormAssociated })
         ).toThrowError(/The attachInternals API is only supported in API version 61 and above/);
     }
 );

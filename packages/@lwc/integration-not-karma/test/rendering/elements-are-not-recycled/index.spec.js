@@ -1,28 +1,28 @@
 import { createElement } from 'lwc';
-import Container from 'c/container';
+import Container from 'x/container';
 
-// c-child show/hides the slotted content
+// x-child show/hides the slotted content
 // Note: There is a difference between native and synthetic shadow on how they handle slotted content:
 // In native shadow: The slot content will be present and connected, but when not visible, assignedSlot=false.
 // In the synthetic shadow however, slot content will be not be present in the DOM when not rendered.
 
 describe('custom elements', () => {
     it('should not be reused when slotted', async () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         elm.isCustomElement = true;
         document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('c-child');
+        const child = elm.shadowRoot.querySelector('x-child');
 
         await Promise.resolve();
         child.open = true;
         await Promise.resolve();
-        const firstRenderCustomElement = elm.shadowRoot.querySelector('c-simple');
+        const firstRenderCustomElement = elm.shadowRoot.querySelector('x-simple');
         child.open = false;
         await Promise.resolve();
         child.open = true;
         await Promise.resolve();
-        const xSimple = elm.shadowRoot.querySelector('c-simple');
+        const xSimple = elm.shadowRoot.querySelector('x-simple');
         expect(xSimple).not.toBeNull();
         expect(xSimple.assignedSlot).not.toBeNull();
         expect(elm.shadowRoot.querySelector('.mark')).not.toBeNull();
@@ -34,11 +34,11 @@ describe('custom elements', () => {
 
 describe('elements', () => {
     it.skipIf(process.env.NATIVE_SHADOW)('should not be reused when slotted', async () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         elm.isElement = true;
         document.body.appendChild(elm);
 
-        const child = elm.shadowRoot.querySelector('c-child');
+        const child = elm.shadowRoot.querySelector('x-child');
 
         await Promise.resolve();
         child.open = true;
@@ -55,13 +55,13 @@ describe('elements', () => {
     });
 
     it('should not add listener multiple times', async () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         elm.isElement = true;
         document.body.appendChild(elm);
         let listenerCalledTimes;
         elm.addEventListener('handlercalled', () => listenerCalledTimes++);
 
-        const child = elm.shadowRoot.querySelector('c-child');
+        const child = elm.shadowRoot.querySelector('x-child');
 
         await Promise.resolve();
         child.open = true;
@@ -84,12 +84,12 @@ describe('elements', () => {
 it.runIf(process.env.NATIVE_SHADOW)(
     'should render same styles for custom element instances',
     async () => {
-        const elm = createElement('c-container', { is: Container });
+        const elm = createElement('x-container', { is: Container });
         elm.isStyleCheck = true;
         document.body.appendChild(elm);
 
         await Promise.resolve();
-        const styles = Array.from(elm.shadowRoot.querySelectorAll('c-simple')).map((xSimple) => {
+        const styles = Array.from(elm.shadowRoot.querySelectorAll('x-simple')).map((xSimple) => {
             // If constructable stylesheets are supported, return that rather than <style> tags
             // In Chrome 99+, adoptedStyleSheets is a proxy, so we have to clone it to compare
             return xSimple.shadowRoot.adoptedStyleSheets

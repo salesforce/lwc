@@ -1,12 +1,12 @@
 import { createElement } from 'lwc';
-import SlotFallback from 'c/slotFallback';
-import WithLwcDynamic from 'c/withLwcDynamic';
-import WithEach from 'c/withEach';
-import WithDynamic from 'c/withDynamic';
+import SlotFallback from 'x/slotFallback';
+import WithLwcDynamic from 'x/withLwcDynamic';
+import WithEach from 'x/withEach';
+import WithDynamic from 'x/withDynamic';
 
 describe('updateDynamicChildren diffing algo', () => {
     it('should render slot default elements in correct order', async function () {
-        const elm = createElement('c-slot-fallback', { is: SlotFallback });
+        const elm = createElement('x-slot-fallback', { is: SlotFallback });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.textContent).toBe('25');
@@ -18,7 +18,7 @@ describe('updateDynamicChildren diffing algo', () => {
     });
 
     it('should render template with foreach in correct order', async function () {
-        const elm = createElement('c-with-each', { is: WithEach });
+        const elm = createElement('x-with-each', { is: WithEach });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.textContent).toBe('25');
@@ -30,7 +30,7 @@ describe('updateDynamicChildren diffing algo', () => {
     });
 
     it('should render template with dynamic component in correct order using lwc:dynamic', async function () {
-        const elm = createElement('c-with-dynamic', { is: WithLwcDynamic });
+        const elm = createElement('x-with-dynamic', { is: WithLwcDynamic });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.textContent).toBe('25');
@@ -42,7 +42,7 @@ describe('updateDynamicChildren diffing algo', () => {
     });
 
     it('should render template with dynamic component in correct order', async () => {
-        const elm = createElement('c-with-dynamic', { is: WithDynamic });
+        const elm = createElement('x-with-dynamic', { is: WithDynamic });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.textContent).toBe('25');

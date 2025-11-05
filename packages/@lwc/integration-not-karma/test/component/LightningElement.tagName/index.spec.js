@@ -1,14 +1,14 @@
 import { createElement } from 'lwc';
 
-import Override from 'c/override';
-import Test from 'c/test';
+import Override from 'x/override';
+import Test from 'x/test';
 
 it('should return the tag name', () => {
-    const elm = createElement('c-test', { is: Test });
-    expect(elm.test).toEqual('C-TEST');
+    const elm = createElement('x-test', { is: Test });
+    expect(elm.test).toEqual('X-TEST');
 });
 
 it('should be overrideable', () => {
-    const elm = createElement('c-override', { is: Override });
-    expect(elm.tagName).toEqual('c-foo');
+    const elm = createElement('x-override', { is: Override });
+    expect(elm.tagName).toEqual('x-foo');
 });

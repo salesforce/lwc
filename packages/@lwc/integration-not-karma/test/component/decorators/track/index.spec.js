@@ -1,14 +1,14 @@
 import { LightningElement, api, track, createElement } from 'lwc';
 
-import Properties from 'c/properties';
-import SideEffect from 'c/sideEffect';
-import NonObservable from 'c/nonObservable';
-import SetTrackedValueToNull from 'c/setTrackedValueToNull';
-import StaticProperty from 'c/staticProperty';
-import duplicatePropertyTemplate from 'c/duplicatePropertyTemplate';
+import Properties from 'x/properties';
+import SideEffect from 'x/sideEffect';
+import NonObservable from 'x/nonObservable';
+import SetTrackedValueToNull from 'x/setTrackedValueToNull';
+import StaticProperty from 'x/staticProperty';
+import duplicatePropertyTemplate from 'x/duplicatePropertyTemplate';
 
 it('rerenders the component when a track property is updated - literal', async () => {
-    const elm = createElement('c-properties', { is: Properties });
+    const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
     expect(elm.shadowRoot.querySelector('.prop').textContent).toBe('0');
@@ -19,7 +19,7 @@ it('rerenders the component when a track property is updated - literal', async (
 });
 
 it('rerenders the component when a track property is updated - object', async () => {
-    const elm = createElement('c-properties', { is: Properties });
+    const elm = createElement('x-properties', { is: Properties });
     document.body.appendChild(elm);
 
     expect(elm.shadowRoot.querySelector('.obj').textContent).toBe('0');
@@ -30,13 +30,13 @@ it('rerenders the component when a track property is updated - object', async ()
 });
 
 it("doesn't work for decorated static props", () => {
-    const elm = createElement('c-static-property', { is: StaticProperty });
+    const elm = createElement('x-static-property', { is: StaticProperty });
     expect(() => elm.increment()).toThrowError(/undefined/);
 });
 
 describe('restrictions', () => {
     it('logs an error when updating a track property during render', () => {
-        const elm = createElement('c-side-effect', { is: SideEffect });
+        const elm = createElement('x-side-effect', { is: SideEffect });
 
         expect(() => {
             document.body.appendChild(elm);
@@ -80,7 +80,7 @@ describe('restrictions', () => {
 
 describe('object mutations', () => {
     it('rerenders the component when a property is updated', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('.nested-obj').textContent).toBe('0');
@@ -91,7 +91,7 @@ describe('object mutations', () => {
     });
 
     it('rerenders the component when a property is deleted', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => {
@@ -102,7 +102,7 @@ describe('object mutations', () => {
     });
 
     it('rerenders the component when a track is defined using Object.defineProperty', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => {
@@ -115,7 +115,7 @@ describe('object mutations', () => {
     });
 
     it('should support freezing tracked property', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => {
@@ -127,7 +127,7 @@ describe('object mutations', () => {
     });
 
     it('should not log an error when setting tracked value to null', () => {
-        const elm = createElement('c-foo-tracked-null', { is: SetTrackedValueToNull });
+        const elm = createElement('x-foo-tracked-null', { is: SetTrackedValueToNull });
 
         expect(() => document.body.appendChild(elm)).not.toLogErrorDev();
     });
@@ -135,7 +135,7 @@ describe('object mutations', () => {
 
 describe('array mutations', () => {
     it('rerenders the component if a new item is added via Array.prototype.push', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => cmp.array.push(4));
@@ -144,7 +144,7 @@ describe('array mutations', () => {
     });
 
     it('rerenders the component if an item is removed via Array.prototype.pop', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => cmp.array.pop());
@@ -153,7 +153,7 @@ describe('array mutations', () => {
     });
 
     it('rerenders the component if an item is removed via Array.prototype.pop', async () => {
-        const elm = createElement('c-properties', { is: Properties });
+        const elm = createElement('x-properties', { is: Properties });
         document.body.appendChild(elm);
 
         elm.mutateCmp((cmp) => cmp.array.unshift(4));
@@ -164,7 +164,7 @@ describe('array mutations', () => {
 
 describe('non-observable values', () => {
     it('should not throw an error when accessing a non-observable property from a tracked property before rendering', () => {
-        const elm = createElement('c-foo', { is: NonObservable });
+        const elm = createElement('x-foo', { is: NonObservable });
         elm.foo = new Map();
         expect(() => {
             // Testing the getter; don't need to use the return value
@@ -198,7 +198,7 @@ describe('regression [W-9927596] - track field with duplicate observed field', (
             /Invalid observed foo field\. Found a duplicate accessor with the same name\./
         );
 
-        const elm = createElement('c-duplicate-property', { is: Ctor });
+        const elm = createElement('x-duplicate-property', { is: Ctor });
         document.body.appendChild(elm);
 
         expect(elm.shadowRoot.querySelector('p').textContent).toBe('track');

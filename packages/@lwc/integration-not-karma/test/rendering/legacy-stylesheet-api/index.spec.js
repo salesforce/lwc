@@ -1,13 +1,13 @@
 import { createElement } from 'lwc';
-import PatchesStylesheet from 'c/patchesStylesheet';
-import PatchesStylesheetOnStylesheet from 'c/patchesStylesheetOnStylesheet';
-import InspectStylesheets from 'c/inspectStylesheets';
+import PatchesStylesheet from 'x/patchesStylesheet';
+import PatchesStylesheetOnStylesheet from 'x/patchesStylesheetOnStylesheet';
+import InspectStylesheets from 'x/inspectStylesheets';
 import { resetAlreadyLoggedMessages } from '../../../helpers/reset';
 
 describe('legacy undocumented stylesheetTokens API', () => {
     afterEach(resetAlreadyLoggedMessages);
     it('can patch a template with stylesheets onto a template without stylesheets', () => {
-        const elm = createElement('c-patches-stylesheet', { is: PatchesStylesheet });
+        const elm = createElement('x-patches-stylesheet', { is: PatchesStylesheet });
         expect(() => {
             document.body.appendChild(elm);
         }).toLogWarningDev([
@@ -20,7 +20,7 @@ describe('legacy undocumented stylesheetTokens API', () => {
     });
 
     it('can patch a template with stylesheets onto a template with stylesheets', () => {
-        const elm = createElement('c-patches-stylesheet-on-stylesheet', {
+        const elm = createElement('x-patches-stylesheet-on-stylesheet', {
             is: PatchesStylesheetOnStylesheet,
         });
         expect(() => {
@@ -35,7 +35,7 @@ describe('legacy undocumented stylesheetTokens API', () => {
     });
 
     it('reflects old stylesheetTokens API to/from new stylesheetToken API', () => {
-        const elm = createElement('c-inspect-stylesheets', { is: InspectStylesheets });
+        const elm = createElement('x-inspect-stylesheets', { is: InspectStylesheets });
         document.body.appendChild(elm);
 
         const { withStylesheet, withoutStylesheet } = elm;

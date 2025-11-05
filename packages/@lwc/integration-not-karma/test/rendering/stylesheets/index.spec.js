@@ -1,16 +1,16 @@
 import { createElement } from 'lwc';
 
-import Component from 'c/component';
-import IdenticalComponent from 'c/identicalComponent';
-import Sharing1 from 'c/sharing1';
-import Sharing2 from 'c/sharing2';
+import Component from 'x/component';
+import IdenticalComponent from 'x/identicalComponent';
+import Sharing1 from 'x/sharing1';
+import Sharing2 from 'x/sharing2';
 
 // This test makes no sense for browsers that don't support constructable stylesheets
 // or for synthetic shadow
 describe.runIf(process.env.NATIVE_SHADOW && document.adoptedStyleSheets)('stylesheets', () => {
     it('re-uses constructable stylesheets for instances of the same component', () => {
-        const elm1 = createElement('c-component', { is: Component });
-        const elm2 = createElement('c-component', { is: Component });
+        const elm1 = createElement('x-component', { is: Component });
+        const elm2 = createElement('x-component', { is: Component });
 
         document.body.appendChild(elm1);
         document.body.appendChild(elm2);
@@ -21,8 +21,8 @@ describe.runIf(process.env.NATIVE_SHADOW && document.adoptedStyleSheets)('styles
     });
 
     it('re-uses constructable stylesheets for components with identical styles', () => {
-        const elm1 = createElement('c-component', { is: Component });
-        const elm2 = createElement('c-identical-component', { is: IdenticalComponent });
+        const elm1 = createElement('x-component', { is: Component });
+        const elm2 = createElement('x-identical-component', { is: IdenticalComponent });
 
         document.body.appendChild(elm1);
         document.body.appendChild(elm2);
@@ -33,8 +33,8 @@ describe.runIf(process.env.NATIVE_SHADOW && document.adoptedStyleSheets)('styles
     });
 
     it('re-uses constructable stylesheets for components with shared style', () => {
-        const elm1 = createElement('c-sharing1', { is: Sharing1 });
-        const elm2 = createElement('c-sharing2', { is: Sharing2 });
+        const elm1 = createElement('x-sharing1', { is: Sharing1 });
+        const elm2 = createElement('x-sharing2', { is: Sharing2 });
 
         document.body.appendChild(elm1);
         document.body.appendChild(elm2);
