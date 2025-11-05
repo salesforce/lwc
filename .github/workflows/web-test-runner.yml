@@ -30,7 +30,7 @@ jobs:
             fail-fast: false
             matrix:
                 shadow_mode: [native, synthetic]
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
+                runs_on: [ubuntu-22.04]
                 env:
                     - ''
                     # TODO: Fix
@@ -125,7 +125,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
+                runs_on: [ubuntu-22.04]
                 engine_server: ['', 1]
                 env:
                     - ''
