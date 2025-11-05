@@ -35,6 +35,13 @@ jobs:
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
                     - ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1
                     - NODE_ENV_FOR_TEST=1
+                    - API_VERSION=58
+                    - API_VERSION=59
+                    - API_VERSION=60
+                    - API_VERSION=61
+                    - API_VERSION=62
+                    # No need for 63-65
+                    - API_VERSION=66
 
         runs-on: ${{ matrix.runs_on }}
         env:
@@ -60,38 +67,6 @@ jobs:
               run: echo '${{ matrix.env }}' >> "$GITHUB_ENV"
             - name: Sanity check
               run: env
-            - run: yarn test
-
-    integration-tests-api-versions:
-        name: Integration tests (${{ matrix.runs_on }}; ${{ matrix.shadow_mode }} shadow; API version ${{ matrix.api_version }})
-        strategy:
-            fail-fast: false
-            matrix:
-                shadow_mode: [native, synthetic]
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
-                api_version: [58, 59, 60, 61, 62, 66] # No new features for 63-65
-
-        runs-on: ${{ matrix.runs_on }}
-        env:
-            SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
-            API_VERSION: ${{ matrix.api_version }}
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
-
-            - name: Setup Node
-              uses: actions/setup-node@v6
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: 'yarn'
-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-              working-directory: ./
-
-            - name: Install playwright dependencies
-              run: yarn playwright install chrome firefox webkit --with-deps
             - run: yarn test
 
     integration-tests-not-both-modes:
