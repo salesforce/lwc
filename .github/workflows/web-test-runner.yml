@@ -43,20 +43,26 @@ jobs:
                     - API_VERSION=62
                     # No need for 63-65
                     - API_VERSION=66
-                include:
-                    # Tests that should run in native OR synthetic, not both
-                    - shadow_mode: synthetic
-                      env: LEGACY_BROWSERS=1
-                    - shadow_mode: synthetic
-                      env: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
-                    - shadow_mode: synthetic
-                      env: DISABLE_DETACHED_REHYDRATION=1
+                    - LEGACY_BROWSERS=1
+                    - FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
+                    - DISABLE_DETACHED_REHYDRATION=1
+                    - DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1
+                    - DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1
                     # TODO: Fix
-                    # - shadow_mode: synthetic
-                    #   env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                    # - DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+
+                exclude:
                     - shadow_mode: native
+                      env: LEGACY_BROWSERS=1
+                    - shadow_mode: native
+                      env: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
+                    - shadow_mode: native
+                      env: DISABLE_DETACHED_REHYDRATION=1
+                    - shadow_mode: native
+                      env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                    - shadow_mode: synthetic
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1
-                    - shadow_mode: native
+                    - shadow_mode: synthetic
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1
 
         runs-on: ${{ matrix.runs_on }}
