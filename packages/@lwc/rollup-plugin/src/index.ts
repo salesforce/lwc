@@ -79,9 +79,9 @@ export interface RollupLwcOptions {
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
 
-const IMPLICIT_DEFAULT_HTML_PATH = ['@lwc', 'resources', 'empty_html.js'].join(path.sep);
+const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
-const IMPLICIT_DEFAULT_CSS_PATH = ['@lwc', 'resources', 'empty_css.css'].join(path.sep);
+const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
@@ -352,19 +352,18 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
-                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
+                // Note we do not need to use path.sep here because this filename contains
+                // a '/' regardless of Windows vs Unix, since it comes from the Rollup `id`
+                specifier?.split('/') ?? path.dirname(filename).split('/').slice(-2);
 
             /* v8 ignore next */
             if (!namespace || !name) {
                 // TODO [#4824]: Make this an error rather than a warning
                 this.warn(
-                    `The component namespace and name (${JSON.stringify(
-                        namespace
-                    )} and ${JSON.stringify(
-                        name
-                    )}) could not be determined from the specifier ${JSON.stringify(
-                        specifier
-                    )} or filename ${JSON.stringify(path.dirname(filename))}`
+                    'The component namespace and name could not be determined from the specifier ' +
+                        JSON.stringify(specifier) +
+                        ' or filename ' +
+                        JSON.stringify(filename)
                 );
             }
 

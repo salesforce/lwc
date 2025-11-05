@@ -98,8 +98,7 @@ const formattedLicense = await prettier.format(newLicense, {
 
 // Check against current top-level license for changes
 const shouldWarnChanges =
-    process.argv.includes('--test') &&
-    formattedLicense !== (await readFile('LICENSE.md', 'utf-8')).replace(/\r\n/g, '\n');
+    process.argv.includes('--test') && formattedLicense !== (await readFile('LICENSE.md', 'utf-8'));
 
 // Top level license
 await writeFile('LICENSE.md', formattedLicense, 'utf-8');

@@ -6,13 +6,12 @@
     "description": "Playground project to experiment with LWC.",
     "scripts": {
         "dev": "rollup -c --watch",
-        "build": "cross-env NODE_ENV=production rollup -c"
+        "build": "NODE_ENV=production rollup -c"
     },
     "devDependencies": {
         "@lwc/rollup-plugin": "8.24.0",
         "@rollup/plugin-replace": "^6.0.3",
         "@rollup/plugin-typescript": "^12.3.0",
-        "cross-env": "^10.1.0",
         "lwc": "8.24.0",
         "rollup": "^4.52.5",
         "rollup-plugin-livereload": "^2.0.5",

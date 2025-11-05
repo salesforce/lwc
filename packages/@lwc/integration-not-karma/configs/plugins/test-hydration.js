@@ -1,7 +1,6 @@
 import { spyOn } from '@vitest/spy';
 import * as LWC from 'lwc';
 import { setHooks } from '../../helpers/hooks';
-import { resetDOM, resetAlreadyLoggedMessages } from '../../helpers/reset';
 
 /*
  * Because these tests are written in JS, the type defs below are not enforced. They are provided
@@ -133,9 +132,6 @@ export function runTest(configPath, componentPath, ssrRendered) {
 
     afterEach(() => {
         consoleSpy.reset();
-        // in case of retries
-        resetDOM();
-        resetAlreadyLoggedMessages();
     });
 
     afterAll(() => {
