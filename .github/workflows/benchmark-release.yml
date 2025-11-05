@@ -25,8 +25,19 @@ jobs:
             - name: Set old version (manual)
               if: github.event_name == 'workflow_dispatch'
               run: |
-                  COMMIT="$(git rev-parse "${{ inputs.old_version }}")"
-                  echo "Parsed ${{ inputs.old_version }} to commit $COMMIT."
+                  INPUT='${{ inputs.old_version }}'
+                  # Convert branch/tag into commit
+                  COMMIT="$(git ls-remote origin "$INPUT" | cut -f 1)"
+                  if [ -z "$COMMIT" ]; then
+                    # Input is not a branch/tag; check if it's actually a commit
+                    if git cat-file -e "$INPUT^{commit}" >/dev/null; then
+                      COMMIT="$INPUT"
+                    else
+                      echo 'Could not resolve "${{ inputs.old_version }}" to a commit ID'
+                      exit 1
+                    fi
+                  fi
+                  echo "Parsed '$INPUT' to commit $COMMIT."
                   echo "BENCHMARK_REF=$COMMIT" >> "$GITHUB_ENV"
 
             - name: Set old version (release)
