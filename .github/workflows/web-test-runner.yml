@@ -25,12 +25,11 @@ jobs:
     # TODO: upload result artifacts
 
     integration-tests:
-        name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
+        name: Integration tests (${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
         strategy:
             fail-fast: false
             matrix:
                 shadow_mode: [native, synthetic]
-                runs_on: [ubuntu-22.04]
                 env:
                     - ''
                     # TODO: Fix
@@ -67,7 +66,7 @@ jobs:
                     - shadow_mode: synthetic
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1
 
-        runs-on: ${{ matrix.runs_on }}
+        runs-on: ubuntu-22.04
         env:
             SHADOW_MODE_OVERRIDE: ${{ matrix.shadow_mode }}
 
@@ -85,7 +84,7 @@ jobs:
               id: saucelabs-tunnel
               shell: bash
               run: |
-                  hash=$('${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
+                  hash=$(echo '${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
                   id="gha-${{ github.run_id }}-wtr-integration-$hash"
                   echo "id=$id" >> "$GITHUB_OUTPUT"
 
@@ -124,11 +123,10 @@ jobs:
                   SAUCE_TUNNEL_ID: ${{ steps.saucelabs-tunnel.outputs.id }}
 
     hydration-tests:
-        name: Hydration tests (${{ matrix.runs_on }}; ${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
+        name: Hydration tests (${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
         strategy:
             fail-fast: false
             matrix:
-                runs_on: [ubuntu-22.04]
                 engine_server: ['', 1]
                 env:
                     - ''
@@ -146,7 +144,7 @@ jobs:
                     - engine_server: ''
                       env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
 
-        runs-on: ${{ matrix.runs_on }}
+        runs-on: ubuntu-22.04
 
         env:
             ENGINE_SERVER: ${{ matrix.engine_server }}
@@ -163,9 +161,8 @@ jobs:
 
             - name: Get SauceLabs tunnel ID
               id: saucelabs-tunnel
-              shell: bash
               run: |
-                  hash=$('${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
+                  hash=$(echo '${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
                   id="gha-${{ github.run_id }}-wtr-hydration-$hash"
                   echo "id=$id" >> "$GITHUB_OUTPUT"
 
