@@ -13,13 +13,7 @@ const baseConfig = createConfig({
 /** @type {import("@web/test-runner").TestRunnerConfig} */
 export default {
     ...baseConfig,
-    files: [
-        'test/**/*.spec.js',
-        '!test/custom-elements/index.spec.js',
-        // Don't work on Windows?
-        '!test/template-expressions/errors/index.spec.js',
-        '!test/template-expressions/smoke-test/index.spec.js',
-    ],
+    files: ['test/**/*.spec.js', '!test/custom-elements/index.spec.js'],
     plugins: [
         ...baseConfig.plugins,
         // Only used for the `sanitizeAttribute` test
