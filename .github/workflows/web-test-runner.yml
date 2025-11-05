@@ -86,13 +86,14 @@ jobs:
               shell: bash
               run: |
                   hash=$('${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
-                  echo "hash=$hash" >> "$GITHUB_OUTPUT"
+                  id="gha-${{ github.run_id }}-wtr-integration-$hash"
+                  echo "id=$id" >> "$GITHUB_OUTPUT"
 
             - uses: saucelabs/sauce-connect-action@v3.0.0
               with:
                   username: ${{ secrets.SAUCE_USERNAME }}
                   accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
-                  tunnelName: gha-${{ github.run_id }}-wtr-integration-${{ steps.saucelabs-tunnel.outputs.hash }}
+                  tunnelName: ${{ steps.saucelabs-tunnel.outputs.id }}
                   region: us
 
             - name: Install dependencies
@@ -119,6 +120,8 @@ jobs:
 
             - name: Run integration tests
               run: yarn test
+              env:
+                  SAUCE_TUNNEL_ID: ${{ steps.saucelabs-tunnel.outputs.id }}
 
     hydration-tests:
         name: Hydration tests (${{ matrix.runs_on }}; ${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
@@ -158,6 +161,21 @@ jobs:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
 
+            - name: Get SauceLabs tunnel ID
+              id: saucelabs-tunnel
+              shell: bash
+              run: |
+                  hash=$('${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
+                  id="gha-${{ github.run_id }}-wtr-hydration-$hash"
+                  echo "id=$id" >> "$GITHUB_OUTPUT"
+
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: ${{ steps.saucelabs-tunnel.outputs.id }}
+                  region: us
+
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
@@ -179,3 +197,5 @@ jobs:
 
             - name: Run hydration tests
               run: yarn test:hydration
+              env:
+                  SAUCE_TUNNEL_ID: ${{ steps.saucelabs-tunnel.outputs.id }}
