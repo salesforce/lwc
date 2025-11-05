@@ -129,6 +129,9 @@ jobs:
 
         runs-on: ${{ matrix.runs_on }}
 
+        env:
+            ENGINE_SERVER: ${{ matrix.engine_server }}
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v5
@@ -156,6 +159,7 @@ jobs:
                   echo "DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=$DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE"
                   echo "DISABLE_STATIC_CONTENT_OPTIMIZATION=$DISABLE_STATIC_CONTENT_OPTIMIZATION"
                   echo "DISABLE_DETACHED_REHYDRATION=$DISABLE_DETACHED_REHYDRATION"
+                  echo "ENGINE_SERVER=$ENGINE_SERVER"
 
             - name: Run hydration tests
               run: yarn test:hydration
