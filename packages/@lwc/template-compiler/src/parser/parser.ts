@@ -6,8 +6,10 @@
  */
 import {
     CompilerError,
+    DiagnosticLevel,
     generateCompilerDiagnostic,
     generateCompilerError,
+    getEffectiveErrorLevel,
     normalizeToDiagnostic,
 } from '@lwc/errors';
 import { isPreserveCommentsDirective, isRenderModeDirective } from '../shared/ast';
@@ -117,6 +119,7 @@ export default class ParserCtx {
      * This holds the info needed to properly parse lwc:if, lwc:elseif, and lwc:else directives.
      */
     private readonly siblingScopes: SiblingScope[] = [];
+    private readonly errorRecoveryMode: boolean;
 
     renderMode: LWCDirectiveRenderMode;
     preserveComments: boolean;
@@ -132,6 +135,7 @@ export default class ParserCtx {
             : 2020;
         this.instrumentation = config.instrumentation;
         this.apiVersion = config.apiVersion;
+        this.errorRecoveryMode = config.experimentalErrorRecoveryMode;
     }
 
     getSource(start: number, end?: number): string {
@@ -396,6 +400,15 @@ export default class ParserCtx {
      * @throws
      */
     throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
+        if (this.errorRecoveryMode) {
+            const errorLevel = getEffectiveErrorLevel(errorInfo, true);
+
+            if (errorLevel !== DiagnosticLevel.Fatal) {
+                this.warn(errorInfo, messageArgs, location);
+                return undefined as never;
+            }
+        }
+
         throw generateCompilerError(errorInfo, {
             messageArgs,
             origin: {

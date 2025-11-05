@@ -150,7 +150,7 @@ export function normalizeToCompilerError(
  * @param useStrictErrorOverride Whether to use strict error level override
  * @returns The effective diagnostic level to use
  */
-function getEffectiveErrorLevel(
+export function getEffectiveErrorLevel(
     errorInfo: LWCErrorInfo,
     useStrictErrorOverride: boolean
 ): DiagnosticLevel {

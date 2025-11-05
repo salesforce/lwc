@@ -89,7 +89,6 @@ import type {
 } from '../shared/types';
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
-import type { Location } from 'parse5/dist/common/token';
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
@@ -466,7 +465,7 @@ function parseText(
     ctx: ParserCtx,
     rawText: string,
     sourceLocation: SourceLocation,
-    location: Location
+    location: parse5Token.Location
 ): Text[] {
     const parsedTextNodes: Text[] = [];
     // Split the text node content around expression and create node for each
@@ -495,7 +494,7 @@ function parseTextComplex(
     ctx: ParserCtx,
     rawText: string,
     sourceLocation: SourceLocation,
-    location: Location
+    location: parse5Token.Location
 ): Text[] {
     const parsedTextNodes: Text[] = [];
     let start = 0;
