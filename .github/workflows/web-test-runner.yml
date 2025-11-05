@@ -84,7 +84,7 @@ jobs:
               id: saucelabs-tunnel
               shell: bash
               run: |
-                  hash=$(echo '${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
+                  hash=$(echo "$RANDOM ${{ matrix.shadow_mode }} ${{ matrix.env }}" | sha256sum | cut -d' ' -f1)
                   id="gha-${{ github.run_id }}-wtr-integration-$hash"
                   echo "id=$id" >> "$GITHUB_OUTPUT"
 
