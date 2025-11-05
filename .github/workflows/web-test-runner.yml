@@ -23,7 +23,7 @@ jobs:
     # TODO: upload result artifacts
 
     integration-tests:
-        name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow; ${{ matrix.env }})
+        name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
         strategy:
             fail-fast: false
             matrix:
@@ -31,7 +31,8 @@ jobs:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
                 env:
                     - ''
-                    # - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1 # currently borked
+                    # TODO: Fix
+                    # - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
                     - ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1
                     - NODE_ENV_FOR_TEST=1
@@ -42,6 +43,21 @@ jobs:
                     - API_VERSION=62
                     # No need for 63-65
                     - API_VERSION=66
+                include:
+                    # Tests that should run in native OR synthetic, not both
+                    - shadow_mode: synthetic
+                      env: LEGACY_BROWSERS=1
+                    - shadow_mode: synthetic
+                      env: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
+                    - shadow_mode: synthetic
+                      env: DISABLE_DETACHED_REHYDRATION=1
+                    # TODO: Fix
+                    # - shadow_mode: synthetic
+                    #   env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                    - shadow_mode: native
+                      env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1
+                    - shadow_mode: native
+                      env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1 DISABLE_STATIC_CONTENT_OPTIMIZATION=1
 
         runs-on: ${{ matrix.runs_on }}
         env:
@@ -64,68 +80,19 @@ jobs:
             - name: Install playwright dependencies
               run: yarn playwright install chrome firefox webkit --with-deps
             - name: Set env vars
-              run: echo '${{ matrix.env }}' >> "$GITHUB_ENV"
+              run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
             - name: Sanity check
-              run: env
+              run: |
+                  echo "API_VERSION=$API_VERSION"
+                  echo "DISABLE_DETACHED_REHYDRATION=$DISABLE_DETACHED_REHYDRATION"
+                  echo "DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=$DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE"
+                  echo "DISABLE_STATIC_CONTENT_OPTIMIZATION=$DISABLE_STATIC_CONTENT_OPTIMIZATION"
+                  echo "DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=$DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER"
+                  echo "ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=$ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL"
+                  echo "FORCE_NATIVE_SHADOW_MODE_FOR_TEST=$FORCE_NATIVE_SHADOW_MODE_FOR_TEST"
+                  echo "LEGACY_BROWSERS=$LEGACY_BROWSERS"
+                  echo "NODE_ENV_FOR_TEST=$NODE_ENV_FOR_TEST"
             - run: yarn test
-
-    integration-tests-not-both-modes:
-        # Tests that should run in only synthetic or native shadow, not both
-        name: Integration tests (${{ matrix.runs_on }}; singleton batch)
-        strategy:
-            fail-fast: false
-            matrix:
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
-
-        runs-on: ${{ matrix.runs_on }}
-
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
-
-            - name: Setup Node
-              uses: actions/setup-node@v6
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: 'yarn'
-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-              working-directory: ./
-
-            - name: Install playwright dependencies
-              run: yarn playwright install chrome firefox webkit --with-deps
-            # Synthetic shadow only
-            - name: Slightly older browsers
-              run: yarn test || true
-              env:
-                  LEGACY_BROWSERS: 1
-            - name: FORCE_NATIVE_SHADOW_MODE_FOR_TEST
-              run: yarn test
-              env:
-                  FORCE_NATIVE_SHADOW_MODE_FOR_TEST: 1
-            - name: DISABLE_DETACHED_REHYDRATION
-              run: yarn test
-              env:
-                  DISABLE_DETACHED_REHYDRATION: 1
-            - name: DISABLE_DETACHED_REHYDRATION DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-              run: yarn test || true
-              env:
-                  DISABLE_DETACHED_REHYDRATION: 1
-                  DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-
-            # Native shadow only -- don't forget SHADOW_MODE_OVERRIDE!
-            - name: Native shadow DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER
-              run: yarn test
-              env:
-                  SHADOW_MODE_OVERRIDE: native
-                  DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER: 1
-            - name: Native shadow DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER DISABLE_STATIC_CONTENT_OPTIMIZATION
-              run: yarn test
-              env:
-                  SHADOW_MODE_OVERRIDE: native
-                  DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
-                  DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER: 1
 
     hydration-tests-ssr-v2:
         name: Hydration tests (${{ matrix.runs_on }}; SSR v2)
