@@ -25,6 +25,7 @@ jobs:
     integration-tests:
         name: Integration tests (${{ matrix.runs_on}}; ${{ matrix.shadow_mode }} shadow; ${{ matrix.env }})
         strategy:
+            fail-fast: false
             matrix:
                 shadow_mode: [native, synthetic]
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
@@ -64,6 +65,7 @@ jobs:
     integration-tests-api-versions:
         name: Integration tests (${{ matrix.runs_on }}; ${{ matrix.shadow_mode }} shadow; API version ${{ matrix.api_version }})
         strategy:
+            fail-fast: false
             matrix:
                 shadow_mode: [native, synthetic]
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
@@ -96,6 +98,7 @@ jobs:
         # Tests that should run in only synthetic or native shadow, not both
         name: Integration tests (${{ matrix.runs_on }}; singleton batch)
         strategy:
+            fail-fast: false
             matrix:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
 
@@ -152,6 +155,7 @@ jobs:
     hydration-tests-ssr-v2:
         name: Hydration tests (${{ matrix.runs_on }}; SSR v2)
         strategy:
+            fail-fast: false
             matrix:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
 
@@ -194,6 +198,7 @@ jobs:
     hydration-tests-engine-server:
         name: Hydration tests (${{ matrix.runs_on }}; engine-server)
         strategy:
+            fail-fast: false
             matrix:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
 
