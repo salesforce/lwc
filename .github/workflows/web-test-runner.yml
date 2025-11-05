@@ -106,16 +106,13 @@ jobs:
                     - ''
                     - SHADOW_MODE_OVERRIDE=synthetic
                     - NODE_ENV_FOR_TEST=production
-                    - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
-                    - DISABLE_DETACHED_REHYDRATION=1
-                    - DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
-                exclude:
-                    - engine_server: ''
+                include:
+                    - engine_server: 1
                       env: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
-                    - engine_server: ''
+                    - engine_server: 1
                       env: DISABLE_DETACHED_REHYDRATION=1
-                    - engine_server: ''
+                    - engine_server: 1
                       env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
 
         env:
