@@ -85,9 +85,11 @@ jobs:
 
             - name: Install playwright dependencies
               run: yarn playwright install chrome firefox webkit --with-deps
+
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
-            - name: Sanity check
+
+            - name: Sanity check env vars
               run: |
                   echo "API_VERSION=$API_VERSION"
                   echo "DISABLE_DETACHED_REHYDRATION=$DISABLE_DETACHED_REHYDRATION"
@@ -98,14 +100,29 @@ jobs:
                   echo "FORCE_NATIVE_SHADOW_MODE_FOR_TEST=$FORCE_NATIVE_SHADOW_MODE_FOR_TEST"
                   echo "LEGACY_BROWSERS=$LEGACY_BROWSERS"
                   echo "NODE_ENV_FOR_TEST=$NODE_ENV_FOR_TEST"
-            - run: yarn test
 
-    hydration-tests-ssr-v2:
-        name: Hydration tests (${{ matrix.runs_on }}; SSR v2)
+            - name: Run integration tests
+              run: yarn test
+
+    hydration-tests:
+        name: Hydration tests (${{ matrix.runs_on }}; ${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
         strategy:
             fail-fast: false
             matrix:
                 runs_on: [ubuntu-22.04, macos-15, windows-2025]
+                engine_server: ['', 1]
+                env:
+                    - SHADOW_MODE_OVERRIDE=synthetic
+                    - NODE_ENV_FOR_TEST=production
+                    - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                    - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
+                    - DISABLE_DETACHED_REHYDRATION=1
+                    - DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                exclude:
+                    - engine_server: ''
+                      env: DISABLE_DETACHED_REHYDRATION=1
+                    - engine_server: ''
+                      env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
 
         runs-on: ${{ matrix.runs_on }}
 
@@ -125,75 +142,17 @@ jobs:
 
             - name: Install playwright dependencies
               run: yarn playwright install chrome firefox webkit --with-deps
-            - run: yarn test:hydration
-            - name: Synthetic shadow
-              run: yarn test:hydration
-              env:
-                  SHADOW_MODE_OVERRIDE: synthetic
-            - name: NODE_ENV_FOR_TEST=production
-              run: yarn test:hydration
-              env:
-                  NODE_ENV_FOR_TEST: production
-            - name: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-              run: yarn test:hydration
-              env:
-                  DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-            - name: DISABLE_STATIC_CONTENT_OPTIMIZATION
-              run: yarn test:hydration
-              env:
-                  DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
 
-    hydration-tests-engine-server:
-        name: Hydration tests (${{ matrix.runs_on }}; engine-server)
-        strategy:
-            fail-fast: false
-            matrix:
-                runs_on: [ubuntu-22.04, macos-15, windows-2025]
+            - name: Set env vars
+              run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
 
-        runs-on: ${{ matrix.runs_on }}
-        env:
-            ENGINE_SERVER: 1
+            - name: Sanity check env vars
+              run: |
+                  echo "SHADOW_MODE_OVERRIDE=$SHADOW_MODE_OVERRIDE"
+                  echo "NODE_ENV_FOR_TEST=$NODE_ENV_FOR_TEST"
+                  echo "DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=$DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE"
+                  echo "DISABLE_STATIC_CONTENT_OPTIMIZATION=$DISABLE_STATIC_CONTENT_OPTIMIZATION"
+                  echo "DISABLE_DETACHED_REHYDRATION=$DISABLE_DETACHED_REHYDRATION"
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
-
-            - name: Setup Node
-              uses: actions/setup-node@v6
-              with:
-                  node-version: ${{ env.NODE_VERSION }}
-                  cache: 'yarn'
-
-            - name: Install dependencies
-              run: yarn install --frozen-lockfile
-              working-directory: ./
-
-            - name: Install playwright dependencies
-              run: yarn playwright install chrome firefox webkit --with-deps
-            # NOTE: All tests have ENGINE_SERVER=1 already set
-            - run: yarn test:hydration
-            - name: Synthetic shadow
+            - name: Run hydration tests
               run: yarn test:hydration
-              env:
-                  SHADOW_MODE_OVERRIDE: synthetic
-            - name: NODE_ENV_FOR_TEST=production
-              run: yarn test:hydration
-              env:
-                  NODE_ENV_FOR_TEST: production
-            - name: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-              run: yarn test:hydration
-              env:
-                  DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
-            - name: DISABLE_STATIC_CONTENT_OPTIMIZATION
-              run: yarn test:hydration
-              env:
-                  DISABLE_STATIC_CONTENT_OPTIMIZATION: 1
-            - name: DISABLE_DETACHED_REHYDRATION
-              run: yarn test:hydration
-              env:
-                  DISABLE_DETACHED_REHYDRATION: 1
-            - name: DISABLE_DETACHED_REHYDRATION DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-              run: yarn test:hydration
-              env:
-                  DISABLE_DETACHED_REHYDRATION: 1
-                  DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: 1
