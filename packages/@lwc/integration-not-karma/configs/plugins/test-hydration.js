@@ -34,7 +34,7 @@ import { resetDOM, resetAlreadyLoggedMessages } from '../../helpers/reset';
  * @callback SnapshotFunc
  *   Captures a snapshot of the page before hydration.
  * @param {HTMLElement} component
- *   The root test component, corresponding to the `c-main` component.
+ *   The root test component, corresponding to the `x-main` component.
  * @returns {unknown}
  *   Any data required for test assertions.
  */
@@ -43,7 +43,7 @@ import { resetDOM, resetAlreadyLoggedMessages } from '../../helpers/reset';
  * @callback TestFunc
  *   Asserts the state of the page after hydration has occurred.
  * @param {HTMLElement} target
- *   The root test element, corresponding to the `c-main` component.
+ *   The root test element, corresponding to the `x-main` component.
  * @param {unknown} snapshot
  *   The result of the `snapshot` function, if defined.
  * @param {Record<'log' | 'warn' | 'error', unknown[][]>} calls
@@ -56,18 +56,18 @@ import { resetDOM, resetAlreadyLoggedMessages } from '../../helpers/reset';
  *   Asserts the state of the page before and after hydration has occurred.
  *   Is responsible for calling `hydrateComponent`.
  * @param {HTMLElement} target
- *   The root test element, corresponding to the `c-main` component.
+ *   The root test element, corresponding to the `x-main` component.
  * @param {object} utils
  *   Various things helpful for making assertions.
  * @param {import('lwc').LightningElement} utils.Component
- *   The constructor for the root test component (`c-main`).
+ *   The constructor for the root test component (`x-main`).
  * @param {import('lwc').hydrateComponent} utils.hydrateComponent
  *   A bound instance of `hydrateComponent`. Must be called for tests to pass.
  * @param {Record<'log' | 'warn' | 'error', unknown[][]> & {reset: () => void}} utils.consoleSpy
  *   A spy on `console` to track calls. Calling `reset` empties the tracked calls.
  * @param {HTMLDivElement} utils.container
  *   The parent of the test root element.
- * @param {'c-main'} utils.selector
+ * @param {'x-main'} utils.selector
  *   The selector of the root test element.
  * @returns {void}
  */

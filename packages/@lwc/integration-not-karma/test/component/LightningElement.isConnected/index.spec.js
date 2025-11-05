@@ -11,7 +11,7 @@ describe('Basic DOM manipulation cases', () => {
         }
     }
     beforeEach(() => {
-        elm = createElement('c-test', { is: Test });
+        elm = createElement('x-test', { is: Test });
     });
     afterEach(() => {
         context = undefined;
@@ -63,7 +63,7 @@ describe('isConnected in life cycle callbacks', () => {
                 actual = this.isConnected;
             }
         }
-        createElement('c-test', { is: Test });
+        createElement('x-test', { is: Test });
         expect(actual).toBe(false);
     });
     it('should return true in the connectedCallback', () => {
@@ -73,7 +73,7 @@ describe('isConnected in life cycle callbacks', () => {
                 actual = this.isConnected;
             }
         }
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         expect(actual).toBe(true);
     });
@@ -85,7 +85,7 @@ describe('isConnected in life cycle callbacks', () => {
                 actual = this.isConnected;
             }
         }
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         expect(actual).toBe(true);
     });
@@ -96,7 +96,7 @@ describe('isConnected in life cycle callbacks', () => {
                 actual = this.isConnected;
             }
         }
-        const elm = createElement('c-test', { is: Test });
+        const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         document.body.removeChild(elm);
         expect(actual).toBe(false);

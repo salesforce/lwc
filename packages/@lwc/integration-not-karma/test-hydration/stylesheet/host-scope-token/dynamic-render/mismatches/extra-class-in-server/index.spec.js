@@ -9,14 +9,14 @@ export default {
         clazz: '',
     },
     snapshot(target) {
-        const child = target.shadowRoot.querySelector('c-child');
+        const child = target.shadowRoot.querySelector('x-child');
         return {
             child,
             h1: child.shadowRoot.querySelector('h1'),
         };
     },
     test(target, snapshots, consoleCalls) {
-        const child = target.shadowRoot.querySelector('c-child');
+        const child = target.shadowRoot.querySelector('x-child');
         const h1 = child.shadowRoot.querySelector('h1');
         expect(child).not.toBe(snapshots.child);
         expect(h1).not.toBe(snapshots.h1);
@@ -24,7 +24,7 @@ export default {
         expectConsoleCallsDev(consoleCalls, {
             error: [],
             warn: [
-                'Hydration attribute mismatch on: <c-child> - rendered on server: class="foo" - expected on client: class=""',
+                'Hydration attribute mismatch on: <x-child> - rendered on server: class="foo" - expected on client: class=""',
                 'Hydration completed with errors.',
             ],
         });

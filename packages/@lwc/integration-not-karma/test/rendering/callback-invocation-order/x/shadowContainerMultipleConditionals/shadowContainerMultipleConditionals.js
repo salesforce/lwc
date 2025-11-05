@@ -14,11 +14,11 @@ export default class ShadowContainerMultipleConditionals extends LightningElemen
 
     @api
     getSlotCmp() {
-        return this.template.querySelector('c-shadow-slot-conditionals');
+        return this.template.querySelector('x-shadow-slot-conditionals');
     }
 
     @api
     getLeaf() {
-        return this.template.querySelector('c-leaf');
+        return this.template.querySelector('x-leaf');
     }
 }
