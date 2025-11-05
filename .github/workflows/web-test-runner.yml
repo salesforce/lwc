@@ -11,6 +11,8 @@ on:
     pull_request:
 
 env:
+    SAUCE_USERNAME: ${{ secrets.SAUCE_USERNAME }}
+    SAUCE_ACCESS_KEY: ${{ secrets.SAUCE_ACCESS_KEY }}
     COVERAGE: '1'
     NODE_VERSION: '20.19.4'
 
@@ -78,6 +80,19 @@ jobs:
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
+
+            - name: Get SauceLabs tunnel ID
+              id: saucelabs-tunnel
+              run: |
+                  hash=$('${{ matrix.shadow_mode }}; ${{ matrix.env }}' | sha256sum | cut -d' ' -f1)
+                  echo "hash=$hash" >> "$GITHUB_OUTPUT"
+
+            - uses: saucelabs/sauce-connect-action@v3.0.0
+              with:
+                  username: ${{ secrets.SAUCE_USERNAME }}
+                  accessKey: ${{ secrets.SAUCE_ACCESS_KEY }}
+                  tunnelName: gha-${{ github.run_id }}-wtr-integration-${{ steps.saucelabs-tunnel.outputs.hash }}
+                  region: us
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
