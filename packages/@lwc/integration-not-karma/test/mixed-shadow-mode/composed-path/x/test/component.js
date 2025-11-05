@@ -1,5 +1,5 @@
 customElements.define(
-    'c-mixed-shadow-mode-composed-path',
+    'x-mixed-shadow-mode-composed-path',
     class extends HTMLElement {
         constructor() {
             super();

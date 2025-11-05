@@ -2,7 +2,7 @@ import { LightningElement, api } from 'lwc';
 
 export default class extends LightningElement {
     get testElement() {
-        return this.template.querySelector('c-test');
+        return this.template.querySelector('x-test');
     }
 
     handleTest() {

@@ -12,7 +12,7 @@ export default class extends LightningElement {
 
     get myClass() {
         // side effect here
-        const elm = this.template.querySelector('c-child-with-api-getter-setter');
+        const elm = this.template.querySelector('x-child-with-api-getter-setter');
         if (elm) {
             elm.baz = 'baz';
         }

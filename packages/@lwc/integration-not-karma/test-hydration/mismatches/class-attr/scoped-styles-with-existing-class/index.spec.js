@@ -14,8 +14,8 @@ export default {
         expect(div2).toBe(snapshots.div2);
 
         // TODO [#4714]: Scope token classes render in an inconsistent order for static vs dynamic classes
-        expect(new Set(div1.classList)).toEqual(new Set(['foo', 'lwc-60uuu289ih']));
-        expect(new Set(div2.classList)).toEqual(new Set(['bar', 'lwc-60uuu289ih']));
+        expect(new Set(div1.classList)).toEqual(new Set(['foo', 'lwc-6958o7oup43']));
+        expect(new Set(div2.classList)).toEqual(new Set(['bar', 'lwc-6958o7oup43']));
 
         expect(consoleCalls.warn).toHaveSize(0);
         expect(consoleCalls.error).toHaveSize(0);

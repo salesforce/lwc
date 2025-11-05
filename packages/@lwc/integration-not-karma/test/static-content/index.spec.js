@@ -43,7 +43,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('Mixed mode for static content', () =
                 .shadowRoot.querySelector('x-component')
                 .shadowRoot.querySelector('div');
 
-            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-lsk3ii3ajr' : 'x-component_component';
+            const token = LOWERCASE_SCOPE_TOKENS ? 'lwc-6a8uqob2ku4' : 'x-component_component';
             expect(syntheticMode.hasAttribute(token)).toBe(true);
             expect(nativeMode.hasAttribute(token)).toBe(false);
         });
@@ -81,12 +81,11 @@ describe('static content when stylesheets change', () => {
         resetAlreadyLoggedMessages();
 
         await Promise.resolve();
-        const classList = Array.from(elm.shadowRoot.querySelector('div').classList);
-        expect(classList.length).toEqual(2);
-        expect(classList).toContain('foo');
-        expect(classList).toContain(
-            LOWERCASE_SCOPE_TOKENS ? 'lwc-28h7mip0uc' : 'x-multipleStyles_b'
-        );
+        const classList = Array.from(elm.shadowRoot.querySelector('div').classList).sort();
+        expect(classList).toEqual([
+            'foo',
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-6fpm08fjoch' : 'x-multipleStyles_b',
+        ]);
         expect(() => {
             elm.updateTemplate({
                 name: 'a',

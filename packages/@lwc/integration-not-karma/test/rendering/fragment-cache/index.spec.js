@@ -71,7 +71,7 @@ scenarios.forEach(({ name, Ctor, tagName, expectedColor, expectClass, expectAttr
         });
 
         it('renders the correct attributes/classes', () => {
-            const scopeToken = LOWERCASE_SCOPE_TOKENS ? 'lwc-33sqfpfooub' : 'x-template_template';
+            const scopeToken = LOWERCASE_SCOPE_TOKENS ? 'lwc-2it5vhebv0i' : 'x-template_template';
 
             expect(h1.getAttribute('class')).toBe(expectClass ? scopeToken : null);
             expect(h1.hasAttribute(scopeToken)).toBe(expectAttribute);

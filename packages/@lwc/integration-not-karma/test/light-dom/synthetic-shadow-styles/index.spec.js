@@ -11,7 +11,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('Light DOM and synthetic shadow', () 
 
         // shadow grandparent
         expect(elm.shadowRoot.querySelector('h1').outerHTML).toContain(
-            LOWERCASE_SCOPE_TOKENS ? 'lwc-2gv2adhthk' : 'x-container_container'
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-7c9hba002d8' : 'x-container_container'
         );
         expect(getComputedStyle(elm.shadowRoot.querySelector('h1')).color).toEqual(
             'rgb(0, 128, 0)'
@@ -27,7 +27,7 @@ describe.skipIf(process.env.NATIVE_SHADOW)('Light DOM and synthetic shadow', () 
         // shadow grandchild
         const grandchild = child.querySelector('x-grandchild');
         expect(grandchild.shadowRoot.querySelector('h1').outerHTML).toContain(
-            LOWERCASE_SCOPE_TOKENS ? 'lwc-5anvjp1uobo' : 'x-grandchild_grandchild'
+            LOWERCASE_SCOPE_TOKENS ? 'lwc-42b236sbaik' : 'x-grandchild_grandchild'
         );
         expect(getComputedStyle(grandchild.shadowRoot.querySelector('h1')).outlineColor).toEqual(
             'rgb(0, 255, 255)'
