@@ -84,7 +84,7 @@ jobs:
 
             - name: Install playwright dependencies
               run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 5
+              timeout-minutes: 2 # Sometimes seems to just hang forever? :|
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
@@ -156,7 +156,7 @@ jobs:
 
             - name: Install playwright dependencies
               run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 5
+              timeout-minutes: 2 # Sometimes seems to just hang forever? :|
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
