@@ -95,8 +95,11 @@ jobs:
             - name: Run integration tests
               run: yarn test
 
-            - name: Export coverage
-              run: awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
+            - name: Upload coverage report
+              # Upload coverage even if the test step failed
+              if: always()
+              run: |
+                  [ -f coverage/index.html ] && awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
 
     hydration-tests:
         name: Hydration tests (${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
@@ -153,5 +156,8 @@ jobs:
             - name: Run hydration tests
               run: yarn test:hydration
 
-            - name: Export coverage
-              run: awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
+            - name: Upload coverage report
+              # Upload coverage even if the test step failed
+              if: always()
+              run: |
+                  [ -f coverage/index.html ] && awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
