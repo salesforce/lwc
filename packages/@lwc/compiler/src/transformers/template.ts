@@ -9,6 +9,7 @@ import {
     normalizeToCompilerError,
     DiagnosticLevel,
     TransformerErrors,
+    CompilerAggregateError,
 } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler';
 
@@ -46,6 +47,7 @@ export default function templateTransform(
         name,
         apiVersion,
         disableSyntheticShadowSupport,
+        experimentalErrorRecoveryMode,
     } = options;
     const experimentalDynamicDirective =
         deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
@@ -71,9 +73,16 @@ export default function templateTransform(
         throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
 
-    const fatalError = result.warnings.find((warning) => warning.level === DiagnosticLevel.Error);
-    if (fatalError) {
-        throw CompilerError.from(fatalError, { filename });
+    const errors = result.warnings.filter((warning) => warning.level === DiagnosticLevel.Error);
+
+    if (experimentalErrorRecoveryMode && errors.length > 0) {
+        throw new CompilerAggregateError(
+            errors.map((err) => CompilerError.from(err, { filename }))
+        );
+    }
+
+    if (errors[0]) {
+        throw CompilerError.from(errors[0], { filename });
     }
 
     // The "Error" diagnostic level makes no sense to include here, because it would already have been
