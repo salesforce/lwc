@@ -153,9 +153,7 @@ jobs:
               run: |
                   yarn --silent --json list --depth 0 playwright 2>/dev/null
                   echo '{"data":{"trees":[{"name":"test@string"}]}}'  | jq -r '.data.trees[0].name|split("@")[1]'
-                  echo 'grep'
-                  yarn --silent --json list --depth 0 playwright 2>/dev/null | grep '"type":"tree"''
-                  version=$(yarn --silent --json list  --depth 0 playwright 2>/dev/null | jq -r '.data.trees[0].name|split("@")[1]')
+                  version="$(yarn --silent --json list --depth 0 playwright 2>/dev/null | jq -r '.data.trees[0].name|split("@")[1]')"
                   echo "version=$version" >> "$GITHUB_OUTPUT"
 
             - name: Cache playwright binaries
