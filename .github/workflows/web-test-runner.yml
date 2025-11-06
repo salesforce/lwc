@@ -71,7 +71,7 @@ jobs:
                   version="$(yarn --silent --json list --depth 0 playwright 2>/dev/null | jq -r '.data.trees[0].name|split("@")[1]')"
                   echo "version=$version" >> "$GITHUB_OUTPUT"
 
-            - name: Cache playwright binaries
+            - name: Restore playwright cache
               uses: actions/cache@v4
               id: playwright-cache
               with:
@@ -83,7 +83,6 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Install playwright dependencies
-              if: steps.playwright-cache.outputs.cache-hit != 'true'
               run: yarn playwright install chrome firefox webkit --with-deps
 
             - name: Set env vars
@@ -151,7 +150,7 @@ jobs:
                   version="$(yarn --silent --json list --depth 0 playwright 2>/dev/null | jq -r '.data.trees[0].name|split("@")[1]')"
                   echo "version=$version" >> "$GITHUB_OUTPUT"
 
-            - name: Cache playwright binaries
+            - name: Restore playwright cache
               uses: actions/cache@v4
               id: playwright-cache
               with:
@@ -163,7 +162,6 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Install playwright dependencies
-              if: steps.playwright-cache.outputs.cache-hit != 'true'
               run: yarn playwright install chrome firefox webkit --with-deps
 
             - name: Set env vars
