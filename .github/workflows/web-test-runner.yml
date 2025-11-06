@@ -103,14 +103,6 @@ jobs:
               id: test
               run: yarn --cwd packages/@lwc/integration-not-karma run test
 
-            - name: Upload coverage report
-              # Upload coverage even if the test step failed, in case it failed due to poor coverage
-              if: ${{ steps.test-hydration.conclusion == 'success' || steps.test-hydration.conclusion == 'failure' }}
-              run: |
-                  if [ -f coverage/index.html ]; then
-                    awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
-                  fi
-
     hydration-tests:
         name: Hydration tests (${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
         runs-on: ubuntu-22.04
@@ -179,11 +171,3 @@ jobs:
             - name: Run hydration tests
               id: test-hydration
               run: yarn --cwd packages/@lwc/integration-not-karma run test:hydration
-
-            - name: Upload coverage report
-              # Upload coverage even if the test step failed, in case it failed due to poor coverage
-              if: ${{ steps.test-hydration.conclusion == 'success' || steps.test-hydration.conclusion == 'failure' }}
-              run: |
-                  if [ -f coverage/index.html ]; then
-                    awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
-                  fi
