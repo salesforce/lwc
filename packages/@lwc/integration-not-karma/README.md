@@ -20,6 +20,10 @@ Environment variables are used as controls to run tests in different modes (e.g 
 - `test`: The test directory for integration tests.
 - `test-hydration`: The test directory for hydration tests.
 
+### Test Runners
+
+By default, the tests are run using Playwright. If the `USE_SAUCE` env var is set, then SauceLabs is used instead. To use SauceLabs, the `SAUCE_USERNAME`, `SAUCE_ACCESS_KEY`, and `SAUCE_TUNNEL_ID` env vars must be set.
+
 ### Integration Tests
 
 Integration tests are simply `.spec.js` files that run in the browser. LWC components are transformed by a plugin defined in `serve-integration.js`.

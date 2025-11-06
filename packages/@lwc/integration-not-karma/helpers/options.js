@@ -81,13 +81,24 @@ export const COVERAGE_DIR_FOR_OPTIONS =
 
 /** Whether or not to report coverage. Currently unused. */
 export const COVERAGE = Boolean(process.env.COVERAGE);
-/** SauceLabs username. */
-export const SAUCE_USERNAME = process.env.SAUCE_USERNAME;
-/** SauceLabs access key. */
-export const SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY || process.env.SAUCE_KEY;
-/** SauceLabs tunnel ID. */
-export const SAUCE_TUNNEL_ID = process.env.SAUCE_TUNNEL_ID;
 /** Whether or not we're running in CI. */
 export const CI = Boolean(process.env.CI);
 /** The GitHub Actions run ID, set by GitHub. */
 export const GITHUB_RUN_ID = process.env.GITHUB_RUN_ID;
+
+// --- SauceLabs config --- //
+
+// We used to use SauceLabs for cross-platform testing in CI. Now we use GitHub Actions,
+// but we've kept the SauceLabs config in place in case we ever need it for local testing.
+// (Requires some local setup, see docs: https://docs.saucelabs.com/secure-connections/sauce-connect-5/quickstart/)
+
+/** Whether we should use SauceLabs runners or not. */
+export const USE_SAUCE = Boolean(process.env.USE_SAUCE);
+export const {
+    /** SauceLabs username. */
+    SAUCE_USERNAME,
+    /** SauceLabs access key. */
+    SAUCE_ACCESS_KEY,
+    /** SauceLabs tunnel ID. */
+    SAUCE_TUNNEL_ID,
+} = process.env;
