@@ -6,19 +6,16 @@
  */
 
 // Inspired from: https://github.com/Rich-Harris/agadoo
-import path from 'node:path';
 import { rollup } from 'rollup';
 import pluginVirtual from '../rollup/plugin-virtual.mjs';
 
 async function check(input) {
-    const resolved = path.resolve(input);
-
     // Tell rollup to bundle a fake file whose content is just `import "path from CLI arg"`
     // If the imported file is tree-shakeable (pure imports/exports, no side effects),
     // then the bundled code will be an empty file
     const bundle = await rollup({
         input: '__virtual__',
-        plugins: [pluginVirtual(`import "${resolved}";`)],
+        plugins: [pluginVirtual(`import "${input}";`)],
         onwarn: (warning, handle) => {
             if (warning.code !== 'EMPTY_BUNDLE') handle(warning);
         },
@@ -28,26 +25,20 @@ async function check(input) {
         format: 'esm',
     });
 
-    const [chunk] = res.output;
+    const [{ code }] = res.output;
 
     return {
-        code: chunk.code,
-        isTreeShakable: chunk.code.trim().length === 0,
+        code,
+        isTreeShakable: code.trim().length === 0,
     };
 }
 
 const input = process.argv[2];
-check(input)
-    .then((res) => {
-        if (res.isTreeShakable === false) {
-            console.error(
-                `${res.code}\n❗️ Failed to fully treeshake ${input}; see remaining code above.`
-            );
-        }
+const result = await check(input);
+if (!result.isTreeShakable) {
+    console.error(
+        `${result.code}\n❗️ Failed to fully treeshake ${input}; see remaining code above.`
+    );
+}
 
-        process.exit(res.isTreeShakable ? 0 : 1);
-    })
-    .catch((err) => {
-        console.error(err);
-        process.exit(1);
-    });
+process.exitCode = result.isTreeShakable ? 0 : 1;

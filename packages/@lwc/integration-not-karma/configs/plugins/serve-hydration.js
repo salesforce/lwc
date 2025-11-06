@@ -12,7 +12,7 @@ const LWC_SSR = readFileSync(
     'utf8'
 );
 
-const ROOT_DIR = path.join(import.meta.dirname, '../..');
+const ROOT_DIR = path.join(import.meta.dirname, '..', '..');
 const COMPONENT_NAME = 'x-main';
 const COMPONENT_ENTRYPOINT = 'x/main/main.js';
 
@@ -25,7 +25,9 @@ async function compileModule(input, targetSSR, format) {
                 targetSSR,
                 modules: [{ dir: modulesDir }],
                 experimentalDynamicComponent: {
-                    loader: fileURLToPath(new URL('../../helpers/loader.js', import.meta.url)),
+                    loader: fileURLToPath(
+                        new URL('../../helpers/loader.js', import.meta.url)
+                    ).replaceAll(path.sep, path.posix.sep),
                     strict: true,
                 },
                 enableSyntheticElementInternals: true,
@@ -108,8 +110,8 @@ async function getSsrMarkup(componentEntrypoint, configPath) {
  * This function wraps those configs in the test code to be executed.
  */
 async function wrapHydrationTest(configPath) {
-    const suiteDir = path.dirname(configPath);
-    const componentEntrypoint = path.join(suiteDir, COMPONENT_ENTRYPOINT);
+    const suiteDir = path.posix.dirname(configPath);
+    const componentEntrypoint = path.posix.join(suiteDir, COMPONENT_ENTRYPOINT);
     const ssrOutput = await getSsrMarkup(componentEntrypoint, configPath);
 
     return `
