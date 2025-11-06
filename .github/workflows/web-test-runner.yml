@@ -20,8 +20,6 @@ defaults:
 
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
-    # TODO: upload result artifacts
-
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
         runs-on: ubuntu-22.04
@@ -71,11 +69,26 @@ jobs:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
 
+            - name: Get installed playwright version
+              id: playwright-version
+              run: |
+                  version="$(yarn --silent list --json --depth 0 playwright | jq -r '.data.trees.[].name|split("@")[1]')"
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+
+            - name: Cache playwright binaries
+              uses: actions/cache@v4
+              id: playwright-cache
+              with:
+                  path: |
+                      ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
 
             - name: Install playwright dependencies
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
               run: yarn playwright install chrome firefox webkit --with-deps
 
             - name: Set env vars
@@ -134,11 +147,26 @@ jobs:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
 
+            - name: Get installed playwright version
+              id: playwright-version
+              run: |
+                  version="$(yarn --silent list --json --depth 0 playwright | jq -r '.data.trees.[].name|split("@")[1]')"
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+
+            - name: Cache playwright binaries
+              uses: actions/cache@v4
+              id: playwright-cache
+              with:
+                  path: |
+                      ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
             - name: Install dependencies
               run: yarn install --frozen-lockfile
               working-directory: ./
 
             - name: Install playwright dependencies
+              if: steps.playwright-cache.outputs.cache-hit != 'true'
               run: yarn playwright install chrome firefox webkit --with-deps
 
             - name: Set env vars
