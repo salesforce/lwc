@@ -14,10 +14,6 @@ env:
     COVERAGE: '1'
     NODE_VERSION: '20.19.4'
 
-defaults:
-    run:
-        working-directory: packages/@lwc/integration-not-karma
-
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
     integration-tests:
@@ -85,7 +81,6 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
-              working-directory: ./
 
             - name: Install playwright dependencies
               if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -107,7 +102,7 @@ jobs:
 
             - name: Run integration tests
               id: test
-              run: yarn test
+              run: yarn --cwd packages/@lwc/integration-not-karma run test
 
             - name: Upload coverage report
               # Upload coverage even if the test step failed, in case it failed due to poor coverage
@@ -164,7 +159,6 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
-              working-directory: ./
 
             - name: Install playwright dependencies
               if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -184,7 +178,7 @@ jobs:
 
             - name: Run hydration tests
               id: test
-              run: yarn test:hydration
+              run: yarn --cwd packages/@lwc/integration-not-karma run test:hydration
 
             - name: Upload coverage report
               # Upload coverage even if the test step failed, in case it failed due to poor coverage
