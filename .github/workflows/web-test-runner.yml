@@ -150,6 +150,7 @@ jobs:
             - name: Get installed playwright version
               id: playwright-version
               run: |
+                  yarn --silent --json list playwright
                   version=$(yarn --silent --json list playwright 2>/dev/null | jq -r '.data.trees.[].name|split("@")[1]')
                   echo "version=$version" >> "$GITHUB_OUTPUT"
 
