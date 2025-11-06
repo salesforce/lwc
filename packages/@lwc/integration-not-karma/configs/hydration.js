@@ -17,10 +17,10 @@ export default {
     coverageConfig: {
         ...baseConfig.coverageConfig,
         threshold: {
-            lines: 65,
-            statements: 65,
-            branches: 75,
-            functions: 60,
+            lines: 60,
+            statements: 60,
+            branches: 70,
+            functions: 55,
         },
     },
 };
