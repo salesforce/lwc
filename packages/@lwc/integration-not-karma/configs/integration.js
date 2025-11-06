@@ -20,7 +20,6 @@ export default {
         importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
         testPlugin,
     ],
-    concurrency: options.CI ? undefined : 2,
     coverageConfig: {
         ...baseConfig.coverageConfig,
         threshold: {
@@ -30,4 +29,6 @@ export default {
             functions: 70,
         },
     },
+    // Use default concurrency in CI, but limit to 2 locally due to flakiness
+    ...(options.CI ? {} : { concurrency: 2 }),
 };
