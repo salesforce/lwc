@@ -106,11 +106,12 @@ jobs:
                   echo "NODE_ENV_FOR_TEST=$NODE_ENV_FOR_TEST"
 
             - name: Run integration tests
+              id: test
               run: yarn test
 
             - name: Upload coverage report
-              # Upload coverage even if the test step failed
-              if: always()
+              # Upload coverage even if the test step failed, in case it failed due to poor coverage
+              if: steps.test.conclusion == 'success' || steps.test.conclusion == 'failure'
               run: |
                   [ -f coverage/index.html ] && awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
 
@@ -150,8 +151,11 @@ jobs:
             - name: Get installed playwright version
               id: playwright-version
               run: |
-                  yarn --silent --json list playwright
-                  version=$(yarn --silent --json list playwright 2>/dev/null | jq -r '.data.trees.[].name|split("@")[1]')
+                  yarn --silent --json list --depth 0 playwright 2>/dev/null
+                  echo '{"data":{"trees":[{"name":"test@string"}]}}'  | jq -r '.data.trees[0].name|split("@")[1]'
+                  echo 'grep'
+                  yarn --silent --json list --depth 0 playwright 2>/dev/null | grep '"type":"tree"''
+                  version=$(yarn --silent --json list  --depth 0 playwright 2>/dev/null | jq -r '.data.trees[0].name|split("@")[1]')
                   echo "version=$version" >> "$GITHUB_OUTPUT"
 
             - name: Cache playwright binaries
@@ -183,10 +187,11 @@ jobs:
                   echo "ENGINE_SERVER=$ENGINE_SERVER"
 
             - name: Run hydration tests
+              id: test
               run: yarn test:hydration
 
             - name: Upload coverage report
-              # Upload coverage even if the test step failed
-              if: always()
+              # Upload coverage even if the test step failed, in case it failed due to poor coverage
+              if: steps.test.conclusion == 'success' || steps.test.conclusion == 'failure'
               run: |
                   [ -f coverage/index.html ] && awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
