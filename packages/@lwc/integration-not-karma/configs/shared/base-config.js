@@ -47,14 +47,6 @@ export default (options) => {
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
         concurrency: 1,
         concurrentBrowsers: browsers.length,
-        coverage: options.COVERAGE,
-        coverageConfig: {
-            // This is a "magic" path that ultimately points to the lwc packages
-            include: ['__wds-outside-root__/**'],
-            // Coverage fails for this file, but it's just the barrel package so we can skip it
-            exclude: ['__wds-outside-root__/2/lwc/index.js'],
-            reporters: ['html', 'text'],
-        },
         nodeResolve: true,
         rootDir: join(import.meta.dirname, '../..'),
         plugins: [

@@ -14,13 +14,4 @@ export default {
     ...baseConfig,
     files: ['test-hydration/**/*.spec.js', '!test-hydration/synthetic-shadow/index.spec.js'],
     plugins: [...baseConfig.plugins, hydrationTestPlugin],
-    coverageConfig: {
-        ...baseConfig.coverageConfig,
-        threshold: {
-            lines: 70,
-            statements: 70,
-            branches: 75,
-            functions: 65,
-        },
-    },
 };

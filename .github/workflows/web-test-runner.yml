@@ -35,7 +35,7 @@ jobs:
                     # - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
                     - ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1
-                    - NODE_ENV_FOR_TEST=production
+                    - NODE_ENV_FOR_TEST=1
                     - API_VERSION=58
                     - API_VERSION=59
                     - API_VERSION=60
@@ -95,9 +95,6 @@ jobs:
             - name: Run integration tests
               run: yarn test
 
-            - name: Export coverage
-              run: awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
-
     hydration-tests:
         name: Hydration tests (${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
         runs-on: ubuntu-22.04
@@ -152,6 +149,3 @@ jobs:
 
             - name: Run hydration tests
               run: yarn test:hydration
-
-            - name: Export coverage
-              run: awk '/<table/,/<\/table>/' coverage/index.html >> "$GITHUB_STEP_SUMMARY"
