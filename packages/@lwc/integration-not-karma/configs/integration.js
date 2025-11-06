@@ -20,6 +20,7 @@ export default {
         importMapsPlugin({ inject: { importMap: { imports: { lwc: './mocks/lwc.js' } } } }),
         testPlugin,
     ],
+    concurrency: options.CI ? undefined : 2,
     coverageConfig: {
         ...baseConfig.coverageConfig,
         threshold: {
