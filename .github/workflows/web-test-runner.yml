@@ -73,7 +73,6 @@ jobs:
 
             - name: Restore playwright cache
               uses: actions/cache@v4
-              id: playwright-cache
               with:
                   path: |
                       ~/.cache/ms-playwright
@@ -84,12 +83,13 @@ jobs:
 
             - name: Install playwright dependencies
               id: install-playwright
+              continue-on-error: true
               run: yarn playwright install chrome firefox webkit --with-deps
               timeout-minutes: 3 # Sometimes seems to just hang forever? :|
 
             # If installing playwright times out, wait 1 minute then try again
-            - name: Install playwright dependencies
-              if: steps.install-playwright.outcome != 'success'
+            - name: Install playwright dependencies (fallback)
+              if: ${{ steps.install-playwright.outcome != 'success' }}
               run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
               timeout-minutes: 3
 
@@ -109,12 +109,13 @@ jobs:
 
             - name: Run integration tests
               id: test-integration
-              run: yarn run test
+              continue-on-error: true
+              run: yarn test
               working-directory: packages/@lwc/integration-not-karma
 
             # Because sometimes things are flaky
             - name: Run integration tests (fallback)
-              if: steps.test-integration.outcome == 'failure'
+              if: ${{ steps.test-integration.outcome == 'failure' }}
               run: yarn run test
               working-directory: packages/@lwc/integration-not-karma
 
@@ -159,7 +160,6 @@ jobs:
 
             - name: Restore playwright cache
               uses: actions/cache@v4
-              id: playwright-cache
               with:
                   path: |
                       ~/.cache/ms-playwright
@@ -170,12 +170,13 @@ jobs:
 
             - name: Install playwright dependencies
               id: install-playwright
+              continue-on-error: true
               run: yarn playwright install chrome firefox webkit --with-deps
               timeout-minutes: 3 # Sometimes seems to just hang forever? :|
 
             # If installing playwright times out, wait 1 minute then try again
-            - name: Install playwright dependencies
-              if: steps.install-playwright.outcome != 'success'
+            - name: Install playwright dependencies (fallback)
+              if: ${{ steps.install-playwright.outcome != 'success' }}
               run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
               timeout-minutes: 3
 
@@ -193,11 +194,12 @@ jobs:
 
             - name: Run hydration tests
               id: test-hydration
+              continue-on-error: true
               run: yarn run test:hydration
               working-directory: packages/@lwc/integration-not-karma
 
             # Because sometimes things are flaky
             - name: Run hydration tests (fallback)
-              if: steps.test-hydration.outcome == 'failure'
+              if: ${{ steps.test-hydration.outcome == 'failure' }}
               run: yarn run test:hydration
               working-directory: packages/@lwc/integration-not-karma
