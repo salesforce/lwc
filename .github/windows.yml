@@ -1,0 +1,59 @@
+name: Smoke Test Windows
+
+on:
+    push:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+    pull_request:
+
+env:
+    COVERAGE: '1'
+
+defaults:
+    run:
+        working-directory: packages/@lwc/integration-not-karma
+
+jobs:
+    smoke-test-windows:
+        runs-on: windows-2025
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: '20.19.4'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            - name: Run unit tests
+              run: yarn test run
+
+            - name: Get installed playwright version
+              id: playwright-version
+              run: |
+                  version="$(yarn --silent --json list --depth 0 playwright 2>/dev/null | jq -r '.data.trees[0].name|split("@")[1]')"
+                  echo "version=$version" >> "$GITHUB_OUTPUT"
+
+            - name: Restore playwright cache
+              uses: actions/cache@v4
+              id: playwright-cache
+              with:
+                  path: ~\AppData\Local\ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+            - name: Install playwright dependencies
+              run: yarn playwright install chromium --with-deps
+
+            - name: Run integration tests
+              run: yarn test
+              env:
+                  BROWSERS: chromium
+              working-directory: packages/@lwc/integration-not-karma
