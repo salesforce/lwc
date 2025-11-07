@@ -6,9 +6,6 @@ import { HIGHEST_API_VERSION } from '@lwc/shared';
 
 // --- Boolean test flags --- //
 
-/** Run SauceLabs tests using only "legacy" browsers. */
-export const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
-
 /** Force tests to run in native shadow mode with synthetic shadow polyfill patches. */
 export const FORCE_NATIVE_SHADOW_MODE_FOR_TEST = Boolean(
     process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST
@@ -58,28 +55,16 @@ export const API_VERSION = process.env.API_VERSION
 /** The `NODE_ENV` to set for tests (at runtime, in the browser). */
 export const NODE_ENV_FOR_TEST = process.env.NODE_ENV_FOR_TEST || 'development';
 
-/** Unique directory name that encodes the flags that the tests were executed with. */
-export const COVERAGE_DIR_FOR_OPTIONS =
-    Object.entries({
-        API_VERSION,
-        DISABLE_STATIC_CONTENT_OPTIMIZATION,
-        SHADOW_MODE_OVERRIDE,
-        DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
-        ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL,
-        FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
-        LEGACY_BROWSERS,
-        NODE_ENV_FOR_TEST,
-        DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
-        ENGINE_SERVER,
-        DISABLE_DETACHED_REHYDRATION,
-    })
-        .filter(([, val]) => val)
-        .map(([key, val]) => `${key}=${val}`)
-        .join('/') || 'no-options';
+/**
+ * Comma-delimited list of browser names to run with Playwright.
+ * Possible values are `chromium`, `firefox`, and `webkit`.
+ * Ignored if the `USE_SAUCE` env var is set.
+ */
+export const BROWSERS = process.env.BROWSERS;
 
 // --- CI config --- //
 
-/** Whether or not to report coverage. Currently unused. */
+/** Whether or not to report coverage. */
 export const COVERAGE = Boolean(process.env.COVERAGE);
 /** Whether or not we're running in CI. */
 export const CI = Boolean(process.env.CI);
@@ -102,3 +87,5 @@ export const {
     /** SauceLabs tunnel ID. */
     SAUCE_TUNNEL_ID,
 } = process.env;
+/** Run SauceLabs tests using only "legacy" browsers. */
+export const LEGACY_BROWSERS = Boolean(process.env.LEGACY_BROWSERS);
