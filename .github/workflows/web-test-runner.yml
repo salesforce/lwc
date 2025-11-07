@@ -91,7 +91,7 @@ jobs:
             - name: Install playwright dependencies (fallback)
               if: ${{ steps.install-playwright.outcome != 'success' }}
               run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 3
+              timeout-minutes: 4
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
@@ -178,7 +178,7 @@ jobs:
             - name: Install playwright dependencies (fallback)
               if: ${{ steps.install-playwright.outcome != 'success' }}
               run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 3
+              timeout-minutes: 4
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
