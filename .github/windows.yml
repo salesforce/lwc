@@ -52,23 +52,18 @@ jobs:
 
             - name: Install playwright dependencies
               id: install-playwright
+              continue-on-error: true
               run: yarn playwright install chromium --with-deps
               timeout-minutes: 3 # Sometimes seems to just hang forever? :|
 
             # If installing playwright times out, wait 1 minute then try again
             - name: Install playwright dependencies
-              if: ${{ steps.install-playwright.conclusion != 'success' }}
+              if: ${{ steps.install-playwright.outcome != 'success' }}
               run: sleep 60 && yarn playwright install chromium --with-deps
-              timeout-minutes: 3
+              timeout-minutes: 4
 
             - name: Run integration tests
-              id: test-integration
-              run: yarn test
+              run: yarn test || yarn test
               env:
                   BROWSERS: chromium
-              working-directory: packages/@lwc/integration-not-karma
-
-            - name: Re-run integration tests (fallback)
-              if: ${{ steps.test-integration.conclusion == 'failure' }}
-              run: yarn test
               working-directory: packages/@lwc/integration-not-karma
