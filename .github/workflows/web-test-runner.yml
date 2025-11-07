@@ -73,7 +73,6 @@ jobs:
 
             - name: Restore playwright cache
               uses: actions/cache@v4
-              id: playwright-cache
               with:
                   path: |
                       ~/.cache/ms-playwright
@@ -89,7 +88,7 @@ jobs:
 
             # If installing playwright times out, wait 1 minute then try again
             - name: Install playwright dependencies
-              if: steps.install-playwright.outcome != 'success'
+              if: ${{ steps.install-playwright.conclusion != 'success' }}
               run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
               timeout-minutes: 3
 
@@ -114,7 +113,7 @@ jobs:
 
             # Because sometimes things are flaky
             - name: Run integration tests (fallback)
-              if: steps.test-integration.outcome == 'failure'
+              if: ${{ steps.test-integration.conclusion == 'failure' }}
               run: yarn run test
               working-directory: packages/@lwc/integration-not-karma
 
@@ -159,7 +158,6 @@ jobs:
 
             - name: Restore playwright cache
               uses: actions/cache@v4
-              id: playwright-cache
               with:
                   path: |
                       ~/.cache/ms-playwright
@@ -175,7 +173,7 @@ jobs:
 
             # If installing playwright times out, wait 1 minute then try again
             - name: Install playwright dependencies
-              if: steps.install-playwright.outcome != 'success'
+              if: ${{ steps.install-playwright.conclusion != 'success' }}
               run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
               timeout-minutes: 3
 
@@ -198,6 +196,6 @@ jobs:
 
             # Because sometimes things are flaky
             - name: Run hydration tests (fallback)
-              if: steps.test-hydration.outcome == 'failure'
+              if: ${{ steps.test-hydration.conclusion == 'failure' }}
               run: yarn run test:hydration
               working-directory: packages/@lwc/integration-not-karma
