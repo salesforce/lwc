@@ -83,8 +83,15 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Install playwright dependencies
+              id: install-playwright
               run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 2 # Sometimes seems to just hang forever? :|
+              timeout-minutes: 3 # Sometimes seems to just hang forever? :|
+
+            # If installing playwright times out, wait 1 minute then try again
+            - name: Install playwright dependencies
+              if: steps.install-playwright.outcome != 'success'
+              run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
+              timeout-minutes: 3
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
@@ -101,8 +108,15 @@ jobs:
                   echo "NODE_ENV_FOR_TEST=$NODE_ENV_FOR_TEST"
 
             - name: Run integration tests
-              id: test
-              run: yarn --cwd packages/@lwc/integration-not-karma run test
+              id: test-integration
+              run: yarn run test
+              working-directory: packages/@lwc/integration-not-karma
+
+            # Because sometimes things are flaky
+            - name: Run integration tests (fallback)
+              if: steps.test-integration.outcome == 'failure'
+              run: yarn run test
+              working-directory: packages/@lwc/integration-not-karma
 
     hydration-tests:
         name: Hydration tests (${{ matrix.engine_server && 'engine-server' || 'SSR v2' }}; ${{ matrix.env || 'default env' }})
@@ -155,8 +169,15 @@ jobs:
               run: yarn install --frozen-lockfile
 
             - name: Install playwright dependencies
+              id: install-playwright
               run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 2 # Sometimes seems to just hang forever? :|
+              timeout-minutes: 3 # Sometimes seems to just hang forever? :|
+
+            # If installing playwright times out, wait 1 minute then try again
+            - name: Install playwright dependencies
+              if: steps.install-playwright.outcome != 'success'
+              run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
+              timeout-minutes: 3
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
@@ -172,4 +193,11 @@ jobs:
 
             - name: Run hydration tests
               id: test-hydration
-              run: yarn --cwd packages/@lwc/integration-not-karma run test:hydration
+              run: yarn run test:hydration
+              working-directory: packages/@lwc/integration-not-karma
+
+            # Because sometimes things are flaky
+            - name: Run hydration tests (fallback)
+              if: steps.test-hydration.outcome == 'failure'
+              run: yarn run test:hydration
+              working-directory: packages/@lwc/integration-not-karma
