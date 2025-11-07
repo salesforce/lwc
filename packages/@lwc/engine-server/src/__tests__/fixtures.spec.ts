@@ -70,7 +70,7 @@ async function compileFixture({
             .join('-') || 'default';
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, `./dist/compiled-${optionsAsString}.js`);
-    const input = 'virtual/fixture/test.js';
+    const input = path.normalize('virtual/fixture/test.js');
 
     const bundle = await rollup({
         input,

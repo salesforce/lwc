@@ -65,7 +65,7 @@ async function compileFixture({
 }) {
     const modulesDir = path.resolve(dirname, './modules');
     const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
-    const input = 'virtual/fixture/test.js';
+    const input = path.normalize('virtual/fixture/test.js');
 
     const bundle = await rollup({
         input,
