@@ -9,6 +9,7 @@ import { getAPIVersionFromNumber } from '@lwc/shared';
 
 import serialize from './serialize';
 import postcssLwc from './postcss-lwc-plugin';
+import { StyleCompilerCtx } from './utils/error-recovery';
 
 /** Configuration options for CSS transforms. */
 export interface Config {
@@ -27,6 +28,8 @@ export interface Config {
     disableSyntheticShadowSupport?: boolean;
     /** The API version to associate with the compiled stylesheet */
     apiVersion?: number;
+    /** When set to true, enables error recovery mode to collect multiple errors */
+    experimentalErrorRecoveryMode?: boolean;
 }
 
 /**
@@ -46,7 +49,11 @@ export interface Config {
  *  }`;
  * const { code } = transform(source, 'example.css');
  */
-export function transform(src: string, id: string, config: Config = {}): { code: string } {
+export function transform(
+    src: string,
+    id: string,
+    config: Config = {}
+): { code: string; errors?: Error[] } {
     if (src === '') {
         return { code: 'export default undefined' };
     }
@@ -54,10 +61,39 @@ export function transform(src: string, id: string, config: Config = {}): { code:
     const scoped = !!config.scoped;
     const apiVersion = getAPIVersionFromNumber(config.apiVersion);
     const disableSyntheticShadowSupport = !!config.disableSyntheticShadowSupport;
+    const errorRecoveryMode = !!config.experimentalErrorRecoveryMode;
 
-    const plugins = [postcssLwc({ scoped, apiVersion, disableSyntheticShadowSupport })];
+    // Create error recovery context
+    const ctx = new StyleCompilerCtx(errorRecoveryMode, id);
 
-    const result = postcss(plugins).process(src, { from: id }).sync();
+    const plugins = [
+        postcssLwc({
+            scoped,
+            apiVersion,
+            disableSyntheticShadowSupport,
+            ctx,
+        }),
+    ];
 
-    return { code: serialize(result, config) };
+    // Wrap PostCSS processing with error recovery for parsing errors
+    let result;
+    try {
+        result = postcss(plugins).process(src, { from: id }).sync();
+    } catch (error) {
+        if (errorRecoveryMode && error instanceof postcss.CssSyntaxError) {
+            // In recovery mode, collect PostCSS parsing errors
+            ctx.errors.push(error);
+            // Create minimal result to continue (empty root)
+            result = postcss.root().toResult({ from: id });
+        } else {
+            throw error;
+        }
+    }
+
+    const code = serialize(result, config);
+
+    return {
+        code,
+        ...(errorRecoveryMode && ctx.hasErrors() ? { errors: ctx.errors } : {}),
+    };
 }

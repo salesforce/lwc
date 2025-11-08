@@ -25,6 +25,7 @@ export default function styleTransform(
     config: NormalizedTransformOptions
 ): TransformResult {
     const { customProperties } = config.stylesheetConfig;
+    const { experimentalErrorRecoveryMode } = config;
 
     const styleCompilerConfig = {
         customProperties: {
@@ -36,6 +37,7 @@ export default function styleTransform(
         scoped: config.scopedStyles,
         disableSyntheticShadowSupport: config.disableSyntheticShadowSupport,
         apiVersion: config.apiVersion,
+        experimentalErrorRecoveryMode,
     };
 
     let res;
@@ -43,6 +45,19 @@ export default function styleTransform(
         res = styleCompiler.transform(src, filename, styleCompilerConfig);
     } catch (e) {
         throw normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, e, { filename });
+    }
+
+    // In error recovery mode, check for collected errors
+    // For now, we just store the errors. Later we'll convert them to CompilerDiagnostic
+    // and throw CompilerAggregateError
+    if (
+        experimentalErrorRecoveryMode &&
+        'errors' in res &&
+        Array.isArray(res.errors) &&
+        res.errors.length > 0
+    ) {
+        // Errors are collected but not yet converted to diagnostics
+        // This will be handled in a future step
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for

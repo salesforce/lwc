@@ -34,6 +34,7 @@ describe('fixtures', () => {
         {
             root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/actual.css',
+            ssrVersion: 2,
         },
         ({ src, filename, config }) => {
             let result;

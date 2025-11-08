@@ -14,6 +14,7 @@ import transformAtRules from './scope-at-rules/transform';
 import type { SelectorScopingConfig } from './selector-scoping/transform';
 import type { APIVersion } from '@lwc/shared';
 import type { Rule, AtRule, TransformCallback } from 'postcss';
+import type { StyleCompilerCtx } from './utils/error-recovery';
 
 function shouldTransformSelector(rule: Rule) {
     // @keyframe at-rules are special, rules inside are not standard selectors and should not be
@@ -21,12 +22,19 @@ function shouldTransformSelector(rule: Rule) {
     return rule.parent?.type !== 'atrule' || (rule.parent as AtRule).name !== 'keyframes';
 }
 
-function selectorProcessorFactory(transformConfig: SelectorScopingConfig) {
+function selectorProcessorFactory(transformConfig: SelectorScopingConfig, ctx: StyleCompilerCtx) {
     return postCssSelector((root) => {
-        validateIdSelectors(root);
+        ctx.withErrorRecovery(() => {
+            validateIdSelectors(root);
+        });
 
-        transformSelectorScoping(root, transformConfig);
-        transformDirPseudoClass(root);
+        ctx.withErrorRecovery(() => {
+            transformSelectorScoping(root, transformConfig);
+        });
+
+        ctx.withErrorRecovery(() => {
+            transformDirPseudoClass(root);
+        });
     });
 }
 
@@ -34,26 +42,44 @@ export default function postCssLwcPlugin(options: {
     scoped: boolean;
     apiVersion: APIVersion;
     disableSyntheticShadowSupport: boolean;
+    ctx: StyleCompilerCtx;
 }): TransformCallback {
+    const { ctx } = options;
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     // This distinction also applies to light DOM in scoped (synthetic-like) vs unscoped (native-like) mode.
-    const nativeShadowSelectorProcessor = selectorProcessorFactory({
-        transformHost: false,
-        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
-        scoped: options.scoped,
-    });
-    const syntheticShadowSelectorProcessor = selectorProcessorFactory({
-        transformHost: true,
-        disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
-        scoped: options.scoped,
-    });
+    const nativeShadowSelectorProcessor = selectorProcessorFactory(
+        {
+            transformHost: false,
+            disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+            scoped: options.scoped,
+        },
+        ctx
+    );
+    const syntheticShadowSelectorProcessor = selectorProcessorFactory(
+        {
+            transformHost: true,
+            disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+            scoped: options.scoped,
+        },
+        ctx
+    );
 
     return (root, result) => {
-        transformImport(root, result, options.scoped);
+        ctx.withErrorRecovery(() => {
+            transformImport(root, result, options.scoped);
+        });
+
         transformAtRules(root);
 
+        // Wrap rule processing with error recovery
         root.walkRules((rule) => {
+            ctx.withErrorRecovery(() => {
+                processRule(rule);
+            });
+        });
+
+        function processRule(rule: Rule) {
             if (!shouldTransformSelector(rule)) {
                 return;
             }
@@ -75,6 +101,6 @@ export default function postCssLwcPlugin(options: {
                 (clonedRule as any)._isNativeHost = true;
                 (currentRule as any)._isSyntheticHost = true;
             }
-        });
+        }
     };
 }
