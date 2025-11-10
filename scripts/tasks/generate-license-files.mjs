@@ -1,17 +1,13 @@
 import path from 'node:path';
-import { readFile, writeFile, stat, readdir } from 'node:fs/promises';
+import { readFile, writeFile, stat } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import prettier from 'prettier';
 import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
+import { ALL_PACKAGES, SCOPED_PACKAGES } from '../shared/packages.mjs';
 
 // We're using ESM here, but some packages still only export CJS, so we also need `require`
 const require = createRequire(import.meta.url);
-
-const atLwcPackages = (await readdir('packages/@lwc'))
-    // skip dotfiles like .DS_Store
-    .filter((_) => !_.startsWith('.'))
-    .map((_) => `@lwc/${_}`);
 
 // Generate our LICENSE files for each package, including any bundled dependencies
 // This is modeled after how Rollup does it:
@@ -43,7 +39,7 @@ function tryResolve(specifier) {
     }
     // `require.resolve` accepts a second parameter of additional places to look
     return require.resolve(specifier, {
-        paths: atLwcPackages.map((pkg) => path.join('packages', pkg, 'node_modules')),
+        paths: SCOPED_PACKAGES.map((pkg) => path.join(pkg.path, 'node_modules')),
     });
 }
 
@@ -77,7 +73,11 @@ async function findLicenseText(depName) {
         await readFile(path.join(resolvedDepPath, 'package.json'), 'utf-8')
     );
 
-    return `${license} license defined in package.json in v${version}.`;
+    if (!license) {
+        throw new Error(`${depName} does not define a license.`);
+    }
+
+    return `"${license}" license defined in package.json in v${version}.`;
 }
 
 const coreLicense = await readFile('LICENSE-CORE.md', 'utf-8');
@@ -106,11 +106,9 @@ await writeFile('LICENSE.md', formattedLicense, 'utf-8');
 
 // License file for each package as well, so that we publish it to npm
 
-const packages = ['lwc', ...atLwcPackages];
-
 await Promise.all(
-    packages.map(async (pkg) => {
-        await writeFile(path.join('packages/', pkg, 'LICENSE.md'), formattedLicense, 'utf-8');
+    ALL_PACKAGES.map(async (pkg) => {
+        await writeFile(path.join(pkg.path, 'LICENSE.md'), formattedLicense, 'utf-8');
     })
 );
 
