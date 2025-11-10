@@ -435,22 +435,47 @@ describe('lwc:on', () => {
 
     describe('object passed to lwc:on has property whose value evaluation throws', () => {
         let element;
+        let button;
+
+        let caughtError;
+
+        catchUnhandledRejectionsAndErrors((error) => {
+            caughtError = error;
+        });
+
+        afterEach(() => {
+            caughtError = undefined;
+        });
 
         function setup(handlerType) {
             element = createElement('x-value-evaluation-throws', { is: ValueEvaluationThrows });
             element.handlerType = handlerType;
             document.body.appendChild(element);
+            button = element.shadowRoot.querySelector('button');
         }
 
         it('getter that throws passed as handler', () => {
-            expect(() => setup('getter that throws')).toThrowError(Error, 'some error');
+            if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                expect(() => setup('getter that throws')).toThrowError(Error, 'some error');
+            } else {
+                setup('getter that throws');
+                expect(caughtError.message).toContain('Error: some error');
+                expect(button).toBeNull();
+            }
         });
 
         it('LightningElement instance is passed as argument to lwc:on', () => {
-            expect(() => setup('LightningElement instance')).toThrowError(
-                TypeError,
-                'Illegal constructor'
-            );
+            if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                expect(() => setup('LightningElement instance')).toThrowError(
+                    TypeError,
+                    'Illegal constructor'
+                );
+            } else {
+                setup('LightningElement instance');
+                expect(caughtError.error).toBeInstanceOf(TypeError);
+                expect(caughtError.message).toContain('TypeError: Illegal constructor');
+                expect(button).toBeNull();
+            }
         });
     });
 });
