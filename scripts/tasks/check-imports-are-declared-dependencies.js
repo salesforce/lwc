@@ -12,17 +12,14 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const { builtinModules } = require('node:module');
-const { globSync } = require('glob');
 const { init, parse } = require('es-module-lexer');
+const { SCOPED_PACKAGES } = require('../shared/packages.mjs');
 
 async function main() {
     const errors = [];
-    const pkgJsonFiles = globSync(path.join(__dirname, '../../packages/@lwc/*/package.json'));
 
-    for (const pkgJsonFile of pkgJsonFiles) {
-        const { dependencies, peerDependencies, private, module, types } = JSON.parse(
-            fs.readFileSync(pkgJsonFile, 'utf-8')
-        );
+    for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
+        const { dependencies, peerDependencies, private, module, types } = pkg;
 
         if (private) {
             continue; // not public, we don't care
@@ -33,7 +30,7 @@ async function main() {
         // We use three fields for exports: "main" for CJS, "module" for ESM, "types" for, y'know.
         // If a package has a "module" defined, we use that as the source of truth, otherwise we
         // assume it's a types-only package and we check that, instead.
-        const fileToCheck = path.join(path.dirname(pkgJsonFile), module ?? types);
+        const fileToCheck = path.join(dir, module ?? types);
 
         const esmSource = fs.readFileSync(fileToCheck, 'utf-8');
 
@@ -57,10 +54,7 @@ async function main() {
 
             if (!(importedPackage in allDependencies)) {
                 errors.push(
-                    `${pkgJsonFile
-                        .split(path.sep)
-                        .slice(-3, -1)
-                        .join(path.sep)} imports "${imported}", but it is not declared ` +
+                    `${pkg} imports "${imported}", but it is not declared ` +
                         'as a dependency/peerDependency in package.json.'
                 );
             }
