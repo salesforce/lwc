@@ -61,7 +61,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
         );
         return;
     }
-    // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by Karma tests
+    // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by integration tests
     if (process.env.NODE_ENV === 'test-lwc-integration' || process.env.NODE_ENV !== 'production') {
         // Allow the same flag to be set more than once outside of production to enable testing
         flags[name] = value;
