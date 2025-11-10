@@ -20,7 +20,6 @@ defaults:
 
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
-    # TODO: upload result artifacts
 
     integration-tests:
         name: Integration tests (${{ matrix.shadow_mode }} shadow; ${{ matrix.env || 'default env' }})
@@ -31,8 +30,7 @@ jobs:
                 shadow_mode: [native, synthetic]
                 env:
                     - ''
-                    # TODO: Fix
-                    # - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                    - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
                     - ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1
                     - NODE_ENV_FOR_TEST=production
@@ -50,9 +48,8 @@ jobs:
                       env: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
                     - shadow_mode: synthetic
                       env: DISABLE_DETACHED_REHYDRATION=1
-                    # TODO: Fix
-                    # - shadow_mode: synthetic
-                    #   env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
+                    - shadow_mode: synthetic
+                      env: DISABLE_DETACHED_REHYDRATION=1 DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - shadow_mode: native
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1
                     - shadow_mode: native

@@ -20,14 +20,15 @@ beforeEach(() => {
 
 afterEach(() => {
     detachReportingControlDispatcher();
+    logger.mockRestore();
 });
 
 const expectLogs = (regexes) => {
     if (process.env.NODE_ENV === 'production') {
         expect(logger).not.toHaveBeenCalled();
     } else {
+        expect(logger).toHaveBeenCalledTimes(regexes.length);
         const args = logger.mock.calls;
-        expect(args.length).toBe(regexes.length);
         for (let i = 0; i < args.length; i++) {
             expect(args[i][0]).toBeInstanceOf(Error);
             expect(args[i][0].message).toMatch(regexes[i]);

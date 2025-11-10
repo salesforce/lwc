@@ -3,7 +3,9 @@
 
 import { createElement } from 'lwc';
 import Container from 'x/container';
+import { spyOn } from '@vitest/spy';
 import { extractDataIds } from '../../../helpers/utils.js';
+import { resetAlreadyLoggedMessages } from '../../../helpers/reset.js';
 
 function dispatchEventWithLog(target, nodes, event) {
     const log = [];
@@ -27,34 +29,9 @@ function createTestElement() {
     return extractDataIds(elm);
 }
 
-function createDisconnectedTestElement() {
-    const fragment = document.createDocumentFragment();
-    const elm = createElement('x-container', { is: Container });
-    elm.setAttribute('data-id', 'x-container');
-
-    const doAppend = () => fragment.appendChild(elm);
-
-    if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-        doAppend();
-    } else {
-        // Expected warning, since we are working with disconnected nodes
-        expect(doAppend).toLogWarningDev(
-            Array(4)
-                .fill()
-                .map(
-                    () =>
-                        /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-                )
-        );
-    }
-
-    const nodes = extractDataIds(elm);
-    // Manually added because document fragments can't have attributes.
-    nodes.fragment = fragment;
-    return nodes;
-}
-
 describe('event propagation', () => {
+    afterEach(resetAlreadyLoggedMessages);
+
     describe('dispatched on native element', () => {
         it('{bubbles: true, composed: true}', () => {
             const nodes = createTestElement();
@@ -532,6 +509,43 @@ describe('event propagation', () => {
     describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
         'dispatched within a disconnected tree',
         () => {
+            let consoleSpy;
+            beforeAll(() => (consoleSpy = spyOn(console, 'warn').mockImplementation(() => {})));
+            afterEach(() => consoleSpy.mockReset());
+            afterAll(() => consoleSpy.mockRestore());
+
+            function createDisconnectedTestElement() {
+                const fragment = document.createDocumentFragment();
+                const elm = createElement('x-container', { is: Container });
+                elm.setAttribute('data-id', 'x-container');
+
+                const doAppend = () => fragment.appendChild(elm);
+
+                if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
+                    doAppend();
+                } else {
+                    doAppend();
+                    expect(consoleSpy).toHaveBeenCalledTimes(4);
+                    const warning = expect.objectContaining({
+                        name: 'Error',
+                        message: expect.stringMatching(
+                            /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+                        ),
+                    });
+                    expect(consoleSpy.mock.calls).toEqual([
+                        [warning],
+                        [warning],
+                        [warning],
+                        [warning],
+                    ]);
+                }
+
+                const nodes = extractDataIds(elm);
+                // Manually added because document fragments can't have attributes.
+                nodes.fragment = fragment;
+                return nodes;
+            }
+
             it('{bubbles: true, composed: true}', () => {
                 const nodes = createDisconnectedTestElement();
                 const event = new CustomEvent('test', { bubbles: true, composed: true });
