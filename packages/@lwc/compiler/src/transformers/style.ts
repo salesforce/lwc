@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as styleCompiler from '@lwc/style-compiler';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { normalizeToCompilerError, TransformerErrors, CompilerAggregateError } from '@lwc/errors';
 
 import type { NormalizedTransformOptions } from '../options';
 import type { TransformResult } from './shared';
@@ -44,20 +44,19 @@ export default function styleTransform(
     try {
         res = styleCompiler.transform(src, filename, styleCompilerConfig);
     } catch (e) {
+        // Handle AggregateError when in error recovery mode
+        if (experimentalErrorRecoveryMode && e instanceof AggregateError) {
+            const compilerErrors = e.errors.map((error) =>
+                normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, error, {
+                    filename,
+                })
+            );
+            throw new CompilerAggregateError(
+                compilerErrors,
+                'Multiple CSS errors occurred during compilation.'
+            );
+        }
         throw normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, e, { filename });
-    }
-
-    // In error recovery mode, check for collected errors
-    // For now, we just store the errors. Later we'll convert them to CompilerDiagnostic
-    // and throw CompilerAggregateError
-    if (
-        experimentalErrorRecoveryMode &&
-        'errors' in res &&
-        Array.isArray(res.errors) &&
-        res.errors.length > 0
-    ) {
-        // Errors are collected but not yet converted to diagnostics
-        // This will be handled in a future step
     }
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
