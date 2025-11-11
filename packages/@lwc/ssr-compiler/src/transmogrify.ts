@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { traverse, builders as b, type NodePath } from 'estree-toolkit';
+import { traverse, builders as b, type NodePath, is } from 'estree-toolkit';
 import { produce } from 'immer';
 import type { FunctionDeclaration, FunctionExpression, Node } from 'estree';
 import type { Program as EsProgram } from 'estree';
@@ -23,20 +23,30 @@ const EMIT_IDENT = b.identifier('$$emit');
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
 const TRANSMOGRIFY_TARGET = /^__lwc(Generate|Tmpl).*$/;
 
-const isWithinFn = (nodePath: NodePath): boolean => {
-    const { node } = nodePath;
-    if (!node) {
-        return false;
-    }
-    if (
-        (node.type === 'FunctionDeclaration' || node.type === 'FunctionExpression') &&
-        node.id &&
-        TRANSMOGRIFY_TARGET.test(node.id.name)
-    ) {
-        return true;
-    }
-    if (nodePath.parentPath) {
-        return isWithinFn(nodePath.parentPath);
+type NonArrowFunction = FunctionDeclaration | FunctionExpression;
+const isNonArrowFunction = (
+    node: NodePath
+): node is NodePath<FunctionDeclaration | FunctionExpression> => {
+    return is.functionDeclaration(node) || is.functionExpression(node);
+};
+
+/**
+ * Determines whether a node is within a function we want to transmogrify.
+ * @param nodePath the node to check
+ * @param nearestOnly whether to check only the nearest function definition or include all ancestors
+ */
+const isWithinFn = (nodePath: NodePath, nearestOnly = false): boolean => {
+    let path: NodePath<NonArrowFunction> | null = isNonArrowFunction(nodePath)
+        ? nodePath
+        : nodePath.findParent<NonArrowFunction>(isNonArrowFunction);
+    while (path?.node) {
+        const { id } = path.node;
+        if (id && TRANSMOGRIFY_TARGET.test(id.name)) {
+            return true;
+        } else if (nearestOnly) {
+            return false;
+        }
+        path = path.findParent<NonArrowFunction>(isNonArrowFunction);
     }
     return false;
 };
