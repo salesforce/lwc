@@ -35,6 +35,7 @@ export default (options) => {
         ]),
         LWC_VERSION,
         NODE_ENV: options.NODE_ENV_FOR_TEST,
+        IS_BROWSER: true,
     });
 
     const browsers = getBrowsers(options);
@@ -76,7 +77,7 @@ export default (options) => {
                 },
             },
         ],
-        testFramework: { config: { retries: 3 } },
+        testFramework: { config: { retries: options.CI ? 3 : 0 } },
         testRunnerHtml: (testFramework) =>
             `
         <!DOCTYPE html>
