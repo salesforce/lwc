@@ -1,0 +1,32 @@
+[
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid import statement, unable to find imported module.",
+        "column": 1,
+        "line": 2
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid import statement, unable to find imported module.",
+        "column": 1,
+        "line": 3
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid import statement, unable to find imported module.",
+        "column": 1,
+        "line": 4
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid import statement, import statement only support a single parameter.",
+        "column": 1,
+        "line": 5
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "@import must precede all other statements",
+        "column": 1,
+        "line": 7
+    }
+]

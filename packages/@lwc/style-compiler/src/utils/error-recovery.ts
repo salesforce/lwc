@@ -10,6 +10,7 @@ export class StyleCompilerCtx {
     readonly errorRecoveryMode: boolean;
     readonly errors: CssSyntaxError[] = [];
     readonly filename: string;
+    private readonly seenErrorKeys: Set<string> = new Set();
 
     constructor(errorRecoveryMode: boolean, filename: string) {
         this.errorRecoveryMode = errorRecoveryMode;
@@ -30,8 +31,11 @@ export class StyleCompilerCtx {
             return fn();
         } catch (error) {
             if (error instanceof CssSyntaxError) {
+                if (this.seenErrorKeys.has(error.message)) {
+                    return;
+                }
+                this.seenErrorKeys.add(error.message);
                 this.errors.push(error);
-                return undefined;
             } else {
                 // Non-CSS errors (compiler errors) should still throw
                 throw error;

@@ -90,10 +90,9 @@ export function transform(
         }
     }
 
-    const code = serialize(result, config);
+    if (errorRecoveryMode && ctx.hasErrors()) {
+        throw AggregateError(ctx.errors);
+    }
 
-    return {
-        code,
-        ...(errorRecoveryMode && ctx.hasErrors() ? { errors: ctx.errors } : {}),
-    };
+    return { code: serialize(result, config) };
 }

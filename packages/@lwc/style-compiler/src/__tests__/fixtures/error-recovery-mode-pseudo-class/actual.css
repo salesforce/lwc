@@ -1,0 +1,11 @@
+:dir() {
+    color: red;
+}
+
+:dir(ltr) {
+    order: 0;
+}
+
+:dir(ltrrrlr) {
+    order: 0;
+}

@@ -14,6 +14,15 @@ import { transform, type Config } from '../index';
 import type { CssSyntaxError } from 'postcss';
 
 function normalizeError(err: Error) {
+    if (err instanceof AggregateError) {
+        return err.errors.map(({ name, reason, column, line }) => ({
+            name,
+            reason,
+            column,
+            line,
+        }));
+    }
+
     if (err.name === 'CssSyntaxError') {
         return {
             name: err.name,

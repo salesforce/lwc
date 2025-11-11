@@ -1,0 +1,26 @@
+[
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid usage of unsupported selector \":root\". This selector is only supported in non-scoped CSS where the `disableSyntheticShadowSupport` flag is set to true.",
+        "column": 1,
+        "line": 1
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid usage of deprecated selector \"::shadow\".",
+        "column": 1,
+        "line": 5
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid usage of deprecated selector \">>>\".",
+        "column": 5,
+        "line": 9
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": "Invalid usage of attribute selector \"key\". \"key\" is a template directive and therefore not supported in css rules.",
+        "column": 2,
+        "line": 13
+    }
+]

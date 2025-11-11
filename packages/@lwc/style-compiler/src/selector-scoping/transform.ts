@@ -12,6 +12,7 @@ import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selecto
 
 import validateSelectors from './validate';
 import type { Selector, Root, Node, Pseudo, Tag } from 'postcss-selector-parser';
+import type { StyleCompilerCtx } from '../utils/error-recovery';
 
 type ChildNode = Exclude<Node, Selector>;
 
@@ -139,10 +140,15 @@ function transformHost(selector: Selector) {
     }
 }
 
-export default function transformSelector(root: Root, transformConfig: SelectorScopingConfig) {
+export default function transformSelector(
+    root: Root,
+    transformConfig: SelectorScopingConfig,
+    ctx: StyleCompilerCtx
+) {
     validateSelectors(
         root,
-        transformConfig.disableSyntheticShadowSupport && !transformConfig.scoped
+        transformConfig.disableSyntheticShadowSupport && !transformConfig.scoped,
+        ctx
     );
 
     root.each(scopeSelector);

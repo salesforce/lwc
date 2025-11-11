@@ -24,17 +24,10 @@ function shouldTransformSelector(rule: Rule) {
 
 function selectorProcessorFactory(transformConfig: SelectorScopingConfig, ctx: StyleCompilerCtx) {
     return postCssSelector((root) => {
-        ctx.withErrorRecovery(() => {
-            validateIdSelectors(root);
-        });
+        validateIdSelectors(root, ctx);
 
-        ctx.withErrorRecovery(() => {
-            transformSelectorScoping(root, transformConfig);
-        });
-
-        ctx.withErrorRecovery(() => {
-            transformDirPseudoClass(root);
-        });
+        transformSelectorScoping(root, transformConfig, ctx);
+        transformDirPseudoClass(root, ctx);
     });
 }
 
@@ -66,41 +59,34 @@ export default function postCssLwcPlugin(options: {
     );
 
     return (root, result) => {
-        ctx.withErrorRecovery(() => {
-            transformImport(root, result, options.scoped);
-        });
-
-        transformAtRules(root);
+        transformImport(root, result, options.scoped, ctx);
+        transformAtRules(root, ctx);
 
         // Wrap rule processing with error recovery
         root.walkRules((rule) => {
             ctx.withErrorRecovery(() => {
-                processRule(rule);
+                if (!shouldTransformSelector(rule)) {
+                    return;
+                }
+
+                // Let transform the selector with the 2 processors.
+                const syntheticSelector = syntheticShadowSelectorProcessor.processSync(rule);
+                const nativeSelector = nativeShadowSelectorProcessor.processSync(rule);
+                rule.selector = syntheticSelector;
+                // If the resulting selector are different it means that the selector use the :host selector. In
+                // this case we need to duplicate the CSS rule and assign the other selector.
+                if (syntheticSelector !== nativeSelector) {
+                    // The cloned selector is inserted before the currently processed selector to avoid processing
+                    // again the cloned selector.
+                    const currentRule = rule;
+                    const clonedRule = rule.cloneBefore();
+                    clonedRule.selector = nativeSelector;
+
+                    // Safe a reference to each other
+                    (clonedRule as any)._isNativeHost = true;
+                    (currentRule as any)._isSyntheticHost = true;
+                }
             });
         });
-
-        function processRule(rule: Rule) {
-            if (!shouldTransformSelector(rule)) {
-                return;
-            }
-
-            // Let transform the selector with the 2 processors.
-            const syntheticSelector = syntheticShadowSelectorProcessor.processSync(rule);
-            const nativeSelector = nativeShadowSelectorProcessor.processSync(rule);
-            rule.selector = syntheticSelector;
-            // If the resulting selector are different it means that the selector use the :host selector. In
-            // this case we need to duplicate the CSS rule and assign the other selector.
-            if (syntheticSelector !== nativeSelector) {
-                // The cloned selector is inserted before the currently processed selector to avoid processing
-                // again the cloned selector.
-                const currentRule = rule;
-                const clonedRule = rule.cloneBefore();
-                clonedRule.selector = nativeSelector;
-
-                // Safe a reference to each other
-                (clonedRule as any)._isNativeHost = true;
-                (currentRule as any)._isSyntheticHost = true;
-            }
-        }
     };
 }
