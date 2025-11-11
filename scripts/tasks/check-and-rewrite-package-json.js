@@ -17,7 +17,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const { globSync } = require('glob');
+const { SCOPED_PACKAGES } = require('../shared/packages.mjs');
 
 // This is the same list as in @lwc/rollup-plugin/src/index.ts
 const LWC_EXPOSED_MODULES = {
@@ -38,10 +38,7 @@ const STATIC_PACKAGES = ['@lwc/types'];
 
 const expectedPkgJsons = [];
 
-for (const dir of globSync('./packages/@lwc/*')) {
-    const filename = path.join('./', dir, 'package.json');
-    const actual = fs.readFileSync(filename, 'utf-8').replace(/\r\n/g, '\n'); // Windows compat
-    const pkg = JSON.parse(actual);
+for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
     // Skip private packages
     if (pkg.private) {
         continue;
@@ -131,12 +128,11 @@ for (const dir of globSync('./packages/@lwc/*')) {
         };
     }
 
-    const expected = JSON.stringify(expectedJson, null, 4) + '\n';
-
     expectedPkgJsons.push({
-        filename,
-        expected,
-        actual,
+        filename: path.join(dir, 'package.json'),
+        // Including \n because that's how prettier formats files
+        expected: JSON.stringify(expectedJson, null, 4) + '\n',
+        actual: JSON.stringify(pkg, null, 4) + '\n',
     });
 }
 

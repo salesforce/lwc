@@ -1,22 +1,13 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { globSync } from 'glob';
 
-const readJsonSync = (filepath) => JSON.parse(readFileSync(filepath, 'utf8'));
+const allPackages = globSync(['packages/lwc/package.json', 'packages/@lwc/*/package.json']);
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '../..');
-const lwcPackageDir = 'packages/lwc';
-const relativeNamespaceDir = 'packages/@lwc';
-const namespacedPackageDirs = readdirSync(join(root, 'packages/@lwc'), {
-    withFileTypes: true,
-})
-    .filter((fd) => fd.isDirectory() && !fd.name.startsWith('.'))
-    .map((fd) => join(relativeNamespaceDir, fd.name));
-const allPackageDirs = [lwcPackageDir, ...namespacedPackageDirs];
-
-export const ALL_PACKAGES = allPackageDirs.map((path) => ({
-    path,
-    package: readJsonSync(join(path, 'package.json')),
+export const ALL_PACKAGES = allPackages.map((pkg) => ({
+    path: dirname(pkg),
+    package: JSON.parse(readFileSync(pkg, 'utf8')),
 }));
 export const PRIVATE_PACKAGES = ALL_PACKAGES.filter((data) => data.package.private);
 export const PUBLIC_PACKAGES = ALL_PACKAGES.filter((data) => !data.package.private);
+export const SCOPED_PACKAGES = ALL_PACKAGES.filter((data) => data.package.name.startsWith('@lwc/'));

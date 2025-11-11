@@ -1,4 +1,0 @@
-:host(.foo) .baz .quux,
-:host(.bar) .baz .quux {
-    color: green;
-}

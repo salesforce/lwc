@@ -36,7 +36,7 @@ const VALID_SCOPE_TOKEN_REGEX = /^[a-zA-Z0-9\-_]+$/;
 let stylesheetsToCssContent: WeakMap<Stylesheet, Set<string>> = /*@__PURE__@*/ new WeakMap();
 let cssContentToAbortControllers: Map<string, AbortController> = /*@__PURE__@*/ new Map();
 
-// Only used in LWC's Karma tests
+// Only used in LWC's integration tests
 if (process.env.NODE_ENV === 'test-lwc-integration') {
     // Used to reset the global state between test runs
     (window as any).__lwcResetStylesheetCache = () => {
