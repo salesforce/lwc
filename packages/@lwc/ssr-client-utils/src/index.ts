@@ -61,7 +61,7 @@ export function registerLwcStyleComponent() {
     customElements.define('lwc-style', StyleDeduplicator);
 }
 
-// Only used in LWC's Karma tests
+// Only used in LWC's integration tests
 // See PR-5281 for precedence on extra guards
 if (
     typeof process === 'object' &&

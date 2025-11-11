@@ -15,7 +15,7 @@ import type { Stylesheet } from '@lwc/shared';
 
 let warned = false;
 
-// Only used in LWC's Karma tests
+// Only used in LWC's integration tests
 if (process.env.NODE_ENV === 'test-lwc-integration') {
     (window as any).__lwcResetWarnedOnVersionMismatch = () => {
         warned = false;

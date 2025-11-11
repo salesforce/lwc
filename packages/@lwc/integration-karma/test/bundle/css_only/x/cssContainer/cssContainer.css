@@ -1,6 +1,0 @@
-@import 'x/onlyCss';
-@import './local.css';
-
-p {
-    color: red;
-}

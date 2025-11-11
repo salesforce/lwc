@@ -1,6 +1,6 @@
 import { DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION } from '../../../helpers/constants.js';
 
-// It's useful to have Karma tests for this, so that we confirm legacy browsers still work
+// It's useful to have tests for this, so that we confirm legacy browsers still work
 describe('object rest spread transformation', () => {
     it('applies the correct transformation based on API version', () => {
         // this function will be compiled by @lwc/compiler

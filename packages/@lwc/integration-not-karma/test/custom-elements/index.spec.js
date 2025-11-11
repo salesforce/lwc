@@ -28,7 +28,7 @@ const undefinedElementError = /(Illegal constructor|does not define a custom ele
 
 describe('customElements.get and customElements.whenDefined', () => {
     it('using CustomElementConstructor', async () => {
-        // Nonce elements should be defined only once in the entire Karma test suite
+        // Nonce elements should be defined only once in the entire test suite
         const tagName = 'x-nonce1';
         expect(customElements.get(tagName)).toBeUndefined();
         const promise = customElements.whenDefined(tagName);

@@ -143,8 +143,8 @@ Some other polyfills are not separate packages but instead part of LWC's core lo
 
 There are several private internal packages for tests and performance benchmarking:
 
-- `@lwc/integration-karma`: primary client-side LWC test suite, using Karma
-- `@lwc/integration-tests`: WebDriverIO tests, used for anything Karma can't do, such as user agent gestures such as changing focus
+- `@lwc/integration-not-karma`: primary client-side LWC test suite, using Web Test Runner
+- `@lwc/integration-tests`: WebDriverIO tests, used for anything WTR can't do, such as user agent gestures such as changing focus
 - `@lwc/integration-types`: TypeScript tests, i.e. tests for the types themselves
 - `@lwc/perf-benchmarks`: Performance micro-benchmarks for either Best or Tachometer
 - `@lwc/perf-benchmarks-components`: Collection of components used by the above (split into a separate package due to Tachometer restrictions)
