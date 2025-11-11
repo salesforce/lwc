@@ -24,6 +24,7 @@ describe('vdom removes component while it is already disconnected', () => {
 
         if (
             !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE ||
+            lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION ||
             process.env.NODE_ENV === 'production'
         ) {
             expect(spy).not.toHaveBeenCalled();
