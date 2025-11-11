@@ -143,13 +143,6 @@ describe('custom elements registry', () => {
     beforeEach(async () => {
         iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
-
-        if (window.__coverage__) {
-            // FIXME: Is this still necessary for WTR?
-            // If istanbul coverage is enabled, we should proxy any calls in the iframe
-            // to window.__coverage__ to the main one, so that the coverage is properly computed.
-            iframe.contentWindow.__coverage__ = window.__coverage__;
-        }
     });
 
     describe('basic', () => {
