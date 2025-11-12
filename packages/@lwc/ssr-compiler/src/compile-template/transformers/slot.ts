@@ -22,9 +22,9 @@ const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
         const isSlotted = ${/* isSlotted */ is.literal};
-        const slotName = ${/* slotName */ is.expression};
-        const lightGenerators = lightSlottedContent?.[slotName ?? ""];
-        const scopedGenerators = scopedSlottedContent?.[slotName ?? ""];
+        const slotName = ${/* slotName */ is.expression} ?? "";
+        const lightGenerators = lightSlottedContent?.[slotName];
+        const scopedGenerators = scopedSlottedContent?.[slotName];
         const mismatchedSlots = isScopedSlot ? lightGenerators : scopedGenerators;
         const generators = isScopedSlot ? scopedGenerators : lightGenerators;
         /* 
