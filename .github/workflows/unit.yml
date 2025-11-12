@@ -64,7 +64,7 @@ jobs:
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup chrome
-              uses: browser-actions/setup-chrome@v1
+              uses: browser-actions/setup-chrome@v2
               with:
                   chrome-version: ${{ env.CHROME_VERSION }}
               id: setup-chrome
@@ -75,7 +75,10 @@ jobs:
               run: yarn add -W chromedriver@^${{ env.CHROME_VERSION }} --ignore-scripts
 
             - name: Run benchmark smoke tests
-              run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
+              run: yarn test:performance
+              env:
+                  BENCHMARK_SMOKE_TEST: 1
+                  CHROME_BINARY: ${{ steps.setup-chrome.outputs.chrome-path }}
 
             - name: Add step summary
               # 1. Remove leading/trailing "border" lines from output
