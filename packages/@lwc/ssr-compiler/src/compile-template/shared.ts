@@ -13,6 +13,7 @@ import {
     StringTrim,
 } from '@lwc/shared';
 import { isValidES3Identifier } from '@babel/types';
+import { esTemplateWithYield } from '../estemplate';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
 import type {
@@ -25,6 +26,9 @@ import type {
     ObjectExpression as EsObjectExpression,
     Property as EsProperty,
     Statement as EsStatement,
+    IfStatement as EsIfStatement,
+    YieldExpression as EsYieldExpression,
+    ExpressionStatement as EsExpressionStatement,
 } from 'estree';
 import type {
     ComplexExpression as IrComplexExpression,
@@ -32,34 +36,83 @@ import type {
     Literal as IrLiteral,
 } from '@lwc/template-compiler';
 
+const bYieldTernary =
+    esTemplateWithYield`yield ${is.expression} ? ${is.expression} : ${is.expression}`<EsExpressionStatement>;
+
+interface OptimizableYield extends EsExpressionStatement {
+    expression: EsYieldExpression & { delegate: false };
+}
+
+const bOptimizedYield =
+    esTemplateWithYield`yield ${is.expression} + ${is.expression};`<OptimizableYield>;
+
+function isOptimizableYield(stmt: EsStatement | undefined): stmt is OptimizableYield {
+    return (
+        is.expressionStatement(stmt) &&
+        is.yieldExpression(stmt.expression) &&
+        stmt.expression.delegate === false
+    );
+}
+
+/** Returns null if the statement cannot be optimized. */
+function optimizeSingleStatement(stmt: EsStatement): OptimizableYield | null {
+    if (is.blockStatement(stmt)) {
+        // `if (cond) { ... }` => optimize inner yields and see if we can condense
+        const optimizedBlock = optimizeAdjacentYieldStmts(stmt.body);
+        // More than one statement cannot be optimized into a single yield
+        if (optimizedBlock.length !== 1) return null;
+        const [optimized] = optimizedBlock;
+        return isOptimizableYield(optimized) ? optimized : null;
+    } else if (is.expressionStatement(stmt)) {
+        // `if (cond) expression` => just check if expression is a yield
+        return is.yieldExpression(stmt) ? stmt : null;
+    } else {
+        // Can only optimize expression/block statements
+        return null;
+    }
+}
+
+/**
+ * Tries to reduce if statements that only contain yields into a single yielded ternary
+ * Returns null if the statement cannot be optimized.
+ */
+function optimizeIfStatement(stmt: EsIfStatement): EsExpressionStatement | null {
+    const consequent = optimizeSingleStatement(stmt.consequent)?.expression.argument;
+    if (!consequent) {
+        return null;
+    }
+
+    const alternate = stmt.alternate
+        ? optimizeSingleStatement(stmt.alternate)?.expression.argument
+        : b.literal('');
+    if (!alternate) {
+        return null;
+    }
+
+    return bYieldTernary(stmt.test, consequent, alternate);
+}
+
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
-    let prevStmt: EsStatement | null = null;
-    return statements
-        .map((stmt) => {
-            if (
-                // Check if the current statement and previous statement are
-                // both yield expression statements that yield a string literal.
-                prevStmt &&
-                is.expressionStatement(prevStmt) &&
-                is.yieldExpression(prevStmt.expression) &&
-                !prevStmt.expression.delegate &&
-                prevStmt.expression.argument &&
-                is.literal(prevStmt.expression.argument) &&
-                typeof prevStmt.expression.argument.value === 'string' &&
-                is.expressionStatement(stmt) &&
-                is.yieldExpression(stmt.expression) &&
-                !stmt.expression.delegate &&
-                stmt.expression.argument &&
-                is.literal(stmt.expression.argument) &&
-                typeof stmt.expression.argument.value === 'string'
-            ) {
-                prevStmt.expression.argument.value += stmt.expression.argument.value;
-                return null;
+    // if (statements) return statements;
+    return statements.reduce((result: EsStatement[], stmt: EsStatement): EsStatement[] => {
+        if (is.ifStatement(stmt)) {
+            const optimized = optimizeIfStatement(stmt);
+            if (optimized) {
+                stmt = optimized;
             }
-            prevStmt = stmt;
-            return stmt;
-        })
-        .filter((el): el is NonNullable<EsStatement> => el !== null);
+        }
+        const prev = result.at(-1);
+        if (!isOptimizableYield(stmt) || !isOptimizableYield(prev)) {
+            // nothing to do
+            return [...result, stmt];
+        }
+        const arg = stmt.expression.argument;
+        if (!arg || (is.literal(arg) && arg.value === '')) {
+            // bare `yield` and `yield ""` amount to nothing, so we can drop them
+            return result;
+        }
+        return [...result.slice(0, -1), bOptimizedYield(prev.expression.argument!, arg)];
+    }, []);
 }
 
 export function bAttributeValue(node: IrNode, attrName: string): EsExpression {
