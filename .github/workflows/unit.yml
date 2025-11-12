@@ -72,7 +72,7 @@ jobs:
             # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
             # See: https://github.com/google/tachometer#on-demand-dependencies
             - name: Install chromedriver
-              run: yarn add -W chromedriver@^${{ env.CHROME_VERSION }}
+              run: yarn add -W chromedriver@^${{ env.CHROME_VERSION }} --ignore-scripts
 
             - name: Run benchmark smoke tests
               run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
