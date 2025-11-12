@@ -13,6 +13,7 @@ import {
     StringTrim,
 } from '@lwc/shared';
 import { isValidES3Identifier } from '@babel/types';
+import { produce } from 'immer';
 import { esTemplateWithYield } from '../estemplate';
 import { expressionIrToEs } from './expression';
 import type { TransformerContext } from './types';
@@ -43,8 +44,7 @@ interface OptimizableYield extends EsExpressionStatement {
     expression: EsYieldExpression & { delegate: false };
 }
 
-const bOptimizedYield =
-    esTemplateWithYield`yield ${is.expression} + ${is.expression};`<OptimizableYield>;
+const bOptimizedYield = esTemplateWithYield`yield ${is.expression};`<OptimizableYield>;
 
 function isOptimizableYield(stmt: EsStatement | undefined): stmt is OptimizableYield {
     return (
@@ -93,7 +93,6 @@ function optimizeIfStatement(stmt: EsIfStatement): EsExpressionStatement | null 
 }
 
 export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
-    // if (statements) return statements;
     return statements.reduce((result: EsStatement[], stmt: EsStatement): EsStatement[] => {
         if (is.ifStatement(stmt)) {
             const optimized = optimizeIfStatement(stmt);
@@ -111,7 +110,24 @@ export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStateme
             // bare `yield` and `yield ""` amount to nothing, so we can drop them
             return result;
         }
-        return [...result.slice(0, -1), bOptimizedYield(prev.expression.argument!, arg)];
+        const newArg = produce(prev.expression.argument!, (draft) => {
+            if (is.literal(arg) && typeof arg.value === 'string') {
+                let concatTail = draft;
+                while (is.binaryExpression(concatTail) && concatTail.operator === '+') {
+                    concatTail = concatTail.right;
+                }
+                if (is.literal(concatTail) && typeof concatTail.value === 'string') {
+                    // conat adjacent strings now, rather than at runtime
+                    concatTail.value += arg.value;
+                    return draft;
+                }
+            }
+            // concat arbitrary values at runtime
+            return b.binaryExpression('+', draft, arg);
+        });
+
+        // replace the last `+` chain with a new one with the new arg
+        return [...result.slice(0, -1), bOptimizedYield(newArg)];
     }, []);
 }
 
