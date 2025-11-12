@@ -6,7 +6,16 @@
  */
 import { traverse, builders as b, type NodePath, is } from 'estree-toolkit';
 import { produce } from 'immer';
-import type { FunctionDeclaration, FunctionExpression, Node } from 'estree';
+import { esTemplate } from './estemplate';
+import type {
+    AssignmentExpression,
+    Function as EsFunction, // Renamed to avoid confusion with the JS built-in
+    FunctionDeclaration,
+    FunctionExpression,
+    Node,
+    ReturnStatement,
+    VariableDeclaration,
+} from 'estree';
 import type { Program as EsProgram } from 'estree';
 import type { Node as EstreeToolkitNode } from 'estree-toolkit/dist/helpers';
 
@@ -18,7 +27,6 @@ interface TransmogrificationState {
 
 export type Visitors = Parameters<typeof traverse<Node, TransmogrificationState, never>>[1];
 
-const EMIT_IDENT = b.identifier('$$emit');
 /** Function names that may be transmogrified. All should start with `__lwc`. */
 // Rollup may rename variables to prevent shadowing. When it does, it uses the format `foo$0`, `foo$1`, etc.
 const TRANSMOGRIFY_TARGET = /^__lwc(Generate|Tmpl).*$/;
@@ -31,11 +39,9 @@ const isNonArrowFunction = (
 };
 
 /**
- * Determines whether a node is within a function we want to transmogrify.
- * @param nodePath the node to check
- * @param nearestOnly whether to check only the nearest function definition or include all ancestors
+ * Determines whether a node is a function we want to transmogrify or within one, at any level.
  */
-const isWithinFn = (nodePath: NodePath, nearestOnly = false): boolean => {
+const isWithinTargetFunc = (nodePath: NodePath): boolean => {
     let path: NodePath<NonArrowFunction> | null = isNonArrowFunction(nodePath)
         ? nodePath
         : nodePath.findParent<NonArrowFunction>(isNonArrowFunction);
@@ -43,13 +49,28 @@ const isWithinFn = (nodePath: NodePath, nearestOnly = false): boolean => {
         const { id } = path.node;
         if (id && TRANSMOGRIFY_TARGET.test(id.name)) {
             return true;
-        } else if (nearestOnly) {
-            return false;
         }
         path = path.findParent<NonArrowFunction>(isNonArrowFunction);
     }
     return false;
 };
+
+/**
+ * Determines whether the nearest function encapsulating this node is a function we transmogrify.
+ */
+const isImmediateWithinTargetFunc = (nodePath: NodePath): boolean => {
+    const parentFunc = nodePath.findParent<EsFunction>(is.function);
+    return Boolean(
+        parentFunc &&
+            isNonArrowFunction(parentFunc) &&
+            parentFunc.node?.id &&
+            TRANSMOGRIFY_TARGET.test(parentFunc.node.id.name)
+    );
+};
+
+const bDeclareYieldVar = esTemplate`let __lwcYield = '';`<VariableDeclaration>;
+const bAppendToYieldVar = esTemplate`__lwcYield += ${is.expression};`<AssignmentExpression>;
+const bReturnYieldVar = esTemplate`return __lwcYield;`<ReturnStatement>;
 
 const visitors: Visitors = {
     // @ts-expect-error types for `traverse` do not support sharing a visitor between node types:
@@ -66,12 +87,12 @@ const visitors: Visitors = {
         // Component authors might conceivably use async generator functions in their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated async
         // generator functions from those that were written by the component author.
-        if (!isWithinFn(path)) {
+        if (!isWithinTargetFunc(path)) {
             return;
         }
         node.generator = false;
         node.async = state.mode === 'async';
-        node.params.unshift(EMIT_IDENT);
+        node.body.body = [bDeclareYieldVar(), ...node.body.body, bReturnYieldVar()];
     },
     YieldExpression(path, state) {
         const { node } = path;
@@ -82,33 +103,17 @@ const visitors: Visitors = {
         // Component authors might conceivably use generator functions within their own code. Therefore,
         // when traversing & transforming written+generated code, we need to disambiguate generated yield
         // expressions from those that were written by the component author.
-        if (!isWithinFn(path)) {
+        if (!isWithinTargetFunc(path)) {
             return;
         }
 
-        if (node.delegate) {
-            // transform `yield* foo(arg)` into `foo($$emit, arg)` or `await foo($$emit, arg)`
-            if (node.argument?.type !== 'CallExpression') {
-                throw new Error(
-                    'Implementation error: cannot transmogrify complex yield-from expressions'
-                );
-            }
-
-            const callExpr = node.argument;
-            callExpr.arguments.unshift(EMIT_IDENT);
-
-            path.replaceWith(state.mode === 'sync' ? callExpr : b.awaitExpression(callExpr));
-        } else {
-            // transform `yield foo` into `$$emit(foo)`
-            const emittedExpression = node.argument;
-            if (!emittedExpression) {
-                throw new Error(
-                    'Implementation error: cannot transform a yield expression that yields nothing'
-                );
-            }
-
-            path.replaceWith(b.callExpression(EMIT_IDENT, [emittedExpression]));
+        const arg = node.argument;
+        if (!arg) {
+            const type = node.delegate ? 'yield*' : 'yield';
+            throw new Error(`Cannot transmogrify ${type} statement without an argument.`);
         }
+
+        path.replaceWith(bAppendToYieldVar(state.mode === 'sync' ? arg : b.awaitExpression(arg)));
     },
     ImportSpecifier(path, _state) {
         // @lwc/ssr-runtime has a couple of helper functions that need to conform to either the generator or
@@ -140,6 +145,17 @@ const visitors: Visitors = {
         } else if (node.imported.name === 'renderAttrs') {
             node.imported.name = 'renderAttrsNoYield';
         }
+    },
+    ReturnStatement(path) {
+        if (!isImmediateWithinTargetFunc(path)) {
+            return;
+        }
+        // The transmogrify result returns __lwcYield, so we skip it
+        const arg = path.node?.argument;
+        if (is.identifier(arg) && arg.name === '__lwcYield') {
+            return;
+        }
+        throw new Error('Cannot transmogrify function with return statement.');
     },
 };
 

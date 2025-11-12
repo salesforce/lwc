@@ -24,12 +24,12 @@ import type {
 // TODO [#4663]: Render mode mismatch between template and compiler should throw.
 const bExportTemplate = esTemplate`
     export default async function* __lwcTmpl(
-            // This is where $$emit comes from
             shadowSlottedContent,
             lightSlottedContent,
             scopedSlottedContent,
             Cmp,
-            instance
+            instance,
+            renderContext
     ) {
         // Deliberately using let so we can mutate as many times as we want in the same scope.
         // These should be scoped to the "tmpl" function however, to avoid conflicts with other templates.
@@ -51,7 +51,7 @@ const bExportTemplate = esTemplate`
         const { stylesheets: staticStylesheets } = Cmp;
         if (defaultStylesheets || defaultScopedStylesheets || staticStylesheets) {
             yield renderStylesheets(
-                $$emit,
+                renderContext,
                 defaultStylesheets, 
                 defaultScopedStylesheets, 
                 staticStylesheets,

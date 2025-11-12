@@ -51,6 +51,7 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
             instance,
             scopeToken,
             contextfulParent,
+            renderContext,
             shadowSlottedContent,
             lightSlottedContentMap,
             scopedSlottedContentMap
