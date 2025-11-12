@@ -76,5 +76,6 @@ jobs:
                   yarn test:run
 
             - name: Format results
+              if: ${{ always() }}
               working-directory: ./packages/@lwc/perf-benchmarks
               run: yarn --silent test:format >> "$GITHUB_STEP_SUMMARY"
