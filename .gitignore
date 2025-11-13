@@ -12,10 +12,10 @@ coverage/
 
 lib/
 __benchmarks_results__/
-packages/@lwc/integration-tests/public/
-packages/@lwc/integration-tests/errorShots/
-packages/@lwc/integration-tests/results/
-packages/@lwc/integration-tests/.env
+packages/@lwc/integration-wdio/public/
+packages/@lwc/integration-wdio/errorShots/
+packages/@lwc/integration-wdio/results/
+packages/@lwc/integration-wdio/.env
 
 # custom node_modules for testing
 !packages/@lwc/module-resolver/src/__tests__/**/node_modules/
