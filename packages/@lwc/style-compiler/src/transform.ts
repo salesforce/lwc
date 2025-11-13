@@ -81,10 +81,8 @@ export function transform(
         result = postcss(plugins).process(src, { from: id }).sync();
     } catch (error) {
         if (errorRecoveryMode && error instanceof postcss.CssSyntaxError) {
-            // In recovery mode, collect PostCSS parsing errors
             ctx.errors.push(error);
-            // Create minimal result to continue (empty root)
-            result = postcss.root().toResult({ from: id });
+            throw AggregateError(ctx.errors);
         } else {
             throw error;
         }
