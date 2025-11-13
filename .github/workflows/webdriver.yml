@@ -25,7 +25,7 @@ jobs:
         runs-on: ubuntu-22.04
         defaults:
             run:
-                working-directory: ./packages/@lwc/integration-tests
+                working-directory: ./packages/@lwc/integration-wdio
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
