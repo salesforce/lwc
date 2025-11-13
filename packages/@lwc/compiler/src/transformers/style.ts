@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as styleCompiler from '@lwc/style-compiler';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import { normalizeToCompilerError, TransformerErrors, CompilerAggregateError } from '@lwc/errors';
 
 import type { NormalizedTransformOptions } from '../options';
 import type { TransformResult } from './shared';
@@ -25,6 +25,7 @@ export default function styleTransform(
     config: NormalizedTransformOptions
 ): TransformResult {
     const { customProperties } = config.stylesheetConfig;
+    const { experimentalErrorRecoveryMode } = config;
 
     const styleCompilerConfig = {
         customProperties: {
@@ -36,12 +37,25 @@ export default function styleTransform(
         scoped: config.scopedStyles,
         disableSyntheticShadowSupport: config.disableSyntheticShadowSupport,
         apiVersion: config.apiVersion,
+        experimentalErrorRecoveryMode,
     };
 
     let res;
     try {
         res = styleCompiler.transform(src, filename, styleCompilerConfig);
     } catch (e) {
+        // Handle AggregateError when in error recovery mode
+        if (experimentalErrorRecoveryMode && e instanceof AggregateError) {
+            const compilerErrors = e.errors.map((error) =>
+                normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, error, {
+                    filename,
+                })
+            );
+            throw new CompilerAggregateError(
+                compilerErrors,
+                'Multiple CSS errors occurred during compilation.'
+            );
+        }
         throw normalizeToCompilerError(TransformerErrors.CSS_TRANSFORMER_ERROR, e, { filename });
     }
 

@@ -1,0 +1,15 @@
+:root {
+    color: red;
+}
+
+::shadow {
+    color: blue;
+}
+
+div >>> span {
+    color: green;
+}
+
+[key='entity-id'] {
+    color: aqua;
+}
