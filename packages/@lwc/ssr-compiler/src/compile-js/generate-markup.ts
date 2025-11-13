@@ -27,13 +27,13 @@ const bGenerateMarkup = esTemplate`
         enumerable: false,
         writable: false,
         value: async function* __lwcGenerateMarkup(
-            // The $$emit function is magically inserted here
             tagName, 
             props, 
             attrs,
             parent, 
             scopeToken,
             contextfulParent,
+            renderContext,
             shadowSlottedContent,
             lightSlottedContent, 
             scopedSlottedContent,
@@ -77,7 +77,8 @@ const bGenerateMarkup = esTemplate`
                 lightSlottedContent,
                 scopedSlottedContent,
                 ${/*component class*/ 0},
-                instance
+                instance,
+                renderContext
             );
             yield \`</\${tagName}>\`;
         }

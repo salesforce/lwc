@@ -29,17 +29,15 @@ type BaseGenerateMarkupParams = readonly [
     parent: LightningElement | null,
     scopeToken: string | null,
     contextfulParent: LightningElement | null,
+    renderContext: RenderContext,
 ];
-
-/** Text emitter used by transmogrified formats. */
-type Emit = (str: string) => void;
 
 /** Slotted content function used by `asyncYield` mode. */
 type SlottedContentGenerator = (
     instance: LightningElement
 ) => AsyncGenerator<string, void, unknown>;
 /** Slotted content function used by `sync` and `async` modes. */
-type SlottedContentEmitter = ($$emit: Emit, instance: LightningElement) => void;
+type SlottedContentEmitter = (instance: LightningElement) => void;
 
 /** Slotted content map used by `asyncYield` mode. */
 type SlottedContentGeneratorMap = Record<number | string, SlottedContentGenerator[]>;
@@ -55,7 +53,6 @@ type GenerateMarkupGeneratorParams = readonly [
 ];
 /** `generateMarkup` parameters used by `sync` and `async` modes. */
 type GenerateMarkupEmitterParams = readonly [
-    emit: Emit,
     ...BaseGenerateMarkupParams,
     shadowSlottedContent: SlottedContentEmitter | null,
     lightSlottedContent: SlottedContentEmitterMap | null,
@@ -67,9 +64,9 @@ export type GenerateMarkupAsyncYield = (
     ...args: GenerateMarkupGeneratorParams
 ) => AsyncGenerator<string>;
 /** Signature for `async` compilation mode. */
-export type GenerateMarkupAsync = (...args: GenerateMarkupEmitterParams) => Promise<void>;
+export type GenerateMarkupAsync = (...args: GenerateMarkupEmitterParams) => Promise<string>;
 /** Signature for `sync` compilation mode. */
-export type GenerateMarkupSync = (...args: GenerateMarkupEmitterParams) => void;
+export type GenerateMarkupSync = (...args: GenerateMarkupEmitterParams) => string;
 
 type GenerateMarkupVariants = GenerateMarkupAsyncYield | GenerateMarkupAsync | GenerateMarkupSync;
 
@@ -147,13 +144,12 @@ export function* renderAttrs(
 }
 
 export function renderAttrsNoYield(
-    emit: (segment: string) => void,
     instance: LightningElement,
     attrs: Attributes,
     hostScopeToken: string | undefined,
     scopeToken: string | undefined
 ) {
-    emit(renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken));
+    return renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken);
 }
 
 export async function* fallbackTmpl(
@@ -161,7 +157,8 @@ export async function* fallbackTmpl(
     _lightSlottedContent: SlottedContentGeneratorMap | null,
     _scopedSlottedContent: SlottedContentGeneratorMap | null,
     Cmp: LightningElementConstructor,
-    instance: LightningElement
+    instance: LightningElement,
+    _renderContext: RenderContext
 ): AsyncGenerator<string> {
     if (Cmp.renderMode !== 'light') {
         yield `<template shadowrootmode="open"></template>`;
@@ -172,19 +169,21 @@ export async function* fallbackTmpl(
 }
 
 export function fallbackTmplNoYield(
-    emit: Emit,
     shadowSlottedContent: SlottedContentEmitter | null,
     _lightSlottedContent: SlottedContentEmitterMap | null,
     _scopedSlottedContent: SlottedContentEmitterMap | null,
     Cmp: LightningElementConstructor,
-    instance: LightningElement
-): void {
+    instance: LightningElement,
+    _renderContext: RenderContext
+): string {
+    let markup = '';
     if (Cmp.renderMode !== 'light') {
-        emit(`<template shadowrootmode="open"></template>`);
+        markup += '<template shadowrootmode="open"></template>';
         if (shadowSlottedContent) {
-            shadowSlottedContent(emit, instance);
+            markup += shadowSlottedContent(instance);
         }
     }
+    return markup;
 }
 
 export function addSlottedContent(
@@ -219,6 +218,10 @@ export class RenderContext {
             this.styleDedupeIsEnabled = false;
         }
     }
+
+    getNextId() {
+        return this.nextId++;
+    }
 }
 
 /**
@@ -239,38 +242,32 @@ export async function serverSideRenderComponent(
     styleDedupe: string | boolean = false,
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): Promise<string> {
-    // TODO [#5309]: Remove this warning after a single release
-    if (process.env.NODE_ENV !== 'production') {
-        if (arguments.length === 6 || !['sync', 'async', 'asyncYield'].includes(mode)) {
-            throw new Error(
-                "The signature for @lwc/ssr-runtime's `renderComponent` has changed. There is now only one parameter for style dedupe."
-            );
-        }
-    }
     if (typeof tagName !== 'string') {
         throw new Error(`tagName must be a string, found: ${tagName}`);
     }
 
     const generateMarkup = Component[SYMBOL__GENERATE_MARKUP];
-
-    let markup = '';
-    const emit = (segment: string) => {
-        markup += segment;
-    };
-
-    emit.cxt = new RenderContext(styleDedupe);
+    const renderContext = new RenderContext(styleDedupe);
 
     if (!generateMarkup) {
         // If a non-component is accidentally provided, render an empty template
-        emit(`<${tagName}>`);
-        // Using a false type assertion for the `instance` param is safe because it's only used
-        // if there's slotted content, which we are not providing
-        fallbackTmplNoYield(emit, null, null, null, Component, null as any);
-        emit(`</${tagName}>`);
+        let markup = `<${tagName}>`;
+        fallbackTmplNoYield(
+            null,
+            null,
+            null,
+            Component,
+            // Using a false type assertion for the `instance` param is safe because it's only used
+            // if there's slotted content, which we are not providing
+            null as unknown as LightningElement,
+            renderContext
+        );
+        markup += `</${tagName}>`;
         return markup;
     }
 
     if (mode === 'asyncYield') {
+        let markup = '';
         for await (const segment of (generateMarkup as GenerateMarkupAsyncYield)(
             tagName,
             props,
@@ -278,34 +275,36 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
+            renderContext,
             null,
             null,
             null
         )) {
             markup += segment;
         }
+        return markup;
     } else if (mode === 'async') {
-        await (generateMarkup as GenerateMarkupAsync)(
-            emit,
+        return await (generateMarkup as GenerateMarkupAsync)(
             tagName,
             props,
             null,
             null,
             null,
             null,
+            renderContext,
             null,
             null,
             null
         );
     } else if (mode === 'sync') {
-        (generateMarkup as GenerateMarkupSync)(
-            emit,
+        return (generateMarkup as GenerateMarkupSync)(
             tagName,
             props,
             null,
             null,
             null,
             null,
+            renderContext,
             null,
             null,
             null
@@ -313,6 +312,4 @@ export async function serverSideRenderComponent(
     } else {
         throw new Error(`Invalid mode: ${mode}`);
     }
-
-    return markup;
 }

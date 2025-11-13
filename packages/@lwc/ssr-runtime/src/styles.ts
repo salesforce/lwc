@@ -17,10 +17,6 @@ type ForgivingStylesheets =
     | null
     | Array<Stylesheets | undefined | null>;
 
-type EmitFn = ((strSegment: string) => void) & {
-    cxt: RenderContext;
-};
-
 // Traverse in the same order as `flattenStylesheets` but without creating unnecessary additional arrays
 function traverseStylesheets(
     stylesheets: ForgivingStylesheets,
@@ -44,10 +40,7 @@ export function hasScopedStaticStylesheets(Component: LightningElementConstructo
 }
 
 export function renderStylesheets(
-    // FIXME: the `emit` function does not exist in the SSR's compiler's yield mode. If we
-    // are going to use it to transport the RenderContext down the call stack, we'll need to figure out
-    // how to make htat work in yield mode.
-    emit: EmitFn,
+    renderContext: RenderContext,
     defaultStylesheets: ForgivingStylesheets,
     defaultScopedStylesheets: ForgivingStylesheets,
     staticStylesheets: ForgivingStylesheets,
@@ -66,7 +59,7 @@ export function renderStylesheets(
         const token = scoped ? scopeToken : undefined;
         const useActualHostSelector = !scoped || renderMode !== 'light';
         const useNativeDirPseudoclass = true;
-        const { styleDedupeIsEnabled, stylesheetToId, styleDedupePrefix } = emit.cxt;
+        const { styleDedupeIsEnabled, stylesheetToId, styleDedupePrefix } = renderContext;
 
         if (!styleDedupeIsEnabled) {
             const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
@@ -78,7 +71,7 @@ export function renderStylesheets(
             // TODO [#2869]: `<lwc-style>`s should not have scope token classes, but required for hydration to function correctly (W-19087941).
             result += `<lwc-style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
         } else {
-            const styleId = emit.cxt.nextId++;
+            const styleId = renderContext.getNextId();
             stylesheetToId.set(stylesheet, styleId.toString());
             const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
             validateStyleTextContents(styleContents);

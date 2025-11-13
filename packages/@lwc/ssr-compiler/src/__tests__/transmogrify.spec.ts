@@ -68,26 +68,26 @@ describe('transmogrify', () => {
         test('__lwcGenerateMarkup is transformed into sync mode', () => {
             expect(COMPILED_CMP_SYNC).not.toContain('async function* __lwcGenerateMarkup');
             expect(COMPILED_CMP_SYNC).not.toContain('async function __lwcGenerateMarkup');
-            expect(COMPILED_CMP_SYNC).toContain('function __lwcGenerateMarkup($$emit');
+            expect(COMPILED_CMP_SYNC).toContain('function __lwcGenerateMarkup');
 
             expect(COMPILED_CMP_SYNC).not.toContain('yield* renderAttrs');
-            expect(COMPILED_CMP_SYNC).toContain('renderAttrs($$emit');
+            expect(COMPILED_CMP_SYNC).toContain('__lwcYield += renderAttrs');
 
             expect(COMPILED_CMP_SYNC).not.toContain('yield ">"');
             expect(COMPILED_CMP_SYNC).not.toContain("yield '>'");
-            expect(COMPILED_CMP_SYNC).toContain('$$emit(">")');
+            expect(COMPILED_CMP_SYNC).toContain('__lwcYield += ">"');
         });
 
         test('__lwcTmpl is transformed into sync mode', () => {
             expect(COMPILED_CMP_SYNC).not.toContain('async function* __lwcTmpl');
             expect(COMPILED_CMP_SYNC).not.toContain('async function __lwcTmpl');
-            expect(COMPILED_CMP_SYNC).toContain('function __lwcTmpl($$emit');
+            expect(COMPILED_CMP_SYNC).toContain('function __lwcTmpl');
 
             expect(COMPILED_CMP_SYNC).not.toContain('yield "<p"');
-            expect(COMPILED_CMP_SYNC).toContain('$$emit("<p")');
+            expect(COMPILED_CMP_SYNC).toContain('__lwcYield += "<p"');
 
             expect(COMPILED_CMP_SYNC).not.toContain('yield stylesheetScopeTokenClass');
-            expect(COMPILED_CMP_SYNC).toContain('$$emit(stylesheetScopeTokenClass)');
+            expect(COMPILED_CMP_SYNC).toContain('__lwcYield += stylesheetScopeTokenClass');
         });
 
         test('component code is not transformed into sync mode', () => {
@@ -104,25 +104,25 @@ describe('transmogrify', () => {
     describe('in async mode', () => {
         test('__lwcGenerateMarkup is transformed into async mode', () => {
             expect(COMPILED_CMP_ASYNC).not.toContain('async function* __lwcGenerateMarkup');
-            expect(COMPILED_CMP_ASYNC).toContain('async function __lwcGenerateMarkup($$emit');
+            expect(COMPILED_CMP_ASYNC).toContain('async function __lwcGenerateMarkup');
 
             expect(COMPILED_CMP_ASYNC).not.toContain('yield* renderAttrs');
-            expect(COMPILED_CMP_ASYNC).toContain('renderAttrs($$emit');
+            expect(COMPILED_CMP_ASYNC).toContain('__lwcYield += await renderAttrs');
 
             expect(COMPILED_CMP_ASYNC).not.toContain('yield ">"');
             expect(COMPILED_CMP_ASYNC).not.toContain("yield '>'");
-            expect(COMPILED_CMP_ASYNC).toContain('$$emit(">")');
+            expect(COMPILED_CMP_ASYNC).toContain('__lwcYield += await ">"');
         });
 
         test('__lwcTmpl is transformed into async mode', () => {
             expect(COMPILED_CMP_ASYNC).not.toContain('async function* __lwcTmpl');
-            expect(COMPILED_CMP_ASYNC).toContain('async function __lwcTmpl($$emit');
+            expect(COMPILED_CMP_ASYNC).toContain('async function __lwcTmpl');
 
             expect(COMPILED_CMP_ASYNC).not.toContain('yield "<p"');
-            expect(COMPILED_CMP_ASYNC).toContain('$$emit("<p")');
+            expect(COMPILED_CMP_ASYNC).toContain('__lwcYield += await "<p"');
 
             expect(COMPILED_CMP_ASYNC).not.toContain('yield stylesheetScopeTokenClass');
-            expect(COMPILED_CMP_ASYNC).toContain('$$emit(stylesheetScopeTokenClass)');
+            expect(COMPILED_CMP_ASYNC).toContain('__lwcYield += await stylesheetScopeTokenClass');
         });
 
         test('component code is not transformed into async mode', () => {

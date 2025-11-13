@@ -48,13 +48,14 @@ const bYieldFromChildGenerator = esTemplateWithYield`
                 instance,
                 scopeToken,
                 contextfulParent,
+                renderContext,
                 shadowSlottedContent,
                 lightSlottedContentMap,
                 scopedSlottedContentMap
             );
         } else {
             yield \`<\${tagName}>\`;
-            yield* __fallbackTmpl(shadowSlottedContent, lightSlottedContentMap, scopedSlottedContentMap, ${/* Component */ 3}, instance)
+            yield* __fallbackTmpl(shadowSlottedContent, lightSlottedContentMap, scopedSlottedContentMap, ${/* Component */ 3}, instance, renderContext)
             yield \`</\${tagName}>\`;
         }
     }
