@@ -7,7 +7,7 @@
 
 import StyledComponent from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/shadow/styledComponent.js';
 
-import { styledComponentSsrBenchmark } from '../../../utils/styledComponentSsrBenchmark';
+import { styledComponentSsrBenchmark } from '../../../../utils/styledComponentSsrBenchmark';
 
 const NUM_COMPONENTS = 10000;
 
