@@ -53,9 +53,9 @@ const header = [
     'Delta (low)',
     'Delta (high)',
     'Delta (avg)',
-    'Delta perc (low)',
-    'Delta perc (high)',
-    'Delta perc (avg)',
+    'Delta % (low)',
+    'Delta % (high)',
+    'Delta % (avg)',
 ];
 
 const results = await Promise.all(
@@ -79,9 +79,9 @@ const results = await Promise.all(
             fmt(deltaAbsLow),
             fmt(deltaAbsHigh),
             fmt(avg(deltaAbsLow, deltaAbsHigh)),
-            fmt(deltaPercLow / 100),
-            fmt(deltaPercHigh / 100),
-            fmt(avg(deltaPercLow, deltaPercHigh) / 100),
+            fmt(deltaPercLow) + '%',
+            fmt(deltaPercHigh) + '%',
+            fmt(avg(deltaPercLow, deltaPercHigh)) + '%',
         ];
     })
 );
