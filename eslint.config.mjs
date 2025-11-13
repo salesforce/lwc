@@ -218,7 +218,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['packages/@lwc/integration-not-karma/**'],
+        files: ['packages/@lwc/integration-wtr/**'],
 
         languageOptions: {
             globals: {
@@ -355,7 +355,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['packages/@lwc/integration-not-karma/**'],
+        files: ['packages/@lwc/integration-wtr/**'],
 
         languageOptions: {
             globals: {

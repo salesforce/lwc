@@ -347,7 +347,7 @@ The footer should contain any information about **Breaking Changes** and is also
 [creating-a-pull-request]: https://help.github.com/articles/creating-a-pull-request/
 [eslint-integrations]: http://eslint.org/docs/user-guide/integrations
 [integration-test-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-tests/README.md
-[integration-wtr-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-not-karma/README.md
+[integration-wtr-readme]: https://github.com/salesforce/lwc/blob/master/packages/@lwc/integration-wtr/README.md
 
 ## Getting your changes reviewed
 

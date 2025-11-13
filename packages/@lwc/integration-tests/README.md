@@ -1,6 +1,6 @@
 # @lwc/integration-tests
 
-Add tests to @lwc/integration-not-karma instead of @lwc/integration-tests unless the tests are related to
+Add tests to @lwc/integration-wtr instead of @lwc/integration-tests unless the tests are related to
 keyboard navigation.
 
 End-to-end tests run in the browser across different modes with the option to run tests remotely on Sauce Labs.
