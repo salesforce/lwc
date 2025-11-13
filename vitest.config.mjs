@@ -44,8 +44,8 @@ export default defineConfig({
                 // TODO [#5272]: add tests
                 '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages
-                '**/packages/@lwc/integration-not-karma/**',
-                '**/packages/@lwc/integration-tests/**',
+                '**/packages/@lwc/integration-wtr/**',
+                '**/packages/@lwc/integration-wdio/**',
                 '**/packages/@lwc/integration-types/**',
                 '**/packages/@lwc/perf-benchmarks-components/**',
                 '**/packages/@lwc/perf-benchmarks/**',

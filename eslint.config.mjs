@@ -211,14 +211,14 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/scripts/**', 'packages/@lwc/integration-tests/src/components/**/*.spec.js'],
+        files: ['**/scripts/**', 'packages/@lwc/integration-wdio/src/components/**/*.spec.js'],
 
         rules: {
             '@typescript-eslint/no-require-imports': 'off',
         },
     },
     {
-        files: ['packages/@lwc/integration-not-karma/**'],
+        files: ['packages/@lwc/integration-wtr/**'],
 
         languageOptions: {
             globals: {
@@ -317,7 +317,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['packages/@lwc/integration-tests/**'],
+        files: ['packages/@lwc/integration-wdio/**'],
 
         languageOptions: {
             globals: {
@@ -355,7 +355,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['packages/@lwc/integration-not-karma/**'],
+        files: ['packages/@lwc/integration-wtr/**'],
 
         languageOptions: {
             globals: {

@@ -1,5 +1,5 @@
 {
-    "name": "@lwc/integration-not-karma",
+    "name": "@lwc/integration-wtr",
     "private": true,
     "version": "8.24.0",
     "type": "module",
