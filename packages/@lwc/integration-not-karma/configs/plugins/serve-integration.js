@@ -5,7 +5,6 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 
 import {
     API_VERSION,
-    COVERAGE,
     DISABLE_STATIC_CONTENT_OPTIMIZATION,
     DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER,
 } from '../../helpers/options.js';
@@ -126,9 +125,7 @@ const transform = async (ctx) => {
 
     const { output } = await bundle.generate({
         format: 'esm',
-        // FIXME: Does web-test-runner use istanbul?
-        // Sourcemaps don't work with Istanbul coverage
-        sourcemap: COVERAGE ? false : 'inline',
+        sourcemap: 'inline',
     });
 
     return output[0].code;

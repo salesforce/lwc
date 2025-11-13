@@ -13,6 +13,10 @@ on:
                 description: Old version to compare
                 type: string
                 required: true
+            grep:
+                description: Tests to focus (regex supported)
+                type: string
+                required: false
 
 jobs:
     run-performance-tests:
@@ -70,12 +74,25 @@ jobs:
               run: yarn build:performance
 
             - name: Run benchmarks
+              id: benchmarks
               working-directory: ./packages/@lwc/perf-benchmarks
               run: |
                   echo "Running benchmarks for $GITHUB_REF_NAME against $BENCHMARK_REF"
                   yarn test:run
+              env:
+                  GREP: ${{ inputs.grep }}
 
             - name: Format results
-              if: ${{ always() }}
+              # Upload successful results, even if some steps failed
+              if: ${{ steps.benchmarks.outcome == 'success' || steps.benchmarks.outcome == 'failure' }}
               working-directory: ./packages/@lwc/perf-benchmarks
               run: yarn --silent test:format >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Upload unit test coverage report
+              uses: actions/upload-artifact@v4
+              with:
+                  name: benchmark-results
+                  path: |
+                      packages/@lwc/perf-benchmarks/dist/__benchmarks__/results.md
+                      packages/@lwc/perf-benchmarks/dist/__benchmarks__/results.html
+                      packages/@lwc/perf-benchmarks/dist/__benchmarks__/**/*.results.json
