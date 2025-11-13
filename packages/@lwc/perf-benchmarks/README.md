@@ -30,6 +30,12 @@ cd packages/@lwc/perf-benchmarks
 yarn tach --config dist/__benchmarks__/path/to/tachometer.json
 ```
 
+To run a subset of benchmarks without specifying each individually, use the `GREP` env var to filter filenames. Regular expressions are supported.
+
+```shell
+GREP='ssr' yarn test
+```
+
 > [!TIP]
 > Running all of the benchmarks will take multiple hours. Let it run overnight!
 

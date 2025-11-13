@@ -37,6 +37,7 @@ BENCHMARK_TIMEOUT = BENCHMARK_SMOKE_TEST ? 0 : toInt(BENCHMARK_TIMEOUT);
 BENCHMARK_CPU_THROTTLING_RATE =
     BENCHMARK_CPU_THROTTLING_RATE && toInt(BENCHMARK_CPU_THROTTLING_RATE);
 
+const benchmarkDir = path.join(__dirname, '../dist/__benchmarks__');
 const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
 const packageRootDir = path.resolve(__dirname, '..');
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRootDir, 'package.json'), 'utf-8'));
@@ -145,14 +146,8 @@ async function extractCpuThrottlingRate(benchmarkFile) {
 // Given a benchmark source file, create the necessary HTML file and Tachometer JSON
 // file for running it.
 async function processBenchmarkFile(benchmarkFile, directoryHash) {
-    const targetDir = path.dirname(benchmarkFile);
-    const benchmarkFileBasename = path.basename(benchmarkFile);
-    const htmlFilename = path.join(targetDir, benchmarkFileBasename.replace('.js', '.html'));
-
-    // Generate a pretty name for the benchmark to display in Tachometer results
-    const splitFileName = benchmarkFile.split(path.sep);
-    const engineType = splitFileName[splitFileName.indexOf('__benchmarks__') + 1];
-    const benchmarkName = `${engineType}-${benchmarkFileBasename.split('.')[0]}`;
+    const htmlFilename = benchmarkFile.replace('.js', '.html');
+    const benchmarkName = path.relative(benchmarkDir, benchmarkFile).replace('.benchmark.js', '');
 
     async function writeHtmlFile() {
         const html = createHtml(benchmarkFile);
@@ -170,10 +165,7 @@ async function processBenchmarkFile(benchmarkFile, directoryHash) {
             directoryHash,
             cpuThrottlingRate
         );
-        const jsonFilename = path.join(
-            targetDir,
-            `${benchmarkFileBasename.split('.')[0]}.tachometer.json`
-        );
+        const jsonFilename = benchmarkFile.replace('.benchmark.js', '.tachometer.json');
         await writeFile(jsonFilename, JSON.stringify(tachometerJson, null, 2), 'utf8');
     }
 
@@ -185,9 +177,7 @@ async function main() {
         algo: 'sha256',
     });
 
-    const benchmarkFiles = await glob(
-        path.join(__dirname, '../dist/__benchmarks__/**/*.benchmark.js')
-    );
+    const benchmarkFiles = await glob(path.join(benchmarkDir, '**/*.benchmark.js'));
 
     await Promise.all(benchmarkFiles.map((file) => processBenchmarkFile(file, directoryHash)));
 }
