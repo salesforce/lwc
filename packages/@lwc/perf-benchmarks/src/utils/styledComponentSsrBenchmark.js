@@ -5,7 +5,8 @@ export function styledComponentSsrBenchmark(
     name,
     numComponents,
     componentOrComponents,
-    { benchmark, run }
+    { benchmark, run },
+    styleDedupe
 ) {
     benchmark(name, () => {
         const isArray = Array.isArray(componentOrComponents);
@@ -15,7 +16,8 @@ export function styledComponentSsrBenchmark(
                 await renderComponent(
                     isArray ? `styled-component${i}` : 'styled-component',
                     isArray ? componentOrComponents[i] : componentOrComponents,
-                    {}
+                    {},
+                    styleDedupe
                 );
             }
         });
