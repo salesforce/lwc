@@ -87,3 +87,12 @@ jobs:
               if: ${{ steps.benchmarks.outcome == 'success' || steps.benchmarks.outcome == 'failure' }}
               working-directory: ./packages/@lwc/perf-benchmarks
               run: yarn --silent test:format >> "$GITHUB_STEP_SUMMARY"
+
+            - name: Upload unit test coverage report
+              uses: actions/upload-artifact@v4
+              with:
+                  name: benchmark-results
+                  path: |
+                      packages/@lwc/perf-benchmarks/dist/__benchmarks__/results.md
+                      packages/@lwc/perf-benchmarks/dist/__benchmarks__/results.html
+                      packages/@lwc/perf-benchmarks/dist/__benchmarks__/**/*.results.json
