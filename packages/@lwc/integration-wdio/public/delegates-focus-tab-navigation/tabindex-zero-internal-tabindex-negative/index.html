@@ -1,0 +1,18 @@
+
+        <html>
+            <head>
+                <title>tabindex-zero-internal-tabindex-negative</title>
+            </head>
+            <body>
+                <script type="module">
+                    window.process = { env: { NODE_ENV: "development" } };
+                </script>
+                <script type="module" src="../../shared/shadow.js"></script>
+                <script type="module">
+                  import * as LWC from '../../shared/engine.js';
+                  window.LWC = LWC;
+                </script>
+                <script type="module" src="./tabindex-zero-internal-tabindex-negative.js"></script>
+            </body>
+        </html>
+    
