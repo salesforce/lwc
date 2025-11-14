@@ -1,6 +1,12 @@
 # Benchmark
 
-## Running the benchmarks
+## Running via GitHub Actions
+
+The [Run Performance Benchmarks](https://github.com/salesforce/lwc/actions/workflows/benchmark-release.yml) workflow has a manual trigger. Run the workflow from the _new_ branch and specify an _old_ branch/tag/commit to compare against. If you don't want to run all of the benchmarks, you can filter by benchmark name.
+
+The workflow is also automatically triggered for any changes to release branches.
+
+## Running locally
 
 First, build the benchmarks:
 
