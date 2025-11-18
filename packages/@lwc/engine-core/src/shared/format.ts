@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, ArrayJoin, ArrayPush, StringToLowerCase } from '@lwc/shared';
+import { isNull, ArrayJoin, ArrayPush, StringToLowerCase, ArrayReverse } from '@lwc/shared';
 
 import type { VM } from '../framework/vm';
 
@@ -36,5 +36,5 @@ export function getErrorComponentStack(vm: VM): string {
         currentVm = currentVm.owner;
     }
 
-    return wcStack.reverse().join('\n\t');
+    return ArrayJoin.call(ArrayReverse.call(wcStack), '\n\t');
 }

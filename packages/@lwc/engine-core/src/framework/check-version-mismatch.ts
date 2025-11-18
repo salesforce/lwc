@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
+import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX, StringMatch, toString } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 
@@ -36,7 +36,7 @@ export function checkVersionMismatch(
     func: Template | Stylesheet | LightningElementConstructor,
     type: 'template' | 'stylesheet' | 'component'
 ) {
-    const versionMatcher = func.toString().match(LWC_VERSION_COMMENT_REGEX);
+    const versionMatcher = StringMatch.call(toString(func), LWC_VERSION_COMMENT_REGEX);
     if (!isNull(versionMatcher) && !warned) {
         if (
             typeof process === 'object' &&

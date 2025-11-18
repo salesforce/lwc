@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { StringReplace } from './language';
+
 const ESCAPED_CHARS: { [char: string]: string } = {
     '"': '&quot;',
     "'": '&#x27;',
@@ -21,5 +23,5 @@ const ESCAPED_CHARS: { [char: string]: string } = {
 export function htmlEscape(str: string, attrMode: boolean = false): string {
     const searchValue = attrMode ? /["&]/g : /["'<>&]/g;
 
-    return str.replace(searchValue, (char) => ESCAPED_CHARS[char]);
+    return StringReplace.call(str, searchValue, (char) => ESCAPED_CHARS[char]);
 }

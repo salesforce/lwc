@@ -5,7 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isArray } from './language';
+import {
+    ArrayJoin,
+    ArrayMap,
+    ArrayPush,
+    entries,
+    isArray,
+    StringReplace,
+    StringSplit,
+    StringTrim,
+} from './language';
 import type { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
 
 export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
@@ -48,13 +57,13 @@ export type Stylesheets = Array<Stylesheet | Stylesheets>;
 export function parseStyleText(cssText: string): { [name: string]: string } {
     const styleMap: { [name: string]: string } = {};
 
-    const declarations = cssText.split(DECLARATION_DELIMITER);
+    const declarations = StringSplit.call(cssText, DECLARATION_DELIMITER);
     for (const declaration of declarations) {
         if (declaration) {
-            const [prop, value] = declaration.split(PROPERTY_DELIMITER);
+            const [prop, value] = StringSplit.call(declaration, PROPERTY_DELIMITER);
 
             if (prop !== undefined && value !== undefined) {
-                styleMap[prop.trim()] = value.trim();
+                styleMap[StringTrim.call(prop)] = StringTrim.call(value);
             }
         }
     }
@@ -65,21 +74,21 @@ export function parseStyleText(cssText: string): { [name: string]: string } {
 export function normalizeStyleAttributeValue(style: string): string {
     const styleMap = parseStyleText(style);
 
-    const styles = Object.entries(styleMap).map(([key, value]) => {
-        value = value.replace(IMPORTANT_FLAG, ' !important').trim();
+    const styles = ArrayMap.call(entries(styleMap), ([key, value]) => {
+        value = StringTrim.call(StringReplace.call(value, IMPORTANT_FLAG, ' !important' as any));
         return `${key}: ${value};`;
     });
 
-    return styles.join(' ');
+    return ArrayJoin.call(styles, ' ');
 }
 
 export function flattenStylesheets(stylesheets: Stylesheets): Stylesheet[] {
     const list: Stylesheet[] = [];
     for (const stylesheet of stylesheets) {
         if (!isArray(stylesheet)) {
-            list.push(stylesheet);
+            ArrayPush.call(list, stylesheet);
         } else {
-            list.push(...flattenStylesheets(stylesheet));
+            ArrayPush.call(list, ...flattenStylesheets(stylesheet));
         }
     }
     return list;

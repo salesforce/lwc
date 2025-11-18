@@ -23,6 +23,11 @@ import {
     ArrayFrom,
     ArrayFilter,
     ArrayMap,
+    ArrayPush,
+    entries,
+    forEach,
+    StringEndsWith,
+    StringStartsWith,
 } from '@lwc/shared';
 
 import {
@@ -455,7 +460,7 @@ function hydrateChildren(
 
     const serverNodes =
         process.env.NODE_ENV !== 'production'
-            ? Array.from(getChildNodes(parentNode), (node) => cloneNode(node, true))
+            ? ArrayFrom(getChildNodes(parentNode), (node) => cloneNode(node, true))
             : null;
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
@@ -536,7 +541,7 @@ function isMatchingElement(
     shouldValidateAttr: AttrValidationPredicate = () => true
 ) {
     const { getProperty } = renderer;
-    if (vnode.sel.toLowerCase() !== getProperty(elm, 'tagName').toLowerCase()) {
+    if (StringToLowerCase.call(vnode.sel) !== StringToLowerCase.call(getProperty(elm, 'tagName'))) {
         if (process.env.NODE_ENV !== 'production') {
             queueHydrationError('node', elm);
         }
@@ -587,7 +592,7 @@ function validateAttrs(
 
     // Validate attributes, though we could always recovery from those by running the update mods.
     // Note: intentionally ONLY matching vnodes.attrs to elm.attrs, in case SSR is adding extra attributes.
-    for (const [attrName, attrValue] of Object.entries(attrs)) {
+    for (const [attrName, attrValue] of entries(attrs)) {
         if (!shouldValidateAttr(attrName)) {
             continue;
         }
@@ -714,19 +719,19 @@ function validateStyleAttr(
         vnodeStyle = style;
     } else if (!isUndefined(styleDecls)) {
         const parsedVnodeStyle = parseStyleText(elmStyle);
-        const expectedStyle = [];
+        const expectedStyle: string[] = [];
         // styleMap is used when style is set to static value.
         for (let i = 0, n = styleDecls.length; i < n; i++) {
             const [prop, value, important] = styleDecls[i];
-            expectedStyle.push(`${prop}: ${value + (important ? ' !important' : '')};`);
+            ArrayPush.call(expectedStyle, `${prop}: ${value + (important ? ' !important' : '')};`);
 
             const parsedPropValue = parsedVnodeStyle[prop];
 
             if (isUndefined(parsedPropValue)) {
                 nodesAreCompatible = false;
-            } else if (!parsedPropValue.startsWith(value)) {
+            } else if (!StringStartsWith.call(parsedPropValue, value)) {
                 nodesAreCompatible = false;
-            } else if (important && !parsedPropValue.endsWith('!important')) {
+            } else if (important && !StringEndsWith.call(parsedPropValue, '!important')) {
                 nodesAreCompatible = false;
             }
         }
@@ -770,15 +775,11 @@ function areStaticElementsCompatible(
         clientElement
     );
 
-    clientAttrsNames.forEach((attrName) => {
+    forEach.call(clientAttrsNames, (attrName) => {
         const clientAttributeValue = getAttribute(clientElement, attrName);
         const serverAttributeValue = getAttribute(serverElement, attrName);
         if (clientAttributeValue !== serverAttributeValue) {
-            // Check if the root element attributes have expressions, if it does then we need to delegate hydration
-            // validation to haveCompatibleStaticParts.
-            // Note if there are no parts then it is a fully static fragment.
-            // partId === 0 will always refer to the root element, this is guaranteed by the compiler.
-            if (parts?.[0].partId !== 0) {
+            if (parts![0].partId !== 0) {
                 if (process.env.NODE_ENV !== 'production') {
                     queueHydrationError(
                         'attribute',

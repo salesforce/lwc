@@ -243,7 +243,6 @@ export function getFilteredChildNodes(node: Node): Element[] {
         const resolver = getShadowRootResolver(getShadowRoot(node));
         return ArrayReduce.call(
             slots,
-            // @ts-expect-error Array#reduce has a generic that gets lost in our retyped ArrayReduce
             (seed: Element[], slot) => {
                 if (resolver === getShadowRootResolver(slot)) {
                     ArrayPush.apply(

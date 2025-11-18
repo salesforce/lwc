@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFalse, isFunction, isUndefined } from '@lwc/shared';
+import { isFalse, isFunction, isUndefined, StringIncludes } from '@lwc/shared';
 import { logWarnOnce } from '../../shared/logger';
 import type { Signal } from '@lwc/signals';
 
@@ -54,7 +54,7 @@ const errorWithStack = (err: unknown): string => {
     const stack = 'stack' in err ? String(err.stack) : '';
     const message = 'message' in err ? String(err.message) : '';
     const constructor = err.constructor.name;
-    return stack.includes(message) ? stack : `${constructor}: ${message}\n${stack}`;
+    return StringIncludes.call(stack, message) ? stack : `${constructor}: ${message}\n${stack}`;
 };
 
 /**
@@ -89,6 +89,7 @@ class SignalTracker {
 
     unsubscribeFromSignals() {
         try {
+            // eslint-disable-next-line @lwc/lwc-internal/no-normal-code
             this.signalToUnsubscribeMap.forEach((unsubscribe) => unsubscribe());
         } catch (err: any) {
             logWarnOnce(

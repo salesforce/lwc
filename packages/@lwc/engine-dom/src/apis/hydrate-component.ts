@@ -12,7 +12,7 @@ import {
     getAssociatedVMIfPresent,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
-import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
+import { StringToLowerCase, entries, isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement } from '@lwc/engine-core';
 
@@ -36,11 +36,11 @@ function createVMWithProps(element: Element, Ctor: typeof LightningElement, prop
     const vm = createVM(element, Ctor, renderer, {
         mode: 'open',
         owner: null,
-        tagName: element.tagName.toLowerCase(),
+        tagName: StringToLowerCase.call(element.tagName),
         hydrated: true,
     });
 
-    for (const [key, value] of Object.entries(props)) {
+    for (const [key, value] of entries(props)) {
         (element as any)[key] = value;
     }
 

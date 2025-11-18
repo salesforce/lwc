@@ -5,7 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined, isArray, isFunction } from '@lwc/shared';
+import {
+    isUndefined,
+    isArray,
+    isFunction,
+    ArrayPush,
+    ArraySplice,
+    ArrayIndexOf,
+} from '@lwc/shared';
 
 //
 // Feature detection
@@ -95,7 +102,7 @@ function insertConstructableStylesheet(
     const { adoptedStyleSheets } = target;
     const { stylesheet } = cacheData;
     // The reason we prefer .push() rather than reassignment is for perf: https://github.com/salesforce/lwc/pull/2683
-    adoptedStyleSheets.push(stylesheet);
+    ArrayPush.call(adoptedStyleSheets, stylesheet);
 
     if (process.env.NODE_ENV !== 'production') {
         /* istanbul ignore if */
@@ -104,7 +111,11 @@ function insertConstructableStylesheet(
         }
         // TODO [#4155]: unrendering should account for stylesheet content collisions
         signal.addEventListener('abort', () => {
-            adoptedStyleSheets.splice(adoptedStyleSheets.indexOf(stylesheet), 1);
+            ArraySplice.call(
+                adoptedStyleSheets,
+                ArrayIndexOf.call(adoptedStyleSheets, stylesheet),
+                1
+            );
             stylesheetCache.delete(content);
         });
     }

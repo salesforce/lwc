@@ -12,6 +12,7 @@ import {
     DEFAULT_SSR_MODE,
     htmlEscape,
     type Stylesheet,
+    ArrayPush,
 } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
@@ -193,7 +194,7 @@ export function addSlottedContent(
 ) {
     const contentList = contentMap[name];
     if (contentList) {
-        contentList.push(fn);
+        ArrayPush.call(contentList, fn);
     } else {
         contentMap[name] = [fn];
     }

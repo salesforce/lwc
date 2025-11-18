@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
+import {
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isNull,
+    isUndefined,
+    StringToLowerCase,
+} from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { logWarnOnce } from '../shared/logger';
 import { getAssociatedVMIfPresent } from '../framework/vm';
@@ -62,8 +68,8 @@ function checkAndReportViolation(elm: Element, prop: string, isSetter: boolean, 
 
     if (process.env.NODE_ENV !== 'production') {
         logWarnOnce(
-            `Element <${elm.tagName.toLowerCase()}> ` +
-                (isUndefined(vm) ? '' : `owned by <${vm.elm.tagName.toLowerCase()}> `) +
+            `Element <${StringToLowerCase.call(elm.tagName)}> ` +
+                (isUndefined(vm) ? '' : `owned by <${StringToLowerCase.call(vm.elm.tagName)}> `) +
                 `uses non-standard property "${prop}". This will be removed in a future version of LWC. ` +
                 `See https://sfdc.co/deprecated-aria`
         );

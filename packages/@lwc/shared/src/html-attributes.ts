@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
+import {
+    isUndefined,
+    StringCharCodeAt,
+    StringFromCharCode,
+    StringReplace,
+    StringToUpperCase,
+} from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -189,7 +195,7 @@ export function kebabCaseToCamelCase(attrName: string): string {
     let result = CACHED_KEBAB_CAMEL_MAPPING.get(attrName);
 
     if (isUndefined(result)) {
-        result = StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+        result = StringReplace.call(attrName, CAMEL_REGEX, (g) => StringToUpperCase.call(g[1]));
         CACHED_KEBAB_CAMEL_MAPPING.set(attrName, result);
     }
 

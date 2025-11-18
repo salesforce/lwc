@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import { htmlPropertyToAttribute, isNull, isUndefined, StringToLowerCase } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { EmptyObject } from '../utils';
 import { safelySetProperty } from '../sanitized-html-content';
@@ -61,7 +61,7 @@ export function patchProps(
             if (process.env.IS_BROWSER && process.env.NODE_ENV !== 'production') {
                 if (!(key in elm!)) {
                     logWarn(
-                        `Unknown public property "${key}" of element <${elm!.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
+                        `Unknown public property "${key}" of element <${StringToLowerCase.call(elm!.tagName)}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
                             key
                         )}", or the attribute does not exist in this browser or DOM implementation.`
                     );

@@ -18,6 +18,10 @@ import {
     StringCharAt,
     STATIC_PART_TOKEN_ID,
     toString,
+    StringIndexOf,
+    StringSubstring,
+    ArrayJoin,
+    StringTrim,
 } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
@@ -164,11 +168,11 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         let delimiterIndex = partToken.length;
         let attrName = '';
         if (type === STATIC_PART_TOKEN_ID.ATTRIBUTE) {
-            delimiterIndex = partToken.indexOf(':');
+            delimiterIndex = StringIndexOf.call(partToken, ':');
             // Only VStaticPartData.attrs have an attribute name
-            attrName = partToken.substring(delimiterIndex + 1);
+            attrName = StringSubstring.call(partToken, delimiterIndex + 1);
         }
-        const partId = partToken.substring(1, delimiterIndex);
+        const partId = StringSubstring.call(partToken, 1, delimiterIndex);
         const part = partIdsToParts.get(partId) ?? EmptyObject;
 
         return { type, part, attrName };
@@ -234,7 +238,9 @@ function serializeClassAttribute(part: VStaticPartElement, classToken: string) {
     const classMap = getMapFromClassName(part.data?.className);
     // Trim the leading and trailing whitespace here because classToken contains a leading space and
     // there will be a trailing space if classMap is empty.
-    const computedClassName = `${classToken} ${keys(classMap).join(' ')}`.trim();
+    const computedClassName = StringTrim.call(
+        `${classToken} ${ArrayJoin.call(keys(classMap), ' ')}`
+    );
     return computedClassName.length ? ` class="${htmlEscape(computedClassName, true)}"` : '';
 }
 

@@ -5,7 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { htmlEscape, HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
+import {
+    htmlEscape,
+    HTML_NAMESPACE,
+    isVoidElement,
+    ArrayJoin,
+    ArrayMap,
+    ArrayPush,
+} from '@lwc/shared';
 
 import {
     HostNodeType,
@@ -22,16 +29,17 @@ import type { HostElement, HostShadowRoot, HostAttribute, HostChildNode } from '
 // Note that for statically optimized content the expression serialization is done in
 // buildParseFragmentFn in @lwc/engine-core. It takes the same logic used here.
 function serializeAttributes(attributes: HostAttribute[]): string {
-    return attributes
-        .map((attr) =>
+    return ArrayJoin.call(
+        ArrayMap.call(attributes, (attr) =>
             attr.value.length ? `${attr.name}="${htmlEscape(attr.value, true)}"` : attr.name
-        )
-        .join(' ');
+        ),
+        ' '
+    );
 }
 
 function serializeChildNodes(children: HostChildNode[], tagName?: string): string {
-    return children
-        .map((child): string => {
+    return ArrayJoin.call(
+        ArrayMap.call(children, (child) => {
             switch (child[HostTypeKey]) {
                 case HostNodeType.Text:
                     return serializeTextContent(child[HostValueKey], tagName);
@@ -42,18 +50,19 @@ function serializeChildNodes(children: HostChildNode[], tagName?: string): strin
                 case HostNodeType.Element:
                     return serializeElement(child);
             }
-        })
-        .join('');
+        }),
+        ''
+    );
 }
 
 function serializeShadowRoot(shadowRoot: HostShadowRoot): string {
     const attrs = [`shadowrootmode="${shadowRoot.mode}"`];
 
     if (shadowRoot.delegatesFocus) {
-        attrs.push('shadowrootdelegatesfocus');
+        ArrayPush.call(attrs, 'shadowrootdelegatesfocus');
     }
 
-    return `<template ${attrs.join(' ')}>${serializeChildNodes(
+    return `<template ${ArrayJoin.call(attrs, ' ')}>${serializeChildNodes(
         shadowRoot[HostChildrenKey]
     )}</template>`;
 }

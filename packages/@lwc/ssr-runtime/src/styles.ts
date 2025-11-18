@@ -72,7 +72,7 @@ export function renderStylesheets(
             result += `<lwc-style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
         } else {
             const styleId = renderContext.getNextId();
-            stylesheetToId.set(stylesheet, styleId.toString());
+            stylesheetToId.set(stylesheet, String(styleId));
             const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
             validateStyleTextContents(styleContents);
 

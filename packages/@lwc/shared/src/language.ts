@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024, Salesforce, Inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
@@ -40,6 +40,8 @@ const {
     seal,
     /** Detached {@linkcode Object.setPrototypeOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf MDN Reference}. */
     setPrototypeOf,
+    /** Detached {@linkcode Object.values}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values MDN Reference}. */
+    values,
 } = Object;
 
 const {
@@ -52,13 +54,7 @@ const {
 /** The most extensible array type. */
 type BaseArray = readonly unknown[];
 /** Names of methods that can be used on a readonly array. */
-type ArrayPureMethodNames = {
-    [K in keyof BaseArray]: K extends string
-        ? BaseArray[K] extends (...args: any) => any
-            ? K
-            : never
-        : never;
-}[keyof BaseArray];
+type ArrayPureMethodNames = Exclude<Extract<keyof BaseArray, string>, 'length'>;
 /**
  * Unbound array methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @example
@@ -92,6 +88,26 @@ type UnboundArrayMutationMethods = {
     };
 };
 
+/** A special case because the method has its own generic. */
+type DetachedArrayReduce = {
+    call: <T, U>(
+        thisArg: T[],
+        callback: (previousValue: U, currentValue: T, index: number, array: T[]) => U,
+        initialValue?: U
+    ) => U;
+    apply: <T, U>(
+        thisArg: T[],
+        args: [
+            callback: (previousValue: U, currentValue: T, index: number, array: T[]) => U,
+            initialValue?: U,
+        ]
+    ) => U;
+};
+
+type FixedArrayPureMethods = Omit<UnboundArrayPureMethods, 'reduce'> & {
+    reduce: DetachedArrayReduce;
+};
+
 // For some reason, JSDoc don't get picked up for multiple renamed destructured constants (even
 // though it works fine for one, e.g. isArray), so comments for these are added to the export
 // statement, rather than this declaration.
@@ -118,7 +134,7 @@ const {
     splice: ArraySplice,
     unshift: ArrayUnshift,
     forEach, // Weird anomaly!
-}: UnboundArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
+}: FixedArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
 
 // The type of the return value of Array.prototype.every is `this is T[]`. However, once this
 // Array method is pulled out of the prototype, the function is now referencing `this` where
@@ -147,10 +163,18 @@ const { fromCharCode: StringFromCharCode } = String;
 const {
     charAt: StringCharAt,
     charCodeAt: StringCharCodeAt,
+    endsWith: StringEndsWith,
+    includes: StringIncludes,
+    indexOf: StringIndexOf,
+    localeCompare: StringLocaleCompare,
+    match: StringMatch,
     replace: StringReplace,
-    split: StringSplit,
     slice: StringSlice,
+    split: StringSplit,
+    startsWith: StringStartsWith,
+    substring: StringSubstring,
     toLowerCase: StringToLowerCase,
+    toUpperCase: StringToUpperCase,
     trim: StringTrim,
 } = String.prototype;
 
@@ -230,6 +254,7 @@ export {
     keys,
     seal,
     setPrototypeOf,
+    values,
     /*
      * String static
      */
@@ -241,14 +266,30 @@ export {
     StringCharAt,
     /** Unbound {@linkcode String.prototype.charCodeAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt MDN Reference}. */
     StringCharCodeAt,
+    /** Unbound {@linkcode String.prototype.endsWith}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith MDN Reference}. */
+    StringEndsWith,
+    /** Unbound {@linkcode String.prototype.includes}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes MDN Reference}. */
+    StringIncludes,
+    /** Unbound {@linkcode String.prototype.indexOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/indexOf MDN Reference}. */
+    StringIndexOf,
+    /** Unbound {@linkcode String.prototype.localeCompare}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare MDN Reference}. */
+    StringLocaleCompare,
+    /** Unbound {@linkcode String.prototype.match}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match MDN Reference}. */
+    StringMatch,
     /** Unbound {@linkcode String.prototype.replace}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace MDN Reference}. */
     StringReplace,
-    /** Unbound {@linkcode String.prototype.split}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split MDN Reference}. */
-    StringSplit,
     /** Unbound {@linkcode String.prototype.slice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice MDN Reference}. */
     StringSlice,
+    /** Unbound {@linkcode String.prototype.split}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split MDN Reference}. */
+    StringSplit,
+    /** Unbound {@linkcode String.prototype.endsWith}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/endsWith MDN Reference}. */
+    StringStartsWith,
+    /** Unbound {@linkcode String.prototype.substring}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring MDN Reference}. */
+    StringSubstring,
     /** Unbound {@linkcode String.prototype.toLowerCase}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase MDN Reference}. */
     StringToLowerCase,
+    /** Unbound {@linkcode String.prototype.toUpperCase}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toUpperCase MDN Reference}. */
+    StringToUpperCase,
     /** Unbound {@linkcode String.prototype.trim}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim MDN Reference}. */
     StringTrim,
 };
@@ -351,8 +392,7 @@ const OtS = {}.toString;
 export function toString(obj: unknown): string {
     if (obj?.toString) {
         // Arrays might hold objects with "null" prototype So using
-        // Array.prototype.toString directly will cause an error Iterate through
-        // all the items and handle individually.
+        // Array.prototype.toString directly will cause an error
         if (isArray(obj)) {
             // This behavior is slightly different from Array#toString:
             // 1. Array#toString calls `this.join`, rather than Array#join
@@ -366,6 +406,7 @@ export function toString(obj: unknown): string {
             // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString
             return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
         }
+        // eslint-disable-next-line @lwc/lwc-internal/no-normal-code
         return obj.toString();
     } else if (typeof obj === 'object') {
         // This catches null and returns "[object Null]". Weird, but kept for backwards compatibility.

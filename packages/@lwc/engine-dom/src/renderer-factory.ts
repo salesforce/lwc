@@ -16,6 +16,7 @@
  * Type-Only imports are allowed.
  */
 
+import { setPrototypeOf } from '@lwc/shared';
 import type { RendererAPI } from '@lwc/engine-core';
 
 // Properties that are either not required to be sandboxed or rely on a globally shared information
@@ -47,6 +48,6 @@ export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): 
     // See `injectInlineRenderer` in /scripts/rollup/rollup.config.js
     const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
-    Object.setPrototypeOf(renderer, baseRenderer);
+    setPrototypeOf(renderer, baseRenderer);
     return renderer;
 }

@@ -22,6 +22,7 @@ import {
     keys,
     htmlPropertyToAttribute,
     isNull,
+    ArrayFilter,
 } from '@lwc/shared';
 import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
 import { logWarn } from '../shared/logger';
@@ -157,21 +158,12 @@ export function HTMLBridgeElementFactory(
         // TODO [#3761]: enable for components that don't extend from LightningElement
         if (!isUndefined(proto) && !isNull(proto) && !hasCustomSuperClass) {
             const nonPublicPropertiesToWarnOn = new Set(
-                [
-                    // getters, setters, and methods
-                    ...keys(getOwnPropertyDescriptors(proto)),
-                    // class properties
-                    ...observedFields,
-                ]
-                    // we don't want to override HTMLElement props because these are meaningful in other ways,
-                    // and can break tooling that expects it to be iterable or defined, e.g. Jest:
-                    // https://github.com/jestjs/jest/blob/b4c9587/packages/pretty-format/src/plugins/DOMElement.ts#L95
-                    // It also doesn't make sense to override e.g. "constructor".
-                    .filter(
-                        (propName) =>
-                            !(propName in HTMLElementPrototype) &&
-                            !(propName in ariaReflectionPolyfillDescriptors)
-                    )
+                ArrayFilter.call(
+                    [...keys(getOwnPropertyDescriptors(proto)), ...observedFields],
+                    (propName) =>
+                        !(propName in HTMLElementPrototype) &&
+                        !(propName in ariaReflectionPolyfillDescriptors)
+                )
             );
 
             for (const propName of nonPublicPropertiesToWarnOn) {

@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { ArrayFilter, StringSplit, ArrayJoin, ArrayFrom } from '@lwc/shared';
+
 const CLASSNAMES_SEPARATOR = /\s+/g;
 
 /**
@@ -14,7 +16,9 @@ const CLASSNAMES_SEPARATOR = /\s+/g;
  * @example classNametoTokenList('foo  bar foo') // Set(2) { 'foo', 'bar' }
  */
 export function classNameToTokenList(value: string): Set<string> {
-    return new Set(value.split(CLASSNAMES_SEPARATOR).filter((str) => str.length));
+    return new Set(
+        ArrayFilter.call(StringSplit.call(value, CLASSNAMES_SEPARATOR), (str) => str.length)
+    );
 }
 
 /**
@@ -24,5 +28,5 @@ export function classNameToTokenList(value: string): Set<string> {
  * @example tokenListToClassName(new Set(['hello', 'world'])) // 'hello world'
  */
 export function tokenListToClassName(values: Set<string>): string {
-    return Array.from(values).join(' ');
+    return ArrayJoin.call(ArrayFrom(values), ' ');
 }

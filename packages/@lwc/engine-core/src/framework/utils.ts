@@ -12,6 +12,7 @@ import {
     seal,
     isAPIFeatureEnabled,
     APIFeature,
+    StringSubstring,
 } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
@@ -57,9 +58,8 @@ export function addCallbackToNextTick(callback: Callback) {
 
 export function guid(): string {
     function s4() {
-        return Math.floor((1 + Math.random()) * 0x10000)
-            .toString(16)
-            .substring(1);
+        // eslint-disable-next-line @lwc/lwc-internal/no-normal-code
+        return StringSubstring.call(Math.floor((1 + Math.random()) * 65536).toString(16), 1);
     }
 
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();

@@ -64,6 +64,7 @@ export function valueObserved(target: object, key: PropertyKey) {
         return; // perf optimization considering that most subscriptions will come from the same record
     }
     if (ArrayIndexOf.call(reactiveObservers, ro) === -1) {
+        // eslint-disable-next-line @lwc/lwc-internal/no-normal-code
         ro.link(reactiveObservers);
     }
 }

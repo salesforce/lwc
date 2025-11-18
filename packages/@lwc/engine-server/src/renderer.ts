@@ -5,6 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFilter,
+    ArrayFind,
+    ArrayIndexOf,
+    ArrayPush,
+    ArraySplice,
+    forEach,
     HTML_NAMESPACE,
     htmlPropertyToAttribute,
     isAriaAttribute,
@@ -15,6 +21,7 @@ import {
     noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
     StringToLowerCase,
+    StringToUpperCase,
 } from '@lwc/shared';
 
 import {
@@ -66,23 +73,23 @@ type E = HostElement;
 function insert(node: N, parent: E, anchor: N | null) {
     const nodeParent = node[HostParentKey];
     if (nodeParent !== null && nodeParent !== parent) {
-        const nodeIndex = nodeParent[HostChildrenKey].indexOf(node);
-        nodeParent[HostChildrenKey].splice(nodeIndex, 1);
+        const nodeIndex = ArrayIndexOf.call(nodeParent[HostChildrenKey], node);
+        ArraySplice.call(nodeParent[HostChildrenKey], nodeIndex, 1);
     }
 
     node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
+    const anchorIndex = isNull(anchor) ? -1 : ArrayIndexOf.call(parent[HostChildrenKey], anchor);
     if (anchorIndex === -1) {
-        parent[HostChildrenKey].push(node);
+        ArrayPush.call(parent[HostChildrenKey], node);
     } else {
-        parent[HostChildrenKey].splice(anchorIndex, 0, node);
+        ArraySplice.call(parent[HostChildrenKey], anchorIndex, 0, node);
     }
 }
 
 function remove(node: N, parent: E) {
-    const nodeIndex = parent[HostChildrenKey].indexOf(node);
-    parent[HostChildrenKey].splice(nodeIndex, 1);
+    const nodeIndex = ArrayIndexOf.call(parent[HostChildrenKey], node);
+    ArraySplice.call(parent[HostChildrenKey], nodeIndex, 1);
 }
 
 function cloneNode(node: HostChildNode): HostChildNode {
@@ -129,7 +136,7 @@ function getSibling(node: N, offset: number) {
         return null;
     }
 
-    const nodeIndex = parent[HostChildrenKey].indexOf(node);
+    const nodeIndex = ArrayIndexOf.call(parent[HostChildrenKey], node);
     return (parent[HostChildrenKey][nodeIndex + offset] as HostNode) ?? null;
 }
 
@@ -264,7 +271,8 @@ function setText(node: N, content: string) {
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
     const normalizedName = StringToLowerCase.call(String(name));
-    const attribute = element[HostAttributesKey].find(
+    const attribute = ArrayFind.call(
+        element[HostAttributesKey],
         (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
     return attribute ? attribute.value : null;
@@ -274,7 +282,8 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
     const normalizedName = StringToLowerCase.call(String(name));
     const normalizedValue = String(value);
     reportMutation(element, normalizedName);
-    const attribute = element[HostAttributesKey].find(
+    const attribute = ArrayFind.call(
+        element[HostAttributesKey],
         (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
 
@@ -283,7 +292,7 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
     }
 
     if (isUndefined(attribute)) {
-        element[HostAttributesKey].push({
+        ArrayPush.call(element[HostAttributesKey], {
             name: normalizedName,
             [HostNamespaceKey]: namespace,
             value: normalizedValue,
@@ -296,14 +305,16 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
 function removeAttribute(element: E, name: string, namespace?: string | null) {
     const normalizedName = StringToLowerCase.call(String(name));
     reportMutation(element, normalizedName);
-    element[HostAttributesKey] = element[HostAttributesKey].filter(
+    element[HostAttributesKey] = ArrayFilter.call(
+        element[HostAttributesKey],
         (attr) => attr.name !== normalizedName && attr[HostNamespaceKey] !== namespace
     );
 }
 
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
-        let classAttribute = element[HostAttributesKey].find(
+        let classAttribute = ArrayFind.call(
+            element[HostAttributesKey],
             (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
         );
 
@@ -313,7 +324,7 @@ function getClassList(element: E) {
                 [HostNamespaceKey]: null,
                 value: '',
             };
-            element[HostAttributesKey].push(classAttribute);
+            ArrayPush.call(element[HostAttributesKey], classAttribute);
         }
 
         return classAttribute;
@@ -325,7 +336,7 @@ function getClassList(element: E) {
             const classAttribute = getClassAttribute();
 
             const tokenList = classNameToTokenList(classAttribute.value);
-            names.forEach((name) => tokenList.add(name));
+            forEach.call(names, (name) => tokenList.add(name));
             classAttribute.value = tokenListToClassName(tokenList);
         },
         remove(...names: string[]): void {
@@ -333,21 +344,22 @@ function getClassList(element: E) {
             const classAttribute = getClassAttribute();
 
             const tokenList = classNameToTokenList(classAttribute.value);
-            names.forEach((name) => tokenList.delete(name));
+            forEach.call(names, (name) => tokenList.delete(name));
             classAttribute.value = tokenListToClassName(tokenList);
         },
     } as DOMTokenList;
 }
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
-    const styleAttribute = element[HostAttributesKey].find(
+    const styleAttribute = ArrayFind.call(
+        element[HostAttributesKey],
         (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''};`;
 
     if (isUndefined(styleAttribute)) {
-        element[HostAttributesKey].push({
+        ArrayPush.call(element[HostAttributesKey], {
             name: 'style',
             [HostNamespaceKey]: null,
             value: serializedProperty,
@@ -363,7 +375,7 @@ function isConnected(node: HostNode) {
 
 function getTagName(elm: HostElement): string {
     // tagName is lowercased on the server, but to align with DOM APIs, we always return uppercase
-    return elm.tagName.toUpperCase();
+    return StringToUpperCase.call(elm.tagName);
 }
 
 type CreateElementAndUpgrade = (upgradeCallback: LifecycleCallback) => HostElement;

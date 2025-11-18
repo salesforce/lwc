@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { StringToLowerCase, ArrayJoin, ArraySort } from '@lwc/shared';
 import type { LightningElement } from './lightning-element';
 
 class MutationTracker {
@@ -18,7 +19,7 @@ class MutationTracker {
                 mutatedAttrs = new Set();
                 this.#mutationMap.set(instance, mutatedAttrs);
             }
-            mutatedAttrs.add(attrName.toLowerCase());
+            mutatedAttrs.add(StringToLowerCase.call(attrName));
         }
     }
 
@@ -33,7 +34,7 @@ class MutationTracker {
     renderMutatedAttrs(instance: LightningElement): string {
         const mutatedAttrs = this.#mutationMap.get(instance);
         if (mutatedAttrs) {
-            return ` data-lwc-host-mutated="${[...mutatedAttrs].sort().join(' ')}"`;
+            return ` data-lwc-host-mutated="${ArrayJoin.call(ArraySort.call([...mutatedAttrs]), ' ')}"`;
         } else {
             return '';
         }

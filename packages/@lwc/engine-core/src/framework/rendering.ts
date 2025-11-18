@@ -18,6 +18,7 @@ import {
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
     keys,
+    StringToLowerCase,
     SVG_NAMESPACE,
 } from '@lwc/shared';
 
@@ -329,7 +330,7 @@ function mountCustomElement(
     // should produce only tags with lowercase letters. However, the Java
     // compiler may generate tagnames with uppercase letters so - for backwards
     // compatibility, we lower case the tagname here.
-    const normalizedTagname = sel.toLowerCase();
+    const normalizedTagname = StringToLowerCase.call(sel);
     const useNativeLifecycle = !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;
     const isFormAssociated = shouldBeFormAssociated(ctor);
     const elm = createCustomElement(

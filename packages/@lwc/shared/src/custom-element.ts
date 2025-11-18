@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { StringReplace, StringToLowerCase } from './language';
+
 /**
  * Generates a custom element tag name given a namespace and component name.
  * Based on the LWC file system requirements, component names come from the file system name which is
@@ -27,6 +29,8 @@ export function generateCustomElementTagName(namespace: string = '', name: strin
                 JSON.stringify(name)
         );
     }
-    const kebabCasedName = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+    const kebabCasedName = StringToLowerCase.call(
+        StringReplace.call(name, /([a-z])([A-Z])/g, '$1-$2' as any)
+    );
     return `${namespace}-${kebabCasedName}`;
 }

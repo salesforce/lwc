@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isString, isUndefined } from '@lwc/shared';
+import { isNull, isString, isUndefined, StringToLowerCase } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import type { RendererAPI } from '../renderer';
 import type { VBaseElement, VStaticPartElement } from '../vnodes';
@@ -25,7 +25,7 @@ export function patchStyleAttribute(
     if (process.env.NODE_ENV !== 'production') {
         if (!isNull(newStyle) && !isUndefined(newStyle) && !isString(newStyle)) {
             logError(
-                `Invalid 'style' attribute passed to <${elm!.tagName.toLowerCase()}> is ignored. This attribute must be a string value.`,
+                `Invalid 'style' attribute passed to <${StringToLowerCase.call(elm!.tagName)}> is ignored. This attribute must be a string value.`,
                 owner
             );
         }

@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { AriaAttrNameToPropNameMap, entries, isNull, toString } from '@lwc/shared';
+import {
+    AriaAttrNameToPropNameMap,
+    entries,
+    isNull,
+    StringToLowerCase,
+    toString,
+} from '@lwc/shared';
 
 import type { LightningElement } from './lightning-element';
 
@@ -39,7 +45,9 @@ const explicitBooleanDescriptor = (
         if (value === null) return defaultValue;
         // spellcheck=false => false, everything else => true
         // draggable=true => true, everything else => false
-        return value.toLowerCase() === String(defaultValue) ? defaultValue : !defaultValue;
+        return StringToLowerCase.call(value) === String(defaultValue)
+            ? defaultValue
+            : !defaultValue;
     },
     set(this: LightningElement, newValue: boolean): void {
         const currentValue = this.getAttribute(attrName);

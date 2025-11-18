@@ -29,7 +29,7 @@ const features: FeatureFlagMap = {
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
-    Object.defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
+    defineProperty(globalThis, 'lwcRuntimeFlags', { value: create(null) });
 }
 
 /** Feature flags that have been set. */

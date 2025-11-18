@@ -10,10 +10,10 @@ import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 
 // Walk up the DOM tree, collecting all shadow roots plus the document root
 function getAllRootNodes(node: Node) {
-    const rootNodes = [];
+    const rootNodes: Node[] = [];
     let currentRootNode = node.getRootNode();
     while (!isUndefined(currentRootNode)) {
-        rootNodes.push(currentRootNode);
+        ArrayPush.call(rootNodes, currentRootNode);
         currentRootNode = (currentRootNode as ShadowRoot).host?.getRootNode();
     }
     return rootNodes;

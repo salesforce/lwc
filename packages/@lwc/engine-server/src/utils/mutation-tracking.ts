@@ -4,6 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import {
+    ArrayFind,
+    StringSplit,
+    StringToLowerCase,
+    ArrayJoin,
+    ArraySort,
+    ArrayPush,
+} from '@lwc/shared';
 import { HostAttributesKey, HostNamespaceKey } from '../types';
 import type { HostElement } from '../types';
 
@@ -13,20 +21,23 @@ const MUTATION_TRACKING_ATTRIBUTE = 'data-lwc-host-mutated';
 
 export function reportMutation(element: HostElement, attributeName: string) {
     if (elementsToTrackForMutations.has(element)) {
-        const existingMutationAttribute = element[HostAttributesKey].find(
+        const existingMutationAttribute = ArrayFind.call(
+            element[HostAttributesKey],
             (attr) => attr.name === MUTATION_TRACKING_ATTRIBUTE && attr[HostNamespaceKey] === null
         );
         const attrNameValues = new Set(
-            existingMutationAttribute ? existingMutationAttribute.value.split(' ') : []
+            existingMutationAttribute
+                ? StringSplit.call(existingMutationAttribute.value, ' ' as any)
+                : []
         );
-        attrNameValues.add(attributeName.toLowerCase());
+        attrNameValues.add(StringToLowerCase.call(attributeName));
 
-        const newMutationAttributeValue = [...attrNameValues].sort().join(' ');
+        const newMutationAttributeValue = ArrayJoin.call(ArraySort.call([...attrNameValues]), ' ');
 
         if (existingMutationAttribute) {
             existingMutationAttribute.value = newMutationAttributeValue;
         } else {
-            element[HostAttributesKey].push({
+            ArrayPush.call(element[HostAttributesKey], {
                 name: MUTATION_TRACKING_ATTRIBUTE,
                 [HostNamespaceKey]: null,
                 value: newMutationAttributeValue,

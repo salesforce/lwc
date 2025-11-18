@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { StringToLowerCase } from './language';
 import { HTML_NAMESPACE } from './namespaces';
 
 // Void elements are elements that self-close even without an explicit solidus (slash),
@@ -40,5 +41,5 @@ const VOID_ELEMENTS_SET = /*@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED
  * @param namespace
  */
 export function isVoidElement(name: string, namespace: string): boolean {
-    return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());
+    return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(StringToLowerCase.call(name));
 }

@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayMap, ArrayPush, ArraySort, isUndefined, noop } from '@lwc/shared';
+import {
+    ArrayJoin,
+    ArrayMap,
+    ArrayPush,
+    ArraySort,
+    isUndefined,
+    noop,
+    StringLocaleCompare,
+} from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode } from './vm';
@@ -207,7 +215,9 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     }
 
     // Sort by tag name
-    const entries = ArraySort.call([...tagNamesToIdsAndProps], (a, b) => a[0].localeCompare(b[0]));
+    const entries = ArraySort.call([...tagNamesToIdsAndProps], (a, b) =>
+        StringLocaleCompare.call(a[0], b[0])
+    );
     const tagNames = ArrayMap.call(entries, (item) => item[0]) as string[];
 
     // Show e.g. `<x-foo>` for one instance, or `<x-foo> (x2)` for two instances. (\u00D7 is multiplication symbol)

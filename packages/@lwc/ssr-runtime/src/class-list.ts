@@ -5,6 +5,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import {
+    ArrayFilter,
+    ArrayFrom,
+    ArrayIncludes,
+    ArrayJoin,
+    ArrayMap,
+    forEach,
+    StringSplit,
+    StringTrim,
+} from '@lwc/shared';
 import type { LightningElement } from './lightning-element';
 
 // Copied from lib.dom
@@ -29,10 +39,12 @@ interface DOMTokenList {
 const MULTI_SPACE = /\s+/g;
 
 function parseClassName(className: string | null): string[] {
-    return (className ?? '')
-        .split(MULTI_SPACE)
-        .map((item) => item.trim())
-        .filter(Boolean);
+    return ArrayFilter.call<string[]>(
+        ArrayMap.call(StringSplit.call(className ?? '', MULTI_SPACE), (item) =>
+            StringTrim.call(item)
+        ) as string[],
+        Boolean
+    );
 }
 
 export class ClassList implements DOMTokenList {
@@ -47,11 +59,11 @@ export class ClassList implements DOMTokenList {
         for (const newClassName of newClassNames) {
             set.add(newClassName);
         }
-        this.el.className = Array.from(set).join(' ');
+        this.el.className = ArrayJoin.call(ArrayFrom(set), ' ');
     }
 
     contains(className: string) {
-        return parseClassName(this.el.className).includes(className);
+        return ArrayIncludes.call(parseClassName(this.el.className), className);
     }
 
     remove(...classNamesToRemove: string[]) {
@@ -59,19 +71,19 @@ export class ClassList implements DOMTokenList {
         for (const newClassName of classNamesToRemove) {
             set.delete(newClassName);
         }
-        this.el.className = Array.from(set).join(' ');
+        this.el.className = ArrayJoin.call(ArrayFrom(set), ' ');
     }
 
     replace(oldClassName: string, newClassName: string) {
         let classWasReplaced = false;
         const listOfClasses = parseClassName(this.el.className);
-        listOfClasses.forEach((value, idx) => {
+        forEach.call(listOfClasses, (value, idx) => {
             if (value === oldClassName) {
                 classWasReplaced = true;
                 listOfClasses[idx] = newClassName;
             }
         });
-        this.el.className = listOfClasses.join(' ');
+        this.el.className = ArrayJoin.call(listOfClasses, ' ');
         return classWasReplaced;
     }
 
@@ -82,7 +94,7 @@ export class ClassList implements DOMTokenList {
         } else if (set.has(classNameToToggle) && force !== true) {
             set.delete(classNameToToggle);
         }
-        this.el.className = Array.from(set).join(' ');
+        this.el.className = ArrayJoin.call(ArrayFrom(set), ' ');
         return set.has(classNameToToggle);
     }
 
@@ -109,7 +121,7 @@ export class ClassList implements DOMTokenList {
         callbackFn: (value: string, key: number, parent: DOMTokenList) => void,
         thisArg?: any
     ): void {
-        parseClassName(this.el.className).forEach((value, index) =>
+        forEach.call(parseClassName(this.el.className), (value, index) =>
             callbackFn.call(thisArg, value, index, this)
         );
     }

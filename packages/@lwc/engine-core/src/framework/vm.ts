@@ -20,6 +20,7 @@ import {
     isTrue,
     isUndefined,
     flattenStylesheets,
+    ArraySort,
 } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
@@ -669,7 +670,7 @@ function flushRehydrationQueue() {
             `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
-    const vms = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
+    const vms = ArraySort.call(rehydrateQueue, (a, b) => a.idx - b.idx);
     rehydrateQueue = []; // reset to a new queue
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];

@@ -75,7 +75,6 @@ function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
     return ArrayReduce.call(
         childNodes,
-        // @ts-expect-error Array#reduce has a generic that is lost by our redefined ArrayReduce
         (seed: Node[], child) => {
             if (child instanceof Element && isSlotElement(child)) {
                 ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child));

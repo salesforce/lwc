@@ -1,4 +1,12 @@
 /*
+ * Copyright (c) 2025, Salesforce, Inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: MIT
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
+ */
+import { defineProperties } from '@lwc/shared';
+
+/*
  * Copyright (c) 2018, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
@@ -14,7 +22,7 @@ function PatchedCustomEvent<T>(
     const event = new CustomEventConstructor(type, eventInitDict);
 
     const isComposed = !!(eventInitDict && eventInitDict.composed);
-    Object.defineProperties(event, {
+    defineProperties(event, {
         composed: {
             get() {
                 return isComposed;
