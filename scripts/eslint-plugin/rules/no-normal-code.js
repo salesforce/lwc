@@ -75,7 +75,7 @@ for (const Ctor of [Array, String, Object]) {
             badNames.add(prop);
         } else {
             const staticName = Ctor.name + prop[0].toUpperCase() + prop.slice(1);
-            if (staticName in shared) badNames.add(staticName);
+            badNames.add(staticName);
         }
     }
 }

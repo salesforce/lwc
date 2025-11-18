@@ -5,15 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayCopyWithin,
-    ArrayFill,
-    ArrayPop,
-    ArrayPush,
-    ArrayReverse,
-    ArrayShift,
-    ArraySort,
-    ArraySplice,
-    ArrayUnshift,
     defineProperty,
     freeze,
     getOwnPropertyDescriptor,
@@ -51,6 +42,18 @@ const ARRAY_MUTATION_METHODS = [
     'splice',
     'copyWithin',
 ] as const;
+
+const {
+    pop: ArrayPop,
+    push: ArrayPush,
+    shift: ArrayShift,
+    unshift: ArrayUnshift,
+    reverse: ArrayReverse,
+    sort: ArraySort,
+    fill: ArrayFill,
+    splice: ArraySplice,
+    copyWithin: ArrayCopyWithin,
+} = Array.prototype;
 
 let mutationTrackingDisabled = false;
 
@@ -124,7 +127,10 @@ function warnOnArrayMutation(stylesheets: Stylesheets) {
         // Assertions used here because TypeScript can't handle mapping over our types
         (stylesheets as any)[prop] = function arrayMutationWarningWrapper() {
             reportTemplateViolation('stylesheets');
-            return originalArrayMethod.apply(this, arguments as any);
+            return (originalArrayMethod as (...args: unknown[]) => void).apply(
+                this,
+                arguments as any
+            );
         };
     }
 }

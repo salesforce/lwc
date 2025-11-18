@@ -6,12 +6,7 @@
  */
 
 import { builders as b, is } from 'estree-toolkit';
-import {
-    normalizeStyleAttributeValue,
-    normalizeTabIndex,
-    StringReplace,
-    StringTrim,
-} from '@lwc/shared';
+import { normalizeStyleAttributeValue, normalizeTabIndex } from '@lwc/shared';
 import { isValidES3Identifier } from '@babel/types';
 import { produce } from 'immer';
 import { esTemplateWithYield } from '../estemplate';
@@ -147,8 +142,7 @@ export function bAttributeValue(node: IrNode, attrName: string): EsExpression {
 }
 
 export function normalizeClassAttributeValue(value: string) {
-    // @ts-expect-error weird indirection results in wrong overload being picked up
-    return StringReplace.call(StringTrim.call(value), /\s+/g, ' ');
+    return value.trim().replace(/\s+/g, ' ');
 }
 
 export function getChildAttrsOrProps(

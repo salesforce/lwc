@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2024, Salesforce, Inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const {
+export const {
     /** Detached {@linkcode Object.assign}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign MDN Reference}. */
     assign,
     /** Detached {@linkcode Object.create}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create MDN Reference}. */
@@ -42,216 +42,15 @@ const {
     setPrototypeOf,
 } = Object;
 
-const {
+export const {
     /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
     isArray,
     /** Detached {@linkcode Array.from}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from MDN Reference}. */
     from: ArrayFrom,
 } = Array;
 
-/** The most extensible array type. */
-type BaseArray = readonly unknown[];
-/** Names of methods that can be used on a readonly array. */
-type ArrayPureMethodNames = {
-    [K in keyof BaseArray]: K extends string
-        ? BaseArray[K] extends (...args: any) => any
-            ? K
-            : never
-        : never;
-}[keyof BaseArray];
-/**
- * Unbound array methods, re-typed so that `.call` and `.apply` correctly report type errors.
- * @example
- * const arr = ['a', 'b', 'c']
- * const trim = (str: string) => str.trim()
- * const sq = (num: number) => num ** 2
- * const unboundForEach = arr.forEach
- * unboundForEach.call(arr, trim) // passes - good
- * unboundForEach.call(arr, sq) // passes - BAD!
- * const fixedForEach = arr.forEach as UnboundArrayPureMethods['forEach']
- * fixedForEach.call(arr, trim) // passes - good
- * fixedForEach.call(arr, sq) // error - yay!
- */
-type UnboundArrayPureMethods = {
-    [K in ArrayPureMethodNames]: {
-        call: <T extends BaseArray>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends BaseArray>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
-    };
-};
-
-/** Names of methods that mutate an array (cannot be used on a readonly array). */
-type ArrayMutationMethodNames = Exclude<keyof unknown[], keyof BaseArray>;
-/**
- * Unbound array mutation methods, re-typed so that `.call` and `.apply` correctly report type errors.
- * @see {@link UnboundArrayPureMethods} for an example showing why this is needed.
- */
-type UnboundArrayMutationMethods = {
-    [K in ArrayMutationMethodNames]: {
-        call: <T extends unknown[]>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends unknown[]>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
-    };
-};
-
-// For some reason, JSDoc don't get picked up for multiple renamed destructured constants (even
-// though it works fine for one, e.g. isArray), so comments for these are added to the export
-// statement, rather than this declaration.
-const {
-    concat: ArrayConcat,
-    copyWithin: ArrayCopyWithin,
-    every: ArrayEvery,
-    fill: ArrayFill,
-    filter: ArrayFilter,
-    find: ArrayFind,
-    findIndex: ArrayFindIndex,
-    includes: ArrayIncludes,
-    indexOf: ArrayIndexOf,
-    join: ArrayJoin,
-    map: ArrayMap,
-    pop: ArrayPop,
-    push: ArrayPush,
-    reduce: ArrayReduce,
-    reverse: ArrayReverse,
-    shift: ArrayShift,
-    slice: ArraySlice,
-    some: ArraySome,
-    sort: ArraySort,
-    splice: ArraySplice,
-    unshift: ArrayUnshift,
-    forEach, // Weird anomaly!
-}: UnboundArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
-
-// The type of the return value of Array.prototype.every is `this is T[]`. However, once this
-// Array method is pulled out of the prototype, the function is now referencing `this` where
-// `this` is meaningless, resulting in a TypeScript compilation error.
-//
-// Exposing this helper function is the closest we can get to preserving the usage patterns
-// of Array.prototype methods used elsewhere in the codebase.
-/**
- * Wrapper for {@linkcode Array.prototype.every} that correctly preserves the type predicate in the
- * return value; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every MDN Reference}.
- * @param arr Array to test.
- * @param predicate A function to execute for each element of the array.
- * @returns Whether all elements in the array pass the test provided by the predicate.
- */
-function arrayEvery<S extends T, T = unknown>(
-    arr: readonly T[],
-    predicate: (value: any, index: number, array: readonly T[]) => value is S
-): arr is readonly S[] {
-    return ArrayEvery.call(arr, predicate);
-}
-
 /** Detached {@linkcode String.fromCharCode}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode MDN Reference}. */
-const { fromCharCode: StringFromCharCode } = String;
-
-// No JSDocs here - see comment for Array.prototype
-const {
-    charAt: StringCharAt,
-    charCodeAt: StringCharCodeAt,
-    replace: StringReplace,
-    split: StringSplit,
-    slice: StringSlice,
-    toLowerCase: StringToLowerCase,
-    trim: StringTrim,
-} = String.prototype;
-
-export {
-    /*
-     * Array static
-     */
-    /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
-    isArray,
-    /** Detached {@linkcode Array.from}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from MDN Reference}. */
-    ArrayFrom,
-    /*
-     * Array prototype
-     */
-    /** Unbound {@linkcode Array.prototype.concat}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat MDN Reference}. */
-    ArrayConcat,
-    /** Unbound {@linkcode Array.prototype.copyWithin}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin MDN Reference}. */
-    ArrayCopyWithin,
-    /** Unbound {@linkcode Array.prototype.every}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every MDN Reference}. */
-    ArrayEvery,
-    /** Unbound {@linkcode Array.prototype.fill}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill MDN Reference}. */
-    ArrayFill,
-    /** Unbound {@linkcode Array.prototype.filter}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter MDN Reference}. */
-    ArrayFilter,
-    /** Unbound {@linkcode Array.prototype.find}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find MDN Reference}. */
-    ArrayFind,
-    /** Unbound {@linkcode Array.prototype.findIndex}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex MDN Reference}. */
-    ArrayFindIndex,
-    /** Unbound {@linkcode Array.prototype.includes}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes MDN Reference}. */
-    ArrayIncludes,
-    /** Unbound {@linkcode Array.prototype.indexOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf MDN Reference}. */
-    ArrayIndexOf,
-    /** Unbound {@linkcode Array.prototype.join}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join MDN Reference}. */
-    ArrayJoin,
-    /** Unbound {@linkcode Array.prototype.map}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map MDN Reference}. */
-    ArrayMap,
-    /** Unbound {@linkcode Array.prototype.pop}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop MDN Reference}. */
-    ArrayPop,
-    /** Unbound {@linkcode Array.prototype.push}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push MDN Reference}. */
-    ArrayPush,
-    /** Unbound {@linkcode Array.prototype.reduce}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce MDN Reference}. */
-    ArrayReduce,
-    /** Unbound {@linkcode Array.prototype.reverse}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse MDN Reference}. */
-    ArrayReverse,
-    /** Unbound {@linkcode Array.prototype.shift}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift MDN Reference}. */
-    ArrayShift,
-    /** Unbound {@linkcode Array.prototype.slice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice MDN Reference}. */
-    ArraySlice,
-    /** Unbound {@linkcode Array.prototype.some}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some MDN Reference}. */
-    ArraySome,
-    /** Unbound {@linkcode Array.prototype.sort}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort MDN Reference}. */
-    ArraySort,
-    /** Unbound {@linkcode Array.prototype.splice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice MDN Reference}. */
-    ArraySplice,
-    /** Unbound {@linkcode Array.prototype.unshift}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift MDN Reference}. */
-    ArrayUnshift,
-    /** Unbound {@linkcode Array.prototype.forEach}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach MDN Reference}. */
-    forEach, // Doesn't follow convention!
-    arrayEvery, // Not actually Array#every!
-    /*
-     * Object static
-     */
-    assign,
-    create,
-    defineProperties,
-    defineProperty,
-    entries,
-    freeze,
-    fromEntries,
-    getOwnPropertyDescriptor,
-    getOwnPropertyDescriptors,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    getPrototypeOf,
-    hasOwnProperty,
-    isFrozen,
-    keys,
-    seal,
-    setPrototypeOf,
-    /*
-     * String static
-     */
-    StringFromCharCode,
-    /*
-     * String prototype
-     */
-    /** Unbound {@linkcode String.prototype.charAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt MDN Reference}. */
-    StringCharAt,
-    /** Unbound {@linkcode String.prototype.charCodeAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt MDN Reference}. */
-    StringCharCodeAt,
-    /** Unbound {@linkcode String.prototype.replace}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace MDN Reference}. */
-    StringReplace,
-    /** Unbound {@linkcode String.prototype.split}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split MDN Reference}. */
-    StringSplit,
-    /** Unbound {@linkcode String.prototype.slice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice MDN Reference}. */
-    StringSlice,
-    /** Unbound {@linkcode String.prototype.toLowerCase}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase MDN Reference}. */
-    StringToLowerCase,
-    /** Unbound {@linkcode String.prototype.trim}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim MDN Reference}. */
-    StringTrim,
-};
+export const { fromCharCode: StringFromCharCode } = String;
 
 /**
  * Determines whether the argument is `undefined`.
@@ -364,7 +163,7 @@ export function toString(obj: unknown): string {
             // 4. Array#toString converts recursive references to arrays to ''
             // Ex: arr = [1]; arr.push(arr, 2); arr.toString() === '1,,2'; toString(arr) throws
             // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString
-            return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
+            return obj.map(toString).join(',');
         }
         return obj.toString();
     } else if (typeof obj === 'object') {

@@ -428,18 +428,7 @@ export default tseslint.config(
         },
     },
     {
-        files: [
-            'packages/@lwc/engine-core/**',
-            'packages/@lwc/engine-dom/**',
-            'packages/@lwc/engine-server/**',
-            'packages/@lwc/features/**',
-            'packages/@lwc/shared/**',
-            'packages/@lwc/signals/**',
-            'packages/@lwc/ssr-runtime/**',
-            'packages/@lwc/synthetic-shadow/**',
-            'packages/@lwc/wire-service/**',
-        ],
-        ignores: ['packages/@lwc/*/src/__tests__/**'],
+        files: ['packages/**'],
         rules: {
             '@lwc/lwc-internal/no-normal-code': 'error',
         },

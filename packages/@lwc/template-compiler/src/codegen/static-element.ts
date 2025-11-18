@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    APIFeature,
-    ArrayEvery,
-    ArraySome,
-    HTML_NAMESPACE,
-    isAPIFeatureEnabled,
-    isArray,
-    isNull,
-} from '@lwc/shared';
+import { APIFeature, HTML_NAMESPACE, isAPIFeatureEnabled, isArray, isNull } from '@lwc/shared';
 import {
     isBaseElement,
     isComment,
@@ -214,8 +206,8 @@ export function transformStaticChildren(elm: StaticElement, preserveComments: bo
 // Given a static child, determines wether the child is a contiguous text node.
 // Note this is intended to be used with children generated from transformStaticChildren
 export const isContiguousText = (staticChild: StaticChildNode | Text[]): staticChild is Text[] =>
-    isArray(staticChild) && ArrayEvery.call(staticChild, isText);
+    isArray(staticChild) && staticChild.every(isText);
 
 export const isTextExpression = (node: ChildNode) => isText(node) && !isStringLiteral(node.value);
 
-export const hasDynamicText = (nodes: Text[]) => ArraySome.call(nodes, isTextExpression);
+export const hasDynamicText = (nodes: Text[]) => nodes.some(isTextExpression);

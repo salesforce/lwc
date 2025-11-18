@@ -11,7 +11,6 @@ import {
     getContextKeys,
     isUndefined,
     keys,
-    ArrayFilter,
 } from '@lwc/shared';
 import { getContextfulStack } from './wire';
 import { type LightningElement, SYMBOL__CONTEXT_VARIETIES } from './lightning-element';
@@ -68,7 +67,7 @@ export function connectContext(le: LightningElement) {
     const enumerableKeys = keys(le);
     // I'm not sure why, but changing this makes tests fail...
     // eslint-disable-next-line @lwc/lwc-internal/no-normal-code
-    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = Array.prototype.filter.call(enumerableKeys, (enumerableKey) =>
         isTrustedContext((le as any)[enumerableKey])
     );
 

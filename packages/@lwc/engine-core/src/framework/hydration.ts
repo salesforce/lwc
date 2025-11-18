@@ -6,7 +6,6 @@
  */
 import {
     isUndefined,
-    arrayEvery,
     assert,
     keys,
     isNull,
@@ -207,7 +206,7 @@ function getValidationPredicate(
 
     // If validationOptOut is an array of strings, attributes specified in the array will be "opted out". Attributes
     // not specified in the array will still be validated.
-    const isValidArray = isArray(optOutStaticProp) && arrayEvery(optOutStaticProp, isString);
+    const isValidArray = isArray(optOutStaticProp) && optOutStaticProp.every(isString);
     const conditionalOptOut = isValidArray ? new Set(optOutStaticProp) : undefined;
 
     if (
