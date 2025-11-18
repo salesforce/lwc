@@ -41,7 +41,7 @@ export default tseslint.config(
         },
 
         linterOptions: {
-            reportUnusedDisableDirectives: true,
+            reportUnusedDisableDirectives: false,
         },
 
         languageOptions: {
@@ -424,8 +424,32 @@ export default tseslint.config(
             // legitimate reasons to do so. So we complain when trying to commit, but not any
             // other time.
             '@lwc/lwc-internal/forbidden-filename':
-                // eslint-disable-next-line no-undef
                 process.env.npm_lifecycle_event === 'lint-staged' ? 'error' : 'off',
+        },
+    },
+    {
+        files: [
+            'packages/@lwc/engine-core/**',
+            'packages/@lwc/engine-dom/**',
+            'packages/@lwc/engine-server/**',
+            'packages/@lwc/features/**',
+            'packages/@lwc/shared/**',
+            'packages/@lwc/signals/**',
+            'packages/@lwc/ssr-runtime/**',
+            'packages/@lwc/synthetic-shadow/**',
+            'packages/@lwc/wire-service/**',
+        ],
+        ignores: ['packages/@lwc/*/src/__tests__/**'],
+        rules: {
+            '@lwc/lwc-internal/no-normal-code': 'error',
         },
     }
 );
+// .map((cfg) => {
+//     if (!cfg.rules) return cfg;
+//     const RULE = '@lwc/lwc-internal/no-normal-code';
+//     return {
+//         ...cfg,
+//         rules: RULE in cfg.rules ? { [RULE]: cfg.rules[RULE] } : {},
+//     };
+// });
