@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArraySlice, defineProperties } from '@lwc/shared';
+import { defineProperties } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -40,7 +40,7 @@ function patchedAddEventListener(
     if (arguments.length < 2) {
         // Slow path, unlikely to be called frequently. We expect modern browsers to throw:
         // https://googlechrome.github.io/samples/event-listeners-mandatory-arguments/
-        const args = ArraySlice.call(arguments as unknown as unknown[]);
+        const args = (arguments as unknown as unknown[]).slice();
         if (args.length > 1) {
             args[1] = getEventListenerWrapper(args[1]);
         }
@@ -67,7 +67,7 @@ function patchedRemoveEventListener(
         // @ts-expect-error type-mismatch
         return removeCustomElementEventListener.apply(this, arguments);
     }
-    const args = ArraySlice.call(arguments as unknown as unknown[]);
+    const args = (arguments as unknown as unknown[]).slice();
     if (arguments.length > 1) {
         args[1] = getEventListenerWrapper(args[1]);
     }

@@ -4,19 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayFindIndex,
-    ArrayPush,
-    ArraySlice,
-    ArraySplice,
-    create,
-    defineProperty,
-    forEach,
-    isFalse,
-    isFunction,
-    isUndefined,
-    toString,
-} from '@lwc/shared';
+import { create, defineProperty, isFalse, isFunction, isUndefined, toString } from '@lwc/shared';
 
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
@@ -143,7 +131,7 @@ function getManagedCustomElementListener(
 }
 
 function indexOfManagedListener(listeners: ManagedListener[], listener: ManagedListener): number {
-    return ArrayFindIndex.call(listeners, (l: ManagedListener) => l.identity === listener.identity);
+    return listeners.findIndex((l) => l.identity === listener.identity);
 }
 
 function domListener(evt: Event) {
@@ -173,14 +161,12 @@ function domListener(evt: Event) {
         configurable: true,
     });
     // in case a listener adds or removes other listeners during invocation
-    const bookkeeping: ManagedListener[] = ArraySlice.call(listeners);
+    const bookkeeping: ManagedListener[] = listeners.slice();
 
     function invokeListenersByPlacement(placement: EventListenerContext) {
-        forEach.call(bookkeeping, (listener: ManagedListener) => {
+        bookkeeping.forEach((listener) => {
             if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
-                // making sure that the listener was not removed from the original listener queue
                 if (indexOfManagedListener(listeners, listener) !== -1) {
-                    // all handlers on the custom element should be called with undefined 'this'
                     listener.handleEvent.call(undefined, evt);
                 }
             }
@@ -212,7 +198,7 @@ function attachDOMListener(elm: Element, type: string, managedListener: ManagedL
     if (listeners.length === 0) {
         addEventListener.call(elm, type, domListener);
     }
-    ArrayPush.call(listeners, managedListener);
+    listeners.push(managedListener);
 }
 
 function detachDOMListener(elm: Element, type: string, managedListener: ManagedListener) {
@@ -223,7 +209,7 @@ function detachDOMListener(elm: Element, type: string, managedListener: ManagedL
         !isUndefined((listeners = listenerMap[type])) &&
         (index = indexOfManagedListener(listeners, managedListener)) !== -1
     ) {
-        ArraySplice.call(listeners, index, 1);
+        listeners.splice(index, 1);
         // only remove from DOM if there is no other listener on the same placement
         if (listeners.length === 0) {
             removeEventListener.call(elm, type, domListener);

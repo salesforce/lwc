@@ -8,13 +8,11 @@
 // Do additional mutation tracking for DevTools performance profiling, in dev mode only.
 //
 import {
-    ArrayPush,
     isUndefined,
     toString,
     isObject,
     isNull,
     isArray,
-    ArrayFilter,
     getOwnPropertyNames,
     getOwnPropertySymbols,
     isString,
@@ -104,7 +102,10 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
         }
     } else {
         const prop = toPrettyMemberNotation(parentKey, key);
-        ArrayPush.call(mutationLogs, { vm, prop });
+        mutationLogs.push({
+            vm: vm,
+            prop: prop,
+        });
     }
 }
 
@@ -114,7 +115,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
  */
 export function flushMutationLogsForVM(vm: VM) {
     assertNotProd();
-    mutationLogs = ArrayFilter.call(mutationLogs, (log) => log.vm !== vm);
+    mutationLogs = mutationLogs.filter((log) => log.vm !== vm);
 }
 
 /**

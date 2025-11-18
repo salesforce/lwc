@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, create, isUndefined, ArrayPush, defineProperty, noop } from '@lwc/shared';
+import { assert, create, isUndefined, defineProperty, noop } from '@lwc/shared';
 import { associateReactiveObserverWithVM } from '../mutation-logger';
 import { createReactiveObserver } from '../mutation-tracker';
 import { runWithBoundaryProtection, VMState, getAssociatedVM } from '../vm';
@@ -269,7 +269,7 @@ export function installWireAdapters(vm: VM) {
                 wireDef
             );
             const hasDynamicParams = wireDef.dynamic.length > 0;
-            ArrayPush.call(wiredConnecting, () => {
+            wiredConnecting.push(() => {
                 connector.connect();
                 if (!lwcRuntimeFlags.ENABLE_WIRE_SYNC_EMIT) {
                     if (hasDynamicParams) {
@@ -278,10 +278,9 @@ export function installWireAdapters(vm: VM) {
                         return;
                     }
                 }
-
                 computeConfigAndUpdate();
             });
-            ArrayPush.call(wiredDisconnecting, () => {
+            wiredDisconnecting.push(() => {
                 connector.disconnect();
                 resetConfigWatcher();
             });

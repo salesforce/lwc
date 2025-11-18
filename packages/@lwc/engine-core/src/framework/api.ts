@@ -6,10 +6,8 @@
  */
 import {
     APIFeature,
-    ArrayPush,
     assert,
     create as ObjectCreate,
-    forEach,
     freeze as ObjectFreeze,
     isAPIFeatureEnabled,
     isArray,
@@ -21,7 +19,6 @@ import {
     isString,
     isTrue,
     isUndefined,
-    StringReplace,
     toString,
     sanitizeHtmlContent,
     normalizeClass,
@@ -68,7 +65,7 @@ import type { SlotSet, VM } from './vm';
 const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
 function addVNodeToChildLWC(vnode: VCustomElement) {
-    ArrayPush.call(getVMBeingRendered()!.velements, vnode);
+    getVMBeingRendered()!.velements.push(vnode);
 }
 
 // [s]tatic [p]art
@@ -164,7 +161,7 @@ function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VEle
             `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
 
-        forEach.call(children, (childVnode: VNode | null | undefined) => {
+        children.forEach((childVnode) => {
             if (childVnode != null) {
                 assert.isTrue(
                     'type' in childVnode &&
@@ -267,7 +264,7 @@ function s(
                         // hence switch over to the slot set owner's template reactive observer
                         const { tro } = slotset.owner!;
                         tro.observe(() => {
-                            ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
+                            newChildren.push(vnode.factory(data.slotData, data.key));
                         });
                     } finally {
                         setVMBeingRendered(vmBeingRendered);
@@ -308,7 +305,7 @@ function s(
                     }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
-                    ArrayPush.call(newChildren, clonedVNode ?? vnode);
+                    newChildren.push(clonedVNode ?? vnode);
                 }
             }
         }
@@ -364,7 +361,7 @@ function c(
             );
         }
         if (arguments.length === 4) {
-            forEach.call(children, (childVnode: VNode | null | undefined) => {
+            children.forEach((childVnode) => {
                 if (childVnode != null) {
                     assert.isTrue(
                         'type' in childVnode &&
@@ -455,20 +452,18 @@ function i(
         // template factory logic based on the previous collected value
         const vnode = factory(value, j, j === 0, last === true);
         if (isArray(vnode)) {
-            ArrayPush.apply(list, vnode);
+            list.push(...vnode);
         } else {
             // `isArray` doesn't narrow this block properly...
-            ArrayPush.call(list, vnode as VNode | null);
+            list.push(vnode as VNode | null);
         }
 
         if (process.env.NODE_ENV !== 'production') {
             const vnodes = isArray(vnode) ? vnode : [vnode];
-            forEach.call(vnodes, (childVnode: VNode | null) => {
-                // Check that the child vnode is either an element or VStatic
+            vnodes.forEach((childVnode) => {
                 if (!isNull(childVnode) && (isVBaseElement(childVnode) || isVStatic(childVnode))) {
-                    const { key } = childVnode;
-                    // In @lwc/engine-server the fragment doesn't have a tagName, default to the VM's tagName.
-                    const { tagName } = vmBeingRendered;
+                    const { key: key } = childVnode;
+                    const { tagName: tagName } = vmBeingRendered;
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
                             iterationError = `Duplicated "key" attribute value in "<${tagName}>" for item number ${j}. A key with value "${key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
@@ -508,10 +503,10 @@ function f(items: ReadonlyArray<VNodes> | VNodes): VNodes {
     for (let j = 0; j < len; j += 1) {
         const item = items[j];
         if (isArray(item)) {
-            ArrayPush.apply(flattened, item);
+            flattened.push(...item);
         } else {
             // `isArray` doesn't narrow this block properly...
-            ArrayPush.call(flattened, item as VNode | null);
+            flattened.push(item as VNode | null);
         }
     }
     return flattened;
@@ -587,7 +582,7 @@ function gid(id: string | undefined | null): string | null | undefined {
     }
     const { idx, shadowMode } = vmBeingRendered;
     if (shadowMode === ShadowMode.Synthetic) {
-        return StringReplace.call(id, /\S+/g, (id) => `${id}-${idx}`);
+        return id.replace(/\S+/g, (id) => `${id}-${idx}`);
     }
     return id;
 }

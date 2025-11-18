@@ -9,8 +9,6 @@
  * that represents the HTMLElement extension used for any LWC inserted in the DOM.
  */
 import {
-    ArraySlice,
-    ArrayIndexOf,
     create,
     defineProperties,
     defineProperty,
@@ -68,7 +66,7 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
         const vm = getAssociatedVM(this);
         const { callHook, component } = vm;
         const fn = (component as any)[methodName];
-        return callHook(vm.component, fn, ArraySlice.call(arguments as unknown as unknown[]));
+        return callHook(vm.component, fn, (arguments as unknown as unknown[]).slice());
     };
 }
 
@@ -175,7 +173,7 @@ export function HTMLBridgeElementFactory(
             );
 
             for (const propName of nonPublicPropertiesToWarnOn) {
-                if (ArrayIndexOf.call(publicProperties, propName) === -1) {
+                if (publicProperties.indexOf(propName) === -1) {
                     descriptors[propName] = createAccessorThatWarns(propName);
                 }
             }

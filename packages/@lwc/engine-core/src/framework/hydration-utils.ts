@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayPush, ArrayJoin, ArraySort, ArrayFrom, isNull, isUndefined } from '@lwc/shared';
+import { ArrayFrom, isNull, isUndefined } from '@lwc/shared';
 
 import { assertNotProd } from './utils';
 
@@ -39,7 +39,7 @@ export function prettyPrintAttribute(attribute: string, value: any): string {
 */
 export function prettyPrintClasses(classes: Classes) {
     assertNotProd(); // this method should never leak to prod
-    const value = JSON.stringify(ArrayJoin.call(ArraySort.call(ArrayFrom(classes)), ' '));
+    const value = JSON.stringify(ArrayFrom(classes).sort().join(' '));
     return `class=${value}`;
 }
 
@@ -49,7 +49,11 @@ export function prettyPrintClasses(classes: Classes) {
 */
 export function queueHydrationError(type: string, serverRendered?: any, clientExpected?: any) {
     assertNotProd(); // this method should never leak to prod
-    ArrayPush.call(hydrationErrors, { type, serverRendered, clientExpected });
+    hydrationErrors.push({
+        type: type,
+        serverRendered: serverRendered,
+        clientExpected: clientExpected,
+    });
 }
 
 /*

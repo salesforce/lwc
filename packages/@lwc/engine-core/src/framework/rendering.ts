@@ -5,9 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPop,
-    ArrayPush,
-    ArraySome,
     assert,
     create,
     isArray,
@@ -689,7 +686,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         // in native shadow mode.
         if (
             renderMode !== RenderMode.Light &&
-            ArraySome.call(children, (child) => !isNull(child) && isVScopedSlotFragment(child))
+            children.some((child) => !isNull(child) && isVScopedSlotFragment(child))
         ) {
             logError(
                 `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
@@ -734,7 +731,7 @@ function flattenFragmentsInChildren(children: VNodes): VNodes {
     let fragmentFound = false;
     for (let i = children.length - 1; i > -1; i -= 1) {
         const child = children[i];
-        ArrayPush.call(nodeStack, child);
+        nodeStack.push(child);
         fragmentFound = fragmentFound || !!(child && isVFragment(child));
     }
 
@@ -743,15 +740,15 @@ function flattenFragmentsInChildren(children: VNodes): VNodes {
     }
 
     let currentNode: VNode | null | undefined;
-    while (!isUndefined((currentNode = ArrayPop.call(nodeStack)))) {
+    while (!isUndefined((currentNode = nodeStack.pop()))) {
         if (!isNull(currentNode) && isVFragment(currentNode)) {
             const fChildren = currentNode.children;
             // Ignore the start and end text node delimiters
             for (let i = fChildren.length - 2; i > 0; i -= 1) {
-                ArrayPush.call(nodeStack, fChildren[i]);
+                nodeStack.push(fChildren[i]);
             }
         } else {
-            ArrayPush.call(flattenedChildren, currentNode);
+            flattenedChildren.push(currentNode);
         }
     }
 
@@ -818,7 +815,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM): void {
 
         const vnodes: MutableVNodes = (cmpSlotsMapping[normalizedSlotName] =
             cmpSlotsMapping[normalizedSlotName] || []);
-        ArrayPush.call(vnodes, vnode);
+        vnodes.push(vnode);
     }
     vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
 

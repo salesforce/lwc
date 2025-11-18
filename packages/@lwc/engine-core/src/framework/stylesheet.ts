@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayMap,
-    ArrayPush,
     isArray,
     isNull,
     isString,
@@ -186,7 +184,7 @@ function evaluateStylesheetsContent(
         let stylesheet = stylesheets[i];
 
         if (isArray(stylesheet)) {
-            ArrayPush.apply(content, evaluateStylesheetsContent(stylesheet, stylesheetToken, vm));
+            content.push(...evaluateStylesheetsContent(stylesheet, stylesheetToken, vm));
         } else {
             if (process.env.NODE_ENV !== 'production') {
                 // Check for compiler version mismatch in dev mode only
@@ -254,7 +252,7 @@ function evaluateStylesheetsContent(
                 linkStylesheetToCssContentInDevMode(stylesheet, cssContent);
             }
 
-            ArrayPush.call(content, cssContent);
+            content.push(cssContent);
         }
     }
 
@@ -272,10 +270,7 @@ export function getStylesheetsContent(vm: VM, template: Template): ReadonlyArray
         const content = evaluateStylesheetsContent(stylesheets, stylesheetToken, vm);
         if (hasVmStyles) {
             // Slow path – merge the template styles and vm styles
-            ArrayPush.apply(
-                content,
-                evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm)
-            );
+            content.push(...evaluateStylesheetsContent(vmStylesheets, stylesheetToken, vm));
         }
         return content;
     }
@@ -347,7 +342,7 @@ export function createStylesheet(vm: VM, stylesheets: ReadonlyArray<string>): VN
         //       the first time the VM renders.
 
         // native shadow or light DOM, SSR
-        return ArrayMap.call(stylesheets, createInlineStyleVNode) as VNode[];
+        return stylesheets.map(createInlineStyleVNode) as VNode[];
     } else {
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);

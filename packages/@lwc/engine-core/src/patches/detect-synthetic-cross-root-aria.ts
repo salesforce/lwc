@@ -16,8 +16,6 @@ import {
     ID_REFERENCING_ATTRIBUTES_SET,
     isString,
     isFunction,
-    StringSplit,
-    ArrayFilter,
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
@@ -79,7 +77,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
 
 function parseIdRefAttributeValue(attrValue: any): string[] {
     // split on whitespace and skip empty strings after splitting
-    return isString(attrValue) ? ArrayFilter.call(StringSplit.call(attrValue, /\s+/), Boolean) : [];
+    return isString(attrValue) ? attrValue.split(/\s+/).filter(Boolean) : [];
 }
 
 function detectSyntheticCrossRootAria(elm: Element, attrName: string, attrValue: any) {

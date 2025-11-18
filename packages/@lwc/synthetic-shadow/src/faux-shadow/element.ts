@@ -5,9 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
-    ArrayFind,
-    ArraySlice,
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
@@ -98,7 +95,7 @@ function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
         ? filteredChildNodes
         : getAllMatches(owner, filteredChildNodes);
     return createStaticHTMLCollection(
-        ArrayFilter.call(childNodes, (node) => node instanceof Element) as Element[]
+        childNodes.filter((node) => node instanceof Element) as Element[]
     );
 }
 
@@ -235,10 +232,7 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
     const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(
-            this,
-            ArraySlice.call(arguments as unknown as unknown[]) as [string]
-        )
+        elementQuerySelectorAll.apply(this, (arguments as unknown as unknown[]).slice() as [string])
     );
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
@@ -257,7 +251,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         const ownerKey = getNodeOwnerKey(this);
         if (!isUndefined(ownerKey)) {
             // `this` is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
-            const elm = ArrayFind.call(nodeList, (elm) => getNodeNearestOwnerKey(elm) === ownerKey);
+            const elm = nodeList.find((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
             return isUndefined(elm) ? null : elm;
         } else {
             // Note: we deviate from native shadow here, but are not fixing
@@ -272,8 +266,7 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
         }
 
         // element belonging to the document
-        const elm = ArrayFind.call(
-            nodeList,
+        const elm = nodeList.find(
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
         );
         return isUndefined(elm) ? null : elm;
@@ -299,26 +292,22 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
         const ownerKey = getNodeOwnerKey(context);
         if (!isUndefined(ownerKey)) {
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
-                (elm) => getNodeNearestOwnerKey(elm) === ownerKey
-            );
+            filtered = unfilteredNodes.filter((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
         } else {
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             // context is manually inserted without lwc:dom-manual, return everything
-            filtered = ArraySlice.call(unfilteredNodes);
+            filtered = unfilteredNodes.slice();
         }
     } else {
         if (context instanceof HTMLBodyElement) {
             // `context` is document.body or element belonging to the document with the patch enabled
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
+            filtered = unfilteredNodes.filter(
                 (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.
-            filtered = ArraySlice.call(unfilteredNodes);
+            filtered = unfilteredNodes.slice();
         }
     }
     return filtered;
@@ -345,7 +334,7 @@ defineProperties(Element.prototype, {
             const nodeList = arrayFromCollection(
                 elementQuerySelectorAll.apply(
                     this,
-                    ArraySlice.call(arguments as unknown as unknown[]) as [string]
+                    (arguments as unknown as unknown[]).slice() as [string]
                 )
             );
 
@@ -368,7 +357,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByClassName.apply(
                         this,
-                        ArraySlice.call(arguments as unknown as unknown[]) as [string]
+                        (arguments as unknown as unknown[]).slice() as [string]
                     )
                 );
 
@@ -387,7 +376,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagName.apply(
                         this,
-                        ArraySlice.call(arguments as unknown as unknown[]) as [tagName: string]
+                        (arguments as unknown as unknown[]).slice() as [tagName: string]
                     )
                 );
 
@@ -406,7 +395,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagNameNS.apply(
                         this,
-                        ArraySlice.call(arguments as unknown as unknown[]) as [
+                        (arguments as unknown as unknown[]).slice() as [
                             namespace: string,
                             localName: string,
                         ]

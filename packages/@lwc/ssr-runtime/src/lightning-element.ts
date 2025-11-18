@@ -21,7 +21,6 @@ import {
     isAriaAttribute,
     keys,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
-    StringToLowerCase,
     toString,
 } from '@lwc/shared';
 
@@ -132,14 +131,14 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     setAttribute(attrName: string, attrValue: string): void {
-        const normalizedName = StringToLowerCase.call(toString(attrName));
+        const normalizedName = toString(attrName).toLowerCase();
         const normalizedValue = String(attrValue);
         this.#attrs[normalizedName] = normalizedValue;
         mutationTracker.add(this, normalizedName);
     }
 
     getAttribute(attrName: string): string | null {
-        const normalizedName = StringToLowerCase.call(toString(attrName));
+        const normalizedName = toString(attrName).toLowerCase();
         if (hasOwnProperty.call(this.#attrs, normalizedName)) {
             return this.#attrs[normalizedName];
         }
@@ -147,12 +146,12 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     hasAttribute(attrName: string): boolean {
-        const normalizedName = StringToLowerCase.call(toString(attrName));
+        const normalizedName = toString(attrName).toLowerCase();
         return hasOwnProperty.call(this.#attrs, normalizedName);
     }
 
     removeAttribute(attrName: string): void {
-        const normalizedName = StringToLowerCase.call(toString(attrName));
+        const normalizedName = toString(attrName).toLowerCase();
         delete this.#attrs[normalizedName];
         // Track mutations for removal of non-existing attributes
         mutationTracker.add(this, normalizedName);

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { create, forEach, StringReplace, StringToLowerCase } from './language';
+import { create } from './language';
 
 /**
  * According to the following list, there are 48 aria attributes of which two (ariaDropEffect and
@@ -95,13 +95,8 @@ const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (
     const AriaPropNameToAttrNameMap: AriaPropToAttrMap = create(null);
 
     // Synthetic creation of all AOM property descriptors for Custom Elements
-    forEach.call(AriaPropertyNames, (propName) => {
-        const attrName = StringToLowerCase.call(
-            StringReplace.call(propName, /^aria/, () => 'aria-')
-        ) as AriaAttribute;
-        // These type assertions are because the map types are a 1:1 mapping of ariaX to aria-x.
-        // TypeScript knows we have one of ariaX | ariaY and one of aria-x | aria-y, and tries to
-        // prevent us from doing ariaX: aria-y, but we that it's safe.
+    AriaPropertyNames.forEach((propName) => {
+        const attrName = propName.replace(/^aria/, () => 'aria-').toLowerCase() as AriaAttribute;
         (AriaAttrNameToPropNameMap[attrName] as AriaProperty) = propName;
         (AriaPropNameToAttrNameMap[propName] as AriaAttribute) = attrName;
     });

@@ -14,7 +14,6 @@ import {
     isUndefined,
     noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
-    StringToLowerCase,
 } from '@lwc/shared';
 
 import {
@@ -263,7 +262,7 @@ function setText(node: N, content: string) {
 }
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
-    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedName = String(name).toLowerCase();
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
@@ -271,7 +270,7 @@ function getAttribute(element: E, name: string, namespace: string | null = null)
 }
 
 function setAttribute(element: E, name: string, value: unknown, namespace: string | null = null) {
-    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedName = String(name).toLowerCase();
     const normalizedValue = String(value);
     reportMutation(element, normalizedName);
     const attribute = element[HostAttributesKey].find(
@@ -294,7 +293,7 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedName = String(name).toLowerCase();
     reportMutation(element, normalizedName);
     element[HostAttributesKey] = element[HostAttributesKey].filter(
         (attr) => attr.name !== normalizedName && attr[HostNamespaceKey] !== namespace

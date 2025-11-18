@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
+import { create, defineProperty, setPrototypeOf } from '@lwc/shared';
 
 import { getAttribute } from '../env/element';
 
@@ -82,7 +82,7 @@ export function createStaticHTMLCollection<T extends Element>(items: T[]): HTMLC
     const collection: HTMLCollectionOf<T> = create(StaticHTMLCollection.prototype);
     Items.set(collection, items);
     // setting static indexes
-    forEach.call(items, (item: T, index: number) => {
+    items.forEach((item, index) => {
         defineProperty(collection, index, {
             value: item,
             enumerable: true,

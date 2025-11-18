@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    create,
-    freeze,
-    isNull,
-    isString,
-    isUndefined,
-    StringCharCodeAt,
-    StringSlice,
-} from '@lwc/shared';
+import { create, freeze, isNull, isString, isUndefined } from '@lwc/shared';
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import type { RendererAPI } from '../renderer';
 
@@ -38,16 +30,16 @@ export function getMapFromClassName(className: string | undefined): Record<strin
     let o;
     const len = className.length;
     for (o = 0; o < len; o++) {
-        if (StringCharCodeAt.call(className, o) === SPACE_CHAR) {
+        if (className.charCodeAt(o) === SPACE_CHAR) {
             if (o > start) {
-                map[StringSlice.call(className, start, o)] = true;
+                map[className.slice(start, o)] = true;
             }
             start = o + 1;
         }
     }
 
     if (o > start) {
-        map[StringSlice.call(className, start, o)] = true;
+        map[className.slice(start, o)] = true;
     }
     classNameToClassMap[className] = map;
     if (process.env.NODE_ENV !== 'production') {

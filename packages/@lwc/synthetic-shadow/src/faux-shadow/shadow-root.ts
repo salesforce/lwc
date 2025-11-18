@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
     assign,
     create,
     defineProperty,
@@ -585,10 +584,7 @@ const ParentNodePatchDescriptors = {
         configurable: true,
         get(this: ShadowRoot) {
             return createStaticHTMLCollection(
-                ArrayFilter.call(
-                    shadowRootChildNodes(this),
-                    (elm: Node | Element) => elm instanceof Element
-                )
+                shadowRootChildNodes(this).filter((elm) => elm instanceof Element)
             );
         },
     },

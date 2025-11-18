@@ -7,7 +7,6 @@
 import {
     isNull,
     isUndefined,
-    StringCharCodeAt,
     XML_NAMESPACE,
     XLINK_NAMESPACE,
     kebabCaseToCamelCase,
@@ -53,10 +52,10 @@ export function patchAttributes(
             // on a custom element versus just using the more reliable attribute format.
             if (external && (propName = kebabCaseToCamelCase(key)) in elm!) {
                 safelySetProperty(setProperty, elm!, propName, cur);
-            } else if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
+            } else if (key.charCodeAt(3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, key, cur as string, XML_NAMESPACE);
-            } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
+            } else if (key.charCodeAt(5) === ColonCharCode) {
                 // Assume xlink namespace
                 setAttribute(elm, key, cur as string, XLINK_NAMESPACE);
             } else if (isNull(cur) || isUndefined(cur)) {

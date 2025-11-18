@@ -12,7 +12,7 @@ import {
     getAssociatedVMIfPresent,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
-import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
+import { isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement } from '@lwc/engine-core';
 
@@ -91,7 +91,7 @@ export function hydrateComponent(
     try {
         const { defineCustomElement, getTagName } = renderer;
         const isFormAssociated = shouldBeFormAssociated(Ctor);
-        defineCustomElement(StringToLowerCase.call(getTagName(element)), isFormAssociated);
+        defineCustomElement(getTagName(element).toLowerCase(), isFormAssociated);
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);

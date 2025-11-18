@@ -5,9 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayPush,
-    ArraySlice,
-    ArrayUnshift,
     assert,
     create,
     defineProperty,
@@ -688,7 +685,7 @@ function flushRehydrationQueue() {
                 if (rehydrateQueue.length === 0) {
                     addCallbackToNextTick(flushRehydrationQueue);
                 }
-                ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
+                rehydrateQueue.unshift(...vms.slice(i + 1));
             }
             // we need to end the measure before throwing.
             logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
@@ -899,7 +896,7 @@ export function scheduleRehydration(vm: VM) {
         addCallbackToNextTick(flushRehydrationQueue);
     }
 
-    ArrayPush.call(rehydrateQueue, vm);
+    rehydrateQueue.push(vm);
 }
 
 function getErrorBoundaryVM(vm: VM): VM | undefined {

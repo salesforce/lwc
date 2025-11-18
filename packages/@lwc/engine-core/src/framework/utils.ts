@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayPush,
-    create,
-    isFunction,
-    keys,
-    seal,
-    isAPIFeatureEnabled,
-    APIFeature,
-} from '@lwc/shared';
+import { create, isFunction, keys, seal, isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 import { logWarnOnce } from '../shared/logger';
 import { getComponentAPIVersion, getComponentRegisteredName } from './component';
 import type { LightningElementConstructor } from './base-lightning-element';
@@ -52,7 +44,7 @@ export function addCallbackToNextTick(callback: Callback) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         Promise.resolve().then(flushCallbackQueue);
     }
-    ArrayPush.call(nextTickCallbackQueue, callback);
+    nextTickCallbackQueue.push(callback);
 }
 
 export function guid(): string {

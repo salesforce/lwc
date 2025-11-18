@@ -15,7 +15,6 @@ import {
     isUndefined,
     KEY__SCOPED_CSS,
     keys,
-    StringCharAt,
     STATIC_PART_TOKEN_ID,
     toString,
 } from '@lwc/shared';
@@ -118,7 +117,7 @@ function checkHasMatchingRenderMode(template: Template, vm: VM) {
 const browserExpressionSerializer = (partToken: string, classAttrToken: string) => {
     // This will insert the scoped style token as a static class attribute in the fragment
     // bypassing the need to call applyStyleScoping when mounting static parts.
-    const type = StringCharAt.call(partToken, 0);
+    const type = partToken.charAt(0);
     switch (type) {
         case STATIC_PART_TOKEN_ID.CLASS:
             return classAttrToken;
@@ -160,7 +159,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         // Ex, attribute: a0:data-name, a = an attribute, 0 = partId, data-name = attribute name.
         // Ex, style: s0, s = a style attribute, 0 = partId.
         // Note some attributes contain a `:`, e.g. `xlink:href` may be encoded as `a0:xlink:href`.
-        const type = StringCharAt.call(partToken, 0);
+        const type = partToken.charAt(0);
         let delimiterIndex = partToken.length;
         let attrName = '';
         if (type === STATIC_PART_TOKEN_ID.ATTRIBUTE) {

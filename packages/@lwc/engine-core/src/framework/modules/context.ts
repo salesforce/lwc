@@ -8,7 +8,6 @@ import {
     isUndefined,
     keys,
     getContextKeys,
-    ArrayFilter,
     ContextEventName,
     isTrustedContext,
     type ContextProvidedCallback,
@@ -122,7 +121,7 @@ function connect(vm: VM, enumerableKeys: string[], contextContainer: any) {
     const { connectContext } = contextKeys;
     const { component } = vm;
 
-    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = enumerableKeys.filter((enumerableKey) =>
         isTrustedContext(contextContainer[enumerableKey])
     );
 
@@ -157,7 +156,7 @@ function disconnect(vm: VM, enumerableKeys: string[], contextContainer: any) {
     const { disconnectContext } = contextKeys;
     const { component } = vm;
 
-    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = enumerableKeys.filter((enumerableKey) =>
         isTrustedContext(contextContainer[enumerableKey])
     );
 

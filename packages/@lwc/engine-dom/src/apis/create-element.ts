@@ -4,16 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    assign,
-    isFunction,
-    isNull,
-    isObject,
-    isUndefined,
-    toString,
-    StringToLowerCase,
-} from '@lwc/shared';
+import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
@@ -208,7 +199,7 @@ export function createElement<Component>(
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
     // the following line guarantees that this does not leaks beyond this point.
-    const tagName = StringToLowerCase.call(sel);
+    const tagName = sel.toLowerCase();
 
     const useNativeCustomElementLifecycle =
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;

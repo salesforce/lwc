@@ -4,16 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayFind,
-    ArrayIndexOf,
-    ArrayReverse,
-    ArraySlice,
-    assert,
-    isNull,
-    isUndefined,
-    toString,
-} from '@lwc/shared';
+import { assert, isNull, isUndefined, toString } from '@lwc/shared';
 
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
@@ -167,17 +158,16 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     }
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
-    const hostIndex = ArrayIndexOf.call(all, host);
+    const hostIndex = all.indexOf(host);
 
     // Host element can show up in our "previous" section if its tabindex is 0
     // We want to filter that out here
-    const firstChildIndex = hostIndex > -1 ? hostIndex : ArrayIndexOf.call(all, firstChild);
+    const firstChildIndex = hostIndex > -1 ? hostIndex : all.indexOf(firstChild);
 
     // Account for an empty inner list
-    const lastChildIndex =
-        inner.length === 0 ? firstChildIndex + 1 : ArrayIndexOf.call(all, lastChild) + 1;
-    const prev = ArraySlice.call(all, 0, firstChildIndex);
-    const next = ArraySlice.call(all, lastChildIndex);
+    const lastChildIndex = inner.length === 0 ? firstChildIndex + 1 : all.indexOf(lastChild) + 1;
+    const prev = all.slice(0, firstChildIndex);
+    const next = all.slice(lastChildIndex);
     return {
         prev,
         inner,
@@ -289,7 +279,7 @@ function skipHostHandler(event: FocusEvent) {
     if (position === 1) {
         // Focus is coming from above
         const findTabbableElms = isTabbableFrom.bind(null, host.getRootNode());
-        const first = ArrayFind.call(segments.inner, findTabbableElms);
+        const first = segments.inner.find(findTabbableElms);
         if (!isUndefined(first)) {
             const win = getOwnerWindow(first);
             muteFocusEventsDuringExecution(win, () => {
@@ -300,7 +290,7 @@ function skipHostHandler(event: FocusEvent) {
         }
     } else if (host === target) {
         // Host is receiving focus from below, either from its shadow or from a sibling
-        focusOnNextOrBlur(ArrayReverse.call(segments.prev), target, relatedTarget);
+        focusOnNextOrBlur(segments.prev.reverse(), target, relatedTarget);
     }
 }
 
@@ -322,7 +312,7 @@ function skipShadowHandler(event: FocusEvent) {
     const host = eventCurrentTargetGetter.call(event) as HTMLElement;
     const segments = getTabbableSegments(host);
 
-    if (ArrayIndexOf.call(segments.inner, relatedTarget) !== -1) {
+    if (segments.inner.indexOf(relatedTarget) !== -1) {
         // If relatedTarget is contained by the host's subtree we can assume that the user is
         // tabbing between elements inside of the shadow. Do nothing.
         return;
@@ -338,7 +328,7 @@ function skipShadowHandler(event: FocusEvent) {
     }
     if (position === 2) {
         // Focus is coming from below
-        focusOnNextOrBlur(ArrayReverse.call(segments.prev), target, relatedTarget);
+        focusOnNextOrBlur(segments.prev.reverse(), target, relatedTarget);
     }
 }
 

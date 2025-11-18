@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayIndexOf, ArrayPush, isNull, isUndefined } from '@lwc/shared';
+import { isNull, isUndefined } from '@lwc/shared';
 import { elementsFromPoint } from '../env/document';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 
@@ -54,8 +54,8 @@ export function fauxElementsFromPoint(
             }
             const elementRootNode = element.getRootNode();
 
-            if (ArrayIndexOf.call(rootNodes, elementRootNode) !== -1) {
-                ArrayPush.call(result, element);
+            if (rootNodes.indexOf(elementRootNode) !== -1) {
+                result.push(element);
                 continue;
             }
             // In cases where the host element is not visible but its shadow descendants are, then
@@ -71,10 +71,10 @@ export function fauxElementsFromPoint(
             );
             if (
                 !isUndefined(ancestorHost) &&
-                ArrayIndexOf.call(elements, ancestorHost) === -1 &&
-                ArrayIndexOf.call(result, ancestorHost) === -1
+                elements.indexOf(ancestorHost) === -1 &&
+                result.indexOf(ancestorHost) === -1
             ) {
-                ArrayPush.call(result, ancestorHost);
+                result.push(ancestorHost);
             }
         }
     }

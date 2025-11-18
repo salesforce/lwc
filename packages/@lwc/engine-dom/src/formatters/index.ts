@@ -5,12 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ArrayPush } from '@lwc/shared';
 import { LightningElementFormatter } from './component';
 
 function init() {
     const devtoolsFormatters = (globalThis as any).devtoolsFormatters || [];
-    ArrayPush.call(devtoolsFormatters, LightningElementFormatter);
+    devtoolsFormatters.push(LightningElementFormatter);
     (globalThis as any).devtoolsFormatters = devtoolsFormatters;
 }
 

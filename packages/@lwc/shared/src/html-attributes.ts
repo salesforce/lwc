@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
+import { isUndefined, StringFromCharCode } from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -161,7 +161,7 @@ export function htmlPropertyToAttribute(propName: string): string {
 
     let attributeName = '';
     for (let i = 0, len = propName.length; i < len; i++) {
-        const code = StringCharCodeAt.call(propName, i);
+        const code = propName.charCodeAt(i);
         if (
             code >= 65 && // "A"
             code <= 90 // "Z"
@@ -189,7 +189,7 @@ export function kebabCaseToCamelCase(attrName: string): string {
     let result = CACHED_KEBAB_CAMEL_MAPPING.get(attrName);
 
     if (isUndefined(result)) {
-        result = StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+        result = attrName.replace(CAMEL_REGEX, (g) => g[1].toUpperCase());
         CACHED_KEBAB_CAMEL_MAPPING.set(attrName, result);
     }
 

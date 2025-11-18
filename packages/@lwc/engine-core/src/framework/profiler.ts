@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayJoin, ArrayMap, ArrayPush, ArraySort, isUndefined, noop } from '@lwc/shared';
+import { isUndefined, noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode } from './vm';
@@ -207,8 +207,8 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     }
 
     // Sort by tag name
-    const entries = ArraySort.call([...tagNamesToIdsAndProps], (a, b) => a[0].localeCompare(b[0]));
-    const tagNames = ArrayMap.call(entries, (item) => item[0]) as string[];
+    const entries = [...tagNamesToIdsAndProps].sort((a, b) => a[0].localeCompare(b[0]));
+    const tagNames = entries.map((item) => item[0]) as string[];
 
     // Show e.g. `<x-foo>` for one instance, or `<x-foo> (x2)` for two instances. (\u00D7 is multiplication symbol)
     const tagNamesToDisplayTagNames = new Map<string, string>();
@@ -223,17 +223,14 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
     const result: [string, string][] = [
         [
             `Component${usePlural ? 's' : ''}`,
-            ArrayJoin.call(
-                ArrayMap.call(tagNames, (_) => tagNamesToDisplayTagNames.get(_)),
-                ', '
-            ),
+            tagNames.map((_) => tagNamesToDisplayTagNames.get(_)).join(', '),
         ],
     ];
 
     // Detail rows
     for (const [prettyTagName, { keys }] of entries) {
         const displayTagName = tagNamesToDisplayTagNames.get(prettyTagName)!;
-        ArrayPush.call(result, [displayTagName, ArrayJoin.call(ArraySort.call([...keys]), ', ')]);
+        result.push([displayTagName, [...keys].sort().join(', ')]);
     }
 
     return result;

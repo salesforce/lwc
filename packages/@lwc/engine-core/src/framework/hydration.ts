@@ -6,7 +6,6 @@
  */
 import {
     isUndefined,
-    ArrayJoin,
     arrayEvery,
     assert,
     keys,
@@ -14,15 +13,11 @@ import {
     isArray,
     isTrue,
     isString,
-    StringToLowerCase,
     APIFeature,
     isAPIFeatureEnabled,
     isFalse,
-    StringSplit,
     parseStyleText,
     ArrayFrom,
-    ArrayFilter,
-    ArrayMap,
 } from '@lwc/shared';
 
 import {
@@ -203,7 +198,7 @@ function getValidationPredicate(
     // host mutations during `connectedCallback`.
     const hostMutatedValue = renderer.getAttribute(elm, 'data-lwc-host-mutated');
     const detectedHostMutations = isString(hostMutatedValue)
-        ? new Set(StringSplit.call(hostMutatedValue, / /))
+        ? new Set(hostMutatedValue.split(/ /))
         : undefined;
 
     // If validationOptOut is true, no attributes will be checked for correctness
@@ -406,7 +401,7 @@ function hydrateCustomElement(
     const { sel, mode, ctor, owner } = vnode;
     const { defineCustomElement, getTagName } = renderer;
     const isFormAssociated = shouldBeFormAssociated(ctor);
-    defineCustomElement(StringToLowerCase.call(getTagName(elm)), isFormAssociated);
+    defineCustomElement(getTagName(elm).toLowerCase(), isFormAssociated);
 
     const vm = createVM(elm, ctor, renderer, {
         mode,
@@ -505,7 +500,7 @@ function hydrateChildren(
         hasMismatch = true;
         // We can't know exactly which node(s) caused the delta, but we can provide context (parent) and the mismatched sets
         if (process.env.NODE_ENV !== 'production') {
-            const clientNodes = ArrayMap.call(children, (c) => c?.elm);
+            const clientNodes = children.map((c) => c?.elm);
             queueHydrationError('child node', serverNodes, clientNodes);
         }
     }
@@ -645,7 +640,7 @@ function validateClassAttr(
 
     if (!isUndefined(className)) {
         // ignore empty spaces entirely, filter them out using `filter(..., Boolean)`
-        const classes = ArrayFilter.call(StringSplit.call(className, /\s+/), Boolean);
+        const classes = className.split(/\s+/).filter(Boolean);
         vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
     } else if (!isUndefined(classMap)) {
         const classes = keys(classMap);
@@ -735,7 +730,7 @@ function validateStyleAttr(
             nodesAreCompatible = false;
         }
 
-        vnodeStyle = ArrayJoin.call(expectedStyle, ' ');
+        vnodeStyle = expectedStyle.join(' ');
     }
 
     if (process.env.NODE_ENV !== 'production' && !nodesAreCompatible) {

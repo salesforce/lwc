@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, ArrayPush } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
 import { guid } from '../utils';
 import type { VM } from '../vm';
 import type {
@@ -81,27 +81,14 @@ export function createContextWatcher(
         renderer: { registerContextConsumer },
     } = vm;
     // waiting for the component to be connected to formally request the context via the token
-    ArrayPush.call(wiredConnecting, () => {
-        // This will attempt to connect the current element with one of its anscestors
-        // that can provide context for the given wire adapter. This relationship is
-        // keyed on the secret & internal value of `adapterContextToken`, which is unique
-        // to a given wire adapter.
-        //
-        // Depending on the runtime environment, this connection is made using either DOM
-        // events (in the browser) or a custom traversal (on the server).
+    wiredConnecting.push(() => {
         registerContextConsumer(elm, adapterContextToken, {
-            setNewContext(newContext: ContextValue) {
-                // eslint-disable-next-line @lwc/lwc-internal/no-invalid-todo
-                // TODO: dev-mode validation of config based on the adapter.contextSchema
+            setNewContext: function (newContext) {
                 callbackWhenContextIsReady(newContext);
-                // Return true as the context is always consumed here and the consumer should
-                // stop bubbling.
                 return true;
             },
-            setDisconnectedCallback(disconnectCallback: () => void) {
-                // adds this callback into the disconnect bucket so it gets disconnected from parent
-                // the the element hosting the wire is disconnected
-                ArrayPush.call(wiredDisconnecting, disconnectCallback);
+            setDisconnectedCallback: function (disconnectCallback) {
+                wiredDisconnecting.push(disconnectCallback);
             },
         });
     });
