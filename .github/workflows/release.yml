@@ -16,6 +16,9 @@ on:
                 description: 'OR Explicit version number (must be greater than current root version)'
                 required: false
 
+env:
+    NODE_VERSION: '24.11.1'
+
 permissions:
     contents: write
     pull-requests: write
@@ -54,7 +57,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v6
               with:
-                  node-version: '20'
+                  node-version: ${{ env.NODE_VERSION }}
                   registry-url: 'https://registry.npmjs.org'
                   cache: 'yarn'
 

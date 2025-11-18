@@ -19,6 +19,7 @@ on:
 env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
     CHROMEDRIVER_BINARY: '../../../node_modules/chromedriver/lib/chromedriver/chromedriver' # pin wdio to local chromedriver
+    NODE_VERSION: '24.11.1'
 
 jobs:
     run-integration-tests:
@@ -33,7 +34,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: '20.19.4'
+                  node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
 
             # Needed for local browser integration tests

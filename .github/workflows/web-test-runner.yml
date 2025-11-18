@@ -12,7 +12,7 @@ on:
 
 env:
     COVERAGE: '1'
-    NODE_VERSION: '20.19.4'
+    NODE_VERSION: '24.11.1'
 
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
