@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, defineProperties, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { ArrayFrom, assert, defineProperties, isNull, isTrue, isUndefined } from '@lwc/shared';
 import {
     getAttribute,
     setAttribute,
@@ -138,7 +138,7 @@ defineProperties(HTMLSlotElement.prototype, {
             } else {
                 return originalAssignedElements.apply(
                     this,
-                    (arguments as unknown as unknown[]).slice() as [options?: AssignedNodesOptions]
+                    ArrayFrom(arguments) as [options?: AssignedNodesOptions]
                 );
             }
         },
@@ -156,7 +156,7 @@ defineProperties(HTMLSlotElement.prototype, {
             } else {
                 return originalAssignedNodes.apply(
                     this,
-                    (arguments as unknown as unknown[]).slice() as [options?: AssignedNodesOptions]
+                    ArrayFrom(arguments) as [options?: AssignedNodesOptions]
                 );
             }
         },

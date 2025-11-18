@@ -20,6 +20,7 @@ import {
     keys,
     htmlPropertyToAttribute,
     isNull,
+    ArrayFrom,
 } from '@lwc/shared';
 import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
 import { logWarn } from '../shared/logger';
@@ -66,7 +67,7 @@ function createMethodCaller(methodName: string): (...args: any[]) => any {
         const vm = getAssociatedVM(this);
         const { callHook, component } = vm;
         const fn = (component as any)[methodName];
-        return callHook(vm.component, fn, (arguments as unknown as unknown[]).slice());
+        return callHook(vm.component, fn, ArrayFrom(arguments));
     };
 }
 

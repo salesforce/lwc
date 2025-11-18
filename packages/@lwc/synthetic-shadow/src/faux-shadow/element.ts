@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
+    ArrayFrom,
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
@@ -232,7 +233,7 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
     const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(this, (arguments as unknown as unknown[]).slice() as [string])
+        elementQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
     );
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
@@ -332,10 +333,7 @@ defineProperties(Element.prototype, {
     querySelectorAll: {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const nodeList = arrayFromCollection(
-                elementQuerySelectorAll.apply(
-                    this,
-                    (arguments as unknown as unknown[]).slice() as [string]
-                )
+                elementQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
             );
 
             // Note: we deviate from native shadow here, but are not fixing
@@ -355,10 +353,7 @@ if (process.env.NODE_ENV !== 'test') {
         getElementsByClassName: {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
-                    elementGetElementsByClassName.apply(
-                        this,
-                        (arguments as unknown as unknown[]).slice() as [string]
-                    )
+                    elementGetElementsByClassName.apply(this, ArrayFrom(arguments) as [string])
                 );
 
                 // Note: we deviate from native shadow here, but are not fixing
@@ -376,7 +371,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagName.apply(
                         this,
-                        (arguments as unknown as unknown[]).slice() as [tagName: string]
+                        ArrayFrom(arguments) as [tagName: string]
                     )
                 );
 
@@ -395,10 +390,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagNameNS.apply(
                         this,
-                        (arguments as unknown as unknown[]).slice() as [
-                            namespace: string,
-                            localName: string,
-                        ]
+                        ArrayFrom(arguments) as [namespace: string, localName: string]
                     )
                 );
 

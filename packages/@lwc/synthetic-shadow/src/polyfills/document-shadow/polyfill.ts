@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
+import {
+    ArrayFrom,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isNull,
+    isUndefined,
+} from '@lwc/shared';
 import {
     DocumentPrototypeActiveElement,
     getElementById as documentGetElementById,
@@ -72,10 +78,7 @@ defineProperty(Document.prototype, 'activeElement', {
 
 defineProperty(Document.prototype, 'getElementById', {
     value(this: Document): Element | null {
-        const elm = documentGetElementById.apply(
-            this,
-            (arguments as unknown as unknown[]).slice() as [string]
-        );
+        const elm = documentGetElementById.apply(this, ArrayFrom(arguments) as [string]);
         if (isNull(elm)) {
             return null;
         }
@@ -91,10 +94,7 @@ defineProperty(Document.prototype, 'getElementById', {
 defineProperty(Document.prototype, 'querySelector', {
     value(this: Document): Element | null {
         const elements = arrayFromCollection(
-            documentQuerySelectorAll.apply(
-                this,
-                (arguments as unknown as unknown[]).slice() as [string]
-            )
+            documentQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.find(
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -109,10 +109,7 @@ defineProperty(Document.prototype, 'querySelector', {
 defineProperty(Document.prototype, 'querySelectorAll', {
     value(this: Document): NodeListOf<Element> {
         const elements = arrayFromCollection(
-            documentQuerySelectorAll.apply(
-                this,
-                (arguments as unknown as unknown[]).slice() as [string]
-            )
+            documentQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.filter(
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -127,10 +124,7 @@ defineProperty(Document.prototype, 'querySelectorAll', {
 defineProperty(Document.prototype, 'getElementsByClassName', {
     value(this: Document): HTMLCollectionOf<Element> {
         const elements = arrayFromCollection(
-            documentGetElementsByClassName.apply(
-                this,
-                (arguments as unknown as unknown[]).slice() as [string]
-            )
+            documentGetElementsByClassName.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.filter(
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -145,10 +139,7 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
 defineProperty(Document.prototype, 'getElementsByTagName', {
     value(this: Document): HTMLCollectionOf<Element> {
         const elements = arrayFromCollection(
-            documentGetElementsByTagName.apply(
-                this,
-                (arguments as unknown as unknown[]).slice() as [string]
-            )
+            documentGetElementsByTagName.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.filter(
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -163,10 +154,7 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
 defineProperty(Document.prototype, 'getElementsByTagNameNS', {
     value(this: Document): HTMLCollectionOf<Element> {
         const elements = arrayFromCollection(
-            documentGetElementsByTagNameNS.apply(
-                this,
-                (arguments as unknown as unknown[]).slice() as [string, string]
-            )
+            documentGetElementsByTagNameNS.apply(this, ArrayFrom(arguments) as [string, string])
         );
         const filtered = elements.filter(
             (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
@@ -187,10 +175,7 @@ defineProperty(
     {
         value(this: Document): NodeListOf<Element> {
             const elements = arrayFromCollection(
-                getElementsByName.apply(
-                    this,
-                    (arguments as unknown as unknown[]).slice() as [string]
-                )
+                getElementsByName.apply(this, ArrayFrom(arguments) as [string])
             );
             const filtered = elements.filter(
                 (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
