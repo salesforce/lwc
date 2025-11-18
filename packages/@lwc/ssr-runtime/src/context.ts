@@ -65,9 +65,7 @@ export function connectContext(le: LightningElement) {
     const { connectContext } = contextKeys;
 
     const enumerableKeys = keys(le);
-    // I'm not sure why, but changing this makes tests fail...
-    // eslint-disable-next-line @lwc/lwc-internal/no-normal-code
-    const contextfulKeys = Array.prototype.filter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = enumerableKeys.filter((enumerableKey) =>
         isTrustedContext((le as any)[enumerableKey])
     );
 

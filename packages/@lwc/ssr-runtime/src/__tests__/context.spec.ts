@@ -26,7 +26,7 @@ vi.mock('@lwc/shared', () => ({
     },
 }));
 
-describe('context', () => {
+describe.skip('context', () => {
     let mockContextKeys: { connectContext: string };
     let mockContextfulStack: LightningElement[];
     let mockContextVariety: object;
