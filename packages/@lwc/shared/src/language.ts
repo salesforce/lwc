@@ -184,7 +184,7 @@ export function toString(obj: unknown): string {
 export function getPropertyDescriptor(o: unknown, p: PropertyKey): PropertyDescriptor | undefined {
     do {
         const d = getOwnPropertyDescriptor(o, p);
-        if (!isUndefined(d)) {
+        if (d !== undefined) {
             return d;
         }
         o = getPrototypeOf(o);
