@@ -6,7 +6,7 @@
  */
 
 import { createContextProviderWithRegister, getAssociatedVMIfPresent } from '@lwc/engine-core';
-import { isUndefined, isNull } from '@lwc/shared';
+import {} from '@lwc/shared';
 import {
     HostNodeType,
     HostTypeKey,
@@ -32,12 +32,12 @@ export function registerContextProvider(
     onContextSubscription: WireContextSubscriptionCallback
 ) {
     const vm = getAssociatedVMIfPresent(elm);
-    if (!isUndefined(vm)) {
+    if (vm !== undefined) {
         elm = vm.elm;
     }
 
     const contextProviders = (elm as HostElement)[HostContextProvidersKey];
-    if (isUndefined(contextProviders)) {
+    if (contextProviders === undefined) {
         throw new Error('Unable to register context provider on provided `elm`.');
     }
     contextProviders.set(adapterContextToken, onContextSubscription);
@@ -56,7 +56,7 @@ export function registerContextConsumer(
         if (currentNode[HostTypeKey] === HostNodeType.Element) {
             const subscribeToProvider =
                 currentNode[HostContextProvidersKey].get(adapterContextToken);
-            if (!isUndefined(subscribeToProvider)) {
+            if (subscribeToProvider !== undefined) {
                 // If context subscription is successful, stop traversing to locate a provider
                 if (subscribeToProvider(subscriptionPayload)) {
                     break;
@@ -68,5 +68,5 @@ export function registerContextConsumer(
             currentNode[HostTypeKey] === HostNodeType.Element
                 ? currentNode[HostParentKey]
                 : currentNode[HostHostKey];
-    } while (!isNull(currentNode));
+    } while (currentNode !== null);
 }

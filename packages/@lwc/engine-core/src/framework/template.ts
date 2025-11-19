@@ -9,10 +9,6 @@ import {
     create,
     htmlEscape,
     isArray,
-    isNull,
-    isString,
-    isTrue,
-    isUndefined,
     KEY__SCOPED_CSS,
     keys,
     STATIC_PART_TOKEN_ID,
@@ -139,7 +135,7 @@ function buildSerializeExpressionFn(parts?: VStaticPart[]) {
         return browserExpressionSerializer;
     }
 
-    if (isUndefined(parts)) {
+    if (parts === undefined) {
         // Technically this should not be reachable, if there are no parts there should be no partTokens
         // and this function should never be invoked.
         return serializerNoop;
@@ -210,7 +206,7 @@ function serializeStyleAttribute(part: VStaticPartElement) {
         data: { style },
     } = part;
     // This is designed to mirror logic patchStyleAttribute
-    return isString(style) && style.length ? ` style="${htmlEscape(style, true)}"` : '';
+    return typeof style === 'string' && style.length ? ` style="${htmlEscape(style, true)}"` : '';
 }
 
 function serializeAttribute(part: VStaticPartElement, name: string) {
@@ -220,7 +216,7 @@ function serializeAttribute(part: VStaticPartElement, name: string) {
     const rawValue = attrs[name];
     let value = '';
     // The undefined and null checks here are designed to match patchAttributes routine.
-    if (!isUndefined(rawValue) && !isNull(rawValue)) {
+    if (rawValue !== undefined && rawValue !== null) {
         const stringifiedValue = String(rawValue);
         value = stringifiedValue.length
             ? ` ${name}="${htmlEscape(stringifiedValue, true)}"`
@@ -247,10 +243,10 @@ function buildParseFragmentFn(
                 shadowMode,
                 renderer,
             } = getVMBeingRendered()!;
-            const hasStyleToken = !isUndefined(stylesheetToken);
+            const hasStyleToken = stylesheetToken !== undefined;
             const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
             const hasLegacyToken =
-                lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS && !isUndefined(legacyStylesheetToken);
+                lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS && legacyStylesheetToken !== undefined;
 
             let cacheKey = 0;
             if (hasStyleToken && hasScopedStyles) {
@@ -264,7 +260,7 @@ function buildParseFragmentFn(
             if (process.env.IS_BROWSER) {
                 // Disable this on the server to prevent cache poisoning when expressions are used.
                 const cached = getFromFragmentCache(cacheKey, strings);
-                if (!isUndefined(cached)) {
+                if (cached !== undefined) {
                     return cached;
                 }
             }
@@ -386,7 +382,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                     // Perf opt: do not reset the shadow root during the first rendering (there is
                     // nothing to reset).
-                    if (!isNull(cmpTemplate)) {
+                    if (cmpTemplate !== null) {
                         // It is important to reset the content to avoid reusing similar elements
                         // generated from a different template, because they could have similar IDs,
                         // and snabbdom just rely on the IDs.
@@ -431,7 +427,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                 vnodes = html.call(undefined, api, component, cmpSlots, context.tplCache);
                 const { styleVNodes } = context;
-                if (!isNull(styleVNodes)) {
+                if (styleVNodes !== null) {
                     // It's important here not to mutate the underlying `vnodes` returned from `html.call()`.
                     // The reason for this is because, due to the static content optimization, the vnodes array
                     // may be a static array shared across multiple component instances. E.g. this occurs in the
@@ -462,7 +458,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 function computeHasScopedStylesInStylesheets(stylesheets: Stylesheets | undefined | null): boolean {
     if (hasStyles(stylesheets)) {
         for (let i = 0; i < stylesheets.length; i++) {
-            if (isTrue((stylesheets[i] as any)[KEY__SCOPED_CSS])) {
+            if ((stylesheets[i] as any)[KEY__SCOPED_CSS] === true) {
                 return true;
             }
         }
@@ -472,7 +468,7 @@ function computeHasScopedStylesInStylesheets(stylesheets: Stylesheets | undefine
 
 function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean {
     const { stylesheets } = template;
-    const vmStylesheets = !isUndefined(vm) ? vm.stylesheets : null;
+    const vmStylesheets = vm !== undefined ? vm.stylesheets : null;
 
     return (
         computeHasScopedStylesInStylesheets(stylesheets) ||
@@ -481,5 +477,5 @@ function computeHasScopedStyles(template: Template, vm: VM | undefined): boolean
 }
 
 export function hasStyles(stylesheets: Stylesheets | undefined | null): stylesheets is Stylesheets {
-    return !isUndefined(stylesheets) && !isNull(stylesheets) && stylesheets.length > 0;
+    return stylesheets !== undefined && stylesheets !== null && stylesheets.length > 0;
 }

@@ -10,12 +10,7 @@ import {
     defineProperty,
     getOwnPropertyNames,
     isArray,
-    isFalse,
     isFunction,
-    isNull,
-    isObject,
-    isTrue,
-    isUndefined,
     flattenStylesheets,
 } from '@lwc/shared';
 
@@ -313,7 +308,7 @@ export function removeVM(vm: VM) {
 
 function getNearestShadowAncestor(owner: VM | null): VM | null {
     let ancestor = owner;
-    while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
+    while (ancestor !== null && ancestor.renderMode === RenderMode.Light) {
         ancestor = ancestor.owner;
     }
     return ancestor;
@@ -455,7 +450,7 @@ function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean
 function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
     warnOnStylesheetsMutation(ctor);
     const { stylesheets } = ctor;
-    if (!isUndefined(stylesheets)) {
+    if (stylesheets !== undefined) {
         const valid = validateComponentStylesheets(vm, stylesheets);
 
         if (valid) {
@@ -519,7 +514,7 @@ function computeShadowMode(
         // If synthetic shadow is explicitly disabled, use pure-native
         lwcRuntimeFlags.DISABLE_SYNTHETIC_SHADOW ||
         // hydration only supports native shadow
-        isTrue(hydrated)
+        hydrated === true
     ) {
         return ShadowMode.Native;
     }
@@ -536,7 +531,7 @@ function computeShadowMode(
             shadowMode = ShadowMode.Native;
         } else {
             const shadowAncestor = getNearestShadowAncestor(owner);
-            if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
+            if (shadowAncestor !== null && shadowAncestor.shadowMode === ShadowMode.Native) {
                 // Transitive support for native Shadow DOM. A component in native mode
                 // transitively opts all of its descendants into native.
                 shadowMode = ShadowMode.Native;
@@ -555,7 +550,7 @@ function computeShadowMode(
 }
 
 function assertIsVM(obj: unknown): asserts obj is VM {
-    if (!isObject(obj) || isNull(obj) || !('renderRoot' in obj)) {
+    if (typeof obj !== 'object' || obj === null || !('renderRoot' in obj)) {
         throw new TypeError(`${obj} is not a VM.`);
     }
 }
@@ -578,7 +573,7 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
     const maybeVm = ViewModelReflection.get(obj);
 
     if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(maybeVm)) {
+        if (maybeVm !== undefined) {
             assertIsVM(maybeVm);
         }
     }
@@ -587,7 +582,7 @@ export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
 }
 
 function rehydrate(vm: VM) {
-    if (isTrue(vm.isDirty)) {
+    if (vm.isDirty === true) {
         const children = renderComponent(vm);
         patchShadowRoot(vm, children);
     }
@@ -643,7 +638,7 @@ export function runRenderedCallback(vm: VM) {
         return;
     }
 
-    if (!isUndefined(renderedCallback)) {
+    if (renderedCallback !== undefined) {
         logOperationStart(OperationId.RenderedCallback, vm);
         invokeComponentCallback(vm, renderedCallback);
         logOperationEnd(OperationId.RenderedCallback, vm);
@@ -715,7 +710,7 @@ export function runConnectedCallback(vm: VM) {
     }
 
     const { connectedCallback } = vm.def;
-    if (!isUndefined(connectedCallback)) {
+    if (connectedCallback !== undefined) {
         logOperationStart(OperationId.ConnectedCallback, vm);
 
         if (!process.env.IS_BROWSER) {
@@ -768,7 +763,7 @@ function runDisconnectedCallback(vm: VM) {
         disconnectContext(vm);
     }
 
-    if (isFalse(vm.isDirty)) {
+    if (vm.isDirty === false) {
         // this guarantees that if the component is reused/reinserted,
         // it will be re-rendered because we are disconnecting the reactivity
         // linking, so mutations are not automatically reflected on the state
@@ -780,7 +775,7 @@ function runDisconnectedCallback(vm: VM) {
         disconnectWireAdapters(vm);
     }
     const { disconnectedCallback } = vm.def;
-    if (!isUndefined(disconnectedCallback)) {
+    if (disconnectedCallback !== undefined) {
         logOperationStart(OperationId.DisconnectedCallback, vm);
 
         invokeComponentCallback(vm, disconnectedCallback);
@@ -804,13 +799,13 @@ function runChildNodesDisconnectedCallback(vm: VM) {
         // * when slotted custom element is not used by the element where it is
         //   slotted into it, as  a result, the custom element was never
         //   initialized.
-        if (!isUndefined(elm)) {
+        if (elm !== undefined) {
             const childVM = getAssociatedVMIfPresent(elm);
 
             // The VM associated with the element might be associated undefined
             // in the case where the VM failed in the middle of its creation,
             // eg: constructor throwing before invoking super().
-            if (!isUndefined(childVM)) {
+            if (childVM !== undefined) {
                 resetComponentStateWhenRemoved(childVM);
             }
         }
@@ -834,7 +829,7 @@ function recursivelyDisconnectChildren(vnodes: VNodes) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode = vnodes[i];
 
-        if (!isNull(vnode) && !isUndefined(vnode.elm)) {
+        if (vnode !== null && vnode.elm !== undefined) {
             switch (vnode.type) {
                 case VNodeType.Element:
                     recursivelyDisconnectChildren(vnode.children);
@@ -875,11 +870,11 @@ function recursivelyRemoveChildren(vnodes: VNodes, vm: VM) {
     for (let i = 0, len = vnodes.length; i < len; i += 1) {
         const vnode = vnodes[i];
 
-        if (!isNull(vnode)) {
+        if (vnode !== null) {
             // VFragments are special; their .elm property does not point to the root element since they have no single root.
             if (isVFragment(vnode)) {
                 recursivelyRemoveChildren(vnode.children, vm);
-            } else if (!isUndefined(vnode.elm)) {
+            } else if (vnode.elm !== undefined) {
                 remove(vnode.elm, renderRoot);
             }
         }
@@ -887,7 +882,7 @@ function recursivelyRemoveChildren(vnodes: VNodes, vm: VM) {
 }
 
 export function scheduleRehydration(vm: VM) {
-    if (!process.env.IS_BROWSER || isTrue(vm.isScheduled)) {
+    if (!process.env.IS_BROWSER || vm.isScheduled === true) {
         return;
     }
 
@@ -902,8 +897,8 @@ export function scheduleRehydration(vm: VM) {
 function getErrorBoundaryVM(vm: VM): VM | undefined {
     let currentVm: VM | null = vm;
 
-    while (!isNull(currentVm)) {
-        if (!isUndefined(currentVm.def.errorCallback)) {
+    while (currentVm !== null) {
+        if (currentVm.def.errorCallback !== undefined) {
             return currentVm;
         }
 
@@ -927,16 +922,16 @@ export function runWithBoundaryProtection(
         error = Object(e);
     } finally {
         post();
-        if (!isUndefined(error)) {
+        if (error !== undefined) {
             addErrorComponentStack(vm, error);
 
-            const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
+            const errorBoundaryVm = owner === null ? undefined : getErrorBoundaryVM(owner);
             // Error boundaries are not in effect when server-side rendering. `errorCallback`
             // is intended to allow recovery from errors - changing the state of a component
             // and instigating a re-render. That is at odds with the single-pass, synchronous
             // nature of SSR. For that reason, all errors bubble up to the `renderComponent`
             // call site.
-            if (!process.env.IS_BROWSER || isUndefined(errorBoundaryVm)) {
+            if (!process.env.IS_BROWSER || errorBoundaryVm === undefined) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
             resetComponentRoot(vm); // remove offenders
@@ -962,7 +957,7 @@ export function forceRehydration(vm: VM) {
     // content of the shadowRoot, this way we can guarantee that all children
     // elements will be throw away, and new instances will be created.
     vm.cmpTemplate = () => [];
-    if (isFalse(vm.isDirty)) {
+    if (vm.isDirty === false) {
         // forcing the vm to rehydrate in the next tick
         markComponentAsDirty(vm);
         scheduleRehydration(vm);
@@ -993,7 +988,7 @@ export function runFormAssociatedCallback(elm: HTMLElement, form: HTMLFormElemen
     const vm = getAssociatedVM(elm);
     const { formAssociatedCallback } = vm.def;
 
-    if (!isUndefined(formAssociatedCallback)) {
+    if (formAssociatedCallback !== undefined) {
         runFormAssociatedCustomElementCallback(vm, formAssociatedCallback, [form]);
     }
 }
@@ -1002,7 +997,7 @@ export function runFormDisabledCallback(elm: HTMLElement, disabled: boolean) {
     const vm = getAssociatedVM(elm);
     const { formDisabledCallback } = vm.def;
 
-    if (!isUndefined(formDisabledCallback)) {
+    if (formDisabledCallback !== undefined) {
         runFormAssociatedCustomElementCallback(vm, formDisabledCallback, [disabled]);
     }
 }
@@ -1011,7 +1006,7 @@ export function runFormResetCallback(elm: HTMLElement) {
     const vm = getAssociatedVM(elm);
     const { formResetCallback } = vm.def;
 
-    if (!isUndefined(formResetCallback)) {
+    if (formResetCallback !== undefined) {
         runFormAssociatedCustomElementCallback(vm, formResetCallback);
     }
 }
@@ -1029,12 +1024,12 @@ export function runFormStateRestoreCallback(
     const vm = getAssociatedVM(elm);
     const { formStateRestoreCallback } = vm.def;
 
-    if (!isUndefined(formStateRestoreCallback)) {
+    if (formStateRestoreCallback !== undefined) {
         runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback, [state, reason]);
     }
 }
 
 export function resetRefVNodes(vm: VM) {
     const { cmpTemplate } = vm;
-    vm.refVNodes = !isNull(cmpTemplate) && cmpTemplate.hasRefs ? create(null) : null;
+    vm.refVNodes = cmpTemplate !== null && cmpTemplate.hasRefs ? create(null) : null;
 }

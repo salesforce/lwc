@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { elementFromPoint } from '../env/document';
 import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
@@ -16,7 +16,7 @@ export function fauxElementFromPoint(
     top: number
 ): Element | null {
     const element: Element | null = elementFromPoint.call(doc, left, top);
-    if (isNull(element)) {
+    if (element === null) {
         return element;
     }
 

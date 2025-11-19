@@ -8,7 +8,6 @@ import {
     getAPIVersionFromNumber,
     SVG_NAMESPACE,
     STATIC_PART_TOKEN_ID,
-    isUndefined,
     APIFeature,
     isAPIFeatureEnabled,
 } from '@lwc/shared';
@@ -855,7 +854,7 @@ export default class CodeGen {
     getStaticExpressionToken(node: Attribute | Text): string {
         const token = this.staticExpressionMap.get(node);
         /* istanbul ignore if */
-        if (isUndefined(token)) {
+        if (token === undefined) {
             // It should not be possible to hit this code path
             const nodeName = isAttribute(node) ? node.name : 'text node';
             throw new Error(

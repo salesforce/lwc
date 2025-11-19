@@ -10,7 +10,6 @@ import {
     isBooleanAttribute,
     SVG_NAMESPACE,
     LWC_VERSION_COMMENT,
-    isUndefined,
     parseStyleText,
 } from '@lwc/shared';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';
@@ -645,7 +644,7 @@ function transform(codeGen: CodeGen): t.Expression {
             data.push(t.property(t.identifier(RENDERER), t.identifier(RENDERER)));
         }
 
-        if (!isUndefined(slotBindDirective)) {
+        if (slotBindDirective !== undefined) {
             data.push(
                 t.property(
                     t.identifier('slotData'),

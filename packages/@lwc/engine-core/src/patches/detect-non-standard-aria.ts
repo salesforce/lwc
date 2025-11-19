@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperty, getOwnPropertyDescriptor, isNull, isUndefined } from '@lwc/shared';
+import { defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 import { onReportingEnabled, report, ReportingEventId } from '../framework/reporting';
 import { logWarnOnce } from '../shared/logger';
 import { getAssociatedVMIfPresent } from '../framework/vm';
@@ -33,23 +33,23 @@ function isGlobalAriaPolyfillLoaded(): boolean {
     // Sniff for the legacy polyfill being loaded. The reason this works is because ariaActiveDescendant is a
     // non-standard ARIA property reflection that is only supported in our legacy polyfill. See
     // @lwc/aria-reflection/README.md for details.
-    return !isUndefined(getOwnPropertyDescriptor(Element.prototype, 'ariaActiveDescendant'));
+    return getOwnPropertyDescriptor(Element.prototype, 'ariaActiveDescendant') !== undefined;
 }
 
 function findVM(elm: Element): VM | undefined {
     // If it's a shadow DOM component, then it has a host
     const { host } = elm.getRootNode() as ShadowRoot;
-    const vm = isUndefined(host) ? undefined : getAssociatedVMIfPresent(host);
-    if (!isUndefined(vm)) {
+    const vm = host === undefined ? undefined : getAssociatedVMIfPresent(host);
+    if (vm !== undefined) {
         return vm;
     }
     // Else it might be a light DOM component. Walk up the tree trying to find the owner
     let parentElement: Element | null = elm;
-    while (!isNull((parentElement = parentElement.parentElement))) {
+    while ((parentElement = parentElement.parentElement) !== null) {
         if (parentElement instanceof BaseBridgeElement) {
             // parentElement is an LWC component
             const vm = getAssociatedVMIfPresent(parentElement);
-            if (!isUndefined(vm)) {
+            if (vm !== undefined) {
                 return vm;
             }
         }
@@ -63,7 +63,7 @@ function checkAndReportViolation(elm: Element, prop: string, isSetter: boolean, 
     if (process.env.NODE_ENV !== 'production') {
         logWarnOnce(
             `Element <${elm.tagName.toLowerCase()}> ` +
-                (isUndefined(vm) ? '' : `owned by <${vm.elm.tagName.toLowerCase()}> `) +
+                (vm === undefined ? '' : `owned by <${vm.elm.tagName.toLowerCase()}> `) +
                 `uses non-standard property "${prop}". This will be removed in a future version of LWC. ` +
                 `See https://sfdc.co/deprecated-aria`
         );
@@ -74,7 +74,7 @@ function checkAndReportViolation(elm: Element, prop: string, isSetter: boolean, 
         // `typeof null` is "object" which is not very useful for detecting null.
         // We mostly want to know null vs undefined vs other types here, due to
         // https://github.com/salesforce/lwc/issues/3284
-        setValueType = isNull(setValue) ? 'null' : typeof setValue;
+        setValueType = setValue === null ? 'null' : typeof setValue;
     }
     report(ReportingEventId.NonStandardAriaReflection, {
         tagName: vm?.tagName,
@@ -93,9 +93,9 @@ function enableDetection() {
         if (process.env.NODE_ENV !== 'production') {
             /* istanbul ignore if */
             if (
-                isUndefined(descriptor) ||
-                isUndefined(descriptor.get) ||
-                isUndefined(descriptor.set)
+                descriptor === undefined ||
+                descriptor.get === undefined ||
+                descriptor.set === undefined
             ) {
                 // should never happen
                 throw new Error('detect-non-standard-aria.ts loaded before @lwc/aria-reflection');

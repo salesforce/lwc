@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction, isUndefined, noop } from '@lwc/shared';
+import { assert, isFunction, noop } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
 
@@ -78,7 +78,7 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         logOperationEnd(OperationId.Constructor, vm);
 
         vmBeingConstructed = vmBeingConstructedInception;
-        if (!isUndefined(error)) {
+        if (error !== undefined) {
             addErrorComponentStack(vm, error);
             // re-throwing the original error annotated after restoring the context
             throw error; // eslint-disable-line no-unsafe-finally

@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    create,
-    isFunction,
-    isUndefined,
-    defineProperty,
-    getOwnPropertyDescriptor,
-    isFalse,
-} from '@lwc/shared';
+import { create, isFunction, defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 import { assertNotProd, EmptyObject } from '../utils';
 import { logError } from '../../shared/logger';
@@ -70,7 +63,7 @@ function validateObservedField(
     descriptor: PropertyDescriptor | undefined
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (!isUndefined(descriptor)) {
+    if (descriptor !== undefined) {
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
@@ -85,7 +78,7 @@ function validateFieldDecoratedWithTrack(
     descriptor: PropertyDescriptor | undefined
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (!isUndefined(descriptor)) {
+    if (descriptor !== undefined) {
         const type = getClassDescriptorType(descriptor);
         // TODO [#3408]: this should throw, not log
         logError(
@@ -100,7 +93,7 @@ function validateFieldDecoratedWithWire(
     descriptor: PropertyDescriptor | undefined
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (!isUndefined(descriptor)) {
+    if (descriptor !== undefined) {
         const type = getClassDescriptorType(descriptor);
         // TODO [#3408]: this should throw, not log
         logError(`Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`);
@@ -113,7 +106,11 @@ function validateMethodDecoratedWithWire(
     descriptor: PropertyDescriptor | undefined
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
+    if (
+        descriptor === undefined ||
+        !isFunction(descriptor.value) ||
+        descriptor.writable === false
+    ) {
         // TODO [#3441]: This line of code does not seem possible to reach.
         logError(
             `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`
@@ -127,7 +124,7 @@ function validateFieldDecoratedWithApi(
     descriptor: PropertyDescriptor | undefined
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (!isUndefined(descriptor)) {
+    if (descriptor !== undefined) {
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
@@ -161,7 +158,11 @@ function validateMethodDecoratedWithApi(
     descriptor: PropertyDescriptor | undefined
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
+    if (
+        descriptor === undefined ||
+        !isFunction(descriptor.value) ||
+        descriptor.writable === false
+    ) {
         // TODO [#3441]: This line of code does not seem possible to reach.
         logError(`Invalid @api ${methodName} method.`);
     }
@@ -186,14 +187,14 @@ export function registerDecorators(
     const observedFields: PropertyDescriptorMap = create(null);
     const apiFieldsConfig: Record<string, PropType> = create(null);
     let descriptor: PropertyDescriptor | undefined;
-    if (!isUndefined(publicProps)) {
+    if (publicProps !== undefined) {
         for (const fieldName in publicProps) {
             const propConfig = publicProps[fieldName];
             apiFieldsConfig[fieldName] = propConfig.config;
 
             descriptor = getOwnPropertyDescriptor(proto, fieldName);
             if (propConfig.config > 0) {
-                if (isUndefined(descriptor)) {
+                if (descriptor === undefined) {
                     // TODO [#3441]: This line of code does not seem possible to reach.
                     throw new Error();
                 }
@@ -211,7 +212,7 @@ export function registerDecorators(
                 // [W-9927596] If a component has both a public property and a private setter/getter
                 // with the same name, the property is defined as a public accessor. This branch is
                 // only here for backward compatibility reasons.
-                if (!isUndefined(descriptor) && !isUndefined(descriptor.get)) {
+                if (descriptor !== undefined && descriptor.get !== undefined) {
                     descriptor = createPublicAccessorDescriptor(fieldName, descriptor);
                 } else {
                     descriptor = createPublicPropertyDescriptor(fieldName);
@@ -221,19 +222,19 @@ export function registerDecorators(
             defineProperty(proto, fieldName, descriptor);
         }
     }
-    if (!isUndefined(publicMethods)) {
+    if (publicMethods !== undefined) {
         publicMethods.forEach((methodName) => {
             descriptor = getOwnPropertyDescriptor(proto, methodName);
             if (process.env.NODE_ENV !== 'production') {
                 validateMethodDecoratedWithApi(Ctor, methodName, descriptor);
             }
-            if (isUndefined(descriptor)) {
+            if (descriptor === undefined) {
                 throw new Error();
             }
             apiMethods[methodName] = descriptor;
         });
     }
-    if (!isUndefined(wire)) {
+    if (wire !== undefined) {
         for (const fieldOrMethodName in wire) {
             const {
                 adapter,
@@ -252,7 +253,7 @@ export function registerDecorators(
                     }
                     validateMethodDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
                 }
-                if (isUndefined(descriptor)) {
+                if (descriptor === undefined) {
                     throw new Error(`Missing descriptor for wired method "${fieldOrMethodName}".`);
                 }
                 wiredMethods[fieldOrMethodName] = descriptor;
@@ -275,7 +276,7 @@ export function registerDecorators(
         }
     }
 
-    if (!isUndefined(track)) {
+    if (track !== undefined) {
         for (const fieldName in track) {
             descriptor = getOwnPropertyDescriptor(proto, fieldName);
             if (process.env.NODE_ENV !== 'production') {
@@ -285,7 +286,7 @@ export function registerDecorators(
             defineProperty(proto, fieldName, descriptor);
         }
     }
-    if (!isUndefined(fields)) {
+    if (fields !== undefined) {
         for (let i = 0, n = fields.length; i < n; i++) {
             const fieldName: string = fields[i];
             descriptor = getOwnPropertyDescriptor(proto, fieldName);
@@ -295,8 +296,8 @@ export function registerDecorators(
 
             // [W-9927596] Only mark a field as observed whenever it isn't a duplicated public nor
             // tracked property. This is only here for backward compatibility purposes.
-            const isDuplicatePublicProp = !isUndefined(publicProps) && fieldName in publicProps;
-            const isDuplicateTrackedProp = !isUndefined(track) && fieldName in track;
+            const isDuplicatePublicProp = publicProps !== undefined && fieldName in publicProps;
+            const isDuplicateTrackedProp = track !== undefined && fieldName in track;
 
             if (!isDuplicatePublicProp && !isDuplicateTrackedProp) {
                 observedFields[fieldName] = createObservedFieldPropertyDescriptor(fieldName);
@@ -340,5 +341,5 @@ const defaultMeta: DecoratorMeta = {
 
 export function getDecoratorsMeta(Ctor: LightningElementConstructor): DecoratorMeta {
     const meta = signedDecoratorToMetaMap.get(Ctor);
-    return isUndefined(meta) ? defaultMeta : meta;
+    return meta === undefined ? defaultMeta : meta;
 }

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 
 const supportsWeakRefs =
     typeof WeakRef === 'function' && typeof FinalizationRegistry === 'function';
@@ -29,7 +29,7 @@ class LegacyWeakMultiMap<K extends object, V extends object> implements WeakMult
 
     private _getValues(key: K): Set<V> {
         let values = this._map.get(key);
-        if (isUndefined(values)) {
+        if (values === undefined) {
             values = new Set();
             this._map.set(key, values);
         }
@@ -60,7 +60,7 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         // Work backwards, removing stale VMs
         for (let i = weakRefs.length - 1; i >= 0; i--) {
             const vm = weakRefs[i].deref();
-            if (isUndefined(vm)) {
+            if (vm === undefined) {
                 weakRefs.splice(i, 1); // remove
             }
         }
@@ -68,7 +68,7 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
 
     private _getWeakRefs(key: K): WeakRef<V>[] {
         let weakRefs = this._map.get(key);
-        if (isUndefined(weakRefs)) {
+        if (weakRefs === undefined) {
             weakRefs = [];
             this._map.set(key, weakRefs);
         }
@@ -80,7 +80,7 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         const result = new Set<V>();
         for (const weakRef of weakRefs) {
             const vm = weakRef.deref();
-            if (!isUndefined(vm)) {
+            if (vm !== undefined) {
                 result.add(vm);
             }
         }

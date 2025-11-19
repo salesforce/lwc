@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { createVM, connectRootElement } from '@lwc/engine-core';
-import { isString, isFunction, isObject, isNull, HTML_NAMESPACE } from '@lwc/shared';
+import { isFunction, HTML_NAMESPACE } from '@lwc/shared';
 
 import { renderer } from '../renderer';
 import { serializeElement } from '../serializer';
@@ -50,7 +50,7 @@ export function renderComponent(
     Ctor: typeof LightningElement,
     props: { [name: string]: any } = {}
 ): string {
-    if (!isString(tagName)) {
+    if (typeof tagName !== 'string') {
         throw new TypeError(
             `"renderComponent" expects a string as the first parameter but instead received ${tagName}.`
         );
@@ -62,7 +62,7 @@ export function renderComponent(
         );
     }
 
-    if (!isObject(props) || isNull(props)) {
+    if (typeof props !== 'object' || props === null) {
         throw new TypeError(
             `"renderComponent" expects an object as the third parameter but instead received ${props}.`
         );

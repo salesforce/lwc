@@ -11,7 +11,6 @@ import {
     defineProperties,
     getPropertyDescriptor,
     getPrototypeOf,
-    isUndefined,
     setPrototypeOf,
 } from '@lwc/shared';
 
@@ -190,7 +189,7 @@ function getShadowRootRestrictionsDescriptors(sr: ShadowRoot): PropertyDescripto
                 options?: boolean | AddEventListenerOptions
             ) {
                 // TODO [#1824]: Potentially relax this restriction
-                if (!isUndefined(options)) {
+                if (options !== undefined) {
                     logError(
                         'The `addEventListener` method on ShadowRoot does not support any options.',
                         getAssociatedVMIfPresent(this)
@@ -251,7 +250,7 @@ function getCustomElementRestrictionsDescriptors(elm: HTMLElement): PropertyDesc
                 options?: boolean | AddEventListenerOptions
             ) {
                 // TODO [#1824]: Potentially relax this restriction
-                if (!isUndefined(options)) {
+                if (options !== undefined) {
                     logError(
                         'The `addEventListener` method in `LightningElement` does not support any options.',
                         getAssociatedVMIfPresent(this)

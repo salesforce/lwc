@@ -8,10 +8,6 @@ import {
     assert,
     create,
     isArray,
-    isFalse,
-    isNull,
-    isTrue,
-    isUndefined,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_STATIC,
     keys,
@@ -242,7 +238,7 @@ function mountElement(
     } = vnode;
     const { createElement } = renderer;
 
-    const namespace = isTrue(svg) ? SVG_NAMESPACE : undefined;
+    const namespace = svg === true ? SVG_NAMESPACE : undefined;
     const elm = (vnode.elm = createElement(sel, namespace));
 
     linkNodeToShadow(elm, owner, renderer);
@@ -393,7 +389,7 @@ function patchCustomElement(
         const vm = (n2.vm = n1.vm);
 
         patchElementPropsAndAttrsAndRefs(n1, n2, renderer);
-        if (!isUndefined(vm)) {
+        if (vm !== undefined) {
             // in fallback mode, the allocation will always set children to
             // empty and delegate the real allocation to the slot elements
             allocateChildren(n2, vm);
@@ -427,7 +423,7 @@ function patchCustomElement(
         // will happen, but in native, it does allocate the light dom
         patchChildren(n1.children, n2.children, elm, renderer);
 
-        if (!isUndefined(vm)) {
+        if (vm !== undefined) {
             // this will probably update the shadowRoot, but only if the vm is in a dirty state
             // this is important to preserve the top to bottom synchronous rendering phase.
             rerenderVM(vm);
@@ -487,7 +483,7 @@ function unmount(
 
             // No need to unmount the children here, `removeVM` will take care of removing the
             // children.
-            if (!isUndefined(vm)) {
+            if (vm !== undefined) {
                 removeVM(vm);
             }
         }
@@ -539,7 +535,7 @@ function insertFragmentOrNode(
         const children = vnode.children;
         for (let i = 0; i < children.length; i += 1) {
             const child = children[i];
-            if (!isNull(child)) {
+            if (child !== null) {
                 renderer.insert(child.elm, parent, anchor);
             }
         }
@@ -577,7 +573,7 @@ function patchElementPropsAndAttrsAndRefs(
     vnode: VBaseElement,
     renderer: RendererAPI
 ) {
-    if (isNull(oldVnode)) {
+    if (oldVnode === null) {
         applyEventListeners(vnode, renderer);
         applyStaticClassAttribute(vnode, renderer);
         applyStaticStyleAttribute(vnode, renderer);
@@ -603,7 +599,7 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
 
     // Set the class name for `*.scoped.css` style scoping.
     const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
-    if (!isNull(scopeToken)) {
+    if (scopeToken !== null) {
         if (!isValidScopeToken(scopeToken)) {
             // See W-16614556
             throw new Error('stylesheet token must be a valid string');
@@ -616,7 +612,7 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     // TODO [#3733]: remove support for legacy scope tokens
     if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
         const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
-        if (!isNull(legacyScopeToken)) {
+        if (legacyScopeToken !== null) {
             if (!isValidScopeToken(legacyScopeToken)) {
                 // See W-16614556
                 throw new Error('stylesheet token must be a valid string');
@@ -630,12 +626,12 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     // Set property element for synthetic shadow DOM style scoping.
     const { stylesheetToken: syntheticToken } = owner.context;
     if (owner.shadowMode === ShadowMode.Synthetic) {
-        if (!isUndefined(syntheticToken)) {
+        if (syntheticToken !== undefined) {
             (elm as any).$shadowToken$ = syntheticToken;
         }
         if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
             const legacyToken = owner.context.legacyStylesheetToken;
-            if (!isUndefined(legacyToken)) {
+            if (legacyToken !== undefined) {
                 (elm as any).$legacyShadowToken$ = legacyToken;
             }
         }
@@ -686,7 +682,7 @@ export function allocateChildren(vnode: VCustomElement, vm: VM) {
         // in native shadow mode.
         if (
             renderMode !== RenderMode.Light &&
-            children.some((child) => !isNull(child) && isVScopedSlotFragment(child))
+            children.some((child) => child !== null && isVScopedSlotFragment(child))
         ) {
             logError(
                 `Invalid usage of 'lwc:slot-data' on ${getComponentTag(
@@ -740,8 +736,8 @@ function flattenFragmentsInChildren(children: VNodes): VNodes {
     }
 
     let currentNode: VNode | null | undefined;
-    while (!isUndefined((currentNode = nodeStack.pop()))) {
-        if (!isNull(currentNode) && isVFragment(currentNode)) {
+    while ((currentNode = nodeStack.pop()) !== undefined) {
+        if (currentNode !== null && isVFragment(currentNode)) {
             const fChildren = currentNode.children;
             // Ignore the start and end text node delimiters
             for (let i = fChildren.length - 2; i > 0; i -= 1) {
@@ -765,7 +761,7 @@ function createViewModelHook(elm: HTMLElement, vnode: VCustomElement, renderer: 
     // There is a possibility that a custom element is registered under tagName, in which case, the
     // initialization is already carry on, and there is nothing else to do here since this hook is
     // called right after invoking `document.createElement`.
-    if (!isUndefined(vm)) {
+    if (vm !== undefined) {
         return vm;
     }
 
@@ -795,7 +791,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM): void {
     // Collect all slots into cmpSlotsMapping
     for (let i = 0, len = children.length; i < len; i += 1) {
         const vnode = children[i];
-        if (isNull(vnode)) {
+        if (vnode === null) {
             continue;
         }
 
@@ -819,7 +815,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM): void {
     }
     vm.cmpSlots = { owner, slotAssignments: cmpSlotsMapping };
 
-    if (isFalse(vm.isDirty)) {
+    if (vm.isDirty === false) {
         // We need to determine if the old allocation is really different from the new one
         // and mark the vm as dirty
         const oldKeys = keys(oldSlotsMapping);
@@ -830,7 +826,7 @@ function allocateInSlot(vm: VM, children: VNodes, owner: VM): void {
         for (let i = 0, len = oldKeys.length; i < len; i += 1) {
             const key = oldKeys[i];
             if (
-                isUndefined(cmpSlotsMapping[key]) ||
+                cmpSlotsMapping[key] === undefined ||
                 oldSlotsMapping[key].length !== cmpSlotsMapping[key].length
             ) {
                 markComponentAsDirty(vm);
@@ -946,7 +942,7 @@ function updateDynamicChildren(
                 oldKeyToIdx = createKeyToOldIdx(oldCh, oldStartIdx, oldEndIdx);
             }
             idxInOld = oldKeyToIdx[newStartVnode.key!];
-            if (isUndefined(idxInOld)) {
+            if (idxInOld === undefined) {
                 // New element
                 mount(newStartVnode, parent, renderer, oldStartVnode.elm!);
                 newStartVnode = newCh[++newStartIdx];

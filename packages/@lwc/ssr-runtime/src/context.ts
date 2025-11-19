@@ -9,7 +9,6 @@ import {
     type ContextBinding as IContextBinding,
     isTrustedContext,
     getContextKeys,
-    isUndefined,
     keys,
 } from '@lwc/shared';
 import { getContextfulStack } from './wire';
@@ -58,7 +57,7 @@ export { ContextBinding };
 export function connectContext(le: LightningElement) {
     const contextKeys = getContextKeys();
 
-    if (isUndefined(contextKeys)) {
+    if (contextKeys === undefined) {
         return;
     }
 

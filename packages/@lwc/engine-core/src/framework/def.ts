@@ -21,8 +21,6 @@ import {
     getPrototypeOf,
     htmlPropertyToAttribute,
     isFunction,
-    isNull,
-    isUndefined,
     keys,
 } from '@lwc/shared';
 
@@ -81,7 +79,7 @@ const CtorToDefMap: WeakMap<any, ComponentDef> = new WeakMap();
 
 function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstructor {
     let proto: LightningElementConstructor | null = getPrototypeOf(Ctor);
-    if (isNull(proto)) {
+    if (proto === null) {
         throw new ReferenceError(
             `Invalid prototype chain for ${Ctor.name}, you must extend LightningElement.`
         );
@@ -90,7 +88,7 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
     if (isCircularModuleDependency(proto)) {
         const p = resolveCircularModuleDependency(proto);
         if (process.env.NODE_ENV !== 'production') {
-            if (isNull(p)) {
+            if (p === null) {
                 throw new ReferenceError(
                     `Circular module dependency for ${Ctor.name}, must resolve to a constructor that extends LightningElement.`
                 );
@@ -135,7 +133,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         }
 
         if (
-            !isUndefined(ctorShadowSupportMode) &&
+            ctorShadowSupportMode !== undefined &&
             ctorShadowSupportMode !== 'any' &&
             ctorShadowSupportMode !== 'reset' &&
             ctorShadowSupportMode !== 'native'
@@ -153,7 +151,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         }
 
         if (
-            !isUndefined(ctorRenderMode) &&
+            ctorRenderMode !== undefined &&
             ctorRenderMode !== 'light' &&
             ctorRenderMode !== 'shadow'
         ) {
@@ -210,7 +208,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     render = render || superDef.render;
 
     let shadowSupportMode = superDef.shadowSupportMode;
-    if (!isUndefined(ctorShadowSupportMode)) {
+    if (ctorShadowSupportMode !== undefined) {
         shadowSupportMode = ctorShadowSupportMode;
 
         if (
@@ -225,12 +223,12 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
     }
 
     let renderMode = superDef.renderMode;
-    if (!isUndefined(ctorRenderMode)) {
+    if (ctorRenderMode !== undefined) {
         renderMode = ctorRenderMode === 'light' ? RenderMode.Light : RenderMode.Shadow;
     }
 
     let formAssociated = superDef.formAssociated;
-    if (!isUndefined(ctorFormAssociated)) {
+    if (ctorFormAssociated !== undefined) {
         formAssociated = ctorFormAssociated;
     }
 
@@ -307,7 +305,7 @@ export function isComponentConstructor(ctor: unknown): ctor is LightningElementC
         if (current === LightningElement) {
             return true;
         }
-    } while (!isNull(current) && (current = getPrototypeOf(current)));
+    } while (current !== null && (current = getPrototypeOf(current)));
 
     // Finally return false if the LightningElement is not part of the prototype chain.
     return false;
@@ -319,7 +317,7 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
     }
     let def = CtorToDefMap.get(Ctor);
 
-    if (isUndefined(def)) {
+    if (def === undefined) {
         if (isCircularModuleDependency(Ctor)) {
             const resolvedCtor = resolveCircularModuleDependency(Ctor);
             def = getComponentInternalDef(resolvedCtor);

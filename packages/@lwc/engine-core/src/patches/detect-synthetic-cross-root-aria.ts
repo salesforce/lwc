@@ -6,15 +6,11 @@
  */
 import {
     assign,
-    isTrue,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
-    isNull,
-    isUndefined,
     getOwnPropertyDescriptor,
     defineProperty,
     ID_REFERENCING_ATTRIBUTES_SET,
-    isString,
     isFunction,
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
@@ -46,17 +42,17 @@ delete (globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID];
 delete (globalThis as any)[KEY__NATIVE_QUERY_SELECTOR_ALL];
 
 function isSyntheticShadowRootInstance(rootNode: Node): rootNode is ShadowRoot {
-    return rootNode !== document && isTrue((rootNode as any).synthetic);
+    return rootNode !== document && (rootNode as any).synthetic === true;
 }
 
 function reportViolation(source: Element, target: Element, attrName: string) {
     // The vm is either for the source, the target, or both. Either one or both must be using synthetic
     // shadow for a violation to be detected.
     let vm: VM | undefined = getAssociatedVMIfPresent((source.getRootNode() as ShadowRoot).host);
-    if (isUndefined(vm)) {
+    if (vm === undefined) {
         vm = getAssociatedVMIfPresent((target.getRootNode() as ShadowRoot).host);
     }
-    if (isUndefined(vm)) {
+    if (vm === undefined) {
         // vm should never be undefined here, but just to be safe, bail out and don't report
         return;
     }
@@ -77,7 +73,7 @@ function reportViolation(source: Element, target: Element, attrName: string) {
 
 function parseIdRefAttributeValue(attrValue: any): string[] {
     // split on whitespace and skip empty strings after splitting
-    return isString(attrValue) ? attrValue.split(/\s+/).filter(Boolean) : [];
+    return typeof attrValue === 'string' ? attrValue.split(/\s+/).filter(Boolean) : [];
 }
 
 function detectSyntheticCrossRootAria(elm: Element, attrName: string, attrValue: any) {
@@ -88,7 +84,7 @@ function detectSyntheticCrossRootAria(elm: Element, attrName: string, attrValue:
 
     if (attrName === 'id') {
         // elm is the target, find the source
-        if (!isString(attrValue) || attrValue.length === 0) {
+        if (typeof attrValue !== 'string' || attrValue.length === 0) {
             // if our id is null or empty, nobody can reference us
             return;
         }
@@ -111,7 +107,7 @@ function detectSyntheticCrossRootAria(elm: Element, attrName: string, attrValue:
         const ids = parseIdRefAttributeValue(attrValue);
         for (const id of ids) {
             const target = getElementById.call(document, id);
-            if (!isNull(target)) {
+            if (target !== null) {
                 const targetRoot = target.getRootNode();
                 if (targetRoot !== root) {
                     // target element's shadow root is not the same as ours
@@ -146,7 +142,7 @@ function enableDetection() {
 
     // Detect `elm.id = 'foo'`
     const idDescriptor = getOwnPropertyDescriptor(Element.prototype, 'id');
-    if (!isUndefined(idDescriptor)) {
+    if (idDescriptor !== undefined) {
         const { get, set } = idDescriptor;
         // These should always be a getter and a setter, but if someone is monkeying with the global descriptor, ignore it
         if (isFunction(get) && isFunction(set)) {

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { guid } from '../utils';
 import type { VM } from '../vm';
 import type {
@@ -50,7 +50,7 @@ export function createContextProviderWithRegister(
                     },
                 };
                 const disconnectCallback = () => {
-                    if (!isUndefined(consumerDisconnectedCallback)) {
+                    if (consumerDisconnectedCallback !== undefined) {
                         consumerDisconnectedCallback(consumer);
                     }
                 };
@@ -72,7 +72,7 @@ export function createContextWatcher(
 ) {
     const { adapter } = wireDef;
     const adapterContextToken = AdapterToTokenMap.get(adapter);
-    if (isUndefined(adapterContextToken)) {
+    if (adapterContextToken === undefined) {
         return; // no provider found, nothing to be done
     }
     const {

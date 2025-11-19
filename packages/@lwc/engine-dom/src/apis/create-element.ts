@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, assign, isFunction, isNull, isObject, isUndefined, toString } from '@lwc/shared';
+import { assert, assign, isFunction, toString } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
@@ -30,7 +30,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
 
     const fn = slot.get(node);
 
-    if (!isUndefined(fn)) {
+    if (fn !== undefined) {
         fn(node);
     }
 
@@ -179,7 +179,7 @@ export function createElement<Component>(
         mode?: 'open' | 'closed';
     }
 ): LightningHTMLElement<Component> {
-    if (!isObject(options) || isNull(options)) {
+    if (typeof options !== 'object' || options === null) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
                 options

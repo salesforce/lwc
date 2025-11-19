@@ -12,7 +12,7 @@ import {
     getAssociatedVMIfPresent,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
-import { isFunction, isNull, isObject } from '@lwc/shared';
+import { isFunction } from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement } from '@lwc/engine-core';
 
@@ -20,13 +20,13 @@ function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElem
     if (element.shadowRoot) {
         const shadowRoot = element.shadowRoot;
 
-        while (!isNull(shadowRoot.firstChild)) {
+        while (shadowRoot.firstChild !== null) {
             shadowRoot.removeChild(shadowRoot.firstChild);
         }
     }
 
     if (Ctor.renderMode === 'light') {
-        while (!isNull(element.firstChild)) {
+        while (element.firstChild !== null) {
             element.removeChild(element.firstChild);
         }
     }
@@ -76,7 +76,7 @@ export function hydrateComponent(
         );
     }
 
-    if (!isObject(props) || isNull(props)) {
+    if (typeof props !== 'object' || props === null) {
         throw new TypeError(
             `"hydrateComponent" expects an object as the third parameter but instead received ${props}.`
         );

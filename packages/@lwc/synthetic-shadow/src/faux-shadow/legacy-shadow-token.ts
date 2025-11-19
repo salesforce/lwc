@@ -7,7 +7,6 @@
 // TODO [#3733]: remove this entire file when we can remove legacy scope tokens
 import {
     defineProperty,
-    isUndefined,
     KEY__LEGACY_SHADOW_TOKEN,
     KEY__LEGACY_SHADOW_TOKEN_PRIVATE,
 } from '@lwc/shared';
@@ -27,10 +26,10 @@ export function setLegacyShadowToken(node: Node, shadowToken: string | undefined
 defineProperty(Element.prototype, KEY__LEGACY_SHADOW_TOKEN, {
     set(this: Element, shadowToken: string | undefined) {
         const oldShadowToken = (this as any)[KEY__LEGACY_SHADOW_TOKEN_PRIVATE];
-        if (!isUndefined(oldShadowToken) && oldShadowToken !== shadowToken) {
+        if (oldShadowToken !== undefined && oldShadowToken !== shadowToken) {
             removeAttribute.call(this, oldShadowToken);
         }
-        if (!isUndefined(shadowToken)) {
+        if (shadowToken !== undefined) {
             setAttribute.call(this, shadowToken, '');
         }
         (this as any)[KEY__LEGACY_SHADOW_TOKEN_PRIVATE] = shadowToken;

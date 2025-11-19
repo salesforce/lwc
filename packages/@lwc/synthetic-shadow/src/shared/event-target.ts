@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isNull, isObject, isUndefined } from '@lwc/shared';
+import { assert, isFunction } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
 import { isSyntheticShadowHost } from '../faux-shadow/shadow-root';
@@ -17,8 +17,8 @@ function isEventListenerOrEventListenerObject(
 ): fnOrObj is EventListenerOrEventListenerObject {
     return (
         isFunction(fnOrObj) ||
-        (isObject(fnOrObj) &&
-            !isNull(fnOrObj) &&
+        (typeof fnOrObj === 'object' &&
+            fnOrObj !== null &&
             isFunction((fnOrObj as EventListenerObject).handleEvent))
     );
 }
@@ -36,7 +36,7 @@ export function shouldInvokeListener(
     }
 
     let composedPath = ComposedPathMap.get(event);
-    if (isUndefined(composedPath)) {
+    if (composedPath === undefined) {
         composedPath = event.composedPath();
         ComposedPathMap.set(event, composedPath);
     }
@@ -50,14 +50,14 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
     }
 
     let wrapperFn = EventListenerMap.get(fnOrObj);
-    if (isUndefined(wrapperFn)) {
+    if (wrapperFn === undefined) {
         wrapperFn = function (this: EventTarget, event: Event) {
             // This function is invoked from an event listener and currentTarget is always defined.
             const currentTarget = eventCurrentTargetGetter.call(event)!;
 
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
-                    isFalse(isSyntheticShadowHost(currentTarget)),
+                    isSyntheticShadowHost(currentTarget) === false,
                     'This routine should not be used to wrap event listeners for host elements and shadow roots.'
                 );
             }

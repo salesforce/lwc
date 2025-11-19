@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, defineProperty, isTrue } from '@lwc/shared';
+import { defineProperty } from '@lwc/shared';
 import { childNodesGetter, compareDocumentPosition, Node } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { getShadowRootResolver, isSyntheticShadowHost, setShadowRootResolver } from './shadow-root';
@@ -50,7 +50,7 @@ function adoptChildNode(
             return;
         }
 
-        if (isUndefined(previousNodeShadowResolver)) {
+        if (previousNodeShadowResolver === undefined) {
             // we only care about Element without shadowResolver (no MO.observe has been called)
             MutationObserverObserve.call(portalObserver, node, portalObserverConfig);
         }
@@ -90,10 +90,10 @@ function initPortalObserver() {
 }
 
 function markElementAsPortal(elm: Element) {
-    if (isUndefined(portalObserver)) {
+    if (portalObserver === undefined) {
         portalObserver = initPortalObserver();
     }
-    if (isUndefined(getShadowRootResolver(elm))) {
+    if (getShadowRootResolver(elm) === undefined) {
         // only an element from a within a shadowRoot should be used here
         throw new Error(`Invalid Element`);
     }
@@ -119,7 +119,7 @@ defineProperty(Element.prototype, '$domManual$', {
     set(this: Element, v: boolean) {
         (this as any)[DomManualPrivateKey] = v;
 
-        if (isTrue(v)) {
+        if (v === true) {
             markElementAsPortal(this);
         }
     },

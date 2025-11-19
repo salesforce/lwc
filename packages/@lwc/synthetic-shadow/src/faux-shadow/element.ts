@@ -10,8 +10,6 @@ import {
     defineProperty,
     getOwnPropertyDescriptor,
     hasOwnProperty,
-    isNull,
-    isUndefined,
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 
@@ -92,9 +90,8 @@ function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
     const owner = getNodeOwner(this);
     const filteredChildNodes = getFilteredChildNodes(this);
     // No need to filter by owner for non-shadowed nodes
-    const childNodes = isNull(owner)
-        ? filteredChildNodes
-        : getAllMatches(owner, filteredChildNodes);
+    const childNodes =
+        owner === null ? filteredChildNodes : getAllMatches(owner, filteredChildNodes);
     return createStaticHTMLCollection(
         childNodes.filter((node) => node instanceof Element) as Element[]
     );
@@ -238,10 +235,10 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
-        if (!isUndefined(getNodeKey(this))) {
+        if (getNodeKey(this) !== undefined) {
             // it is a custom element, and we should then filter by slotted elements
             return getFirstSlottedMatch(this, nodeList);
-        } else if (isNull(owner)) {
+        } else if (owner === null) {
             return null;
         } else {
             // regular element, we should then filter by ownership
@@ -250,10 +247,10 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        if (!isUndefined(ownerKey)) {
+        if (ownerKey !== undefined) {
             // `this` is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
             const elm = nodeList.find((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
-            return isUndefined(elm) ? null : elm;
+            return elm === undefined ? null : elm;
         } else {
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
@@ -263,14 +260,14 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else {
         if (!(this instanceof HTMLBodyElement)) {
             const elm = nodeList[0];
-            return isUndefined(elm) ? null : elm;
+            return elm === undefined ? null : elm;
         }
 
         // element belonging to the document
         const elm = nodeList.find(
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(this)
         );
-        return isUndefined(elm) ? null : elm;
+        return elm === undefined ? null : elm;
     }
 }
 
@@ -279,10 +276,10 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
     if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
-        if (!isUndefined(getNodeKey(context))) {
+        if (getNodeKey(context) !== undefined) {
             // it is a custom element, and we should then filter by slotted elements
             filtered = getAllSlottedMatches(context, unfilteredNodes);
-        } else if (isNull(owner)) {
+        } else if (owner === null) {
             filtered = [];
         } else {
             // regular element, we should then filter by ownership
@@ -291,7 +288,7 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
-        if (!isUndefined(ownerKey)) {
+        if (ownerKey !== undefined) {
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
             filtered = unfilteredNodes.filter((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
         } else {
@@ -304,7 +301,7 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
         if (context instanceof HTMLBodyElement) {
             // `context` is document.body or element belonging to the document with the patch enabled
             filtered = unfilteredNodes.filter(
-                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
+                (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.

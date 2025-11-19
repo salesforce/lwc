@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFalse, isFunction, isUndefined } from '@lwc/shared';
+import { isFunction } from '@lwc/shared';
 import { logWarnOnce } from '../../shared/logger';
 import type { Signal } from '@lwc/signals';
 
@@ -16,7 +16,7 @@ const TargetToSignalTrackerMap = new WeakMap<object, SignalTracker>();
 
 function getSignalTracker(target: object) {
     let signalTracker = TargetToSignalTrackerMap.get(target);
-    if (isUndefined(signalTracker)) {
+    if (signalTracker === undefined) {
         signalTracker = new SignalTracker();
         TargetToSignalTrackerMap.set(target, signalTracker);
     }
@@ -29,7 +29,7 @@ export function subscribeToSignal(
     update: CallbackFunction
 ) {
     const signalTracker = getSignalTracker(target);
-    if (isFalse(signalTracker.seen(signal))) {
+    if (signalTracker.seen(signal) === false) {
         signalTracker.subscribeToSignal(signal, update);
     }
 }

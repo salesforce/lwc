@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, noop } from '@lwc/shared';
+import { noop } from '@lwc/shared';
 
 import { getComponentTag } from '../shared/format';
 import { RenderMode, ShadowMode } from './vm';
@@ -180,7 +180,7 @@ function getColor(opId: OperationId): TrackColor {
 // "why did this component re-render?"
 function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string, string][] {
     // `mutationLogs` should never have length 0, but bail out if it does for whatever reason
-    if (isUndefined(mutationLogs)) {
+    if (mutationLogs === undefined) {
         return EmptyArray;
     }
 
@@ -198,7 +198,7 @@ function getMutationProperties(mutationLogs: MutationLog[] | undefined): [string
         prop,
     } of mutationLogs) {
         let idsAndProps = tagNamesToIdsAndProps.get(tagName);
-        if (isUndefined(idsAndProps)) {
+        if (idsAndProps === undefined) {
             idsAndProps = { ids: new Set(), keys: new Set() };
             tagNamesToIdsAndProps.set(tagName, idsAndProps);
         }

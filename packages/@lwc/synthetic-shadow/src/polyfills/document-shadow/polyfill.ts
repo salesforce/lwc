@@ -4,13 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayFrom,
-    defineProperty,
-    getOwnPropertyDescriptor,
-    isNull,
-    isUndefined,
-} from '@lwc/shared';
+import { ArrayFrom, defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 import {
     DocumentPrototypeActiveElement,
     getElementById as documentGetElementById,
@@ -45,13 +39,13 @@ defineProperty(Document.prototype, 'activeElement', {
     get(this: Document): Element | null {
         let node = DocumentPrototypeActiveElement.call(this);
 
-        if (isNull(node)) {
+        if (node === null) {
             return node;
         }
 
-        while (!isUndefined(getNodeOwnerKey(node as Node))) {
+        while (getNodeOwnerKey(node as Node) !== undefined) {
             node = parentElementGetter.call(node);
-            if (isNull(node)) {
+            if (node === null) {
                 return null;
             }
         }
@@ -79,12 +73,12 @@ defineProperty(Document.prototype, 'activeElement', {
 defineProperty(Document.prototype, 'getElementById', {
     value(this: Document): Element | null {
         const elm = documentGetElementById.apply(this, ArrayFrom(arguments) as [string]);
-        if (isNull(elm)) {
+        if (elm === null) {
             return null;
         }
         // Note: we deviate from native shadow here, but are not fixing
         // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-        return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
+        return getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm) ? elm : null;
     },
     writable: true,
     enumerable: true,
@@ -97,9 +91,9 @@ defineProperty(Document.prototype, 'querySelector', {
             documentQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.find(
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm)
         );
-        return !isUndefined(filtered) ? filtered : null;
+        return filtered !== undefined ? filtered : null;
     },
     writable: true,
     enumerable: true,
@@ -112,7 +106,7 @@ defineProperty(Document.prototype, 'querySelectorAll', {
             documentQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.filter(
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm)
         );
         return createStaticNodeList(filtered);
     },
@@ -127,7 +121,7 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
             documentGetElementsByClassName.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.filter(
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
     },
@@ -142,7 +136,7 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
             documentGetElementsByTagName.apply(this, ArrayFrom(arguments) as [string])
         );
         const filtered = elements.filter(
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
     },
@@ -157,7 +151,7 @@ defineProperty(Document.prototype, 'getElementsByTagNameNS', {
             documentGetElementsByTagNameNS.apply(this, ArrayFrom(arguments) as [string, string])
         );
         const filtered = elements.filter(
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm)
         );
         return createStaticHTMLCollection(filtered);
     },
@@ -178,7 +172,7 @@ defineProperty(
                 getElementsByName.apply(this, ArrayFrom(arguments) as [string])
             );
             const filtered = elements.filter(
-                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+                (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(elm)
             );
             return createStaticNodeList(filtered);
         },

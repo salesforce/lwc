@@ -7,16 +7,7 @@
 //
 // Do additional mutation tracking for DevTools performance profiling, in dev mode only.
 //
-import {
-    isUndefined,
-    toString,
-    isObject,
-    isNull,
-    isArray,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    isString,
-} from '@lwc/shared';
+import { toString, isArray, getOwnPropertyNames, getOwnPropertySymbols } from '@lwc/shared';
 import { assertNotProd } from './utils';
 import type { ReactiveObserver } from '../libs/mutation-tracker';
 import type { VM } from './vm';
@@ -33,10 +24,10 @@ let mutationLogs: MutationLog[] = [];
 // Create a human-readable member access notation like `obj.foo` or `arr[1]`,
 // handling edge cases like `obj[Symbol("bar")]` and `obj["spaces here"]`
 function toPrettyMemberNotation(parent: PropertyKey | undefined, child: PropertyKey) {
-    if (isUndefined(parent)) {
+    if (parent === undefined) {
         // Bare prop, just stringify the child
         return toString(child);
-    } else if (!isString(child)) {
+    } else if (typeof child !== 'string') {
         // Symbol/number, e.g. `obj[Symbol("foo")]` or `obj[1234]`
         return `${toString(parent)}[${toString(child)}]`;
     } else if (/^\w+$/.test(child)) {
@@ -92,7 +83,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
     const vm = reactiveObserversToVMs.get(reactiveObserver);
 
     /* istanbul ignore if */
-    if (isUndefined(vm)) {
+    if (vm === undefined) {
         // VM should only be undefined in Vitest tests, where a reactive observer is not always associated with a VM
         // because the unit tests just create Reactive Observers on-the-fly.
         // Note we could explicitly target Vitest with `process.env.NODE_ENV === 'test'`, but then that would also
@@ -141,7 +132,7 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
     }
 
     // Revoked proxies (e.g. window props in LWS sandboxes) throw an error if we try to track them
-    if (isObject(target) && !isNull(target) && !isRevokedProxy(target)) {
+    if (typeof target === 'object' && target !== null && !isRevokedProxy(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
         targetsToPropertyKeys.set(target, key);
 

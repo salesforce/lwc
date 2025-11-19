@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFrom, assert, defineProperties, isNull, isTrue, isUndefined } from '@lwc/shared';
+import { ArrayFrom, assert, defineProperties } from '@lwc/shared';
 import {
     getAttribute,
     setAttribute,
@@ -95,7 +95,7 @@ export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement
      * different than the node owner key (always `undefined`).
      */
     if (
-        !isNull(parentNode) &&
+        parentNode !== null &&
         isSlotElement(parentNode) &&
         getNodeOwnerKey(parentNode) !== getNodeOwnerKey(this)
     ) {
@@ -130,7 +130,7 @@ defineProperties(HTMLSlotElement.prototype, {
     assignedElements: {
         value(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
             if (isNodeShadowed(this)) {
-                const flatten = !isUndefined(options) && isTrue(options.flatten);
+                const flatten = options !== undefined && options.flatten === true;
                 const nodes = flatten
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
@@ -149,7 +149,7 @@ defineProperties(HTMLSlotElement.prototype, {
     assignedNodes: {
         value(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
             if (isNodeShadowed(this)) {
-                const flatten = !isUndefined(options) && isTrue(options.flatten);
+                const flatten = options !== undefined && options.flatten === true;
                 return flatten
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
@@ -167,7 +167,7 @@ defineProperties(HTMLSlotElement.prototype, {
     name: {
         get(this: HTMLSlotElement): string {
             const name = getAttribute.call(this, 'name');
-            return isNull(name) ? '' : name;
+            return name === null ? '' : name;
         },
         set(this: HTMLSlotElement, value: string) {
             setAttribute.call(this, 'name', value);
@@ -179,9 +179,8 @@ defineProperties(HTMLSlotElement.prototype, {
         get(this: HTMLSlotElement): NodeListOf<Node> {
             if (isNodeShadowed(this)) {
                 const owner = getNodeOwner(this);
-                const childNodes = isNull(owner)
-                    ? []
-                    : getAllMatches(owner, getFilteredChildNodes(this));
+                const childNodes =
+                    owner === null ? [] : getAllMatches(owner, getFilteredChildNodes(this));
                 return createStaticNodeList(childNodes);
             }
             return childNodesGetter.call(this);

@@ -6,13 +6,11 @@
  */
 import {
     defineProperty,
-    isUndefined,
     KEY__SHADOW_TOKEN,
     KEY__SHADOW_TOKEN_PRIVATE,
     KEY__SHADOW_STATIC,
     KEY__SHADOW_STATIC_PRIVATE,
     KEY__SHADOW_RESOLVER,
-    isNull,
 } from '@lwc/shared';
 import { setAttribute, removeAttribute } from '../env/element';
 import { firstChildGetter, nextSiblingGetter } from '../env/node';
@@ -33,10 +31,10 @@ export function setShadowToken(node: Node, shadowToken: string | undefined) {
 defineProperty(Element.prototype, KEY__SHADOW_TOKEN, {
     set(this: Element, shadowToken: string | undefined) {
         const oldShadowToken = (this as any)[KEY__SHADOW_TOKEN_PRIVATE];
-        if (!isUndefined(oldShadowToken) && oldShadowToken !== shadowToken) {
+        if (oldShadowToken !== undefined && oldShadowToken !== shadowToken) {
             removeAttribute.call(this, oldShadowToken);
         }
-        if (!isUndefined(shadowToken)) {
+        if (shadowToken !== undefined) {
             setAttribute.call(this, shadowToken, '');
         }
         (this as any)[KEY__SHADOW_TOKEN_PRIVATE] = shadowToken;
@@ -54,7 +52,7 @@ function recursivelySetShadowResolver(node: Node, fn: any) {
     // represent the DOM, so childNodes/children would cause an unnecessary array allocation.
     // https://viethung.space/blog/2020/09/01/Browser-from-Scratch-DOM-API/#Choosing-DOM-tree-data-structure
     let child = firstChildGetter.call(node);
-    while (!isNull(child)) {
+    while (child !== null) {
         recursivelySetShadowResolver(child, fn);
         child = nextSiblingGetter.call(child);
     }

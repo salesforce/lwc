@@ -20,9 +20,6 @@ import {
     freeze,
     isAPIFeatureEnabled,
     isFunction,
-    isNull,
-    isObject,
-    isUndefined,
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
@@ -121,7 +118,7 @@ function createBridgeToElementDescriptor(
                         )}': The result must not have attributes.`
                     );
                 }
-                if (isObject(newValue) && !isNull(newValue)) {
+                if (typeof newValue === 'object' && newValue !== null) {
                     logError(
                         `Invalid value "${newValue}" for "${propName}" of ${vm}. Value cannot be an object, must be a primitive value.`
                     );
@@ -230,7 +227,7 @@ export const LightningElement: LightningElementConstructor = function (
     this: LightningElement
 ): LightningElement {
     // This should be as performant as possible, while any initialization should be done lazily
-    if (isNull(vmBeingConstructed)) {
+    if (vmBeingConstructed === null) {
         // Thrown when doing something like `new LightningElement()` or
         // `class Foo extends LightningElement {}; new Foo()`
         throw new TypeError('Illegal constructor');
@@ -397,7 +394,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
             elm,
             renderer: { getAttribute },
         } = vm;
-        return !isNull(getAttribute(elm, name));
+        return getAttribute(elm, name) !== null;
     },
 
     hasAttributeNS(namespace: string | null, name: string): boolean {
@@ -406,7 +403,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
             elm,
             renderer: { getAttribute },
         } = vm;
-        return !isNull(getAttribute(elm, name, namespace));
+        return getAttribute(elm, name, namespace) !== null;
     },
 
     removeAttribute(name: string): void {
@@ -635,7 +632,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         // `warnIfInvokedDuringConstruction` above).
         if (
             process.env.NODE_ENV !== 'production' &&
-            isNull(cmpTemplate) &&
+            cmpTemplate === null &&
             !isBeingConstructed(vm)
         ) {
             logError(
@@ -652,7 +649,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         // anywhere. This fixes components that may want to add an expando called `refs`
         // and are checking if it exists with `if (this.refs)`  before adding it.
         // Note we use a null refVNodes to indicate that the template has no refs defined.
-        if (isNull(refVNodes)) {
+        if (refVNodes === null) {
             return;
         }
 
@@ -661,7 +658,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
         // This happens with `vm.refVNodes = null` in `template.ts` in `@lwc/engine-core`.
         let refs = refsCache.get(refVNodes);
 
-        if (isUndefined(refs)) {
+        if (refs === undefined) {
             refs = create(null) as RefNodes;
             for (const key of keys(refVNodes)) {
                 refs[key] = refVNodes[key].elm!;

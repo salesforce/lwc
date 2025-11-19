@@ -5,16 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
     assert,
     keys,
-    isNull,
     isArray,
-    isTrue,
-    isString,
     APIFeature,
     isAPIFeatureEnabled,
-    isFalse,
     parseStyleText,
     ArrayFrom,
 } from '@lwc/shared';
@@ -196,23 +191,23 @@ function getValidationPredicate(
     // `data-lwc-host-mutated` is a special attribute added by the SSR engine itself, which automatically detects
     // host mutations during `connectedCallback`.
     const hostMutatedValue = renderer.getAttribute(elm, 'data-lwc-host-mutated');
-    const detectedHostMutations = isString(hostMutatedValue)
-        ? new Set(hostMutatedValue.split(/ /))
-        : undefined;
+    const detectedHostMutations =
+        typeof hostMutatedValue === 'string' ? new Set(hostMutatedValue.split(/ /)) : undefined;
 
     // If validationOptOut is true, no attributes will be checked for correctness
     // and the runtime will assume VDOM attrs and DOM attrs are in sync.
-    const fullOptOut = isTrue(optOutStaticProp);
+    const fullOptOut = optOutStaticProp === true;
 
     // If validationOptOut is an array of strings, attributes specified in the array will be "opted out". Attributes
     // not specified in the array will still be validated.
-    const isValidArray = isArray(optOutStaticProp) && optOutStaticProp.every(isString);
+    const isValidArray =
+        isArray(optOutStaticProp) && optOutStaticProp.every((v) => typeof v === 'string');
     const conditionalOptOut = isValidArray ? new Set(optOutStaticProp) : undefined;
 
     if (
         process.env.NODE_ENV !== 'production' &&
-        !isUndefined(optOutStaticProp) &&
-        !isTrue(optOutStaticProp) &&
+        optOutStaticProp !== undefined &&
+        optOutStaticProp !== true &&
         !isValidArray
     ) {
         logHydrationWarning(
@@ -226,11 +221,11 @@ function getValidationPredicate(
             return false;
         }
         // Mutations were automatically detected and should be ignored
-        if (!isUndefined(detectedHostMutations) && detectedHostMutations.has(attrName)) {
+        if (detectedHostMutations !== undefined && detectedHostMutations.has(attrName)) {
             return false;
         }
         // Component explicitly wants to opt out of certain validations, regardless of auto-detection
-        if (!isUndefined(conditionalOptOut) && conditionalOptOut.has(attrName)) {
+        if (conditionalOptOut !== undefined && conditionalOptOut.has(attrName)) {
             return false;
         }
         // Attribute must be validated
@@ -296,7 +291,7 @@ function hydrateStaticElement(elm: Node, vnode: VStatic, renderer: RendererAPI):
 function hydrateStaticElementParts(elm: Element, vnode: VStatic, renderer: RendererAPI) {
     const { parts } = vnode;
 
-    if (!isUndefined(parts)) {
+    if (parts !== undefined) {
         // Elements must first be set on the static part to validate against.
         traverseAndSetElements(elm, parts, renderer);
     }
@@ -332,7 +327,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
     const { owner } = vnode;
     const { context } = vnode.data;
     const isDomManual = Boolean(
-        !isUndefined(context) && !isUndefined(context.lwc) && context.lwc.dom === 'manual'
+        context !== undefined && context.lwc !== undefined && context.lwc.dom === 'manual'
     );
 
     if (isDomManual) {
@@ -342,7 +337,7 @@ function hydrateElement(elm: Node, vnode: VElement, renderer: RendererAPI): Node
             data: { props },
         } = vnode;
         const { getProperty } = renderer;
-        if (!isUndefined(props) && !isUndefined(props.innerHTML)) {
+        if (props !== undefined && props.innerHTML !== undefined) {
             const unwrappedServerInnerHTML = unwrapIfNecessary(getProperty(elm, 'innerHTML'));
             const unwrappedClientInnerHTML = unwrapIfNecessary(props.innerHTML);
             if (unwrappedServerInnerHTML === unwrappedClientInnerHTML) {
@@ -454,7 +449,7 @@ function hydrateChildren(
     for (let i = 0; i < children.length; i++) {
         const childVnode = children[i];
 
-        if (!isNull(childVnode)) {
+        if (childVnode !== null) {
             if (nextNode) {
                 nextNode = hydrateNode(nextNode, childVnode, renderer);
             } else {
@@ -561,7 +556,7 @@ function attributeValuesAreEqual(
 
     // If the expected value is null, this means that the attribute does not exist. In that case,
     // we accept any nullish value (undefined or null).
-    if (isNull(value) && (isUndefined(vnodeValue) || isNull(vnodeValue))) {
+    if (value === null && (vnodeValue === undefined || vnodeValue === null)) {
         return true;
     }
 
@@ -637,11 +632,11 @@ function validateClassAttr(
     const elmClasses = elm.classList.length ? new Set(ArrayFrom(elm.classList)) : EMPTY_SET;
     let vnodeClasses: Classes;
 
-    if (!isUndefined(className)) {
+    if (className !== undefined) {
         // ignore empty spaces entirely, filter them out using `filter(..., Boolean)`
         const classes = className.split(/\s+/).filter(Boolean);
         vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
-    } else if (!isUndefined(classMap)) {
+    } else if (classMap !== undefined) {
         const classes = keys(classMap);
         vnodeClasses = classes.length ? new Set(classes) : EMPTY_SET;
     } else {
@@ -659,7 +654,7 @@ function validateClassAttr(
     //
     // Consequently, hydration mismatches will occur if scoped CSS token classnames
     // are rendered during SSR. This needs to be accounted for when validating.
-    if (!isNull(scopeToken)) {
+    if (scopeToken !== null) {
         if (vnodeClasses === EMPTY_SET) {
             vnodeClasses = new Set([scopeToken]);
         } else {
@@ -671,7 +666,7 @@ function validateClassAttr(
     // For now we just ignore any mismatches involving this class.
     // TODO [#4866]: correctly validate the host scope token class
     const elmHostScopeToken = renderer.getAttribute(elm, 'data-lwc-host-scope-token');
-    if (!isNull(elmHostScopeToken)) {
+    if (elmHostScopeToken !== null) {
         elmClasses.delete(elmHostScopeToken);
         vnodeClasses.delete(elmHostScopeToken);
     }
@@ -703,10 +698,10 @@ function validateStyleAttr(
     let vnodeStyle;
     let nodesAreCompatible = true;
 
-    if (!isUndefined(style) && style !== elmStyle) {
+    if (style !== undefined && style !== elmStyle) {
         nodesAreCompatible = false;
         vnodeStyle = style;
-    } else if (!isUndefined(styleDecls)) {
+    } else if (styleDecls !== undefined) {
         const parsedVnodeStyle = parseStyleText(elmStyle);
         const expectedStyle = [];
         // styleMap is used when style is set to static value.
@@ -716,7 +711,7 @@ function validateStyleAttr(
 
             const parsedPropValue = parsedVnodeStyle[prop];
 
-            if (isUndefined(parsedPropValue)) {
+            if (parsedPropValue === undefined) {
                 nodesAreCompatible = false;
             } else if (!parsedPropValue.startsWith(value)) {
                 nodesAreCompatible = false;
@@ -791,7 +786,7 @@ function areStaticElementsCompatible(
 function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
     const { parts } = vnode;
 
-    if (isUndefined(parts)) {
+    if (parts === undefined) {
         return true;
     }
 
@@ -818,7 +813,7 @@ function haveCompatibleStaticParts(vnode: VStatic, renderer: RendererAPI) {
             const hasMatchingStyleAttr = shouldValidateAttr(data, 'style')
                 ? validateStyleAttr(elm, data, renderer)
                 : true;
-            if (isFalse(hasMatchingAttrs && hasMatchingClass && hasMatchingStyleAttr)) {
+            if ((hasMatchingAttrs && hasMatchingClass && hasMatchingStyleAttr) === false) {
                 return false;
             }
         } else {

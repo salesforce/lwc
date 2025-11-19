@@ -10,8 +10,6 @@ import {
     isAriaAttribute,
     isBooleanAttribute,
     isFunction,
-    isNull,
-    isUndefined,
     noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';
@@ -71,7 +69,7 @@ function insert(node: N, parent: E, anchor: N | null) {
 
     node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
+    const anchorIndex = anchor === null ? -1 : parent[HostChildrenKey].indexOf(anchor);
     if (anchorIndex === -1) {
         parent[HostChildrenKey].push(node);
     } else {
@@ -124,7 +122,7 @@ function createComment(content: string): HostNode {
 function getSibling(node: N, offset: number) {
     const parent = node[HostParentKey];
 
-    if (isNull(parent)) {
+    if (parent === null) {
         return null;
     }
 
@@ -230,7 +228,7 @@ function setProperty(node: N, propName: string, value: any): void {
             // TODO [#3284]: According to the spec, IDL nullable type values
             // (null and undefined) should remove the attribute; however, we
             // only do so in the case of null for historical reasons.
-            return isNull(value)
+            return value === null
                 ? removeAttribute(node, attrName)
                 : setAttribute(node, attrName, value);
         } else if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
@@ -277,11 +275,11 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
         (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
 
-    if (isUndefined(namespace)) {
+    if (namespace === undefined) {
         namespace = null;
     }
 
-    if (isUndefined(attribute)) {
+    if (attribute === undefined) {
         element[HostAttributesKey].push({
             name: normalizedName,
             [HostNamespaceKey]: namespace,
@@ -303,10 +301,10 @@ function removeAttribute(element: E, name: string, namespace?: string | null) {
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
         let classAttribute = element[HostAttributesKey].find(
-            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
+            (attr) => attr.name === 'class' && attr[HostNamespaceKey] === null
         );
 
-        if (isUndefined(classAttribute)) {
+        if (classAttribute === undefined) {
             classAttribute = {
                 name: 'class',
                 [HostNamespaceKey]: null,
@@ -340,12 +338,12 @@ function getClassList(element: E) {
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
     const styleAttribute = element[HostAttributesKey].find(
-        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
+        (attr) => attr.name === 'style' && attr[HostNamespaceKey] === null
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''};`;
 
-    if (isUndefined(styleAttribute)) {
+    if (styleAttribute === undefined) {
         element[HostAttributesKey].push({
             name: 'style',
             [HostNamespaceKey]: null,
@@ -357,7 +355,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
 }
 
 function isConnected(node: HostNode) {
-    return !isNull(node[HostParentKey]);
+    return node[HostParentKey] !== null;
 }
 
 function getTagName(elm: HostElement): string {
@@ -384,7 +382,7 @@ function getUpgradableElement(
     _isFormAssociated?: boolean
 ): CreateElementAndUpgrade {
     let ctor = localRegistryRecord.get(tagName);
-    if (!isUndefined(ctor)) {
+    if (ctor !== undefined) {
         return ctor;
     }
 

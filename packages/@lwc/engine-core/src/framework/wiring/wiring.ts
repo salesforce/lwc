@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, create, isUndefined, defineProperty, noop } from '@lwc/shared';
+import { assert, create, defineProperty, noop } from '@lwc/shared';
 import { associateReactiveObserverWithVM } from '../mutation-logger';
 import { createReactiveObserver } from '../mutation-tracker';
 import { runWithBoundaryProtection, VMState, getAssociatedVM } from '../vm';
@@ -105,7 +105,7 @@ function createConnector(
     let debugInfo: WireDebugInfo;
 
     if (process.env.NODE_ENV !== 'production') {
-        const wiredPropOrMethod = isUndefined(method) ? name : method.name;
+        const wiredPropOrMethod = method === undefined ? name : method.name;
 
         debugInfo = create(null) as WireDebugInfo;
 
@@ -113,9 +113,10 @@ function createConnector(
         vm.debugInfo![WIRE_DEBUG_ENTRY][wiredPropOrMethod] = debugInfo;
     }
 
-    const fieldOrMethodCallback = isUndefined(method)
-        ? createFieldDataCallback(vm, name)
-        : createMethodDataCallback(vm, method);
+    const fieldOrMethodCallback =
+        method === undefined
+            ? createFieldDataCallback(vm, name)
+            : createMethodDataCallback(vm, method);
 
     const dataCallback = (value: any) => {
         if (process.env.NODE_ENV !== 'production') {
@@ -181,7 +182,7 @@ function createConnector(
     );
 
     // if the adapter needs contextualization, we need to watch for new context and push it alongside the config
-    if (!isUndefined(adapter.contextSchema)) {
+    if (adapter.contextSchema !== undefined) {
         createContextWatcher(vm, wireDef, (newContext: ContextValue) => {
             // every time the context is pushed into this component,
             // this callback will be invoked with the new computed context
@@ -262,7 +263,7 @@ export function installWireAdapters(vm: VM) {
         if (process.env.NODE_ENV !== 'production') {
             assert.invariant(wireDef, `Internal Error: invalid wire definition found.`);
         }
-        if (!isUndefined(wireDef)) {
+        if (wireDef !== undefined) {
             const { connector, computeConfigAndUpdate, resetConfigWatcher } = createConnector(
                 vm,
                 fieldNameOrMethod,

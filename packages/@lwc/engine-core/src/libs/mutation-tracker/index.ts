@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined } from '@lwc/shared';
+import { create } from '@lwc/shared';
 import { logMutation } from '../../framework/mutation-logger';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
@@ -23,7 +23,7 @@ type ReactiveRecord = Record<PropertyKey, ObservedMemberPropertyRecords>;
 
 function getReactiveRecord(target: object): ReactiveRecord {
     let reactiveRecord = TargetToReactiveRecordMap.get(target);
-    if (isUndefined(reactiveRecord)) {
+    if (reactiveRecord === undefined) {
         const newRecord: ReactiveRecord = create(null);
         reactiveRecord = newRecord;
         TargetToReactiveRecordMap.set(target, newRecord);
@@ -35,9 +35,9 @@ let currentReactiveObserver: ReactiveObserver | null = null;
 
 export function valueMutated(target: object, key: PropertyKey) {
     const reactiveRecord = TargetToReactiveRecordMap.get(target);
-    if (!isUndefined(reactiveRecord)) {
+    if (reactiveRecord !== undefined) {
         const reactiveObservers = reactiveRecord[key as any];
-        if (!isUndefined(reactiveObservers)) {
+        if (reactiveObservers !== undefined) {
             for (let i = 0, len = reactiveObservers.length; i < len; i += 1) {
                 const ro = reactiveObservers[i];
                 if (process.env.NODE_ENV !== 'production') {
@@ -57,7 +57,7 @@ export function valueObserved(target: object, key: PropertyKey) {
     const ro = currentReactiveObserver;
     const reactiveRecord = getReactiveRecord(target);
     let reactiveObservers = reactiveRecord[key as any];
-    if (isUndefined(reactiveObservers)) {
+    if (reactiveObservers === undefined) {
         reactiveObservers = [];
         reactiveRecord[key as any] = reactiveObservers;
     } else if (reactiveObservers[0] === ro) {

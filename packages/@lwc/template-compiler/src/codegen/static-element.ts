@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { APIFeature, HTML_NAMESPACE, isAPIFeatureEnabled, isArray, isNull } from '@lwc/shared';
+import { APIFeature, HTML_NAMESPACE, isAPIFeatureEnabled, isArray } from '@lwc/shared';
 import {
     isBaseElement,
     isComment,
@@ -179,7 +179,7 @@ export function transformStaticChildren(elm: StaticElement, preserveComments: bo
     for (let i = 0; i < len; i++) {
         current = children[i];
         if (isText(current)) {
-            if (!isNull(contiguousTextNodes)) {
+            if (contiguousTextNodes !== null) {
                 // Already in a contiguous text node chain
                 // All contiguous nodes represent an expression in the source, it's guaranteed by the parser.
                 contiguousTextNodes.push(current);

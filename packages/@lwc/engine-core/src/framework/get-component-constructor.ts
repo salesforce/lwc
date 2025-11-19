@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { getAssociatedVMIfPresent } from './vm';
 import type { LightningElement } from './base-lightning-element';
 
@@ -18,9 +18,9 @@ export function getComponentConstructor(elm: HTMLElement): typeof LightningEleme
     let ctor: typeof LightningElement | null = null;
     // intentionally checking for undefined due to some funky libraries patching weakmap.get
     // to throw when undefined.
-    if (!isUndefined(elm)) {
+    if (elm !== undefined) {
         const vm = getAssociatedVMIfPresent(elm);
-        if (!isUndefined(vm)) {
+        if (vm !== undefined) {
             ctor = vm.def.ctor;
         }
     }

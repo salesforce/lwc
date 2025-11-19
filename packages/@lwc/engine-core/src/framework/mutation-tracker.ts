@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isObject, isTrustedSignal, legacyIsTrustedSignal } from '@lwc/shared';
+import { isTrustedSignal, legacyIsTrustedSignal } from '@lwc/shared';
 import { ReactiveObserver, valueMutated, valueObserved } from '../libs/mutation-tracker';
 import { subscribeToSignal } from '../libs/signal-tracker';
 import type { Signal } from '@lwc/signals';
@@ -39,8 +39,8 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
     //  2. There was a call to a getter to access the signal (happens during vnode generation)
     if (
         lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
-        isObject(target) &&
-        !isNull(target) &&
+        typeof target === 'object' &&
+        target !== null &&
         process.env.IS_BROWSER &&
         // Only subscribe if a template is being rendered by the engine
         tro.isObserving()

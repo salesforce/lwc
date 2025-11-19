@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFrom, isNull, isUndefined } from '@lwc/shared';
+import { ArrayFrom } from '@lwc/shared';
 
 import { assertNotProd } from './utils';
 
@@ -31,7 +31,7 @@ export type Classes = Omit<Set<string>, 'add'>;
 */
 export function prettyPrintAttribute(attribute: string, value: any): string {
     assertNotProd(); // this method should never leak to prod
-    return `${attribute}=${isNull(value) || isUndefined(value) ? value : `"${value}"`}`;
+    return `${attribute}=${value === null || value === undefined ? value : `"${value}"`}`;
 }
 
 /*

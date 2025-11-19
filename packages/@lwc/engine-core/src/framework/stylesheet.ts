@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isArray,
-    isNull,
-    isString,
-    isTrue,
-    isUndefined,
-    KEY__NATIVE_ONLY_CSS,
-    KEY__SCOPED_CSS,
-} from '@lwc/shared';
+import { isArray, KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 
@@ -47,7 +39,7 @@ function linkStylesheetToCssContentInDevMode(stylesheet: Stylesheet, cssContent:
     // Should never leak to prod; only used for HMR
     assertNotProd();
     let cssContents = stylesheetsToCssContent.get(stylesheet);
-    if (isUndefined(cssContents)) {
+    if (cssContents === undefined) {
         cssContents = new Set();
         stylesheetsToCssContent.set(stylesheet, cssContents);
     }
@@ -58,7 +50,7 @@ function getOrCreateAbortControllerInDevMode(cssContent: string) {
     // Should never leak to prod; only used for HMR
     assertNotProd();
     let abortController = cssContentToAbortControllers.get(cssContent);
-    if (isUndefined(abortController)) {
+    if (abortController === undefined) {
         abortController = new AbortController();
         cssContentToAbortControllers.set(cssContent, abortController);
     }
@@ -124,7 +116,7 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
         oldHasTokenInClass = context.hasTokenInClass;
         oldHasTokenInAttribute = context.hasTokenInAttribute;
     }
-    if (!isUndefined(oldToken)) {
+    if (oldToken !== undefined) {
         if (oldHasTokenInClass) {
             getClassList(elm).remove(makeHostToken(oldToken));
         }
@@ -142,7 +134,7 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
     }
 
     // Set the new styling token on the host element
-    if (!isUndefined(newToken)) {
+    if (newToken !== undefined) {
         if (hasScopedStyles) {
             const hostScopeTokenClass = makeHostToken(newToken);
             getClassList(elm).add(hostScopeTokenClass);
@@ -194,8 +186,8 @@ function evaluateStylesheetsContent(
                 // the stylesheet, while internally, we have a replacement for it.
                 stylesheet = getStyleOrSwappedStyle(stylesheet);
             }
-            const isScopedCss = isTrue(stylesheet[KEY__SCOPED_CSS]);
-            const isNativeOnlyCss = isTrue(stylesheet[KEY__NATIVE_ONLY_CSS]);
+            const isScopedCss = stylesheet[KEY__SCOPED_CSS] === true;
+            const isNativeOnlyCss = stylesheet[KEY__NATIVE_ONLY_CSS] === true;
             const { renderMode, shadowMode } = vm;
 
             if (
@@ -227,11 +219,11 @@ function evaluateStylesheetsContent(
             } else {
                 // Light DOM components should only render `[dir]` if they're inside of a synthetic shadow root.
                 // At the top level (root is null) or inside of a native shadow root, they should use `:dir()`.
-                if (isUndefined(root)) {
+                if (root === undefined) {
                     // Only calculate the root once as necessary
                     root = getNearestShadowComponent(vm);
                 }
-                useNativeDirPseudoclass = isNull(root) || root.shadowMode === ShadowMode.Native;
+                useNativeDirPseudoclass = root === null || root.shadowMode === ShadowMode.Native;
             }
 
             let cssContent;
@@ -289,7 +281,7 @@ export function getStylesheetsContent(vm: VM, template: Template): ReadonlyArray
 // https://github.com/salesforce/lwc/pull/2460#discussion_r691208892
 function getNearestShadowComponent(vm: VM): VM | null {
     let owner: VM | null = vm;
-    while (!isNull(owner)) {
+    while (owner !== null) {
         if (owner.renderMode === RenderMode.Shadow) {
             return owner;
         }
@@ -317,7 +309,7 @@ export function getScopeTokenClass(owner: VM, legacy: boolean): string | null {
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {
     const owner = getNearestShadowComponent(vm);
-    if (!isNull(owner) && owner.shadowMode === ShadowMode.Synthetic) {
+    if (owner !== null && owner.shadowMode === ShadowMode.Synthetic) {
         // Synthetic-within-native is impossible. So if the nearest shadow component is
         // synthetic, we know we won't find a native component if we go any further.
         return null;
@@ -347,7 +339,7 @@ export function createStylesheet(vm: VM, stylesheets: ReadonlyArray<string>): VN
         // native shadow or light DOM, DOM renderer
         const root = getNearestNativeShadowComponent(vm);
         // null root means a global style
-        const target = isNull(root) ? undefined : root.shadowRoot!;
+        const target = root === null ? undefined : root.shadowRoot!;
         for (let i = 0; i < stylesheets.length; i++) {
             const stylesheet = stylesheets[i];
             insertStylesheet(stylesheet, target, getOrCreateAbortSignal(stylesheet));
@@ -361,12 +353,12 @@ export function unrenderStylesheet(stylesheet: Stylesheet) {
     assertNotProd();
     const cssContents = stylesheetsToCssContent.get(stylesheet);
     /* istanbul ignore if */
-    if (isUndefined(cssContents)) {
+    if (cssContents === undefined) {
         throw new Error('Cannot unrender stylesheet which was never rendered');
     }
     for (const cssContent of cssContents) {
         const abortController = cssContentToAbortControllers.get(cssContent);
-        if (isUndefined(abortController)) {
+        if (abortController === undefined) {
             // Two stylesheets with the same content will share an abort controller, in which case it only needs to be called once.
             continue;
         }
@@ -377,7 +369,7 @@ export function unrenderStylesheet(stylesheet: Stylesheet) {
 }
 
 export function isValidScopeToken(token: unknown) {
-    if (!isString(token)) {
+    if (typeof token !== 'string') {
         return false;
     }
 

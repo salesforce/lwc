@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, isUndefined, isBoolean } from '@lwc/shared';
+import { create, defineProperty } from '@lwc/shared';
 import type { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types';
 
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
@@ -44,7 +44,7 @@ const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
  * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
-    if (!isBoolean(value)) {
+    if (typeof value !== 'boolean') {
         const message = `Failed to set the value "${value}" for the runtime feature flag "${name}". Runtime feature flags can only be set to a boolean value.`;
         if (process.env.NODE_ENV !== 'production') {
             throw new TypeError(message);
@@ -54,7 +54,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
             return;
         }
     }
-    if (isUndefined(features[name])) {
+    if (features[name] === undefined) {
         // eslint-disable-next-line no-console
         console.info(
             `Attempt to set a value on an unknown feature flag "${name}" resulted in a NOOP.`
@@ -68,7 +68,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
     } else {
         // Disallow the same flag to be set more than once in production
         const runtimeValue = flags[name];
-        if (!isUndefined(runtimeValue)) {
+        if (runtimeValue !== undefined) {
             // eslint-disable-next-line no-console
             console.error(
                 `Failed to set the value "${value}" for the runtime feature flag "${name}". "${name}" has already been set with the value "${runtimeValue}".`

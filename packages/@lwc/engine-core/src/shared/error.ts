@@ -5,13 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperty, isFrozen, isUndefined } from '@lwc/shared';
+import { defineProperty, isFrozen } from '@lwc/shared';
 
 import { getErrorComponentStack } from './format';
 import type { VM } from '../framework/vm';
 
 export function addErrorComponentStack(vm: VM, error: any): void {
-    if (!isFrozen(error) && isUndefined(error.wcStack)) {
+    if (!isFrozen(error) && error.wcStack === undefined) {
         const wcStack = getErrorComponentStack(vm);
         defineProperty(error, 'wcStack', {
             get() {

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperties, defineProperty, isNull, isUndefined } from '@lwc/shared';
+import { create, defineProperties, defineProperty } from '@lwc/shared';
 import { isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 
@@ -80,10 +80,10 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
  */
 function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
     let parentNode: Node | null = target;
-    while (!isNull(parentNode)) {
+    while (parentNode !== null) {
         const parentNodeObservers = getNodeObservers(parentNode);
         if (
-            !isUndefined(parentNodeObservers) &&
+            parentNodeObservers !== undefined &&
             (parentNodeObservers[0] === observer || // perf optimization to check for the first item is a match
                 parentNodeObservers.indexOf(observer) !== -1)
         ) {
@@ -115,7 +115,7 @@ function filterMutationRecords(
         // Determine if the mutations affected the host or the shadowRoot
         // Mutations affecting host: changes to slot content
         // Mutations affecting shadowRoot: changes to template content
-        if (type === 'childList' && !isUndefined(getNodeKey(target))) {
+        if (type === 'childList' && getNodeKey(target) !== undefined) {
             const { addedNodes } = record;
             // In case of added nodes, we can climb up the tree and determine eligibility
             if (addedNodes.length > 0) {
@@ -173,7 +173,7 @@ function filterMutationRecords(
 
 function getWrappedCallback(callback: MutationCallbackWithInternals): MutationCallback {
     let wrappedCallback = callback[wrapperLookupField];
-    if (isUndefined(wrappedCallback)) {
+    if (wrappedCallback === undefined) {
         wrappedCallback = callback[wrapperLookupField] = (mutations, observer) => {
             // Filter mutation records
             const filteredRecords = filterMutationRecords(mutations, observer);
@@ -207,10 +207,10 @@ function patchedDisconnect(this: MutationObserver): void {
 
     // Clear the node to observer reference which is a strong references
     const observedNodes = observerToNodesMap.get(this);
-    if (!isUndefined(observedNodes)) {
+    if (observedNodes !== undefined) {
         observedNodes.forEach((observedNode) => {
             const observers = observedNode[observerLookupField];
-            if (!isUndefined(observers)) {
+            if (observers !== undefined) {
                 const index = observers.indexOf(this);
                 if (index !== -1) {
                     observers.splice(index, 1);
@@ -235,7 +235,7 @@ function patchedObserve(
     let targetObservers = getNodeObservers(target);
 
     // Maintain a list of all observers that want to observe a node
-    if (isUndefined(targetObservers)) {
+    if (targetObservers === undefined) {
         targetObservers = [];
         setNodeObservers(target, targetObservers);
     }

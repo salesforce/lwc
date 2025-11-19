@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { create as ObjectCreate, isNull, isObject, isUndefined } from '@lwc/shared';
+import { create as ObjectCreate } from '@lwc/shared';
 import { logWarn } from '../shared/logger';
 import type { RendererAPI } from './renderer';
 
@@ -16,7 +16,7 @@ export type SanitizedHtmlContent = {
 };
 
 function isSanitizedHtmlContent(object: any): object is SanitizedHtmlContent {
-    return isObject(object) && !isNull(object) && sanitizedHtmlContentSymbol in object;
+    return typeof object === 'object' && object !== null && sanitizedHtmlContentSymbol in object;
 }
 
 export function unwrapIfNecessary(object: any) {
@@ -55,7 +55,7 @@ export function safelySetProperty(
 ) {
     // See W-16614337
     // we support setting innerHTML to `undefined` because it's inherently safe
-    if ((key === 'innerHTML' || key === 'outerHTML') && !isUndefined(value)) {
+    if ((key === 'innerHTML' || key === 'outerHTML') && value !== undefined) {
         if (isSanitizedHtmlContent(value)) {
             // it's a SanitizedHtmlContent object
             setProperty(elm, key, value[sanitizedHtmlContentSymbol]);

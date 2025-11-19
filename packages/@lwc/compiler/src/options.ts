@@ -5,13 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { CompilerValidationErrors, invariant } from '@lwc/errors';
-import {
-    isUndefined,
-    isBoolean,
-    getAPIVersionFromNumber,
-    DEFAULT_SSR_MODE,
-    type CompilationMode,
-} from '@lwc/shared';
+import { getAPIVersionFromNumber, DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
 import type { InstrumentationObject } from '@lwc/errors';
 import type { CustomRendererConfig } from '@lwc/template-compiler';
 
@@ -190,9 +184,9 @@ export function validateTransformOptions(options: TransformOptions): NormalizedT
 }
 
 function validateOptions(options: TransformOptions) {
-    invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
+    invariant(options !== undefined, CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
 
-    if (!isUndefined(options.enableLwcSpread) && !alreadyWarnedAboutLwcSpread) {
+    if (options.enableLwcSpread !== undefined && !alreadyWarnedAboutLwcSpread) {
         alreadyWarnedAboutLwcSpread = true;
 
         // eslint-disable-next-line no-console
@@ -201,7 +195,7 @@ function validateOptions(options: TransformOptions) {
         );
     }
 
-    if (!isUndefined(options.stylesheetConfig) && !alreadyWarnedOnStylesheetConfig) {
+    if (options.stylesheetConfig !== undefined && !alreadyWarnedOnStylesheetConfig) {
         alreadyWarnedOnStylesheetConfig = true;
 
         // eslint-disable-next-line no-console
@@ -210,13 +204,13 @@ function validateOptions(options: TransformOptions) {
         );
     }
 
-    if (!isUndefined(options.outputConfig)) {
+    if (options.outputConfig !== undefined) {
         validateOutputConfig(options.outputConfig);
     }
 }
 
 function isUndefinedOrBoolean(property: any): boolean {
-    return isUndefined(property) || isBoolean(property);
+    return property === undefined || typeof property === 'boolean';
 }
 
 function validateOutputConfig(config: OutputConfig) {
@@ -226,7 +220,7 @@ function validateOutputConfig(config: OutputConfig) {
         [config.sourcemap]
     );
 
-    if (!isUndefined(config.minify)) {
+    if (config.minify !== undefined) {
         // eslint-disable-next-line no-console
         console.warn(
             `"OutputConfig.minify" property is deprecated. The value doesn't impact the compilation and can safely be removed.`

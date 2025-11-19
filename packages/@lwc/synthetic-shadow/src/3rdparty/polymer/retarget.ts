@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { isSyntheticOrNativeShadowRoot } from '../../shared/utils';
 import { pathComposer } from './path-composer';
 
@@ -18,7 +18,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 export function retarget(refNode: EventTarget | null, path: EventTarget[]): EventTarget | null {
-    if (isNull(refNode)) {
+    if (refNode === null) {
         return null;
     }
     // If ANCESTOR's root is not a shadow root or ANCESTOR's root is BASE's
@@ -37,7 +37,7 @@ export function retarget(refNode: EventTarget | null, path: EventTarget[]): Even
             lastRoot = root;
         }
         // Retarget to ancestor if ancestor is shadowed by refNode's shadow root
-        if (!isUndefined(rootIdx) && rootIdx > -1) {
+        if (rootIdx !== undefined && rootIdx > -1) {
             return ancestor;
         }
     }

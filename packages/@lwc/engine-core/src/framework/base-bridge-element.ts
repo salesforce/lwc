@@ -15,11 +15,9 @@ import {
     freeze,
     getOwnPropertyNames,
     getOwnPropertyDescriptors,
-    isUndefined,
     seal,
     keys,
     htmlPropertyToAttribute,
-    isNull,
     ArrayFrom,
 } from '@lwc/shared';
 import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';
@@ -39,7 +37,7 @@ const cachedSetterByKey: Record<string, (this: HTMLElement, newValue: any) => an
 
 function createGetter(key: string) {
     let fn = cachedGetterByKey[key];
-    if (isUndefined(fn)) {
+    if (fn === undefined) {
         fn = cachedGetterByKey[key] = function (this: HTMLElement): any {
             const vm = getAssociatedVM(this);
             const { getHook } = vm;
@@ -51,7 +49,7 @@ function createGetter(key: string) {
 
 function createSetter(key: string) {
     let fn = cachedSetterByKey[key];
-    if (isUndefined(fn)) {
+    if (fn === undefined) {
         fn = cachedSetterByKey[key] = function (this: HTMLElement, newValue: any): any {
             const vm = getAssociatedVM(this);
             const { setHook } = vm;
@@ -93,8 +91,8 @@ function createAttributeChangedCallback(
             return;
         }
         const propName = attributeToPropMap[attrName];
-        if (isUndefined(propName)) {
-            if (!isUndefined(superAttributeChangedCallback)) {
+        if (propName === undefined) {
+            if (superAttributeChangedCallback !== undefined) {
                 // delegate unknown attributes to the super.
                 // Typescript does not like it when you treat the `arguments` object as an array
                 // @ts-expect-error type-mismatch
@@ -154,7 +152,7 @@ export function HTMLBridgeElementFactory(
     // an `in` check could mistakenly assume that a prop is declared on a LightningElement prototype.
     if (process.env.NODE_ENV !== 'production' && process.env.IS_BROWSER) {
         // TODO [#3761]: enable for components that don't extend from LightningElement
-        if (!isUndefined(proto) && !isNull(proto) && !hasCustomSuperClass) {
+        if (proto !== undefined && proto !== null && !hasCustomSuperClass) {
             const nonPublicPropertiesToWarnOn = new Set(
                 [
                     // getters, setters, and methods

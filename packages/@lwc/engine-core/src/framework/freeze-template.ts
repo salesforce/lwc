@@ -9,7 +9,6 @@ import {
     freeze,
     getOwnPropertyDescriptor,
     isArray,
-    isUndefined,
     KEY__SCOPED_CSS,
     KEY__NATIVE_ONLY_CSS,
 } from '@lwc/shared';
@@ -189,7 +188,7 @@ function traverseStylesheets(
 }
 
 function trackMutations(tmpl: Template) {
-    if (!isUndefined(tmpl.stylesheets)) {
+    if (tmpl.stylesheets !== undefined) {
         trackStylesheetsMutation(tmpl.stylesheets);
     }
     for (const prop of TEMPLATE_PROPS) {
@@ -232,7 +231,7 @@ function addLegacyStylesheetTokensShim(tmpl: Template) {
         configurable: true,
         get() {
             const { stylesheetToken } = this;
-            if (isUndefined(stylesheetToken)) {
+            if (stylesheetToken === undefined) {
                 return stylesheetToken;
             }
             // Shim for the old `stylesheetTokens` property
@@ -247,7 +246,7 @@ function addLegacyStylesheetTokensShim(tmpl: Template) {
             // If the value is null or some other exotic object, you would be broken anyway in the past
             // because the engine would try to access hostAttribute/shadowAttribute, which would throw an error.
             // However it may be undefined in newer versions of LWC, so we need to guard against that case.
-            this.stylesheetToken = isUndefined(value) ? undefined : value.shadowAttribute;
+            this.stylesheetToken = value === undefined ? undefined : value.shadowAttribute;
         },
     });
 }
@@ -257,7 +256,7 @@ export function freezeTemplate(tmpl: Template) {
     if (lwcRuntimeFlags.ENABLE_FROZEN_TEMPLATE) {
         // Deep freeze the template
         freeze(tmpl);
-        if (!isUndefined(tmpl.stylesheets)) {
+        if (tmpl.stylesheets !== undefined) {
             deepFreeze(tmpl.stylesheets);
         }
     } else {

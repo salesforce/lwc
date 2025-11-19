@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction, isNull, toString } from '@lwc/shared';
+import { assert, isFunction, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
@@ -57,7 +57,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                         `render() method has side effects on the state of property "${toString(
                             key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                        vmBeingRendered === null ? vm : vmBeingRendered
                     );
                 }
                 if (isUpdatingTemplate) {
@@ -65,7 +65,7 @@ export function createPublicPropertyDescriptor(key: string): PropertyDescriptor 
                         `Updating the template has side effects on the state of property "${toString(
                             key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                        vmBeingRendered === null ? vm : vmBeingRendered
                     );
                 }
             }
@@ -106,7 +106,7 @@ export function createPublicAccessorDescriptor(
                         `render() method has side effects on the state of property "${toString(
                             key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                        vmBeingRendered === null ? vm : vmBeingRendered
                     );
                 }
                 if (isUpdatingTemplate) {
@@ -114,7 +114,7 @@ export function createPublicAccessorDescriptor(
                         `Updating the template has side effects on the state of property "${toString(
                             key
                         )}"`,
-                        isNull(vmBeingRendered) ? vm : vmBeingRendered
+                        vmBeingRendered === null ? vm : vmBeingRendered
                     );
                 }
             }

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { elementsFromPoint } from '../env/document';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 
@@ -12,7 +12,7 @@ import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 function getAllRootNodes(node: Node) {
     const rootNodes = [];
     let currentRootNode = node.getRootNode();
-    while (!isUndefined(currentRootNode)) {
+    while (currentRootNode !== undefined) {
         rootNodes.push(currentRootNode);
         currentRootNode = (currentRootNode as ShadowRoot).host?.getRootNode();
     }
@@ -22,7 +22,7 @@ function getAllRootNodes(node: Node) {
 // Keep searching up the host tree until we find an element that is within the immediate shadow root
 const findAncestorHostInImmediateShadowRoot = (rootNode: Node, targetRootNode: Node) => {
     let host;
-    while (!isUndefined((host = (rootNode as any).host))) {
+    while ((host = (rootNode as any).host) !== undefined) {
         const thisRootNode = host.getRootNode();
         if (thisRootNode === targetRootNode) {
             return host;
@@ -45,7 +45,7 @@ export function fauxElementsFromPoint(
     // Filter the elements array to only include those elements that are in this shadow root or in one of its
     // ancestor roots. This matches Chrome and Safari's implementation (but not Firefox's, which only includes
     // elements in the immediate shadow root: https://crbug.com/1207863#c4).
-    if (!isNull(elements)) {
+    if (elements !== null) {
         // can be null in IE https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint#browser_compatibility
         for (let i = 0; i < elements.length; i++) {
             const element = elements[i];
@@ -70,7 +70,7 @@ export function fauxElementsFromPoint(
                 rootNodes[0]
             );
             if (
-                !isUndefined(ancestorHost) &&
+                ancestorHost !== undefined &&
                 elements.indexOf(ancestorHost) === -1 &&
                 result.indexOf(ancestorHost) === -1
             ) {

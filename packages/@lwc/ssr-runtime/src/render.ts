@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    getOwnPropertyNames,
-    isNull,
-    isString,
-    isUndefined,
-    DEFAULT_SSR_MODE,
-    htmlEscape,
-    type Stylesheet,
-} from '@lwc/shared';
+import { getOwnPropertyNames, DEFAULT_SSR_MODE, htmlEscape, type Stylesheet } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
 import type { CompilationMode } from '@lwc/shared';
@@ -92,14 +84,14 @@ function renderAttrsPrivate(
 
         // Backwards compatibility with historical patchStyleAttribute() behavior:
         // https://github.com/salesforce/lwc/blob/59e2c6c/packages/%40lwc/engine-core/src/framework/modules/computed-style-attr.ts#L40
-        if (attrName === 'style' && (!isString(attrValue) || attrValue === '')) {
+        if (attrName === 'style' && (typeof attrValue !== 'string' || attrValue === '')) {
             // If the style attribute is invalid, we don't render it.
             continue;
         }
 
-        if (isNull(attrValue) || isUndefined(attrValue)) {
+        if (attrValue === null || attrValue === undefined) {
             attrValue = '';
-        } else if (!isString(attrValue)) {
+        } else if (typeof attrValue !== 'string') {
             attrValue = String(attrValue);
         }
 

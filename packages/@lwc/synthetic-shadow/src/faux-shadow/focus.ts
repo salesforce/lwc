@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isNull, isUndefined, toString } from '@lwc/shared';
+import { assert, toString } from '@lwc/shared';
 
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';
@@ -108,7 +108,7 @@ export function hostElementFocus(this: HTMLElement) {
         // We invoke the focus() method even if the host is disconnected in order to eliminate
         // observable differences for component authors between synthetic and native.
         const focusable = querySelector.call(this, FocusableSelector) as HTMLElement;
-        if (!isNull(focusable)) {
+        if (focusable !== null) {
             // @ts-expect-error type-mismatch
             focusable.focus.apply(focusable, arguments);
         }
@@ -178,7 +178,7 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
 export function getActiveElement(host: HTMLElement): Element | null {
     const doc = getOwnerDocument(host);
     const activeElement = DocumentPrototypeActiveElement.call(doc);
-    if (isNull(activeElement)) {
+    if (activeElement === null) {
         return activeElement;
     }
     // activeElement must be child of the host and owned by it
@@ -224,7 +224,7 @@ function focusOnNextOrBlur(
 ) {
     const win = getOwnerWindow(relatedTarget);
     const next = getNextTabbable(segment, relatedTarget);
-    if (isNull(next)) {
+    if (next === null) {
         // nothing to focus on, blur to invalidate the operation
         muteFocusEventsDuringExecution(win, () => {
             target.blur();
@@ -264,7 +264,7 @@ function skipHostHandler(event: FocusEvent) {
     }
 
     const relatedTarget = focusEventRelatedTargetGetter.call(event) as HTMLElement | null;
-    if (isNull(relatedTarget)) {
+    if (relatedTarget === null) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
         // browser chrome. We could probably deduce whether focus is coming in from the top or the
         // bottom by comparing the position of the target to all tabbable elements. This is an edge
@@ -280,7 +280,7 @@ function skipHostHandler(event: FocusEvent) {
         // Focus is coming from above
         const findTabbableElms = isTabbableFrom.bind(null, host.getRootNode());
         const first = segments.inner.find(findTabbableElms);
-        if (!isUndefined(first)) {
+        if (first !== undefined) {
             const win = getOwnerWindow(first);
             muteFocusEventsDuringExecution(win, () => {
                 first.focus();
@@ -300,7 +300,7 @@ function skipShadowHandler(event: FocusEvent) {
     }
 
     const relatedTarget = focusEventRelatedTargetGetter.call(event) as HTMLElement | null;
-    if (isNull(relatedTarget)) {
+    if (relatedTarget === null) {
         // If relatedTarget is null, the user is most likely tabbing into the document from the
         // browser chrome. We could probably deduce whether focus is coming in from the top or the
         // bottom by comparing the position of the target to all tabbable elements. This is an edge

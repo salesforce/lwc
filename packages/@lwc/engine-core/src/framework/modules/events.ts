@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import type { RendererAPI } from '../renderer';
 import type { VBaseElement, VStaticPartElement } from '../vnodes';
 
@@ -15,7 +15,7 @@ export function applyEventListeners(
     const { elm, data } = vnode;
     const { on } = data;
 
-    if (isUndefined(on)) {
+    if (on === undefined) {
         return;
     }
 

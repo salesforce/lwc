@@ -6,7 +6,7 @@
  */
 import * as path from 'path';
 
-import { isString } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 
@@ -84,8 +84,8 @@ export function transformSync(
 }
 
 function validateArguments(src: string, filename: string) {
-    invariant(isString(src), TransformerErrors.INVALID_SOURCE, [src]);
-    invariant(isString(filename), TransformerErrors.INVALID_ID, [filename]);
+    invariant(typeof src === 'string', TransformerErrors.INVALID_SOURCE, [src]);
+    invariant(typeof filename === 'string', TransformerErrors.INVALID_ID, [filename]);
 }
 
 function transformFile(

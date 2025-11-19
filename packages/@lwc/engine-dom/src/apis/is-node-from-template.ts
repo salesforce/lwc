@@ -5,13 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import {
-    getPrototypeOf,
-    hasOwnProperty,
-    isFalse,
-    isUndefined,
-    KEY__SHADOW_RESOLVER,
-} from '@lwc/shared';
+import { getPrototypeOf, hasOwnProperty, KEY__SHADOW_RESOLVER } from '@lwc/shared';
 import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
@@ -26,7 +20,7 @@ const _Node = Node;
  * @example isNodeShadowed(document.querySelector('my-component'))
  */
 function isNodeShadowed(node: Node): boolean {
-    if (isFalse(node instanceof _Node)) {
+    if (node instanceof _Node === false) {
         return false;
     }
 
@@ -42,14 +36,14 @@ function isNodeShadowed(node: Node): boolean {
     // synthetic roots cannot be descendants of native roots.
     if (
         rootNode instanceof ShadowRoot &&
-        isFalse(hasOwnProperty.call(getPrototypeOf(rootNode), 'synthetic'))
+        hasOwnProperty.call(getPrototypeOf(rootNode), 'synthetic') === false
     ) {
         return true;
     }
 
     // TODO [#1252]: Old behavior that is still used by some pieces of the platform. Manually
     // inserted nodes without the `lwc:dom=manual` directive will be considered as global elements.
-    return renderer.isSyntheticShadowDefined && !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
+    return renderer.isSyntheticShadowDefined && (node as any)[KEY__SHADOW_RESOLVER] !== undefined;
 }
 
 // Rename to maintain backcompat
