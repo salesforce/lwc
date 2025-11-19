@@ -9,7 +9,6 @@ import {
     type ContextBinding as IContextBinding,
     isTrustedContext,
     getContextKeys,
-    isUndefined,
     keys,
 } from '@lwc/shared';
 import { getContextfulStack } from './wire';

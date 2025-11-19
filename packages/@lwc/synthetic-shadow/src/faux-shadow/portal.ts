@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, defineProperty, isTrue } from '@lwc/shared';
+import { defineProperty } from '@lwc/shared';
 import { childNodesGetter, compareDocumentPosition, Node } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { getShadowRootResolver, isSyntheticShadowHost, setShadowRootResolver } from './shadow-root';

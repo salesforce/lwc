@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined, isArray, isFunction } from '@lwc/shared';
+import { isArray } from '@lwc/shared';
 
 //
 // Feature detection

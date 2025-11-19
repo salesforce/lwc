@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperties, defineProperty, isNull, isUndefined } from '@lwc/shared';
+import { create, defineProperties, defineProperty } from '@lwc/shared';
 import { isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 

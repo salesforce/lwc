@@ -10,8 +10,6 @@ import {
     defineProperty,
     getOwnPropertyDescriptor,
     hasOwnProperty,
-    isNull,
-    isUndefined,
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 

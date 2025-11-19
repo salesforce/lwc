@@ -19,7 +19,6 @@ import {
     runFormStateRestoreCallback,
     BaseBridgeElement,
 } from '@lwc/engine-core';
-import { isNull } from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement, FormRestoreState, FormRestoreReason } from '@lwc/engine-core';
 

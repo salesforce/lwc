@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isUndefined, LOWEST_API_VERSION } from '@lwc/shared';
+import { assert, LOWEST_API_VERSION } from '@lwc/shared';
 
 import { createReactiveObserver, unsubscribeFromSignals } from './mutation-tracker';
 

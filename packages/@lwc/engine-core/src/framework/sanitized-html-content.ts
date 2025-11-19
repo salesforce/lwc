@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { create as ObjectCreate, isNull, isObject, isUndefined } from '@lwc/shared';
+import { create as ObjectCreate } from '@lwc/shared';
 import { logWarn } from '../shared/logger';
 import type { RendererAPI } from './renderer';
 

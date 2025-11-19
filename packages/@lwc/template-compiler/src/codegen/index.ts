@@ -10,7 +10,6 @@ import {
     isBooleanAttribute,
     SVG_NAMESPACE,
     LWC_VERSION_COMMENT,
-    isUndefined,
     parseStyleText,
 } from '@lwc/shared';
 import { CompilerMetrics, generateCompilerError, TemplateErrors } from '@lwc/errors';

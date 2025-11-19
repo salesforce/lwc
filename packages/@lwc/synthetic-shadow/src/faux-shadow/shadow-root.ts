@@ -8,16 +8,12 @@ import {
     assign,
     create,
     defineProperty,
-    isNull,
-    isTrue,
-    isUndefined,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
     setPrototypeOf,
     getPrototypeOf,
-    isObject,
 } from '@lwc/shared';
 
 import { innerHTMLSetter } from '../env/element';

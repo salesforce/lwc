@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFunction, hasOwnProperty } from '@lwc/shared';
+import { hasOwnProperty } from '@lwc/shared';
 
 interface MaybeModule {
     __esModule?: boolean;

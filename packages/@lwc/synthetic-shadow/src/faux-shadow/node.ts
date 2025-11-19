@@ -9,9 +9,6 @@ import {
     defineProperty,
     getOwnPropertyDescriptor,
     hasOwnProperty,
-    isNull,
-    isTrue,
-    isUndefined,
 } from '@lwc/shared';
 
 import { Node } from '../env/node';

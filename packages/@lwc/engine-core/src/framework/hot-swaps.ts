@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isNull, isUndefined, flattenStylesheets } from '@lwc/shared';
+import { flattenStylesheets } from '@lwc/shared';
 import { scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { markComponentAsDirty } from './component';

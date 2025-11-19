@@ -15,11 +15,9 @@ import {
     freeze,
     getOwnPropertyNames,
     getOwnPropertyDescriptors,
-    isUndefined,
     seal,
     keys,
     htmlPropertyToAttribute,
-    isNull,
     ArrayFrom,
 } from '@lwc/shared';
 import { ariaReflectionPolyfillDescriptors } from '../libs/reflection';

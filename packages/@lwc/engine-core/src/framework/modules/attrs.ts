@@ -4,13 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isNull,
-    isUndefined,
-    XML_NAMESPACE,
-    XLINK_NAMESPACE,
-    kebabCaseToCamelCase,
-} from '@lwc/shared';
+import { XML_NAMESPACE, XLINK_NAMESPACE, kebabCaseToCamelCase } from '@lwc/shared';
 import { EmptyObject } from '../utils';
 import { safelySetProperty } from '../sanitized-html-content';
 import type { RendererAPI } from '../renderer';

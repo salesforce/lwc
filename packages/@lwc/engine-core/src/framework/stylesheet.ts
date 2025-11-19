@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isArray,
-    isNull,
-    isString,
-    isTrue,
-    isUndefined,
-    KEY__NATIVE_ONLY_CSS,
-    KEY__SCOPED_CSS,
-} from '@lwc/shared';
+import { isArray, KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 

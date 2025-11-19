@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isUndefined } from '@lwc/shared';
 import { isSyntheticOrNativeShadowRoot } from '../../shared/utils';
 import { pathComposer } from './path-composer';
 

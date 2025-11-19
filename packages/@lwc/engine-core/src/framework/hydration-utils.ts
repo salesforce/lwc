@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFrom, isNull, isUndefined } from '@lwc/shared';
+import { ArrayFrom } from '@lwc/shared';
 
 import { assertNotProd } from './utils';
 

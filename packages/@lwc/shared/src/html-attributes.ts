@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { AriaPropNameToAttrNameMap } from './aria';
-import { isUndefined, StringFromCharCode } from './language';
+import { StringFromCharCode } from './language';
 
 const CAMEL_REGEX = /-([a-z])/g;
 
@@ -145,17 +145,17 @@ const CACHED_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map<string, string>
 export function htmlPropertyToAttribute(propName: string): string {
     const ariaAttributeName =
         AriaPropNameToAttrNameMap[propName as keyof typeof AriaPropNameToAttrNameMap];
-    if (!isUndefined(ariaAttributeName)) {
+    if (ariaAttributeName !== undefined) {
         return ariaAttributeName;
     }
 
     const specialAttributeName = SPECIAL_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
-    if (!isUndefined(specialAttributeName)) {
+    if (specialAttributeName !== undefined) {
         return specialAttributeName;
     }
 
     const cachedAttributeName = CACHED_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
-    if (!isUndefined(cachedAttributeName)) {
+    if (cachedAttributeName !== undefined) {
         return cachedAttributeName;
     }
 
@@ -188,7 +188,7 @@ const CACHED_KEBAB_CAMEL_MAPPING = /*@__PURE__@*/ new Map<string, string>();
 export function kebabCaseToCamelCase(attrName: string): string {
     let result = CACHED_KEBAB_CAMEL_MAPPING.get(attrName);
 
-    if (isUndefined(result)) {
+    if (result === undefined) {
         result = attrName.replace(CAMEL_REGEX, (g) => g[1].toUpperCase());
         CACHED_KEBAB_CAMEL_MAPPING.set(attrName, result);
     }

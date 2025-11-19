@@ -7,16 +7,7 @@
 //
 // Do additional mutation tracking for DevTools performance profiling, in dev mode only.
 //
-import {
-    isUndefined,
-    toString,
-    isObject,
-    isNull,
-    isArray,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    isString,
-} from '@lwc/shared';
+import { toString, isArray, getOwnPropertyNames, getOwnPropertySymbols } from '@lwc/shared';
 import { assertNotProd } from './utils';
 import type { ReactiveObserver } from '../libs/mutation-tracker';
 import type { VM } from './vm';

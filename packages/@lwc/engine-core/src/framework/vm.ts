@@ -10,12 +10,6 @@ import {
     defineProperty,
     getOwnPropertyNames,
     isArray,
-    isFalse,
-    isFunction,
-    isNull,
-    isObject,
-    isTrue,
-    isUndefined,
     flattenStylesheets,
 } from '@lwc/shared';
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isNull, isUndefined, toString } from '@lwc/shared';
+import { assert, toString } from '@lwc/shared';
 
 import { addEventListener, removeEventListener } from '../env/event-target';
 import { windowAddEventListener, windowRemoveEventListener } from '../env/window';

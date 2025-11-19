@@ -52,89 +52,6 @@ export const {
 /** Detached {@linkcode String.fromCharCode}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode MDN Reference}. */
 export const { fromCharCode: StringFromCharCode } = String;
 
-/**
- * Determines whether the argument is `undefined`.
- * @param obj Value to test
- * @returns `true` if the value is `undefined`.
- */
-export function isUndefined(obj: unknown): obj is undefined {
-    return obj === undefined;
-}
-
-/**
- * Determines whether the argument is `null`.
- * @param obj Value to test
- * @returns `true` if the value is `null`.
- */
-export function isNull(obj: unknown): obj is null {
-    return obj === null;
-}
-
-/**
- * Determines whether the argument is `true`.
- * @param obj Value to test
- * @returns `true` if the value is `true`.
- */
-export function isTrue(obj: unknown): obj is true {
-    return obj === true;
-}
-
-/**
- * Determines whether the argument is `false`.
- * @param obj Value to test
- * @returns `true` if the value is `false`.
- */
-export function isFalse(obj: unknown): obj is false {
-    return obj === false;
-}
-
-/**
- * Determines whether the argument is a boolean.
- * @param obj Value to test
- * @returns `true` if the value is a boolean.
- */
-export function isBoolean(obj: unknown): obj is boolean {
-    return typeof obj === 'boolean';
-}
-
-/**
- * Determines whether the argument is a function.
- * @param obj Value to test
- * @returns `true` if the value is a function.
- */
-// Replacing `Function` with a narrower type that works for all our use cases is tricky...
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function isFunction(obj: unknown): obj is Function {
-    return typeof obj === 'function';
-}
-
-/**
- * Determines whether the argument is an object or null.
- * @param obj Value to test
- * @returns `true` if the value is an object or null.
- */
-export function isObject(obj: unknown): obj is object | null {
-    return typeof obj === 'object';
-}
-
-/**
- * Determines whether the argument is a string.
- * @param obj Value to test
- * @returns `true` if the value is a string.
- */
-export function isString(obj: unknown): obj is string {
-    return typeof obj === 'string';
-}
-
-/**
- * Determines whether the argument is a number.
- * @param obj Value to test
- * @returns `true` if the value is a number.
- */
-export function isNumber(obj: unknown): obj is number {
-    return typeof obj === 'number';
-}
-
 /** Does nothing! 🚀 */
 export function noop(): void {
     /* Do nothing */
@@ -184,7 +101,7 @@ export function toString(obj: unknown): string {
 export function getPropertyDescriptor(o: unknown, p: PropertyKey): PropertyDescriptor | undefined {
     do {
         const d = getOwnPropertyDescriptor(o, p);
-        if (!isUndefined(d)) {
+        if (d !== undefined) {
             return d;
         }
         o = getPrototypeOf(o);

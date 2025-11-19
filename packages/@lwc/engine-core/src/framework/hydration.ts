@@ -5,16 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
     assert,
     keys,
-    isNull,
     isArray,
-    isTrue,
-    isString,
     APIFeature,
     isAPIFeatureEnabled,
-    isFalse,
     parseStyleText,
     ArrayFrom,
 } from '@lwc/shared';

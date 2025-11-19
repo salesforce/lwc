@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    getOwnPropertyNames,
-    isNull,
-    isString,
-    isUndefined,
-    DEFAULT_SSR_MODE,
-    htmlEscape,
-    type Stylesheet,
-} from '@lwc/shared';
+import { getOwnPropertyNames, DEFAULT_SSR_MODE, htmlEscape, type Stylesheet } from '@lwc/shared';
 import { mutationTracker } from './mutation-tracker';
 import { SYMBOL__GENERATE_MARKUP } from './lightning-element';
 import type { CompilationMode } from '@lwc/shared';

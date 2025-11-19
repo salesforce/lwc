@@ -9,7 +9,6 @@ import {
     freeze,
     getOwnPropertyDescriptor,
     isArray,
-    isUndefined,
     KEY__SCOPED_CSS,
     KEY__NATIVE_ONLY_CSS,
 } from '@lwc/shared';
