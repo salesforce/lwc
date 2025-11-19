@@ -12,7 +12,6 @@ env:
     BEST_HUB_CLIENT_TOKEN: ${{secrets.BEST_HUB_CLIENT_TOKEN}}
     BEST_HUB_HOSTNAME: ${{secrets.BEST_HUB_HOSTNAME}}
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
-    NODE_VERSION: '24.11.1'
 
 jobs:
     run-best-performance-tests:
@@ -25,7 +24,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: ${{ env.NODE_VERSION }}
+                  node-version: '20.19.4'
                   cache: 'yarn'
 
             - name: Install dependencies

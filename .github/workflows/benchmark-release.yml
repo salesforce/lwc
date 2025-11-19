@@ -18,9 +18,6 @@ on:
                 type: string
                 required: false
 
-env:
-    NODE_VERSION: '24.11.1'
-
 jobs:
     run-performance-tests:
         # It is important to use this image so that we have a consistent IP address
@@ -67,7 +64,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: ${{ env.NODE_VERSION }}
+                  node-version: '20.19.4'
                   cache: 'yarn'
 
             - name: Install dependencies

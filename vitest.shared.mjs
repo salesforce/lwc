@@ -13,9 +13,7 @@ export default defineConfig({
         testTimeout: inspector.url()
             ? // Largest allowed delay, see https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout#maximum_delay_value
               2147483647
-            : process.env.CI // Looks like we have some tests frequently timing out when code coverage is enabled
-              ? 10000
-              : undefined,
+            : undefined,
         include: ['**/*.{test,spec}.{mjs,js,ts}'],
         snapshotFormat: {
             printBasicPrototype: true,
