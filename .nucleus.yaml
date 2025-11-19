@@ -36,7 +36,7 @@ branches:
     winter26:
         pull-request:
             <<: *branch-definition
-    spring25:
+    spring26:
         pull-request:
             <<: *branch-definition
     summer25:
