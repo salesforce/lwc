@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, assign, isFunction, toString } from '@lwc/shared';
+import { assert, assign, toString } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
@@ -188,7 +188,7 @@ export function createElement<Component>(
     }
 
     const Ctor = options.is;
-    if (!isFunction(Ctor)) {
+    if (typeof Ctor !== 'function') {
         throw new TypeError(
             `"createElement" function expects an "is" option with a valid component constructor.`
         );

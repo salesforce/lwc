@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isArray, isFunction } from '@lwc/shared';
+import { isArray } from '@lwc/shared';
 
 //
 // Feature detection
@@ -15,7 +15,8 @@ import { isArray, isFunction } from '@lwc/shared';
 // https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStylesheets =
-    isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
+    typeof CSSStyleSheet.prototype.replaceSync === 'function' &&
+    isArray(document.adoptedStyleSheets);
 
 //
 // Style sheet cache

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction, noop } from '@lwc/shared';
+import { assert, noop } from '@lwc/shared';
 
 import { addErrorComponentStack } from '../shared/error';
 
@@ -137,7 +137,7 @@ export function invokeEventListener(
             // job
             if (process.env.NODE_ENV !== 'production') {
                 assert.isTrue(
-                    isFunction(fn),
+                    typeof fn === 'function',
                     `Invalid event handler for event '${event.type}' on ${vm}.`
                 );
             }

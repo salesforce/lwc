@@ -11,7 +11,6 @@ import {
     freeze as ObjectFreeze,
     isAPIFeatureEnabled,
     isArray,
-    isFunction,
     toString,
     sanitizeHtmlContent,
     normalizeClass,
@@ -332,7 +331,7 @@ function c(
     const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(typeof sel === 'string', `c() 1st argument sel must be a string.`);
-        assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
+        assert.isTrue(typeof Ctor === 'function', `c() 2nd argument Ctor must be a function.`);
         assert.isTrue(typeof data === 'object', `c() 3nd argument data must be an object.`);
         assert.isTrue(
             arguments.length === 3 || isArray(children),
@@ -423,7 +422,7 @@ function i(
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
-            iterator && isFunction(iterator.next),
+            iterator && typeof iterator.next === 'function',
             `Invalid iterator function for "${toString(iterable)}" in ${vmBeingRendered}.`
         );
     }

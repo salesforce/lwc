@@ -1,5 +1,5 @@
 const eqMethods = new Set(['isUndefined', 'isNull', 'isTrue', 'isFalse']);
-const typeofMethods = new Set(['isObject', 'isString', 'isNumber', 'isBoolean']);
+const typeofMethods = new Set(['isObject', 'isString', 'isNumber', 'isBoolean', 'isFunction']);
 
 /** @type {import('eslint').JSRuleDefinition} */
 module.exports = {

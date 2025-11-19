@@ -10,7 +10,6 @@ import {
     defineProperty,
     getOwnPropertyNames,
     isArray,
-    isFunction,
     flattenStylesheets,
 } from '@lwc/shared';
 
@@ -431,7 +430,7 @@ function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean
             for (let i = 0; i < arrayOrStylesheet.length; i++) {
                 validate(arrayOrStylesheet[i]);
             }
-        } else if (!isFunction(arrayOrStylesheet)) {
+        } else if (typeof arrayOrStylesheet !== 'function') {
             // function assumed to be a stylesheet factory
             valid = false;
         }

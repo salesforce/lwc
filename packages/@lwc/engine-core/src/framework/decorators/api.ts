@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction, toString } from '@lwc/shared';
+import { assert, toString } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import { isInvokingRender, isBeingConstructed } from '../invoker';
 import { componentValueObserved, componentValueMutated } from '../mutation-tracker';
@@ -84,7 +84,7 @@ export function createPublicAccessorDescriptor(
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
     assert.invariant(
-        isFunction(get),
+        typeof get === 'function',
         `Invalid public accessor ${toString(
             key
         )} decorated with @api. The property is missing a getter.`

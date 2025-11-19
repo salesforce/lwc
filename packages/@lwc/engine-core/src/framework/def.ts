@@ -20,7 +20,6 @@ import {
     freeze,
     getPrototypeOf,
     htmlPropertyToAttribute,
-    isFunction,
     keys,
 } from '@lwc/shared';
 
@@ -276,7 +275,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
  * @param ctor
  */
 export function isComponentConstructor(ctor: unknown): ctor is LightningElementConstructor {
-    if (!isFunction(ctor)) {
+    if (typeof ctor !== 'function') {
         return false;
     }
 

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, isFunction, toString } from '@lwc/shared';
+import { create, defineProperty, toString } from '@lwc/shared';
 
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
@@ -35,7 +35,7 @@ interface ListenerMap {
 }
 
 function getEventHandler(listener: EventListenerOrEventListenerObject): EventListener {
-    if (isFunction(listener)) {
+    if (typeof listener === 'function') {
         return listener;
     } else {
         return listener.handleEvent;
@@ -45,7 +45,7 @@ function getEventHandler(listener: EventListenerOrEventListenerObject): EventLis
 function isEventListenerOrEventListenerObject(
     listener: any
 ): listener is EventListenerOrEventListenerObject {
-    return isFunction(listener) || isFunction(listener?.handleEvent);
+    return typeof listener === 'function' || typeof listener?.handleEvent === 'function';
 }
 
 const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();

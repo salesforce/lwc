@@ -12,7 +12,7 @@ import {
     getAssociatedVMIfPresent,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
-import { isFunction } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement } from '@lwc/engine-core';
 
@@ -70,7 +70,7 @@ export function hydrateComponent(
         );
     }
 
-    if (!isFunction(Ctor)) {
+    if (typeof Ctor !== 'function') {
         throw new TypeError(
             `"hydrateComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`
         );

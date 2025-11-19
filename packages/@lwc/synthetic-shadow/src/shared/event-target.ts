@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFunction } from '@lwc/shared';
+import { assert } from '@lwc/shared';
 import { eventCurrentTargetGetter } from '../env/dom';
 import { getActualTarget } from '../faux-shadow/events';
 import { isSyntheticShadowHost } from '../faux-shadow/shadow-root';
@@ -16,10 +16,10 @@ function isEventListenerOrEventListenerObject(
     fnOrObj: unknown
 ): fnOrObj is EventListenerOrEventListenerObject {
     return (
-        isFunction(fnOrObj) ||
+        typeof fnOrObj === 'function' ||
         (typeof fnOrObj === 'object' &&
             fnOrObj !== null &&
-            isFunction((fnOrObj as EventListenerObject).handleEvent))
+            typeof (fnOrObj as EventListenerObject).handleEvent === 'function')
     );
 }
 
@@ -67,7 +67,7 @@ export function getEventListenerWrapper(fnOrObj: unknown) {
                 return;
             }
 
-            return isFunction(fnOrObj)
+            return typeof fnOrObj === 'function'
                 ? fnOrObj.call(this, event)
                 : fnOrObj.handleEvent && fnOrObj.handleEvent(event);
         };

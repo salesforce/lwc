@@ -19,7 +19,6 @@ import {
     entries,
     freeze,
     isAPIFeatureEnabled,
-    isFunction,
     KEY__SYNTHETIC_MODE,
     keys,
     setPrototypeOf,
@@ -70,12 +69,12 @@ function createBridgeToElementDescriptor(
     descriptor: PropertyDescriptor
 ): PropertyDescriptor {
     const { get, set, enumerable, configurable } = descriptor;
-    if (!isFunction(get)) {
+    if (typeof get !== 'function') {
         throw new TypeError(
             `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard getter.`
         );
     }
-    if (!isFunction(set)) {
+    if (typeof set !== 'function') {
         throw new TypeError(
             `Detected invalid public property descriptor for HTMLElement.prototype.${propName} definition. Missing the standard setter.`
         );
@@ -362,7 +361,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
                     `Updating the template of ${vmBeingRendered} has side effects on the state of ${vm} by adding an event listener for "${type}".`
                 );
             }
-            if (!isFunction(listener)) {
+            if (typeof listener !== 'function') {
                 logError(
                     `Invalid second argument for this.addEventListener() in ${vm} for event "${type}". Expected an EventListener but received ${listener}.`
                 );

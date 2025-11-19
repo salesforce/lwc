@@ -11,7 +11,6 @@ import {
     getOwnPropertyDescriptor,
     defineProperty,
     ID_REFERENCING_ATTRIBUTES_SET,
-    isFunction,
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';
@@ -145,7 +144,7 @@ function enableDetection() {
     if (idDescriptor !== undefined) {
         const { get, set } = idDescriptor;
         // These should always be a getter and a setter, but if someone is monkeying with the global descriptor, ignore it
-        if (isFunction(get) && isFunction(set)) {
+        if (typeof get === 'function' && typeof set === 'function') {
             defineProperty(Element.prototype, 'id', {
                 get() {
                     return get.call(this);
@@ -165,7 +164,7 @@ function enableDetection() {
 // Our detection logic relies on some modern browser features. We can just skip reporting the data
 // for unsupported browsers
 function supportsCssEscape() {
-    return typeof CSS !== 'undefined' && isFunction(CSS.escape);
+    return typeof CSS !== 'undefined' && typeof CSS.escape === 'function';
 }
 
 // If this page is not using synthetic shadow, then we don't need to install detection. Note

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFunction, hasOwnProperty } from '@lwc/shared';
+import { hasOwnProperty } from '@lwc/shared';
 
 interface MaybeModule {
     __esModule?: boolean;
@@ -32,5 +32,5 @@ export function resolveCircularModuleDependency<M extends MaybeModule>(
 }
 
 export function isCircularModuleDependency(obj: unknown): obj is CircularModuleDependency<any> {
-    return isFunction(obj) && hasOwnProperty.call(obj, '__circular__');
+    return typeof obj === 'function' && hasOwnProperty.call(obj, '__circular__');
 }

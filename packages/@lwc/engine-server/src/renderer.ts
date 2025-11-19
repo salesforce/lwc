@@ -9,7 +9,6 @@ import {
     htmlPropertyToAttribute,
     isAriaAttribute,
     isBooleanAttribute,
-    isFunction,
     noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';
@@ -370,7 +369,7 @@ const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
 function createUpgradableElementConstructor(tagName: string): CreateElementAndUpgrade {
     return function Ctor(upgradeCallback: LifecycleCallback) {
         const elm = createElement(tagName);
-        if (isFunction(upgradeCallback)) {
+        if (typeof upgradeCallback === 'function') {
             upgradeCallback(elm); // nothing to do with the result for now
         }
         return elm;

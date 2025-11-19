@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isFunction } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { logWarnOnce } from '../../shared/logger';
 import type { Signal } from '@lwc/signals';
 
@@ -73,7 +73,7 @@ class SignalTracker {
     subscribeToSignal(signal: Signal<unknown>, update: CallbackFunction) {
         try {
             const unsubscribe = signal.subscribe(update);
-            if (isFunction(unsubscribe)) {
+            if (typeof unsubscribe === 'function') {
                 // TODO [#3978]: Evaluate how we should handle the case when unsubscribe is not a function.
                 // Long term we should throw an error or log a warning.
                 this.signalToUnsubscribeMap.set(signal, unsubscribe);

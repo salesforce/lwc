@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isFunction, defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
+import { create, defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 import { assertNotProd, EmptyObject } from '../utils';
 import { logError } from '../../shared/logger';
@@ -48,9 +48,9 @@ interface RegisterDecoratorMeta {
 }
 
 function getClassDescriptorType(descriptor: PropertyDescriptor): string {
-    if (isFunction(descriptor.value)) {
+    if (typeof descriptor.value === 'function') {
         return 'method';
-    } else if (isFunction(descriptor.set) || isFunction(descriptor.get)) {
+    } else if (typeof descriptor.set === 'function' || typeof descriptor.get === 'function') {
         return 'accessor';
     } else {
         return 'field';
@@ -108,7 +108,7 @@ function validateMethodDecoratedWithWire(
     assertNotProd(); // this method should never leak to prod
     if (
         descriptor === undefined ||
-        !isFunction(descriptor.value) ||
+        typeof descriptor.value !== 'function' ||
         descriptor.writable === false
     ) {
         // TODO [#3441]: This line of code does not seem possible to reach.
@@ -139,14 +139,14 @@ function validateAccessorDecoratedWithApi(
     descriptor: PropertyDescriptor
 ) {
     assertNotProd(); // this method should never leak to prod
-    if (isFunction(descriptor.set)) {
-        if (!isFunction(descriptor.get)) {
+    if (typeof descriptor.set === 'function') {
+        if (typeof descriptor.get !== 'function') {
             // TODO [#3441]: This line of code does not seem possible to reach.
             logError(
                 `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
             );
         }
-    } else if (!isFunction(descriptor.get)) {
+    } else if (typeof descriptor.get !== 'function') {
         // TODO [#3441]: This line of code does not seem possible to reach.
         logError(`Missing @api get ${fieldName} accessor.`);
     }
@@ -160,7 +160,7 @@ function validateMethodDecoratedWithApi(
     assertNotProd(); // this method should never leak to prod
     if (
         descriptor === undefined ||
-        !isFunction(descriptor.value) ||
+        typeof descriptor.value !== 'function' ||
         descriptor.writable === false
     ) {
         // TODO [#3441]: This line of code does not seem possible to reach.
