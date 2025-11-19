@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
+import { isNull, LWC_VERSION, LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 
 import { logError } from '../shared/logger';
 

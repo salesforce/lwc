@@ -6,6 +6,7 @@
  */
 
 import { createContextProviderWithRegister, getAssociatedVMIfPresent } from '@lwc/engine-core';
+import { isUndefined, isNull } from '@lwc/shared';
 import {
     HostNodeType,
     HostTypeKey,

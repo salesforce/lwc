@@ -4,7 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFrom, defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
+import {
+    ArrayFrom,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isNull,
+    isUndefined,
+} from '@lwc/shared';
 import {
     DocumentPrototypeActiveElement,
     getElementById as documentGetElementById,

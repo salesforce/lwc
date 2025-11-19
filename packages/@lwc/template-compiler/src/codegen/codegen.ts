@@ -8,6 +8,7 @@ import {
     getAPIVersionFromNumber,
     SVG_NAMESPACE,
     STATIC_PART_TOKEN_ID,
+    isUndefined,
     APIFeature,
     isAPIFeatureEnabled,
 } from '@lwc/shared';

@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
+import {
+    create,
+    isFunction,
+    isUndefined,
+    defineProperty,
+    getOwnPropertyDescriptor,
+    isFalse,
+} from '@lwc/shared';
 
 import { assertNotProd, EmptyObject } from '../utils';
 import { logError } from '../../shared/logger';

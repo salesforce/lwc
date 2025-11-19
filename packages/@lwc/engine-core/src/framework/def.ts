@@ -20,6 +20,9 @@ import {
     freeze,
     getPrototypeOf,
     htmlPropertyToAttribute,
+    isFunction,
+    isNull,
+    isUndefined,
     keys,
 } from '@lwc/shared';
 

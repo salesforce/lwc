@@ -9,6 +9,9 @@ import {
     htmlPropertyToAttribute,
     isAriaAttribute,
     isBooleanAttribute,
+    isFunction,
+    isNull,
+    isUndefined,
     noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';

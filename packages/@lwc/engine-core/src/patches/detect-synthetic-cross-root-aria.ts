@@ -6,11 +6,16 @@
  */
 import {
     assign,
+    isTrue,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
+    isNull,
+    isUndefined,
     getOwnPropertyDescriptor,
     defineProperty,
     ID_REFERENCING_ATTRIBUTES_SET,
+    isString,
+    isFunction,
     hasOwnProperty,
     KEY__SHADOW_TOKEN,
 } from '@lwc/shared';

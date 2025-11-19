@@ -6,6 +6,7 @@
  */
 import * as path from 'path';
 
+import { isString } from '@lwc/shared';
 import { TransformerErrors, generateCompilerError, invariant } from '@lwc/errors';
 import { compileComponentForSSR, compileTemplateForSSR } from '@lwc/ssr-compiler';
 

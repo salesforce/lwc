@@ -7,6 +7,7 @@
 // TODO [#3733]: remove this entire file when we can remove legacy scope tokens
 import {
     defineProperty,
+    isUndefined,
     KEY__LEGACY_SHADOW_TOKEN,
     KEY__LEGACY_SHADOW_TOKEN_PRIVATE,
 } from '@lwc/shared';

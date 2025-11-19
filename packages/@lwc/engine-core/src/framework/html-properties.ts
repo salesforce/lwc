@@ -8,6 +8,7 @@ import {
     AriaPropNameToAttrNameMap,
     create,
     getPropertyDescriptor,
+    isUndefined,
     keys,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';

@@ -4,7 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { AriaPropNameToAttrNameMap, create, getPropertyDescriptor, entries } from '@lwc/shared';
+import {
+    AriaPropNameToAttrNameMap,
+    isNull,
+    isUndefined,
+    create,
+    getPropertyDescriptor,
+    entries,
+} from '@lwc/shared';
 import { HTMLElementPrototype } from '../../framework/html-element';
 
 // Apply ARIA string reflection behavior to a prototype.

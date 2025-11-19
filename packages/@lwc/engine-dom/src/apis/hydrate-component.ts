@@ -12,6 +12,7 @@ import {
     getAssociatedVMIfPresent,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
+import { isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement } from '@lwc/engine-core';
 

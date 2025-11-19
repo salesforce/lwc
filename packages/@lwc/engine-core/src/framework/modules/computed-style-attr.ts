@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { isNull, isString, isUndefined } from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import type { RendererAPI } from '../renderer';
 import type { VBaseElement, VStaticPartElement } from '../vnodes';

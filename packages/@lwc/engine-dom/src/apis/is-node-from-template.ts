@@ -5,7 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getPrototypeOf, hasOwnProperty, KEY__SHADOW_RESOLVER } from '@lwc/shared';
+import {
+    getPrototypeOf,
+    hasOwnProperty,
+    isFalse,
+    isUndefined,
+    KEY__SHADOW_RESOLVER,
+} from '@lwc/shared';
 import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.

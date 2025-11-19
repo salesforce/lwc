@@ -8,6 +8,7 @@ import path from 'path';
 import fs from 'fs';
 
 import { LwcConfigError } from './errors';
+import { isObject } from './shared';
 import type {
     LwcConfig,
     ModuleRecord,
@@ -73,7 +74,7 @@ export function normalizeConfig(
     const rootDir = config.rootDir ? path.resolve(config.rootDir) : process.cwd();
     const modules = config.modules || [];
     const normalizedModules = modules.map((m) => {
-        if (typeof m !== 'object') {
+        if (!isObject(m)) {
             throw new LwcConfigError(
                 `Invalid module record. Module record must be an object, instead got ${JSON.stringify(
                     m

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, freeze } from '@lwc/shared';
+import { create, freeze, isNull, isString, isUndefined } from '@lwc/shared';
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import type { RendererAPI } from '../renderer';
 

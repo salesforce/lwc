@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute } from '@lwc/shared';
+import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { EmptyObject } from '../utils';
 import { safelySetProperty } from '../sanitized-html-content';

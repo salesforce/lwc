@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
+import { isUndefined } from '@lwc/shared';
+
 const supportsWeakRefs =
     typeof WeakRef === 'function' && typeof FinalizationRegistry === 'function';
 

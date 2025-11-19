@@ -11,6 +11,7 @@ import {
     defineProperties,
     getPropertyDescriptor,
     getPrototypeOf,
+    isUndefined,
     setPrototypeOf,
 } from '@lwc/shared';
 
