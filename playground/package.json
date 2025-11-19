@@ -1,7 +1,7 @@
 {
     "private": true,
     "name": "@lwc/playground",
-    "version": "8.24.0",
+    "version": "8.25.0",
     "type": "module",
     "description": "Playground project to experiment with LWC.",
     "scripts": {
@@ -9,11 +9,11 @@
         "build": "cross-env NODE_ENV=production rollup -c"
     },
     "devDependencies": {
-        "@lwc/rollup-plugin": "8.24.0",
+        "@lwc/rollup-plugin": "8.25.0",
         "@rollup/plugin-replace": "^6.0.3",
         "@rollup/plugin-typescript": "^12.3.0",
         "cross-env": "^10.1.0",
-        "lwc": "8.24.0",
+        "lwc": "8.25.0",
         "rollup": "^4.53.2",
         "rollup-plugin-livereload": "^2.0.5",
         "rollup-plugin-serve": "^3.0.0",
