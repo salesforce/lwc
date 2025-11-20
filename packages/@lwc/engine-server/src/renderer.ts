@@ -9,12 +9,8 @@ import {
     htmlPropertyToAttribute,
     isAriaAttribute,
     isBooleanAttribute,
-    isFunction,
-    isNull,
-    isUndefined,
     noop,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
-    StringToLowerCase,
 } from '@lwc/shared';
 
 import {
@@ -72,7 +68,7 @@ function insert(node: N, parent: E, anchor: N | null) {
 
     node[HostParentKey] = parent;
 
-    const anchorIndex = isNull(anchor) ? -1 : parent[HostChildrenKey].indexOf(anchor);
+    const anchorIndex = anchor === null ? -1 : parent[HostChildrenKey].indexOf(anchor);
     if (anchorIndex === -1) {
         parent[HostChildrenKey].push(node);
     } else {
@@ -125,7 +121,7 @@ function createComment(content: string): HostNode {
 function getSibling(node: N, offset: number) {
     const parent = node[HostParentKey];
 
-    if (isNull(parent)) {
+    if (parent === null) {
         return null;
     }
 
@@ -231,7 +227,7 @@ function setProperty(node: N, propName: string, value: any): void {
             // TODO [#3284]: According to the spec, IDL nullable type values
             // (null and undefined) should remove the attribute; however, we
             // only do so in the case of null for historical reasons.
-            return isNull(value)
+            return value === null
                 ? removeAttribute(node, attrName)
                 : setAttribute(node, attrName, value);
         } else if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
@@ -263,7 +259,7 @@ function setText(node: N, content: string) {
 }
 
 function getAttribute(element: E, name: string, namespace: string | null = null) {
-    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedName = String(name).toLowerCase();
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
@@ -271,18 +267,18 @@ function getAttribute(element: E, name: string, namespace: string | null = null)
 }
 
 function setAttribute(element: E, name: string, value: unknown, namespace: string | null = null) {
-    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedName = String(name).toLowerCase();
     const normalizedValue = String(value);
     reportMutation(element, normalizedName);
     const attribute = element[HostAttributesKey].find(
         (attr) => attr.name === normalizedName && attr[HostNamespaceKey] === namespace
     );
 
-    if (isUndefined(namespace)) {
+    if (namespace === undefined) {
         namespace = null;
     }
 
-    if (isUndefined(attribute)) {
+    if (attribute === undefined) {
         element[HostAttributesKey].push({
             name: normalizedName,
             [HostNamespaceKey]: namespace,
@@ -294,7 +290,7 @@ function setAttribute(element: E, name: string, value: unknown, namespace: strin
 }
 
 function removeAttribute(element: E, name: string, namespace?: string | null) {
-    const normalizedName = StringToLowerCase.call(String(name));
+    const normalizedName = String(name).toLowerCase();
     reportMutation(element, normalizedName);
     element[HostAttributesKey] = element[HostAttributesKey].filter(
         (attr) => attr.name !== normalizedName && attr[HostNamespaceKey] !== namespace
@@ -304,10 +300,10 @@ function removeAttribute(element: E, name: string, namespace?: string | null) {
 function getClassList(element: E) {
     function getClassAttribute(): HostAttribute {
         let classAttribute = element[HostAttributesKey].find(
-            (attr) => attr.name === 'class' && isNull(attr[HostNamespaceKey])
+            (attr) => attr.name === 'class' && attr[HostNamespaceKey] === null
         );
 
-        if (isUndefined(classAttribute)) {
+        if (classAttribute === undefined) {
             classAttribute = {
                 name: 'class',
                 [HostNamespaceKey]: null,
@@ -341,12 +337,12 @@ function getClassList(element: E) {
 
 function setCSSStyleProperty(element: E, name: string, value: string, important: boolean) {
     const styleAttribute = element[HostAttributesKey].find(
-        (attr) => attr.name === 'style' && isNull(attr[HostNamespaceKey])
+        (attr) => attr.name === 'style' && attr[HostNamespaceKey] === null
     );
 
     const serializedProperty = `${name}: ${value}${important ? ' !important' : ''};`;
 
-    if (isUndefined(styleAttribute)) {
+    if (styleAttribute === undefined) {
         element[HostAttributesKey].push({
             name: 'style',
             [HostNamespaceKey]: null,
@@ -358,7 +354,7 @@ function setCSSStyleProperty(element: E, name: string, value: string, important:
 }
 
 function isConnected(node: HostNode) {
-    return !isNull(node[HostParentKey]);
+    return node[HostParentKey] !== null;
 }
 
 function getTagName(elm: HostElement): string {
@@ -373,7 +369,7 @@ const localRegistryRecord: Map<string, CreateElementAndUpgrade> = new Map();
 function createUpgradableElementConstructor(tagName: string): CreateElementAndUpgrade {
     return function Ctor(upgradeCallback: LifecycleCallback) {
         const elm = createElement(tagName);
-        if (isFunction(upgradeCallback)) {
+        if (typeof upgradeCallback === 'function') {
             upgradeCallback(elm); // nothing to do with the result for now
         }
         return elm;
@@ -385,7 +381,7 @@ function getUpgradableElement(
     _isFormAssociated?: boolean
 ): CreateElementAndUpgrade {
     let ctor = localRegistryRecord.get(tagName);
-    if (!isUndefined(ctor)) {
+    if (ctor !== undefined) {
         return ctor;
     }
 

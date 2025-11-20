@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { StringCharAt } from '@lwc/shared';
 import { DASHED_TAGNAME_ELEMENT_SET } from './constants';
 
 export function toPropertyName(attr: string) {
@@ -12,7 +11,7 @@ export function toPropertyName(attr: string) {
     let shouldUpperCaseNext = false;
 
     for (let i = 0; i < attr.length; i++) {
-        const char = StringCharAt.call(attr, i);
+        const char = attr.charAt(i);
 
         if (char === '-') {
             shouldUpperCaseNext = true;

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isNull, isUndefined, assert } from '@lwc/shared';
+import { assert } from '@lwc/shared';
 import { isVStaticPartElement, isVStaticPartText } from '../vnodes';
 import { applyEventListeners } from './events';
 import { applyRefs } from './refs';
@@ -68,11 +68,11 @@ export function traverseAndSetElements(
     // This is very slightly faster than a TreeWalker (~0.5% on js-framework-benchmark create-10k), but basically
     // the same idea.
     let node: Element | Text | null = root;
-    while (!isNull(node)) {
+    while (node !== null) {
         // visit node
         partId++;
         const part = partIdsToParts.get(partId);
-        if (!isUndefined(part)) {
+        if (part !== undefined) {
             part.elm = node;
             numFoundParts++;
             if (numFoundParts === numParts) {
@@ -81,12 +81,12 @@ export function traverseAndSetElements(
         }
 
         const child = getFirstChild(node);
-        if (!isNull(child)) {
+        if (child !== null) {
             // walk down
             node = child;
         } else {
             let sibling: Element | Text | null;
-            while (isNull((sibling = nextSibling(node)))) {
+            while ((sibling = nextSibling(node)) === null) {
                 // we never want to walk up from the root
                 assertNotRoot(node);
                 // walk up
@@ -121,7 +121,7 @@ export function mountStaticParts(root: Element, vnode: VStatic, renderer: Render
         return;
     }
     const { parts, owner } = vnode;
-    if (isUndefined(parts)) {
+    if (parts === undefined) {
         return;
     }
 
@@ -164,7 +164,7 @@ export function patchStaticParts(n1: VStatic, n2: VStatic, renderer: RendererAPI
     }
 
     const { parts: currParts, owner: currPartsOwner } = n2;
-    if (isUndefined(currParts)) {
+    if (currParts === undefined) {
         return;
     }
 
@@ -212,7 +212,7 @@ export function hydrateStaticParts(vnode: VStatic, renderer: RendererAPI): void 
     }
 
     const { parts, owner } = vnode;
-    if (isUndefined(parts)) {
+    if (parts === undefined) {
         return;
     }
 

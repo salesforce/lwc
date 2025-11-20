@@ -5,8 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isNumber } from './language';
-
 export const enum APIVersion {
     V58_244_SUMMER_23 = 58,
     V59_246_WINTER_24 = 59,
@@ -43,7 +41,7 @@ export const HIGHEST_API_VERSION = allVersions[allVersions.length - 1];
  * @param version
  */
 export function getAPIVersionFromNumber(version: number | undefined): APIVersion {
-    if (!isNumber(version)) {
+    if (typeof version !== 'number') {
         // if version is unspecified, default to latest
         return HIGHEST_API_VERSION;
     }

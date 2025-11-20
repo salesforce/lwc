@@ -4,16 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    assign,
-    isFunction,
-    isNull,
-    isObject,
-    isUndefined,
-    toString,
-    StringToLowerCase,
-} from '@lwc/shared';
+import { assert, assign, toString } from '@lwc/shared';
 import {
     createVM,
     connectRootElement,
@@ -39,7 +30,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
 
     const fn = slot.get(node);
 
-    if (!isUndefined(fn)) {
+    if (fn !== undefined) {
         fn(node);
     }
 
@@ -188,7 +179,7 @@ export function createElement<Component>(
         mode?: 'open' | 'closed';
     }
 ): LightningHTMLElement<Component> {
-    if (!isObject(options) || isNull(options)) {
+    if (typeof options !== 'object' || options === null) {
         throw new TypeError(
             `"createElement" function expects an object as second parameter but received "${toString(
                 options
@@ -197,7 +188,7 @@ export function createElement<Component>(
     }
 
     const Ctor = options.is;
-    if (!isFunction(Ctor)) {
+    if (typeof Ctor !== 'function') {
         throw new TypeError(
             `"createElement" function expects an "is" option with a valid component constructor.`
         );
@@ -208,7 +199,7 @@ export function createElement<Component>(
     // tagName must be all lowercase, unfortunately, we have legacy code that is
     // passing `sel` as a camel-case, which makes them invalid custom elements name
     // the following line guarantees that this does not leaks beyond this point.
-    const tagName = StringToLowerCase.call(sel);
+    const tagName = sel.toLowerCase();
 
     const useNativeCustomElementLifecycle =
         !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;

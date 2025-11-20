@@ -9,9 +9,6 @@ import {
     defineProperty,
     getOwnPropertyDescriptor,
     hasOwnProperty,
-    isNull,
-    isTrue,
-    isUndefined,
 } from '@lwc/shared';
 
 import { Node } from '../env/node';
@@ -69,12 +66,12 @@ function getShadowParent(node: Node, value: ParentNode & Node): (Node & ParentNo
         if (getNodeNearestOwnerKey(node) === getNodeNearestOwnerKey(value)) {
             // the element and its parent node belong to the same shadow root
             return value;
-        } else if (!isNull(owner) && isSlotElement(value)) {
+        } else if (owner !== null && isSlotElement(value)) {
             // slotted elements must be top level childNodes of the slot element
             // where they slotted into, but its shadowed parent is always the
             // owner of the slot.
             const slotOwner = getNodeOwner(value);
-            if (!isNull(slotOwner) && isNodeOwnedBy(owner, slotOwner)) {
+            if (slotOwner !== null && isNodeOwnedBy(owner, slotOwner)) {
                 // it is a slotted element, and therefore its parent is always going to be the host of the slot
                 return slotOwner;
             }
@@ -107,7 +104,7 @@ function textContentSetterPatched(this: Node, value: string) {
 
 function parentNodeGetterPatched(this: Node): (Node & ParentNode) | null {
     const value = nativeParentNodeGetter.call(this);
-    if (isNull(value)) {
+    if (value === null) {
         return value;
     }
     // TODO [#1635]: this needs optimization, maybe implementing it based on this.assignedSlot
@@ -116,7 +113,7 @@ function parentNodeGetterPatched(this: Node): (Node & ParentNode) | null {
 
 function parentElementGetterPatched(this: Node): Element | null {
     const value = nativeParentNodeGetter.call(this);
-    if (isNull(value)) {
+    if (value === null) {
         return null;
     }
     const parentNode = getShadowParent(this, value);
@@ -175,9 +172,8 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
         const owner = getNodeOwner(this);
         const filteredChildNodes = getFilteredChildNodes(this);
         // No need to filter by owner for non-shadowed nodes
-        const childNodes = isNull(owner)
-            ? filteredChildNodes
-            : getAllMatches(owner, filteredChildNodes);
+        const childNodes =
+            owner === null ? filteredChildNodes : getAllMatches(owner, filteredChildNodes);
         return createStaticNodeList(childNodes);
     }
     // nothing to do here since this does not have a synthetic shadow attached to it
@@ -192,19 +188,18 @@ const nativeGetRootNode = Node.prototype.getRootNode;
  * If Node.prototype.getRootNode is supported, use it
  * else, assume we are working in non-native shadow mode and climb using parentNode
  */
-const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node = !isUndefined(
-    nativeGetRootNode
-)
-    ? nativeGetRootNode
-    : function (this: Node): Node {
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          let node = this;
-          let nodeParent: Node | null;
-          while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
-              node = nodeParent!;
-          }
-          return node;
-      };
+const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node =
+    nativeGetRootNode !== undefined
+        ? nativeGetRootNode
+        : function (this: Node): Node {
+              // eslint-disable-next-line @typescript-eslint/no-this-alias
+              let node = this;
+              let nodeParent: Node | null;
+              while ((nodeParent = parentNodeGetter.call(node)) !== null) {
+                  node = nodeParent!;
+              }
+              return node;
+          };
 
 /**
  * Get the shadow root
@@ -218,7 +213,7 @@ const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node 
 function getNearestRoot(node: Node): Node {
     const ownerNode: HTMLElement | null = getNodeOwner(node);
 
-    if (isNull(ownerNode)) {
+    if (ownerNode === null) {
         // we hit a wall, either we are in native shadow mode or the node is not in lwc boundary.
         return getDocumentOrRootNode.call(node);
     }
@@ -246,8 +241,8 @@ function getNearestRoot(node: Node): Node {
  * @param options
  */
 function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);
+    const composed: boolean = options === undefined ? false : !!options.composed;
+    return composed === true ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
@@ -297,7 +292,7 @@ defineProperties(Node.prototype, {
 
             // Handle the case where a top level light DOM element is slotted into a synthetic
             // shadow slot.
-            if (!isNull(parentNode) && isSyntheticSlotElement(parentNode)) {
+            if (parentNode !== null && isSyntheticSlotElement(parentNode)) {
                 return getNodeOwner(parentNode);
             }
 
@@ -316,7 +311,7 @@ defineProperties(Node.prototype, {
 
             // Handle the case where a top level light DOM element is slotted into a synthetic
             // shadow slot.
-            if (!isNull(parentElement) && isSyntheticSlotElement(parentElement)) {
+            if (parentElement !== null && isSyntheticSlotElement(parentElement)) {
                 return getNodeOwner(parentElement);
             }
 

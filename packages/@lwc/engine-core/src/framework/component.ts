@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { assert, isFalse, isFunction, isUndefined, LOWEST_API_VERSION } from '@lwc/shared';
+import { assert, LOWEST_API_VERSION } from '@lwc/shared';
 
 import { createReactiveObserver, unsubscribeFromSignals } from './mutation-tracker';
 
@@ -46,7 +46,7 @@ export function registerComponent(
     Ctor: any,
     metadata: ComponentConstructorMetadata
 ): any {
-    if (isFunction(Ctor)) {
+    if (typeof Ctor === 'function') {
         if (process.env.NODE_ENV !== 'production') {
             // There is no point in running this in production, because the version mismatch check relies
             // on code comments which are stripped out in production by minifiers
@@ -74,7 +74,7 @@ export function getComponentAPIVersion(Ctor: LightningElementConstructor): APIVe
     const metadata = registeredComponentMap.get(Ctor);
     const apiVersion: APIVersion | undefined = metadata?.apiVersion;
 
-    if (isUndefined(apiVersion)) {
+    if (apiVersion === undefined) {
         // This should only occur in our integration tests; in practice every component
         // is registered, and so this code path should not get hit. But to be safe,
         // return the lowest possible version.
@@ -102,7 +102,7 @@ export function getComponentMetadata(
 export function getTemplateReactiveObserver(vm: VM): ReactiveObserver {
     const reactiveObserver = createReactiveObserver(() => {
         const { isDirty } = vm;
-        if (isFalse(isDirty)) {
+        if (isDirty === false) {
             markComponentAsDirty(vm);
             scheduleRehydration(vm);
         }
@@ -166,11 +166,11 @@ export function markComponentAsDirty(vm: VM) {
 const cmpEventListenerMap: WeakMap<EventListener, EventListener> = new WeakMap();
 
 export function getWrappedComponentsListener(vm: VM, listener: EventListener): EventListener {
-    if (!isFunction(listener)) {
+    if (typeof listener !== 'function') {
         throw new TypeError('Expected an EventListener but received ' + typeof listener); // avoiding problems with non-valid listeners
     }
     let wrappedListener = cmpEventListenerMap.get(listener);
-    if (isUndefined(wrappedListener)) {
+    if (wrappedListener === undefined) {
         wrappedListener = function (event: Event) {
             invokeEventListener(vm, listener, undefined, event);
         };

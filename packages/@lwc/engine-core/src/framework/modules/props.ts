@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
+import { htmlPropertyToAttribute } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { EmptyObject } from '../utils';
 import { safelySetProperty } from '../sanitized-html-content';
@@ -24,24 +24,24 @@ export function patchProps(
 ) {
     const { props } = vnode.data;
 
-    if (isUndefined(props)) {
+    if (props === undefined) {
         return;
     }
 
     let oldProps;
-    if (!isNull(oldVnode)) {
+    if (oldVnode !== null) {
         oldProps = oldVnode.data.props;
         // Props may be the same due to the static content optimization, so we can skip diffing
         if (oldProps === props) {
             return;
         }
 
-        if (isUndefined(oldProps)) {
+        if (oldProps === undefined) {
             oldProps = EmptyObject;
         }
     }
 
-    const isFirstPatch = isNull(oldVnode);
+    const isFirstPatch = oldVnode === null;
     const { elm, sel } = vnode;
     const { getProperty, setProperty } = renderer;
 

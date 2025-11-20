@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import type { RefVNodes, VM } from '../vm';
 import type { VBaseElement, VStaticPartElement } from '../vnodes';
 
@@ -13,11 +13,11 @@ export function applyRefs(vnode: VBaseElement | VStaticPartElement, owner: VM) {
     const { data } = vnode;
     const { ref } = data;
 
-    if (isUndefined(ref)) {
+    if (ref === undefined) {
         return;
     }
 
-    if (process.env.NODE_ENV !== 'production' && isUndefined(owner.refVNodes)) {
+    if (process.env.NODE_ENV !== 'production' && owner.refVNodes === undefined) {
         throw new Error('refVNodes must be defined when setting a ref');
     }
 

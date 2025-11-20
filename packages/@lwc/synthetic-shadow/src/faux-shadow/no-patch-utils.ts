@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayFilter, ArraySlice, isNull, isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 
 import { getNodeKey, getNodeNearestOwnerKey, getNodeOwnerKey } from '../shared/node-ownership';
 import { isGlobalPatchingSkipped } from '../shared/utils';
@@ -27,11 +27,11 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
     const ownerKey = getNodeOwnerKey(context);
 
     // a node inside a shadow.
-    if (!isUndefined(ownerKey)) {
+    if (ownerKey !== undefined) {
         if (isSyntheticShadowHost(context)) {
             // element with shadowRoot attached
             const owner = getNodeOwner(context);
-            if (isNull(owner)) {
+            if (owner === null) {
                 filtered = [];
             } else if (getNodeKey(context)) {
                 // it is a custom element, and we should then filter by slotted elements
@@ -42,22 +42,16 @@ export function getNonPatchedFilteredArrayOfNodes<T extends Node>(
             }
         } else {
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
-                (elm) => getNodeNearestOwnerKey(elm) === ownerKey
-            );
+            filtered = unfilteredNodes.filter((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
         }
     } else if (context instanceof HTMLBodyElement) {
         // `context` is document.body which is already patched.
-        filtered = ArrayFilter.call(
-            unfilteredNodes,
-            // Note: we deviate from native shadow here, but are not fixing
-            // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
+        filtered = unfilteredNodes.filter(
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(context)
         );
     } else {
         // `context` is outside the lwc boundary, return unfiltered list.
-        filtered = ArraySlice.call(unfilteredNodes);
+        filtered = unfilteredNodes.slice();
     }
 
     return filtered;

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFalse, isNull, isUndefined, flattenStylesheets } from '@lwc/shared';
+import { flattenStylesheets } from '@lwc/shared';
 import { scheduleRehydration, forceRehydration } from './vm';
 import { isComponentConstructor } from './def';
 import { markComponentAsDirty } from './component';
@@ -49,7 +49,7 @@ if (process.env.NODE_ENV === 'test-lwc-integration') {
 function rehydrateHotTemplate(tpl: Template): boolean {
     const list = activeTemplates.get(tpl);
     for (const vm of list) {
-        if (isFalse(vm.isDirty)) {
+        if (vm.isDirty === false) {
             // forcing the vm to rehydrate in the micro-task:
             markComponentAsDirty(vm);
             scheduleRehydration(vm);
@@ -83,7 +83,7 @@ function rehydrateHotComponent(Ctor: LightningElementConstructor): boolean {
     let canRefreshAllInstances = true;
     for (const vm of list) {
         const { owner } = vm;
-        if (!isNull(owner)) {
+        if (owner !== null) {
             // if a component class definition is swapped, we must reset
             // owner's template content in the next micro-task:
             forceRehydration(owner);
@@ -145,7 +145,7 @@ export function getStyleOrSwappedStyle(style: Stylesheet): Stylesheet {
 }
 
 function addActiveStylesheets(stylesheets: Stylesheets | undefined | null, vm: VM) {
-    if (isUndefined(stylesheets) || isNull(stylesheets)) {
+    if (stylesheets === undefined || stylesheets === null) {
         // Ignore non-existent stylesheets
         return;
     }
@@ -171,7 +171,7 @@ export function setActiveVM(vm: VM) {
 
     // tracking active template
     const template = vm.cmpTemplate;
-    if (!isNull(template)) {
+    if (template !== null) {
         // this will allow us to keep track of the templates that are
         // being used by a hot component
         activeTemplates.add(template, vm);

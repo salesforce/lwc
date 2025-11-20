@@ -6,7 +6,7 @@
  */
 
 import { getAssociatedVMIfPresent } from '@lwc/engine-core';
-import { isUndefined, keys } from '@lwc/shared';
+import { keys } from '@lwc/shared';
 import type { LightningElement } from '@lwc/engine-core';
 
 /**
@@ -60,7 +60,7 @@ export const LightningElementFormatter = {
     header(obj: any, config?: Record<string, any>) {
         const vm = getAssociatedVMIfPresent(obj);
 
-        if (!isUndefined(vm) && (isUndefined(config) || !config.skip)) {
+        if (vm !== undefined && (config === undefined || !config.skip)) {
             if (obj instanceof HTMLElement) {
                 return getHeaderForCustomElement(obj, vm.component);
             } else {

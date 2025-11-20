@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { assert, isNull, isUndefined } from '@lwc/shared';
+import { assert } from '@lwc/shared';
 import { ElementAttachShadow, ElementShadowRootGetter } from '../language';
 
 function cloneNode(node: Node, deep: boolean): Node {
@@ -13,7 +13,7 @@ function cloneNode(node: Node, deep: boolean): Node {
 }
 
 function createElement(tagName: string, namespace?: string): Element {
-    return isUndefined(namespace)
+    return namespace === undefined
         ? document.createElement(tagName)
         : document.createElementNS(namespace, tagName);
 }
@@ -60,7 +60,7 @@ function attachShadow(element: Element, options: ShadowRootInit): ShadowRoot {
     //      root component with customElement.define('c-app', Ctor)
     // see W-17441501
     const shadowRoot = ElementShadowRootGetter.call(element);
-    if (!isNull(shadowRoot)) {
+    if (shadowRoot !== null) {
         return shadowRoot;
     }
     return ElementAttachShadow.call(element, options);
@@ -83,7 +83,7 @@ function setProperty<K extends string>(
 }
 
 function getAttribute(element: Element, name: string, namespace?: string | null): string | null {
-    return isUndefined(namespace)
+    return namespace === undefined
         ? element.getAttribute(name)
         : element.getAttributeNS(namespace, name);
 }
@@ -94,13 +94,13 @@ function setAttribute(
     value: string,
     namespace?: string | null
 ): void {
-    return isUndefined(namespace)
+    return namespace === undefined
         ? element.setAttribute(name, value)
         : element.setAttributeNS(namespace, name, value);
 }
 
 function removeAttribute(element: Element, name: string, namespace?: string | null): void {
-    if (isUndefined(namespace)) {
+    if (namespace === undefined) {
         element.removeAttribute(name);
     } else {
         element.removeAttributeNS(namespace, name);

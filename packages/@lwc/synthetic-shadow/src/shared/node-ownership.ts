@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, isNull, isUndefined } from '@lwc/shared';
+import { defineProperty } from '@lwc/shared';
 
 import { parentNodeGetter } from '../env/node';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
@@ -51,16 +51,16 @@ export function getNodeNearestOwnerKey(node: Node): number | undefined {
     let hostKey: number | undefined;
     // search for the first element with owner identity
     // in case of manually inserted elements and elements slotted from Light DOM
-    while (!isNull(host)) {
+    while (host !== null) {
         hostKey = getNodeOwnerKey(host);
-        if (!isUndefined(hostKey)) {
+        if (hostKey !== undefined) {
             return hostKey;
         }
         host = parentNodeGetter.call(host) as ShadowedNode | null;
 
         // Elements slotted from top level light DOM into synthetic shadow
         // reach the slot tag from the shadow element first
-        if (!isNull(host) && isSyntheticSlotElement(host)) {
+        if (host !== null && isSyntheticSlotElement(host)) {
             return undefined;
         }
     }
@@ -77,5 +77,5 @@ export function getNodeKey(node: Node): number | undefined {
  * @param node
  */
 export function isNodeShadowed(node: Node): boolean {
-    return !isUndefined(getNodeOwnerKey(node));
+    return getNodeOwnerKey(node) !== undefined;
 }

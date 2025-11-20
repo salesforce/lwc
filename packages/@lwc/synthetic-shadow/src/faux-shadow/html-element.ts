@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isFalse, defineProperties, defineProperty } from '@lwc/shared';
+import { defineProperties, defineProperty } from '@lwc/shared';
 
 import {
     hasAttribute,
@@ -35,7 +35,7 @@ const { blur, focus } = HTMLElement.prototype;
  * This method only applies to elements with a shadow attached to them
  */
 function tabIndexGetterPatched(this: HTMLElement) {
-    if (isDelegatingFocus(this) && isFalse(hasAttribute.call(this, 'tabindex'))) {
+    if (isDelegatingFocus(this) && hasAttribute.call(this, 'tabindex') === false) {
         // this covers the case where the default tabindex should be 0 because the
         // custom element is delegating its focus
         return 0;
@@ -73,7 +73,7 @@ function tabIndexSetterPatched(this: HTMLElement, value: any) {
     // previously executed and a listener has been added. We must remove that listener if
     // the tabIndex property value has changed or if the component no longer renders a
     // tabindex attribute.
-    if (prevHasAttr && (didValueChange || isFalse(currHasAttr))) {
+    if (prevHasAttr && (didValueChange || currHasAttr === false)) {
         if (prevValue === -1) {
             ignoreFocusIn(this);
         }
@@ -84,7 +84,7 @@ function tabIndexSetterPatched(this: HTMLElement, value: any) {
 
     // If a tabindex attribute was not rendered after invoking its setter, it means the
     // component is taking control. Do nothing.
-    if (isFalse(currHasAttr)) {
+    if (currHasAttr === false) {
         return;
     }
 
@@ -92,7 +92,7 @@ function tabIndexSetterPatched(this: HTMLElement, value: any) {
     // previously executed and a listener has been added. If the tabindex attribute is still
     // rendered after invoking the setter AND the tabIndex property value has not changed,
     // we don't need to do any work.
-    if (prevHasAttr && currHasAttr && isFalse(didValueChange)) {
+    if (prevHasAttr && currHasAttr && didValueChange === false) {
         return;
     }
 
@@ -117,7 +117,7 @@ function tabIndexSetterPatched(this: HTMLElement, value: any) {
 function blurPatched(this: HTMLElement) {
     if (isDelegatingFocus(this)) {
         const currentActiveElement = getActiveElement(this);
-        if (!isNull(currentActiveElement)) {
+        if (currentActiveElement !== null) {
             // if there is an active element, blur it (intentionally using the dot notation in case the user defines the blur routine)
             (currentActiveElement as HTMLElement).blur();
             return;

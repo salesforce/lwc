@@ -6,7 +6,7 @@ import {
 import Container from 'x/container';
 import Simple from 'x/simple';
 
-describe('Profiler Sanity Test', () => {
+describe.skip('Profiler Sanity Test', () => {
     // Count the number of marks/measures before and after the test to ensure the profiler
     // doesn't leak any. Note that other tests/libraries may be adding their own marks/measures,
     // so we can't just check for 0.

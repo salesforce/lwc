@@ -19,7 +19,7 @@ import {
     runFormStateRestoreCallback,
     BaseBridgeElement,
 } from '@lwc/engine-core';
-import { isNull } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement, FormRestoreState, FormRestoreReason } from '@lwc/engine-core';
 
@@ -76,7 +76,7 @@ export function buildCustomElementConstructor(Ctor: ComponentConstructor): HTMLE
         constructor() {
             super();
 
-            if (!isNull(this.shadowRoot)) {
+            if (this.shadowRoot !== null) {
                 if (process.env.NODE_ENV !== 'production') {
                     // eslint-disable-next-line no-console
                     console.warn(

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayMap, create, defineProperty, forEach, setPrototypeOf } from '@lwc/shared';
+import { create, defineProperty, setPrototypeOf } from '@lwc/shared';
 
 const Items = new WeakMap<any, Node[]>();
 
@@ -41,7 +41,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value(cb: (value: Node, key: number, parent: Node[]) => void, thisArg?: any) {
-            forEach.call(Items.get(this)!, cb, thisArg);
+            Items.get(this)!.forEach(cb, thisArg);
         },
     },
     entries: {
@@ -49,7 +49,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(Items.get(this)!, (v, i) => [i, v]);
+            return Items.get(this)!.map((v, i) => [i, v]);
         },
     },
     keys: {
@@ -57,7 +57,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value() {
-            return ArrayMap.call(Items.get(this)!, (_v, i) => i);
+            return Items.get(this)!.map((_v, i) => i);
         },
     },
     values: {
@@ -111,7 +111,7 @@ export function createStaticNodeList<T extends Node>(items: T[]): NodeListOf<T> 
     const nodeList: NodeListOf<T> = create(StaticNodeList.prototype);
     Items.set(nodeList, items);
     // setting static indexes
-    forEach.call(items, (item: T, index: number) => {
+    items.forEach((item, index) => {
         defineProperty(nodeList, index, {
             value: item,
             enumerable: true,

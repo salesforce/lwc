@@ -4,19 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    assert,
-    defineProperties,
-    ArrayFilter,
-    ArrayIndexOf,
-    ArrayPush,
-    ArrayReduce,
-    ArraySlice,
-    forEach,
-    isNull,
-    isTrue,
-    isUndefined,
-} from '@lwc/shared';
+import { ArrayFrom, assert, defineProperties } from '@lwc/shared';
 import {
     getAttribute,
     setAttribute,
@@ -55,7 +43,7 @@ const SlotChangeKey = new WeakMap<any, boolean>();
 function initSlotObserver() {
     return new MutationObserver((mutations) => {
         const slots: Node[] = [];
-        forEach.call(mutations, (mutation) => {
+        mutations.forEach((mutation) => {
             if (process.env.NODE_ENV !== 'production') {
                 assert.invariant(
                     mutation.type === 'childList',
@@ -63,8 +51,8 @@ function initSlotObserver() {
                 );
             }
             const { target: slot } = mutation;
-            if (ArrayIndexOf.call(slots, slot) === -1) {
-                ArrayPush.call(slots, slot);
+            if (slots.indexOf(slot) === -1) {
+                slots.push(slot);
                 dispatchEvent.call(slot, new CustomEvent('slotchange'));
             }
         });
@@ -73,19 +61,14 @@ function initSlotObserver() {
 
 function getFilteredSlotFlattenNodes(slot: HTMLElement): Node[] {
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
-    return ArrayReduce.call(
-        childNodes,
-        // @ts-expect-error Array#reduce has a generic that is lost by our redefined ArrayReduce
-        (seed: Node[], child) => {
-            if (child instanceof Element && isSlotElement(child)) {
-                ArrayPush.apply(seed, getFilteredSlotFlattenNodes(child));
-            } else {
-                ArrayPush.call(seed, child);
-            }
-            return seed;
-        },
-        []
-    ) as Node[];
+    return childNodes.reduce<Node[]>((seed, child) => {
+        if (child instanceof Element && isSlotElement(child)) {
+            seed.push(...getFilteredSlotFlattenNodes(child));
+        } else {
+            seed.push(child);
+        }
+        return seed;
+    }, []);
 }
 
 export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement | null {
@@ -112,7 +95,7 @@ export function assignedSlotGetterPatched(this: Element | Text): HTMLSlotElement
      * different than the node owner key (always `undefined`).
      */
     if (
-        !isNull(parentNode) &&
+        parentNode !== null &&
         isSlotElement(parentNode) &&
         getNodeOwnerKey(parentNode) !== getNodeOwnerKey(this)
     ) {
@@ -147,17 +130,15 @@ defineProperties(HTMLSlotElement.prototype, {
     assignedElements: {
         value(this: HTMLSlotElement, options?: AssignedNodesOptions): Element[] {
             if (isNodeShadowed(this)) {
-                const flatten = !isUndefined(options) && isTrue(options.flatten);
+                const flatten = options !== undefined && options.flatten === true;
                 const nodes = flatten
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
-                return ArrayFilter.call(nodes, (node) => node instanceof Element) as Element[];
+                return nodes.filter((node) => node instanceof Element) as Element[];
             } else {
                 return originalAssignedElements.apply(
                     this,
-                    ArraySlice.call(arguments as unknown as unknown[]) as [
-                        options?: AssignedNodesOptions,
-                    ]
+                    ArrayFrom(arguments) as [options?: AssignedNodesOptions]
                 );
             }
         },
@@ -168,16 +149,14 @@ defineProperties(HTMLSlotElement.prototype, {
     assignedNodes: {
         value(this: HTMLSlotElement, options?: AssignedNodesOptions): Node[] {
             if (isNodeShadowed(this)) {
-                const flatten = !isUndefined(options) && isTrue(options.flatten);
+                const flatten = options !== undefined && options.flatten === true;
                 return flatten
                     ? getFilteredSlotFlattenNodes(this)
                     : getFilteredSlotAssignedNodes(this);
             } else {
                 return originalAssignedNodes.apply(
                     this,
-                    ArraySlice.call(arguments as unknown as unknown[]) as [
-                        options?: AssignedNodesOptions,
-                    ]
+                    ArrayFrom(arguments) as [options?: AssignedNodesOptions]
                 );
             }
         },
@@ -188,7 +167,7 @@ defineProperties(HTMLSlotElement.prototype, {
     name: {
         get(this: HTMLSlotElement): string {
             const name = getAttribute.call(this, 'name');
-            return isNull(name) ? '' : name;
+            return name === null ? '' : name;
         },
         set(this: HTMLSlotElement, value: string) {
             setAttribute.call(this, 'name', value);
@@ -200,9 +179,8 @@ defineProperties(HTMLSlotElement.prototype, {
         get(this: HTMLSlotElement): NodeListOf<Node> {
             if (isNodeShadowed(this)) {
                 const owner = getNodeOwner(this);
-                const childNodes = isNull(owner)
-                    ? []
-                    : getAllMatches(owner, getFilteredChildNodes(this));
+                const childNodes =
+                    owner === null ? [] : getAllMatches(owner, getFilteredChildNodes(this));
                 return createStaticNodeList(childNodes);
             }
             return childNodesGetter.call(this);

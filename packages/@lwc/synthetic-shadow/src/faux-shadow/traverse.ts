@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
+import {} from '@lwc/shared';
 
 import { arrayFromCollection } from '../shared/utils';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
@@ -29,7 +29,7 @@ import {
 // inside another slot.
 function foldSlotElement(slot: HTMLElement) {
     let parent = parentElementGetter.call(slot);
-    while (!isNull(parent) && isSlotElement(parent)) {
+    while (parent !== null && isSlotElement(parent)) {
         slot = parent;
         parent = parentElementGetter.call(slot);
     }
@@ -57,7 +57,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
     // this routine assumes that the node is coming from a different shadow (it is not owned by the host)
     // just in case the provided node is not an element
     let currentElement = node instanceof Element ? node : parentElementGetter.call(node);
-    while (!isNull(currentElement) && currentElement !== host) {
+    while (currentElement !== null && currentElement !== host) {
         const elmOwnerKey = getNodeNearestOwnerKey(currentElement);
         const parent = parentElementGetter.call(currentElement);
         if (elmOwnerKey === hostKey) {
@@ -66,7 +66,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
             return isSlotElement(currentElement);
         } else if (parent === host) {
             return false;
-        } else if (!isNull(parent) && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
+        } else if (parent !== null && getNodeNearestOwnerKey(parent) !== elmOwnerKey) {
             // we are crossing a boundary of some sort since the elm and its parent
             // have different owner key. for slotted elements, this is possible
             // if the parent happens to be a slot.
@@ -85,7 +85,7 @@ function isNodeSlotted(host: Element, node: Node): boolean {
                  * most outer slot parent before jumping into its corresponding host.
                  */
                 currentElement = getNodeOwner(foldSlotElement(parent as HTMLElement));
-                if (!isNull(currentElement)) {
+                if (currentElement !== null) {
                     if (currentElement === host) {
                         // the slot element is a top level element inside the shadow
                         // of a host that was allocated into host in question
@@ -111,16 +111,16 @@ export function getNodeOwner(node: Node): HTMLElement | null {
         return null;
     }
     const ownerKey = getNodeNearestOwnerKey(node);
-    if (isUndefined(ownerKey)) {
+    if (ownerKey === undefined) {
         return null;
     }
     let nodeOwner: Node | null = node;
     // At this point, node is a valid node with owner identity, now we need to find the owner node
     // search for a custom element with a VM that owns the first element with owner identity attached to it
-    while (!isNull(nodeOwner) && getNodeKey(nodeOwner) !== ownerKey) {
+    while (nodeOwner !== null && getNodeKey(nodeOwner) !== ownerKey) {
         nodeOwner = parentNodeGetter.call(nodeOwner);
     }
-    if (isNull(nodeOwner)) {
+    if (nodeOwner === null) {
         return null;
     }
     return nodeOwner as HTMLElement;
@@ -153,10 +153,10 @@ export function isNodeOwnedBy(owner: Element, node: Node): boolean {
     }
     const ownerKey = getNodeNearestOwnerKey(node);
 
-    if (isUndefined(ownerKey)) {
+    if (ownerKey === undefined) {
         // in case of root level light DOM element slotting into a synthetic shadow
         const host = parentNodeGetter.call(node);
-        if (!isNull(host) && isSyntheticSlotElement(host)) {
+        if (host !== null && isSyntheticSlotElement(host)) {
             return false;
         }
 
@@ -180,7 +180,7 @@ export function getAllSlottedMatches<T extends Node>(
     for (let i = 0, len = nodeList.length; i < len; i += 1) {
         const node = nodeList[i];
         if (!isNodeOwnedBy(host, node) && isNodeSlotted(host, node)) {
-            ArrayPush.call(filteredAndPatched, node as T);
+            filteredAndPatched.push(node as T);
         }
     }
     return filteredAndPatched;
@@ -204,7 +204,7 @@ export function getAllMatches<T extends Node>(owner: Element, nodeList: Node[]):
         if (isOwned) {
             // Patch querySelector, querySelectorAll, etc
             // if element is owned by VM
-            ArrayPush.call(filteredAndPatched, node as T);
+            filteredAndPatched.push(node as T);
         }
     }
     return filteredAndPatched;
@@ -241,38 +241,27 @@ export function getFilteredChildNodes(node: Node): Element[] {
         // we need to get only the nodes that were slotted
         const slots = arrayFromCollection(querySelectorAll.call(node, 'slot'));
         const resolver = getShadowRootResolver(getShadowRoot(node));
-        return ArrayReduce.call(
-            slots,
-            // @ts-expect-error Array#reduce has a generic that gets lost in our retyped ArrayReduce
-            (seed: Element[], slot) => {
-                if (resolver === getShadowRootResolver(slot)) {
-                    ArrayPush.apply(
-                        seed,
-                        getFilteredSlotAssignedNodes(slot as HTMLElement) as Element[]
-                    );
-                }
-                return seed;
-            },
-            []
-        ) as Element[];
+        return slots.reduce<Element[]>((seed, slot) => {
+            if (resolver === getShadowRootResolver(slot)) {
+                seed.push(...(getFilteredSlotAssignedNodes(slot as HTMLElement) as Element[]));
+            }
+            return seed;
+        }, []);
     } else {
         // slot element
         const children = arrayFromCollection(childNodesGetter.call(node));
         const resolver = getShadowRootResolver(node);
 
-        return ArrayFilter.call(children, (child) => resolver === getShadowRootResolver(child));
+        return children.filter((child) => resolver === getShadowRootResolver(child));
     }
 }
 
 export function getFilteredSlotAssignedNodes(slot: HTMLElement): Node[] {
     const owner = getNodeOwner(slot);
-    if (isNull(owner)) {
+    if (owner === null) {
         return [];
     }
 
     const childNodes = arrayFromCollection(childNodesGetter.call(slot));
-    return ArrayFilter.call(
-        childNodes,
-        (child) => !isNodeShadowed(child) || !isNodeOwnedBy(owner, child)
-    );
+    return childNodes.filter((child) => !isNodeShadowed(child) || !isNodeOwnedBy(owner, child));
 }

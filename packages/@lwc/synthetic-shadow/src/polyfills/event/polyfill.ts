@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperties, isNull, isUndefined } from '@lwc/shared';
+import { defineProperties } from '@lwc/shared';
 
 import { pathComposer } from '../../3rdparty/polymer/path-composer';
 import { retarget } from '../../3rdparty/polymer/retarget';
@@ -26,7 +26,7 @@ import { getOwnerDocument } from '../../shared/utils';
 
 function patchedCurrentTargetGetter(this: Event): EventTarget | null {
     const currentTarget = eventCurrentTargetGetter.call(this);
-    if (isNull(currentTarget)) {
+    if (currentTarget === null) {
         return null;
     }
     if (eventToContextMap.get(this) === EventListenerContext.SHADOW_ROOT_LISTENER) {
@@ -50,14 +50,14 @@ function patchedTargetGetter(this: Event): EventTarget | null {
     if (!(originalCurrentTarget instanceof Node)) {
         // TODO [#1511]: Special escape hatch to support legacy behavior. Should be fixed.
         // If the event's target is being accessed async and originalTarget is not a keyed element, do not retarget
-        if (isNull(originalCurrentTarget) && isUndefined(getNodeOwnerKey(originalTarget))) {
+        if (originalCurrentTarget === null && getNodeOwnerKey(originalTarget) === undefined) {
             return originalTarget;
         }
         return retarget(doc, composedPath);
     } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
         // TODO [#1530]: If currentTarget is document or document.body (Third party libraries that have global event listeners)
         // and the originalTarget is not a keyed element, do not retarget
-        if (isUndefined(getNodeOwnerKey(originalTarget))) {
+        if (getNodeOwnerKey(originalTarget) === undefined) {
             return originalTarget;
         }
         return retarget(doc, composedPath);
@@ -106,7 +106,7 @@ function patchedComposedPathValue(this: Event): EventTarget[] {
     const originalCurrentTarget = eventCurrentTargetGetter.call(this);
 
     // If the event has completed propagation, the composedPath should be an empty array.
-    if (isNull(originalCurrentTarget)) {
+    if (originalCurrentTarget === null) {
         return [];
     }
 
