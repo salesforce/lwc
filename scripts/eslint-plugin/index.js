@@ -10,7 +10,5 @@ module.exports = {
         'forbidden-filename': require('./rules/forbidden-filename'),
         'no-global-node': require('./rules/no-global-node'),
         'no-invalid-todo': require('./rules/no-invalid-todo'),
-        'no-normal-code': require('./rules/no-normal-code'),
-        'no-shared-util': require('./rules/no-shared-util'),
     },
 };

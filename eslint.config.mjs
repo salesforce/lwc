@@ -41,7 +41,7 @@ export default tseslint.config(
         },
 
         linterOptions: {
-            reportUnusedDisableDirectives: false,
+            reportUnusedDisableDirectives: true,
         },
 
         languageOptions: {
@@ -427,19 +427,5 @@ export default tseslint.config(
                 // eslint-disable-next-line no-undef
                 process.env.npm_lifecycle_event === 'lint-staged' ? 'error' : 'off',
         },
-    },
-    {
-        files: ['packages/**'],
-        rules: {
-            '@lwc/lwc-internal/no-shared-util': 'error',
-        },
     }
 );
-// .map((cfg) => {
-//     if (!cfg.rules) return cfg;
-//     const RULE = '@lwc/lwc-internal/no-shared-util';
-//     return {
-//         ...cfg,
-//         rules: RULE in cfg.rules ? { [RULE]: cfg.rules[RULE] } : {},
-//     };
-// });
