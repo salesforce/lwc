@@ -3522,16 +3522,16 @@
     webdriver "9.20.0"
     webdriverio "9.20.0"
 
-"@wdio/sauce-service@^9.20.0":
-  version "9.20.0"
-  resolved "https://registry.yarnpkg.com/@wdio/sauce-service/-/sauce-service-9.20.0.tgz#49df655642de64a97a177b4ecad31365cf4646f2"
-  integrity sha512-guSY9PVmpchiZhBSz18IaOqoxVNzZj5jkxa2QnszsKtZA/UdZKVXgnOLSlmg3uSBaYWA/4EZ1GIS3NM52sTj3w==
+"@wdio/sauce-service@^9.20.1":
+  version "9.20.1"
+  resolved "https://registry.yarnpkg.com/@wdio/sauce-service/-/sauce-service-9.20.1.tgz#b0f8efb85a94f46b41856a92054e0678dfe28f6d"
+  integrity sha512-W827Yii2z9gzlXUhK9N1k7Yd+e7euHpOWwcnLZb2Y0WVUPG5bLkaulYgZAwRE/7AkfIazdDKDfrKZ1++F38uCw==
   dependencies:
     "@wdio/logger" "9.18.0"
     "@wdio/types" "9.20.0"
-    "@wdio/utils" "9.20.0"
+    "@wdio/utils" "9.20.1"
     saucelabs "^9.0.1"
-    webdriverio "9.20.0"
+    webdriverio "9.20.1"
 
 "@wdio/spec-reporter@^9.20.0":
   version "9.20.0"
@@ -12167,7 +12167,7 @@ webdriverio@9.20.0:
     urlpattern-polyfill "^10.0.0"
     webdriver "9.20.0"
 
-webdriverio@^9.0.0, webdriverio@^9.20.1:
+webdriverio@9.20.1, webdriverio@^9.0.0, webdriverio@^9.20.1:
   version "9.20.1"
   resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-9.20.1.tgz#2ed1de1eb516cbf287216c137421457d9f1bbdc2"
   integrity sha512-QVM/asb5sDESz37ow/BAOA0z2HtUJsuAjPKHdw+Vx92PaQP3EfHwTgxK2T5rgwa0WRNh+c+n/0nEqIvqBl01sA==
