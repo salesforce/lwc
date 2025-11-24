@@ -16,6 +16,9 @@ updates:
           # language features from a version newer than our downstream users have installed
           - dependency-name: 'typescript'
       groups:
+          # Most minor/patch version bumps are harmless, so we group them together
+          # Major version bumps typically require manual intervention, so they get individual PRs (default behavior)
+          # Namespaced packages typically depend on each other, so they get grouped for major version bumps
           babel:
               patterns:
                   - '@babel/*'
@@ -33,6 +36,7 @@ updates:
                   # eslint packages probably have rules that require manual updates
                   - '*eslint*'
               update-types:
+                  # any version bump can make linting fail in CI
                   - 'major'
                   - 'minor'
                   - 'patch'
@@ -67,5 +71,3 @@ updates:
               update-types:
                   - 'minor'
                   - 'patch'
-              exclude-patterns:
-                  - '@wdio/*'
