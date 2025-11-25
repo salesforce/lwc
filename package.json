@@ -63,7 +63,7 @@
         "eslint-config-flat-gitignore": "^2.1.0",
         "eslint-plugin-header": "^3.1.1",
         "eslint-plugin-import": "^2.32.0",
-        "glob": "^11.1.0",
+        "glob": "^13.0.0",
         "globals": "^16.5.0",
         "husky": "^9.1.7",
         "isbinaryfile": "^5.0.7",
