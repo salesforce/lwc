@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    HTML_NAMESPACE,
-    SVG_NAMESPACE,
-    MATHML_NAMESPACE,
-    isVoidElement,
-    isUndefined,
-    isNull,
-} from '@lwc/shared';
+import { HTML_NAMESPACE, SVG_NAMESPACE, MATHML_NAMESPACE, isVoidElement } from '@lwc/shared';
 import { ParserDiagnostics, DiagnosticLevel, CompilerMetrics } from '@lwc/errors';
 import * as parse5Tools from '@parse5/tools';
 
@@ -1445,7 +1438,7 @@ function parseSlot(
 ): Slot {
     const location = ast.sourceLocation(parse5ElmLocation);
 
-    const isScopedSlot = !isUndefined(parsedAttr.get(ElementDirectiveName.SlotBind));
+    const isScopedSlot = parsedAttr.get(ElementDirectiveName.SlotBind) !== undefined;
     if (isScopedSlot && ctx.renderMode !== LWCDirectiveRenderMode.light) {
         ctx.throwAtLocation(ParserDiagnostics.SCOPED_SLOT_BIND_IN_LIGHT_DOM_ONLY, location);
     }
@@ -1737,7 +1730,7 @@ function validateChildren(ctx: ParserCtx, element?: BaseElement, directive?: Par
 
         // If the current directive is a slotFragment or the descendent of a slotFragment, additional
         // validations are required
-        if (!isNull(slotFragment)) {
+        if (slotFragment !== null) {
             /*
              * A slot fragment cannot contain comment or text node as children.
              * Comment and Text nodes are always slotted to the default slot, in other words these

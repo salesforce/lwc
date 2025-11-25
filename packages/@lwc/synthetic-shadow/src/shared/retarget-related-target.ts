@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { defineProperty, getOwnPropertyDescriptor, isNull } from '@lwc/shared';
+import { defineProperty, getOwnPropertyDescriptor } from '@lwc/shared';
 
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 import { retarget } from '../3rdparty/polymer/retarget';
@@ -20,14 +20,14 @@ export function retargetRelatedTarget(Ctor: typeof FocusEvent | typeof MouseEven
     defineProperty(Ctor.prototype, 'relatedTarget', {
         get(this: Event) {
             const relatedTarget = relatedTargetGetter.call(this);
-            if (isNull(relatedTarget)) {
+            if (relatedTarget === null) {
                 return null;
             }
             if (!(relatedTarget instanceof Node) || !isNodeShadowed(relatedTarget)) {
                 return relatedTarget;
             }
             let pointOfReference = eventCurrentTargetGetter.call(this);
-            if (isNull(pointOfReference)) {
+            if (pointOfReference === null) {
                 pointOfReference = getOwnerDocument(relatedTarget);
             }
             return retarget(pointOfReference, pathComposer(relatedTarget, true));

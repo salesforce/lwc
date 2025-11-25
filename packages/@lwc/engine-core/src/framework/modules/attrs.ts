@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    isNull,
-    isUndefined,
-    StringCharCodeAt,
-    XML_NAMESPACE,
-    XLINK_NAMESPACE,
-    kebabCaseToCamelCase,
-} from '@lwc/shared';
+import { XML_NAMESPACE, XLINK_NAMESPACE, kebabCaseToCamelCase } from '@lwc/shared';
 import { EmptyObject } from '../utils';
 import { safelySetProperty } from '../sanitized-html-content';
 import type { RendererAPI } from '../renderer';
@@ -28,11 +21,11 @@ export function patchAttributes(
     const { data, elm } = vnode;
     const { attrs } = data;
 
-    if (isUndefined(attrs)) {
+    if (attrs === undefined) {
         return;
     }
 
-    const oldAttrs = isNull(oldVnode) ? EmptyObject : oldVnode.data.attrs;
+    const oldAttrs = oldVnode === null ? EmptyObject : oldVnode.data.attrs;
     // Attrs may be the same due to the static content optimization, so we can skip diffing
     if (oldAttrs === attrs) {
         return;
@@ -53,13 +46,13 @@ export function patchAttributes(
             // on a custom element versus just using the more reliable attribute format.
             if (external && (propName = kebabCaseToCamelCase(key)) in elm!) {
                 safelySetProperty(setProperty, elm!, propName, cur);
-            } else if (StringCharCodeAt.call(key, 3) === ColonCharCode) {
+            } else if (key.charCodeAt(3) === ColonCharCode) {
                 // Assume xml namespace
                 setAttribute(elm, key, cur as string, XML_NAMESPACE);
-            } else if (StringCharCodeAt.call(key, 5) === ColonCharCode) {
+            } else if (key.charCodeAt(5) === ColonCharCode) {
                 // Assume xlink namespace
                 setAttribute(elm, key, cur as string, XLINK_NAMESPACE);
-            } else if (isNull(cur) || isUndefined(cur)) {
+            } else if (cur === null || cur === undefined) {
                 removeAttribute(elm, key);
             } else {
                 setAttribute(elm, key, cur as string);
@@ -82,7 +75,7 @@ export function patchSlotAssignment(
     const { elm } = vnode;
     const { setAttribute, removeAttribute } = renderer;
 
-    if (isUndefined(slotAssignment) || isNull(slotAssignment)) {
+    if (slotAssignment === undefined || slotAssignment === null) {
         removeAttribute(elm, 'slot');
     } else {
         setAttribute(elm, 'slot', slotAssignment);

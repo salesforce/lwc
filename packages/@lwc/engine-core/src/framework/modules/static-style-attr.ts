@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import type { RendererAPI } from '../renderer';
 import type { VBaseElement } from '../vnodes';
 
@@ -17,7 +17,7 @@ export function applyStaticStyleAttribute(vnode: VBaseElement, renderer: Rendere
         data: { styleDecls },
     } = vnode;
 
-    if (isUndefined(styleDecls)) {
+    if (styleDecls === undefined) {
         return;
     }
 

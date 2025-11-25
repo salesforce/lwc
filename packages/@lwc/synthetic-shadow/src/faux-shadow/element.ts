@@ -5,15 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
-    ArrayFind,
-    ArraySlice,
+    ArrayFrom,
     defineProperties,
     defineProperty,
     getOwnPropertyDescriptor,
     hasOwnProperty,
-    isNull,
-    isUndefined,
     KEY__SYNTHETIC_MODE,
 } from '@lwc/shared';
 
@@ -94,11 +90,10 @@ function childrenGetterPatched(this: Element): HTMLCollectionOf<Element> {
     const owner = getNodeOwner(this);
     const filteredChildNodes = getFilteredChildNodes(this);
     // No need to filter by owner for non-shadowed nodes
-    const childNodes = isNull(owner)
-        ? filteredChildNodes
-        : getAllMatches(owner, filteredChildNodes);
+    const childNodes =
+        owner === null ? filteredChildNodes : getAllMatches(owner, filteredChildNodes);
     return createStaticHTMLCollection(
-        ArrayFilter.call(childNodes, (node) => node instanceof Element) as Element[]
+        childNodes.filter((node) => node instanceof Element) as Element[]
     );
 }
 
@@ -235,18 +230,15 @@ if (hasOwnProperty.call(HTMLElement.prototype, 'children')) {
 
 function querySelectorPatched(this: Element /*, selector: string*/): Element | null {
     const nodeList = arrayFromCollection(
-        elementQuerySelectorAll.apply(
-            this,
-            ArraySlice.call(arguments as unknown as unknown[]) as [string]
-        )
+        elementQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
     );
     if (isSyntheticShadowHost(this)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(this);
-        if (!isUndefined(getNodeKey(this))) {
+        if (getNodeKey(this) !== undefined) {
             // it is a custom element, and we should then filter by slotted elements
             return getFirstSlottedMatch(this, nodeList);
-        } else if (isNull(owner)) {
+        } else if (owner === null) {
             return null;
         } else {
             // regular element, we should then filter by ownership
@@ -255,10 +247,10 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else if (isNodeShadowed(this)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(this);
-        if (!isUndefined(ownerKey)) {
+        if (ownerKey !== undefined) {
             // `this` is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
-            const elm = ArrayFind.call(nodeList, (elm) => getNodeNearestOwnerKey(elm) === ownerKey);
-            return isUndefined(elm) ? null : elm;
+            const elm = nodeList.find((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
+            return elm === undefined ? null : elm;
         } else {
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
@@ -268,15 +260,14 @@ function querySelectorPatched(this: Element /*, selector: string*/): Element | n
     } else {
         if (!(this instanceof HTMLBodyElement)) {
             const elm = nodeList[0];
-            return isUndefined(elm) ? null : elm;
+            return elm === undefined ? null : elm;
         }
 
         // element belonging to the document
-        const elm = ArrayFind.call(
-            nodeList,
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(this)
+        const elm = nodeList.find(
+            (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(this)
         );
-        return isUndefined(elm) ? null : elm;
+        return elm === undefined ? null : elm;
     }
 }
 
@@ -285,10 +276,10 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
     if (isSyntheticShadowHost(context)) {
         // element with shadowRoot attached
         const owner = getNodeOwner(context);
-        if (!isUndefined(getNodeKey(context))) {
+        if (getNodeKey(context) !== undefined) {
             // it is a custom element, and we should then filter by slotted elements
             filtered = getAllSlottedMatches(context, unfilteredNodes);
-        } else if (isNull(owner)) {
+        } else if (owner === null) {
             filtered = [];
         } else {
             // regular element, we should then filter by ownership
@@ -297,28 +288,24 @@ function getFilteredArrayOfNodes<T extends Node>(context: Element, unfilteredNod
     } else if (isNodeShadowed(context)) {
         // element inside a shadowRoot
         const ownerKey = getNodeOwnerKey(context);
-        if (!isUndefined(ownerKey)) {
+        if (ownerKey !== undefined) {
             // context is handled by lwc, using getNodeNearestOwnerKey to include manually inserted elements in the same shadow.
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
-                (elm) => getNodeNearestOwnerKey(elm) === ownerKey
-            );
+            filtered = unfilteredNodes.filter((elm) => getNodeNearestOwnerKey(elm) === ownerKey);
         } else {
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
             // context is manually inserted without lwc:dom-manual, return everything
-            filtered = ArraySlice.call(unfilteredNodes);
+            filtered = unfilteredNodes.slice();
         }
     } else {
         if (context instanceof HTMLBodyElement) {
             // `context` is document.body or element belonging to the document with the patch enabled
-            filtered = ArrayFilter.call(
-                unfilteredNodes,
-                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(context)
+            filtered = unfilteredNodes.filter(
+                (elm) => getNodeOwnerKey(elm) === undefined || isGlobalPatchingSkipped(context)
             );
         } else {
             // `context` is outside the lwc boundary and patch is not enabled.
-            filtered = ArraySlice.call(unfilteredNodes);
+            filtered = unfilteredNodes.slice();
         }
     }
     return filtered;
@@ -343,10 +330,7 @@ defineProperties(Element.prototype, {
     querySelectorAll: {
         value(this: HTMLBodyElement): NodeListOf<Element> {
             const nodeList = arrayFromCollection(
-                elementQuerySelectorAll.apply(
-                    this,
-                    ArraySlice.call(arguments as unknown as unknown[]) as [string]
-                )
+                elementQuerySelectorAll.apply(this, ArrayFrom(arguments) as [string])
             );
 
             // Note: we deviate from native shadow here, but are not fixing
@@ -366,10 +350,7 @@ if (process.env.NODE_ENV !== 'test') {
         getElementsByClassName: {
             value(this: HTMLBodyElement): HTMLCollectionOf<Element> {
                 const elements = arrayFromCollection(
-                    elementGetElementsByClassName.apply(
-                        this,
-                        ArraySlice.call(arguments as unknown as unknown[]) as [string]
-                    )
+                    elementGetElementsByClassName.apply(this, ArrayFrom(arguments) as [string])
                 );
 
                 // Note: we deviate from native shadow here, but are not fixing
@@ -387,7 +368,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagName.apply(
                         this,
-                        ArraySlice.call(arguments as unknown as unknown[]) as [tagName: string]
+                        ArrayFrom(arguments) as [tagName: string]
                     )
                 );
 
@@ -406,10 +387,7 @@ if (process.env.NODE_ENV !== 'test') {
                 const elements = arrayFromCollection(
                     elementGetElementsByTagNameNS.apply(
                         this,
-                        ArraySlice.call(arguments as unknown as unknown[]) as [
-                            namespace: string,
-                            localName: string,
-                        ]
+                        ArrayFrom(arguments) as [namespace: string, localName: string]
                     )
                 );
 

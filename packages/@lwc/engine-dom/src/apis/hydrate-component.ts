@@ -12,7 +12,7 @@ import {
     getAssociatedVMIfPresent,
     shouldBeFormAssociated,
 } from '@lwc/engine-core';
-import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { renderer } from '../renderer';
 import type { LightningElement } from '@lwc/engine-core';
 
@@ -20,13 +20,13 @@ function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElem
     if (element.shadowRoot) {
         const shadowRoot = element.shadowRoot;
 
-        while (!isNull(shadowRoot.firstChild)) {
+        while (shadowRoot.firstChild !== null) {
             shadowRoot.removeChild(shadowRoot.firstChild);
         }
     }
 
     if (Ctor.renderMode === 'light') {
-        while (!isNull(element.firstChild)) {
+        while (element.firstChild !== null) {
             element.removeChild(element.firstChild);
         }
     }
@@ -70,13 +70,13 @@ export function hydrateComponent(
         );
     }
 
-    if (!isFunction(Ctor)) {
+    if (typeof Ctor !== 'function') {
         throw new TypeError(
             `"hydrateComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`
         );
     }
 
-    if (!isObject(props) || isNull(props)) {
+    if (typeof props !== 'object' || props === null) {
         throw new TypeError(
             `"hydrateComponent" expects an object as the third parameter but instead received ${props}.`
         );
@@ -91,7 +91,7 @@ export function hydrateComponent(
     try {
         const { defineCustomElement, getTagName } = renderer;
         const isFormAssociated = shouldBeFormAssociated(Ctor);
-        defineCustomElement(StringToLowerCase.call(getTagName(element)), isFormAssociated);
+        defineCustomElement(getTagName(element).toLowerCase(), isFormAssociated);
         const vm = createVMWithProps(element, Ctor, props);
 
         hydrateRoot(vm);

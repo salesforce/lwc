@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { AriaAttrNameToPropNameMap, entries, isNull, toString } from '@lwc/shared';
+import { AriaAttrNameToPropNameMap, entries, toString } from '@lwc/shared';
 
 import type { LightningElement } from './lightning-element';
 
@@ -88,7 +88,7 @@ const ariaDescriptor = (attrName: string): TypedPropertyDescriptor<string | null
             // TODO [#3284]: According to the spec, IDL nullable type values
             // (null and undefined) should remove the attribute; however, we
             // only do so in the case of null for historical reasons.
-            if (isNull(newValue)) {
+            if (newValue === null) {
                 this.removeAttribute(attrName);
             } else {
                 this.setAttribute(attrName, toString(newValue));

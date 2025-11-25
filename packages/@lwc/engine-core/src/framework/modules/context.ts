@@ -5,10 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    isUndefined,
     keys,
     getContextKeys,
-    ArrayFilter,
     ContextEventName,
     isTrustedContext,
     type ContextProvidedCallback,
@@ -115,14 +113,14 @@ export function disconnectContext(vm: VM) {
 function connect(vm: VM, enumerableKeys: string[], contextContainer: any) {
     const contextKeys = getContextKeys();
 
-    if (isUndefined(contextKeys)) {
+    if (contextKeys === undefined) {
         return;
     }
 
     const { connectContext } = contextKeys;
     const { component } = vm;
 
-    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = enumerableKeys.filter((enumerableKey) =>
         isTrustedContext(contextContainer[enumerableKey])
     );
 
@@ -157,7 +155,7 @@ function disconnect(vm: VM, enumerableKeys: string[], contextContainer: any) {
     const { disconnectContext } = contextKeys;
     const { component } = vm;
 
-    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = enumerableKeys.filter((enumerableKey) =>
         isTrustedContext(contextContainer[enumerableKey])
     );
 

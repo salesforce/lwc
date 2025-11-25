@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isTrue } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { ownerDocumentGetter } from '../env/node';
 import { defaultViewGetter } from '../env/document';
 import { getAttribute } from '../env/element';
@@ -40,14 +40,14 @@ let skipGlobalPatching: boolean;
 export function isGlobalPatchingSkipped(node: Node): boolean {
     // we lazily compute this value instead of doing it during evaluation, this helps
     // for apps that are setting this after the engine code is evaluated.
-    if (isUndefined(skipGlobalPatching)) {
+    if (skipGlobalPatching === undefined) {
         const ownerDocument = getOwnerDocument(node);
         skipGlobalPatching =
             ownerDocument.body &&
             getAttribute.call(ownerDocument.body, 'data-global-patching-bypass') ===
                 'temporary-bypass';
     }
-    return isTrue(skipGlobalPatching);
+    return skipGlobalPatching === true;
 }
 
 /**

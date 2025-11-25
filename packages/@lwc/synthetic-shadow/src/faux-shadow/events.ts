@@ -4,19 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayFindIndex,
-    ArrayPush,
-    ArraySlice,
-    ArraySplice,
-    create,
-    defineProperty,
-    forEach,
-    isFalse,
-    isFunction,
-    isUndefined,
-    toString,
-} from '@lwc/shared';
+import { create, defineProperty, toString } from '@lwc/shared';
 
 import { isInstanceOfNativeShadowRoot } from '../env/shadow-root';
 import { eventCurrentTargetGetter, eventTargetGetter } from '../env/dom';
@@ -47,7 +35,7 @@ interface ListenerMap {
 }
 
 function getEventHandler(listener: EventListenerOrEventListenerObject): EventListener {
-    if (isFunction(listener)) {
+    if (typeof listener === 'function') {
         return listener;
     } else {
         return listener.handleEvent;
@@ -57,14 +45,14 @@ function getEventHandler(listener: EventListenerOrEventListenerObject): EventLis
 function isEventListenerOrEventListenerObject(
     listener: any
 ): listener is EventListenerOrEventListenerObject {
-    return isFunction(listener) || isFunction(listener?.handleEvent);
+    return typeof listener === 'function' || typeof listener?.handleEvent === 'function';
 }
 
 const customElementToWrappedListeners: WeakMap<EventTarget, ListenerMap> = new WeakMap();
 
 function getEventMap(elm: EventTarget): ListenerMap {
     let listenerInfo = customElementToWrappedListeners.get(elm);
-    if (isUndefined(listenerInfo)) {
+    if (listenerInfo === undefined) {
         listenerInfo = create(null) as ListenerMap;
         customElementToWrappedListeners.set(elm, listenerInfo);
     }
@@ -91,7 +79,7 @@ function getManagedShadowRootListener(
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
     let managedListener = shadowRootEventListenerMap.get(listener);
-    if (isUndefined(managedListener)) {
+    if (managedListener === undefined) {
         managedListener = {
             identity: listener,
             placement: EventListenerContext.SHADOW_ROOT_LISTENER,
@@ -124,7 +112,7 @@ function getManagedCustomElementListener(
         throw new TypeError(); // avoiding problems with non-valid listeners
     }
     let managedListener = customElementEventListenerMap.get(listener);
-    if (isUndefined(managedListener)) {
+    if (managedListener === undefined) {
         managedListener = {
             identity: listener,
             placement: EventListenerContext.CUSTOM_ELEMENT_LISTENER,
@@ -143,7 +131,7 @@ function getManagedCustomElementListener(
 }
 
 function indexOfManagedListener(listeners: ManagedListener[], listener: ManagedListener): number {
-    return ArrayFindIndex.call(listeners, (l: ManagedListener) => l.identity === listener.identity);
+    return listeners.findIndex((l) => l.identity === listener.identity);
 }
 
 function domListener(evt: Event) {
@@ -173,14 +161,12 @@ function domListener(evt: Event) {
         configurable: true,
     });
     // in case a listener adds or removes other listeners during invocation
-    const bookkeeping: ManagedListener[] = ArraySlice.call(listeners);
+    const bookkeeping: ManagedListener[] = listeners.slice();
 
     function invokeListenersByPlacement(placement: EventListenerContext) {
-        forEach.call(bookkeeping, (listener: ManagedListener) => {
-            if (isFalse(immediatePropagationStopped) && listener.placement === placement) {
-                // making sure that the listener was not removed from the original listener queue
+        bookkeeping.forEach((listener) => {
+            if (immediatePropagationStopped === false && listener.placement === placement) {
                 if (indexOfManagedListener(listeners, listener) !== -1) {
-                    // all handlers on the custom element should be called with undefined 'this'
                     listener.handleEvent.call(undefined, evt);
                 }
             }
@@ -189,7 +175,7 @@ function domListener(evt: Event) {
 
     eventToContextMap.set(evt, EventListenerContext.SHADOW_ROOT_LISTENER);
     invokeListenersByPlacement(EventListenerContext.SHADOW_ROOT_LISTENER);
-    if (isFalse(immediatePropagationStopped) && isFalse(propagationStopped)) {
+    if (immediatePropagationStopped === false && propagationStopped === false) {
         // doing the second iteration only if the first one didn't interrupt the event propagation
         eventToContextMap.set(evt, EventListenerContext.CUSTOM_ELEMENT_LISTENER);
         invokeListenersByPlacement(EventListenerContext.CUSTOM_ELEMENT_LISTENER);
@@ -200,7 +186,7 @@ function domListener(evt: Event) {
 function attachDOMListener(elm: Element, type: string, managedListener: ManagedListener) {
     const listenerMap = getEventMap(elm);
     let listeners = listenerMap[type];
-    if (isUndefined(listeners)) {
+    if (listeners === undefined) {
         listeners = listenerMap[type] = [];
     }
     // Prevent identical listeners from subscribing to the same event type.
@@ -212,7 +198,7 @@ function attachDOMListener(elm: Element, type: string, managedListener: ManagedL
     if (listeners.length === 0) {
         addEventListener.call(elm, type, domListener);
     }
-    ArrayPush.call(listeners, managedListener);
+    listeners.push(managedListener);
 }
 
 function detachDOMListener(elm: Element, type: string, managedListener: ManagedListener) {
@@ -220,10 +206,10 @@ function detachDOMListener(elm: Element, type: string, managedListener: ManagedL
     let index: number;
     let listeners: ManagedListener[] | undefined;
     if (
-        !isUndefined((listeners = listenerMap[type])) &&
+        (listeners = listenerMap[type]) !== undefined &&
         (index = indexOfManagedListener(listeners, managedListener)) !== -1
     ) {
-        ArraySplice.call(listeners, index, 1);
+        listeners.splice(index, 1);
         // only remove from DOM if there is no other listener on the same placement
         if (listeners.length === 0) {
             removeEventListener.call(elm, type, domListener);

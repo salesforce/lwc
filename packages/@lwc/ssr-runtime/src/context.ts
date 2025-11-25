@@ -9,9 +9,7 @@ import {
     type ContextBinding as IContextBinding,
     isTrustedContext,
     getContextKeys,
-    isUndefined,
     keys,
-    ArrayFilter,
 } from '@lwc/shared';
 import { getContextfulStack } from './wire';
 import { type LightningElement, SYMBOL__CONTEXT_VARIETIES } from './lightning-element';
@@ -59,14 +57,14 @@ export { ContextBinding };
 export function connectContext(le: LightningElement) {
     const contextKeys = getContextKeys();
 
-    if (isUndefined(contextKeys)) {
+    if (contextKeys === undefined) {
         return;
     }
 
     const { connectContext } = contextKeys;
 
     const enumerableKeys = keys(le);
-    const contextfulKeys = ArrayFilter.call(enumerableKeys, (enumerableKey) =>
+    const contextfulKeys = enumerableKeys.filter((enumerableKey) =>
         isTrustedContext((le as any)[enumerableKey])
     );
 

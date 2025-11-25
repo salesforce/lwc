@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { EmptyObject } from '../utils';
 import { invokeEventListener } from '../invoker';
 import { logError } from '../../shared/logger';
@@ -91,7 +91,7 @@ function getAttachedEventListeners(
     elm: Element
 ): Record<string, EventListener | undefined> {
     let attachedEventListeners = vm.attachedEventListeners.get(elm);
-    if (isUndefined(attachedEventListeners)) {
+    if (attachedEventListeners === undefined) {
         attachedEventListeners = {};
         vm.attachedEventListeners.set(elm, attachedEventListeners);
     }

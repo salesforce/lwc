@@ -15,7 +15,7 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 */
 
-import { isNull } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { getOwnerDocument } from '../../shared/utils';
 import { Node } from '../../env/node';
 import { isSyntheticOrNativeShadowRoot } from '../../shared/utils';
@@ -33,12 +33,12 @@ export function pathComposer(startNode: EventTarget, composed: boolean): EventTa
     }
 
     let current: Window | Node | null = startNode;
-    while (!isNull(current)) {
+    while (current !== null) {
         composedPath.push(current);
 
         if (current instanceof Element || current instanceof Text) {
             const assignedSlot: HTMLSlotElement | null = current.assignedSlot;
-            if (!isNull(assignedSlot)) {
+            if (assignedSlot !== null) {
                 current = assignedSlot;
             } else {
                 current = current.parentNode;

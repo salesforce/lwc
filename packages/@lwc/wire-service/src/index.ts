@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { ValueChangedEvent } from './value-changed-event';
 import type { WireConfigValue, WireAdapter, WireDataCallback } from '@lwc/engine-core';
 
@@ -101,7 +101,7 @@ function isEmptyConfig(config: Record<string, any>): boolean {
 
 function isValidConfig(config: Record<string, any>, params: string[]): boolean {
     // The config is valid if there is no params, or if exist a param for which config[param] !== undefined.
-    return params.length === 0 || params.some((param) => !isUndefined(config[param]));
+    return params.length === 0 || params.some((param) => config[param] !== undefined);
 }
 
 function isDifferentConfig(
@@ -215,7 +215,7 @@ class LegacyWireAdapterBridge implements WireAdapter {
         }
 
         if (
-            isUndefined(this.currentConfig) ||
+            this.currentConfig === undefined ||
             isDifferentConfig(config, this.currentConfig, this.dynamicParamsNames)
         ) {
             this.currentConfig = config;

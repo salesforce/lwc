@@ -4,17 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    ArrayIndexOf,
-    ArrayPush,
-    ArraySplice,
-    create,
-    defineProperties,
-    defineProperty,
-    forEach,
-    isNull,
-    isUndefined,
-} from '@lwc/shared';
+import { create, defineProperties, defineProperty } from '@lwc/shared';
 import { isSyntheticShadowRoot } from '../../faux-shadow/shadow-root';
 import { getNodeKey, getNodeNearestOwnerKey } from '../../shared/node-ownership';
 
@@ -90,12 +80,12 @@ function retargetMutationRecord(originalRecord: MutationRecord): MutationRecord 
  */
 function isQualifiedObserver(observer: MutationObserver, target: Node): boolean {
     let parentNode: Node | null = target;
-    while (!isNull(parentNode)) {
+    while (parentNode !== null) {
         const parentNodeObservers = getNodeObservers(parentNode);
         if (
-            !isUndefined(parentNodeObservers) &&
+            parentNodeObservers !== undefined &&
             (parentNodeObservers[0] === observer || // perf optimization to check for the first item is a match
-                ArrayIndexOf.call(parentNodeObservers, observer) !== -1)
+                parentNodeObservers.indexOf(observer) !== -1)
         ) {
             return true;
         }
@@ -125,7 +115,7 @@ function filterMutationRecords(
         // Determine if the mutations affected the host or the shadowRoot
         // Mutations affecting host: changes to slot content
         // Mutations affecting shadowRoot: changes to template content
-        if (type === 'childList' && !isUndefined(getNodeKey(target))) {
+        if (type === 'childList' && getNodeKey(target) !== undefined) {
             const { addedNodes } = record;
             // In case of added nodes, we can climb up the tree and determine eligibility
             if (addedNodes.length > 0) {
@@ -138,14 +128,13 @@ function filterMutationRecords(
                     const nodeObservers = getNodeObservers(target);
                     if (
                         nodeObservers &&
-                        (nodeObservers[0] === observer ||
-                            ArrayIndexOf.call(nodeObservers, observer) !== -1)
+                        (nodeObservers[0] === observer || nodeObservers.indexOf(observer) !== -1)
                     ) {
-                        ArrayPush.call(result, record);
+                        result.push(record);
                     } else {
                         // else, must be observing the shadowRoot
 
-                        ArrayPush.call(result, retargetMutationRecord(record));
+                        result.push(retargetMutationRecord(record));
                     }
                 }
             } else {
@@ -158,16 +147,16 @@ function filterMutationRecords(
                     getNodeNearestOwnerKey(target) === getNodeNearestOwnerKey(sampleNode) && // trickery: sampleNode is slot content
                     isQualifiedObserver(observer, target) // use target as a close enough reference to climb up
                 ) {
-                    ArrayPush.call(result, record);
+                    result.push(record);
                 } else if (shadowRoot) {
                     const shadowRootObservers = getNodeObservers(shadowRoot);
 
                     if (
                         shadowRootObservers &&
                         (shadowRootObservers[0] === observer ||
-                            ArrayIndexOf.call(shadowRootObservers, observer) !== -1)
+                            shadowRootObservers.indexOf(observer) !== -1)
                     ) {
-                        ArrayPush.call(result, retargetMutationRecord(record));
+                        result.push(retargetMutationRecord(record));
                     }
                 }
             }
@@ -175,7 +164,7 @@ function filterMutationRecords(
             // Mutation happened under a root node(shadow root or document) and the decision is straighforward
             // Ascend the tree starting from target and check if observer is qualified
             if (isQualifiedObserver(observer, target)) {
-                ArrayPush.call(result, record);
+                result.push(record);
             }
         }
     }
@@ -184,7 +173,7 @@ function filterMutationRecords(
 
 function getWrappedCallback(callback: MutationCallbackWithInternals): MutationCallback {
     let wrappedCallback = callback[wrapperLookupField];
-    if (isUndefined(wrappedCallback)) {
+    if (wrappedCallback === undefined) {
         wrappedCallback = callback[wrapperLookupField] = (mutations, observer) => {
             // Filter mutation records
             const filteredRecords = filterMutationRecords(mutations, observer);
@@ -218,13 +207,13 @@ function patchedDisconnect(this: MutationObserver): void {
 
     // Clear the node to observer reference which is a strong references
     const observedNodes = observerToNodesMap.get(this);
-    if (!isUndefined(observedNodes)) {
-        forEach.call(observedNodes, (observedNode) => {
+    if (observedNodes !== undefined) {
+        observedNodes.forEach((observedNode) => {
             const observers = observedNode[observerLookupField];
-            if (!isUndefined(observers)) {
-                const index = ArrayIndexOf.call(observers, this);
+            if (observers !== undefined) {
+                const index = observers.indexOf(this);
                 if (index !== -1) {
-                    ArraySplice.call(observers, index, 1);
+                    observers.splice(index, 1);
                 }
             }
         });
@@ -246,13 +235,13 @@ function patchedObserve(
     let targetObservers = getNodeObservers(target);
 
     // Maintain a list of all observers that want to observe a node
-    if (isUndefined(targetObservers)) {
+    if (targetObservers === undefined) {
         targetObservers = [];
         setNodeObservers(target, targetObservers);
     }
     // Same observer trying to observe the same node
-    if (ArrayIndexOf.call(targetObservers, this) === -1) {
-        ArrayPush.call(targetObservers, this);
+    if (targetObservers.indexOf(this) === -1) {
+        targetObservers.push(this);
     } // else There is more bookkeeping to do here https://dom.spec.whatwg.org/#dom-mutationobserver-observe Step #7
 
     // SyntheticShadowRoot instances are not actually a part of the DOM so observe the host instead.
@@ -263,8 +252,8 @@ function patchedObserve(
     // maintain a list of all nodes observed by this observer
     if (observerToNodesMap.has(this)) {
         const observedNodes = observerToNodesMap.get(this)!;
-        if (ArrayIndexOf.call(observedNodes, target) === -1) {
-            ArrayPush.call(observedNodes, target);
+        if (observedNodes.indexOf(target) === -1) {
+            observedNodes.push(target);
         }
     } else {
         observerToNodesMap.set(this, [target]);

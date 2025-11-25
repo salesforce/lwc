@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { create, isUndefined, ArrayIndexOf, ArrayPush, ArrayPop } from '@lwc/shared';
+import { create } from '@lwc/shared';
 import { logMutation } from '../../framework/mutation-logger';
 
 const TargetToReactiveRecordMap: WeakMap<object, ReactiveRecord> = new WeakMap();
@@ -23,7 +23,7 @@ type ReactiveRecord = Record<PropertyKey, ObservedMemberPropertyRecords>;
 
 function getReactiveRecord(target: object): ReactiveRecord {
     let reactiveRecord = TargetToReactiveRecordMap.get(target);
-    if (isUndefined(reactiveRecord)) {
+    if (reactiveRecord === undefined) {
         const newRecord: ReactiveRecord = create(null);
         reactiveRecord = newRecord;
         TargetToReactiveRecordMap.set(target, newRecord);
@@ -35,9 +35,9 @@ let currentReactiveObserver: ReactiveObserver | null = null;
 
 export function valueMutated(target: object, key: PropertyKey) {
     const reactiveRecord = TargetToReactiveRecordMap.get(target);
-    if (!isUndefined(reactiveRecord)) {
+    if (reactiveRecord !== undefined) {
         const reactiveObservers = reactiveRecord[key as any];
-        if (!isUndefined(reactiveObservers)) {
+        if (reactiveObservers !== undefined) {
             for (let i = 0, len = reactiveObservers.length; i < len; i += 1) {
                 const ro = reactiveObservers[i];
                 if (process.env.NODE_ENV !== 'production') {
@@ -57,13 +57,13 @@ export function valueObserved(target: object, key: PropertyKey) {
     const ro = currentReactiveObserver;
     const reactiveRecord = getReactiveRecord(target);
     let reactiveObservers = reactiveRecord[key as any];
-    if (isUndefined(reactiveObservers)) {
+    if (reactiveObservers === undefined) {
         reactiveObservers = [];
         reactiveRecord[key as any] = reactiveObservers;
     } else if (reactiveObservers[0] === ro) {
         return; // perf optimization considering that most subscriptions will come from the same record
     }
-    if (ArrayIndexOf.call(reactiveObservers, ro) === -1) {
+    if (reactiveObservers.indexOf(ro) === -1) {
         ro.link(reactiveObservers);
     }
 }
@@ -112,11 +112,11 @@ export class ReactiveObserver {
                 if (setLength > 1) {
                     // Swap with the last item before removal.
                     // (Avoiding splice here is a perf optimization, and the order doesn't matter.)
-                    const index = ArrayIndexOf.call(set, this);
+                    const index = set.indexOf(this);
                     set[index] = set[setLength - 1];
                 }
                 // Remove the last item
-                ArrayPop.call(set);
+                set.pop();
             }
             listeners.length = 0;
         }
@@ -128,9 +128,9 @@ export class ReactiveObserver {
     }
 
     link(reactiveObservers: ReactiveObserver[]) {
-        ArrayPush.call(reactiveObservers, this);
+        reactiveObservers.push(this);
         // we keep track of observing records where the observing record was added to so we can do some clean up later on
-        ArrayPush.call(this.listeners, reactiveObservers);
+        this.listeners.push(reactiveObservers);
     }
 
     isObserving() {

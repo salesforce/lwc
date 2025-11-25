@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, forEach, defineProperty, isTrue } from '@lwc/shared';
+import { defineProperty } from '@lwc/shared';
 import { childNodesGetter, compareDocumentPosition, Node } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { getShadowRootResolver, isSyntheticShadowHost, setShadowRootResolver } from './shadow-root';
@@ -50,7 +50,7 @@ function adoptChildNode(
             return;
         }
 
-        if (isUndefined(previousNodeShadowResolver)) {
+        if (previousNodeShadowResolver === undefined) {
             // we only care about Element without shadowResolver (no MO.observe has been called)
             MutationObserverObserve.call(portalObserver, node, portalObserverConfig);
         }
@@ -64,37 +64,23 @@ function adoptChildNode(
 
 function initPortalObserver() {
     return new MutationObserver((mutations) => {
-        forEach.call(mutations, (mutation: MutationRecord) => {
-            /**
-             * This routine will process all nodes added or removed from elm (which is marked as a portal)
-             * When adding a node to the portal element, we should add the ownership.
-             * When removing a node from the portal element, this ownership should be removed.
-             *
-             * There is some special cases in which MutationObserver may call with stacked mutations (the same node
-             * will be in addedNodes and removedNodes) or with false positives (a node that is removed and re-appended
-             * in the same tick) for those cases, we cover by checking that the node is contained
-             * (or not in the case of removal) by the element.
-             */
-            const { target: elm, addedNodes, removedNodes } = mutation;
-            // the target of the mutation should always have a ShadowRootResolver attached to it
+        mutations.forEach((mutation) => {
+            const { target: elm, addedNodes: addedNodes, removedNodes: removedNodes } = mutation;
             const fn = getShadowRootResolver(elm)!;
             const shadowToken = getShadowToken(elm);
             const legacyShadowToken = lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS
                 ? getLegacyShadowToken(elm)
                 : undefined;
-
-            // Process removals first to handle the case where an element is removed and reinserted
             for (let i = 0, len = removedNodes.length; i < len; i += 1) {
-                const node: Node = removedNodes[i];
+                const node = removedNodes[i];
                 if (
                     !(compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY)
                 ) {
                     adoptChildNode(node, DocumentResolverFn, undefined, undefined);
                 }
             }
-
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
-                const node: Node = addedNodes[i];
+                const node = addedNodes[i];
                 if (compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
                     adoptChildNode(node, fn, shadowToken, legacyShadowToken);
                 }
@@ -104,10 +90,10 @@ function initPortalObserver() {
 }
 
 function markElementAsPortal(elm: Element) {
-    if (isUndefined(portalObserver)) {
+    if (portalObserver === undefined) {
         portalObserver = initPortalObserver();
     }
-    if (isUndefined(getShadowRootResolver(elm))) {
+    if (getShadowRootResolver(elm) === undefined) {
         // only an element from a within a shadowRoot should be used here
         throw new Error(`Invalid Element`);
     }
@@ -133,7 +119,7 @@ defineProperty(Element.prototype, '$domManual$', {
     set(this: Element, v: boolean) {
         (this as any)[DomManualPrivateKey] = v;
 
-        if (isTrue(v)) {
+        if (v === true) {
             markElementAsPortal(this);
         }
     },

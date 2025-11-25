@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { is } from 'estree-toolkit';
-import { isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { expressionIrToEs } from '../../expression';
 import { esTemplateWithYield } from '../../../estemplate';
 import { getChildAttrsOrProps } from '../../shared';
@@ -63,7 +63,7 @@ export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(n
     const { directives } = node;
 
     const lwcIs = directives.find((directive) => directive.name === 'Is');
-    if (!isUndefined(lwcIs)) {
+    if (lwcIs !== undefined) {
         cxt.import({
             LightningElement: undefined,
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',

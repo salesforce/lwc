@@ -5,20 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import {
-    ArrayFilter,
     assign,
     create,
     defineProperty,
-    isNull,
-    isTrue,
-    isUndefined,
     KEY__SHADOW_RESOLVER,
     KEY__SHADOW_RESOLVER_PRIVATE,
     KEY__NATIVE_GET_ELEMENT_BY_ID,
     KEY__NATIVE_QUERY_SELECTOR_ALL,
     setPrototypeOf,
     getPrototypeOf,
-    isObject,
 } from '@lwc/shared';
 
 import { innerHTMLSetter } from '../env/element';
@@ -75,7 +70,7 @@ export function hasInternalSlot(root: unknown): boolean {
 
 function getInternalSlot(root: ShadowRoot | Element): ShadowRootRecord {
     const record = InternalSlot.get(root);
-    if (isUndefined(record)) {
+    if (record === undefined) {
         throw new TypeError();
     }
     return record;
@@ -83,7 +78,7 @@ function getInternalSlot(root: ShadowRoot | Element): ShadowRootRecord {
 
 defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
     set(this: Node, fn: ShadowRootResolver | undefined) {
-        if (isUndefined(fn)) return;
+        if (fn === undefined) return;
         (this as any)[KEY__SHADOW_RESOLVER_PRIVATE] = fn;
         // TODO [#1164]: temporary propagation of the key
         setNodeOwnerKey(this, (fn as any).nodeKey);
@@ -97,7 +92,7 @@ defineProperty(Node.prototype, KEY__SHADOW_RESOLVER, {
 
 // The isUndefined check is because two copies of synthetic shadow may be loaded on the same page, and this
 // would throw an error if we tried to redefine it. Plus the whole point is to expose the native method.
-if (isUndefined((globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
+if ((globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID] === undefined) {
     defineProperty(globalThis, KEY__NATIVE_GET_ELEMENT_BY_ID, {
         value: getElementById,
         configurable: true,
@@ -105,7 +100,7 @@ if (isUndefined((globalThis as any)[KEY__NATIVE_GET_ELEMENT_BY_ID])) {
 }
 
 // See note above.
-if (isUndefined((globalThis as any)[KEY__NATIVE_QUERY_SELECTOR_ALL])) {
+if ((globalThis as any)[KEY__NATIVE_QUERY_SELECTOR_ALL] === undefined) {
     defineProperty(globalThis, KEY__NATIVE_QUERY_SELECTOR_ALL, {
         value: querySelectorAll,
         configurable: true,
@@ -141,12 +136,12 @@ export function getShadowRoot(elm: Element): ShadowRoot {
 // and we can avoid having to cast the type before calling this method in a few places.
 export function isSyntheticShadowHost(node: unknown): node is HTMLElement {
     const shadowRootRecord = InternalSlot.get(node);
-    return !isUndefined(shadowRootRecord) && node === shadowRootRecord.host;
+    return shadowRootRecord !== undefined && node === shadowRootRecord.host;
 }
 
 export function isSyntheticShadowRoot(node: unknown): node is ShadowRoot {
     const shadowRootRecord = InternalSlot.get(node);
-    return !isUndefined(shadowRootRecord) && node === shadowRootRecord.shadowRoot;
+    return shadowRootRecord !== undefined && node === shadowRootRecord.shadowRoot;
 }
 
 let uid = 0;
@@ -208,7 +203,7 @@ const ShadowRootDescriptors = {
             const host = getHost(this);
             const doc = getOwnerDocument(host);
             const activeElement = DocumentPrototypeActiveElement.call(doc);
-            if (isNull(activeElement)) {
+            if (activeElement === null) {
                 return activeElement;
             }
 
@@ -546,7 +541,7 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: ShadowRoot, options?: GetRootNodeOptions): Node {
-            return !isUndefined(options) && isTrue(options.composed)
+            return options !== undefined && options.composed === true
                 ? getHost(this).getRootNode(options)
                 : this;
         },
@@ -585,10 +580,7 @@ const ParentNodePatchDescriptors = {
         configurable: true,
         get(this: ShadowRoot) {
             return createStaticHTMLCollection(
-                ArrayFilter.call(
-                    shadowRootChildNodes(this),
-                    (elm: Node | Element) => elm instanceof Element
-                )
+                shadowRootChildNodes(this).filter((elm) => elm instanceof Element)
             );
         },
     },
@@ -652,8 +644,8 @@ defineProperty(SyntheticShadowRoot, Symbol.hasInstance, {
         // Technically we should walk up the entire prototype chain, but with SyntheticShadowRoot
         // it's reasonable to assume that no one is doing any deep subclasses here.
         return (
-            isObject(object) &&
-            !isNull(object) &&
+            typeof object === 'object' &&
+            object !== null &&
             (isInstanceOfNativeShadowRoot(object) ||
                 getPrototypeOf(object) === SyntheticShadowRoot.prototype)
         );

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isNull, isString, isUndefined } from '@lwc/shared';
+import {} from '@lwc/shared';
 import { logError } from '../../shared/logger';
 import type { RendererAPI } from '../renderer';
 import type { VBaseElement, VStaticPartElement } from '../vnodes';
@@ -23,7 +23,7 @@ export function patchStyleAttribute(
     } = vnode;
 
     if (process.env.NODE_ENV !== 'production') {
-        if (!isNull(newStyle) && !isUndefined(newStyle) && !isString(newStyle)) {
+        if (newStyle !== null && newStyle !== undefined && typeof newStyle !== 'string') {
             logError(
                 `Invalid 'style' attribute passed to <${elm!.tagName.toLowerCase()}> is ignored. This attribute must be a string value.`,
                 owner
@@ -31,13 +31,13 @@ export function patchStyleAttribute(
         }
     }
 
-    const oldStyle = isNull(oldVnode) ? undefined : oldVnode.data.style;
+    const oldStyle = oldVnode === null ? undefined : oldVnode.data.style;
     if (oldStyle === newStyle) {
         return;
     }
 
     const { setAttribute, removeAttribute } = renderer;
-    if (!isString(newStyle) || newStyle === '') {
+    if (typeof newStyle !== 'string' || newStyle === '') {
         removeAttribute(elm, 'style');
     } else {
         setAttribute(elm, 'style', newStyle);

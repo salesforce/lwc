@@ -7,9 +7,7 @@
 import {
     AriaPropNameToAttrNameMap,
     create,
-    forEach,
     getPropertyDescriptor,
-    isUndefined,
     keys,
     REFLECTIVE_GLOBAL_PROPERTY_SET,
 } from '@lwc/shared';
@@ -24,11 +22,9 @@ import { HTMLElementPrototype } from './html-element';
  */
 export const HTMLElementOriginalDescriptors: PropertyDescriptorMap = create(null);
 
-forEach.call(keys(AriaPropNameToAttrNameMap), (propName: string) => {
-    // Note: intentionally using our in-house getPropertyDescriptor instead of getOwnPropertyDescriptor here because
-    // in IE11, some properties are on Element.prototype instead of HTMLElement, just to be sure.
+keys(AriaPropNameToAttrNameMap).forEach((propName) => {
     const descriptor = getPropertyDescriptor(HTMLElementPrototype, propName);
-    if (!isUndefined(descriptor)) {
+    if (descriptor !== undefined) {
         HTMLElementOriginalDescriptors[propName] = descriptor;
     }
 });
@@ -38,7 +34,7 @@ for (const propName of REFLECTIVE_GLOBAL_PROPERTY_SET) {
     // in IE11, id property is on Element.prototype instead of HTMLElement, and we suspect that more will fall into
     // this category, so, better to be sure.
     const descriptor = getPropertyDescriptor(HTMLElementPrototype, propName);
-    if (!isUndefined(descriptor)) {
+    if (descriptor !== undefined) {
         HTMLElementOriginalDescriptors[propName] = descriptor;
     }
 }

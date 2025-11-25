@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isUndefined, isArray, isFunction } from '@lwc/shared';
+import { isArray } from '@lwc/shared';
 
 //
 // Feature detection
@@ -15,7 +15,8 @@ import { isUndefined, isArray, isFunction } from '@lwc/shared';
 // https://github.com/microsoft/fast/blob/d49d1ec/packages/web-components/fast-element/src/dom.ts#L51-L53
 // See also: https://github.com/whatwg/webidl/issues/1027#issuecomment-934510070
 const supportsConstructableStylesheets =
-    isFunction(CSSStyleSheet.prototype.replaceSync) && isArray(document.adoptedStyleSheets);
+    typeof CSSStyleSheet.prototype.replaceSync === 'function' &&
+    isArray(document.adoptedStyleSheets);
 
 //
 // Style sheet cache
@@ -99,7 +100,7 @@ function insertConstructableStylesheet(
 
     if (process.env.NODE_ENV !== 'production') {
         /* istanbul ignore if */
-        if (isUndefined(signal)) {
+        if (signal === undefined) {
             throw new Error('Expected AbortSignal to be defined in dev mode');
         }
         // TODO [#4155]: unrendering should account for stylesheet content collisions
@@ -121,7 +122,7 @@ function insertStyleElement(
 
     if (process.env.NODE_ENV !== 'production') {
         /* istanbul ignore if */
-        if (isUndefined(signal)) {
+        if (signal === undefined) {
             throw new Error('Expected AbortSignal to be defined in dev mode');
         }
         // TODO [#4155]: unrendering should account for stylesheet content collisions
@@ -134,7 +135,7 @@ function insertStyleElement(
 
 function getCacheData(content: string, useConstructableStylesheet: boolean): CacheData {
     let cacheData = stylesheetCache.get(content);
-    if (isUndefined(cacheData)) {
+    if (cacheData === undefined) {
         cacheData = {
             stylesheet: undefined,
             element: undefined,
@@ -146,9 +147,9 @@ function getCacheData(content: string, useConstructableStylesheet: boolean): Cac
     }
 
     // Create <style> elements or CSSStyleSheets on-demand, as needed
-    if (useConstructableStylesheet && isUndefined(cacheData.stylesheet)) {
+    if (useConstructableStylesheet && cacheData.stylesheet === undefined) {
         cacheData.stylesheet = createConstructableStylesheet(content);
-    } else if (!useConstructableStylesheet && isUndefined(cacheData.element)) {
+    } else if (!useConstructableStylesheet && cacheData.element === undefined) {
         cacheData.element = createFreshStyleElement(content);
     }
     return cacheData;
@@ -174,7 +175,7 @@ function insertLocalStylesheet(
 ) {
     const cacheData = getCacheData(content, supportsConstructableStylesheets);
     let { roots } = cacheData;
-    if (isUndefined(roots)) {
+    if (roots === undefined) {
         roots = cacheData.roots = new WeakSet(); // lazily initialize (not needed for global styles)
     } else if (roots.has(target)) {
         // already inserted
@@ -209,7 +210,7 @@ export function insertStylesheet(
     target: ShadowRoot | undefined,
     signal: AbortSignal | undefined
 ) {
-    if (isUndefined(target)) {
+    if (target === undefined) {
         // global
         insertGlobalStylesheet(content, signal);
     } else {

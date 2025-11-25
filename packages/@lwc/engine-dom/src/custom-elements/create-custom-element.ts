@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isTrue } from '@lwc/shared';
+import {} from '@lwc/shared';
 import {
     connectRootElement,
     disconnectRootElement,
@@ -52,14 +52,14 @@ function createBaseUpgradableConstructor() {
 
         connectedCallback() {
             // native `connectedCallback`/`disconnectedCallback` are only enabled in native lifecycle mode
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
+            if (nativeLifecycleElementsToUpgradedByLWC.get(this) === true) {
                 connectRootElement(this);
             }
         }
 
         disconnectedCallback() {
             // native `connectedCallback`/`disconnectedCallback` are only enabled in native lifecycle mode
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
+            if (nativeLifecycleElementsToUpgradedByLWC.get(this) === true) {
                 disconnectRootElement(this);
             }
         }
@@ -106,8 +106,8 @@ const createUpgradableConstructor = (isFormAssociated: boolean) => {
 export function getUpgradableConstructor(tagName: string, isFormAssociated: boolean) {
     let UpgradableConstructor = cachedConstructors.get(tagName);
 
-    if (isUndefined(UpgradableConstructor)) {
-        if (!isUndefined(customElements.get(tagName))) {
+    if (UpgradableConstructor === undefined) {
+        if (customElements.get(tagName) !== undefined) {
             throw new Error(
                 `Unexpected tag name "${tagName}". This name is a registered custom element, preventing LWC to upgrade the element.`
             );

@@ -4,15 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {
-    create,
-    freeze,
-    isNull,
-    isString,
-    isUndefined,
-    StringCharCodeAt,
-    StringSlice,
-} from '@lwc/shared';
+import { create, freeze } from '@lwc/shared';
 import { EmptyObject, SPACE_CHAR } from '../utils';
 import type { RendererAPI } from '../renderer';
 
@@ -21,13 +13,13 @@ import type { VBaseElement, VStaticPartElement } from '../vnodes';
 const classNameToClassMap = create(null);
 
 export function getMapFromClassName(className: string | undefined): Record<string, boolean> {
-    if (isUndefined(className) || isNull(className) || className === '') {
+    if (className === undefined || className === null || className === '') {
         return EmptyObject;
     }
     // computed class names must be string
     // This will throw if className is a symbol or null-prototype object
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    className = isString(className) ? className : className + '';
+    className = typeof className === 'string' ? className : className + '';
 
     let map = classNameToClassMap[className];
     if (map) {
@@ -38,16 +30,16 @@ export function getMapFromClassName(className: string | undefined): Record<strin
     let o;
     const len = className.length;
     for (o = 0; o < len; o++) {
-        if (StringCharCodeAt.call(className, o) === SPACE_CHAR) {
+        if (className.charCodeAt(o) === SPACE_CHAR) {
             if (o > start) {
-                map[StringSlice.call(className, start, o)] = true;
+                map[className.slice(start, o)] = true;
             }
             start = o + 1;
         }
     }
 
     if (o > start) {
-        map[StringSlice.call(className, start, o)] = true;
+        map[className.slice(start, o)] = true;
     }
     classNameToClassMap[className] = map;
     if (process.env.NODE_ENV !== 'production') {
@@ -67,7 +59,7 @@ export function patchClassAttribute(
         data: { className: newClass },
     } = vnode;
 
-    const oldClass = isNull(oldVnode) ? undefined : oldVnode.data.className;
+    const oldClass = oldVnode === null ? undefined : oldVnode.data.className;
     if (oldClass === newClass) {
         return;
     }
@@ -88,12 +80,12 @@ export function patchClassAttribute(
     let name: string;
     for (name in oldClassMap) {
         // remove only if it is not in the new class collection and it is not set from within the instance
-        if (isUndefined(newClassMap[name])) {
+        if (newClassMap[name] === undefined) {
             classList.remove(name);
         }
     }
     for (name in newClassMap) {
-        if (isUndefined(oldClassMap[name])) {
+        if (oldClassMap[name] === undefined) {
             classList.add(name);
         }
     }
