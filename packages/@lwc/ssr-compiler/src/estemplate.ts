@@ -50,12 +50,12 @@ type ValidatedType<T> =
           // messes with the inferred type `V`, so we must check `Checker` explicitly
           T extends Checker<infer C>
             ? // estree validator
-              C | C[]
+                  C | C[]
             : // custom validator
-              V | Array<NonNullable<V>> // avoid invalid `Array<V | null>`
+                  V | Array<NonNullable<V>> // avoid invalid `Array<V | null>`
         : T extends typeof NO_VALIDATION
           ? // no validation = broadest type possible
-            EsNode | EsNode[] | null
+                EsNode | EsNode[] | null
           : // not a validator!
             never;
 
