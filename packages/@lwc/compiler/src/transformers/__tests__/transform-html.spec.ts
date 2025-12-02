@@ -79,11 +79,7 @@ describe('transformSync', () => {
                 ...config,
             });
             expect(warnings!.length).toBe(0);
-            if (expected) {
-                expect(code).toContain('<img');
-            } else {
-                expect(code).not.toContain('<img');
-            }
+            expect(code.includes('<img')).toBe(expected);
         });
     });
 

@@ -65,6 +65,7 @@ it('errors with strictLevel have correct DiagnosticLevel.Fatal value', () => {
 
     // Check GENERIC_COMPILER_ERROR
     if (fatalErrorCodes.includes(GENERIC_COMPILER_ERROR.code)) {
+        // eslint-disable-next-line vitest/no-conditional-expect
         expect(GENERIC_COMPILER_ERROR.strictLevel).toBe(DiagnosticLevel.Fatal);
     }
 
@@ -72,6 +73,7 @@ it('errors with strictLevel have correct DiagnosticLevel.Fatal value', () => {
     Object.entries(errors).forEach(([_key, map]) => {
         Object.entries(map).forEach(([_label, info]) => {
             if (fatalErrorCodes.includes(info.code)) {
+                // eslint-disable-next-line vitest/no-conditional-expect
                 expect(info.strictLevel).toBe(DiagnosticLevel.Fatal);
             }
         });
