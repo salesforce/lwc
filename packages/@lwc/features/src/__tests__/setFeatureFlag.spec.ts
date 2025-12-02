@@ -36,10 +36,13 @@ describe('setFeatureFlag', () => {
                     // @ts-expect-error Explicitly testing JS behavior that violates TS types
                     setFeatureFlag('PLACEHOLDER_TEST_FLAG', 'foo');
                 };
+
                 if (env === 'production') {
                     callback();
+                    // eslint-disable-next-line vitest/no-conditional-expect
                     expect(error).toHaveBeenCalledExactlyOnceWith(expectedError);
                 } else {
+                    // eslint-disable-next-line vitest/no-conditional-expect
                     expect(callback).toThrowError(expectedError);
                 }
 
@@ -64,12 +67,16 @@ describe('setFeatureFlag', () => {
                 expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
                 setFeatureFlag('PLACEHOLDER_TEST_FLAG', false);
                 if (env === 'production') {
+                    // eslint-disable-next-line vitest/no-conditional-expect
                     expect(error).toHaveBeenCalledExactlyOnceWith(
                         'Failed to set the value "false" for the runtime feature flag "PLACEHOLDER_TEST_FLAG". "PLACEHOLDER_TEST_FLAG" has already been set with the value "true".'
                     );
+                    // eslint-disable-next-line vitest/no-conditional-expect
                     expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
                 } else {
+                    // eslint-disable-next-line vitest/no-conditional-expect
                     expect(error).not.toHaveBeenCalled();
+                    // eslint-disable-next-line vitest/no-conditional-expect
                     expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(false);
                 }
             });

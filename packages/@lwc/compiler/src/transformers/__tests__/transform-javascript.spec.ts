@@ -60,11 +60,8 @@ describe('object rest spread', () => {
             });
 
             expect(code).toContain('b: 1');
-            if (apiVersion === 59) {
-                expect(code).not.toContain('...a');
-            } else {
-                expect(code).toContain('...a');
-            }
+            const shouldContainSpread = apiVersion !== 59;
+            expect(code.includes('...a')).toBe(shouldContainSpread);
         });
     });
 });
