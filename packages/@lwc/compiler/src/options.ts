@@ -171,8 +171,7 @@ type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, Optiona
 type OptionalTransformOptions = Pick<TransformOptions, OptionalTransformKeys>;
 
 export interface NormalizedTransformOptions
-    extends RequiredTransformOptions,
-        OptionalTransformOptions {}
+    extends RequiredTransformOptions, OptionalTransformOptions {}
 
 /**
  * Validates that the options conform to the expected shape and normalizes them to a standard format

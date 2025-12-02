@@ -62,9 +62,9 @@ const isImmediateWithinTargetFunc = (nodePath: NodePath): boolean => {
     const parentFunc = nodePath.findParent<EsFunction>(is.function);
     return Boolean(
         parentFunc &&
-            isNonArrowFunction(parentFunc) &&
-            parentFunc.node?.id &&
-            TRANSMOGRIFY_TARGET.test(parentFunc.node.id.name)
+        isNonArrowFunction(parentFunc) &&
+        parentFunc.node?.id &&
+        TRANSMOGRIFY_TARGET.test(parentFunc.node.id.name)
     );
 };
 

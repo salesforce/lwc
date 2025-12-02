@@ -30,7 +30,7 @@ interface WireDecorator<Value, Class> {
     (
         target: unknown,
         context: // A wired prop doesn't have any data on creation, so we must allow `undefined`
-        | ClassFieldDecoratorContext<Class, Value | undefined>
+            | ClassFieldDecoratorContext<Class, Value | undefined>
             | ClassMethodDecoratorContext<
                   Class,
                   // When a wire adapter is typed as `WireAdapterConstructor`, then this `Value`
