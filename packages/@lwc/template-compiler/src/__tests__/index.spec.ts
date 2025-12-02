@@ -79,11 +79,7 @@ describe('parse', () => {
             const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
             const { code, warnings } = compile(template, '', config);
             expect(warnings.length).toBe(0);
-            if (expected) {
-                expect(code).toContain('<img');
-            } else {
-                expect(code).not.toContain('<img');
-            }
+            expect(code.includes('<img')).toBe(expected);
         });
     });
 });

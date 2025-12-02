@@ -50,6 +50,7 @@ describe('dynamic imports', () => {
             };
 
             if (strictSpecifier && !isStrict) {
+                // eslint-disable-next-line vitest/no-conditional-expect
                 expect(callback).toThrowError(/LWC1121/);
                 return;
             } else {
@@ -65,8 +66,10 @@ describe('dynamic imports', () => {
             ]);
 
             if (loader) {
+                // eslint-disable-next-line vitest/no-conditional-expect
                 expect(imports).toEqual(importsWithLoader);
             } else {
+                // eslint-disable-next-line vitest/no-conditional-expect
                 expect(imports).not.toEqual(importsWithLoader);
             }
         }
