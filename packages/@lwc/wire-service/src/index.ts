@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import {} from '@lwc/shared';
 import { ValueChangedEvent } from './value-changed-event';
 import type { WireConfigValue, WireAdapter, WireDataCallback } from '@lwc/engine-core';
 
