@@ -120,5 +120,5 @@ type PropertiesOfType<Target, ExpectedType> = {
 /** wire decorator's config can be the literal type defined or a property from component that is compatible with the expected type */
 export type ConfigWithReactiveValues<Config extends ConfigValue, Comp> = {
     // allow the original config value and also any valid reactive strings
-    [K in keyof Config]: Config[K] | ReactivePropertyOfCompoent<Comp, Config[K]>;
+    [K in keyof Config]: Config[K] | ReactivePropertyOfComponent<Comp, Config[K]>;
 };
