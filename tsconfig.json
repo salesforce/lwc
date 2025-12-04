@@ -6,12 +6,12 @@
         "declarationMap": true,
         "sourceMap": true,
 
-        "module": "commonjs",
-        "moduleResolution": "node",
+        "module": "preserve",
+        "moduleResolution": "bundler",
         "esModuleInterop": true,
 
-        "target": "es2021",
-        "lib": ["es2021"],
+        "target": "esnext",
+        "lib": ["ESNext"],
 
         // Disable automatic inclusion of @types packages
         "types": ["node"],
