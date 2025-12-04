@@ -351,75 +351,14 @@ export class MethodDecoratorsWithImperative extends LightningElement {
     // @ts-expect-error Too many method parameters
     @wire(TestAdapterWithImperative, { config: 'config' })
     tooManyParameters(_a: TestValue, _b: TestValue) {}
+    // @ts-expect-error Value is an invalid string
+    @wire(TestAdapterWithImperative, { config: 'incorrect' })
 
     // --- AMBIGUOUS --- //
     // Passing a config is optional because adapters don't strictly need to use it.
     // Can we be smarter about the type and require a config, but only if the adapter does?
     @wire(TestAdapterWithImperative)
     noConfig(_: TestValue): void {}
-    // @ts-expect-error config limited to specific string or valid reactive prop
-    @wire(TestAdapterWithImperative, { config: 'incorrect' })
-    wrongConfigButInferredAsString(_: TestValue): void {}
-    // Wire adapters shouldn't use default params, but the type system doesn't know the difference
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    implicitDefaultType(_ = testValue) {}
-}
-
-/** Validations for decorated methods */
-export class MethodDecoratorsWithImperative extends LightningElement {
-    // Helper props
-    configProp = 'config' as const;
-    nested = { prop: 'config', invalid: 123 } as const;
-    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
-    // uses the object above, rather than a weird prop name
-    'nested.prop' = false;
-    number = 123;
-    // --- VALID --- //
-    // Valid - basic
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    basic(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    async asyncMethod(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
-    simpleReactive(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
-    nestedReactive(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
-    optionalParam(_?: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
-    noParam() {}
-    // Valid - as const
-    @wire(TestAdapterWithImperative, { config: 'config' } as const)
-    basicAsConst(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
-    simpleReactiveAsConst(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' } as const)
-    nestedReactiveAsConst(_: TestValue) {}
-    // Valid - using `any`
-    @wire(TestAdapterWithImperative, {} as any)
-    configAsAny(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    paramAsAny(_: any) {}
-
-    // --- INVALID --- //
-    // @ts-expect-error Too many wire parameters
-    @wire(TestAdapterWithImperative, { config: 'config' }, {})
-    tooManyWireParams(_: TestValue) {}
-    // @ts-expect-error Too many method parameters
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    tooManyParameters(_a: TestValue, _b: TestValue) {}
-
-    // --- AMBIGUOUS --- //
-    // Passing a config is optional because adapters don't strictly need to use it.
-    // Can we be smarter about the type and require a config, but only if the adapter does?
-    @wire(TestAdapterWithImperative)
-    noConfig(_: TestValue): void {}
-    // Because the basic type `string` could be _any_ string, we can't narrow it and compare against
-    // the component's props, so we must accept all string props, even if they're incorrect.
-    // We could technically be strict, and enforce that all configs objects use `as const`, but very
-    // few projects currently use it (there is no need) and the error reported is not simple to
-    // understand.
-    @wire(TestAdapterWithImperative, { config: 'incorrect' })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapterWithImperative, { config: 'config' })
