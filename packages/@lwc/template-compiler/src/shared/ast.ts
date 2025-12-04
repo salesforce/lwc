@@ -43,6 +43,7 @@ import type {
     LWCDirectiveDomMode,
     RefDirective,
     SpreadDirective,
+    OnDirective,
     ElementDirective,
     RootDirective,
     SlotBindDirective,
@@ -361,6 +362,15 @@ export function spreadDirective(value: Expression, location: SourceLocation): Sp
     };
 }
 
+export function OnDirective(value: Expression, location: SourceLocation): OnDirective {
+    return {
+        type: 'Directive',
+        name: 'On',
+        value,
+        location,
+    };
+}
+
 export function slotBindDirective(value: Expression, location: SourceLocation): SlotBindDirective {
     return {
         type: 'Directive',
@@ -522,7 +532,9 @@ export function isStringLiteral(
     return node.type === 'Literal' && typeof node.value === 'string';
 }
 
-export function isBooleanLiteral(node: Expression | Literal): node is Literal<boolean> {
+export function isBooleanLiteral(
+    node: Expression | Literal | ComplexExpression
+): node is Literal<boolean> {
     return node.type === 'Literal' && typeof node.value === 'boolean';
 }
 
@@ -586,6 +598,10 @@ export function isDomDirective(directive: ElementDirective): directive is DomDir
 
 export function isSpreadDirective(directive: ElementDirective): directive is SpreadDirective {
     return directive.name === 'Spread';
+}
+
+export function isOnDirective(directive: ElementDirective): directive is OnDirective {
+    return directive.name === 'On';
 }
 
 export function isInnerHTMLDirective(directive: ElementDirective): directive is InnerHTMLDirective {

@@ -19,7 +19,13 @@ const features: FeatureFlagMap = {
     ENABLE_LEGACY_SCOPE_TOKENS: null,
     ENABLE_FORCE_SHADOW_MIGRATE_MODE: null,
     ENABLE_EXPERIMENTAL_SIGNALS: null,
+    ENABLE_LEGACY_SIGNAL_CONTEXT_VALIDATION: null,
     DISABLE_SYNTHETIC_SHADOW: null,
+    DISABLE_SCOPE_TOKEN_VALIDATION: null,
+    LEGACY_LOCKER_ENABLED: null,
+    DISABLE_LEGACY_VALIDATION: null,
+    DISABLE_DETACHED_REHYDRATION: null,
+    ENABLE_LEGACY_CONTEXT_CONNECTION: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
@@ -55,8 +61,8 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
         );
         return;
     }
-    // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests
-    if (process.env.NODE_ENV === 'test-karma-lwc' || process.env.NODE_ENV !== 'production') {
+    // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by integration tests
+    if (process.env.NODE_ENV === 'test-lwc-integration' || process.env.NODE_ENV !== 'production') {
         // Allow the same flag to be set more than once outside of production to enable testing
         flags[name] = value;
     } else {
@@ -81,8 +87,8 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
  * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
-    // This may seem redundant, but `process.env.NODE_ENV === 'test-karma-lwc'` is replaced by Karma tests
-    if (process.env.NODE_ENV === 'test-karma-lwc' || process.env.NODE_ENV !== 'production') {
+    // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by Karma tests
+    if (process.env.NODE_ENV === 'test-lwc-integration' || process.env.NODE_ENV !== 'production') {
         setFeatureFlag(name, value);
     }
 }

@@ -1,0 +1,20 @@
+<fixture-test>
+  <template shadowrootmode="open">
+    <x-wire>
+      <template shadowrootmode="open">
+        <div>
+          Invocation sequence: 
+ 1. component: setApiValue(parent provided (initial) value)
+ 2. adapter: connect()
+ 3. component: getApiValue(parent provided (initial) value)
+ 4. adapter: update()
+ 5. component: wiredMethod(wire provided value)
+ 6. component: setApiValue(wire provided value)
+        </div>
+        <div>
+          Api Value: wire provided value
+        </div>
+      </template>
+    </x-wire>
+  </template>
+</fixture-test>

@@ -22,6 +22,7 @@ export { Config } from './config';
 export { toPropertyName } from './shared/utils';
 export { kebabcaseToCamelcase } from './shared/naming';
 export { generateScopeTokens } from './scopeTokens';
+export { bindExpression } from './codegen/expression';
 
 /**
  * Parses HTML markup into an AST

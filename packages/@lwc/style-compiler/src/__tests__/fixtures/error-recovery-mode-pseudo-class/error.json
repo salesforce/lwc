@@ -1,0 +1,14 @@
+[
+    {
+        "name": "CssSyntaxError",
+        "reason": ":dir() pseudo class expects \"ltr\" or \"rtl\" for value, but received \"\".",
+        "column": 1,
+        "line": 1
+    },
+    {
+        "name": "CssSyntaxError",
+        "reason": ":dir() pseudo class expects \"ltr\" or \"rtl\" for value, but received \"ltrrrlr\".",
+        "column": 1,
+        "line": 9
+    }
+]

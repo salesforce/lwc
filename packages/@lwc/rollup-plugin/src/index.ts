@@ -34,6 +34,11 @@ export interface RollupLwcOptions {
     sourcemap?: boolean | 'inline';
     /** The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`. */
     modules?: ModuleRecord[];
+    /**
+     * Default modules passed to the `@lwc/module-resolver`.
+     * If unspecified, defaults to `["@lwc/engine-dom", "@lwc/synthetic-shadow", "@lwc/wire-service"]`.
+     */
+    defaultModules?: ModuleRecord[];
     /** The stylesheet compiler configuration to pass to the `@lwc/style-compiler` */
     stylesheetConfig?: StylesheetConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
@@ -47,33 +52,44 @@ export interface RollupLwcOptions {
     /** The configuration to pass to `@lwc/template-compiler`. */
     enableDynamicComponents?: boolean;
     /** The configuration to pass to `@lwc/compiler`. */
+    enableSyntheticElementInternals?: boolean;
+    /** The configuration to pass to `@lwc/compiler`. */
     enableLightningWebSecurityTransforms?: boolean;
     // TODO [#3370]: remove experimental template expression flag
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalComplexExpressions?: boolean;
     /** @deprecated Spread operator is now always enabled. */
     enableLwcSpread?: boolean;
+    /** The configuration to pass to the `@lwc/template-compiler`. */
+    enableLwcOn?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
     disableSyntheticShadowSupport?: boolean;
     /** The API version to associate with the compiled module */
     apiVersion?: APIVersion;
     /** True if the static content optimization should be enabled. Defaults to true */
     enableStaticContentOptimization?: boolean;
+    /**
+     * Full module path for a feature flag to import and enforce at runtime.
+     * The module should provide a boolean value as a default export.
+     * Exporting `true` will allow the component to render; exporting `false` will result in a runtime error.
+     * @example '@salesforce/featureFlag/name'
+     */
+    componentFeatureFlagModulePath?: string;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
+
+const IMPLICIT_DEFAULT_HTML_PATH = ['@lwc', 'resources', 'empty_html.js'].join(path.sep);
+const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
+const IMPLICIT_DEFAULT_CSS_PATH = ['@lwc', 'resources', 'empty_css.css'].join(path.sep);
+const EMPTY_IMPLICIT_CSS_CONTENT = '';
+const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
 const DEFAULT_MODULES = [
     { npm: '@lwc/engine-dom' },
     { npm: '@lwc/synthetic-shadow' },
     { npm: '@lwc/wire-service' },
 ];
-
-const IMPLICIT_DEFAULT_HTML_PATH = '@lwc/resources/empty_html.js';
-const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
-const IMPLICIT_DEFAULT_CSS_PATH = '@lwc/resources/empty_css.css';
-const EMPTY_IMPLICIT_CSS_CONTENT = '';
-const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
 function isImplicitHTMLImport(importee: string, importer: string, importerExt: string): boolean {
     return (
@@ -164,6 +180,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
     const filter = pluginUtils.createFilter(pluginOptions.include, pluginOptions.exclude);
 
     let { rootDir, modules = [] } = pluginOptions;
+
     const {
         targetSSR,
         ssrMode,
@@ -173,16 +190,21 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         experimentalDynamicComponent,
         experimentalDynamicDirective,
         enableDynamicComponents,
+        enableSyntheticElementInternals,
+        enableLwcOn,
         enableLightningWebSecurityTransforms,
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions,
         disableSyntheticShadowSupport,
         apiVersion,
+        defaultModules = DEFAULT_MODULES,
+        componentFeatureFlagModulePath,
     } = pluginOptions;
 
     return {
         name: PLUGIN_NAME,
-
+        // The version from the package.json is inlined by the build script
+        version: process.env.LWC_VERSION,
         buildStart({ input }) {
             if (rootDir === undefined) {
                 if (Array.isArray(input)) {
@@ -204,7 +226,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 rootDir = path.resolve(rootDir);
             }
 
-            modules = [...modules, ...DEFAULT_MODULES, { dir: rootDir }];
+            modules = [...modules, ...defaultModules, { dir: rootDir }];
         },
 
         resolveId(importee, importer) {
@@ -330,18 +352,19 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
-                // Note we do not need to use path.sep here because this filename contains
-                // a '/' regardless of Windows vs Unix, since it comes from the Rollup `id`
-                specifier?.split('/') ?? path.dirname(filename).split('/').slice(-2);
+                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
 
             /* v8 ignore next */
             if (!namespace || !name) {
                 // TODO [#4824]: Make this an error rather than a warning
                 this.warn(
-                    'The component namespace and name could not be determined from the specifier ' +
-                        JSON.stringify(specifier) +
-                        ' or filename ' +
-                        JSON.stringify(filename)
+                    `The component namespace and name (${JSON.stringify(
+                        namespace
+                    )} and ${JSON.stringify(
+                        name
+                    )}) could not be determined from the specifier ${JSON.stringify(
+                        specifier
+                    )} or filename ${JSON.stringify(path.dirname(filename))}`
                 );
             }
 
@@ -355,6 +378,8 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 experimentalDynamicComponent,
                 experimentalDynamicDirective,
                 enableDynamicComponents,
+                enableSyntheticElementInternals,
+                enableLwcOn,
                 enableLightningWebSecurityTransforms,
                 // TODO [#3370]: remove experimental template expression flag
                 experimentalComplexExpressions,
@@ -362,12 +387,15 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 scopedStyles: scoped,
                 disableSyntheticShadowSupport,
                 apiVersion: apiVersionToUse,
-                // Only pass this in if it's actually specified – otherwise unspecified becomes undefined becomes false
-                ...('enableStaticContentOptimization' in pluginOptions && {
-                    enableStaticContentOptimization: pluginOptions.enableStaticContentOptimization,
-                }),
+                enableStaticContentOptimization:
+                    // {enableStaticContentOptimization:undefined} behaves like `false`
+                    // but {} (prop unspecified) behaves like `true`
+                    'enableStaticContentOptimization' in pluginOptions
+                        ? pluginOptions.enableStaticContentOptimization
+                        : true,
                 targetSSR,
                 ssrMode,
+                componentFeatureFlagModulePath,
             });
 
             if (warnings) {
@@ -383,4 +411,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
 }
 
 // For backward compatibility with commonjs format
-module.exports = lwc;
+if (typeof module !== 'undefined') {
+    // Using Object.defineProperty because regular assignment breaks when running with vite
+    Object.defineProperty(module, 'exports', { value: lwc });
+}

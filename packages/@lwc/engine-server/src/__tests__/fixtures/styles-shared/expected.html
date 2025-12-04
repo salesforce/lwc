@@ -1,19 +1,24 @@
-<x-parent>
+<fixture-test>
   <template shadowrootmode="open">
-    <style type="text/css">
+    <style id="lwc-style--0" type="text/css">
       div {border: 1px solid turquoise;}
     </style>
-    <style type="text/css">
+    <lwc-style style-id="lwc-style--0">
+    </lwc-style>
+    <style id="lwc-style--1" type="text/css">
       div {background: blue;}
     </style>
+    <lwc-style style-id="lwc-style--1">
+    </lwc-style>
     <x-child>
       <template shadowrootmode="open">
-        <style type="text/css">
-          div {border: 1px solid turquoise;}
-        </style>
-        <style type="text/css">
+        <lwc-style style-id="lwc-style--0">
+        </lwc-style>
+        <style id="lwc-style--2" type="text/css">
           div {color: red;}
         </style>
+        <lwc-style style-id="lwc-style--2">
+        </lwc-style>
         <div>
           Hello child
         </div>
@@ -23,4 +28,4 @@
       Hello parent
     </div>
   </template>
-</x-parent>
+</fixture-test>

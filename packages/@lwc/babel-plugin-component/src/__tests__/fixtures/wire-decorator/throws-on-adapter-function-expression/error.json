@@ -1,0 +1,10 @@
+{
+    "message": "LWC1097: @wire expects a function identifier as first parameter.",
+    "loc": {
+        "line": 3,
+        "column": 8,
+        "start": 107,
+        "length": 21
+    },
+    "filename": "test.js"
+}

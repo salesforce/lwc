@@ -116,6 +116,10 @@ export interface SpreadDirective extends Directive<'Spread'> {
     value: Expression;
 }
 
+export interface OnDirective extends Directive<'On'> {
+    value: Expression;
+}
+
 export interface InnerHTMLDirective extends Directive<'InnerHTML'> {
     value: Expression | Literal<string>;
 }
@@ -149,7 +153,8 @@ export type ElementDirective =
     | RefDirective
     | SlotBindDirective
     | SlotDataDirective
-    | SpreadDirective;
+    | SpreadDirective
+    | OnDirective;
 
 export type RootDirective = RenderModeDirective | PreserveCommentsDirective;
 
@@ -341,6 +346,7 @@ export enum ElementDirectiveName {
     SlotBind = 'lwc:slot-bind',
     SlotData = 'lwc:slot-data',
     Spread = 'lwc:spread',
+    On = 'lwc:on',
     Key = 'key',
 }
 

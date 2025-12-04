@@ -4,14 +4,21 @@
 version: 2
 updates:
     - package-ecosystem: 'npm' # See documentation for possible values
+      cooldown:
+          default-days: 2
       directory: '/' # Location of package manifests
       schedule:
           interval: 'weekly'
+      labels:
+          - 'USER STORY'
       ignore:
           # As a library, we want to avoid bumping TypeScript, so that we don't accidentally use
           # language features from a version newer than our downstream users have installed
-          - dependency-name: typescript
+          - dependency-name: 'typescript'
       groups:
+          # Most minor/patch version bumps are harmless, so we group them together
+          # Major version bumps typically require manual intervention, so they get individual PRs (default behavior)
+          # Namespaced packages typically depend on each other, so they get grouped for major version bumps
           babel:
               patterns:
                   - '@babel/*'
@@ -23,6 +30,16 @@ updates:
                   - '@best/*'
               update-types:
                   - 'major'
+          lint:
+              patterns:
+                  - 'prettier'
+                  # eslint packages probably have rules that require manual updates
+                  - '*eslint*'
+              update-types:
+                  # any version bump can make linting fail in CI
+                  - 'major'
+                  - 'minor'
+                  - 'patch'
           nx:
               patterns:
                   - 'nx'
@@ -41,14 +58,13 @@ updates:
                   - '@wdio/*'
               update-types:
                   - 'major'
-          prettier:
+                  - 'minor'
+          vitest:
               patterns:
-                  - 'prettier'
+                  - 'vitest'
+                  - '@vitest/*'
               update-types:
                   - 'major'
-                  # Prettier can introduce formatting differences in minor versions,
-                  # which causes formatting checks to fail in CI.
-                  - 'minor'
           # Non-major version bumps hopefully shouldn't break anything,
           # so let's group them together into a single PR!
           theoretically-non-breaking:

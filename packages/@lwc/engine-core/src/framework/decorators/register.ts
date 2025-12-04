@@ -254,7 +254,7 @@ export function registerDecorators(
                     validateMethodDecoratedWithWire(Ctor, fieldOrMethodName, descriptor);
                 }
                 if (isUndefined(descriptor)) {
-                    throw new Error();
+                    throw new Error(`Missing descriptor for wired method "${fieldOrMethodName}".`);
                 }
                 wiredMethods[fieldOrMethodName] = descriptor;
                 storeWiredMethodMeta(descriptor, adapter, configCallback, dynamic);

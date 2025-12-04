@@ -2,5 +2,7 @@
     "typescript.tsdk": "./node_modules/typescript/lib",
 
     "eslint.useFlatConfig": true,
-    "eslint.validate": ["javascript", "typescript"]
+    "eslint.validate": ["javascript", "typescript"],
+    // Don't auto-fix no-focused tests; we want to allow them in the file, just not committed
+    "eslint.codeActionsOnSave.rules": ["!vitest/no-focused-tests", "*"]
 }

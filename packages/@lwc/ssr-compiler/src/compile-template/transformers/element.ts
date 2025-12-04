@@ -20,16 +20,15 @@ import {
     type Property as IrProperty,
 } from '@lwc/template-compiler';
 import { esTemplateWithYield } from '../../estemplate';
-import { expressionIrToEs } from '../expression';
+import { expressionIrToEs, getScopedExpression } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
-import { getScopedExpression, normalizeClassAttributeValue } from '../shared';
+import { normalizeClassAttributeValue } from '../shared';
 import type {
     ExternalComponent as IrExternalComponent,
     Slot as IrSlot,
 } from '@lwc/template-compiler';
 
 import type {
-    BinaryExpression,
     BlockStatement as EsBlockStatement,
     Expression as EsExpression,
     Statement as EsStatement,
@@ -81,9 +80,17 @@ const bYieldClassDynamicValue = esTemplateWithYield`
         const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
         const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
 
+        // Concatenate the scope token with the class attribute value as necessary.
+        // If either is missing, render the other alone.
+        let combinedValue = shouldRenderScopeToken ? stylesheetScopeToken : '';
         if (attrValue) {
-            const prefix = shouldRenderScopeToken ? stylesheetScopeToken + ' ' : '';
-            yield \` class="\${prefix}\${htmlEscape(String(attrValue), true)}"\`;
+            if (combinedValue) {
+                combinedValue += ' ';
+            }
+            combinedValue += htmlEscape(String(attrValue), true);
+        }
+        if (combinedValue) {
+            yield \` class="\${combinedValue}"\`;
         }
     }
 `<EsBlockStatement>;
@@ -111,6 +118,16 @@ const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
         yield \` class="\${stylesheetScopeToken}"\`;
     }
 `<EsIfStatement>;
+
+/* 
+    If `slotAttributeValue` is set, it references a slot that does not exist, and the `slot` attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
+    See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
+*/
+const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
+    if (slotAttributeValue) {
+        yield \` slot="\${slotAttributeValue}"\`; 
+    }   
+`<EsBlockStatement>;
 
 const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
@@ -147,11 +164,11 @@ function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStat
 function yieldAttrOrPropDynamicValue(
     elementName: string,
     name: string,
-    value: IrExpression | BinaryExpression,
+    value: IrExpression,
     cxt: TransformerContext
 ): EsStatement[] {
     cxt.import('htmlEscape');
-    const scopedExpression = getScopedExpression(value as EsExpression, cxt);
+    const scopedExpression = getScopedExpression(value, cxt);
     switch (name) {
         case 'class':
             cxt.import('normalizeClass');
@@ -255,6 +272,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
     return [
         bYield(b.literal(`<${node.name}`)),
+        bConditionallyYieldDanglingSlotName(),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
         ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
         ...yieldAttrsAndProps,

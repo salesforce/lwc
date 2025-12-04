@@ -1,0 +1,6 @@
+<template>
+    <template for:each={loopArray} for:item="item">
+        <button key={item.key} lwc:on={item.eventHandlers}></button>
+    </template>
+    {dummy}
+</template> 

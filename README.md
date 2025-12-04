@@ -19,9 +19,9 @@
          alt="unit tests build status">
   </a>
 
-  <a href="https://github.com/salesforce/lwc/actions/workflows/karma.yml?query=branch%3Amaster">
-    <img src="https://github.com/salesforce/lwc/actions/workflows/karma.yml/badge.svg"
-         alt="karma tests build status">
+  <a href="https://github.com/salesforce/lwc/actions/workflows/web-test-runner.yml?query=branch%3Amaster">
+    <img src="https://github.com/salesforce/lwc/actions/workflows/web-test-runner.yml/badge.svg"
+         alt="web-test-runner tests build status">
   </a>
 
   <a href="https://github.com/salesforce/lwc/actions/workflows/integration.yml?query=branch%3Amaster">

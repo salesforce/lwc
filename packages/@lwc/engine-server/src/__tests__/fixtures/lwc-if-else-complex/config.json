@@ -1,0 +1,8 @@
+{
+    "entry": "x/component",
+    "experimentalComplexExpressions": true,
+    "ssrFiles": {
+        "expected": "expected-ssr.html",
+        "error": "error-ssr.txt"
+    }
+}

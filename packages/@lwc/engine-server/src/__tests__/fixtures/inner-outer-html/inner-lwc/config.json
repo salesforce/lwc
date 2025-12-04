@@ -1,0 +1,6 @@
+{
+    "entry": "x/inner",
+    "ssrFiles": {
+        "expected": "expected-ssr.html"
+    }
+}

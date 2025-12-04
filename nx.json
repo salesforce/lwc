@@ -24,5 +24,8 @@
     },
     "$schema": "./node_modules/nx/schemas/nx-schema.json",
     "cacheDirectory": "./.nx-cache",
-    "defaultBase": "master"
+    "defaultBase": "master",
+    "tui": {
+        "enabled": false
+    }
 }

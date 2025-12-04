@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression {() => foo(\"} - Unterminated string constant (1:11)",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 16,
+                "start": 40,
+                "length": 26
+            }
+        }
+    ]
+}

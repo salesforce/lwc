@@ -8,6 +8,7 @@ import { isArray } from '@lwc/shared';
 import { validateStyleTextContents } from './validate-style-text-contents';
 import type { LightningElementConstructor } from './lightning-element';
 import type { Stylesheets, Stylesheet } from '@lwc/shared';
+import type { RenderContext } from './render';
 
 type ForgivingStylesheets =
     | Stylesheets
@@ -39,6 +40,7 @@ export function hasScopedStaticStylesheets(Component: LightningElementConstructo
 }
 
 export function renderStylesheets(
+    renderContext: RenderContext,
     defaultStylesheets: ForgivingStylesheets,
     defaultScopedStylesheets: ForgivingStylesheets,
     staticStylesheets: ForgivingStylesheets,
@@ -57,12 +59,27 @@ export function renderStylesheets(
         const token = scoped ? scopeToken : undefined;
         const useActualHostSelector = !scoped || renderMode !== 'light';
         const useNativeDirPseudoclass = true;
+        const { styleDedupeIsEnabled, stylesheetToId, styleDedupePrefix } = renderContext;
 
-        const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
-        validateStyleTextContents(styleContents);
+        if (!styleDedupeIsEnabled) {
+            const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+            validateStyleTextContents(styleContents);
+            // TODO [#2869]: `<style>`s should not have scope token classes
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
+        } else if (stylesheetToId.has(stylesheet)) {
+            const styleId = stylesheetToId.get(stylesheet);
+            // TODO [#2869]: `<lwc-style>`s should not have scope token classes, but required for hydration to function correctly (W-19087941).
+            result += `<lwc-style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
+        } else {
+            const styleId = renderContext.getNextId();
+            stylesheetToId.set(stylesheet, styleId.toString());
+            const styleContents = stylesheet(token, useActualHostSelector, useNativeDirPseudoclass);
+            validateStyleTextContents(styleContents);
 
-        // TODO [#2869]: `<style>`s should not have scope token classes
-        result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} type="text/css">${styleContents}</style>`;
+            // TODO [#2869]: `<style>`s should not have scope token classes
+            result += `<style${hasAnyScopedStyles ? ` class="${scopeToken}"` : ''} id="lwc-style-${styleDedupePrefix}-${styleId}" type="text/css">${styleContents}</style>`;
+            result += `<lwc-style style-id="lwc-style-${styleDedupePrefix}-${styleId}"></lwc-style>`;
+        }
     };
 
     traverseStylesheets(defaultStylesheets, renderStylesheet);

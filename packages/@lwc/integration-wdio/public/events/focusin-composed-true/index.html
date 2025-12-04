@@ -1,0 +1,18 @@
+
+        <html>
+            <head>
+                <title>focusin-composed-true</title>
+            </head>
+            <body>
+                <script type="module">
+                    window.process = { env: { NODE_ENV: "development" } };
+                </script>
+                <script type="module" src="../../shared/shadow.js"></script>
+                <script type="module">
+                  import * as LWC from '../../shared/engine.js';
+                  window.LWC = LWC;
+                </script>
+                <script type="module" src="./focusin-composed-true.js"></script>
+            </body>
+        </html>
+    

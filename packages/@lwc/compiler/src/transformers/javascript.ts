@@ -11,7 +11,14 @@ import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties
 import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
-import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
+import {
+    CompilerAggregateError,
+    CompilerError,
+    normalizeToCompilerError,
+    TransformerErrors,
+    type CompilerDiagnostic,
+    type LWCErrorInfo,
+} from '@lwc/errors';
 import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
 
 import type { NormalizedTransformOptions } from '../options';
@@ -33,6 +40,7 @@ export default function scriptTransform(
 ): TransformResult {
     const {
         isExplicitImport,
+        enableSyntheticElementInternals,
         // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
         experimentalDynamicComponent: dynamicImports,
         outputConfig: { sourcemap },
@@ -41,15 +49,19 @@ export default function scriptTransform(
         name,
         instrumentation,
         apiVersion,
+        experimentalErrorRecoveryMode,
+        componentFeatureFlagModulePath,
     } = options;
 
     const lwcBabelPluginOptions: LwcBabelPluginOptions = {
         isExplicitImport,
         dynamicImports,
+        enableSyntheticElementInternals,
         namespace,
         name,
         instrumentation,
         apiVersion,
+        componentFeatureFlagModulePath,
     };
 
     const plugins: babel.PluginItem[] = [
@@ -83,9 +95,14 @@ export default function scriptTransform(
             // an error when the generated code is over 500KB.
             compact: false,
             plugins,
+            parserOpts: {
+                errorRecovery: experimentalErrorRecoveryMode,
+            },
         })!;
     } catch (e) {
-        let transformerError = TransformerErrors.JS_TRANSFORMER_ERROR;
+        // If we are here in errorRecoveryMode then it's most likely that we have run into
+        // an unforeseen error
+        let transformerError: LWCErrorInfo = TransformerErrors.JS_TRANSFORMER_ERROR;
 
         // Sniff for a Babel decorator error, so we can provide a more helpful error message.
         if (
@@ -96,6 +113,18 @@ export default function scriptTransform(
             transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
         }
         throw normalizeToCompilerError(transformerError, e, { filename });
+    }
+
+    if (experimentalErrorRecoveryMode) {
+        const metadata = result.metadata as { lwcErrors?: CompilerDiagnostic[] };
+        const errors = metadata?.lwcErrors;
+
+        if (errors) {
+            throw new CompilerAggregateError(
+                errors.map((diagnostic) => CompilerError.from(diagnostic)),
+                'Multiple errors occurred during compilation.'
+            );
+        }
     }
 
     return {

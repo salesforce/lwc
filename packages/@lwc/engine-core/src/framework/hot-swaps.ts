@@ -33,8 +33,8 @@ let activeComponents: WeakMultiMap<LightningElementConstructor, VM> =
     /*@__PURE__@*/ new WeakMultiMap();
 let activeStyles: WeakMultiMap<Stylesheet, VM> = /*@__PURE__@*/ new WeakMultiMap();
 
-// Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+// Only used in LWC's integration tests
+if (process.env.NODE_ENV === 'test-lwc-integration') {
     // Used to reset the global state between test runs
     (window as any).__lwcResetHotSwaps = () => {
         swappedTemplateMap = new WeakMap();

@@ -35,7 +35,7 @@ import {
     startTrackingMutations,
     stopTrackingMutations,
 } from './utils/mutation-tracking';
-import { registerContextConsumer } from './context';
+import { registerContextConsumer, registerContextProvider } from './context';
 import type { HostNode, HostElement, HostAttribute, HostChildNode } from './types';
 import type { LifecycleCallback } from '@lwc/engine-core';
 
@@ -227,8 +227,15 @@ function setProperty(node: N, propName: string, value: any): void {
                 : removeAttribute(node, attrName);
         }
 
-        // Handle global html attributes and AOM.
-        if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) || isAriaAttribute(attrName)) {
+        if (isAriaAttribute(attrName)) {
+            // TODO [#3284]: According to the spec, IDL nullable type values
+            // (null and undefined) should remove the attribute; however, we
+            // only do so in the case of null for historical reasons.
+            return isNull(value)
+                ? removeAttribute(node, attrName)
+                : setAttribute(node, attrName, value);
+        } else if (REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName)) {
+            // Handle global html attributes and AOM.
             return setAttribute(node, attrName, value);
         }
     }
@@ -502,6 +509,7 @@ export const renderer = {
     insertStylesheet,
     assertInstanceOfHTMLElement,
     ownerDocument,
+    registerContextProvider,
     registerContextConsumer,
     attachInternals,
     defineCustomElement: getUpgradableElement,

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1210,
+            "message": "Invalid expression {foo()} - LWC1210: Template expression doesn't allow CallExpression. The current component API version (59) is insufficient and must be increased to at least 66 for this type of expression.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 18,
+                "start": 42,
+                "length": 13
+            }
+        }
+    ]
+}

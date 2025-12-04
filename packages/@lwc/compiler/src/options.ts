@@ -40,6 +40,8 @@ const DEFAULT_OPTIONS = {
     enableLightningWebSecurityTransforms: false,
     targetSSR: false,
     ssrMode: DEFAULT_SSR_MODE,
+    experimentalErrorRecoveryMode: false,
+    componentFeatureFlagModulePath: '',
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -108,6 +110,8 @@ export interface TransformOptions {
     experimentalDynamicDirective?: boolean;
     /** Flag to enable usage of dynamic component(lwc:is) directive in HTML template */
     enableDynamicComponents?: boolean;
+    /** Flag to enable usage of ElementInternals in synthetic shadow DOM */
+    enableSyntheticElementInternals?: boolean;
     // TODO [#3370]: remove experimental template expression flag
     /** Flag to enable use of (a subset of) JavaScript expressions in place of template bindings. Passed to `@lwc/template-compiler`. */
     experimentalComplexExpressions?: boolean;
@@ -125,6 +129,8 @@ export interface TransformOptions {
     customRendererConfig?: CustomRendererConfig;
     /** @deprecated Ignored by compiler. `lwc:spread` is always enabled. */
     enableLwcSpread?: boolean;
+    /** Flag to enable usage of dynamic event listeners (lwc:on) directive in HTML template */
+    enableLwcOn?: boolean;
     /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output. */
     disableSyntheticShadowSupport?: boolean;
     /**
@@ -140,6 +146,10 @@ export interface TransformOptions {
     apiVersion?: number;
     targetSSR?: boolean;
     ssrMode?: CompilationMode;
+    /** Flag to enable collecting multiple errors rather than failing at the first error. */
+    experimentalErrorRecoveryMode?: boolean;
+    /** Full module path for a feature flag to import and enforce at runtime (e.g., '@salesforce/featureFlag/name'). */
+    componentFeatureFlagModulePath?: string;
 }
 
 type OptionalTransformKeys =
@@ -148,18 +158,20 @@ type OptionalTransformKeys =
     | 'scopedStyles'
     | 'customRendererConfig'
     | 'enableLwcSpread'
+    | 'enableLwcOn'
     | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
+    | 'enableSyntheticElementInternals'
     | 'experimentalDynamicDirective'
     | 'experimentalDynamicComponent'
+    | 'componentFeatureFlagModulePath'
     | 'instrumentation';
 
 type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;
 type OptionalTransformOptions = Pick<TransformOptions, OptionalTransformKeys>;
 
 export interface NormalizedTransformOptions
-    extends RequiredTransformOptions,
-        OptionalTransformOptions {}
+    extends RequiredTransformOptions, OptionalTransformOptions {}
 
 /**
  * Validates that the options conform to the expected shape and normalizes them to a standard format

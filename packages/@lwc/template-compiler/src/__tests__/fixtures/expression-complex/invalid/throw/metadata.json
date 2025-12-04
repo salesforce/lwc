@@ -1,12 +1,14 @@
 {
     "warnings": [
         {
-            "code": 1052,
-            "message": "Unexpected compilation error: LWC1052: Error parsing attribute: Unexpected token (3:31)",
+            "code": 1083,
+            "message": "LWC1083: Error parsing template expression: Invalid expression {() => throw 'oh no!'} - Unexpected token (1:7)",
             "level": 1,
             "location": {
                 "line": 3,
-                "column": 31
+                "column": 17,
+                "start": 41,
+                "length": 32
             }
         }
     ]

@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1209,
+            "message": "Invalid expression {classNames[0]} - LWC1209: Template expression doesn't allow computed property access. The current component API version (59) is insufficient and must be increased to at least 66 for this type of expression.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 12,
+                "start": 36,
+                "length": 23
+            }
+        }
+    ]
+}

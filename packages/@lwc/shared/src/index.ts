@@ -8,6 +8,7 @@ import * as assert from './assert';
 
 export * from './api-version';
 export * from './aria';
+export * from './context';
 export * from './language';
 export * from './keys';
 export * from './void-elements';
@@ -22,5 +23,6 @@ export * from './style';
 export * from './signals';
 export * from './custom-element';
 export * from './ssr';
+export * from './normalize-tab-index';
 
 export { assert };

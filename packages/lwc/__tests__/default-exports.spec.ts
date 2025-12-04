@@ -66,7 +66,9 @@ describe('default exports are not forgotten', () => {
                 `^export \\{ default \\} from '@lwc/${pkg}';$`,
                 'm'
             );
+            // eslint-disable-next-line vitest/no-conditional-expect
             expect(readPackageFile(pkg, '.d.ts')).toMatch(exportDefaultFromPackage);
+            // eslint-disable-next-line vitest/no-conditional-expect
             expect(readPackageFile(pkg, '.js')).toMatch(exportDefaultFromPackage);
         }
     });

@@ -14,9 +14,6 @@ export default class extends LightningElement {
     isSymbol = Symbol('yolo');
     isArray = ['foo', 'bar'];
     isObject = { foo: 'bar', baz: 'quux' };
-    isFunction = function whoWouldDoThis() {
-        return 'somebody, probably!';
-    };
     isString = 'ooo eee, ooo ah ah, ting tang, walla walla, bing bang';
     isNumber = 6.02214076e23;
 }

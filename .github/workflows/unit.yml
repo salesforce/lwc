@@ -18,6 +18,8 @@ on:
 
 env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
+    CHROME_VERSION: 130
+    NODE_VERSION: '24.11.1'
 
 jobs:
     run-unit-tests:
@@ -25,35 +27,20 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
-
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: '20.18.1'
+                  node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
-
-            # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
-            # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
-            - name: Setup chrome
-              uses: browser-actions/setup-chrome@v1
-              with:
-                  chrome-version: 130
-              id: setup-chrome
-
             - name: Install dependencies
               run: yarn install --frozen-lockfile
-
-            # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
-            # See: https://github.com/google/tachometer#on-demand-dependencies
-            - name: Install chromedriver
-              run: yarn add -W chromedriver@^130
 
             - name: Check package.json integrity
               run: node ./scripts/tasks/check-and-rewrite-package-json.js --test
             - name: Check licenses are up to date
-              run: node ./scripts/tasks/generate-license-files.js --test
+              run: node ./scripts/tasks/generate-license-files.mjs --test
             - name: Verify @lwc/shared is tree-shakable
-              run: node ./scripts/tasks/verify-treeshakable.js ./packages/@lwc/shared/dist/index.js
+              run: node ./scripts/tasks/verify-treeshakable.mjs ./packages/@lwc/shared/dist/index.js
             - name: Verify that dependencies are declared
               run: node ./scripts/tasks/check-imports-are-declared-dependencies.js
             - name: Check formatting
@@ -66,16 +53,33 @@ jobs:
               run: yarn test:types
             - name: Run unit tests
               run: yarn test:ci
-            # TODO [#4815]: enable all SSR v2 tests
-            - name: Run experimental SSR fixture tests
-              run: TEST_SSR_COMPILER=1 yarn test packages/@lwc/ssr-compiler/src/__tests__/fixtures.spec.ts
+            - name: Run unit tests in production mode
+              run: yarn test:production --no-watch
             - name: Upload unit test coverage report
               uses: actions/upload-artifact@v4
               with:
                   name: test-coverage-report
                   path: coverage/
+
+            # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
+            # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
+            - name: Setup chrome
+              uses: browser-actions/setup-chrome@v2
+              with:
+                  chrome-version: ${{ env.CHROME_VERSION }}
+              id: setup-chrome
+
+            # Pin chromedriver to the same version as Chrome above, so Tachometer uses this version.
+            # See: https://github.com/google/tachometer#on-demand-dependencies
+            - name: Install chromedriver
+              run: yarn add -W chromedriver@^${{ env.CHROME_VERSION }} --ignore-scripts
+
             - name: Run benchmark smoke tests
-              run: CHROME_BINARY=${{ steps.setup-chrome.outputs.chrome-path }} BENCHMARK_SMOKE_TEST=1 yarn test:performance
+              run: yarn test:performance
+              env:
+                  BENCHMARK_SMOKE_TEST: 1
+                  CHROME_BINARY: ${{ steps.setup-chrome.outputs.chrome-path }}
+
             - name: Add step summary
               # 1. Remove leading/trailing "border" lines from output
               # 2. Wrap file names in backticks

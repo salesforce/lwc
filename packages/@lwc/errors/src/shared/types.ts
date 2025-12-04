@@ -20,6 +20,7 @@ export interface LWCErrorInfo {
     message: string;
     level: DiagnosticLevel;
     url?: string;
+    strictLevel?: DiagnosticLevel;
 }
 
 export interface Location {

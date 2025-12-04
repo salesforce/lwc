@@ -1,4 +1,5 @@
 {
+    "entry": "x/attribute-dynamic-escape",
     "props": {
         "attr": "\"></div>This 'should' be escaped<div attr=\""
     }

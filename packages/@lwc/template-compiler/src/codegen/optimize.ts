@@ -7,6 +7,7 @@
 import * as astring from 'astring';
 import { walk } from 'estree-walker';
 import * as t from '../shared/estree';
+import type { Node } from 'estree-walker';
 
 /**
  * Given a template function, extract all static objects/arrays (e.g. `{ key : 1 }`)
@@ -88,7 +89,7 @@ export function optimizeStaticExpressions(
         return t.identifier(keysToVariableNames.get(key));
     }
 
-    walk(templateFn, {
+    walk(templateFn as Node, {
         enter(node) {
             // For deeply-nested static object, we only want to extract the top-level node
             if (isStaticObjectOrArray(node)) {

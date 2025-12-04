@@ -2,8 +2,14 @@
     "warnings": [
         {
             "code": 1197,
-            "message": "Unexpected compilation error: LWC1197: Use of comments is disallowed within template expressions.",
-            "level": 1
+            "message": "Invalid expression {\n            /* what do you think ? */\n            someValue\n        } - LWC1197: Use of comments is disallowed within template expressions.",
+            "level": 1,
+            "location": {
+                "line": 3,
+                "column": 16,
+                "start": 40,
+                "length": 79
+            }
         }
     ]
 }

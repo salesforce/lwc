@@ -1,0 +1,15 @@
+{
+    "warnings": [
+        {
+            "code": 1209,
+            "message": "Invalid expression {val[state.foo]} - LWC1209: Template expression doesn't allow computed property access. The current component API version (59) is insufficient and must be increased to at least 66 for this type of expression.",
+            "level": 1,
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 22
+            }
+        }
+    ]
+}

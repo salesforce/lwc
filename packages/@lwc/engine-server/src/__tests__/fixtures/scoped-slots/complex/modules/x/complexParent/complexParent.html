@@ -1,0 +1,7 @@
+<template>
+    <x-complex-child>
+        <template lwc:slot-data="itemFn">
+            <span>{itemFn().id} - {itemFn().name}</span>
+        </template>
+    </x-complex-child>
+</template>

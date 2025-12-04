@@ -6,7 +6,7 @@
  */
 import { DecoratorErrors } from '@lwc/errors';
 import { LWC_PACKAGE_EXPORTS } from '../../constants';
-import { generateError } from '../../utils';
+import { handleError } from '../../utils';
 import { isWireDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
 import type { LwcBabelPluginPass } from '../../types';
@@ -16,71 +16,83 @@ const { TRACK_DECORATOR, WIRE_DECORATOR, API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
 function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabelPluginPass) {
     if (!id) {
-        throw generateError(
+        handleError(
             path,
             {
                 errorInfo: DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER,
             },
             state
         );
+        return;
     }
 
-    const isMemberExpression = id.isMemberExpression();
+    let adapter: NodePath<types.Identifier>;
 
-    if (!id.isIdentifier() && !isMemberExpression) {
-        throw generateError(
+    if (id.isIdentifier()) {
+        // @wire(adapter)
+        adapter = id;
+    } else if (id.isMemberExpression()) {
+        if (id.node.computed) {
+            // @wire(adapter[computed])
+            handleError(
+                id,
+                {
+                    errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
+                },
+                state
+            );
+            return;
+        }
+
+        const object = id.get('object');
+
+        if (object.isIdentifier()) {
+            // @wire(adapter.foo)
+            adapter = object;
+        } else {
+            // @wire(adapter.foo.bar)
+            handleError(
+                id,
+                {
+                    errorInfo:
+                        DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
+                },
+                state
+            );
+            return;
+        }
+    } else {
+        // @wire(1), @wire('adapter'), @wire(function adapter() {}), etc.
+        handleError(
             id,
             {
                 errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
             },
             state
         );
+        return;
     }
 
-    if (id.isMemberExpression({ computed: true })) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS,
-            },
-            state
-        );
-    }
-
-    // TODO [#3444]: improve member expression computed typechecking
-    // @ts-expect-error type narrowing incorrectly reduces id to `never`
-    if (isMemberExpression && !id.get('object').isIdentifier()) {
-        throw generateError(
-            id,
-            {
-                errorInfo: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS,
-            },
-            state
-        );
-    }
-
-    // TODO [#3444]: improve member expression computed typechecking
     // Ensure wire adapter is imported (check for member expression or identifier)
-    // @ts-expect-error type narrowing incorrectly reduces id to `never`
-    const wireBinding = isMemberExpression ? id.node.object.name : id.node.name;
-    if (!path.scope.getBinding(wireBinding)) {
-        throw generateError(
+    const adapterBinding = path.scope.getBinding(adapter.node.name);
+    if (!adapterBinding) {
+        handleError(
             id,
             {
                 errorInfo: DecoratorErrors.WIRE_ADAPTER_SHOULD_BE_IMPORTED,
-                messageArgs: [id.node.name],
+                messageArgs: [adapter.node.name],
             },
             state
         );
+        return;
     }
 
     // ensure wire adapter is a first parameter
     if (
-        wireBinding &&
-        !path.scope.getBinding(wireBinding)!.path.isImportSpecifier() &&
-        !path.scope.getBinding(wireBinding)!.path.isImportDefaultSpecifier()
+        !adapterBinding.path.isImportSpecifier() &&
+        !adapterBinding.path.isImportDefaultSpecifier()
     ) {
-        throw generateError(
+        handleError(
             id,
             {
                 errorInfo: DecoratorErrors.IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER,
@@ -92,7 +104,7 @@ function validateWireId(id: NodePath | undefined, path: NodePath, state: LwcBabe
 
 function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPluginPass) {
     if (!config.isObjectExpression()) {
-        throw generateError(
+        handleError(
             config,
             {
                 errorInfo: DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER,
@@ -101,45 +113,48 @@ function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPlu
         );
     }
 
-    for (const prop of config.get('properties')) {
-        // Only validate {[computed]: true} object properties; {static: true} props are all valid
-        // and we ignore {...spreads} and {methods(){}}
-        if (!prop.isObjectProperty() || !prop.node.computed) continue;
+    const properties = config.get('properties');
+    if (Array.isArray(properties)) {
+        for (const prop of properties) {
+            // Only validate {[computed]: true} object properties; {static: true} props are all valid
+            // and we ignore {...spreads} and {methods(){}}
+            if (!prop.isObjectProperty() || !prop.node.computed) continue;
 
-        const key: NodePath = prop.get('key');
-        if (key.isIdentifier()) {
-            // Only allow identifiers that originated from a `const` declaration
-            const binding = key.scope.getBinding(key.node.name);
-            // TODO [#3956]: Investigate allowing imported constants
-            if (binding?.kind === 'const') continue;
-            // By default, the identifier `undefined` has no binding (when it's actually undefined),
-            // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
-            if (key.node.name === 'undefined' && !binding) continue;
-        } else if (key.isLiteral()) {
-            // A literal can be a regexp, template literal, or primitive; only allow primitives
-            if (key.isTemplateLiteral()) {
-                // A template literal is not guaranteed to always result in the same value
-                // (e.g. `${Math.random()}`), so we disallow them entirely.
-                // TODO [#3956]: Investigate allowing template literals
-                throw generateError(
-                    key,
-                    {
-                        errorInfo: DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL,
-                    },
-                    state
-                );
-            } else if (!key.isRegExpLiteral()) {
-                continue;
+            const key: NodePath = prop.get('key');
+            if (key.isIdentifier()) {
+                // Only allow identifiers that originated from a `const` declaration
+                const binding = key.scope.getBinding(key.node.name);
+                // TODO [#3956]: Investigate allowing imported constants
+                if (binding?.kind === 'const') continue;
+                // By default, the identifier `undefined` has no binding (when it's actually undefined),
+                // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
+                if (key.node.name === 'undefined' && !binding) continue;
+            } else if (key.isLiteral()) {
+                // A literal can be a regexp, template literal, or primitive; only allow primitives
+                if (key.isTemplateLiteral()) {
+                    // A template literal is not guaranteed to always result in the same value
+                    // (e.g. `${Math.random()}`), so we disallow them entirely.
+                    // TODO [#3956]: Investigate allowing template literals
+                    handleError(
+                        key,
+                        {
+                            errorInfo: DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL,
+                        },
+                        state
+                    );
+                } else if (!key.isRegExpLiteral()) {
+                    continue;
+                }
             }
-        }
 
-        throw generateError(
-            key,
-            {
-                errorInfo: DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL,
-            },
-            state
-        );
+            handleError(
+                key,
+                {
+                    errorInfo: DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL,
+                },
+                state
+            );
+        }
     }
 }
 
@@ -167,7 +182,7 @@ function validateUsageWithOtherDecorators(
             decorator.name === WIRE_DECORATOR &&
             decorator.path.parentPath.node === path.parentPath.node
         ) {
-            throw generateError(
+            handleError(
                 path,
                 {
                     errorInfo: DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED,
@@ -179,7 +194,7 @@ function validateUsageWithOtherDecorators(
             (decorator.name === API_DECORATOR || decorator.name === TRACK_DECORATOR) &&
             decorator.path.parentPath.node === path.parentPath.node
         ) {
-            throw generateError(
+            handleError(
                 path,
                 {
                     errorInfo: DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR,

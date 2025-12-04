@@ -66,8 +66,11 @@ export function patchElementWithRestrictions(
     assertNotProd(); // this method should never leak to prod
 
     const originalOuterHTMLDescriptor = getPropertyDescriptor(elm, 'outerHTML')!;
-    const descriptors: PropertyDescriptorMap = {
-        outerHTML: generateAccessorDescriptor({
+    const descriptors: { [K in keyof Element]?: PropertyDescriptor } = {};
+    // For consistency between dev/prod modes, only patch `outerHTML` if it exists
+    // (i.e. patch it in engine-dom, not in engine-server)
+    if (originalOuterHTMLDescriptor) {
+        descriptors.outerHTML = generateAccessorDescriptor({
             get(this: Element): string {
                 return originalOuterHTMLDescriptor.get!.call(this);
             },
@@ -75,8 +78,8 @@ export function patchElementWithRestrictions(
                 logError(`Invalid attempt to set outerHTML on Element.`);
                 return originalOuterHTMLDescriptor.set!.call(this, value);
             },
-        }),
-    };
+        });
+    }
 
     // Apply extra restriction related to DOM manipulation if the element is not a portal.
     if (!options.isLight && options.isSynthetic && !options.isPortal) {

@@ -6,6 +6,7 @@
  */
 import { SHADOW_ATTRIBUTE } from '../utils/selectors-scoping';
 import type { Root } from 'postcss';
+import type { StyleCompilerCtx } from '../utils/error-recovery';
 
 // Subset of prefixes for animation-related names that we expect people might be using.
 // The most important is -webkit, which is actually part of the spec now. All -webkit prefixes
@@ -26,36 +27,40 @@ function getAllNames(name: string) {
 const ANIMATION = getAllNames('animation');
 const ANIMATION_NAME = getAllNames('animation-name');
 
-export default function process(root: Root) {
+export default function process(root: Root, ctx: StyleCompilerCtx) {
     const knownNames: Set<string> = new Set();
     root.walkAtRules((atRule) => {
-        // Note that @-webkit-keyframes, @-moz-keyframes, etc. are not actually a thing supported
-        // in any browser, even though you'll see it on some StackOverflow answers.
-        if (atRule.name === 'keyframes') {
-            const { params } = atRule;
-            knownNames.add(params);
-            atRule.params = `${params}-${SHADOW_ATTRIBUTE}`;
-        }
+        ctx.withErrorRecovery(() => {
+            // Note that @-webkit-keyframes, @-moz-keyframes, etc. are not actually a thing supported
+            // in any browser, even though you'll see it on some StackOverflow answers.
+            if (atRule.name === 'keyframes') {
+                const { params } = atRule;
+                knownNames.add(params);
+                atRule.params = `${params}-${SHADOW_ATTRIBUTE}`;
+            }
+        });
     });
     root.walkRules((rule) => {
         rule.walkDecls((decl) => {
-            if (ANIMATION.has(decl.prop)) {
-                // Use a simple heuristic of breaking up the tokens by whitespace. We could use
-                // a dedicated animation prop parser (e.g.
-                // https://github.com/hookhookun/parse-animation-shorthand) but it's
-                // probably overkill.
-                const tokens = decl.value
-                    .trim()
-                    .split(/\s+/g)
-                    .map((token) =>
-                        knownNames.has(token) ? `${token}-${SHADOW_ATTRIBUTE}` : token
-                    );
-                decl.value = tokens.join(' ');
-            } else if (ANIMATION_NAME.has(decl.prop)) {
-                if (knownNames.has(decl.value)) {
-                    decl.value = `${decl.value}-${SHADOW_ATTRIBUTE}`;
+            ctx.withErrorRecovery(() => {
+                if (ANIMATION.has(decl.prop)) {
+                    // Use a simple heuristic of breaking up the tokens by whitespace. We could use
+                    // a dedicated animation prop parser (e.g.
+                    // https://github.com/hookhookun/parse-animation-shorthand) but it's
+                    // probably overkill.
+                    const tokens = decl.value
+                        .trim()
+                        .split(/\s+/g)
+                        .map((token) =>
+                            knownNames.has(token) ? `${token}-${SHADOW_ATTRIBUTE}` : token
+                        );
+                    decl.value = tokens.join(' ');
+                } else if (ANIMATION_NAME.has(decl.prop)) {
+                    if (knownNames.has(decl.value)) {
+                        decl.value = `${decl.value}-${SHADOW_ATTRIBUTE}`;
+                    }
                 }
-            }
+            });
         });
     });
 }

@@ -1,11 +1,11 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "8.12.2",
+    "version": "8.26.0",
     "private": true,
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
         "test": "yarn test:run && yarn test:format",
-        "test:run": "for file in $(find dist -name '*.tachometer.json'); do tach --config $file --json-file $(echo $file | sed 's/.json/.results.json/'); done",
+        "test:run": "for file in $(find dist -name '*.tachometer.json' | egrep \"$GREP\"); do tach --config $file --json-file $(echo $file | sed 's/.json/.results.json/'); done",
         "test:format": "if [ -z $BENCHMARK_SMOKE_TEST ]; then node ./scripts/format-results.mjs $(find dist -name '*.results.json'); fi",
         "test:best": "best src",
         "test:best:ci": "best src --runner remote"
@@ -15,19 +15,19 @@
         "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "8.12.2",
-        "@lwc/engine-server": "8.12.2",
-        "@lwc/perf-benchmarks-components": "8.12.2",
-        "@lwc/ssr-runtime": "8.12.2",
-        "@lwc/synthetic-shadow": "8.12.2"
+        "@lwc/engine-dom": "8.26.0",
+        "@lwc/engine-server": "8.26.0",
+        "@lwc/perf-benchmarks-components": "8.26.0",
+        "@lwc/ssr-runtime": "8.26.0",
+        "@lwc/synthetic-shadow": "8.26.0"
     },
     "devDependencies": {
-        "@best/cli": "^14.0.0",
-        "@best/runner-headless": "^14.0.0",
-        "@best/runner-remote": "^14.0.0",
-        "folder-hash": "4.0.4",
+        "@best/cli": "^16.0.0",
+        "@best/runner-headless": "^16.0.0",
+        "@best/runner-remote": "^16.0.0",
+        "folder-hash": "4.1.1",
         "markdown-table": "^3.0.4",
-        "tachometer": "^0.7.1"
+        "tachometer": "^0.7.2"
     },
     "nx": {
         "targets": {

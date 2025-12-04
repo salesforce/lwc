@@ -50,10 +50,6 @@ describe('enableStaticContentOptimization:', () => {
     it.for(configs)('$name', async ({ opts, expected }) => {
         const { code, warnings } = await runRollup('fixtures/basic/basic.js', opts);
         expect(warnings).toEqual([]);
-        if (expected) {
-            expect(code).toContain('<img');
-        } else {
-            expect(code).not.toContain('<img');
-        }
+        expect(code.includes('<img')).toBe(expected);
     });
 });

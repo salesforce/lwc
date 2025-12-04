@@ -40,5 +40,5 @@ export function addScopeTokenDeclarations(
         bHasScopedStylesheetsDeclaration()
     );
 
-    program.body.push(...tmplAssignmentBlock(b.identifier('tmpl')));
+    program.body.push(...tmplAssignmentBlock(b.identifier('__lwcTmpl')));
 }

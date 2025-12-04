@@ -60,6 +60,18 @@ function safelyCallGetter(target: any, key: PropertyKey) {
     }
 }
 
+function isRevokedProxy(target: object) {
+    try {
+        // `str in obj` will never throw for normal objects or active proxies,
+        // but the operation is not allowed for revoked proxies
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        '' in target;
+        return false;
+    } catch (_) {
+        return true;
+    }
+}
+
 /**
  * Flush all the logs we've written so far and return the current logs.
  */
@@ -87,7 +99,7 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
         // because the unit tests just create Reactive Observers on-the-fly.
         // Note we could explicitly target Vitest with `process.env.NODE_ENV === 'test'`, but then that would also
         // affect our downstream consumers' Jest/Vitest tests, and we don't want to throw an error just for a logger.
-        if (process.env.NODE_ENV === 'test-karma-lwc') {
+        if (process.env.NODE_ENV === 'test-lwc-integration') {
             throw new Error('The VM should always be defined except possibly in unit tests');
         }
     } else {
@@ -126,7 +138,9 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
         // Guard against recursive objects - don't traverse forever
         return;
     }
-    if (isObject(target) && !isNull(target)) {
+
+    // Revoked proxies (e.g. window props in LWS sandboxes) throw an error if we try to track them
+    if (isObject(target) && !isNull(target) && !isRevokedProxy(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
         targetsToPropertyKeys.set(target, key);
 

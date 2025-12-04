@@ -21,4 +21,7 @@ export default class extends LightningElement {
     isUppercase = 'FOO BaR';
     isTabs = '\tfoo\t';
     isNewlines = '\nfoo\n';
+    // Skipping `>` because it messes up `formatHTML()`, and the important thing is checking
+    // that we are calling `htmlEscape()` in attribute mode, so checking `<` is sufficient.
+    hasEscapableCharacters = `"'<&`;
 }

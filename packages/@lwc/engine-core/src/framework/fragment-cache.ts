@@ -24,8 +24,8 @@ const fragmentCache: WeakMap<string[], Element>[] = ArrayFrom(
     () => new WeakMap()
 );
 
-// Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+// Only used in LWC's integration tests
+if (process.env.NODE_ENV === 'test-lwc-integration') {
     (window as any).__lwcResetFragmentCache = () => {
         for (let i = 0; i < fragmentCache.length; i++) {
             fragmentCache[i] = new WeakMap();

@@ -14,6 +14,9 @@ export const enum APIVersion {
     V61_250_SUMMER_24 = 61,
     V62_252_WINTER_25 = 62,
     V63_254_SPRING_25 = 63,
+    V64_256_SUMMER_25 = 64,
+    V65_258_WINTER_26 = 65,
+    V66_260_SPRING_26 = 66,
 }
 
 // These must be updated when the enum is updated.
@@ -27,6 +30,9 @@ const allVersions = [
     APIVersion.V61_250_SUMMER_24,
     APIVersion.V62_252_WINTER_25,
     APIVersion.V63_254_SPRING_25,
+    APIVersion.V64_256_SUMMER_25,
+    APIVersion.V65_258_WINTER_26,
+    APIVersion.V66_260_SPRING_26,
 ];
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
 export const LOWEST_API_VERSION = allVersions[0];
@@ -118,6 +124,31 @@ export const enum APIFeature {
 }
 
 /**
+ * @param apiVersionFeature
+ */
+export function minApiVersion(apiVersionFeature: APIFeature): APIVersion {
+    switch (apiVersionFeature) {
+        case APIFeature.LOWERCASE_SCOPE_TOKENS:
+        case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
+            return APIVersion.V59_246_WINTER_24;
+        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
+        case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
+        case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
+        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
+            return APIVersion.V60_248_SPRING_24;
+        case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
+        case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
+            return APIVersion.V61_250_SUMMER_24;
+        case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
+        case APIFeature.ENABLE_THIS_DOT_STYLE:
+        case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
+            return APIVersion.V62_252_WINTER_25;
+        case APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS:
+            return APIVersion.V66_260_SPRING_26;
+    }
+}
+
+/**
  *
  * @param apiVersionFeature
  * @param apiVersion
@@ -126,23 +157,5 @@ export function isAPIFeatureEnabled(
     apiVersionFeature: APIFeature,
     apiVersion: APIVersion
 ): boolean {
-    switch (apiVersionFeature) {
-        case APIFeature.LOWERCASE_SCOPE_TOKENS:
-        case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
-            return apiVersion >= APIVersion.V59_246_WINTER_24;
-        case APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION:
-        case APIFeature.SKIP_UNNECESSARY_REGISTER_DECORATORS:
-        case APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS:
-        case APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS:
-            return apiVersion >= APIVersion.V60_248_SPRING_24;
-        case APIFeature.ENABLE_ELEMENT_INTERNALS_AND_FACE:
-        case APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING:
-            return apiVersion >= APIVersion.V61_250_SUMMER_24;
-        case APIFeature.ENABLE_THIS_DOT_HOST_ELEMENT:
-        case APIFeature.ENABLE_THIS_DOT_STYLE:
-        case APIFeature.TEMPLATE_CLASS_NAME_OBJECT_BINDING:
-            return apiVersion >= APIVersion.V62_252_WINTER_25;
-        case APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS:
-            return apiVersion >= APIVersion.V63_254_SPRING_25;
-    }
+    return apiVersion >= minApiVersion(apiVersionFeature);
 }

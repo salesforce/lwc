@@ -50,7 +50,8 @@ describe('dynamic imports', () => {
             };
 
             if (strictSpecifier && !isStrict) {
-                expect(callback).toThrowError(/INVALID_DYNAMIC_IMPORT_SOURCE_STRICT/);
+                // eslint-disable-next-line vitest/no-conditional-expect
+                expect(callback).toThrowError(/LWC1121/);
                 return;
             } else {
                 callback();
@@ -65,8 +66,10 @@ describe('dynamic imports', () => {
             ]);
 
             if (loader) {
+                // eslint-disable-next-line vitest/no-conditional-expect
                 expect(imports).toEqual(importsWithLoader);
             } else {
+                // eslint-disable-next-line vitest/no-conditional-expect
                 expect(imports).not.toEqual(importsWithLoader);
             }
         }

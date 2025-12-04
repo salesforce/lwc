@@ -5,10 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { LWC_COMPONENT_PROPERTIES } from '../../constants';
+import { isErrorRecoveryMode } from '../../utils';
 import { isWireDecorator } from './shared';
 import type { types, NodePath } from '@babel/core';
 import type { DecoratorMeta } from '../index';
-import type { BabelTypes } from '../../types';
+import type { BabelTypes, LwcBabelPluginPass } from '../../types';
 import type { BindingOptions } from '../types';
 
 const WIRE_PARAM_PREFIX = '$';
@@ -21,19 +22,38 @@ function isObservedProperty(configProperty: NodePath<types.ObjectProperty>) {
     );
 }
 
-function getWiredStatic(wireConfig: NodePath<types.ObjectExpression>): types.ObjectProperty[] {
-    return wireConfig
-        .get('properties')
+function getWiredStatic(
+    wireConfig: NodePath<types.ObjectExpression>,
+    state: LwcBabelPluginPass
+): types.ObjectProperty[] {
+    const properties = wireConfig.get('properties');
+
+    // Should only occurs in error recovery mode when config validation has already failed
+    // Skip processing since the error has been logged upstream
+    if (isErrorRecoveryMode(state) && !Array.isArray(properties)) {
+        return [];
+    }
+
+    return properties
         .filter((property) => !isObservedProperty(property as NodePath<types.ObjectProperty>))
         .map((path) => path.node) as types.ObjectProperty[];
 }
 
 function getWiredParams(
     t: BabelTypes,
-    wireConfig: NodePath<types.ObjectExpression>
+    wireConfig: NodePath<types.ObjectExpression>,
+    state: LwcBabelPluginPass
 ): types.ObjectProperty[] {
-    return wireConfig
-        .get('properties')
+    const properties = wireConfig.get('properties');
+
+    // Should only occur in error recovery mode when config validation has already failed
+    // Skip processing since the error has been logged upstream
+    if (isErrorRecoveryMode(state) && !Array.isArray(properties)) {
+        // In error recovery mode, return empty array instead of crashing
+        return [];
+    }
+
+    return properties
         .filter((property) => isObservedProperty(property as NodePath<types.ObjectProperty>))
         .map((path) => {
             // Need to clone deep the observed property to remove the param prefix
@@ -261,7 +281,11 @@ type WiredValue = {
     };
 };
 
-export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]) {
+export default function transform(
+    t: BabelTypes,
+    decoratorMetas: DecoratorMeta[],
+    state: LwcBabelPluginPass
+) {
     const objectProperties = [];
     const wiredValues = decoratorMetas.filter(isWireDecorator).map(({ path }) => {
         const [id, config] = path.get('expression.arguments') as [
@@ -280,8 +304,8 @@ export default function transform(t: BabelTypes, decoratorMetas: DecoratorMeta[]
         };
 
         if (config) {
-            wiredValue.static = getWiredStatic(config);
-            wiredValue.params = getWiredParams(t, config);
+            wiredValue.static = getWiredStatic(config, state);
+            wiredValue.params = getWiredParams(t, config, state);
         }
 
         const referenceLookup = scopedReferenceLookup(path.scope);

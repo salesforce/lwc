@@ -1,0 +1,5 @@
+[
+    {
+        "message": "LWC1121: Invalid import. The argument \"123\" must be a stringLiteral for dynamic imports when strict mode is enabled."
+    }
+]

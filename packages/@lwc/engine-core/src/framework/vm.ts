@@ -31,6 +31,7 @@ import {
     getTemplateReactiveObserver,
     getComponentAPIVersion,
     resetTemplateObserverAndUnsubscribe,
+    supportsSyntheticElementInternals,
 } from './component';
 import { addCallbackToNextTick, EmptyArray, EmptyObject } from './utils';
 import { invokeComponentCallback, invokeComponentConstructor } from './invoker';
@@ -49,6 +50,7 @@ import { flushMutationLogsForVM, getAndFlushMutationLogs } from './mutation-logg
 import { connectWireAdapters, disconnectWireAdapters, installWireAdapters } from './wiring';
 import { VNodeType, isVFragment } from './vnodes';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
+import { connectContext, disconnectContext } from './modules/context';
 import type { VNodes, VCustomElement, VNode, VBaseElement, VStaticPartElement } from './vnodes';
 import type { ReactiveObserver } from './mutation-tracker';
 import type {
@@ -135,6 +137,8 @@ export interface VM<N = HostNode, E = HostElement> {
     readonly owner: VM<N, E> | null;
     /** References to elements rendered using lwc:ref (template refs) */
     refVNodes: RefVNodes | null;
+    /** event listeners added to elements corresponding to functions provided by lwc:on */
+    attachedEventListeners: WeakMap<Element, Record<string, EventListener | undefined>>;
     /** Whether or not the VM was hydrated */
     readonly hydrated: boolean;
     /** Rendering operations associated with the VM */
@@ -250,11 +254,11 @@ export function connectRootElement(elm: any) {
 
     if (process.env.NODE_ENV !== 'production') {
         // Flush any logs for this VM so that the initial properties from the constructor don't "count"
-        // in subsequent re-renders (lwc-rehydrate). Right now we're at the first render (lwc-hydrate).
+        // in subsequent re-renders (lwc-rerender). Right now we're at the first render (lwc-hydrate).
         flushMutationLogsForVM(vm);
     }
 
-    logGlobalOperationStartWithVM(OperationId.GlobalHydrate, vm);
+    logGlobalOperationStartWithVM(OperationId.GlobalRender, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
@@ -265,7 +269,7 @@ export function connectRootElement(elm: any) {
     runConnectedCallback(vm);
     rehydrate(vm);
 
-    logGlobalOperationEndWithVM(OperationId.GlobalHydrate, vm);
+    logGlobalOperationEndWithVM(OperationId.GlobalRender, vm);
 }
 
 export function disconnectRootElement(elm: any) {
@@ -344,6 +348,7 @@ export function createVM<HostNode, HostElement>(
         mode,
         owner,
         refVNodes: null,
+        attachedEventListeners: new WeakMap(),
         children: EmptyArray,
         aChildren: EmptyArray,
         velements: EmptyArray,
@@ -512,7 +517,7 @@ function computeShadowMode(
     if (
         // Force the shadow mode to always be native. Used for running tests with synthetic shadow patches
         // on, but components running in actual native shadow mode
-        (process.env.NODE_ENV === 'test-karma-lwc' &&
+        (process.env.NODE_ENV === 'test-lwc-integration' &&
             process.env.FORCE_NATIVE_SHADOW_MODE_FOR_TEST) ||
         // If synthetic shadow is explicitly disabled, use pure-native
         lwcRuntimeFlags.DISABLE_SYNTHETIC_SHADOW ||
@@ -656,7 +661,7 @@ function flushRehydrationQueue() {
     const mutationLogs =
         process.env.NODE_ENV === 'production' ? undefined : getAndFlushMutationLogs();
 
-    logGlobalOperationStart(OperationId.GlobalRehydrate);
+    logGlobalOperationStart(OperationId.GlobalRerender);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
@@ -669,7 +674,14 @@ function flushRehydrationQueue() {
     for (let i = 0, len = vms.length; i < len; i += 1) {
         const vm = vms[i];
         try {
-            rehydrate(vm);
+            // We want to prevent rehydration from occurring when nodes are detached from the DOM as this can trigger
+            // unintended side effects, like lifecycle methods being called multiple times.
+            // For backwards compatibility, we use a flag to control the check.
+            // 1. When flag is off, always rehydrate (legacy behavior)
+            // 2. When flag is on, only rehydrate when the VM state is connected (fixed behavior)
+            if (!lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION || vm.state === VMState.connected) {
+                rehydrate(vm);
+            }
         } catch (error) {
             if (i + 1 < len) {
                 // pieces of the queue are still pending to be rehydrated, those should have priority
@@ -679,7 +691,7 @@ function flushRehydrationQueue() {
                 ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
+            logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -687,7 +699,7 @@ function flushRehydrationQueue() {
         }
     }
 
-    logGlobalOperationEnd(OperationId.GlobalRehydrate, mutationLogs);
+    logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
 }
 
 export function runConnectedCallback(vm: VM) {
@@ -699,6 +711,12 @@ export function runConnectedCallback(vm: VM) {
     if (hasWireAdapters(vm)) {
         connectWireAdapters(vm);
     }
+
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        // Setup context before connected callback is executed
+        connectContext(vm);
+    }
+
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
         logOperationStart(OperationId.ConnectedCallback, vm);
@@ -748,6 +766,11 @@ function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
+
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        disconnectContext(vm);
+    }
+
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,
         // it will be re-rendered because we are disconnecting the reactivity
@@ -950,9 +973,17 @@ export function forceRehydration(vm: VM) {
 }
 
 export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void, args?: any[]) {
-    const { renderMode, shadowMode } = vm;
+    const {
+        renderMode,
+        shadowMode,
+        def: { ctor },
+    } = vm;
 
-    if (shadowMode === ShadowMode.Synthetic && renderMode !== RenderMode.Light) {
+    if (
+        shadowMode === ShadowMode.Synthetic &&
+        renderMode !== RenderMode.Light &&
+        !supportsSyntheticElementInternals(ctor)
+    ) {
         throw new Error(
             'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
         );

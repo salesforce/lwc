@@ -5,32 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { builders as b, is } from 'estree-toolkit';
-import { esTemplateWithYield } from '../../estemplate';
-import { expressionIrToEs } from '../expression';
-import { isLiteral } from '../shared';
-
-import { bYieldTextContent, isLastConcatenatedNode } from '../adjacent-text-nodes';
-import type {
-    Statement as EsStatement,
-    ExpressionStatement as EsExpressionStatement,
-} from 'estree';
+import {
+    generateConcatenatedTextNodesExpressions,
+    isLastConcatenatedNode,
+} from '../adjacent-text-nodes';
+import type { Statement as EsStatement } from 'estree';
 import type { Text as IrText } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
-const bBufferTextContent = esTemplateWithYield`
-    didBufferTextContent = true;
-    textContentBuffer += massageTextContent(${/* string value */ is.expression});
-`<EsExpressionStatement[]>;
-
 export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
-    cxt.import(['htmlEscape', 'massageTextContent']);
+    if (isLastConcatenatedNode(cxt)) {
+        // render all concatenated content up to us
+        return generateConcatenatedTextNodesExpressions(cxt);
+    }
 
-    const isLastInSeries = isLastConcatenatedNode(cxt);
-
-    const valueToYield = isLiteral(node.value)
-        ? b.literal(node.value.value)
-        : expressionIrToEs(node.value, cxt);
-
-    return [...bBufferTextContent(valueToYield), ...(isLastInSeries ? [bYieldTextContent()] : [])];
+    // our last sibling is responsible for rendering our content, not us
+    return [];
 };

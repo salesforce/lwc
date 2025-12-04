@@ -4,6 +4,25 @@ import { defineConfig } from 'vitest/config';
 // See: https://github.com/vitest-dev/vitest/discussions/3852
 export default defineConfig({
     test: {
+        projects: [
+            'packages/@lwc/babel-plugin-component',
+            'packages/@lwc/compiler',
+            'packages/@lwc/engine-core',
+            'packages/@lwc/engine-dom',
+            'packages/@lwc/engine-server',
+            'packages/@lwc/errors',
+            'packages/@lwc/features',
+            'packages/@lwc/module-resolver',
+            'packages/@lwc/rollup-plugin',
+            'packages/@lwc/shared',
+            'packages/@lwc/signals',
+            'packages/@lwc/ssr-compiler',
+            'packages/@lwc/ssr-runtime',
+            'packages/@lwc/style-compiler',
+            'packages/@lwc/template-compiler',
+            'packages/@lwc/wire-service',
+            'packages/lwc',
+        ],
         coverage: {
             provider: 'v8',
             exclude: [
@@ -17,29 +36,29 @@ export default defineConfig({
                 '**/scripts/**',
                 '**/vitest.*',
                 // Ignore browser-only modules which are only lightly tested in unit tests
-                // These are mostly tested in integration/karma tests
+                // These are mostly tested in integration tests
                 '**/packages/@lwc/aria-reflection/**',
                 '**/packages/@lwc/engine-dom/**',
                 '**/packages/@lwc/engine-core/**',
                 '**/packages/@lwc/synthetic-shadow/**',
+                // TODO [#5272]: add tests
+                '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages
-                '**/packages/@lwc/integration-karma/**',
-                '**/packages/@lwc/integration-tests/**',
+                '**/packages/@lwc/integration-wtr/**',
+                '**/packages/@lwc/integration-wdio/**',
                 '**/packages/@lwc/integration-types/**',
                 '**/packages/@lwc/perf-benchmarks-components/**',
                 '**/packages/@lwc/perf-benchmarks/**',
                 '**/playground/**',
-                // These are not production-ready yet
-                '**/packages/@lwc/ssr-compiler/**',
-                '**/packages/@lwc/ssr-runtime/**',
                 // This just re-exports other packages
                 '**/packages/lwc/**',
             ],
             thresholds: {
-                branches: 95,
-                functions: 95,
-                lines: 95,
-                statements: 95,
+                // TODO [#5564]: Restore to 95 across the board
+                branches: 90,
+                functions: 89,
+                lines: 93,
+                statements: 90,
             },
             reporter: [
                 'clover',

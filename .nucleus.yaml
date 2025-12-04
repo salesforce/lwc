@@ -5,6 +5,7 @@ core-deploy:
 branches:
     ~DEFAULT~:
         pull-request: &branch-definition
+            workflow: build-and-test
             auto-start: true
             auto-start-from-forks: false
             merge-method: disabled # do not auto-merge; we'll do it ourselves
@@ -13,7 +14,6 @@ branches:
                 - MobilePlatform/lsdk-modules
                 - MobilePlatform/lwr-lightning-platform
                 - MobilePlatform/ui-fsm-components
-                - Skilling-and-Enablement/ui-external-enablement
                 - automation-platform/ui-externalservices-builder-components
                 - communities/microsite-template-marketing
                 - communities/shared-experience-components
@@ -26,15 +26,20 @@ branches:
                 - salesforce-experience-platform-emu/lwr-everywhere
                 - salesforce-experience-platform-emu/lwr-recipes
                 - salesforce/lwc-test
-                - salesforce/o11y-sample-app
+                # Using old major versions; tests in PRs will always fail
+                # - salesforce/o11y-sample-app
+                # - Skilling-and-Enablement/ui-external-enablement
     release:
         pull-request:
             <<: *branch-definition
-            merge-method: force-push # release branch should always be in sync with master branch (linear history)
-    winter25:
+    # Only active branches need to be included in this config
+    winter26:
         pull-request:
             <<: *branch-definition
     spring25:
+        pull-request:
+            <<: *branch-definition
+    summer25:
         pull-request:
             <<: *branch-definition
 jobs:
@@ -57,16 +62,3 @@ steps:
     # this project runs yarn build after yarn install so skip explicit build step
     node-build: &node-build
         skip: true
-    node-pre-release-tests:
-        params:
-            command: yarn test
-    npm-configure:
-        params:
-            registry-url: https://registry.yarnpkg.com
-    npm-configure-for-publish:
-        params:
-            registry-url: https://registry.npmjs.org
-    npm-publish-release:
-        params:
-            access: public
-            tag: latest # note: this should be summer22, winter23, etc. if this .nucleus.yaml file is in a non-master branch

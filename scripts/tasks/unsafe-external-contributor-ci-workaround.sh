@@ -21,11 +21,11 @@ if [[ -n `git status --porcelain` ]]; then
 fi
 
 # Enforce required tooling
-if [[ -z `which gh` ]]; then
+if ! which gh 2>/dev/null 1>/dev/null; then
   echo 'Please install the GitHub CLI (gh): https://cli.github.com/'
   exit 1
 fi
-if [[ -z `which jq` ]]; then
+if ! which jq 2>/dev/null 1>/dev/null; then
   echo 'Please install jq: https://jqlang.github.io/jq'
   exit 1
 fi

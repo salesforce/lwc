@@ -98,21 +98,28 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 /**
- * Properties defined on the component class, excluding those inherited from `LightningElement`.
+ * Gets the public properties of a component class. If the `__lwc_public_property_types__` property
+ * is defined, it will be used as the source of truth for the property types. Otherwise, all of the
+ * properties defined on the component class are used, excluding those inherited from `LightningElement`.
+ *
+ * IMPORTANT: If the fallback is used, then _all_ component properties are returned, rather than
+ * just the public properties.
  */
-// TODO [#4292]: Restrict this to only @api props
-type ComponentClassProperties<T> = Omit<T, keyof LightningElement>;
+type ComponentClassProperties<T> = T extends {
+    readonly __lwc_public_property_types__?: infer Props extends object;
+}
+    ? Props
+    : Omit<T, keyof LightningElement>;
 
 /**
  * The custom element returned when calling {@linkcode createElement} with the given component
  * constructor.
  *
- * NOTE: The returned type incorrectly includes _all_ properties defined on the component class,
+ * NOTE: By default, the returned type includes _all_ properties defined on the component class,
  * even though the runtime object only uses those decorated with `@api`. This is due to a
- * limitation of TypeScript. To avoid inferring incorrect properties, provide an explicit generic
- * parameter, e.g. `createElement<typeof LightningElement>('x-foo', { is: FooCtor })`.
+ * limitation of TypeScript. For example:
  *
- * @example ```
+ * ```
  * class Example extends LightningElement {
  *   @api exposed = 'hello'
  *   internal = 'secret'
@@ -123,6 +130,29 @@ type ComponentClassProperties<T> = Omit<T, keyof LightningElement>;
  * console.log(exposed) // prints 'hello'
  * const internal = example.internal // type is 'string'
  * console.log(internal) // prints `undefined`
+ * ```
+ *
+ * One way to avoid inferring incorrect properties, is to provide an explicit generic parameter.
+ * For example:
+ * ```
+ * const example = createElement<{exposed: string}>('c-example', { is: Example })
+ * const exposed = example.exposed // type is 'string'
+ * const internal = example.internal // Now a type error! ✅
+ * ```
+ *
+ * Alternatively, you can define a type for property on the component, `__lwc_public_property_types__`,
+ * that explicitly lists only the public properties, and the types will be inferred from that prop.
+ * The property should be optional, because it does not actually exist at runtime.
+ * For example:
+ * ```
+ * class Example extends LightningElement {
+ *   @api exposed = 'hello'
+ *   internal = 'secret'
+ *   __lwc_public_property_types__?: { exposed: string }
+ * }
+ * const example = createElement('c-example', { is: Example })
+ * const exposed = example.exposed // type is 'string'
+ * const internal = example.internal // Now a type error! ✅
  * ```
  */
 export type LightningHTMLElement<T> = HTMLElement & ComponentClassProperties<T>;

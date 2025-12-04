@@ -1,0 +1,5 @@
+/* Per-file compiler config, used in configs/plugins/serve-integration.js */
+/*!WTR {"disableSyntheticShadowSupport": true}*/
+div {
+    --foo: 'native';
+}

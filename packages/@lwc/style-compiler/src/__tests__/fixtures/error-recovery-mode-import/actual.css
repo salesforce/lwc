@@ -1,0 +1,12 @@
+@import './foo.css';
+@import url('./foo.css');
+@import 123;
+@import;
+@import './foo.css' bar;
+
+.some-class {
+    color: red;
+}
+
+@import;
+

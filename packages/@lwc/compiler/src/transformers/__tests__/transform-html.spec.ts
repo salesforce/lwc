@@ -9,14 +9,14 @@ import { APIVersion, noop } from '@lwc/shared';
 import { transformSync } from '../transformer';
 import type { TransformOptions } from '../../options';
 
-const TRANSFORMATION_OPTIONS: TransformOptions = {
+const BASE_TRANSFORM_OPTIONS = {
     namespace: 'x',
     name: 'foo',
-};
+} satisfies TransformOptions;
 
 describe('transformSync', () => {
     it('should throw when processing an invalid HTML file', () => {
-        expect(() => transformSync(`<html`, 'foo.html', TRANSFORMATION_OPTIONS)).toThrow(
+        expect(() => transformSync(`<html`, 'foo.html', BASE_TRANSFORM_OPTIONS)).toThrow(
             'Invalid HTML syntax: eof-in-tag.'
         );
     });
@@ -27,7 +27,7 @@ describe('transformSync', () => {
                 <div>Hello</div>
             </template>
         `;
-        const { code } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+        const { code } = transformSync(template, 'foo.html', BASE_TRANSFORM_OPTIONS);
 
         expect(code).toContain(`tmpl.stylesheets = [];`);
     });
@@ -74,13 +74,12 @@ describe('transformSync', () => {
         ];
         it.for(configs)('$name', ({ config, expected }) => {
             const template = `<template><img src="http://example.com/img.png" crossorigin="anonymous"></template>`;
-            const { code, warnings } = transformSync(template, 'foo.html', config);
+            const { code, warnings } = transformSync(template, 'foo.html', {
+                ...BASE_TRANSFORM_OPTIONS,
+                ...config,
+            });
             expect(warnings!.length).toBe(0);
-            if (expected) {
-                expect(code).toContain('<img');
-            } else {
-                expect(code).not.toContain('<img');
-            }
+            expect(code.includes('<img')).toBe(expected);
         });
     });
 
@@ -103,7 +102,7 @@ describe('transformSync', () => {
                     },
                 ],
             },
-            ...TRANSFORMATION_OPTIONS,
+            ...BASE_TRANSFORM_OPTIONS,
         });
         expect(warnings).toHaveLength(0);
         expect(code).toMatch('renderer: renderer');
@@ -117,7 +116,7 @@ describe('transformSync', () => {
                 </svg>
             </template>
         `;
-        const { code, warnings } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+        const { code, warnings } = transformSync(template, 'foo.html', BASE_TRANSFORM_OPTIONS);
         expect(warnings).toHaveLength(0);
         expect(code).not.toMatch('renderer: renderer');
     });
@@ -128,7 +127,7 @@ describe('transformSync', () => {
                 <div>Hello</div>
             </template>
         `;
-        const { cssScopeTokens } = transformSync(template, 'foo.html', TRANSFORMATION_OPTIONS);
+        const { cssScopeTokens } = transformSync(template, 'foo.html', BASE_TRANSFORM_OPTIONS);
 
         expect(cssScopeTokens!.sort()).toEqual([
             'lwc-1hl7358i549',
@@ -147,7 +146,7 @@ describe('transformSync', () => {
             `;
             const { code, warnings } = transformSync(template, 'foo.html', {
                 enableDynamicComponents: true,
-                ...TRANSFORMATION_OPTIONS,
+                ...BASE_TRANSFORM_OPTIONS,
             });
 
             expect(warnings).toHaveLength(0);
@@ -163,7 +162,7 @@ describe('transformSync', () => {
             expect(() =>
                 transformSync(template, 'foo.html', {
                     enableDynamicComponents: false,
-                    ...TRANSFORMATION_OPTIONS,
+                    ...BASE_TRANSFORM_OPTIONS,
                 })
             ).toThrow('LWC1188: Invalid dynamic components usage');
         });
@@ -176,7 +175,7 @@ describe('transformSync', () => {
             `;
             const { code, warnings } = transformSync(template, 'foo.html', {
                 experimentalDynamicDirective: true,
-                ...TRANSFORMATION_OPTIONS,
+                ...BASE_TRANSFORM_OPTIONS,
             });
 
             expect(warnings).toHaveLength(1);
@@ -195,7 +194,7 @@ describe('transformSync', () => {
             expect(() =>
                 transformSync(template, 'foo.html', {
                     experimentalDynamicDirective: false,
-                    ...TRANSFORMATION_OPTIONS,
+                    ...BASE_TRANSFORM_OPTIONS,
                 })
             ).toThrowErrorMatchingInlineSnapshot(
                 `[Error: LWC1128: Invalid lwc:dynamic usage. The LWC dynamic directive must be enabled in order to use this feature.]`
@@ -216,13 +215,63 @@ describe('transformSync', () => {
                     incrementCounter,
                 },
                 experimentalDynamicDirective: true,
-                ...TRANSFORMATION_OPTIONS,
+                ...BASE_TRANSFORM_OPTIONS,
             });
 
             const calls = incrementCounter.mock.calls;
             expect(calls).toHaveLength(2);
             expect(calls[0][0]).toBe('lwc-dynamic-directive');
             expect(calls[1][0]).toBe('lwc-dynamic-directive');
+        });
+    });
+
+    describe('experimentalErrorRecoveryMode', () => {
+        const transformOptions = {
+            ...BASE_TRANSFORM_OPTIONS,
+            experimentalErrorRecoveryMode: true,
+        };
+
+        it('should apply transformation for template file', () => {
+            const template = `
+                <template>
+                    <div>Hello</div>
+                </template>
+            `;
+
+            const { code, warnings } = transformSync(template, 'foo.html', transformOptions);
+
+            expect(code).toContain(`tmpl.stylesheets = [];`);
+            expect(warnings?.length).toBe(0);
+        });
+
+        it('should throw an AggregateError', () => {
+            const templateWithErrors = `
+                <template>
+                    <div lwc:invalid-directive="test"></div>
+                    <span lwc:another-invalid="test"></span>
+                    <p lwc:yet-another-invalid="test"></p>
+                </template>
+            `;
+            expect(() => {
+                transformSync(templateWithErrors, 'foo.html', transformOptions);
+            }).toThrowAggregateError([
+                'LWC1127: Invalid directive "lwc:invalid-directive" on element <div>.',
+                'LWC1127: Invalid directive "lwc:another-invalid" on element <span>.',
+                'LWC1127: Invalid directive "lwc:yet-another-invalid" on element <p>.',
+            ]);
+        });
+
+        it('should aggregate errors from custom element types', () => {
+            const templateWithErrors = `
+                <template>
+                    <custom-element lwc:invalid="test"></custom-element>
+                </template>
+            `;
+            expect(() => {
+                transformSync(templateWithErrors, 'foo.html', transformOptions);
+            }).toThrowAggregateError([
+                'LWC1127: Invalid directive "lwc:invalid" on element <custom-element>.',
+            ]);
         });
     });
 });

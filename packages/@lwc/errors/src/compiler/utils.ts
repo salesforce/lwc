@@ -24,14 +24,21 @@ export class CompilerError extends Error implements CompilerDiagnostic {
     public code: number;
     public filename?: string;
     public location?: Location;
-    public level = DiagnosticLevel.Error;
+    public level: DiagnosticLevel;
 
-    constructor(code: number, message: string, filename?: string, location?: Location) {
+    constructor(
+        code: number,
+        message: string,
+        filename?: string,
+        location?: Location,
+        level = DiagnosticLevel.Error
+    ) {
         super(message);
 
         this.code = code;
         this.filename = filename;
         this.location = location;
+        this.level = level;
     }
 
     static from(diagnostic: CompilerDiagnostic, origin?: CompilerDiagnosticOrigin) {
@@ -56,6 +63,15 @@ export class CompilerError extends Error implements CompilerDiagnostic {
             filename: this.filename,
             location: this.location,
         };
+    }
+}
+
+export class CompilerAggregateError extends AggregateError {
+    public readonly errors: CompilerError[];
+
+    constructor(errors: CompilerError[], message?: string) {
+        super(errors, message);
+        this.errors = errors;
     }
 }
 

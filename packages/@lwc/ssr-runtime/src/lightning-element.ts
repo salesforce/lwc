@@ -15,9 +15,12 @@
 
 import {
     assign,
-    defineProperty,
     defineProperties,
     hasOwnProperty,
+    htmlPropertyToAttribute,
+    isAriaAttribute,
+    keys,
+    REFLECTIVE_GLOBAL_PROPERTY_SET,
     StringToLowerCase,
     toString,
 } from '@lwc/shared';
@@ -25,13 +28,17 @@ import {
 import { ClassList } from './class-list';
 import { mutationTracker } from './mutation-tracker';
 import { descriptors as reflectionDescriptors } from './reflection';
+import { getReadOnlyProxy } from './get-read-only-proxy';
+import { connectContext } from './context';
 import type { Attributes, Properties } from './types';
 import type { Stylesheets } from '@lwc/shared';
+import type { Signal } from '@lwc/signals';
 
 type EventListenerOrEventListenerObject = unknown;
 type AddEventListenerOptions = unknown;
 type EventListenerOptions = unknown;
 type ShadowRoot = unknown;
+type ContextVarieties = Map<unknown, Signal<unknown>>;
 
 export type LightningElementConstructor = typeof LightningElement;
 
@@ -42,10 +49,14 @@ interface PropsAvailableAtConstruction {
 export const SYMBOL__SET_INTERNALS = Symbol('set-internals');
 export const SYMBOL__GENERATE_MARKUP = Symbol('generate-markup');
 export const SYMBOL__DEFAULT_TEMPLATE = Symbol('default-template');
+export const SYMBOL__CONTEXT_VARIETIES = Symbol('context-varieties');
 
 export class LightningElement implements PropsAvailableAtConstruction {
     static renderMode?: 'light' | 'shadow';
     static stylesheets?: Stylesheets;
+    static delegatesFocus?: boolean;
+    static formAssociated?: boolean;
+    static shadowSupportMode?: 'any' | 'reset' | 'native';
 
     // Using ! because these are defined by descriptors in ./reflection
     accessKey!: string;
@@ -59,32 +70,58 @@ export class LightningElement implements PropsAvailableAtConstruction {
     title!: string;
 
     isConnected = false;
-    className = '';
 
     // Using ! because it's assigned in the constructor via `Object.assign`, which TS can't detect
     tagName!: string;
 
+    #props!: Properties;
     #attrs!: Attributes;
     #classList: ClassList | null = null;
+    [SYMBOL__CONTEXT_VARIETIES]: ContextVarieties = new Map();
 
     constructor(propsAvailableAtConstruction: PropsAvailableAtConstruction & Properties) {
         assign(this, propsAvailableAtConstruction);
     }
 
-    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes) {
+    [SYMBOL__SET_INTERNALS](props: Properties, attrs: Attributes, publicProperties: Set<string>) {
+        this.#props = props;
         this.#attrs = attrs;
-        assign(this, props);
 
-        defineProperty(this, 'className', {
-            get() {
-                return props.class ?? '';
-            },
-            set(newVal) {
-                props.class = newVal;
-                attrs.class = newVal;
-                mutationTracker.add(this, 'class');
-            },
-        });
+        if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+            // Setup context before connected callback is executed
+            connectContext(this);
+        }
+
+        // Class should be set explicitly to avoid it being overridden by connectedCallback classList mutation.
+        if (attrs.class) {
+            this.className = attrs.class;
+        }
+
+        // Avoid setting the following types of properties that should not be set:
+        // - Properties that are not public.
+        // - Properties that are not global.
+        for (const propName of keys(props)) {
+            const attrName = htmlPropertyToAttribute(propName);
+            if (
+                publicProperties.has(propName) ||
+                REFLECTIVE_GLOBAL_PROPERTY_SET.has(propName) ||
+                isAriaAttribute(attrName)
+            ) {
+                // For props passed from parents to children, they are intended to be read-only
+                // to avoid a child mutating its parent's state
+                (this as any)[propName] = getReadOnlyProxy(props[propName]);
+            }
+        }
+    }
+
+    get className() {
+        return this.#props.class ?? '';
+    }
+
+    set className(newVal: any) {
+        this.#props.class = newVal;
+        this.#attrs.class = newVal;
+        mutationTracker.add(this, 'class');
     }
 
     get classList() {
@@ -135,6 +172,12 @@ export class LightningElement implements PropsAvailableAtConstruction {
         _options?: boolean | EventListenerOptions
     ): void {
         // noop
+    }
+
+    get template() {
+        return {
+            synthetic: false,
+        };
     }
 
     // ----------------------------------------------------------- //

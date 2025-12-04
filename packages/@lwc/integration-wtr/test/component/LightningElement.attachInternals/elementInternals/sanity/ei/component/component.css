@@ -1,0 +1,3 @@
+:host(:state(--checked)) {
+    color: rgb(255, 0, 0);
+}

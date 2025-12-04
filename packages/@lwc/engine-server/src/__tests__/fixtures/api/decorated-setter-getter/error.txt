@@ -1,0 +1,1 @@
+LWC1112: @api get setterGetterApi and @api set setterGetterApi detected in class declaration. Only one of the two needs to be decorated with @api.

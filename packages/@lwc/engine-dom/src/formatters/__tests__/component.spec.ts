@@ -15,7 +15,7 @@ import {
 import { LOWEST_API_VERSION } from '@lwc/shared';
 
 // it needs to be imported from the window, otherwise the checks for associated vms is done against "@lwc/engine-core"
-const LightningElementFormatter = (globalThis as any)['devtoolsFormatters'].find((f: any) => {
+const LightningElementFormatter = (globalThis as any)['devtoolsFormatters']?.find((f: any) => {
     return f.name === 'LightningElementFormatter';
 });
 
@@ -33,8 +33,9 @@ class WireAdapter {
     disconnect() {}
 }
 
-describe('Lightning Element formatter', () => {
-    const { header } = LightningElementFormatter;
+// LightningElementFormatter is not exposed in prod mode
+describe.skipIf(process.env.NODE_ENV === 'production')('Lightning Element formatter', () => {
+    const header = LightningElementFormatter?.header;
 
     it('should not contain body', () => {
         expect(LightningElementFormatter.hasBody()).toBe(false);

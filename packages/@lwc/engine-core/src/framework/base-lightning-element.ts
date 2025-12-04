@@ -38,7 +38,11 @@ import {
 } from '../libs/reflection';
 
 import { HTMLElementOriginalDescriptors } from './html-properties';
-import { getComponentAPIVersion, getWrappedComponentsListener } from './component';
+import {
+    getComponentAPIVersion,
+    getWrappedComponentsListener,
+    supportsSyntheticElementInternals,
+} from './component';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import { associateVM, getAssociatedVM, RenderMode, ShadowMode } from './vm';
 import { componentValueObserved } from './mutation-tracker';
@@ -188,12 +192,17 @@ type RefNodes = { [name: string]: Element };
 
 const refsCache: WeakMap<RefVNodes, RefNodes> = new WeakMap();
 
-/**
- * A `LightningElement` will always be attached to an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement),
- * rather than the more broad `Element` used by the generic shadow root interface.
- */
 export interface LightningElementShadowRoot extends ShadowRoot {
+    /**
+     * A `LightningElement` will always be attached to an [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement),
+     * rather than the more broad `Element` used by the generic shadow root interface.
+     */
     readonly host: HTMLElement;
+    /**
+     * When present, indicates that the shadow root is the synthetic polyfill loaded by
+     * `@lwc/synethic-shadow`.
+     */
+    readonly synthetic?: true;
 }
 
 export interface LightningElement extends HTMLElementTheGoodParts, AccessibleElementProperties {
@@ -488,6 +497,7 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
     attachInternals(): ElementInternals {
         const vm = getAssociatedVM(this);
         const {
+            def: { ctor },
             elm,
             apiVersion,
             renderer: { attachInternals },
@@ -501,11 +511,28 @@ function warnIfInvokedDuringConstruction(vm: VM, methodOrPropName: string) {
             );
         }
 
-        if (vm.shadowMode === ShadowMode.Synthetic) {
+        const internals = attachInternals(elm);
+        if (vm.shadowMode === ShadowMode.Synthetic && supportsSyntheticElementInternals(ctor)) {
+            const handler: ProxyHandler<ElementInternals> = {
+                get(target: ElementInternals, prop: keyof ElementInternals) {
+                    if (prop === 'shadowRoot') {
+                        return vm.shadowRoot;
+                    }
+                    const value = Reflect.get(target, prop);
+                    if (typeof value === 'function') {
+                        return value.bind(target);
+                    }
+                    return value;
+                },
+                set(target: ElementInternals, prop: keyof ElementInternals, value: any) {
+                    return Reflect.set(target, prop, value);
+                },
+            };
+            return new Proxy(internals, handler);
+        } else if (vm.shadowMode === ShadowMode.Synthetic) {
             throw new Error('attachInternals API is not supported in synthetic shadow.');
         }
-
-        return attachInternals(elm);
+        return internals;
     },
 
     get isConnected(): boolean {

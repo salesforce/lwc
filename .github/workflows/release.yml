@@ -1,0 +1,116 @@
+name: Manual Release
+
+on:
+    workflow_dispatch:
+        inputs:
+            bump:
+                description: 'Version bump type'
+                type: choice
+                options:
+                    - major
+                    - minor
+                    - patch
+                    - prerelease
+                required: false
+            release_version:
+                description: 'OR Explicit version number (must be greater than current root version)'
+                required: false
+
+env:
+    NODE_VERSION: '24.11.1'
+
+permissions:
+    contents: write
+    pull-requests: write
+    id-token: write
+    packages: write
+
+jobs:
+    release:
+        # Allow only on master, spring*, summer*, winter*;
+        if: ${{ github.repository_owner == 'salesforce' && (github.ref_name == 'master' || startsWith(github.ref_name, 'spring') || startsWith(github.ref_name, 'summer') || startsWith(github.ref_name, 'winter')) }}
+        name: Release LWC - ${{ inputs.release_version }} ${{ inputs.bump }}
+        environment: release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Validate input version
+              id: resolve_input
+              run: |
+                  RELEASE_VERSION='${{ inputs.release_version }}'
+                  if [ -z "$RELEASE_VERSION" ]; then
+                    RELEASE_VERSION='${{ inputs.bump }}'
+                    if [ -z "$RELEASE_VERSION" ]; then
+                      echo "An explicit version number or release version type must be specified."
+                      exit 1
+                    fi
+                  fi
+                  echo "Resolved input: '$RELEASE_VERSION'"
+                  echo "resolved=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+            - name: Checkout
+              uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+                  token: ${{ secrets.WORKFLOW_PAT }}
+                  persist-credentials: true
+
+            - name: Setup Node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  registry-url: 'https://registry.npmjs.org'
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile --ignore-scripts # Building later; can skip for now
+
+            - name: Update LWC version
+              id: update_version
+              run: |
+
+                  node ./scripts/release/version.js '${{ steps.resolve_input.outputs.resolved }}'
+                  RESOLVED_VERSION="$(jq -r .version package.json)"
+                  echo "New version: $RESOLVED_VERSION"
+                  echo "new_version=$RESOLVED_VERSION" >> "$GITHUB_OUTPUT"
+
+            - name: Set git identity (Actions bot)
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            - name: Commit & push
+              uses: actions-js/push@v1.4
+              with:
+                  github_token: ${{ secrets.WORKFLOW_PAT }}
+                  branch: ${{ github.ref_name }}
+                  message: 'chore: release v${{ steps.update_version.outputs.new_version }}'
+
+            - name: Build
+              run: yarn build
+
+            - name: Tag and create GitHub release
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  VERSION='${{ steps.update_version.outputs.new_version }}'
+                  git tag -a "v$VERSION" -m "Release v$VERSION"
+                  git push origin tag "v$VERSION"
+                  gh release create "v$VERSION" --title "v$VERSION" --generate-notes
+
+            - name: Publish to npm
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_CONFIG_ALWAYS_AUTH: 'true'
+              run: |
+                  # Force both npm and yarn to use npmjs and pick up the token
+                  yarn config set registry https://registry.npmjs.org
+                  npm config set registry https://registry.npmjs.org
+                  printf "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true\n" > ~/.npmrc
+
+                  # Sanity checks
+                  echo "yarn registry: $(yarn config get registry)"
+                  echo "npm registry:  $(npm config get registry)"
+
+                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
+                  yarn nx release publish --yes --tag "$TAG"

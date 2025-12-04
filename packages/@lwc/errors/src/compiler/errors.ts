@@ -6,7 +6,7 @@
  */
 import { templateString } from '../shared/utils';
 import { CompilerError, getCodeFromError, getFilename, getLocation } from './utils';
-import type { LWCErrorInfo } from '../shared/types';
+import type { DiagnosticLevel, LWCErrorInfo } from '../shared/types';
 import type { CompilerDiagnosticOrigin, CompilerDiagnostic } from './utils';
 
 export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
@@ -47,13 +47,15 @@ export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): str
  */
 export function generateCompilerDiagnostic(
     errorInfo: LWCErrorInfo,
-    config?: ErrorConfig
+    config?: ErrorConfig,
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
+
     const diagnostic: CompilerDiagnostic = {
         code: errorInfo.code,
         message,
-        level: errorInfo.level,
+        level: getEffectiveErrorLevel(errorInfo, useStrictErrorOverride),
     };
 
     if (config && config.origin) {
@@ -74,10 +76,12 @@ export function generateCompilerDiagnostic(
  */
 export function generateCompilerError(
     errorInfo: LWCErrorInfo,
-    config?: ErrorConfig
+    config?: ErrorConfig,
+    useStrictErrorOverride = false
 ): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
-    const error = new CompilerError(errorInfo.code, message);
+    const level = getEffectiveErrorLevel(errorInfo, useStrictErrorOverride);
+    const error = new CompilerError(errorInfo.code, message, undefined, undefined, level);
 
     if (config) {
         error.filename = getFilename(config.origin);
@@ -110,9 +114,10 @@ export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: an
  * @returns The normalized compiler error.
  */
 export function normalizeToCompilerError(
-    errorInfo: LWCErrorInfo,
+    fallbackErrorInfo: LWCErrorInfo,
     error: any,
-    origin?: CompilerDiagnosticOrigin
+    origin?: CompilerDiagnosticOrigin,
+    useStrictErrorOverride = false
 ): CompilerError {
     if (error instanceof CompilerError) {
         if (origin) {
@@ -121,16 +126,37 @@ export function normalizeToCompilerError(
         }
         return error;
     }
-
-    const { code, message, filename, location } = convertErrorToDiagnostic(
+    const { code, message, filename, location, level } = convertErrorToDiagnostic(
         error,
-        errorInfo,
-        origin
+        fallbackErrorInfo,
+        origin,
+        useStrictErrorOverride
     );
 
-    const compilerError = new CompilerError(code, `${error.name}: ${message}`, filename, location);
+    const compilerError = new CompilerError(
+        code,
+        `${error.name}: ${message}`,
+        filename,
+        location,
+        level
+    );
     compilerError.stack = error.stack;
     return compilerError;
+}
+
+/**
+ * Determines the effective error level based on strict mode override settings.
+ * @param errorInfo The error information containing level and strictLevel properties
+ * @param useStrictErrorOverride Whether to use strict error level override
+ * @returns The effective diagnostic level to use
+ */
+function getEffectiveErrorLevel(
+    errorInfo: LWCErrorInfo,
+    useStrictErrorOverride: boolean
+): DiagnosticLevel {
+    return useStrictErrorOverride && errorInfo.strictLevel !== undefined
+        ? errorInfo.strictLevel
+        : errorInfo.level;
 }
 
 /**
@@ -143,7 +169,8 @@ export function normalizeToCompilerError(
 export function normalizeToDiagnostic(
     errorInfo: LWCErrorInfo,
     error: any,
-    origin?: CompilerDiagnosticOrigin
+    origin?: CompilerDiagnosticOrigin,
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
     if (error instanceof CompilerError) {
         const diagnostic = error.toDiagnostic();
@@ -154,20 +181,24 @@ export function normalizeToDiagnostic(
         return diagnostic;
     }
 
-    return convertErrorToDiagnostic(error, errorInfo, origin);
+    return convertErrorToDiagnostic(error, errorInfo, origin, useStrictErrorOverride);
 }
 
 function convertErrorToDiagnostic(
     error: any,
     fallbackErrorInfo: LWCErrorInfo,
-    origin?: CompilerDiagnosticOrigin
+    origin?: CompilerDiagnosticOrigin,
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
     const code = getCodeFromError(error) || fallbackErrorInfo.code;
     const message = error.lwcCode
         ? error.message
         : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
-    const level = error.level || fallbackErrorInfo.level;
+    const level = getEffectiveErrorLevel(
+        'level' in error ? error : fallbackErrorInfo,
+        useStrictErrorOverride
+    );
     const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 

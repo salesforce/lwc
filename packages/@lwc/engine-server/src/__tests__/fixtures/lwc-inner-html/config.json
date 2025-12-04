@@ -1,4 +1,5 @@
 {
+    "entry": "x/lwc-inner-html",
     "props": {
         "content": "Hello <b>World</b>"
     }

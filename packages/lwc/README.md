@@ -79,3 +79,34 @@ import { renderComponent } from '@lwc/engine-server';
 ## Experimental Packages
 
 The `@lwc/ssr-compiler` and `@lwc/ssr-runtime` packages are still considered experimental, and may break without notice.
+
+## Experimental APIs
+
+### setTrustedSignalSet()
+
+This experimental API enables the addition of a signal as a trusted signal. If the [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature is enabled, any signal value change will trigger a re-render.
+
+If `setTrustedSignalSet` is called more than once, it will throw an error. If it is never called, then no trusted signal validation will be performed. The same `setTrustedSignalSet` API must be called on both `@lwc/engine-dom` and `@lwc/signals`.
+
+### isTrustedSignal()
+
+Not intended for external use. This experimental API enables the caller to determine if an object is a trusted signal. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
+
+### setContextKeys
+
+Not intended for external use. Enables another library to establish contextful relationships via the LWC component tree. The `connectContext` and `disconnectContext` symbols that are provided are later used to identify methods that facilitate the establishment and dissolution of these contextful relationships. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
+
+### setTrustedContextSet()
+
+Not intended for external use. This experimental API enables the addition of context as trusted context. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
+
+If `setTrustedContextSet` is called more than once, it will throw an error. If it is never called, then context will not be connected.
+
+### ContextBinding
+
+The context object's `connectContext` and `disconnectContext` methods are called with this object when contextful components are connected and disconnected. The ContextBinding exposes `provideContext` and `consumeContext`,
+enabling the provision/consumption of a contextful Signal of a specified variety for the associated component. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.
+
+### SignalBaseClass
+
+Not intended for external use. Signals that extend SignalBaseClass will be added to set of trusted signals. The [ENABLE_EXPERIMENTAL_SIGNALS](https://github.com/salesforce/lwc/blob/master/packages/%40lwc/features/README.md#lwcfeatures) feature must be enabled.

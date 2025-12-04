@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { DiagnosticLevel } from '../../shared/types';
+import { DiagnosticLevel, type LWCErrorInfo } from '../../shared/types';
 
 /*
  * For the next available error code, reference (and update!) the value in ./index.ts
@@ -15,6 +15,7 @@ export const TemplateErrors = {
         code: 1003,
         message: 'Invalid template',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -52,7 +53,7 @@ export const TemplateErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
-};
+} as const satisfies Record<string, LWCErrorInfo>;
 
 export const ParserDiagnostics = {
     AMBIGUOUS_ATTRIBUTE_VALUE: {
@@ -200,6 +201,7 @@ export const ParserDiagnostics = {
         code: 1052,
         message: 'Error parsing attribute: {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -207,6 +209,7 @@ export const ParserDiagnostics = {
         code: 1053,
         message: 'Error parsing identifier: {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -246,6 +249,7 @@ export const ParserDiagnostics = {
             'Invalid HTML syntax: {0}. For more information, ' +
             'please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-{0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -317,6 +321,7 @@ export const ParserDiagnostics = {
         code: 1072,
         message: 'Missing root template tag',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -338,6 +343,7 @@ export const ParserDiagnostics = {
         code: 1075,
         message: 'Multiple roots found',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -360,6 +366,7 @@ export const ParserDiagnostics = {
         code: 1078,
         message: '<{0}> has no matching closing tag.',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -367,6 +374,7 @@ export const ParserDiagnostics = {
         code: 1079,
         message: 'Expected root tag to be template, found {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -389,6 +397,7 @@ export const ParserDiagnostics = {
         code: 1083,
         message: 'Error parsing template expression: {0}',
         level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
         url: '',
     },
 
@@ -947,4 +956,68 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Warning,
         url: '',
     },
-};
+
+    INVALID_LWC_ON_ELEMENT: {
+        code: 1203,
+        message:
+            'Invalid lwc:on usage on element "{0}". The directive can\'t be used on a template element.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_ON_LITERAL_PROP: {
+        code: 1204,
+        message:
+            'Invalid lwc:on usage on element "{0}". The directive binding must be an expression.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_ON_WITH_DECLARATIVE_LISTENERS: {
+        code: 1205,
+        message:
+            'Invalid lwc:on usage on element "{0}". It is not permitted to use declarative event listeners alongside lwc:on',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_LWC_ON_OPTS: {
+        code: 1206,
+        message:
+            'Invalid lwc:on usage. The `lwc:on` directive must be enabled in order to use this feature.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_CTE_UNQUOTED: {
+        code: 1207,
+        message:
+            'Template expression doesn\'t allow computed property access unless the expression is surrounded by quotes: "{0}"',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_NODE_CTE_UNQUOTED: {
+        code: 1208,
+        message:
+            'Template expression doesn\'t allow {0} unless the expression is surrounded by quotes: "{1}"',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    COMPUTED_PROPERTY_ACCESS_NOT_ALLOWED_CTE_API_VERSION: {
+        code: 1209,
+        message:
+            "Template expression doesn't allow computed property access. The current component API version ({1}) is insufficient and must be increased to at least {2} for this type of expression.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    INVALID_NODE_CTE_API_VERSION: {
+        code: 1210,
+        message:
+            "Template expression doesn't allow {0}. The current component API version ({1}) is insufficient and must be increased to at least {2} for this type of expression.",
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+} as const satisfies Record<string, LWCErrorInfo>;

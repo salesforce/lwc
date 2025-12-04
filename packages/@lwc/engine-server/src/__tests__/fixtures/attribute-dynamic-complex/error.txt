@@ -1,0 +1,1 @@
+LWC1034: Ambiguous attribute value class="{bar() + foo()}". If you want to make it a valid identifier you should remove the surrounding quotes class={bar() + foo()}. If you want to make it a string you should escape it class="\{bar() + foo()}".

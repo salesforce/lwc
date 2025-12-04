@@ -98,22 +98,8 @@
                                 "raw": "{noSpace}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 39,
-                                    "end": 46,
-                                    "loc": {
-                                        "start": {
-                                            "line": 3,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 3,
-                                            "column": 21
-                                        }
-                                    },
-                                    "range": [
-                                        39,
-                                        46
-                                    ],
+                                    "start": 1,
+                                    "end": 8,
                                     "name": "noSpace",
                                     "location": {
                                         "startLine": 3,
@@ -173,39 +159,25 @@
                                 "raw": "{spaceRight}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 68,
-                                    "end": 78,
-                                    "loc": {
-                                        "start": {
-                                            "line": 4,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 4,
-                                            "column": 24
-                                        }
-                                    },
-                                    "range": [
-                                        68,
-                                        78
-                                    ],
+                                    "start": 1,
+                                    "end": 11,
                                     "name": "spaceRight",
                                     "location": {
                                         "startLine": 4,
                                         "startColumn": 14,
                                         "endLine": 4,
-                                        "endColumn": 26,
+                                        "endColumn": 27,
                                         "start": 67,
-                                        "end": 79
+                                        "end": 80
                                     }
                                 },
                                 "location": {
                                     "startLine": 4,
                                     "startColumn": 14,
                                     "endLine": 4,
-                                    "endColumn": 26,
+                                    "endColumn": 27,
                                     "start": 67,
-                                    "end": 79
+                                    "end": 80
                                 }
                             },
                             {
@@ -217,10 +189,10 @@
                                 },
                                 "location": {
                                     "startLine": 4,
-                                    "startColumn": 26,
+                                    "startColumn": 14,
                                     "endLine": 4,
                                     "endColumn": 27,
-                                    "start": 79,
+                                    "start": 67,
                                     "end": 80
                                 }
                             }
@@ -270,9 +242,9 @@
                                     "startLine": 5,
                                     "startColumn": 14,
                                     "endLine": 5,
-                                    "endColumn": 15,
+                                    "endColumn": 26,
                                     "start": 100,
-                                    "end": 101
+                                    "end": 112
                                 }
                             },
                             {
@@ -280,38 +252,24 @@
                                 "raw": "{spaceLeft}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 102,
-                                    "end": 111,
-                                    "loc": {
-                                        "start": {
-                                            "line": 5,
-                                            "column": 15
-                                        },
-                                        "end": {
-                                            "line": 5,
-                                            "column": 24
-                                        }
-                                    },
-                                    "range": [
-                                        102,
-                                        111
-                                    ],
+                                    "start": 2,
+                                    "end": 11,
                                     "name": "spaceLeft",
                                     "location": {
                                         "startLine": 5,
-                                        "startColumn": 15,
+                                        "startColumn": 14,
                                         "endLine": 5,
                                         "endColumn": 26,
-                                        "start": 101,
+                                        "start": 100,
                                         "end": 112
                                     }
                                 },
                                 "location": {
                                     "startLine": 5,
-                                    "startColumn": 15,
+                                    "startColumn": 14,
                                     "endLine": 5,
                                     "endColumn": 26,
-                                    "start": 101,
+                                    "start": 100,
                                     "end": 112
                                 }
                             }
@@ -355,39 +313,25 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 133,
-                                    "end": 136,
-                                    "loc": {
-                                        "start": {
-                                            "line": 6,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 6,
-                                            "column": 17
-                                        }
-                                    },
-                                    "range": [
-                                        133,
-                                        136
-                                    ],
+                                    "start": 1,
+                                    "end": 4,
                                     "name": "one",
                                     "location": {
                                         "startLine": 6,
                                         "startColumn": 14,
                                         "endLine": 6,
-                                        "endColumn": 19,
+                                        "endColumn": 24,
                                         "start": 132,
-                                        "end": 137
+                                        "end": 142
                                     }
                                 },
                                 "location": {
                                     "startLine": 6,
                                     "startColumn": 14,
                                     "endLine": 6,
-                                    "endColumn": 19,
+                                    "endColumn": 24,
                                     "start": 132,
-                                    "end": 137
+                                    "end": 142
                                 }
                             },
                             {
@@ -395,38 +339,24 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 138,
-                                    "end": 141,
-                                    "loc": {
-                                        "start": {
-                                            "line": 6,
-                                            "column": 19
-                                        },
-                                        "end": {
-                                            "line": 6,
-                                            "column": 22
-                                        }
-                                    },
-                                    "range": [
-                                        138,
-                                        141
-                                    ],
+                                    "start": 6,
+                                    "end": 9,
                                     "name": "two",
                                     "location": {
                                         "startLine": 6,
-                                        "startColumn": 19,
+                                        "startColumn": 14,
                                         "endLine": 6,
                                         "endColumn": 24,
-                                        "start": 137,
+                                        "start": 132,
                                         "end": 142
                                     }
                                 },
                                 "location": {
                                     "startLine": 6,
-                                    "startColumn": 19,
+                                    "startColumn": 14,
                                     "endLine": 6,
                                     "endColumn": 24,
-                                    "start": 137,
+                                    "start": 132,
                                     "end": 142
                                 }
                             }
@@ -476,9 +406,9 @@
                                     "startLine": 7,
                                     "startColumn": 14,
                                     "endLine": 7,
-                                    "endColumn": 15,
+                                    "endColumn": 25,
                                     "start": 162,
-                                    "end": 163
+                                    "end": 173
                                 }
                             },
                             {
@@ -486,39 +416,25 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 164,
-                                    "end": 167,
-                                    "loc": {
-                                        "start": {
-                                            "line": 7,
-                                            "column": 15
-                                        },
-                                        "end": {
-                                            "line": 7,
-                                            "column": 18
-                                        }
-                                    },
-                                    "range": [
-                                        164,
-                                        167
-                                    ],
+                                    "start": 2,
+                                    "end": 5,
                                     "name": "one",
                                     "location": {
                                         "startLine": 7,
-                                        "startColumn": 15,
+                                        "startColumn": 14,
                                         "endLine": 7,
-                                        "endColumn": 20,
-                                        "start": 163,
-                                        "end": 168
+                                        "endColumn": 25,
+                                        "start": 162,
+                                        "end": 173
                                     }
                                 },
                                 "location": {
                                     "startLine": 7,
-                                    "startColumn": 15,
+                                    "startColumn": 14,
                                     "endLine": 7,
-                                    "endColumn": 20,
-                                    "start": 163,
-                                    "end": 168
+                                    "endColumn": 25,
+                                    "start": 162,
+                                    "end": 173
                                 }
                             },
                             {
@@ -526,38 +442,24 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 169,
-                                    "end": 172,
-                                    "loc": {
-                                        "start": {
-                                            "line": 7,
-                                            "column": 20
-                                        },
-                                        "end": {
-                                            "line": 7,
-                                            "column": 23
-                                        }
-                                    },
-                                    "range": [
-                                        169,
-                                        172
-                                    ],
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "two",
                                     "location": {
                                         "startLine": 7,
-                                        "startColumn": 20,
+                                        "startColumn": 14,
                                         "endLine": 7,
                                         "endColumn": 25,
-                                        "start": 168,
+                                        "start": 162,
                                         "end": 173
                                     }
                                 },
                                 "location": {
                                     "startLine": 7,
-                                    "startColumn": 20,
+                                    "startColumn": 14,
                                     "endLine": 7,
                                     "endColumn": 25,
-                                    "start": 168,
+                                    "start": 162,
                                     "end": 173
                                 }
                             }
@@ -601,39 +503,25 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 194,
-                                    "end": 197,
-                                    "loc": {
-                                        "start": {
-                                            "line": 8,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 8,
-                                            "column": 17
-                                        }
-                                    },
-                                    "range": [
-                                        194,
-                                        197
-                                    ],
+                                    "start": 1,
+                                    "end": 4,
                                     "name": "one",
                                     "location": {
                                         "startLine": 8,
                                         "startColumn": 14,
                                         "endLine": 8,
-                                        "endColumn": 19,
+                                        "endColumn": 25,
                                         "start": 193,
-                                        "end": 198
+                                        "end": 204
                                     }
                                 },
                                 "location": {
                                     "startLine": 8,
                                     "startColumn": 14,
                                     "endLine": 8,
-                                    "endColumn": 19,
+                                    "endColumn": 25,
                                     "start": 193,
-                                    "end": 198
+                                    "end": 204
                                 }
                             },
                             {
@@ -641,39 +529,25 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 199,
-                                    "end": 202,
-                                    "loc": {
-                                        "start": {
-                                            "line": 8,
-                                            "column": 19
-                                        },
-                                        "end": {
-                                            "line": 8,
-                                            "column": 22
-                                        }
-                                    },
-                                    "range": [
-                                        199,
-                                        202
-                                    ],
+                                    "start": 6,
+                                    "end": 9,
                                     "name": "two",
                                     "location": {
                                         "startLine": 8,
-                                        "startColumn": 19,
+                                        "startColumn": 14,
                                         "endLine": 8,
-                                        "endColumn": 24,
-                                        "start": 198,
-                                        "end": 203
+                                        "endColumn": 25,
+                                        "start": 193,
+                                        "end": 204
                                     }
                                 },
                                 "location": {
                                     "startLine": 8,
-                                    "startColumn": 19,
+                                    "startColumn": 14,
                                     "endLine": 8,
-                                    "endColumn": 24,
-                                    "start": 198,
-                                    "end": 203
+                                    "endColumn": 25,
+                                    "start": 193,
+                                    "end": 204
                                 }
                             },
                             {
@@ -685,10 +559,10 @@
                                 },
                                 "location": {
                                     "startLine": 8,
-                                    "startColumn": 24,
+                                    "startColumn": 14,
                                     "endLine": 8,
                                     "endColumn": 25,
-                                    "start": 203,
+                                    "start": 193,
                                     "end": 204
                                 }
                             }
@@ -732,39 +606,25 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 225,
-                                    "end": 228,
-                                    "loc": {
-                                        "start": {
-                                            "line": 9,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 9,
-                                            "column": 17
-                                        }
-                                    },
-                                    "range": [
-                                        225,
-                                        228
-                                    ],
+                                    "start": 1,
+                                    "end": 4,
                                     "name": "one",
                                     "location": {
                                         "startLine": 9,
                                         "startColumn": 14,
                                         "endLine": 9,
-                                        "endColumn": 19,
+                                        "endColumn": 25,
                                         "start": 224,
-                                        "end": 229
+                                        "end": 235
                                     }
                                 },
                                 "location": {
                                     "startLine": 9,
                                     "startColumn": 14,
                                     "endLine": 9,
-                                    "endColumn": 19,
+                                    "endColumn": 25,
                                     "start": 224,
-                                    "end": 229
+                                    "end": 235
                                 }
                             },
                             {
@@ -776,11 +636,11 @@
                                 },
                                 "location": {
                                     "startLine": 9,
-                                    "startColumn": 19,
+                                    "startColumn": 14,
                                     "endLine": 9,
-                                    "endColumn": 20,
-                                    "start": 229,
-                                    "end": 230
+                                    "endColumn": 25,
+                                    "start": 224,
+                                    "end": 235
                                 }
                             },
                             {
@@ -788,38 +648,24 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 231,
-                                    "end": 234,
-                                    "loc": {
-                                        "start": {
-                                            "line": 9,
-                                            "column": 20
-                                        },
-                                        "end": {
-                                            "line": 9,
-                                            "column": 23
-                                        }
-                                    },
-                                    "range": [
-                                        231,
-                                        234
-                                    ],
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "two",
                                     "location": {
                                         "startLine": 9,
-                                        "startColumn": 20,
+                                        "startColumn": 14,
                                         "endLine": 9,
                                         "endColumn": 25,
-                                        "start": 230,
+                                        "start": 224,
                                         "end": 235
                                     }
                                 },
                                 "location": {
                                     "startLine": 9,
-                                    "startColumn": 20,
+                                    "startColumn": 14,
                                     "endLine": 9,
                                     "endColumn": 25,
-                                    "start": 230,
+                                    "start": 224,
                                     "end": 235
                                 }
                             }
@@ -869,9 +715,9 @@
                                     "startLine": 10,
                                     "startColumn": 14,
                                     "endLine": 10,
-                                    "endColumn": 15,
+                                    "endColumn": 26,
                                     "start": 255,
-                                    "end": 256
+                                    "end": 267
                                 }
                             },
                             {
@@ -879,39 +725,25 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 257,
-                                    "end": 260,
-                                    "loc": {
-                                        "start": {
-                                            "line": 10,
-                                            "column": 15
-                                        },
-                                        "end": {
-                                            "line": 10,
-                                            "column": 18
-                                        }
-                                    },
-                                    "range": [
-                                        257,
-                                        260
-                                    ],
+                                    "start": 2,
+                                    "end": 5,
                                     "name": "one",
                                     "location": {
                                         "startLine": 10,
-                                        "startColumn": 15,
+                                        "startColumn": 14,
                                         "endLine": 10,
-                                        "endColumn": 20,
-                                        "start": 256,
-                                        "end": 261
+                                        "endColumn": 26,
+                                        "start": 255,
+                                        "end": 267
                                     }
                                 },
                                 "location": {
                                     "startLine": 10,
-                                    "startColumn": 15,
+                                    "startColumn": 14,
                                     "endLine": 10,
-                                    "endColumn": 20,
-                                    "start": 256,
-                                    "end": 261
+                                    "endColumn": 26,
+                                    "start": 255,
+                                    "end": 267
                                 }
                             },
                             {
@@ -923,11 +755,11 @@
                                 },
                                 "location": {
                                     "startLine": 10,
-                                    "startColumn": 20,
+                                    "startColumn": 14,
                                     "endLine": 10,
-                                    "endColumn": 21,
-                                    "start": 261,
-                                    "end": 262
+                                    "endColumn": 26,
+                                    "start": 255,
+                                    "end": 267
                                 }
                             },
                             {
@@ -935,38 +767,24 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 263,
-                                    "end": 266,
-                                    "loc": {
-                                        "start": {
-                                            "line": 10,
-                                            "column": 21
-                                        },
-                                        "end": {
-                                            "line": 10,
-                                            "column": 24
-                                        }
-                                    },
-                                    "range": [
-                                        263,
-                                        266
-                                    ],
+                                    "start": 8,
+                                    "end": 11,
                                     "name": "two",
                                     "location": {
                                         "startLine": 10,
-                                        "startColumn": 21,
+                                        "startColumn": 14,
                                         "endLine": 10,
                                         "endColumn": 26,
-                                        "start": 262,
+                                        "start": 255,
                                         "end": 267
                                     }
                                 },
                                 "location": {
                                     "startLine": 10,
-                                    "startColumn": 21,
+                                    "startColumn": 14,
                                     "endLine": 10,
                                     "endColumn": 26,
-                                    "start": 262,
+                                    "start": 255,
                                     "end": 267
                                 }
                             }
@@ -1010,39 +828,25 @@
                                 "raw": "{one}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 288,
-                                    "end": 291,
-                                    "loc": {
-                                        "start": {
-                                            "line": 11,
-                                            "column": 14
-                                        },
-                                        "end": {
-                                            "line": 11,
-                                            "column": 17
-                                        }
-                                    },
-                                    "range": [
-                                        288,
-                                        291
-                                    ],
+                                    "start": 1,
+                                    "end": 4,
                                     "name": "one",
                                     "location": {
                                         "startLine": 11,
                                         "startColumn": 14,
                                         "endLine": 11,
-                                        "endColumn": 19,
+                                        "endColumn": 26,
                                         "start": 287,
-                                        "end": 292
+                                        "end": 299
                                     }
                                 },
                                 "location": {
                                     "startLine": 11,
                                     "startColumn": 14,
                                     "endLine": 11,
-                                    "endColumn": 19,
+                                    "endColumn": 26,
                                     "start": 287,
-                                    "end": 292
+                                    "end": 299
                                 }
                             },
                             {
@@ -1054,11 +858,11 @@
                                 },
                                 "location": {
                                     "startLine": 11,
-                                    "startColumn": 19,
+                                    "startColumn": 14,
                                     "endLine": 11,
-                                    "endColumn": 20,
-                                    "start": 292,
-                                    "end": 293
+                                    "endColumn": 26,
+                                    "start": 287,
+                                    "end": 299
                                 }
                             },
                             {
@@ -1066,39 +870,25 @@
                                 "raw": "{two}",
                                 "value": {
                                     "type": "Identifier",
-                                    "start": 294,
-                                    "end": 297,
-                                    "loc": {
-                                        "start": {
-                                            "line": 11,
-                                            "column": 20
-                                        },
-                                        "end": {
-                                            "line": 11,
-                                            "column": 23
-                                        }
-                                    },
-                                    "range": [
-                                        294,
-                                        297
-                                    ],
+                                    "start": 7,
+                                    "end": 10,
                                     "name": "two",
                                     "location": {
                                         "startLine": 11,
-                                        "startColumn": 20,
+                                        "startColumn": 14,
                                         "endLine": 11,
-                                        "endColumn": 25,
-                                        "start": 293,
-                                        "end": 298
+                                        "endColumn": 26,
+                                        "start": 287,
+                                        "end": 299
                                     }
                                 },
                                 "location": {
                                     "startLine": 11,
-                                    "startColumn": 20,
+                                    "startColumn": 14,
                                     "endLine": 11,
-                                    "endColumn": 25,
-                                    "start": 293,
-                                    "end": 298
+                                    "endColumn": 26,
+                                    "start": 287,
+                                    "end": 299
                                 }
                             },
                             {
@@ -1110,10 +900,10 @@
                                 },
                                 "location": {
                                     "startLine": 11,
-                                    "startColumn": 25,
+                                    "startColumn": 14,
                                     "endLine": 11,
                                     "endColumn": 26,
-                                    "start": 298,
+                                    "start": 287,
                                     "end": 299
                                 }
                             }

@@ -1,0 +1,1 @@
+LWC1061: The attribute "tabindex" can only be set to "0" or "-1".

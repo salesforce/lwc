@@ -1,10 +1,9 @@
 /*
- * Copyright (c) 2018, salesforce.com, inc.
+ * Copyright (c) 2025, Salesforce, Inc.
  * All rights reserved.
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { walk } from 'estree-walker';
 import {
     getAPIVersionFromNumber,
     SVG_NAMESPACE,
@@ -47,7 +46,7 @@ import {
     hasDynamicText,
 } from './static-element';
 import { serializeStaticElement } from './static-element-serializer';
-import { bindAttributeExpression, bindComplexExpression } from './expression';
+import { bindAttributeExpression, bindExpression } from './expression';
 import type State from '../state';
 import type {
     ChildNode,
@@ -62,16 +61,9 @@ import type {
     Attribute,
     KeyDirective,
     StaticChildNode,
+    OnDirective,
 } from '../shared/types';
 import type { APIVersion } from '@lwc/shared';
-import type { Node } from 'estree';
-
-// structuredClone is only available in Node 17+
-// https://developer.mozilla.org/en-US/docs/Web/API/structuredClone#browser_compatibility
-const doStructuredClone =
-    typeof structuredClone === 'function'
-        ? structuredClone
-        : (obj: any) => JSON.parse(JSON.stringify(obj));
 
 type RenderPrimitive =
     | 'iterator'
@@ -456,6 +448,25 @@ export default class CodeGen {
         }
     }
 
+    genDynamicEventListeners(onDirective: OnDirective) {
+        // Example Input : lwc:on={someObj}
+
+        // $cmp.someObj
+        const rawValue = this.bindExpression(onDirective.value);
+
+        // {__proto__: null, ...$cmp.someObj}
+        const clonedValue = t.objectExpression([
+            t.property(t.identifier('__proto__'), t.literal(null)),
+            t.spreadElement(rawValue),
+        ]);
+
+        const dynamicOnRawProperty = t.property(t.identifier('dynamicOnRaw'), rawValue);
+
+        const dynamicOnProperty = t.property(t.identifier('dynamicOn'), clonedValue);
+
+        return [dynamicOnRawProperty, dynamicOnProperty];
+    }
+
     genRef(ref: RefDirective) {
         this.hasRefs = true;
         return t.property(t.identifier('ref'), ref.value);
@@ -617,48 +628,12 @@ export default class CodeGen {
      * @param expression
      */
     bindExpression(expression: Expression | Literal | ComplexExpression): t.Expression {
-        if (t.isIdentifier(expression)) {
-            if (!this.isLocalIdentifier(expression)) {
-                return t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), expression);
-            } else {
-                return expression;
-            }
-        }
-
-        // TODO [#3370]: remove experimental template expression flag
-        if (this.state.config.experimentalComplexExpressions) {
-            // Cloning here is necessary because `this.replace()` is destructive, and we might use the
-            // node later during static content optimization
-            expression = doStructuredClone(expression);
-            return bindComplexExpression(expression as ComplexExpression, this);
-        }
-
-        // We need access to both this `this` and the walker's `this` in the walker
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const scope = this;
-
-        // Cloning here is necessary because `this.replace()` is destructive, and we might use the
-        // node later during static content optimization
-        expression = doStructuredClone(expression);
-        // TODO [#3370]: when the template expression flag is removed, the
-        // ComplexExpression type should be redefined as an ESTree Node. Doing
-        // so when the flag is still in place results in a cascade of required
-        // type changes across the codebase.
-        walk(expression as Node, {
-            leave(node, parent) {
-                if (
-                    parent !== null &&
-                    t.isIdentifier(node) &&
-                    t.isMemberExpression(parent) &&
-                    parent.object === node &&
-                    !scope.isLocalIdentifier(node)
-                ) {
-                    this.replace(t.memberExpression(t.identifier(TEMPLATE_PARAMS.INSTANCE), node));
-                }
-            },
-        });
-
-        return expression as t.Expression;
+        return bindExpression(
+            expression,
+            this.isLocalIdentifier.bind(this),
+            TEMPLATE_PARAMS.INSTANCE,
+            this.state.config.experimentalComplexExpressions
+        );
     }
 
     genStaticElement(element: StaticElement, slotParentName?: string): t.Expression {

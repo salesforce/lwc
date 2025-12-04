@@ -11,8 +11,8 @@ import type { VM } from '../framework/vm';
 
 const alreadyLoggedMessages = new Set();
 
-// Only used in LWC's Karma tests
-if (process.env.NODE_ENV === 'test-karma-lwc') {
+// Only used in LWC's integration tests
+if (process.env.NODE_ENV === 'test-lwc-integration') {
     (window as any).__lwcResetAlreadyLoggedMessages = () => {
         alreadyLoggedMessages.clear();
     };
@@ -49,6 +49,10 @@ function log(method: 'warn' | 'error', message: string, vm: VM | undefined, once
 
 export function logError(message: string, vm?: VM) {
     log('error', message, vm, false);
+}
+
+export function logErrorOnce(message: string, vm?: VM) {
+    log('error', message, vm, true);
 }
 
 export function logWarn(message: string, vm?: VM) {

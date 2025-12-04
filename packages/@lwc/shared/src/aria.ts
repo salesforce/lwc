@@ -129,6 +129,7 @@ export const ID_REFERENCING_ATTRIBUTES_SET: Set<string> = /*@__PURE__*/ new Set(
     'aria-labelledby',
     'aria-owns',
     'for',
+    'popovertarget',
 ]);
 
 export { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };

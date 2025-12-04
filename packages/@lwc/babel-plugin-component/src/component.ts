@@ -14,6 +14,8 @@ import {
     TEMPLATE_KEY,
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
+    SYNTHETIC_ELEMENT_INTERNALS_KEY,
+    COMPONENT_FEATURE_FLAG_KEY,
 } from './constants';
 import type { types, NodePath, Visitor } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
@@ -58,6 +60,17 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             LWC_PACKAGE_ALIAS
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
+        // Optionally import feature flag module if provided via compiler options
+        let componentFeatureFlagIdentifier: types.Identifier | undefined;
+        if (state.opts.componentFeatureFlagModulePath) {
+            componentFeatureFlagIdentifier = addDefault(
+                declarationPath,
+                state.opts.componentFeatureFlagModulePath,
+                {
+                    nameHint: COMPONENT_FEATURE_FLAG_KEY,
+                }
+            );
+        }
         const statementPath = declarationPath.getStatementParent();
         const componentRegisteredName = getComponentRegisteredName(t, state);
         let node = declarationPath.node;
@@ -81,15 +94,44 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         //       sel: 'x-foo',
         //       apiVersion: '58'
         //     })
+        const properties = [
+            t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
+            t.objectProperty(t.identifier(COMPONENT_NAME_KEY), componentRegisteredName),
+            // It's important that, at this point, we have an APIVersion rather than just a number.
+            // The client needs to trust the server that it's providing an actual known API version
+            t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
+        ];
+        if (componentFeatureFlagIdentifier) {
+            properties.push(
+                t.objectProperty(
+                    t.identifier(COMPONENT_FEATURE_FLAG_KEY),
+                    t.objectExpression([
+                        t.objectProperty(
+                            t.identifier('value'),
+                            t.callExpression(t.identifier('Boolean'), [
+                                componentFeatureFlagIdentifier,
+                            ])
+                        ),
+                        t.objectProperty(
+                            t.identifier('path'),
+                            t.stringLiteral(state.opts.componentFeatureFlagModulePath!)
+                        ),
+                    ])
+                )
+            );
+        }
+        // Only include enableSyntheticElementInternals if set to true
+        if (state.opts.enableSyntheticElementInternals === true) {
+            properties.push(
+                t.objectProperty(
+                    t.identifier(SYNTHETIC_ELEMENT_INTERNALS_KEY),
+                    t.booleanLiteral(true)
+                )
+            );
+        }
         const registerComponentExpression = t.callExpression(registerComponentId, [
             node as types.Expression,
-            t.objectExpression([
-                t.objectProperty(t.identifier(TEMPLATE_KEY), templateIdentifier),
-                t.objectProperty(t.identifier(COMPONENT_NAME_KEY), componentRegisteredName),
-                // It's important that, at this point, we have an APIVersion rather than just a number.
-                // The client needs to trust the server that it's providing an actual known API version
-                t.objectProperty(t.identifier(API_VERSION_KEY), t.numericLiteral(apiVersion)),
-            ]),
+            t.objectExpression(properties),
         ]);
 
         // Example:

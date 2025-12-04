@@ -1,0 +1,8 @@
+<template>
+  <div data-id="div-inner-static" data-expect-no-warning inner-h-t-m-l="replaced">original</div>
+  <div data-id="div-inner-computed" data-expect-no-warning inner-h-t-m-l={computed}>original</div>
+  <div data-id="div-inner-spread" lwc:spread={spread}>original</div>
+
+  <span lwc:inner-html="lwc:inner-html"></span>
+  <p lwc:inner-html={computed}></p>
+</template>
