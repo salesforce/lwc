@@ -17,7 +17,7 @@ export declare const testConfig: TestConfig;
 export declare const testValue: TestValue;
 export declare const TestAdapter: WireAdapterConstructor<TestConfig, TestValue, TestContext>;
 export declare const TestAdapterNoConfig: WireAdapterConstructor<never, TestValue, TestContext>;
-export declare const TestAdapterWithImperative: {
+export declare const ImperativeAdapter: {
     (config: TestConfig): TestValue;
     adapter: WireAdapterConstructor<TestConfig, TestValue, TestContext>;
 };

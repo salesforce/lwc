@@ -5,7 +5,7 @@ import {
     AnyAdapter,
     testValue,
     TestAdapterNoConfig,
-    TestAdapterWithImperative,
+    ImperativeAdapter,
     type TestValue,
 } from './types';
 
@@ -127,53 +127,53 @@ export class PropertyDecoratorsWithImperative extends LightningElement {
     number = 123;
     // --- VALID --- //
     // Valid - basic
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     basic?: TestValue;
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    @wire(ImperativeAdapter, { config: '$configProp' })
     simpleReactive?: TestValue;
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    @wire(ImperativeAdapter, { config: '$nested.prop' })
     nestedReactive?: TestValue;
     // Valid - as const
-    @wire(TestAdapterWithImperative, { config: 'config' } as const)
+    @wire(ImperativeAdapter, { config: 'config' } as const)
     basicAsConst?: TestValue;
-    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
+    @wire(ImperativeAdapter, { config: '$configProp' } as const)
     simpleReactiveAsConst?: TestValue;
     // Valid - using `any`
-    @wire(TestAdapterWithImperative, {} as any)
+    @wire(ImperativeAdapter, {} as any)
     configAsAny?: TestValue;
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     propAsAny?: any;
     // Valid - prop assignment
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     nonNullAssertion!: TestValue;
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     explicitDefaultType: TestValue = testValue;
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     implicitDefaultType = testValue;
 
     // --- INVALID --- //
     // @ts-expect-error Too many wire parameters
-    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    @wire(ImperativeAdapter, { config: 'config' }, {})
     tooManyWireParams?: TestValue;
     // @ts-expect-error Bad config type
-    @wire(TestAdapterWithImperative, { bad: 'value' })
+    @wire(ImperativeAdapter, { bad: 'value' })
     badConfig?: TestValue;
     // @ts-expect-error Bad prop type
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     badPropType?: { bad: 'value' };
     // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
+    @wire(ImperativeAdapter, { config: '$nonexistentProp' } as const)
     nonExistentReactiveProp?: TestValue;
 
     // --- AMBIGUOUS --- //
     // Passing a config is optional because adapters don't strictly need to use it.
     // Can we be smarter about the type and require a config, but only if the adapter does?
-    @wire(TestAdapterWithImperative)
+    @wire(ImperativeAdapter)
     noConfig?: TestValue;
     // @ts-expect-error config limited to specific string or valid reactive prop
-    @wire(TestAdapterWithImperative, { config: 'incorrect' })
+    @wire(ImperativeAdapter, { config: 'incorrect' })
     wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     never?: never;
 }

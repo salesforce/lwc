@@ -1,5 +1,5 @@
 import { LightningElement, wire } from 'lwc';
-import { TestAdapter, AnyAdapter, TestAdapterWithImperative, type TestValue } from './types';
+import { TestAdapter, AnyAdapter, ImperativeAdapter, type TestValue } from './types';
 
 /** Validations for decorated setters */
 export class Setter extends LightningElement {
@@ -84,48 +84,48 @@ export class SetterWithImperative extends LightningElement {
     // --- VALID --- //
 
     // Valid - basic
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     set basic(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    @wire(ImperativeAdapter, { config: '$configProp' })
     set simpleReactive(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    @wire(ImperativeAdapter, { config: '$nested.prop' })
     set nestedReactive(_: TestValue) {}
     // Valid - as const
-    @wire(TestAdapterWithImperative, { config: 'config' } as const)
+    @wire(ImperativeAdapter, { config: 'config' } as const)
     set basicAsConst(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
+    @wire(ImperativeAdapter, { config: '$configProp' } as const)
     set simpleReactiveAsConst(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' } as const)
+    @wire(ImperativeAdapter, { config: '$nested.prop' } as const)
     set nestedReactiveAsConst(_: TestValue) {}
     // Valid - using `any`
-    @wire(TestAdapterWithImperative, {} as any)
+    @wire(ImperativeAdapter, {} as any)
     set configAsAny(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     set valueAsAny(_: any) {}
 
     // --- INVALID --- //
     // @ts-expect-error Too many wire parameters
-    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    @wire(ImperativeAdapter, { config: 'config' }, {})
     set tooManyWireParams(_: TestValue) {}
     // @ts-expect-error Bad config type
-    @wire(TestAdapterWithImperative, { bad: 'value' })
+    @wire(ImperativeAdapter, { bad: 'value' })
     set badConfig(_: TestValue) {}
     // @ts-expect-error Bad value type
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     set badValueType(_: { bad: 'value' }) {}
     // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
+    @wire(ImperativeAdapter, { config: '$nonexistentProp' } as const)
     set nonExistentReactiveProp(_: TestValue) {}
     // @ts-expect-error Referenced reactive prop is the wrong type
-    @wire(TestAdapterWithImperative, { config: '$number' } as const)
+    @wire(ImperativeAdapter, { config: '$number' } as const)
     set numberReactiveProp(_: TestValue) {}
     // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapterWithImperative, { config: '$nested.nonexistent' } as const)
+    @wire(ImperativeAdapter, { config: '$nested.nonexistent' } as const)
     set nonexistentNestedReactiveProp(_: TestValue) {}
     // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapterWithImperative, { config: '$nested.invalid' } as const)
+    @wire(ImperativeAdapter, { config: '$nested.invalid' } as const)
     set invalidNestedReactiveProp(_: TestValue) {}
     // @ts-expect-error Incorrect non-reactive string literal type
-    @wire(TestAdapterWithImperative, { config: 'not reactive' } as const)
+    @wire(ImperativeAdapter, { config: 'not reactive' } as const)
     set nonReactiveStringLiteral(_: TestValue) {}
 }

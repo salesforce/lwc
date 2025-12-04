@@ -1,5 +1,5 @@
 import { LightningElement, wire } from 'lwc';
-import { TestAdapter, testValue, AnyAdapter, TestAdapterWithImperative } from './types';
+import { TestAdapter, testValue, AnyAdapter, ImperativeAdapter } from './types';
 
 /** Validations for decorated getters */
 export class GetterDecorators extends LightningElement {
@@ -132,52 +132,52 @@ export class GetterDecoratorsWithImperative extends LightningElement {
     // --- VALID --- //
 
     // Valid - basic
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     get basic() {
         return testValue;
     }
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     get undefined() {
         // The function implementation of a wired getter is ignored, but TypeScript enforces that
         // we must return something. Since we don't have any data to return, we return `undefined`
         return undefined;
     }
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    @wire(ImperativeAdapter, { config: '$configProp' })
     get simpleReactive() {
         return testValue;
     }
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    @wire(ImperativeAdapter, { config: '$nested.prop' })
     get nestedReactive() {
         return testValue;
     }
     // Valid - using `any`
-    @wire(TestAdapterWithImperative, {} as any)
+    @wire(ImperativeAdapter, {} as any)
     get configAsAny() {
         return testValue;
     }
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     get valueAsAny() {
         return null as any;
     }
 
     // --- INVALID --- //
     // @ts-expect-error Too many wire parameters
-    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    @wire(ImperativeAdapter, { config: 'config' }, {})
     get tooManyWireParams() {
         return testValue;
     }
     // @ts-expect-error Bad config type
-    @wire(TestAdapterWithImperative, { bad: 'value' })
+    @wire(ImperativeAdapter, { bad: 'value' })
     get badConfig() {
         return testValue;
     }
     // @ts-expect-error Bad value type
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     get badValueType() {
         return { bad: 'value' };
     }
     // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
+    @wire(ImperativeAdapter, { config: '$nonexistentProp' } as const)
     get nonExistentReactiveProp() {
         return testValue;
     }

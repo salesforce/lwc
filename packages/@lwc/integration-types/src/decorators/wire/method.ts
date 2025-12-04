@@ -1,11 +1,5 @@
 import { LightningElement, wire } from 'lwc';
-import {
-    TestAdapter,
-    AnyAdapter,
-    testValue,
-    TestAdapterWithImperative,
-    type TestValue,
-} from './types';
+import { TestAdapter, AnyAdapter, testValue, ImperativeAdapter, type TestValue } from './types';
 
 /** Validations for decorated methods */
 export class MethodDecorators extends LightningElement {
@@ -102,15 +96,15 @@ export class MethodDecorators extends LightningElement {
     // no support for reactive props so testing is simpler
     imperativeTest(): TestValue {
         let output: TestValue;
-        output = TestAdapterWithImperative({ config: 'config' });
+        output = ImperativeAdapter({ config: 'config' });
         // @ts-expect-error no reactive props
-        output = TestAdapterWithImperative({ config: '$configProp' });
+        output = ImperativeAdapter({ config: '$configProp' });
         // @ts-expect-error extra config prop
-        output = TestAdapterWithImperative({ config: 'config', extra: 'val' });
+        output = ImperativeAdapter({ config: 'config', extra: 'val' });
         // @ts-expect-error missing config prop
-        output = TestAdapterWithImperative({});
+        output = ImperativeAdapter({});
         // @ts-expect-error missing param
-        output = TestAdapterWithImperative();
+        output = ImperativeAdapter();
         return output;
     }
 }
@@ -126,48 +120,48 @@ export class MethodDecoratorsWithImperative extends LightningElement {
     number = 123;
     // --- VALID --- //
     // Valid - basic
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     basic(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     async asyncMethod(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    @wire(ImperativeAdapter, { config: '$configProp' })
     simpleReactive(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
+    @wire(ImperativeAdapter, { config: '$nested.prop' })
     nestedReactive(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    @wire(ImperativeAdapter, { config: '$configProp' })
     optionalParam(_?: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
+    @wire(ImperativeAdapter, { config: '$configProp' })
     noParam() {}
     // Valid - as const
-    @wire(TestAdapterWithImperative, { config: 'config' } as const)
+    @wire(ImperativeAdapter, { config: 'config' } as const)
     basicAsConst(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$configProp' } as const)
+    @wire(ImperativeAdapter, { config: '$configProp' } as const)
     simpleReactiveAsConst(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' } as const)
+    @wire(ImperativeAdapter, { config: '$nested.prop' } as const)
     nestedReactiveAsConst(_: TestValue) {}
     // Valid - using `any`
-    @wire(TestAdapterWithImperative, {} as any)
+    @wire(ImperativeAdapter, {} as any)
     configAsAny(_: TestValue) {}
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     paramAsAny(_: any) {}
 
     // --- INVALID --- //
     // @ts-expect-error Too many wire parameters
-    @wire(TestAdapterWithImperative, { config: 'config' }, {})
+    @wire(ImperativeAdapter, { config: 'config' }, {})
     tooManyWireParams(_: TestValue) {}
     // @ts-expect-error Too many method parameters
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     tooManyParameters(_a: TestValue, _b: TestValue) {}
     // @ts-expect-error Value is an invalid string
-    @wire(TestAdapterWithImperative, { config: 'incorrect' })
+    @wire(ImperativeAdapter, { config: 'incorrect' })
 
     // --- AMBIGUOUS --- //
     // Passing a config is optional because adapters don't strictly need to use it.
     // Can we be smarter about the type and require a config, but only if the adapter does?
-    @wire(TestAdapterWithImperative)
+    @wire(ImperativeAdapter)
     noConfig(_: TestValue): void {}
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
-    @wire(TestAdapterWithImperative, { config: 'config' })
+    @wire(ImperativeAdapter, { config: 'config' })
     implicitDefaultType(_ = testValue) {}
 }
