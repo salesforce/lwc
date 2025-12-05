@@ -1,12 +1,23 @@
 import { LightningElement, wire } from 'lwc';
-import { TestAdapter, type TestValue } from './types';
+import { AnyAdapter, ImperativeAdapter, TestAdapter, type TestValue } from './types';
 
 // @ts-expect-error bare decorator cannot be used
-wire(FakeWireAdapter, { config: 'config' })();
+wire(AnyAdapter, { config: 'config' })();
 
 // @ts-expect-error decorator cannot be used on classes
-@wire(FakeWireAdapter, { config: 'config' })
+@wire(AnyAdapter, { config: 'config' })
 export class InvalidUsage extends LightningElement {}
+
+// Imperative adapters *can* be used directly
+ImperativeAdapter({ config: 'config' }) satisfies TestValue;
+// @ts-expect-error no reactive props
+ImperativeAdapter({ config: '$configProp' });
+// @ts-expect-error extra config prop
+ImperativeAdapter({ config: 'config', extra: 'val' });
+// @ts-expect-error missing config prop
+ImperativeAdapter({});
+// @ts-expect-error missing param
+ImperativeAdapter();
 
 /** Ensure that components extending other components correctly use the hosting component's props */
 export class BaseComponent extends LightningElement {

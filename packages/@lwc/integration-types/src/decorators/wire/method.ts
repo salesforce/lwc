@@ -91,22 +91,6 @@ export class MethodDecorators extends LightningElement {
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapter, { config: 'config' })
     implicitDefaultType(_ = testValue) {}
-
-    // make sure imperatively calling works correctly
-    // no support for reactive props so testing is simpler
-    imperativeTest(): TestValue {
-        let output: TestValue;
-        output = ImperativeAdapter({ config: 'config' });
-        // @ts-expect-error no reactive props
-        output = ImperativeAdapter({ config: '$configProp' });
-        // @ts-expect-error extra config prop
-        output = ImperativeAdapter({ config: 'config', extra: 'val' });
-        // @ts-expect-error missing config prop
-        output = ImperativeAdapter({});
-        // @ts-expect-error missing param
-        output = ImperativeAdapter();
-        return output;
-    }
 }
 
 /** Validations for decorated methods */
