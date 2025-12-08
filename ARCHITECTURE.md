@@ -217,3 +217,5 @@ This is another point of differentiation with Lit, which has resisted implementi
 [^js]: Whenever JS files are mentioned in the context of the compiler, you can assume that TS (TypeScript) files are also included here.
 
 [^rollup]: External tools like [`lwc-webpack-plugin`](https://github.com/salesforce/lwc-webpack-plugin) or [`vite-plugin-lwc`](https://github.com/cardoso/vite-plugin-lwc), which use other bundlers than Rollup, would likely also call directly into `@lwc/compiler`.
+
+
