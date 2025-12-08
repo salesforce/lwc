@@ -7769,10 +7769,15 @@ isarray@^2.0.5:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-2.0.5.tgz#8af1e4c1221244cc62459faf38940d4e644a5723"
   integrity sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==
 
-isbinaryfile@^5.0.0, isbinaryfile@^5.0.7:
+isbinaryfile@^5.0.0:
   version "5.0.7"
   resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-5.0.7.tgz#19a73f2281b7368dca9d3b3ac8a0434074670979"
   integrity sha512-gnWD14Jh3FzS3CPhF0AxNOJ8CxqeblPTADzI38r0wt8ZyQl5edpy75myt08EG2oKvpyiqSqsx+Wkz9vtkbTqYQ==
+
+isbinaryfile@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/isbinaryfile/-/isbinaryfile-6.0.0.tgz#adcae341a39375f3862ba706594e8450060b62f2"
+  integrity sha512-2FN2B8MAqKv6d5TaKsLvMrwMcghxwHTpcKy0L5mhNbRqjNqo2++SpCqN6eG1lCC1GmTQgvrYJYXv2+Chvyevag==
 
 isexe@^2.0.0:
   version "2.0.0"
