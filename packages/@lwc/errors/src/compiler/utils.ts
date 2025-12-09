@@ -18,6 +18,7 @@ export interface CompilerDiagnostic {
     filename?: string;
     location?: Location;
     level: DiagnosticLevel;
+    url?: string;
 }
 
 export class CompilerError extends Error implements CompilerDiagnostic {
@@ -25,13 +26,15 @@ export class CompilerError extends Error implements CompilerDiagnostic {
     public filename?: string;
     public location?: Location;
     public level: DiagnosticLevel;
+    public url?: string;
 
     constructor(
         code: number,
         message: string,
         filename?: string,
         location?: Location,
-        level = DiagnosticLevel.Error
+        level = DiagnosticLevel.Error,
+        url?: string
     ) {
         super(message);
 
@@ -39,15 +42,16 @@ export class CompilerError extends Error implements CompilerDiagnostic {
         this.filename = filename;
         this.location = location;
         this.level = level;
+        this.url = url;
     }
 
     static from(diagnostic: CompilerDiagnostic, origin?: CompilerDiagnosticOrigin) {
-        const { code, message } = diagnostic;
+        const { code, message, url } = diagnostic;
 
         const filename = getFilename(origin, diagnostic);
         const location = getLocation(origin, diagnostic);
 
-        const compilerError = new CompilerError(code, message, filename, location);
+        const compilerError = new CompilerError(code, message, filename, location, undefined, url);
 
         // The stack here is misleading and doesn't point to the cause of the original error message
         // TODO [W-5712064]: Enhance diagnostics with useful stack trace and source code
@@ -62,6 +66,7 @@ export class CompilerError extends Error implements CompilerDiagnostic {
             level: this.level,
             filename: this.filename,
             location: this.location,
+            url: this.url,
         };
     }
 }
