@@ -56,7 +56,7 @@
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.13",
         "immer": "^11.1.3",
-        "meriyah": "^5.0.0"
+        "meriyah": "^7.0.0"
     },
     "devDependencies": {
         "@lwc/babel-plugin-component": "8.27.0",
