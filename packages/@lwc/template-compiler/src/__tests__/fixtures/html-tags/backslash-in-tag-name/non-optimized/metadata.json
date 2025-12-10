@@ -4,6 +4,7 @@
             "code": 1123,
             "message": "LWC1123: Unknown html tag '<s\\ection>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 2,
                 "column": 5,

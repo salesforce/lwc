@@ -4,6 +4,7 @@
             "code": 1057,
             "message": "LWC1057: unknown-attr is not valid attribute for textarea. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/textarea",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 47,

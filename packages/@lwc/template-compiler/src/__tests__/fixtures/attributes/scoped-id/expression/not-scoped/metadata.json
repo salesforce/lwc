@@ -4,6 +4,7 @@
             "code": 1057,
             "message": "LWC1057: aria-described-by is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 5,
                 "column": 9,
@@ -15,6 +16,7 @@
             "code": 1057,
             "message": "LWC1057: aria-active-descendant is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 6,
                 "column": 9,
@@ -26,6 +28,7 @@
             "code": 1057,
             "message": "LWC1057: aria-error-message is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 7,
                 "column": 9,
@@ -37,6 +40,7 @@
             "code": 1057,
             "message": "LWC1057: aria-flow-to is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 8,
                 "column": 9,
@@ -48,6 +52,7 @@
             "code": 1057,
             "message": "LWC1057: aria-labelled-by is not valid attribute for div. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 9,
                 "column": 9,
