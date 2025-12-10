@@ -89,7 +89,22 @@ import type {
 } from '../shared/types';
 import type State from '../state';
 import type { Token as parse5Token } from 'parse5';
-import type { Location } from 'parse5/dist/common/token';
+
+/** Copied from `parse5/dist/common/token.d.ts` because it's not exported at the top level. */
+interface Location {
+    /** One-based line index of the first character. */
+    startLine: number;
+    /** One-based column index of the first character. */
+    startCol: number;
+    /** Zero-based first character index. */
+    startOffset: number;
+    /** One-based line index of the last character. */
+    endLine: number;
+    /** One-based column index of the last character. Points directly *after* the last character. */
+    endCol: number;
+    /** Zero-based last character index. Points directly *after* the last character. */
+    endOffset: number;
+}
 
 function attributeExpressionReferencesForOfIndex(attribute: Attribute, forOf: ForOf): boolean {
     const { value } = attribute;
