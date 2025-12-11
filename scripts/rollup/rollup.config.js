@@ -136,7 +136,7 @@ function injectInlineRenderer() {
     };
 }
 
-module.exports = {
+export default {
     input: path.resolve(packageRoot, './src/index.ts'),
 
     output: formats.map((format) => ({
