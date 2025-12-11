@@ -5,14 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { globSync } from 'glob';
 import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import { generateStyledComponents } from './scripts/generate-styled-components.mjs';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const { tmpDir, styledComponents } = generateStyledComponents();
 
@@ -25,7 +22,7 @@ const ENGINE_TYPE_TO_LWC_IMPORT = {
 function createConfig(componentFile, engineType) {
     const rootDir = componentFile.includes(tmpDir)
         ? path.join(tmpDir, 'src')
-        : path.join(__dirname, 'src');
+        : path.join(import.meta.dirname, 'src');
     const lwcImportModule = ENGINE_TYPE_TO_LWC_IMPORT[engineType];
     return {
         input: componentFile,
@@ -51,7 +48,9 @@ function createConfig(componentFile, engineType) {
             }),
         ],
         output: {
-            file: componentFile.replace(tmpDir, __dirname).replace('/src/', `/dist/${engineType}/`),
+            file: componentFile
+                .replace(tmpDir, import.meta.dirname)
+                .replace('/src/', `/dist/${engineType}/`),
             format: 'esm',
         },
         // These packages need to be external so that @lwc/perf-benchmarks can potentially swap them out
@@ -69,7 +68,10 @@ function createConfig(componentFile, engineType) {
     };
 }
 
-const components = [...globSync(path.join(__dirname, 'src/**/*.js')), ...styledComponents];
+const components = [
+    ...globSync(path.join(import.meta.dirname, 'src/**/*.js')),
+    ...styledComponents,
+];
 
 const config = ['server', 'dom', 'ssr']
     .map((engineType) => components.map((component) => createConfig(component, engineType)))

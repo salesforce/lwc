@@ -81,7 +81,7 @@ async function compileFixture({
                 experimentalDynamicDirective: true,
                 modules: [{ dir: modulesDir }],
                 experimentalDynamicComponent: {
-                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                    loader: path.join(import.meta.dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
                 experimentalComplexExpressions,
@@ -106,7 +106,10 @@ async function compileFixture({
 describe.concurrent('fixtures', () => {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
+            root: path.resolve(
+                import.meta.dirname,
+                '../../../engine-server/src/__tests__/fixtures'
+            ),
             pattern: '**/config.json',
             ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests

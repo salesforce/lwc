@@ -11,7 +11,7 @@ const merge = require('deepmerge');
 const minimist = require('minimist');
 
 require('dotenv').config({
-    path: path.resolve(__dirname, '../.env'),
+    path: path.resolve(import.meta.dirname, '../.env'),
 });
 
 const baseConfig = require('./wdio.conf.js');

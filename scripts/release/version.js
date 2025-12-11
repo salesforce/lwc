@@ -10,7 +10,7 @@ const readline = require('node:readline');
 const semver = require('semver');
 const { globSync } = require('glob');
 
-const rootPath = path.resolve(__dirname, '../../');
+const rootPath = path.resolve(import.meta.dirname, '../../');
 const rootPackageJsonPath = `${rootPath}/package.json`;
 const rootPackageJson = JSON.parse(fs.readFileSync(rootPackageJsonPath, 'utf-8'));
 

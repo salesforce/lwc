@@ -93,7 +93,7 @@ function injectInlineRenderer() {
             if (source.includes(rendererReplacementString)) {
                 const bundle = await rollup({
                     input: path.resolve(
-                        __dirname,
+                        import.meta.dirname,
                         '../../packages/@lwc/engine-dom/src/renderer/index.ts'
                     ),
 

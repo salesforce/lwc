@@ -21,10 +21,10 @@ const shadowModeFile = require.resolve('@lwc/synthetic-shadow/dist/index.js');
 
 const testSufix = '.test.js';
 
-const functionalTestDir = path.join(__dirname, '../', 'src/components');
+const functionalTestDir = path.join(import.meta.dirname, '../', 'src/components');
 const functionalTests = fs.readdirSync(functionalTestDir);
 
-const testOutput = path.join(__dirname, '../', 'public');
+const testOutput = path.join(import.meta.dirname, '../', 'public');
 const testSharedOutput = path.join(testOutput, 'shared');
 const testEntries = functionalTests.reduce((seed, functionalFolder) => {
     const testsFolder = path.join(functionalTestDir, functionalFolder);

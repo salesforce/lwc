@@ -41,7 +41,7 @@ function normalizeError(err: Error) {
 describe('fixtures', () => {
     testFixtureDir<Config>(
         {
-            root: path.resolve(__dirname, 'fixtures'),
+            root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/actual.css',
             ssrVersion: 2,
         },

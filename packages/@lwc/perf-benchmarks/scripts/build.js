@@ -37,9 +37,12 @@ BENCHMARK_TIMEOUT = BENCHMARK_SMOKE_TEST ? 0 : toInt(BENCHMARK_TIMEOUT);
 BENCHMARK_CPU_THROTTLING_RATE =
     BENCHMARK_CPU_THROTTLING_RATE && toInt(BENCHMARK_CPU_THROTTLING_RATE);
 
-const benchmarkDir = path.join(__dirname, '../dist/__benchmarks__');
-const benchmarkComponentsDir = path.join(__dirname, '../../../@lwc/perf-benchmarks-components');
-const packageRootDir = path.resolve(__dirname, '..');
+const benchmarkDir = path.join(import.meta.dirname, '../dist/__benchmarks__');
+const benchmarkComponentsDir = path.join(
+    import.meta.dirname,
+    '../../../@lwc/perf-benchmarks-components'
+);
+const packageRootDir = path.resolve(import.meta.dirname, '..');
 const packageJson = JSON.parse(readFileSync(path.resolve(packageRootDir, 'package.json'), 'utf-8'));
 
 // lwc packages that need to be swapped in when comparing the current code to the latest tip-of-tree code.

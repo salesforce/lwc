@@ -8,7 +8,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { describe, beforeAll, test, expect } from 'vitest';
 
-const PACKAGE_ROOT = path.join(__dirname, '..');
+const PACKAGE_ROOT = path.join(import.meta.dirname, '..');
 
 function readPackageFile(pkgName: string, ext: string) {
     const filename = path.join(PACKAGE_ROOT, pkgName + ext);

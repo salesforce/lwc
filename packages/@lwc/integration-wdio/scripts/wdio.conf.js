@@ -10,7 +10,7 @@ const path = require('path');
 const { registerCustomCommands } = require('./commands');
 
 const port = process.env.PORT || 4567;
-const suiteFolders = path.resolve(__dirname, '../', 'src/components');
+const suiteFolders = path.resolve(import.meta.dirname, '../', 'src/components');
 
 /*
     SUITE
