@@ -26,7 +26,7 @@
         "test:ci": "vitest run --coverage",
         "test:wtr": "nx test @lwc/integration-wtr",
         "test:hydration": "nx test:hydration @lwc/integration-wtr",
-        "test:integration": "nx sauce @lwc/integration-wdio",
+        "test:wdio": "nx sauce @lwc/integration-wdio",
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
