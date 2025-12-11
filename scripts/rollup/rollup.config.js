@@ -7,14 +7,14 @@
 
 /* eslint-env node */
 
-const { readFileSync } = require('node:fs');
-const path = require('node:path');
-const MagicString = require('magic-string');
-const { rollup } = require('rollup');
-const replace = require('@rollup/plugin-replace');
-const typescript = require('@rollup/plugin-typescript');
-const { nodeResolve } = require('@rollup/plugin-node-resolve');
-const { BUNDLED_DEPENDENCIES } = require('../shared/bundled-dependencies.js');
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import MagicString from 'magic-string';
+import { rollup } from 'rollup';
+import replace from '@rollup/plugin-replace';
+import typescript from '@rollup/plugin-typescript';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import { BUNDLED_DEPENDENCIES } from '../shared/bundled-dependencies.js';
 
 // The assumption is that the build script for each sub-package runs in that sub-package's directory
 const packageRoot = process.cwd();
@@ -140,7 +140,7 @@ export default {
     input: path.resolve(packageRoot, './src/index.ts'),
 
     output: formats.map((format) => ({
-        file: `dist/index${format === 'cjs' ? '.cjs' : ''}.js`,
+        file: `dist/index${format === 'cjs' ? '.cjs' : '.js'}`,
         sourcemap: true,
         format,
         banner,
