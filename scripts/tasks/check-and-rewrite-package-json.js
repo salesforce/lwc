@@ -64,7 +64,7 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
         };
     } else {
         buildProps = {
-            main: 'dist/index.cjs',
+            main: 'dist/index.js',
             module: 'dist/index.js',
             types: 'dist/index.d.ts',
             // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
