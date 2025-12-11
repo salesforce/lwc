@@ -15,9 +15,9 @@
 // Use the flag `--test` if you want it to fail with a non-zero exit code if the package.json
 // files differ from what we expect.
 
-const fs = require('node:fs');
-const path = require('node:path');
-const { SCOPED_PACKAGES } = require('../shared/packages.mjs');
+import { writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { SCOPED_PACKAGES } from '../shared/packages.mjs';
 
 // This is the same list as in @lwc/rollup-plugin/src/index.ts
 const LWC_EXPOSED_MODULES = {
@@ -64,7 +64,7 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
         };
     } else {
         buildProps = {
-            main: 'dist/index.cjs.js',
+            main: 'dist/index.js',
             module: 'dist/index.js',
             types: 'dist/index.d.ts',
             // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
@@ -102,6 +102,7 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
         },
         bugs: { url: 'https://github.com/salesforce/lwc/issues' },
         license: 'MIT',
+        type: 'module',
         publishConfig: { access: 'public' },
         // Use the same volta config in every subdirectory so that we always get the same node/yarn versions
         // See: https://docs.volta.sh/advanced/workspaces
@@ -129,7 +130,7 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
     }
 
     expectedPkgJsons.push({
-        filename: path.join(dir, 'package.json'),
+        filename: join(dir, 'package.json'),
         // Including \n because that's how prettier formats files
         expected: JSON.stringify(expectedJson, null, 4) + '\n',
         actual: JSON.stringify(pkg, null, 4) + '\n',
@@ -142,7 +143,7 @@ const differingPackageJsonFiles = [];
 for (const { filename, expected, actual } of expectedPkgJsons) {
     if (actual !== expected) {
         differingPackageJsonFiles.push(filename);
-        fs.writeFileSync(filename, expected, 'utf-8');
+        writeFileSync(filename, expected, 'utf-8');
     }
 }
 

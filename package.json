@@ -7,6 +7,7 @@
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git"
     },
+    "type": "module",
     "scripts": {
         "prepare": "husky && yarn build",
         "lint": "eslint . --cache",

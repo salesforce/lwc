@@ -21,6 +21,7 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
     },
