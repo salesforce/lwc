@@ -16,8 +16,8 @@ const templates = require('../src/shared/templates.js');
 const mode = process.env.MODE || 'dev';
 const isProd = /prod/.test(mode);
 
-const engineModeFile = require.resolve('@lwc/engine-dom/dist/index.js');
-const shadowModeFile = require.resolve('@lwc/synthetic-shadow/dist/index.js');
+const engineModeFile = require.resolve('@lwc/engine-dom');
+const shadowModeFile = require.resolve('@lwc/synthetic-shadow');
 
 const testSufix = '.test.js';
 
