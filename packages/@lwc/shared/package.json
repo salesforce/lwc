@@ -23,7 +23,7 @@
         "access": "public"
     },
     "engines": {
-        "node": ">=16.20.0"
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"
