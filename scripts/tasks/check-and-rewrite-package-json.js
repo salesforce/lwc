@@ -104,7 +104,8 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
         license: 'MIT',
         publishConfig: { access: 'public' },
         engines: {
-            node: '>= 20.19.0',
+            // minimum version where importing @lwc/* actually works, regardless of official support
+            node: '>=16.6.0',
         },
         // Use the same volta config in every subdirectory so that we always get the same node/yarn versions
         // See: https://docs.volta.sh/advanced/workspaces
