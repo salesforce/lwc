@@ -16,8 +16,8 @@ describe('rootDir', () => {
 
         await rollup({
             input: [
-                path.resolve(__dirname, 'fixtures/entryA.js'),
-                path.resolve(__dirname, 'fixtures/entryB.js'),
+                path.resolve(import.meta.dirname, 'fixtures/entryA.js'),
+                path.resolve(import.meta.dirname, 'fixtures/entryB.js'),
             ],
             plugins: [lwc()],
             onwarn(warning) {
@@ -40,8 +40,8 @@ describe('rootDir', () => {
 
         await rollup({
             input: {
-                entryA: path.resolve(__dirname, 'fixtures/entryA.js'),
-                entryB: path.resolve(__dirname, 'fixtures/entryB.js'),
+                entryA: path.resolve(import.meta.dirname, 'fixtures/entryA.js'),
+                entryB: path.resolve(import.meta.dirname, 'fixtures/entryB.js'),
             },
             plugins: [lwc()],
             onwarn(warning) {

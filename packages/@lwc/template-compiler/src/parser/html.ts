@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as parse5 from 'parse5';
-import * as he from 'he';
+import he from 'he';
 
 import { ParserDiagnostics } from '@lwc/errors';
 import { APIFeature, isAPIFeatureEnabled } from '@lwc/shared';

@@ -18,7 +18,7 @@ describe('enableStaticContentOptimization:', () => {
     ): Promise<{ code: string; warnings: RollupLog[] }> {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({
-            input: path.resolve(__dirname, pathname),
+            input: path.resolve(import.meta.dirname, pathname),
             plugins: [lwc(options)],
             external: ['lwc'],
             onwarn(warning) {
