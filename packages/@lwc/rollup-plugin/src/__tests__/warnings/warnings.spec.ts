@@ -16,7 +16,7 @@ function normalizeLog(log: RollupLog) {
         code: log.code,
         frame: log.frame,
         hook: log.hook,
-        id: log.id && path.relative(__dirname, log.id),
+        id: log.id && path.relative(import.meta.dirname, log.id),
         // The error message contains a prefix determined by Rollup. We just want the part after "LWC123: <message>"
         message: log.message.match(/(LWC\d+:.*$)/)![1],
         plugin: log.plugin,
@@ -24,7 +24,7 @@ function normalizeLog(log: RollupLog) {
         loc: log.loc && {
             column: log.loc.column,
             line: log.loc.line,
-            file: log.loc.file && path.relative(__dirname, log.loc.file),
+            file: log.loc.file && path.relative(import.meta.dirname, log.loc.file),
         },
     };
 }
@@ -33,7 +33,7 @@ describe('warnings', () => {
     it('should emit a warning for double </template> tags in older API versions', async () => {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({
-            input: path.resolve(__dirname, 'fixtures/test/test.js'),
+            input: path.resolve(import.meta.dirname, 'fixtures/test/test.js'),
             plugins: [
                 lwc({
                     apiVersion: APIVersion.V58_244_SUMMER_23,

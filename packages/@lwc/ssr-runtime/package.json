@@ -21,15 +21,21 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
     },
     "volta": {
         "extends": "../../../package.json"
     },
-    "main": "dist/index.cjs.js",
+    "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
+    "exports": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.js",
+        "require": "./dist/index.cjs"
+    },
     "files": [
         "dist/**/*.js",
         "dist/**/*.d.ts"

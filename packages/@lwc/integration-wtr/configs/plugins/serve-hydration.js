@@ -8,7 +8,10 @@ import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helper
 
 /** Code for the LWC SSR module. */
 const LWC_SSR = readFileSync(
-    new URL(import.meta.resolve(ENGINE_SERVER ? '@lwc/engine-server' : '@lwc/ssr-runtime')),
+    new URL(
+        'index.cjs',
+        import.meta.resolve(ENGINE_SERVER ? '@lwc/engine-server' : '@lwc/ssr-runtime')
+    ),
     'utf8'
 );
 

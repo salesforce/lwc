@@ -18,7 +18,7 @@ async function runRollup(
     const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
-        input: path.resolve(__dirname, 'fixtures', pathname),
+        input: path.resolve(import.meta.dirname, 'fixtures', pathname),
         plugins: [lwc(options)],
         external: ['lwc', ...external],
         onwarn(warning) {

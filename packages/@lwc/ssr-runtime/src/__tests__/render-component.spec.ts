@@ -17,7 +17,7 @@ async function compileComponent({
     input: string;
     files: { [name: string]: string };
 }) {
-    const dirname = path.resolve(__dirname, 'dist/render-component');
+    const dirname = path.resolve(import.meta.dirname, 'dist/render-component');
     const modulesDir = path.resolve(dirname, './src');
     const outputFile = path.resolve(dirname, './dist/index.js');
 
