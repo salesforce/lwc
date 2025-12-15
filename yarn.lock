@@ -5900,6 +5900,11 @@ es-module-lexer@^1.0.0, es-module-lexer@^1.7.0:
   resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-1.7.0.tgz#9159601561880a85f2734560a9099b2c31e5372a"
   integrity sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==
 
+es-module-lexer@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/es-module-lexer/-/es-module-lexer-2.0.0.tgz#f657cd7a9448dcdda9c070a3cb75e5dc1e85f5b1"
+  integrity sha512-5POEcUuZybH7IdmGsD8wlf0AI55wMecM9rVBTI/qEAy2c1kTOm3DjFYjrBdI2K3BaJjJYfYFeRtM0t9ssnRuxw==
+
 es-object-atoms@^1.0.0, es-object-atoms@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/es-object-atoms/-/es-object-atoms-1.1.1.tgz#1c4f2c4837327597ce69d2ca190a7fdd172338c1"
@@ -11985,7 +11990,7 @@ webdriver@9.21.0, webdriver@^9.0.0:
     undici "^6.21.3"
     ws "^8.8.0"
 
-webdriverio@9.21.0, webdriverio@^9.0.0, webdriverio@^9.20.1:
+webdriverio@9.21.0, webdriverio@^9.0.0, webdriverio@^9.21.0:
   version "9.21.0"
   resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-9.21.0.tgz#dbbe1b9be28d03e998fc6e86a94707bdd74fadf8"
   integrity sha512-7teaXajOuNdn2UyyKlqMLssJjf0vDEih+Lo+tE/gHOt/P+mB8CinZym4PGtsriZLcyt4xV+Cun3hDmXM+pL26A==

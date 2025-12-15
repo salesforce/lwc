@@ -56,7 +56,7 @@
         "@vitest/spy": "4.0.14",
         "@vitest/ui": "4.0.14",
         "bytes": "^3.1.2",
-        "es-module-lexer": "^1.7.0",
+        "es-module-lexer": "^2.0.0",
         "eslint": "9.39.1",
         "eslint-config-flat-gitignore": "^2.1.0",
         "eslint-plugin-header": "^3.1.1",
