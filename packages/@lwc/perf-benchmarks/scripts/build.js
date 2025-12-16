@@ -9,11 +9,11 @@
  * Builds the HTML and tachometer.json files necessary to run the benchmarks.
  */
 
-const path = require('node:path');
-const { readFile, writeFile } = require('node:fs/promises');
-const { readFileSync } = require('node:fs');
-const { glob } = require('glob');
-const { hashElement } = require('folder-hash');
+import path from 'node:path';
+import { readFile, writeFile } from 'node:fs/promises';
+import { readFileSync } from 'node:fs';
+import { glob } from 'glob';
+import { hashElement } from 'folder-hash';
 
 const {
     BENCHMARK_SMOKE_TEST,

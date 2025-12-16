@@ -2,6 +2,7 @@
     "name": "@lwc/perf-benchmarks",
     "version": "8.26.1",
     "private": true,
+    "type": "module",
     "scripts": {
         "build": "rm -fr dist && rollup -c  ./rollup.config.mjs && node scripts/build.js && ./scripts/fix-deps.sh",
         "test": "yarn test:run && yarn test:format",
