@@ -123,17 +123,17 @@ export default class Test extends LightningElement {
 
             expect(() => compileComponentForSSR(src, 'test.js', {}))
                 .toThrowErrorMatchingInlineSnapshot(`
-              {
-                "filename": "test.js",
-                "location": {
-                  "column": 2,
-                  "length": 77,
-                  "line": 6,
-                  "start": 220,
-                },
-                "message": "LWC1200: Computed property in @wire config must be a constant or primitive literal.",
-              }
-            `);
+                  {
+                    "filename": "test.js",
+                    "location": {
+                      "column": 2,
+                      "length": 9,
+                      "line": 7,
+                      "start": 288,
+                    },
+                    "message": "LWC1200: Computed property in @wire config must be a constant or primitive literal.",
+                  }
+                `);
         });
     });
 });
