@@ -67,12 +67,6 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
             main: 'dist/index.js',
             module: 'dist/index.js',
             types: 'dist/index.d.ts',
-            exports: {
-                // order is important!
-                types: './dist/index.d.ts',
-                import: './dist/index.js',
-                require: './dist/index.cjs',
-            },
             // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
             files: Array.from(new Set(['dist/**/*.js', 'dist/**/*.d.ts', ...pkg.files])),
             scripts: {
