@@ -401,7 +401,7 @@ function parseLwcComponent(
         );
     }
 
-    return ast.lwcComponent(parse5Elm.tagName as LwcTagName.Component, parse5ElmLocation);
+    return ast.lwcComponent(parse5Elm.tagName as typeof LwcTagName.Component, parse5ElmLocation);
 }
 
 function parseLwcElementAsBuiltIn(

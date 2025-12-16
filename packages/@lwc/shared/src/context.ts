@@ -30,23 +30,23 @@ export interface ContextBinding<C extends object> {
 
 let contextKeys: ContextKeys;
 
-export function setContextKeys(config: ContextKeys) {
+export function setContextKeys(config: ContextKeys): void {
     isFalse(contextKeys, '`setContextKeys` cannot be called more than once');
 
     contextKeys = config;
 }
 
-export function getContextKeys() {
+export function getContextKeys(): ContextKeys {
     return contextKeys;
 }
 
-export function setTrustedContextSet(context: WeakSet<object>) {
+export function setTrustedContextSet(context: WeakSet<object>): void {
     isFalse(trustedContext, 'Trusted Context Set is already set!');
 
     trustedContext = context;
 }
 
-export function addTrustedContext(contextParticipant: object) {
+export function addTrustedContext(contextParticipant: object): void {
     // This should be a no-op when the trustedSignals set isn't set by runtime
     trustedContext?.add(contextParticipant);
 }

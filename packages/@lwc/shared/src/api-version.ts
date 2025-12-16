@@ -33,10 +33,10 @@ const allVersions = [
     APIVersion.V64_256_SUMMER_25,
     APIVersion.V65_258_WINTER_26,
     APIVersion.V66_260_SPRING_26,
-];
+] as const;
 const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
-export const LOWEST_API_VERSION = allVersions[0];
-export const HIGHEST_API_VERSION = allVersions[allVersions.length - 1];
+export const LOWEST_API_VERSION: APIVersion = allVersions[0];
+export const HIGHEST_API_VERSION: APIVersion = allVersions[allVersions.length - 1];
 
 /**
  *
