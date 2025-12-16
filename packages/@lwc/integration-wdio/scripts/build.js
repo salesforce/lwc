@@ -7,7 +7,7 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const rollup = require('rollup');
-const rollupLwcCompilerPlugin = require('@lwc/rollup-plugin');
+const { default: rollupLwcCompilerPlugin } = require('@lwc/rollup-plugin');
 const rollupReplacePlugin = require('@rollup/plugin-replace');
 
 const templates = require('../src/shared/templates.js');
