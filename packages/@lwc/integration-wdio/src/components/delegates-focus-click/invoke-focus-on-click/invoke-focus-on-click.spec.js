@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const assert = require('assert');
+const assert = require('node:assert');
 /*
 This regression test reproduces a very specific scenario where an element's focus() method is
 invoked immediately after the mousedown event listener on the global document:
