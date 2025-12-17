@@ -4,7 +4,7 @@
     "version": "8.26.1",
     "type": "module",
     "scripts": {
-        "build": "echo playwright install || true",
+        "build": "playwright install || true",
         "start": "web-test-runner --config configs/integration.js --manual",
         "test": "web-test-runner --config configs/integration.js",
         "test:hydration": "web-test-runner --config configs/hydration.js"
