@@ -80,7 +80,7 @@ async function compileFixture({
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
                 modules: [{ dir: modulesDir }],
-                experimentalDynamicComponent: {
+                dynamicImports: {
                     loader: path.join(import.meta.dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
