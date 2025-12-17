@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'fs';
-import path from 'path';
-import { URLSearchParams } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { URLSearchParams } from 'node:url';
 
 import pluginUtils from '@rollup/pluginutils';
 import { transformSync } from '@lwc/compiler';
