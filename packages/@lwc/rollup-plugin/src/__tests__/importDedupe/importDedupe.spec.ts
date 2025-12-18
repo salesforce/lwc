@@ -45,6 +45,8 @@ it('merges duplicate imports', async () => {
     expect(warnings).toHaveLength(0);
     expect(imports).toHaveLength(1);
     const specifiers = imports[0][1];
+    // `specifiers` should include `LightningElement` and `renderer` from basic.js
+    // we don't do an exact string match because the compiler adds imports
     expect(specifiers).toContain('renderer');
     expect(specifiers).not.toContain('renderer as');
 });
