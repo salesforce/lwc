@@ -53,12 +53,12 @@ const visitors: Visitors = {
         removeDecoratorImport(path);
     },
     ImportExpression(path, state) {
-        const { experimentalDynamicComponent, importManager } = state;
-        if (!experimentalDynamicComponent) {
-            // if no `experimentalDynamicComponent` config, then leave dynamic `import()`s as-is
+        const { dynamicImports, importManager } = state;
+        if (!dynamicImports) {
+            // if no `dynamicImports` config, then leave dynamic `import()`s as-is
             return;
         }
-        if (experimentalDynamicComponent.strictSpecifier) {
+        if (dynamicImports.strictSpecifier) {
             if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
                 throw generateError(
                     path.node!,
@@ -67,7 +67,7 @@ const visitors: Visitors = {
                 );
             }
         }
-        const loader = experimentalDynamicComponent.loader;
+        const loader = dynamicImports.loader;
         if (!loader) {
             // if no `loader` defined, then leave dynamic `import()`s as-is
             return;
@@ -299,7 +299,7 @@ export default function compileJS(
         publicProperties: new Map(),
         privateProperties: new Set(),
         wireAdapters: [],
-        experimentalDynamicComponent: options.experimentalDynamicComponent,
+        dynamicImports: options.dynamicImports,
         importManager: new ImportManager(),
         trustedLwcIdentifiers: new WeakSet(),
     };
