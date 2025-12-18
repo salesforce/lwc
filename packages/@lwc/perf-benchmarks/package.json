@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "8.26.1",
+    "version": "8.26.2",
     "private": true,
     "type": "module",
     "scripts": {
@@ -16,11 +16,11 @@
         "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "8.26.1",
-        "@lwc/engine-server": "8.26.1",
-        "@lwc/perf-benchmarks-components": "8.26.1",
-        "@lwc/ssr-runtime": "8.26.1",
-        "@lwc/synthetic-shadow": "8.26.1"
+        "@lwc/engine-dom": "8.26.2",
+        "@lwc/engine-server": "8.26.2",
+        "@lwc/perf-benchmarks-components": "8.26.2",
+        "@lwc/ssr-runtime": "8.26.2",
+        "@lwc/synthetic-shadow": "8.26.2"
     },
     "devDependencies": {
         "@best/cli": "^16.0.0",

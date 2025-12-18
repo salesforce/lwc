@@ -11,8 +11,5 @@ export type Expression = string;
 
 export type TemplateTransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
 export type ComponentTransformOptions = Partial<
-    Pick<LwcBabelPluginOptions, 'name' | 'namespace'>
-> & {
-    // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
-    experimentalDynamicComponent?: LwcBabelPluginOptions['dynamicImports'];
-};
+    Pick<LwcBabelPluginOptions, 'name' | 'namespace' | 'dynamicImports'>
+>;

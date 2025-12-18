@@ -64,7 +64,7 @@ async function compileFixture({
     experimentalComplexExpressions: boolean | undefined;
 }) {
     const modulesDir = path.resolve(dirname, './modules');
-    const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
+    const outputFile = path.resolve(dirname, './dist/compiled-ssr.js');
     const input = 'virtual/fixture/test.js';
 
     const bundle = await rollup({
@@ -80,7 +80,7 @@ async function compileFixture({
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
                 modules: [{ dir: modulesDir }],
-                experimentalDynamicComponent: {
+                dynamicImports: {
                     loader: path.join(import.meta.dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
@@ -106,10 +106,7 @@ async function compileFixture({
 describe.concurrent('fixtures', () => {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(
-                import.meta.dirname,
-                '../../../engine-server/src/__tests__/fixtures'
-            ),
+            root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/config.json',
             ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests
