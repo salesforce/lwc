@@ -106,10 +106,7 @@ async function compileFixture({
 describe.concurrent('fixtures', () => {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(
-                import.meta.dirname,
-                '../../../engine-server/src/__tests__/fixtures'
-            ),
+            root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/config.json',
             ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests

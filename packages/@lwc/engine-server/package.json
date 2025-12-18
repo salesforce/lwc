@@ -5,6 +5,7 @@
     ],
     "name": "@lwc/engine-server",
     "version": "8.27.0",
+    "private": true,
     "description": "Renders LWC components in a server environment.",
     "keywords": [
         "lwc"
