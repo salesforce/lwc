@@ -33,7 +33,7 @@ export default function templateTransform(
     options: NormalizedTransformOptions
 ): TransformResult {
     const {
-        experimentalDynamicComponent,
+        dynamicImports,
         // TODO [#3370]: remove experimental template expression flag
         experimentalComplexExpressions,
         preserveHtmlComments,
@@ -49,8 +49,7 @@ export default function templateTransform(
         disableSyntheticShadowSupport,
         experimentalErrorRecoveryMode,
     } = options;
-    const experimentalDynamicDirective =
-        deprecatedDynamicDirective ?? Boolean(experimentalDynamicComponent);
+    const experimentalDynamicDirective = deprecatedDynamicDirective ?? Boolean(dynamicImports);
 
     let result;
     try {

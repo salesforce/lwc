@@ -56,7 +56,7 @@ export interface ComponentMetaState {
     /** indicates whether the LightningElement has any wired props */
     wireAdapters: WireAdapter[];
     /** dynamic imports configuration */
-    experimentalDynamicComponent: ComponentTransformOptions['experimentalDynamicComponent'];
+    dynamicImports: ComponentTransformOptions['dynamicImports'];
     /** imports to add to the top of the program after parsing */
     importManager: ImportManager;
     /** identifiers starting with __lwc that we added */
