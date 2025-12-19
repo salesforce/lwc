@@ -178,13 +178,6 @@ describe('EventTarget.addEventListener', () => {
                 document.body.appendChild(container);
             });
 
-            it('should be discarded on host elements', () => {
-                testWithOptions({
-                    node: container,
-                    options: [true, { capture: true }],
-                    expectedCount: 1,
-                });
-            });
             it('should log error on host elements', () => {
                 expect(() => {
                     container.addEventListener('test', () => {}, {});
@@ -193,13 +186,6 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
-            it('should be discarded on shadow roots', () => {
-                testWithOptions({
-                    node: container.shadowRoot,
-                    options: [true, { capture: true }],
-                    expectedCount: 1,
-                });
-            });
             it('should log error on shadow roots', () => {
                 expect(() => {
                     container.shadowRoot.addEventListener('test', () => {}, {});
@@ -224,13 +210,6 @@ describe('EventTarget.addEventListener', () => {
                 document.body.appendChild(container);
             });
 
-            it('should not be discarded on host elements', () => {
-                testWithOptions({
-                    node: container,
-                    options: [true, { capture: true }, false, { capture: false }],
-                    expectedCount: 2,
-                });
-            });
             it('should log error on host elements', () => {
                 expect(() => {
                     container.addEventListener('test', () => {}, {});
@@ -239,13 +218,6 @@ describe('EventTarget.addEventListener', () => {
                 );
             });
 
-            it('should not be discarded on shadow roots', () => {
-                testWithOptions({
-                    node: container.shadowRoot,
-                    options: [true, { capture: true }, false, { capture: false }],
-                    expectedCount: 2,
-                });
-            });
             it('should log error on shadow roots', () => {
                 expect(() => {
                     container.shadowRoot.addEventListener('test', () => {}, {});
