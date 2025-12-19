@@ -93,7 +93,7 @@ export type RegisterContextProviderFn = (
 /** The string keys of an object */
 type PropsOfType<Class, Target> = Exclude<
     {
-        [K in keyof Class]: Required<Class>[K] extends Target ? K : never;
+        [K in keyof Class]-?: Required<Class>[K] extends Target ? K : never;
     }[keyof Class],
     // $foo.bar maps to Class["foo"]["bar"]; Class["foo.bar"] can never be a reactive prop
     symbol | `${string}.${string}`
