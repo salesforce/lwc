@@ -11843,10 +11843,10 @@ typescript-eslint@8.47.0:
     "@typescript-eslint/typescript-estree" "8.47.0"
     "@typescript-eslint/utils" "8.47.0"
 
-typescript@~6.0.0-0:
-  version "6.0.0-dev.20251218"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.0-dev.20251218.tgz#c6d7feafc05e30e07fd8dee2ebb8de391ad7b807"
-  integrity sha512-1rsSqwJ5VNB+4dXoQQND3ICVsWalA9ZrdGBMv7osCG92McuNkhn7kRrL5eGx3jWH5+sYH+gx2+0e6pvNNJeloA==
+typescript@6.0.0-dev.20251217:
+  version "6.0.0-dev.20251217"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.0-dev.20251217.tgz#bf484de50c11e4a4ac23ad9a1c46038ec37085c5"
+  integrity sha512-UnRbrasJ86baTYM5iydq/NjjNDUgR+MqWbUgfHGjo44gDxvUAHk7y11Z7457tkImr7TOp+NcFnYOyy5s+ZQF2g==
 
 typical@^4.0.0:
   version "4.0.0"
