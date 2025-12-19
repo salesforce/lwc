@@ -48,6 +48,21 @@ it('should transform class fields', async () => {
     expect(code).not.toContain('foo;');
 });
 
+it('should preserve imports', async () => {
+    const actual = `
+        import { LightningElement } from 'lwc';
+        import { renderer as a } from 'lwc';
+        import { renderer as b } from 'lwc';
+        export default class extends LightningElement {
+            prop = [a, b];
+        }
+    `;
+    const { code } = await transform(actual, 'foo.js', BASE_TRANSFORM_OPTIONS);
+
+    expect(code).toContain("import { renderer as a } from 'lwc'");
+    expect(code).toContain("import { renderer as b } from 'lwc'");
+});
+
 describe('object rest spread', () => {
     [59, 60].forEach((apiVersion) => {
         it(`apiVersion=${apiVersion}`, async () => {
