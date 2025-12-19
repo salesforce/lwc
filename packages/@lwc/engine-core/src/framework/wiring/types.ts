@@ -90,38 +90,41 @@ export type RegisterContextProviderFn = (
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
 
-/** Resolves a property chain to the corresponding value on the target type. */
-type ResolveReactiveValue<
-    /** The object to search for properties; initially the component. */
-    Target,
-    /** A string representing a chain of of property keys, e.g. "data.user.name". */
-    Keys extends string,
-> = Keys extends `${infer FirstKey}.${infer Rest}`
-    ? // If the string is "a.b.c", check if "a" is a prop on the target object
-      FirstKey extends keyof Target
-        ? // If "a" exists on the target, check `target["a"]` for "b.c"
-          ResolveReactiveValue<Target[FirstKey], Rest>
-        : undefined
-    : // The string has no ".", use the full string as the key (e.g. we've reached "c" in "a.b.c")
-      Keys extends keyof Target
-      ? Target[Keys]
-      : undefined;
+/** The string keys of an object */
+type PropsOfType<Class, Target> = Exclude<
+    {
+        [K in keyof Class]: Required<Class>[K] extends Target ? K : never;
+    }[keyof Class],
+    symbol
+>;
 
 /**
- * Detects if the `Value` type is a property chain starting with "$". If so, it resolves the
- * properties to the corresponding value on the target type.
+ * Extends the given wire adapter config with reactive property strings (e.g. `$prop`) for values
+ * on the given class that match the config. Only validates top-level props; does **not** provide
+ * type checking for nested property access.
+ *
+ * @example
+ * type Config = { id: number };
+ * declare const Adapter: WireAdapterConstructor<Config>;
+ * declare class Component extends LightningElement {
+ *   numberProp = 6_7;
+ *   stringProp = '🙌';
+ *   objectProp?: { nestedStringProp: string };
+ *   \@wire(Adapter, { id: 123 }) validValue?: unknown;
+ *   \@wire(Adapter, { id: "$numberProp" }) validProp?: unknown;
+ *
+ *   \@wire(Adapter, { id: "bad value" }) invalidValue?: unknown;
+ *   \@wire(Adapter, { id: "$stringProp" }) invalidProp?: unknown;
+ *
+ *   // Nested props are not checked to avoid crashing on recursive types
+ *   \@wire(Adapter, { id: "$objectProp.nestedStringProp" }) falsePositive?: unknown;
+ * }
  */
-type ResolveValueIfReactive<Value, Target> = Value extends string
-    ? string extends Value // `Value` is type `string`
-        ? // Workaround for not being able to enforce `as const` assertions -- we don't know if this
-          // is a true string value (e.g. `@wire(adapter, {val: 'str'})`) or if it's a reactive prop
-          // (e.g. `@wire(adapter, {val: '$number'})`), so we have to go broad to avoid type errors.
-          any
-        : Value extends `$${infer Keys}` // String literal starting with "$", e.g. `$prop`
-          ? ResolveReactiveValue<Target, Keys>
-          : Value // String literal *not* starting with "$", e.g. `"hello world"`
-    : Value; // non-string type
-
-export type ReplaceReactiveValues<Config extends ConfigValue, Component> = {
-    [K in keyof Config]: ResolveValueIfReactive<Config[K], Component>;
+export type ConfigWithReactiveProps<Config extends ConfigValue, Class> = {
+    [K in keyof Config]:
+        | Config[K] // The actual value, e.g. `number`
+        // Props on the class that match the config value, e.g. `$numberProp`
+        | `$${PropsOfType<Class, Config[K]>}`
+        // A nested prop on the class that matches the config value, e.g. `$obj.num` or `$1.2.3`
+        | `$${PropsOfType<Class, object>}.${string}`;
 };
