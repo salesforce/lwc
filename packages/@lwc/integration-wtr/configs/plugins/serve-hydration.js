@@ -27,7 +27,7 @@ async function compileModule(input, targetSSR, format) {
             lwcRollupPlugin({
                 targetSSR,
                 modules: [{ dir: modulesDir }],
-                experimentalDynamicComponent: {
+                dynamicImports: {
                     loader: fileURLToPath(
                         new URL('../../helpers/loader.js', import.meta.url)
                     ).replaceAll(path.sep, path.posix.sep),

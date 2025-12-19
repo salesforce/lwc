@@ -59,10 +59,10 @@ interface WireDecorator<Value, Class> {
  * }
  */
 export default function wire<
-    ReactiveConfig extends ConfigValue = ConfigValue,
-    Value = any,
-    Context extends ContextValue = ContextValue,
-    Class = LightningElement,
+    const ReactiveConfig extends ConfigValue = ConfigValue,
+    const Value = any,
+    const Context extends ContextValue = ContextValue,
+    const Class = LightningElement,
 >(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     adapter:
