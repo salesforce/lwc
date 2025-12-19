@@ -95,7 +95,8 @@ type PropsOfType<Class, Target> = Exclude<
     {
         [K in keyof Class]: Required<Class>[K] extends Target ? K : never;
     }[keyof Class],
-    symbol
+    // $foo.bar maps to Class["foo"]["bar"]; Class["foo.bar"] can never be a reactive prop
+    symbol | `${string}.${string}`
 >;
 
 /**
