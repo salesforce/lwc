@@ -8738,10 +8738,10 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-meriyah@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/meriyah/-/meriyah-5.0.0.tgz#9f5fd811ee6e7952dcb48cf6962f27a885f108b8"
-  integrity sha512-tNlPDP4AzkH/7cROw7PKJ7mCLe/ZLpa2ja23uqB35vt63+8dgZi2NKLJMrkjxLcxArnLJVvd3Y/7pRl3OLR7yg==
+meriyah@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/meriyah/-/meriyah-7.0.0.tgz#a1b507c29ebb4157430fcc627215439044a28914"
+  integrity sha512-eM23BVAsVhOxLEKckm3DopvcEze2o1leYO11xIkYqeeJgaNbzfGS00y7BUp/KeQPcTzXx0cGJRD2V7BYEZnDcg==
 
 methods@~1.1.2:
   version "1.1.2"
@@ -11813,10 +11813,10 @@ typescript-eslint@8.50.0:
     "@typescript-eslint/typescript-estree" "8.50.0"
     "@typescript-eslint/utils" "8.50.0"
 
-typescript@5.8.2:
-  version "5.8.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.2.tgz#8170b3702f74b79db2e5a96207c15e65807999e4"
-  integrity sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==
+typescript@6.0.0-dev.20251217:
+  version "6.0.0-dev.20251217"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.0-dev.20251217.tgz#bf484de50c11e4a4ac23ad9a1c46038ec37085c5"
+  integrity sha512-UnRbrasJ86baTYM5iydq/NjjNDUgR+MqWbUgfHGjo44gDxvUAHk7y11Z7457tkImr7TOp+NcFnYOyy5s+ZQF2g==
 
 typical@^4.0.0:
   version "4.0.0"

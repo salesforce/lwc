@@ -29,7 +29,7 @@ export default {
 - `modules` (type: `ModuleRecord[]`, default: `[]`) - The [module resolution](https://lwc.dev/guide/es_modules#module-resolution) overrides passed to the `@lwc/module-resolver`.
 - `stylesheetConfig` (type: `object`, default: `{}`) - Deprecated. Ignored by compiler.
 - `preserveHtmlComments` (type: `boolean`, default: `false`) - The configuration to pass to the `@lwc/template-compiler`.
-- `experimentalDynamicComponent` (type: `DynamicImportConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
+- `dynamicImports` (type: `DynamicImportConfig`, default: `null`) - The configuration to pass to `@lwc/compiler`.
 - `experimentalDynamicDirective` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable deprecated dynamic components.
 - `enableDynamicComponents` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/template-compiler` to enable dynamic components.
 - `enableLightningWebSecurityTransforms` (type: `boolean`, default: `false`) - The configuration to pass to `@lwc/compiler`.

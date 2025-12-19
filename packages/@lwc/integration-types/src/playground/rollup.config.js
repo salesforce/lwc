@@ -4,8 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { fileURLToPath } from 'node:url';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import lwc from '@lwc/rollup-plugin';
 import replace from '@rollup/plugin-replace';
 import typescript from '@rollup/plugin-typescript';
@@ -15,14 +14,12 @@ import serve from 'rollup-plugin-serve';
 // Executing the script to ensure the tsconfig paths are up to date
 await import('../../scripts/update-paths.js');
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
 /** @type {import('rollup').RollupOptions} */
 export default {
-    input: join(__dirname, 'main.ts'),
+    input: join(import.meta.dirname, 'main.ts'),
 
     output: {
-        file: join(__dirname, 'dist/main.js'),
+        file: join(import.meta.dirname, 'dist/main.js'),
         format: 'esm',
         sourcemap: true,
     },
@@ -35,10 +32,10 @@ export default {
         }),
         lwc(),
         serve({
-            contentBase: __dirname,
+            contentBase: import.meta.dirname,
             open: false,
             port: process.env.PORT ?? 3000,
         }),
-        livereload(join(__dirname, 'dist')),
+        livereload(join(import.meta.dirname, 'dist')),
     ],
 };

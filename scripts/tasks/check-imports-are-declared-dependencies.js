@@ -9,19 +9,25 @@
 // This avoids issues with transitive dependencies being treated as implicit dependencies, which
 // may break tools like Yarn PnP (see: https://github.com/salesforce/lwc/issues/3540)
 
-const path = require('node:path');
-const fs = require('node:fs');
-const { builtinModules } = require('node:module');
-const { init, parse } = require('es-module-lexer');
-const { SCOPED_PACKAGES } = require('../shared/packages.mjs');
+import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { builtinModules } from 'node:module';
+import { init, parse } from 'es-module-lexer';
+import { SCOPED_PACKAGES } from '../shared/packages.mjs';
 
 async function main() {
     const errors = [];
 
     for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
-        const { dependencies, peerDependencies, private, module, types } = pkg;
+        const {
+            dependencies,
+            peerDependencies,
+            private: isPrivate,
+            module: moduleEntry,
+            types,
+        } = pkg;
 
-        if (private) {
+        if (isPrivate) {
             continue; // not public, we don't care
         }
 
@@ -30,9 +36,9 @@ async function main() {
         // We use three fields for exports: "main" for CJS, "module" for ESM, "types" for, y'know.
         // If a package has a "module" defined, we use that as the source of truth, otherwise we
         // assume it's a types-only package and we check that, instead.
-        const fileToCheck = path.join(dir, module ?? types);
+        const fileToCheck = join(dir, moduleEntry ?? types);
 
-        const esmSource = fs.readFileSync(fileToCheck, 'utf-8');
+        const esmSource = readFileSync(fileToCheck, 'utf-8');
 
         await init;
         const [importeds] = parse(esmSource);

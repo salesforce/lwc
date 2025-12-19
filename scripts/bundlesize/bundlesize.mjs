@@ -9,20 +9,18 @@
 import fs from 'node:fs/promises';
 import { promisify } from 'node:util';
 import { gzip as gzipCallback } from 'node:zlib';
-import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import bytes from 'bytes';
 import * as terser from 'terser';
 
 const gzip = promisify(gzipCallback);
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const jsonFile = path.join(__dirname, 'bundlesize.config.json');
+const jsonFile = path.join(import.meta.dirname, 'bundlesize.config.json');
 const { files } = JSON.parse(await fs.readFile(jsonFile, 'utf-8'));
 
 let failed = false;
 
 for (const { path: filePath, maxSize } of files) {
-    const absoluteFile = path.join(__dirname, '../..', filePath);
+    const absoluteFile = path.join(import.meta.dirname, '../..', filePath);
     const unminifiedSource = await fs.readFile(absoluteFile, 'utf-8');
     const prodSource = unminifiedSource.replaceAll('process.env.NODE_ENV', '"production"');
     const { code: minifiedSource } = await terser.minify(prodSource, {
