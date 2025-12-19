@@ -67,10 +67,7 @@ export default function wire<
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     config?: ConfigWithReactiveProps<Config, Class>
 ): WireDecorator<Value, Class> {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.fail('@wire(adapter, config?) may only be used as a decorator.');
-    }
-    throw new Error();
+    assert.fail('@wire(adapter, config?) may only be used as a decorator.');
 }
 
 export function internalWireFieldDecorator(key: string): PropertyDescriptor {
