@@ -90,24 +90,20 @@ type AriaAttrToPropMap = {
     [Prop in AriaProperty as AriaPropToAttrMap[Prop]]: Prop;
 };
 
-const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (() => {
-    const AriaAttrNameToPropNameMap: AriaAttrToPropMap = create(null);
-    const AriaPropNameToAttrNameMap: AriaPropToAttrMap = create(null);
+const AriaAttrNameToPropNameMap: AriaAttrToPropMap = create(null);
+const AriaPropNameToAttrNameMap: AriaPropToAttrMap = create(null);
 
-    // Synthetic creation of all AOM property descriptors for Custom Elements
-    forEach.call(AriaPropertyNames, (propName) => {
-        const attrName = StringToLowerCase.call(
-            StringReplace.call(propName, /^aria/, () => 'aria-')
-        ) as AriaAttribute;
-        // These type assertions are because the map types are a 1:1 mapping of ariaX to aria-x.
-        // TypeScript knows we have one of ariaX | ariaY and one of aria-x | aria-y, and tries to
-        // prevent us from doing ariaX: aria-y, but we that it's safe.
-        (AriaAttrNameToPropNameMap[attrName] as AriaProperty) = propName;
-        (AriaPropNameToAttrNameMap[propName] as AriaAttribute) = attrName;
-    });
-
-    return { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };
-})();
+// Synthetic creation of all AOM property descriptors for Custom Elements
+forEach.call(AriaPropertyNames, (propName) => {
+    const attrName = StringToLowerCase.call(
+        StringReplace.call(propName, /^aria/, () => 'aria-')
+    ) as AriaAttribute;
+    // These type assertions are because the map types are a 1:1 mapping of ariaX to aria-x.
+    // TypeScript knows we have one of ariaX | ariaY and one of aria-x | aria-y, and tries to
+    // prevent us from doing ariaX: aria-y, but we that it's safe.
+    (AriaAttrNameToPropNameMap[attrName] as AriaProperty) = propName;
+    (AriaPropNameToAttrNameMap[propName] as AriaAttribute) = attrName;
+});
 
 /**
  *
