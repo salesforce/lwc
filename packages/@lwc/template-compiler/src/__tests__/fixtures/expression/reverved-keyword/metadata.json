@@ -12,8 +12,8 @@
             }
         },
         {
-            "code": 1059,
-            "message": "LWC1059: const is not a valid identifier",
+            "code": 1211,
+            "message": "LWC1211: const is a reserved keyword and cannot be used as an identifier",
             "level": 1,
             "location": {
                 "line": 3,

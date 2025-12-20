@@ -182,6 +182,8 @@ export function parseIdentifier(
             ...t.identifier(source),
             location,
         };
+    } else if (isReservedES6Keyword(source)) {
+        ctx.throwAtLocation(ParserDiagnostics.RESERVED_KEYWORD_AS_IDENTIFIER, location, [source]);
     } else {
         ctx.throwAtLocation(ParserDiagnostics.INVALID_IDENTIFIER, location, [source]);
     }
