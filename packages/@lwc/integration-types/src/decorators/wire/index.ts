@@ -24,6 +24,19 @@ export declare const ImperativeAdapter: { adapter: typeof TestAdapter };
 export declare const testConfig: TestConfig;
 export declare const testValue: TestValue;
 
+/** Defines the props used in the other test classes */
+export class Props extends LightningElement {
+    numberProp = +1.2_3e-4;
+    optionalNumber?: number;
+    stringProp = 'arrivederci';
+    objectProp = { nestedNumber: 123, nestedBoolean: true };
+    'inaccessible.prop'?: number;
+    // Not used directly, but helps validate that the reactive config doesn't use this
+    'objectProp.nestedNumber' = false;
+}
+
+// --- Generic test cases --- //
+
 // @ts-expect-error bare decorator cannot be used
 wire(TestAdapter, { config: 'config' })();
 

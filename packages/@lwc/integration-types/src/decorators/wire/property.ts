@@ -1,7 +1,7 @@
-/*
+/**
  * Validations for props/fields using the @wire decorator.
  */
-import { LightningElement, wire } from 'lwc';
+import { wire } from 'lwc';
 import {
     TestAdapter,
     testConfig,
@@ -11,19 +11,9 @@ import {
     DeepConfigAdapter,
     NoConfigAdapter,
     ImperativeAdapter,
+    Props,
 } from './index';
 import type { TestValue } from './index';
-
-/** Defines the props used in the other test classes */
-class Props extends LightningElement {
-    numberProp = +1.2_3e-4;
-    optionalNumber?: number;
-    stringProp = 'arrivederci';
-    objectProp = { nestedNumber: 123, nestedBoolean: true };
-    'inaccessible.prop'?: number;
-    // Not used directly, but helps validate that the reactive config doesn't use this
-    'objectProp.nestedNumber' = false;
-}
 
 /** Valid test cases for decorated fields/properties. */
 export class ValidPropertyDecorators extends Props {
