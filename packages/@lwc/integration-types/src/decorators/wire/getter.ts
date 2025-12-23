@@ -11,7 +11,7 @@ import {
     Props,
 } from './index';
 
-export class GetterDecorators extends Props {
+export class ValidGetterDecorators extends Props {
     // --- VALID --- //
     // Valid - basic
     @wire(TestAdapter, { config: 123 })
@@ -58,8 +58,9 @@ export class GetterDecorators extends Props {
     get imperativeAdapter() {
         return testValue;
     }
+}
 
-    // --- INVALID --- //
+export class InvalidGetterDecorators extends Props {
     // @ts-expect-error Invalid adapter type
     @wire(InvalidAdapter, { config: 123 })
     get invalidAdapter() {
@@ -111,7 +112,6 @@ export class GetterDecorators extends Props {
         return testValue;
     }
 }
-
 export class EdgeCaseGetterDecorators extends Props {
     // Nested property access is not type checked to avoid crashing on recursive types
     @wire(TestAdapter, { config: '$objectProp.invalid' })
