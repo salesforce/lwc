@@ -90,6 +90,14 @@ export type RegisterContextProviderFn = (
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
 
+type LightningElementMethods = {
+    [K in keyof LightningElement]-?: NonNullable<LightningElement[K]> extends (
+        ...args: never
+    ) => unknown
+        ? K
+        : never;
+}[keyof LightningElement];
+
 /** The string keys of an object */
 type PropsOfType<Class, Target> = Exclude<
     {
@@ -117,15 +125,25 @@ type PropsOfType<Class, Target> = Exclude<
  *   \@wire(Adapter, { id: "bad value" }) invalidValue?: unknown;
  *   \@wire(Adapter, { id: "$stringProp" }) invalidProp?: unknown;
  *
- *   // Nested props are not checked to avoid crashing on recursive types
+ *   // Nested props are not checked to avoid crashing on recursive types.
  *   \@wire(Adapter, { id: "$objectProp.nestedStringProp" }) falsePositive?: unknown;
+ *
+ *   // Any non-nullish value can have properties accessed at runtime, but property access
+ *   // for non-objects is uncommon, so is excluded for simplicity.
+ *   \@wire(Adapter, { id: "$stringProp.length" }) falseNegativeString?: unknown;
+ *
+ *   // All functions are objects, so property access is generally allowed.
+ *   // All components extend `LightningElement`, but are unlikely to use property access
+ *   // on `LightningElement` methods, so they are excluded for simplicity.
+ *   \@wire(Adapter, { id: "$connectedCallback.length" }) falseNegativeLightningElement?: unknown;
  * }
  */
+
 export type ConfigWithReactiveProps<Config extends ConfigValue, Class> = {
     [K in keyof Config]:
         | Config[K] // The actual value, e.g. `number`
         // Props on the class that match the config value, e.g. `$numberProp`
         | `$${PropsOfType<Class, Config[K]>}`
         // A nested prop on the class that matches the config value, e.g. `$obj.num` or `$1.2.3`
-        | `$${PropsOfType<Class, object>}.${string}`;
+        | `$${Exclude<PropsOfType<Class, object>, LightningElementMethods | symbol>}.${string}`;
 };
