@@ -99,7 +99,7 @@ describe('error validation', () => {
         );
         const expectedNextErrorCode = 1 + lastErrorCode;
         const errorInfo = fs.readFileSync(
-            path.join(__dirname, '../compiler/error-info/index.ts'),
+            path.join(import.meta.dirname, '../compiler/error-info/index.ts'),
             'utf-8'
         );
         const actualNextErrorCode = parseInt(errorInfo.match(/Next error code: (\d+)/)![1], 10);

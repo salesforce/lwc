@@ -7,8 +7,6 @@ describe('HTMLCollection', () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
-            // TODO [#1231]: Add this assertion back once we patch getElementsByTagName
-            // expect(elm.getElementsByTagName(`p`).length).toBe(0);
             expect(elm.getElementsByTagName(`p`) instanceof HTMLCollection).toBe(true);
             expect(elm.getElementsByTagName(`p`) + '').toBe('[object HTMLCollection]');
             // regular element
@@ -62,8 +60,6 @@ describe('HTMLCollection', () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
-            // TODO [#1231]: Add this assertion back once we patch getElementsByClassName
-            // expect(elm.getElementsByClassName(`foo`).length).toBe(0);
             expect(elm.getElementsByClassName(`foo`) instanceof HTMLCollection).toBe(true);
             expect(elm.getElementsByClassName(`foo`) + '').toBe('[object HTMLCollection]');
             // regular element
@@ -89,8 +85,6 @@ describe('HTMLCollection', () => {
             const elm = createElement('x-test', { is: XTest });
             document.body.appendChild(elm);
             // custom element
-            // TODO [#1231]: Add this assertion back once we patch children
-            // expect(elm.children.length).toBe(3);
             expect(elm.children instanceof HTMLCollection).toBe(true);
             expect(elm.children + '').toBe('[object HTMLCollection]');
             // regular element

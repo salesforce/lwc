@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'path';
-import fs from 'fs';
+import path from 'node:path';
+import fs, { readFileSync } from 'node:fs';
 
 import { LwcConfigError } from './errors';
 import { isObject } from './shared';
@@ -190,18 +190,18 @@ export function validateNpmAlias(
     });
 }
 
+function readJson(filepath: string): unknown {
+    return JSON.parse(readFileSync(filepath, 'utf8'));
+}
+
 export function getLwcConfig(dirname: string): LwcConfig {
     const packageJsonPath = path.resolve(dirname, PACKAGE_JSON);
     const lwcConfigPath = path.resolve(dirname, LWC_CONFIG_FILE);
 
     if (fs.existsSync(lwcConfigPath)) {
-        // Using require() to read JSON, rather than load a module
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        return require(lwcConfigPath);
+        return readJson(lwcConfigPath) as LwcConfig;
     } else {
-        // Using require() to read JSON, rather than load a module
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        return require(packageJsonPath).lwc ?? {};
+        return (readJson(packageJsonPath) as { lwc: LwcConfig }).lwc ?? {};
     }
 }
 
