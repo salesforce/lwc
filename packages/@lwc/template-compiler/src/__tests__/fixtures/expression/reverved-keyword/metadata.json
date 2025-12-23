@@ -13,7 +13,7 @@
         },
         {
             "code": 1211,
-            "message": "LWC1211: const is a reserved keyword and cannot be used as an identifier",
+            "message": "LWC1211: const is a reserved keyword and cannot be used as an identifier.",
             "level": 1,
             "location": {
                 "line": 3,
