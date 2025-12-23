@@ -1,54 +1,39 @@
-import { LightningElement, wire } from 'lwc';
+/** Validations for decorated getters */
+
+import { wire } from 'lwc';
 import {
     TestAdapter,
     testValue,
     AnyAdapter,
     InvalidAdapter,
     DeepConfigAdapter,
-    TestAdapterWithImperative,
+    ImperativeAdapter,
+    Props,
 } from './index';
 
-/** Validations for decorated getters */
-
-export class GetterDecorators extends LightningElement {
-    // Helper props
-    configProp = 'config' as const;
-    nested = { prop: 'config', invalid: 123 } as const;
-    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
-    // uses the object above, rather than a weird prop name
-    'nested.prop' = false;
-    number = 123;
+export class GetterDecorators extends Props {
     // --- VALID --- //
     // Valid - basic
-    @wire(TestAdapter, { config: 'config' })
+    @wire(TestAdapter, { config: 123 })
     get basic() {
         return testValue;
     }
-    @wire(TestAdapter, { config: 'config' })
+    @wire(TestAdapter, { config: 123 })
     get undefined() {
         // The function implementation of a wired getter is ignored, but TypeScript enforces that
         // we must return something. Since we don't have any data to return, we return `undefined`
         return undefined;
     }
-    @wire(TestAdapter, { config: '$configProp' })
+    @wire(TestAdapter, { config: '$numberProp' })
     get simpleReactive() {
         return testValue;
     }
-    @wire(TestAdapter, { config: '$nested.prop' })
+    @wire(TestAdapter, { config: '$optionalNumber' })
+    get reactiveOptional() {
+        return testValue;
+    }
+    @wire(TestAdapter, { config: '$objectProp.nestedNumber' })
     get nestedReactive() {
-        return testValue;
-    }
-    // Valid - as const
-    @wire(TestAdapter, { config: 'config' } as const)
-    get basicAsConst() {
-        return testValue;
-    }
-    @wire(TestAdapter, { config: '$configProp' } as const)
-    get simpleReactiveAsConst() {
-        return testValue;
-    }
-    @wire(TestAdapter, { config: '$nested.prop' } as const)
-    get nestedReactiveAsConst() {
         return testValue;
     }
     // Valid - using `any`
@@ -56,22 +41,27 @@ export class GetterDecorators extends LightningElement {
     get configAsAny() {
         return testValue;
     }
-    @wire(TestAdapter, { config: 'config' })
+    @wire(TestAdapter, { config: 123 })
     get valueAsAny() {
         return null as any;
     }
-    @wire(AnyAdapter, { config: 'config' })
+    @wire(AnyAdapter, { what: 'ever' })
     get adapterAsAny() {
         return testValue;
     }
-    @wire(AnyAdapter, { config: 'config' })
+    @wire(AnyAdapter, { config: 123 })
     get anyAdapterOtherValue() {
         return 12345;
     }
 
+    @wire(ImperativeAdapter, { config: 123 })
+    get imperativeAdapter() {
+        return testValue;
+    }
+
     // --- INVALID --- //
     // @ts-expect-error Invalid adapter type
-    @wire(InvalidAdapter, { config: 'config' })
+    @wire(InvalidAdapter, { config: 123 })
     get invalidAdapter() {
         return testValue;
     }
@@ -91,100 +81,52 @@ export class GetterDecorators extends LightningElement {
         return testValue;
     }
     // @ts-expect-error Bad value type
-    @wire(TestAdapter, { config: 'config' })
+    @wire(TestAdapter, { config: 123 })
     get badValueType() {
         return { bad: 'value' };
     }
     // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapter, { config: '$nonexistentProp' } as const)
+    @wire(TestAdapter, { config: '$nonexistentProp' })
     get nonExistentReactiveProp() {
         return testValue;
     }
     // @ts-expect-error Referenced reactive prop is the wrong type
-    @wire(TestAdapter, { config: '$number' } as const)
+    @wire(TestAdapter, { config: '$stringProp' })
     get numberReactiveProp() {
         return testValue;
     }
-    // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapter, { config: '$nested.nonexistent' } as const)
-    get nonexistentNestedReactiveProp() {
-        return testValue;
-    }
-    // @ts-expect-error Referenced nested reactive prop does not exist
-    @wire(TestAdapter, { config: '$nested.invalid' } as const)
-    get invalidNestedReactiveProp() {
-        return testValue;
-    }
     // @ts-expect-error Incorrect non-reactive string literal type
-    @wire(TestAdapter, { config: 'not reactive' } as const)
+    @wire(TestAdapter, { config: 'not reactive' })
     get nonReactiveStringLiteral() {
         return testValue;
     }
     // @ts-expect-error Nested props are not reactive - only top level
-    @wire(DeepConfigAdapter, { deep: { config: '$number' } } as const)
+    @wire(DeepConfigAdapter, { deep: { config: '$numberProp' } })
     get deepReactive() {
         return testValue;
     }
+    // @ts-expect-error Chaining off of a non-object prop
+    @wire(TestAdapter, { config: '$numberProp.foo.bar ' })
+    get nonObjectChainProp() {
+        return testValue;
+    }
 }
-/** Validations for decorated getters */
 
-export class GetterDecoratorsWithImperative extends LightningElement {
-    // Helper props
-    configProp = 'config' as const;
-    nested = { prop: 'config', invalid: 123 } as const;
-    // 'nested.prop' is not directly used, but helps validate that the reactive config resolution
-    // uses the object above, rather than a weird prop name
-    'nested.prop' = false;
-    number = 123;
-    // --- VALID --- //
-    // Valid - basic
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    get basic() {
+export class EdgeCaseGetterDecorators extends Props {
+    // Nested property access is not type checked to avoid crashing on recursive types
+    @wire(TestAdapter, { config: '$objectProp.invalid' })
+    get invalidNestedReactiveProp() {
         return testValue;
     }
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    get undefined() {
-        // The function implementation of a wired getter is ignored, but TypeScript enforces that
-        // we must return something. Since we don't have any data to return, we return `undefined`
-        return undefined;
-    }
-    @wire(TestAdapterWithImperative, { config: '$configProp' })
-    get simpleReactive() {
+    // Same as above, with a nonexistent nested prop instead of incorrectly typed
+    @wire(TestAdapter, { config: '$objectProp.nonexistent' })
+    get nonexistentNestedReactiveProp() {
         return testValue;
-    }
-    @wire(TestAdapterWithImperative, { config: '$nested.prop' })
-    get nestedReactive() {
-        return testValue;
-    }
-    // Valid - using `any`
-    @wire(TestAdapterWithImperative, {} as any)
-    get configAsAny() {
-        return testValue;
-    }
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    get valueAsAny() {
-        return null as any;
     }
 
-    // --- INVALID --- //
-    // @ts-expect-error Too many wire parameters
-    @wire(TestAdapterWithImperative, { config: 'config' }, {})
-    get tooManyWireParams() {
-        return testValue;
-    }
-    // @ts-expect-error Bad config type
-    @wire(TestAdapterWithImperative, { bad: 'value' })
-    get badConfig() {
-        return testValue;
-    }
-    // @ts-expect-error Bad value type
-    @wire(TestAdapterWithImperative, { config: 'config' })
-    get badValueType() {
-        return { bad: 'value' };
-    }
-    // @ts-expect-error Referenced reactive prop does not exist
-    @wire(TestAdapterWithImperative, { config: '$nonexistentProp' } as const)
-    get nonExistentReactiveProp() {
+    // @ts-expect-error Technically file at runtime, but the type only allows chaining off objects
+    @wire(TestAdapter, { config: '$stringProp.length' })
+    get wrongNestedProp() {
         return testValue;
     }
 }
