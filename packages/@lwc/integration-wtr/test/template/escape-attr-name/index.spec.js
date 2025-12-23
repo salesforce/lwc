@@ -51,16 +51,8 @@ scenarios.forEach(({ name, expectedValue, Ctor, tagName }) => {
             document.body.appendChild(elm);
 
             await Promise.resolve();
-            if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
-                expect(elm.shadowRoot.children.length).toBe(0); // does not render
-                expect(caughtError).not.toBeUndefined();
-                expect(caughtError.message).toMatch(
-                    /Failed to execute 'setAttribute' on 'Element'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
-                );
-            } else {
-                expect(elm.shadowRoot.children[0].getAttribute('a`b`c')).toBe(expectedValue);
-                expect(caughtError).toBeUndefined();
-            }
+            expect(elm.shadowRoot.children[0].getAttribute('a`b`c')).toBe(expectedValue);
+            expect(caughtError).toBeUndefined();
         });
     });
 });
