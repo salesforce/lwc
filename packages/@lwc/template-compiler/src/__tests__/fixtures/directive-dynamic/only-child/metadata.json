@@ -4,6 +4,7 @@
             "code": 1187,
             "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 2,
                 "column": 5,

@@ -4,6 +4,7 @@
             "code": 1201,
             "message": "LWC1201: The slot attribute in <span> will be ignored due to its ancestor <div>. It must be a direct child of the containing component.",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 5,
                 "column": 15,

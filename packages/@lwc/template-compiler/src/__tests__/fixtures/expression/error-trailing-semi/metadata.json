@@ -9,7 +9,8 @@
                 "column": 10,
                 "start": 20,
                 "length": 6
-            }
+            },
+            "url": ""
         },
         {
             "code": 1074,
@@ -20,7 +21,8 @@
                 "column": 10,
                 "start": 42,
                 "length": 15
-            }
+            },
+            "url": ""
         }
     ]
 }

@@ -4,6 +4,7 @@
             "code": 1058,
             "message": "LWC1058: Invalid HTML syntax: invalid-first-character-of-tag-name. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-invalid-first-character-of-tag-name",
             "level": 1,
+            "url": "",
             "location": {
                 "line": 8,
                 "column": 22,

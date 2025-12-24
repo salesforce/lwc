@@ -9,7 +9,8 @@
                 "column": 5,
                 "start": 69,
                 "length": 48
-            }
+            },
+            "url": ""
         },
         {
             "code": 1143,
@@ -20,7 +21,8 @@
                 "column": 5,
                 "start": 343,
                 "length": 26
-            }
+            },
+            "url": ""
         },
         {
             "code": 1141,
@@ -31,7 +33,8 @@
                 "column": 5,
                 "start": 416,
                 "length": 38
-            }
+            },
+            "url": ""
         },
         {
             "code": 1140,
@@ -42,7 +45,8 @@
                 "column": 5,
                 "start": 510,
                 "length": 40
-            }
+            },
+            "url": ""
         },
         {
             "code": 1141,
@@ -53,12 +57,14 @@
                 "column": 5,
                 "start": 601,
                 "length": 46
-            }
+            },
+            "url": ""
         },
         {
             "code": 1187,
             "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 21,
                 "column": 5,
@@ -75,7 +81,8 @@
                 "column": 5,
                 "start": 695,
                 "length": 61
-            }
+            },
+            "url": ""
         },
         {
             "code": 1140,
@@ -86,7 +93,8 @@
                 "column": 5,
                 "start": 818,
                 "length": 70
-            }
+            },
+            "url": ""
         }
     ]
 }

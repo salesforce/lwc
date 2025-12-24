@@ -4,6 +4,7 @@
             "code": 1182,
             "message": "LWC1182: Multiple if: directives found on 'c-hello'. Only one if: directive is allowed; the rest are ignored.",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 2,
                 "column": 5,

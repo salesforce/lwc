@@ -9,7 +9,8 @@
                 "column": 5,
                 "start": 39,
                 "length": 32
-            }
+            },
+            "url": ""
         },
         {
             "code": 1171,
@@ -20,12 +21,14 @@
                 "column": 5,
                 "start": 76,
                 "length": 40
-            }
+            },
+            "url": ""
         },
         {
             "code": 1145,
             "message": "LWC1145: Invalid attributes detected on template. The following attributes are not supported on template tags in LWC: lwc:slot-bind. For more information, please visit https://sfdc.co/template-directives",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 4,
                 "column": 5,
@@ -37,6 +40,7 @@
             "code": 1153,
             "message": "LWC1153: Non-root template elements must contain valid LWC template directive attributes. Otherwise, the template and its children will be ignored. For more information please visit https://sfdc.co/template-directives",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 4,
                 "column": 5,
@@ -48,6 +52,7 @@
             "code": 1187,
             "message": "LWC1187: The lwc:dynamic directive is deprecated and will be removed in a future release. Please use lwc:is instead.",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 7,
                 "column": 5,
@@ -64,7 +69,8 @@
                 "column": 5,
                 "start": 204,
                 "length": 57
-            }
+            },
+            "url": ""
         },
         {
             "code": 1171,
@@ -75,7 +81,8 @@
                 "column": 5,
                 "start": 266,
                 "length": 66
-            }
+            },
+            "url": ""
         }
     ]
 }

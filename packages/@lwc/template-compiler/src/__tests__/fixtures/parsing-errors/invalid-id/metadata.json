@@ -9,7 +9,8 @@
                 "column": 12,
                 "start": 43,
                 "length": 8
-            }
+            },
+            "url": ""
         },
         {
             "code": 1040,
@@ -20,7 +21,8 @@
                 "column": 12,
                 "start": 64,
                 "length": 12
-            }
+            },
+            "url": ""
         },
         {
             "code": 1040,
@@ -31,12 +33,14 @@
                 "column": 12,
                 "start": 89,
                 "length": 10
-            }
+            },
+            "url": ""
         },
         {
             "code": 1041,
             "message": "LWC1041: Static id values are not allowed in iterators. Id values must be unique within a template and must therefore be computed with an expression.",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 7,
                 "column": 16,
