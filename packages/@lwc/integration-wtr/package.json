@@ -5,8 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "playwright install || true",
-        "start": "DISABLE_STATIC_CONTENT_OPTIMIZATION=1 web-test-runner --config configs/integration.js --manual",
-        "test": "DISABLE_STATIC_CONTENT_OPTIMIZATION=1 web-test-runner --config configs/integration.js",
+        "start": "web-test-runner --config configs/integration.js --manual",
+        "test": "web-test-runner --config configs/integration.js",
         "test:hydration": "web-test-runner --config configs/hydration.js"
     },
     "devDependencies": {
