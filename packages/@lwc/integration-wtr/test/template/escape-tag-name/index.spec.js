@@ -9,7 +9,7 @@ import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 //
 //     elm.innerHTML = '<s\ection></s\ection>'
 //
-// Fails with: Uncaught InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('s\ection') is not a valid name.
+// Fails in some browsers with: Uncaught InvalidCharacterError: Failed to execute 'createElement' on 'Document': The tag name provided ('s\ection') is not a valid name.
 //
 //     document.createElement('s\\ection')
 //
@@ -34,7 +34,8 @@ it('should render tag names with proper escaping', async () => {
 
     await Promise.resolve();
 
-    if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION) {
+    // Only fails in some browsers. If no errors were caught, assert against the attribute as normal.
+    if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION && caughtError) {
         expect(elm.shadowRoot.children.length).toBe(0); // does not render
         expect(caughtError).not.toBeUndefined();
         expect(caughtError.message).toMatch(
