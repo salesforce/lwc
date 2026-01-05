@@ -91,11 +91,9 @@ export type RegisterContextProviderFn = (
 ) => void;
 
 type LightningElementMethods = {
-    [K in keyof LightningElement]-?: NonNullable<LightningElement[K]> extends (
-        ...args: never
-    ) => unknown
-        ? K
-        : never;
+    // We don't do any funny business on `LightningElement`, so using `Function` is safe (and terse)
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    [K in keyof LightningElement]-?: NonNullable<LightningElement[K]> extends Function ? K : never;
 }[keyof LightningElement];
 
 /** The string keys of an object */
