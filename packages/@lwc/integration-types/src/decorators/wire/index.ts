@@ -33,6 +33,14 @@ export class Props extends LightningElement {
     'inaccessible.prop'?: number;
     // Not used directly, but helps validate that the reactive config doesn't use this
     'objectProp.nestedNumber' = false;
+
+    // Cannot be used as the parent of a nested reactive prop because it has no props
+    methodWithoutProp() {}
+    // *Can* be used as the parent of a nested reactive prop because it has a prop
+    methodWithProp?: {
+        (): void;
+        theProp?: number;
+    };
 }
 
 // --- Generic test cases --- //

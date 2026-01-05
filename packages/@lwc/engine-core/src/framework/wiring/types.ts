@@ -90,19 +90,28 @@ export type RegisterContextProviderFn = (
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
 
-type LightningElementMethods = {
-    // We don't do any funny business on `LightningElement`, so using `Function` is safe (and terse)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    [K in keyof LightningElement]-?: NonNullable<LightningElement[K]> extends Function ? K : never;
-}[keyof LightningElement];
+/**
+ * Gets the property keys that can be used in a reactive string. Excludes symbols and string props
+ * with `.` (`$foo.bar` maps to `Class["foo"]["bar"]`; `Class["foo.bar"]` can never be used).
+ */
+type ReactivePropsOnly<K extends PropertyKey> = Exclude<K, symbol | `${string}.${string}`>;
 
-/** The string keys of an object */
-type PropsOfType<Class, Target> = Exclude<
+/** The string keys of an object that match the target type. */
+type PropsOfType<Class, Target> = ReactivePropsOnly<
     {
-        [K in keyof Class]-?: Required<Class>[K] extends Target ? K : never;
-    }[keyof Class],
-    // $foo.bar maps to Class["foo"]["bar"]; Class["foo.bar"] can never be a reactive prop
-    symbol | `${string}.${string}`
+        [K in keyof Class]-?: NonNullable<Class[K]> extends Target ? K : never;
+    }[keyof Class]
+>;
+
+/** Gets the property keys that can be used in a reactive property chain. */
+type ChainableObjectProps<Class> = ReactivePropsOnly<
+    {
+        [K in keyof Class]-?: NonNullable<Class[K]> extends object
+            ? keyof NonNullable<Class[K]> extends never
+                ? never // object/function has no props
+                : K // object has props
+            : never; // not an object
+    }[keyof Class]
 >;
 
 /**
@@ -143,5 +152,5 @@ export type ConfigWithReactiveProps<Config extends ConfigValue, Class> = {
         // Props on the class that match the config value, e.g. `$numberProp`
         | `$${PropsOfType<Class, Config[K]>}`
         // A nested prop on the class that matches the config value, e.g. `$obj.num` or `$1.2.3`
-        | `$${Exclude<PropsOfType<Class, object>, LightningElementMethods | symbol>}.${string}`;
+        | `$${ChainableObjectProps<Class>}.${string}`;
 };
