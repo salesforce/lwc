@@ -49,6 +49,9 @@ export class ValidPropertyDecorators extends Props {
     deepConfigBasic?: TestValue;
     @wire(ImperativeAdapter, { config: '$numberProp' })
     imperativeBasic?: TestValue;
+    // Valid -- edge cases
+    @wire(TestAdapter, { config: '$methodWithProp.theProp' })
+    reactiveMethodWithProp?: TestValue;
 }
 
 /** Invalid test cases for decorated fields/properties. */
@@ -126,4 +129,9 @@ export class EdgeCasePropertyDecorators extends Props {
     // but any non-nullish value can be chained at runtime
     @wire(TestAdapter, { config: '$stringProp.length' })
     stringLength?: TestValue;
+
+    // @ts-expect-error Our type def only allows chaining on object types,
+    // but any non-nullish value can be chained at runtime
+    @wire(TestAdapter, { config: '$method.length' })
+    methodLength?: TestValue;
 }
