@@ -663,11 +663,3 @@ export class SetterWithImperative extends LightningElement {
     @wire(TestAdapterWithImperative, { config: 'not reactive' } as const)
     set nonReactiveStringLiteral(_: TestValue) {}
 }
-
-// import { LightningElement, wire, type WireAdapterConstructor } from 'lwc';
-declare const Adapter: WireAdapterConstructor<{ id: number }, object>;
-export default class Component extends LightningElement {
-    prop?: number;
-    bool?: boolean;
-    @wire(Adapter, { id: '$bool' } as const) wired?: object;
-}
