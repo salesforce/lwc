@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const fs = require('node:fs');
-const path = require('node:path');
-const readline = require('node:readline');
-const semver = require('semver');
-const { globSync } = require('glob');
+import fs from 'node:fs';
+import path from 'node:path';
+import readline from 'node:readline';
+import semver from 'semver';
+import { globSync } from 'glob';
 
 const rootPath = path.resolve(import.meta.dirname, '../../');
 const rootPackageJsonPath = `${rootPath}/package.json`;
