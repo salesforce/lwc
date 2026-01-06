@@ -56,6 +56,7 @@ export function generateCompilerDiagnostic(
         code: errorInfo.code,
         message,
         level: getEffectiveErrorLevel(errorInfo, useStrictErrorOverride),
+        url: errorInfo.url,
     };
 
     if (config && config.origin) {
@@ -81,7 +82,14 @@ export function generateCompilerError(
 ): CompilerError {
     const message = generateErrorMessage(errorInfo, config && config.messageArgs);
     const level = getEffectiveErrorLevel(errorInfo, useStrictErrorOverride);
-    const error = new CompilerError(errorInfo.code, message, undefined, undefined, level);
+    const error = new CompilerError(
+        errorInfo.code,
+        message,
+        undefined,
+        undefined,
+        level,
+        errorInfo.url
+    );
 
     if (config) {
         error.filename = getFilename(config.origin);
@@ -130,7 +138,7 @@ export function normalizeToCompilerError(
         }
         return error;
     }
-    const { code, message, filename, location, level } = convertErrorToDiagnostic(
+    const { code, message, filename, location, level, url } = convertErrorToDiagnostic(
         error,
         fallbackErrorInfo,
         origin,
@@ -142,7 +150,8 @@ export function normalizeToCompilerError(
         `${error.name}: ${message}`,
         filename,
         location,
-        level
+        level,
+        url
     );
     compilerError.stack = error.stack;
     return compilerError;
@@ -203,9 +212,10 @@ function convertErrorToDiagnostic(
         'level' in error ? error : fallbackErrorInfo,
         useStrictErrorOverride
     );
+    const url = error.url ?? fallbackErrorInfo.url;
     const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 
     // TODO [#1289]: Preserve stack information
-    return { code, message, level, filename, location };
+    return { code, message, level, filename, location, url };
 }

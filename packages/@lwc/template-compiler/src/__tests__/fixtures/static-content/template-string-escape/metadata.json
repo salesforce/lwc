@@ -4,6 +4,7 @@
             "code": 1123,
             "message": "LWC1123: Unknown html tag '<xmp>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 5,
                 "column": 5,
@@ -15,6 +16,7 @@
             "code": 1123,
             "message": "LWC1123: Unknown html tag '<xmp>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 10,
                 "column": 5,
@@ -26,6 +28,7 @@
             "code": 1123,
             "message": "LWC1123: Unknown html tag '<xmp>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 15,
                 "column": 5,
