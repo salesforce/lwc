@@ -4,6 +4,7 @@
             "code": 1057,
             "message": "LWC1057: xlink:href is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 7,
                 "column": 22,
@@ -15,6 +16,7 @@
             "code": 1057,
             "message": "LWC1057: x is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 8,
                 "column": 16,
@@ -26,6 +28,7 @@
             "code": 1057,
             "message": "LWC1057: y is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 8,
                 "column": 22,
@@ -37,6 +40,7 @@
             "code": 1057,
             "message": "LWC1057: width is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 8,
                 "column": 28,
@@ -48,6 +52,7 @@
             "code": 1057,
             "message": "LWC1057: height is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 8,
                 "column": 41,
@@ -59,6 +64,7 @@
             "code": 1057,
             "message": "LWC1057: preserveAspectRatio is not valid attribute for feImage. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/feImage",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 9,
                 "column": 16,
@@ -75,7 +81,8 @@
                 "column": 13,
                 "start": 148,
                 "length": 130
-            }
+            },
+            "url": ""
         }
     ]
 }

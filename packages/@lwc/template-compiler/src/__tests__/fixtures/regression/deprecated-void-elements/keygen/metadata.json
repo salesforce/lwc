@@ -4,6 +4,7 @@
             "code": 1057,
             "message": "LWC1057: name is not valid attribute for keygen. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 17,
@@ -15,6 +16,7 @@
             "code": 1057,
             "message": "LWC1057: challenge is not valid attribute for keygen. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 29,
@@ -26,6 +28,7 @@
             "code": 1057,
             "message": "LWC1057: keytype is not valid attribute for keygen. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 56,
@@ -37,6 +40,7 @@
             "code": 1057,
             "message": "LWC1057: keyparams is not valid attribute for keygen. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/keygen",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 71,
