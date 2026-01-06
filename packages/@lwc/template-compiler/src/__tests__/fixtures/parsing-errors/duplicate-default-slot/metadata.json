@@ -4,6 +4,7 @@
             "code": 1137,
             "message": "LWC1137: Invalid duplicate slot (default).",
             "level": 2,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 5,

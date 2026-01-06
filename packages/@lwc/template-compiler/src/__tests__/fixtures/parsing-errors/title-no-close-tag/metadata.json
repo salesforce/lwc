@@ -4,6 +4,7 @@
             "code": 1058,
             "message": "LWC1058: Invalid HTML syntax: eof-in-element-that-can-contain-only-text. For more information, please visit https://html.spec.whatwg.org/multipage/parsing.html#parse-error-eof-in-element-that-can-contain-only-text",
             "level": 1,
+            "url": "",
             "location": {
                 "line": 3,
                 "column": 1,

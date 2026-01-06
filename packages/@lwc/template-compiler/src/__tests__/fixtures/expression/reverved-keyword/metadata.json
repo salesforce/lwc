@@ -9,7 +9,8 @@
                 "column": 10,
                 "start": 20,
                 "length": 7
-            }
+            },
+            "url": ""
         },
         {
             "code": 1059,
@@ -20,7 +21,8 @@
                 "column": 32,
                 "start": 65,
                 "length": 16
-            }
+            },
+            "url": ""
         },
         {
             "code": 1059,
@@ -31,7 +33,8 @@
                 "column": 32,
                 "start": 125,
                 "length": 15
-            }
+            },
+            "url": ""
         },
         {
             "code": 1059,
@@ -42,7 +45,8 @@
                 "column": 32,
                 "start": 184,
                 "length": 18
-            }
+            },
+            "url": ""
         }
     ]
 }
