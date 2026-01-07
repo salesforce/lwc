@@ -179,7 +179,7 @@ export function validateNpmAlias(
     exposed: string[],
     map: { [key: string]: string },
     opts: InnerResolverOptions
-) {
+): void {
     Object.keys(map).forEach((specifier) => {
         if (!exposed.includes(specifier)) {
             throw new LwcConfigError(
