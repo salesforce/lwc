@@ -42,7 +42,7 @@ describe('dynamic imports', () => {
 
             const callback = () => {
                 code = compileComponentForSSR(source, filename, {
-                    experimentalDynamicComponent: {
+                    dynamicImports: {
                         loader,
                         strictSpecifier,
                     },
@@ -87,7 +87,7 @@ describe('dynamic imports', () => {
             `;
         const filename = path.resolve('component.js');
         const { code } = compileComponentForSSR(source, filename, {
-            experimentalDynamicComponent: {
+            dynamicImports: {
                 loader: 'myLoader',
                 strictSpecifier: true,
             },

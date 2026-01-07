@@ -7,7 +7,7 @@
 
 export { createContextProviderWithRegister, createContextWatcher } from './context';
 
-export {
+export type {
     ConfigCallback,
     ConfigValue,
     ContextConsumer,

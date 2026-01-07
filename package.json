@@ -7,6 +7,7 @@
         "type": "git",
         "url": "https://github.com/salesforce/lwc.git"
     },
+    "type": "module",
     "scripts": {
         "prepare": "husky && yarn build",
         "lint": "eslint . --cache",
@@ -25,7 +26,7 @@
         "test:ci": "vitest run --coverage",
         "test:wtr": "nx test @lwc/integration-wtr",
         "test:hydration": "nx test:hydration @lwc/integration-wtr",
-        "test:integration": "nx sauce @lwc/integration-wdio",
+        "test:wdio": "nx sauce @lwc/integration-wdio",
         "test:performance": "nx test @lwc/perf-benchmarks",
         "test:performance:best": "nx test:best @lwc/perf-benchmarks",
         "test:performance:best:ci": "nx test:best:ci @lwc/perf-benchmarks",
@@ -72,7 +73,7 @@
         "rollup": "^4.54.0",
         "terser": "^5.44.1",
         "tslib": "^2.8.1",
-        "typescript": "5.8.2",
+        "typescript": "6.0.0-dev.20251217",
         "typescript-eslint": "8.51.0",
         "vitest": "4.0.16"
     },
@@ -87,9 +88,6 @@
         "packages/lwc",
         "playground"
     ],
-    "engines": {
-        "node": ">=10"
-    },
     "volta": {
         "node": "24.11.1",
         "yarn": "1.22.22"

@@ -12,7 +12,7 @@ import { describe, test, expect } from 'vitest';
 const tsPackages = ['@lwc/types'];
 
 describe('packaged dependencies are re-exported', () => {
-    const pkg = JSON.parse(readFileSync(join(__dirname, '../package.json'), 'utf8'));
+    const pkg = JSON.parse(readFileSync(join(import.meta.dirname, '../package.json'), 'utf8'));
     test.each(Object.keys(pkg.dependencies))(`%s is exported`, (name) => {
         const relative = name.replace('@lwc', '.');
         const ext = tsPackages.includes(name) ? '.d.ts' : '.js';

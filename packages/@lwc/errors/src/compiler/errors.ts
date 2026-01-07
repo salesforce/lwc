@@ -9,7 +9,7 @@ import { CompilerError, getCodeFromError, getFilename, getLocation } from './uti
 import type { DiagnosticLevel, LWCErrorInfo } from '../shared/types';
 import type { CompilerDiagnosticOrigin, CompilerDiagnostic } from './utils';
 
-export { CompilerDiagnosticOrigin, CompilerDiagnostic, CompilerError } from './utils';
+export { type CompilerDiagnosticOrigin, type CompilerDiagnostic, CompilerError } from './utils';
 
 export * from './error-info';
 
@@ -106,7 +106,11 @@ export function generateCompilerError(
  * @param args Values used to fill the error message template.
  * @throws Throws a compiler error if the provided condition is falsy.
  */
-export function invariant(condition: boolean, errorInfo: LWCErrorInfo, args?: any[]) {
+export function invariant(
+    condition: boolean,
+    errorInfo: LWCErrorInfo,
+    args?: any[]
+): asserts condition {
     if (!condition) {
         throw generateCompilerError(errorInfo, {
             messageArgs: args,

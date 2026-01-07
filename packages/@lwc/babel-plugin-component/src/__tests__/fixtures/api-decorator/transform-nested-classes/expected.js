@@ -1,5 +1,6 @@
-import { registerDecorators as _registerDecorators, registerDecorators as _registerDecorators2, LightningElement, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators, registerDecorators as _registerDecorators2 } from "lwc";
 import _tmpl from "./test.html";
+import { LightningElement, registerComponent as _registerComponent } from "lwc";
 class Outer extends LightningElement {
   outer;
   a = _registerDecorators2(class extends LightningElement {
