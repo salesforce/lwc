@@ -25,7 +25,7 @@ export default (args) => {
             args.watch &&
                 serve({
                     open: false,
-                    port: 3000,
+                    port: process.env.PORT || 3000,
                 }),
             args.watch && livereload('dist'),
         ],
