@@ -57,7 +57,7 @@ class StyleDeduplicator extends HTMLElement {
  * stylesheet.
  * It can also be implicitly invoked by importing `@lwc/ssr-client-utils/register-lwc-style` as a bare import.
  */
-export function registerLwcStyleComponent() {
+export function registerLwcStyleComponent(): void {
     customElements.define('lwc-style', StyleDeduplicator);
 }
 

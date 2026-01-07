@@ -17,14 +17,17 @@ export interface TemplateCompileResult extends TemplateParseResult {
     cssScopeTokens: string[];
 }
 
-export enum LWCDirectiveDomMode {
-    manual = 'manual',
-}
+export const LWCDirectiveDomMode = {
+    manual: 'manual',
+} as const;
+export type LWCDirectiveDomMode = (typeof LWCDirectiveDomMode)[keyof typeof LWCDirectiveDomMode];
 
-export enum LWCDirectiveRenderMode {
-    shadow = 'shadow',
-    light = 'light',
-}
+export const LWCDirectiveRenderMode = {
+    shadow: 'shadow',
+    light: 'light',
+} as const;
+export type LWCDirectiveRenderMode =
+    (typeof LWCDirectiveRenderMode)[keyof typeof LWCDirectiveRenderMode];
 
 export interface BaseNode {
     type: string;
@@ -224,9 +227,10 @@ export interface LwcComponent extends BaseLwcElement<'lwc:component'> {}
 /**
  * All supported special LWC tags, they should all begin with lwc:*
  */
-export enum LwcTagName {
-    Component = 'lwc:component',
-}
+export const LwcTagName = {
+    Component: 'lwc:component',
+} as const;
+export type LwcTagName = (typeof LwcTagName)[keyof typeof LwcTagName];
 
 export type BaseElement = Element | ExternalComponent | Component | Slot | LwcComponent;
 
@@ -236,15 +240,15 @@ export interface Root extends BaseParentNode {
     directives: RootDirective[];
 }
 
-export enum TemplateDirectiveName {
-    If = 'if:true',
-    IfBlock = 'lwc:if',
-    ElseifBlock = 'lwc:elseif',
-    ElseBlock = 'lwc:else',
-    ForEach = 'for:each',
-    ForOf = 'for:of',
-    ScopedSlotFragment = 'lwc:slot-data',
-}
+export const TemplateDirectiveName = {
+    If: 'if:true',
+    IfBlock: 'lwc:if',
+    ElseifBlock: 'lwc:elseif',
+    ElseBlock: 'lwc:else',
+    ForEach: 'for:each',
+    ForOf: 'for:of',
+    ScopedSlotFragment: 'lwc:slot-data',
+} as const;
 
 interface DirectiveParentNode<T extends keyof typeof TemplateDirectiveName> extends BaseParentNode {
     directiveLocation: SourceLocation;
@@ -335,22 +339,22 @@ export type Node =
     | Text
     | ScopedSlotFragment;
 
-export enum ElementDirectiveName {
-    Dom = 'lwc:dom',
+export const ElementDirectiveName = {
+    Dom: 'lwc:dom',
     // TODO [#3331]: remove usage of lwc:dynamic in 246
-    Dynamic = 'lwc:dynamic',
-    Is = 'lwc:is',
-    External = 'lwc:external',
-    InnerHTML = 'lwc:inner-html',
-    Ref = 'lwc:ref',
-    SlotBind = 'lwc:slot-bind',
-    SlotData = 'lwc:slot-data',
-    Spread = 'lwc:spread',
-    On = 'lwc:on',
-    Key = 'key',
-}
+    Dynamic: 'lwc:dynamic',
+    Is: 'lwc:is',
+    External: 'lwc:external',
+    InnerHTML: 'lwc:inner-html',
+    Ref: 'lwc:ref',
+    SlotBind: 'lwc:slot-bind',
+    SlotData: 'lwc:slot-data',
+    Spread: 'lwc:spread',
+    On: 'lwc:on',
+    Key: 'key',
+} as const;
 
-export enum RootDirectiveName {
-    PreserveComments = 'lwc:preserve-comments',
-    RenderMode = 'lwc:render-mode',
-}
+export const RootDirectiveName = {
+    PreserveComments: 'lwc:preserve-comments',
+    RenderMode: 'lwc:render-mode',
+} as const;

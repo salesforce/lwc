@@ -28,7 +28,7 @@ export { setFeatureFlag, setFeatureFlagForTest } from '@lwc/features';
 export { ClassList } from './class-list';
 export {
     LightningElement,
-    LightningElementConstructor,
+    type LightningElementConstructor,
     SYMBOL__DEFAULT_TEMPLATE,
     SYMBOL__GENERATE_MARKUP,
     SYMBOL__SET_INTERNALS,
@@ -37,7 +37,7 @@ export { mutationTracker } from './mutation-tracker';
 export {
     fallbackTmpl,
     fallbackTmplNoYield,
-    GenerateMarkupAsyncYield,
+    type GenerateMarkupAsyncYield,
     renderAttrs,
     renderAttrsNoYield,
     addSlottedContent,
