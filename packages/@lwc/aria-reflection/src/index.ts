@@ -57,7 +57,7 @@ const ARIA_PROPERTIES = [
     'ariaValueNow',
     'ariaValueText',
     'role',
-];
+] as const;
 
 for (const prop of ARIA_PROPERTIES) {
     const attribute = prop.replace(/^aria/, 'aria-').toLowerCase(); // e.g. ariaPosInSet => aria-posinset
