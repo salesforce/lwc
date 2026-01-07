@@ -1,2 +1,3 @@
-import { foo, bar, baz } from "foo";
+import { foo, bar } from "foo";
 import * as Foo from "foo";
+import { baz } from "foo";
