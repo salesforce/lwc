@@ -10,12 +10,12 @@ export { createContextProviderWithRegister, createContextWatcher } from './conte
 export type {
     ConfigCallback,
     ConfigValue,
+    ConfigWithReactiveProps,
     ContextConsumer,
     ContextProvider,
     ContextProviderOptions,
     ContextValue,
     DataCallback,
-    ReplaceReactiveValues,
     WireAdapter,
     WireAdapterConstructor,
     WireAdapterSchemaValue,
