@@ -64,7 +64,7 @@ async function compileFixture({
     experimentalComplexExpressions: boolean | undefined;
 }) {
     const modulesDir = path.resolve(dirname, './modules');
-    const outputFile = path.resolve(dirname, './dist/compiled-experimental-ssr.js');
+    const outputFile = path.resolve(dirname, './dist/compiled-ssr.js');
     const input = 'virtual/fixture/test.js';
 
     const bundle = await rollup({
@@ -106,7 +106,7 @@ async function compileFixture({
 describe.concurrent('fixtures', () => {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(__dirname, '../../../engine-server/src/__tests__/fixtures'),
+            root: path.resolve(__dirname, 'fixtures'),
             pattern: '**/config.json',
             ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests
