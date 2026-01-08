@@ -79,9 +79,9 @@ export interface RollupLwcOptions {
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
 
-const IMPLICIT_DEFAULT_HTML_PATH = ['@lwc', 'resources', 'empty_html.js'].join(path.sep);
+const IMPLICIT_DEFAULT_HTML_PATH = path.join('@lwc', 'resources', 'empty_html.js');
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
-const IMPLICIT_DEFAULT_CSS_PATH = ['@lwc', 'resources', 'empty_css.css'].join(path.sep);
+const IMPLICIT_DEFAULT_CSS_PATH = path.join('@lwc', 'resources', 'empty_css.css');
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
 const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
@@ -201,7 +201,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         componentFeatureFlagModulePath,
     } = pluginOptions;
 
-    return {
+    const plugin: Plugin = {
         name: PLUGIN_NAME,
         // The version from the package.json is inlined by the build script
         version: process.env.LWC_VERSION,
@@ -408,6 +408,18 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             return { code, map: rollupMap };
         },
     };
+
+    Object.entries(plugin).forEach(([hook, val]) => {
+        if (typeof val === 'function') {
+            (plugin as any)[hook] = function (...args: any) {
+                // eslint-disable-next-line no-console
+                console.log(hook, args);
+                return val.apply(this, args);
+            };
+        }
+    });
+
+    return plugin;
 }
 
 // For backward compatibility with commonjs format
