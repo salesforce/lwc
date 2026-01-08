@@ -1020,4 +1020,11 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    RESERVED_KEYWORD_AS_IDENTIFIER: {
+        code: 1211,
+        message: '{0} is a reserved keyword and cannot be used as an identifier.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;

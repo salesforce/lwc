@@ -177,7 +177,12 @@ export function parseIdentifier(
         isValid = isIdentifierChar(source.charCodeAt(i));
     }
 
-    if (isValid && !isReservedES6Keyword(source)) {
+    if (isValid) {
+        if (isReservedES6Keyword(source)) {
+            ctx.throwAtLocation(ParserDiagnostics.RESERVED_KEYWORD_AS_IDENTIFIER, location, [
+                source,
+            ]);
+        }
         return {
             ...t.identifier(source),
             location,
