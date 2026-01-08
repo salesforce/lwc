@@ -12,7 +12,7 @@ import type { ComponentTransformOptions, TemplateTransformOptions } from './shar
 
 export interface CompilationResult {
     code: string;
-    map: unknown;
+    map: undefined;
 }
 
 export function compileComponentForSSR(
