@@ -12,7 +12,7 @@ import pluginUtils from '@rollup/pluginutils';
 import { transformSync } from '@lwc/compiler';
 import { resolveModule, RegistryType } from '@lwc/module-resolver';
 import { getAPIVersionFromNumber } from '@lwc/shared';
-import type { Plugin, SourceMapInput, RollupLog } from 'rollup';
+import type { Plugin, RollupLog, TransformResult } from 'rollup';
 import type { FilterPattern } from '@rollup/pluginutils';
 import type { StylesheetConfig, DynamicImportConfig } from '@lwc/compiler';
 import type { ModuleRecord } from '@lwc/module-resolver';
@@ -83,6 +83,9 @@ const IMPLICIT_DEFAULT_HTML_PATH = path.join('@lwc', 'resources', 'empty_html.js
 const EMPTY_IMPLICIT_HTML_CONTENT = 'export default void 0';
 const IMPLICIT_DEFAULT_CSS_PATH = path.join('@lwc', 'resources', 'empty_css.css');
 const EMPTY_IMPLICIT_CSS_CONTENT = '';
+const IMPLICIT_DEFAULT_JS_PATH = path.join('@lwc', 'resources', 'empty_js.js');
+const EMPTY_IMPLICIT_JS_CONTENT =
+    'import {LightningElement} from "lwc";export default class extends LightningElement{}';
 const SCRIPT_FILE_EXTENSIONS = ['.js', '.mjs', '.jsx', '.ts', '.mts', '.tsx'];
 
 const DEFAULT_MODULES = [
@@ -110,27 +113,32 @@ function isImplicitCssImport(importee: string, importer: string): boolean {
 }
 
 interface Descriptor {
+    /** The filename for the component. May be a virtual `@lwc/resources` path. */
     filename: string;
+    /** Whether the component uses scoped CSS. */
     scoped: boolean;
+    /** The component's specifier, e.g. `x/cmp`. */
     specifier: string | null;
+    /** For a template-only component, the real path to the template. */
+    templateOnlyEntry: string | null;
 }
 
 function parseDescriptorFromFilePath(id: string): Descriptor {
     const [filename, query] = id.split('?', 2);
     const params = new URLSearchParams(query);
-    const scoped = params.has('scoped');
-    const specifier = params.get('specifier');
     return {
         filename,
-        specifier,
-        scoped,
+        specifier: params.get('specifier'),
+        scoped: params.has('scoped'),
+        templateOnlyEntry: params.get('template'),
     };
 }
 
-function appendAliasSpecifierQueryParam(id: string, specifier: string): string {
+function appendQueryParams(id: string, specifier: string, template?: string): string {
     const [filename, query] = id.split('?', 2);
     const params = new URLSearchParams(query);
     params.set('specifier', specifier);
+    if (template) params.set('template', template);
     return `${filename}?${params.toString()}`;
 }
 
@@ -201,7 +209,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         componentFeatureFlagModulePath,
     } = pluginOptions;
 
-    const plugin: Plugin = {
+    return {
         name: PLUGIN_NAME,
         // The version from the package.json is inlined by the build script
         version: process.env.LWC_VERSION,
@@ -232,7 +240,11 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         resolveId(importee, importer) {
             if (importer) {
                 // Importer has been resolved already and may contain an alias specifier
-                const { filename: importerFilename } = parseDescriptorFromFilePath(importer);
+                const importerDescriptor = parseDescriptorFromFilePath(importer);
+                const importerFilename =
+                    // If `templateOnlyEntry` is set, then it points to the real filename and
+                    // `filename` is just the virtual JS file
+                    importerDescriptor.templateOnlyEntry ?? importerDescriptor.filename;
 
                 // Normalize relative import to absolute import
                 // Note that in @rollup/plugin-node-resolve v13, relative imports will sometimes
@@ -285,6 +297,12 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                             rootDir,
                         });
 
+                        if (entry.endsWith('.html')) {
+                            // If the entrypoint is `.html`, then it's a template-only component.
+                            // We need to inject a virtual JS file for the component to function.
+                            return appendQueryParams(IMPLICIT_DEFAULT_JS_PATH, specifier, entry);
+                        }
+
                         if (type === RegistryType.alias) {
                             // specifier must be in in namespace/name format
                             const [namespace, name, ...rest] = specifier.split('/');
@@ -293,11 +311,10 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                             // Verify 3 things about the alias specifier:
                             // 1. The namespace is a non-empty string
                             // 2. The name is an non-empty string
-                            // 3. The specifier was in a namespace / name format, ie no extra '/' (this is what rest checks)
-                            const hasValidSpecifier =
-                                !!namespace?.length && !!name?.length && !rest?.length;
+                            // 3. The specifier was in a `namespace/name` format, i.e. no extra '/' (this is what rest checks)
+                            const hasValidSpecifier = namespace && name && rest.length === 0;
                             if (hasValidSpecifier) {
-                                return appendAliasSpecifierQueryParam(entry, specifier);
+                                return appendQueryParams(entry, specifier);
                             }
                         }
 
@@ -314,15 +331,18 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         load(id) {
             if (id === IMPLICIT_DEFAULT_HTML_PATH) {
                 return EMPTY_IMPLICIT_HTML_CONTENT;
-            }
-
-            if (id === IMPLICIT_DEFAULT_CSS_PATH) {
+            } else if (id === IMPLICIT_DEFAULT_CSS_PATH) {
                 return EMPTY_IMPLICIT_CSS_CONTENT;
             }
 
             // Have to parse the `?scoped=true` in `load`, because it's not guaranteed
             // that `resolveId` will always be called (e.g. if another plugin resolves it first)
             const { filename, specifier: hasAlias } = parseDescriptorFromFilePath(id);
+            // Not checking `id` directly because it's expected to have query params
+            if (filename === IMPLICIT_DEFAULT_JS_PATH) {
+                return EMPTY_IMPLICIT_JS_CONTENT;
+            }
+
             const isCSS = path.extname(filename) === '.css';
 
             if (isCSS || hasAlias) {
@@ -340,11 +360,14 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             }
         },
 
-        transform(src, id) {
-            const { scoped, filename, specifier } = parseDescriptorFromFilePath(id);
+        transform(src, id): TransformResult {
+            const { scoped, filename, specifier, templateOnlyEntry } =
+                parseDescriptorFromFilePath(id);
+            // If `templateOnlyEntry` is set, then `filename` is the virtual JS file
+            const realFilename = templateOnlyEntry ?? filename;
 
             // Filter user-land config and lwc import
-            if (!filter(filename)) {
+            if (!filter(realFilename)) {
                 return;
             }
 
@@ -352,7 +375,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             // Specifier will only exist for modules with alias paths.
             // Otherwise, use the file directory structure to resolve namespace and name.
             const [namespace, name] =
-                specifier?.split('/') ?? path.dirname(filename).split(path.sep).slice(-2);
+                specifier?.split('/') ?? path.dirname(realFilename).split(path.sep).slice(-2);
 
             /* v8 ignore next */
             if (!namespace || !name) {
@@ -364,62 +387,56 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                         name
                     )}) could not be determined from the specifier ${JSON.stringify(
                         specifier
-                    )} or filename ${JSON.stringify(path.dirname(filename))}`
+                    )} or filename ${JSON.stringify(path.dirname(realFilename))}`
                 );
             }
 
             const apiVersionToUse = getAPIVersionFromNumber(apiVersion);
 
-            const { code, map, warnings } = transformSync(src, filename, {
-                name,
-                namespace,
-                outputConfig: { sourcemap },
-                stylesheetConfig,
-                experimentalDynamicComponent,
-                experimentalDynamicDirective,
-                enableDynamicComponents,
-                enableSyntheticElementInternals,
-                enableLwcOn,
-                enableLightningWebSecurityTransforms,
-                // TODO [#3370]: remove experimental template expression flag
-                experimentalComplexExpressions,
-                preserveHtmlComments,
-                scopedStyles: scoped,
-                disableSyntheticShadowSupport,
-                apiVersion: apiVersionToUse,
-                enableStaticContentOptimization:
-                    // {enableStaticContentOptimization:undefined} behaves like `false`
-                    // but {} (prop unspecified) behaves like `true`
-                    'enableStaticContentOptimization' in pluginOptions
-                        ? pluginOptions.enableStaticContentOptimization
-                        : true,
-                targetSSR,
-                ssrMode,
-                componentFeatureFlagModulePath,
-            });
+            const { code, map, warnings } = transformSync(
+                src,
+                // If `templateOnlyEntry` is set, then the extension of `realFilename` is .html,
+                // but we're transforming the virtual JS file as if it is the component's JS file
+                // (which doesn't actually exist)
+                templateOnlyEntry ? `${realFilename.slice(0, -5)}.js` : realFilename,
+                {
+                    name,
+                    namespace,
+                    outputConfig: { sourcemap },
+                    stylesheetConfig,
+                    experimentalDynamicComponent,
+                    experimentalDynamicDirective,
+                    enableDynamicComponents,
+                    enableSyntheticElementInternals,
+                    enableLwcOn,
+                    enableLightningWebSecurityTransforms,
+                    // TODO [#3370]: remove experimental template expression flag
+                    experimentalComplexExpressions,
+                    preserveHtmlComments,
+                    scopedStyles: scoped,
+                    disableSyntheticShadowSupport,
+                    apiVersion: apiVersionToUse,
+                    enableStaticContentOptimization:
+                        // {enableStaticContentOptimization:undefined} behaves like `false`
+                        // but {} (prop unspecified) behaves like `true`
+                        'enableStaticContentOptimization' in pluginOptions
+                            ? pluginOptions.enableStaticContentOptimization
+                            : true,
+                    targetSSR,
+                    ssrMode,
+                    componentFeatureFlagModulePath,
+                }
+            );
 
             if (warnings) {
                 for (const warning of warnings) {
-                    this.warn(transformWarningToRollupLog(warning, src, filename));
+                    this.warn(transformWarningToRollupLog(warning, src, realFilename));
                 }
             }
 
-            const rollupMap = map as SourceMapInput;
-            return { code, map: rollupMap };
+            return { code, map };
         },
     };
-
-    Object.entries(plugin).forEach(([hook, val]) => {
-        if (typeof val === 'function') {
-            (plugin as any)[hook] = function (...args: any) {
-                // eslint-disable-next-line no-console
-                console.log(hook, args);
-                return val.apply(this, args);
-            };
-        }
-    });
-
-    return plugin;
 }
 
 // For backward compatibility with commonjs format
