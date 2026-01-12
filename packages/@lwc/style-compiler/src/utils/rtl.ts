@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isPseudoClass } from 'postcss-selector-parser';
+import postCssSelectorParser from 'postcss-selector-parser';
 import type { Node, Pseudo } from 'postcss-selector-parser';
 
 export function isDirPseudoClass(node: Node): node is Pseudo {
-    return isPseudoClass(node) && node.value === ':dir';
+    return postCssSelectorParser.isPseudoClass(node) && node.value === ':dir';
 }

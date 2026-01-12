@@ -23,7 +23,7 @@ const createRollupPlugin = (input, options) => {
     return lwcRollupPlugin({
         // Sourcemaps don't work with Istanbul coverage
         sourcemap: !process.env.COVERAGE,
-        experimentalDynamicComponent: {
+        dynamicImports: {
             loader: fileURLToPath(new URL('../../helpers/dynamic-loader', import.meta.url)),
             strict: true,
         },

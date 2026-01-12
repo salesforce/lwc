@@ -37,7 +37,6 @@ describe('isomorphic package exports', () => {
         }
         expect(Array.from(baseExports)).toEqual([
             // Exports that intentionally only exist in @lwc/engine-server
-            'default', // artifact of interop support
         ]);
     });
 });

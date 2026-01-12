@@ -39,7 +39,7 @@ export const enum PropType {
 
 interface PropCompilerDef {
     config: PropType; // 0 m
-    type: string; // TODO [#1301]: make this an enum
+    type: string;
 }
 interface WireCompilerDef {
     method?: number;
@@ -75,7 +75,7 @@ function validateObservedField(
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid observed ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
-        // TODO [#3408]: this should throw, not log
+        // TODO [#4450]: this should throw, not log
         logError(message);
     }
 }
@@ -88,7 +88,7 @@ function validateFieldDecoratedWithTrack(
     assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
-        // TODO [#3408]: this should throw, not log
+        // TODO [#4450]: this should throw, not log
         logError(
             `Invalid @track ${fieldName} field. Found a duplicate ${type} with the same name.`
         );
@@ -103,7 +103,7 @@ function validateFieldDecoratedWithWire(
     assertNotProd(); // this method should never leak to prod
     if (!isUndefined(descriptor)) {
         const type = getClassDescriptorType(descriptor);
-        // TODO [#3408]: this should throw, not log
+        // TODO [#4450]: this should throw, not log
         logError(`Invalid @wire ${fieldName} field. Found a duplicate ${type} with the same name.`);
     }
 }
@@ -115,7 +115,7 @@ function validateMethodDecoratedWithWire(
 ) {
     assertNotProd(); // this method should never leak to prod
     if (isUndefined(descriptor) || !isFunction(descriptor.value) || isFalse(descriptor.writable)) {
-        // TODO [#3441]: This line of code does not seem possible to reach.
+        // TODO [#4450]: This line of code does not seem possible to reach.
         logError(
             `Invalid @wire ${methodName} field. The field should have a valid writable descriptor.`
         );
@@ -132,7 +132,7 @@ function validateFieldDecoratedWithApi(
         const type = getClassDescriptorType(descriptor);
         const message = `Invalid @api ${fieldName} field. Found a duplicate ${type} with the same name.`;
 
-        // TODO [#3408]: this should throw, not log
+        // TODO [#4450]: this should throw, not log
         logError(message);
     }
 }
@@ -145,7 +145,7 @@ function validateAccessorDecoratedWithApi(
     assertNotProd(); // this method should never leak to prod
     if (isFunction(descriptor.set)) {
         if (!isFunction(descriptor.get)) {
-            // TODO [#3441]: This line of code does not seem possible to reach.
+            // TODO [#4450]: This line of code does not seem possible to reach.
             logError(
                 `Missing getter for property ${fieldName} decorated with @api in ${Ctor}. You cannot have a setter without the corresponding getter.`
             );
@@ -246,7 +246,7 @@ export function registerDecorators(
             if (method === 1) {
                 if (process.env.NODE_ENV !== 'production') {
                     if (!adapter) {
-                        // TODO [#3408]: this should throw, not log
+                        // TODO [#4450]: this should throw, not log
                         logError(
                             `@wire on method "${fieldOrMethodName}": adapter id must be truthy.`
                         );
@@ -261,7 +261,7 @@ export function registerDecorators(
             } else {
                 if (process.env.NODE_ENV !== 'production') {
                     if (!adapter) {
-                        // TODO [#3408]: this should throw, not log
+                        // TODO [#4450]: this should throw, not log
                         logError(
                             `@wire on field "${fieldOrMethodName}": adapter id must be truthy.`
                         );

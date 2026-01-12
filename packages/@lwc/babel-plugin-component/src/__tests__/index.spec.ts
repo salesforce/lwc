@@ -81,7 +81,7 @@ function transform(source: string, opts = {}) {
 describe('fixtures', () => {
     testFixtureDir<TestConfig>(
         {
-            root: path.resolve(__dirname, 'fixtures'),
+            root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/actual.js',
             ssrVersion: 2,
         },

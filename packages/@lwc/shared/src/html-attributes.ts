@@ -98,7 +98,7 @@ export function isGlobalHtmlAttribute(attrName: string): boolean {
 }
 
 // These are HTML standard prop/attribute IDL mappings, but are not predictable based on camel/kebab-case conversion
-export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
+export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING: Map<string, string> = /*@__PURE__@*/ new Map([
     ['accessKey', 'accesskey'],
     ['readOnly', 'readonly'],
     ['tabIndex', 'tabindex'],
@@ -121,7 +121,7 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map([
 // descriptors for these properties are added from HTMLElement.prototype to
 // LightningElement.prototype. For SSR, in order to match CSR behavior, this
 // list is used to determine which attributes to reflect.
-export const REFLECTIVE_GLOBAL_PROPERTY_SET = /*@__PURE__@*/ new Set([
+export const REFLECTIVE_GLOBAL_PROPERTY_SET: Set<string> = /*@__PURE__@*/ new Set([
     'accessKey',
     'dir',
     'draggable',
@@ -203,7 +203,7 @@ export function kebabCaseToCamelCase(attrName: string): string {
  * Because the template will never call them. It'll always call the camel
  * cased version.
  */
-export const AMBIGUOUS_PROP_SET = /*@__PURE__@*/ new Map([
+export const AMBIGUOUS_PROP_SET: Map<string, string> = /*@__PURE__@*/ new Map([
     ['bgcolor', 'bgColor'],
     ['accesskey', 'accessKey'],
     ['contenteditable', 'contentEditable'],
@@ -217,4 +217,9 @@ export const AMBIGUOUS_PROP_SET = /*@__PURE__@*/ new Map([
  * by users on their components.
  * We throw for these.
  */
-export const DISALLOWED_PROP_SET = /*@__PURE__@*/ new Set(['is', 'class', 'slot', 'style']);
+export const DISALLOWED_PROP_SET: Set<string> = /*@__PURE__@*/ new Set([
+    'is',
+    'class',
+    'slot',
+    'style',
+]);

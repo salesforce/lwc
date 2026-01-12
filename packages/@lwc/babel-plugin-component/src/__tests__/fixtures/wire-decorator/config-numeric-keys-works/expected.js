@@ -1,5 +1,6 @@
-import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators } from "lwc";
 import _tmpl from "./test.html";
+import { LightningElement, registerComponent as _registerComponent } from "lwc";
 import { getFoo } from "data-service";
 class Test extends LightningElement {
   // Did you know numeric literals can be used as property keys? This becomes "123"!

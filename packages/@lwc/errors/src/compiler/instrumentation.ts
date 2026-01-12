@@ -10,12 +10,14 @@ import type { ErrorConfig } from './errors';
 /**
  * Pattern modeled after @lwc/engine-core's reporting.ts system
  */
-export enum CompilerMetrics {
-    LWCDynamicDirective = 'lwc-dynamic-directive',
-    LWCRenderModeDirective = 'lwc-render-mode-directive',
-    LWCSpreadDirective = 'lwc-spread-directive',
-    DynamicImportTransform = 'dynamic-import-transform',
-}
+export const CompilerMetrics = {
+    LWCDynamicDirective: 'lwc-dynamic-directive',
+    LWCRenderModeDirective: 'lwc-render-mode-directive',
+    LWCSpreadDirective: 'lwc-spread-directive',
+    DynamicImportTransform: 'dynamic-import-transform',
+} as const;
+
+export type CompilerMetrics = (typeof CompilerMetrics)[keyof typeof CompilerMetrics];
 
 export interface InstrumentationObject {
     log: (errorInfo: LWCErrorInfo, config: ErrorConfig) => void;

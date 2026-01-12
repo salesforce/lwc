@@ -123,7 +123,7 @@ export class PropertyDecorators extends LightningElement {
     // We could technically be strict, and enforce that all configs objects use `as const`, but very
     // few projects currently use it (there is no need) and the error reported is not simple to
     // understand.
-    @wire(TestAdapter, { config: 'incorrect' })
+    @wire(TestAdapter, { config: 'incorrect' as string })
     wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
     @wire(TestAdapter, { config: 'config' })
@@ -189,7 +189,7 @@ export class PropertyDecoratorsWithImperative extends LightningElement {
     // We could technically be strict, and enforce that all configs objects use `as const`, but very
     // few projects currently use it (there is no need) and the error reported is not simple to
     // understand.
-    @wire(TestAdapterWithImperative, { config: 'incorrect' })
+    @wire(TestAdapterWithImperative, { config: 'incorrect' as string })
     wrongConfigButInferredAsString?: TestValue;
     // People shouldn't do this, and they probably never (heh) will. TypeScript allows it, though.
     @wire(TestAdapterWithImperative, { config: 'config' })
@@ -285,7 +285,7 @@ export class MethodDecorators extends LightningElement {
     // We could technically be strict, and enforce that all configs objects use `as const`, but very
     // few projects currently use it (there is no need) and the error reported is not simple to
     // understand.
-    @wire(TestAdapter, { config: 'incorrect' })
+    @wire(TestAdapter, { config: 'incorrect' as string })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapter, { config: 'config' })
@@ -346,7 +346,7 @@ export class MethodDecoratorsWithImperative extends LightningElement {
     // We could technically be strict, and enforce that all configs objects use `as const`, but very
     // few projects currently use it (there is no need) and the error reported is not simple to
     // understand.
-    @wire(TestAdapterWithImperative, { config: 'incorrect' })
+    @wire(TestAdapterWithImperative, { config: 'incorrect' as string })
     wrongConfigButInferredAsString(_: TestValue): void {}
     // Wire adapters shouldn't use default params, but the type system doesn't know the difference
     @wire(TestAdapterWithImperative, { config: 'config' })

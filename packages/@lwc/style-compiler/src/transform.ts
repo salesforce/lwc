@@ -39,7 +39,7 @@ export interface Config {
  * @param config Transformation options
  * @returns Transformed CSS
  * @example
- * const {transform} = require('@lwc/style-compiler');
+ * import { transform } from '@lwc/style-compiler';
  * const source = `
  *  :host {
  *    opacity: 0.4;
