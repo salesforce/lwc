@@ -265,6 +265,10 @@ export function getStylesheetsContent(vm: VM, template: Template): ReadonlyArray
     const { stylesheets, stylesheetToken } = template;
     const { stylesheets: vmStylesheets } = vm;
 
+    if (!isUndefined(stylesheetToken) && !isValidScopeToken(stylesheetToken)) {
+        throw new Error('stylesheet token must be a valid string');
+    }
+
     const hasTemplateStyles = hasStyles(stylesheets);
     const hasVmStyles = hasStyles(vmStylesheets);
 
