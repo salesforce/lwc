@@ -13,8 +13,10 @@ updates:
           - 'USER STORY'
       ignore:
           # As a library, we want to avoid bumping TypeScript, so that we don't accidentally use
-          # language features from a version newer than our downstream users have installed
+          # language features from a version newer than our downstream users have installed.
           - dependency-name: 'typescript'
+          # For the same reason, we want @types/node to be the *oldest* node that we support
+          - dependency-name: '@types/node'
       groups:
           # Most minor/patch version bumps are harmless, so we group them together
           # Major version bumps typically require manual intervention, so they get individual PRs (default behavior)
