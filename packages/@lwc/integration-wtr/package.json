@@ -16,7 +16,7 @@
         "@lwc/rollup-plugin": "8.28.0",
         "@lwc/synthetic-shadow": "8.28.0",
         "@types/chai": "^5.2.3",
-        "@types/jasmine": "^5.1.13",
+        "@types/jasmine": "^5.1.14",
         "@vitest/expect": "^4.0.16",
         "@vitest/spy": "^4.0.16",
         "@web/dev-server-import-maps": "^0.2.1",
