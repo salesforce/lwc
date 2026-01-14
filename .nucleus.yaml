@@ -9,8 +9,7 @@ branches:
             auto-start: true
             auto-start-from-forks: false
             merge-method: disabled # do not auto-merge; we'll do it ourselves
-            required-downstream-deps:
-                # none
+            required-downstream-deps: [] # none
     release:
         pull-request:
             <<: *branch-definition
