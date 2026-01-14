@@ -122,7 +122,7 @@ async function compileFixture({
 function testFixtures(options?: RollupLwcOptions) {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(import.meta.dirname, 'fixtures'),
+            root: path.resolve(import.meta.dirname, '../../../ssr-compiler/src/__tests__/fixtures'),
             ssrVersion: 1,
             pattern: '**/config.json',
         },

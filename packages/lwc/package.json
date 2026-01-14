@@ -62,7 +62,6 @@
         "./compiler": "./compiler.js",
         "./engine-core": "./engine-core.js",
         "./engine-dom": "./engine-dom.js",
-        "./engine-server": "./engine-server.js",
         "./errors": "./errors.js",
         "./features": "./features.js",
         "./types": "./types.d.ts",
