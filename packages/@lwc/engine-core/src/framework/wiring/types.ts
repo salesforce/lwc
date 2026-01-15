@@ -116,12 +116,17 @@ type ChainableObjectProps<Class> = ReactivePropsOnly<
 
 /**
  * Extends the given wire adapter config with reactive property strings (e.g. `$prop`) for values
- * on the given class that match the config. Only validates top-level props; does **not** provide
- * type checking for nested property access.
+ * on the given class that match the config. To limit the amount of noise in the resultant type
+ * union, there are a number of restrictions that may result in false positives or false negatives.
+ * - Only top-level props are validated. Type checking is **not** done on nested property chains.
+ * - `string` values inherently permit _any_ string.
+ * - Property chains are only allowed if the top-level props is an object.
+ * - Property chains from `LightningElement` props are excluded.
+ * A getter can be used to avoid incorrect error reporting, top-level props are always validated.
+ * Alternatively, a type assertion can be used to suppress the error.
  *
  * @example
- * type Config = { id: number };
- * declare const Adapter: WireAdapterConstructor<Config>;
+ * declare const Adapter: WireAdapterConstructor<{ id: number }>;
  * declare class Component extends LightningElement {
  *   numberProp = 6_7;
  *   stringProp = '🙌';
@@ -135,17 +140,25 @@ type ChainableObjectProps<Class> = ReactivePropsOnly<
  *   // Nested props are not checked to avoid crashing on recursive types.
  *   \@wire(Adapter, { id: "$objectProp.nestedStringProp" }) falsePositive?: unknown;
  *
+ *   get propertyChainWorkaround(): string {
+ *     return this.objectProp.nestedStringProp;
+ *   }
+ *
+ *   // Correctly type-checked and reports an error
+ *   \@wire(Adapter, { id: "$propertyChainWorkaround" }) invalidGetter?: unknown;
+ *
  *   // Any non-nullish value can have properties accessed at runtime, but property access
  *   // for non-objects is uncommon, so is excluded for simplicity.
  *   \@wire(Adapter, { id: "$stringProp.length" }) falseNegativeString?: unknown;
  *
- *   // All functions are objects, so property access is generally allowed.
- *   // All components extend `LightningElement`, but are unlikely to use property access
- *   // on `LightningElement` methods, so they are excluded for simplicity.
- *   \@wire(Adapter, { id: "$connectedCallback.length" }) falseNegativeLightningElement?: unknown;
+ *   // Using props inherited from `LightningElement` for property chains is uncommon,
+ *   // so they are excluded for simplicity.
+ *   \@wire(Adapter, { id: "$children.length" }) falseNegativeLightningElement?: unknown;
+ *
+ *   //
+ *   \@wire(Adapter, { id: "$children.length" as unknown as Component["children"]["length"] }) falseNegativeLightningElement?: unknown;
  * }
  */
-
 export type ConfigWithReactiveProps<Config extends ConfigValue, Class> = {
     [K in keyof Config]:
         | Config[K] // The actual value, e.g. `number`
