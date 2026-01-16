@@ -5,19 +5,11 @@ import { api, track, wire } from './facade.js';
 
 describe('decorator APIs used as non-decorators', () => {
     it('api() throws error', () => {
-        expect(api).toThrowError(
-            process.env.NODE_ENV === 'production'
-                ? ''
-                : /@api decorator can only be used as a decorator function/
-        );
+        expect(api).toThrowError(/@api decorator can only be used as a decorator function/);
     });
 
     it('wire() throws error', () => {
-        expect(wire).toThrowError(
-            process.env.NODE_ENV === 'production'
-                ? ''
-                : /@wire\(adapter, config\?\) may only be used as a decorator/
-        );
+        expect(wire).toThrowError(/@wire\(adapter, config\?\) may only be used as a decorator/);
     });
 
     it('track() throws error when passed arguments.length !== 1', () => {
@@ -31,9 +23,7 @@ describe('decorator APIs used as non-decorators', () => {
 
         for (const func of funcs) {
             expect(func).toThrowError(
-                process.env.NODE_ENV === 'production'
-                    ? ''
-                    : /@track decorator can only be used with one argument to return a trackable object, or as a decorator function/
+                /@track decorator can only be used with one argument to return a trackable object, or as a decorator function/
             );
         }
     });
