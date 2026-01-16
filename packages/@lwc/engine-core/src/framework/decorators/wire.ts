@@ -13,13 +13,6 @@ import type { ConfigValue, ConfigWithReactiveProps, WireAdapterConstructor } fro
 
 /**
  * The decorator returned by `@wire()`; not the `wire` function.
- *
- * For TypeScript users:
- * - If you are seeing an unclear error message, ensure that both the type of the decorated prop and
- * the config used match the types expected by the wire adapter.
- * - String literal types in the config are resolved to the corresponding prop on the component.
- * For example, a component with `id = 555` and `@wire(getBook, {id: "$id"} as const) book` will
- * have `"$id"` resolve to type `number`.
  */
 interface WireDecorator<Value, Class> {
     (
@@ -44,6 +37,10 @@ interface WireDecorator<Value, Class> {
 
 /**
  * Decorator factory to wire a property or method to a wire adapter data source.
+ *
+ * TypeScript users: Due to limitations of the type system, some edge cases are
+ * not fully type checked. See the type definition for {@linkcode ConfigWithReactiveProps}
+ * for details.
  * @param adapter the adapter used to provision data
  * @param config configuration object for the adapter
  * @returns A decorator function
