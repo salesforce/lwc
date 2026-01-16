@@ -35,7 +35,7 @@
         "release:publish:canary": "nx release publish --registry https://registry.npmjs.org --tag canary"
     },
     "devDependencies": {
-        "@commitlint/cli": "^20.3.0",
+        "@commitlint/cli": "^20.3.1",
         "@eslint/js": "9.39.2",
         "@lwc/eslint-plugin-lwc-internal": "link:./scripts/eslint-plugin",
         "@lwc/test-utils-lwc-internals": "link:./scripts/test-utils",
@@ -51,7 +51,7 @@
         "@types/babel__core": "^7.20.5",
         "@types/node": "^22.19.1",
         "@vitest/coverage-v8": "4.0.16",
-        "@vitest/eslint-plugin": "1.6.5",
+        "@vitest/eslint-plugin": "1.6.6",
         "@vitest/spy": "4.0.16",
         "@vitest/ui": "4.0.16",
         "bytes": "^3.1.2",
@@ -69,11 +69,11 @@
         "magic-string": "^0.30.21",
         "nx": "22.3.3",
         "prettier": "^3.7.2",
-        "rollup": "^4.54.0",
+        "rollup": "^4.55.1",
         "terser": "^5.44.1",
         "tslib": "^2.8.1",
         "typescript": "5.8.2",
-        "typescript-eslint": "8.51.0",
+        "typescript-eslint": "8.52.0",
         "vitest": "4.0.16"
     },
     "lint-staged": {
