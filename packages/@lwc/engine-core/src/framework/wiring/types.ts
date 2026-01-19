@@ -115,18 +115,23 @@ type ChainableObjectProps<Class> = ReactivePropsOnly<
 >;
 
 /**
- * Extends the given wire adapter config with reactive property strings (e.g. `$prop`) for values
- * on the given class that match the config. Due to limitations of the type system, and to limit
- * the size of the resultant type union, a number of restrictions apply to this type that may
+ * Extends a given wire adapter config with reactive property strings
+ * (for example, `$prop`) for values on the given class that match the config.
+ *
+ * Due to limitations of the type system, and to limit the size of the
+ * resulting type union, a number of restrictions apply to this type that can
  * result in false positives or false negatives.
+ *
  * - Config values with a `string` type inherently permit _any_ string,
  *   even reactive strings that resolve to the wrong type.
- * - Only top-level props are validated. Type checking is **not** done on nested property chains.
- * - Property chains are only allowed if the top-level property is an object.
- * - Property chains from `LightningElement` props are excluded for brevity.
+ * - Only top-level props are validated. Type checking is _not_ done on nested
+ *   property chains.
+ * - Property chains are allowed only if the top-level property is an object.
+ * - Property chains from `LightningElement` props are excluded.
  *
- * For property chains, a getter can be used to avoid incorrect error reporting, as top-level props
- * are always validated. Alternatively, a type assertion can be used to suppress the error.
+ * For property chains, a getter can be used to avoid incorrect error reporting,
+ * as top-level properties are always validated. Alternatively, a type assertion
+ * can be used to suppress the error.
  *
  * @example
  * // Wire adapter with a required number prop and optional string prop
@@ -135,7 +140,7 @@ type ChainableObjectProps<Class> = ReactivePropsOnly<
  *   numberProp = 6_7;
  *   stringProp = '🙌';
  *   objectProp?: { nestedStringProp: string };
- 
+
  *   \@wire(Adapter, { num: 123 }) validNumberValue?: unknown;
  *   \@wire(Adapter, { num: "$numberProp" }) validNumberProp?: unknown;
  *   \@wire(Adapter, { num: "bad value" }) invalidNumberValue?: unknown;
@@ -143,26 +148,29 @@ type ChainableObjectProps<Class> = ReactivePropsOnly<
  *
  *   \@wire(Adapter, { str: "valid string", num: 0 }) validStringValue?: unknown;
  *   \@wire(Adapter, { str: "$stringProp", num: 0 }) validStringProp?: unknown;
+
  *   // `"$numberProp"` is a string, and therefore satisfies the type,
  *   // despite resolving to a number at runtime
  *   \@wire(Adapter, { str: "$numberProp", num: 0 }) falseNegativeString?: unknown;
  *
- *   // Nested props are not checked to avoid crashing on recursive types
+ *   // Nested props aren't checked to avoid crashing on recursive types
  *   \@wire(Adapter, { num: "$objectProp.nestedStringProp" }) falseNegativeNested?: unknown;
- * 
+ *
  *   // Any value can have properties accessed at runtime, but property chains using
- *   // non-objects are uncommon, so they are excluded for simplicity
+ *   // non-objects are uncommon, and are excluded for simplicity
  *   \@wire(Adapter, { num: "$stringProp.length" }) falsePositiveString?: unknown;
  *
  *   // Using props inherited from `LightningElement` for property chains is uncommon,
- *   // so they are excluded for simplicity
+ *   // and are excluded for simplicity
  *   \@wire(Adapter, { num: "$hostElement.childElementCount" }) falsePositiveLightningElement?: unknown;
- * 
+ *
  *   get propertyChainWorkaround(): string {
  *     return this.objectProp.nestedStringProp;
  *   }
+ *
  *   // Top-level prop is type checked and correctly reports an error
  *   \@wire(Adapter, { num: "$propertyChainWorkaround" }) truePositiveGetter?: unknown;
+ *
  *   // Type assertion is used and correctly reports an error
  *   \@wire(Adapter, {
  *     num: "$objectProp.nestedStringProp" as unknown as Component["objectProp"]["nestedStringProp"]
