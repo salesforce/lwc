@@ -12,9 +12,10 @@ updates:
       labels:
           - 'USER STORY'
       ignore:
-          # As a library, we want to avoid bumping TypeScript, so that we don't accidentally use
-          # language features from a version newer than our downstream users have installed
+          # As a library, we intentionally avoid updating TypeScript and @types/node so that we
+          # don't accidentally use features from a version newer than our downstream users have installed
           - dependency-name: 'typescript'
+          - dependency-name: '@types/node'
       groups:
           # Most minor/patch version bumps are harmless, so we group them together
           # Major version bumps typically require manual intervention, so they get individual PRs (default behavior)
