@@ -9,9 +9,9 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
 const _Node = Node;
-const nodePrototype = _Node.prototype;
 
 const {
+    prototype: nodePrototype,
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_PRECEDING,
@@ -28,13 +28,12 @@ const {
     appendChild,
     cloneNode,
     compareDocumentPosition,
+    contains,
     insertBefore,
     removeChild,
     replaceChild,
     hasChildNodes,
 } = nodePrototype;
-
-const { contains } = HTMLElement.prototype;
 
 const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
     nodePrototype,

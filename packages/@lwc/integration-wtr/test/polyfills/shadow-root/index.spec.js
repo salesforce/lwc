@@ -6,6 +6,13 @@ it('should attach ShadowRoot to the global object if not present', () => {
     expect(String(window.ShadowRoot)).toMatch(/ShadowRoot|SyntheticShadowRoot/);
 });
 
+// See W-17585549
+it('should not use component implementation', () => {
+    const elm = createElement('x-test', { is: XTest });
+    document.body.appendChild(elm);
+    expect(() => elm.compareHostElement()).not.toThrow();
+});
+
 describe('ShadowRoot.activeElement', () => {
     it('should be null when no active element is found', () => {
         const elm = createElement('x-parent', { is: XTest });
