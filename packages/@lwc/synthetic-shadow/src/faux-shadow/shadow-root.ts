@@ -38,6 +38,7 @@ import {
     COMMENT_NODE,
     Node,
     contains,
+    getRootNode,
 } from '../env/node';
 
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
@@ -548,7 +549,7 @@ const NodePatchDescriptors = {
         configurable: true,
         value(this: ShadowRoot, options?: GetRootNodeOptions): Node {
             return !isUndefined(options) && isTrue(options.composed)
-                ? getHost(this).getRootNode(options)
+                ? getRootNode.call(getHost(this), options)
                 : this;
         },
     },

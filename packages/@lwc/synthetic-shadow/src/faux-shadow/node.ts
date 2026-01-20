@@ -14,7 +14,7 @@ import {
     isUndefined,
 } from '@lwc/shared';
 
-import { Node } from '../env/node';
+import { getRootNode, Node } from '../env/node';
 import {
     parentNodeGetter,
     textContextSetter,
@@ -129,7 +129,7 @@ function parentElementGetterPatched(this: Node): Element | null {
 function compareDocumentPositionPatched(this: Node, otherNode: Node) {
     if (this === otherNode) {
         return 0;
-    } else if (this.getRootNode() === otherNode) {
+    } else if (getRootNode.call(this) === otherNode) {
         // "this" is in a shadow tree where the shadow root is the "otherNode".
         return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
     } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {

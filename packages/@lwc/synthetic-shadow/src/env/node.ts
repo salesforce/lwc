@@ -9,9 +9,9 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
 const _Node = Node;
+const nodePrototype = _Node.prototype;
 
-const {
-    prototype: nodePrototype,
+export const {
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_PRECEDING,
@@ -24,11 +24,12 @@ const {
     DOCUMENT_FRAGMENT_NODE,
 } = _Node;
 
-const {
+export const {
     appendChild,
     cloneNode,
     compareDocumentPosition,
     contains,
+    getRootNode,
     insertBefore,
     removeChild,
     replaceChild,
@@ -96,34 +97,14 @@ const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
 export {
     _Node as Node,
     // Node.prototype
-    appendChild,
     childNodesGetter,
-    cloneNode,
-    compareDocumentPosition,
-    insertBefore,
     isConnected,
     parentElementGetter,
     parentNodeGetter,
-    removeChild,
-    replaceChild,
     textContextSetter,
     ownerDocumentGetter,
-    hasChildNodes,
-    contains,
     firstChildGetter,
     lastChildGetter,
     textContentGetter,
     nextSiblingGetter,
-    // Node
-    DOCUMENT_POSITION_CONTAINS,
-    DOCUMENT_POSITION_CONTAINED_BY,
-    DOCUMENT_POSITION_PRECEDING,
-    DOCUMENT_POSITION_FOLLOWING,
-    // Node Types
-    ELEMENT_NODE,
-    TEXT_NODE,
-    CDATA_SECTION_NODE,
-    PROCESSING_INSTRUCTION_NODE,
-    COMMENT_NODE,
-    DOCUMENT_FRAGMENT_NODE,
 };

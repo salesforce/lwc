@@ -10,7 +10,7 @@ import {
     eventTargetPrototype,
     removeEventListener as nativeRemoveEventListener,
 } from '../../env/event-target';
-import { Node } from '../../env/node';
+import { getRootNode, Node } from '../../env/node';
 import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import {
     addCustomElementEventListener,
@@ -31,7 +31,7 @@ function patchedAddEventListener(
         return addCustomElementEventListener.apply(this, arguments);
     }
 
-    if (this instanceof Node && isInstanceOfNativeShadowRoot(this.getRootNode())) {
+    if (this instanceof Node && isInstanceOfNativeShadowRoot(getRootNode.call(this))) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-expect-error type-mismatch
         return nativeAddEventListener.apply(this, arguments);

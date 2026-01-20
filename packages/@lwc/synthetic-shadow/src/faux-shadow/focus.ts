@@ -41,6 +41,7 @@ import {
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_PRECEDING,
     DOCUMENT_POSITION_FOLLOWING,
+    getRootNode,
 } from '../env/node';
 
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
@@ -112,7 +113,7 @@ interface QuerySegments {
 }
 
 export function hostElementFocus(this: HTMLElement) {
-    const _rootNode = this.getRootNode();
+    const _rootNode = getRootNode.call(this);
     if (_rootNode === this) {
         // We invoke the focus() method even if the host is disconnected in order to eliminate
         // observable differences for component authors between synthetic and native.

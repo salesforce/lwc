@@ -6,11 +6,12 @@ it('should attach ShadowRoot to the global object if not present', () => {
     expect(String(window.ShadowRoot)).toMatch(/ShadowRoot|SyntheticShadowRoot/);
 });
 
-// See W-17585549
+// See W-17585549 & W-17585571
 it('should not use component implementation', () => {
     const elm = createElement('x-test', { is: XTest });
     document.body.appendChild(elm);
     expect(() => elm.compareHostElement()).not.toThrow();
+    expect(() => elm.getHostElementRootNode()).not.toThrow();
 });
 
 describe('ShadowRoot.activeElement', () => {
