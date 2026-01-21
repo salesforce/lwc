@@ -12,6 +12,8 @@ To run individual test files, provide them as CLI arguments. If using relative p
 
 Environment variables are used as controls to run tests in different modes (e.g native vs synthetic shadow, different API versions). The full list of controls is defined in [`helpers/options.js`](./helpers/options.js).
 
+To run tests only for a specific browser, set the `BROWSERS` environment variable. For example, `BROWSERS=chromium yarn test:wtr`.
+
 ## Architecture
 
 - `configs`: WTR configuration files. The main entrypoints are `integration.js` and `hydration.js`.
