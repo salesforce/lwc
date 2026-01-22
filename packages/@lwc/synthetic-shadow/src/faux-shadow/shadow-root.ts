@@ -19,6 +19,7 @@ import {
     setPrototypeOf,
     getPrototypeOf,
     isObject,
+    assert,
 } from '@lwc/shared';
 
 import { innerHTMLSetter } from '../env/element';
@@ -38,7 +39,6 @@ import {
     COMMENT_NODE,
     Node,
     contains,
-    getRootNode,
 } from '../env/node';
 
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
@@ -60,6 +60,12 @@ import {
     isNodeOwnedBy,
     isSlotElement,
 } from './traverse';
+
+const getRootNodePatched = Node.prototype.getRootNode;
+assert.isFalse(
+    String(getRootNodePatched).includes('[native code]'),
+    'Node prototype must be patched before patching shadow root.'
+);
 
 const InternalSlot = new WeakMap<any, ShadowRootRecord>();
 const { createDocumentFragment } = document;
@@ -548,8 +554,8 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: ShadowRoot, options?: GetRootNodeOptions): Node {
-            return !isUndefined(options) && isTrue(options.composed)
-                ? getRootNode.call(getHost(this), options)
+            return isTrue(options?.composed)
+                ? getRootNodePatched.call(getHost(this), { composed: true })
                 : this;
         },
     },

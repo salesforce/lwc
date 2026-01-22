@@ -10,12 +10,10 @@ import {
     getOwnPropertyDescriptor,
     hasOwnProperty,
     isNull,
-    isTrue,
-    isUndefined,
 } from '@lwc/shared';
 
-import { getRootNode, Node } from '../env/node';
 import {
+    Node,
     parentNodeGetter,
     textContextSetter,
     compareDocumentPosition,
@@ -23,6 +21,7 @@ import {
     parentNodeGetter as nativeParentNodeGetter,
     cloneNode as nativeCloneNode,
     cloneNode,
+    getRootNode,
     hasChildNodes,
     contains,
     parentElementGetter,
@@ -129,7 +128,7 @@ function parentElementGetterPatched(this: Node): Element | null {
 function compareDocumentPositionPatched(this: Node, otherNode: Node) {
     if (this === otherNode) {
         return 0;
-    } else if (getRootNode.call(this) === otherNode) {
+    } else if (getRootNodePatched.call(this) === otherNode) {
         // "this" is in a shadow tree where the shadow root is the "otherNode".
         return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
     } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
@@ -185,27 +184,6 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     return childNodesGetter.call(this);
 }
 
-const nativeGetRootNode = Node.prototype.getRootNode;
-
-/**
- * Get the root by climbing up the dom tree, beyond the shadow root
- * If Node.prototype.getRootNode is supported, use it
- * else, assume we are working in non-native shadow mode and climb using parentNode
- */
-const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node = !isUndefined(
-    nativeGetRootNode
-)
-    ? nativeGetRootNode
-    : function (this: Node): Node {
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          let node = this;
-          let nodeParent: Node | null;
-          while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
-              node = nodeParent!;
-          }
-          return node;
-      };
-
 /**
  * Get the shadow root
  * getNodeOwner() returns the host element that owns the given node
@@ -220,7 +198,7 @@ function getNearestRoot(node: Node): Node {
 
     if (isNull(ownerNode)) {
         // we hit a wall, either we are in native shadow mode or the node is not in lwc boundary.
-        return getDocumentOrRootNode.call(node);
+        return getRootNode.call(node);
     }
 
     return getShadowRoot(ownerNode) as Node;
@@ -246,8 +224,7 @@ function getNearestRoot(node: Node): Node {
  * @param options
  */
 function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);
+    return options?.composed ? getRootNode.call(this, options) : getNearestRoot(this);
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that

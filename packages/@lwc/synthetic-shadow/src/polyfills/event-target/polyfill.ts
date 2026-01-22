@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArraySlice, defineProperties } from '@lwc/shared';
+import { ArraySlice, assert, defineProperties } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
     removeEventListener as nativeRemoveEventListener,
 } from '../../env/event-target';
-import { getRootNode, Node } from '../../env/node';
+import { Node } from '../../env/node';
 import { isInstanceOfNativeShadowRoot } from '../../env/shadow-root';
 import {
     addCustomElementEventListener,
@@ -18,6 +18,12 @@ import {
 } from '../../faux-shadow/events';
 import { isSyntheticShadowHost } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
+
+const getRootNodePatched = Node.prototype.getRootNode;
+assert.isFalse(
+    String(getRootNodePatched).includes('[native code]'),
+    'Node prototype must be patched before event target.'
+);
 
 function patchedAddEventListener(
     this: EventTarget,
@@ -31,7 +37,7 @@ function patchedAddEventListener(
         return addCustomElementEventListener.apply(this, arguments);
     }
 
-    if (this instanceof Node && isInstanceOfNativeShadowRoot(getRootNode.call(this))) {
+    if (this instanceof Node && isInstanceOfNativeShadowRoot(getRootNodePatched.call(this))) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-expect-error type-mismatch
         return nativeAddEventListener.apply(this, arguments);

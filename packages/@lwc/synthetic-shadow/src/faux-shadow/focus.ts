@@ -37,16 +37,22 @@ import {
     hasAttribute,
 } from '../env/element';
 import {
+    Node,
     compareDocumentPosition,
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_PRECEDING,
     DOCUMENT_POSITION_FOLLOWING,
-    getRootNode,
 } from '../env/node';
 
 import { arrayFromCollection, getOwnerDocument, getOwnerWindow } from '../shared/utils';
 
 import { isDelegatingFocus, isSyntheticShadowHost } from './shadow-root';
+
+const getRootNodePatched = Node.prototype.getRootNode;
+assert.isFalse(
+    String(getRootNodePatched).includes('[native code]'),
+    'Node prototype must be patched before patching focus.'
+);
 
 const FocusableSelector = `
     [contenteditable],
@@ -113,7 +119,7 @@ interface QuerySegments {
 }
 
 export function hostElementFocus(this: HTMLElement) {
-    const _rootNode = getRootNode.call(this);
+    const _rootNode = getRootNodePatched.call(this);
     if (_rootNode === this) {
         // We invoke the focus() method even if the host is disconnected in order to eliminate
         // observable differences for component authors between synthetic and native.
