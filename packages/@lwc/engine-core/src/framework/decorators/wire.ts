@@ -9,22 +9,10 @@ import { componentValueObserved } from '../mutation-tracker';
 import { getAssociatedVM } from '../vm';
 import { updateComponentValue } from '../update-component-value';
 import type { LightningElement } from '../base-lightning-element';
-import type {
-    ConfigValue,
-    ContextValue,
-    ReplaceReactiveValues,
-    WireAdapterConstructor,
-} from '../wiring';
+import type { ConfigValue, ConfigWithReactiveProps, WireAdapterConstructor } from '../wiring';
 
 /**
  * The decorator returned by `@wire()`; not the `wire` function.
- *
- * For TypeScript users:
- * - If you are seeing an unclear error message, ensure that both the type of the decorated prop and
- * the config used match the types expected by the wire adapter.
- * - String literal types in the config are resolved to the corresponding prop on the component.
- * For example, a component with `id = 555` and `@wire(getBook, {id: "$id"} as const) book` will
- * have `"$id"` resolve to type `number`.
  */
 interface WireDecorator<Value, Class> {
     (
@@ -49,6 +37,10 @@ interface WireDecorator<Value, Class> {
 
 /**
  * Decorator factory to wire a property or method to a wire adapter data source.
+ *
+ * TypeScript users: Due to limitations of the type system, some edge cases are
+ * not fully type checked. See the type definition for {@linkcode ConfigWithReactiveProps}
+ * for details.
  * @param adapter the adapter used to provision data
  * @param config configuration object for the adapter
  * @returns A decorator function
@@ -59,28 +51,20 @@ interface WireDecorator<Value, Class> {
  * }
  */
 export default function wire<
-    ReactiveConfig extends ConfigValue = ConfigValue,
-    Value = any,
-    Context extends ContextValue = ContextValue,
-    Class = LightningElement,
+    const Config extends ConfigValue = ConfigValue,
+    const Value = any,
+    const Class = LightningElement,
 >(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     adapter:
-        | WireAdapterConstructor<ReplaceReactiveValues<ReactiveConfig, Class>, Value, Context>
+        | WireAdapterConstructor<Config, Value>
         | {
-              adapter: WireAdapterConstructor<
-                  ReplaceReactiveValues<ReactiveConfig, Class>,
-                  Value,
-                  Context
-              >;
+              adapter: WireAdapterConstructor<Config, Value>;
           },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config?: ReactiveConfig
+    config?: ConfigWithReactiveProps<Config, Class>
 ): WireDecorator<Value, Class> {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.fail('@wire(adapter, config?) may only be used as a decorator.');
-    }
-    throw new Error();
+    assert.fail('@wire(adapter, config?) may only be used as a decorator.');
 }
 
 export function internalWireFieldDecorator(key: string): PropertyDescriptor {

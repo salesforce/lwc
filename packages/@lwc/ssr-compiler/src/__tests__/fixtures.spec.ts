@@ -80,8 +80,8 @@ async function compileFixture({
                 // TODO [#3331]: remove usage of lwc:dynamic in 246
                 experimentalDynamicDirective: true,
                 modules: [{ dir: modulesDir }],
-                experimentalDynamicComponent: {
-                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                dynamicImports: {
+                    loader: path.join(import.meta.dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
                 experimentalComplexExpressions,
@@ -106,7 +106,7 @@ async function compileFixture({
 describe.concurrent('fixtures', () => {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(__dirname, 'fixtures'),
+            root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/config.json',
             ssrVersion: 2,
             // TODO [#4815]: enable all SSR v2 tests

@@ -116,7 +116,6 @@ describe('event propagation', () => {
                     [nodes['x-container'], nodes['x-container'], composedPath],
                 ];
             } else {
-                // TODO [#1138]: {bubbles: false, composed: true} events should invoke event listeners on ancestor hosts
                 expectedLogs = [[nodes.button, nodes.button, composedPath]];
             }
 

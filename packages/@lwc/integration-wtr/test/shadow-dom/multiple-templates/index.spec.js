@@ -63,7 +63,6 @@ describe('multiple stylesheets rendered in same component', () => {
         element.next();
         await new Promise((resolve_1) => requestAnimationFrame(() => resolve_1()));
         if (process.env.NATIVE_SHADOW) {
-            // TODO [#2466]: In native shadow, stylesheets are not removed from the DOM
             expect(getComputedStyle(element.shadowRoot.querySelector('.red')).color).toEqual(
                 'rgb(255, 0, 0)'
             );

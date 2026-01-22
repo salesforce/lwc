@@ -90,38 +90,98 @@ export type RegisterContextProviderFn = (
     onContextSubscription: WireContextSubscriptionCallback
 ) => void;
 
-/** Resolves a property chain to the corresponding value on the target type. */
-type ResolveReactiveValue<
-    /** The object to search for properties; initially the component. */
-    Target,
-    /** A string representing a chain of of property keys, e.g. "data.user.name". */
-    Keys extends string,
-> = Keys extends `${infer FirstKey}.${infer Rest}`
-    ? // If the string is "a.b.c", check if "a" is a prop on the target object
-      FirstKey extends keyof Target
-        ? // If "a" exists on the target, check `target["a"]` for "b.c"
-          ResolveReactiveValue<Target[FirstKey], Rest>
-        : undefined
-    : // The string has no ".", use the full string as the key (e.g. we've reached "c" in "a.b.c")
-      Keys extends keyof Target
-      ? Target[Keys]
-      : undefined;
+/**
+ * Gets the property keys that can be used in a reactive string. Excludes symbols and string props
+ * with `.` (`$foo.bar` maps to `Class["foo"]["bar"]`; `Class["foo.bar"]` can never be used).
+ */
+type ReactivePropsOnly<K extends PropertyKey> = Exclude<K, symbol | `${string}.${string}`>;
+
+/** The string keys of an object that match the target type. */
+type PropsOfType<Class, Target> = ReactivePropsOnly<
+    {
+        [K in keyof Class]-?: NonNullable<Class[K]> extends Target ? K : never;
+    }[keyof Class]
+>;
+
+/** Gets the property keys that can be used in a reactive property chain. */
+type ChainableObjectProps<Class> = ReactivePropsOnly<
+    {
+        [K in keyof Class]-?: NonNullable<Class[K]> extends object
+            ? keyof NonNullable<Class[K]> extends never
+                ? never // object/function has no props
+                : K // object has props
+            : never; // not an object
+    }[keyof Class]
+>;
 
 /**
- * Detects if the `Value` type is a property chain starting with "$". If so, it resolves the
- * properties to the corresponding value on the target type.
- */
-type ResolveValueIfReactive<Value, Target> = Value extends string
-    ? string extends Value // `Value` is type `string`
-        ? // Workaround for not being able to enforce `as const` assertions -- we don't know if this
-          // is a true string value (e.g. `@wire(adapter, {val: 'str'})`) or if it's a reactive prop
-          // (e.g. `@wire(adapter, {val: '$number'})`), so we have to go broad to avoid type errors.
-          any
-        : Value extends `$${infer Keys}` // String literal starting with "$", e.g. `$prop`
-          ? ResolveReactiveValue<Target, Keys>
-          : Value // String literal *not* starting with "$", e.g. `"hello world"`
-    : Value; // non-string type
+ * Extends a given wire adapter config with reactive property strings
+ * (for example, `$prop`) for values on the given class that match the config.
+ *
+ * Due to limitations of the type system, and to limit the size of the
+ * resulting type union, a number of restrictions apply to this type that can
+ * result in false positives or false negatives.
+ *
+ * - Config values with a `string` type inherently permit _any_ string,
+ *   even reactive strings that resolve to the wrong type.
+ * - Only top-level props are validated. Type checking is _not_ done on nested
+ *   property chains.
+ * - Property chains are allowed only if the top-level property is an object.
+ * - Property chains from `LightningElement` props are excluded.
+ *
+ * For property chains, a getter can be used to avoid incorrect error reporting,
+ * as top-level properties are always validated. Alternatively, a type assertion
+ * can be used to suppress the error.
+ *
+ * @example
+ * // Wire adapter with a required number prop and optional string prop
+ * declare const Adapter: WireAdapterConstructor<{ num: number; str?: string }>;
+ * declare class Component extends LightningElement {
+ *   numberProp = 6_7;
+ *   stringProp = '🙌';
+ *   objectProp?: { nestedStringProp: string };
 
-export type ReplaceReactiveValues<Config extends ConfigValue, Component> = {
-    [K in keyof Config]: ResolveValueIfReactive<Config[K], Component>;
+ *   \@wire(Adapter, { num: 123 }) validNumberValue?: unknown;
+ *   \@wire(Adapter, { num: "$numberProp" }) validNumberProp?: unknown;
+ *   \@wire(Adapter, { num: "bad value" }) invalidNumberValue?: unknown;
+ *   \@wire(Adapter, { num: "$stringProp" }) invalidNumberProp?: unknown;
+ *
+ *   \@wire(Adapter, { str: "valid string", num: 0 }) validStringValue?: unknown;
+ *   \@wire(Adapter, { str: "$stringProp", num: 0 }) validStringProp?: unknown;
+
+ *   // `"$numberProp"` is a string, and therefore satisfies the type,
+ *   // despite resolving to a number at runtime
+ *   \@wire(Adapter, { str: "$numberProp", num: 0 }) falseNegativeString?: unknown;
+ *
+ *   // Nested props aren't checked to avoid crashing on recursive types
+ *   \@wire(Adapter, { num: "$objectProp.nestedStringProp" }) falseNegativeNested?: unknown;
+ *
+ *   // Any value can have properties accessed at runtime, but property chains using
+ *   // non-objects are uncommon, and are excluded for simplicity
+ *   \@wire(Adapter, { num: "$stringProp.length" }) falsePositiveString?: unknown;
+ *
+ *   // Using props inherited from `LightningElement` for property chains is uncommon,
+ *   // and are excluded for simplicity
+ *   \@wire(Adapter, { num: "$hostElement.childElementCount" }) falsePositiveLightningElement?: unknown;
+ *
+ *   get propertyChainWorkaround(): string {
+ *     return this.objectProp.nestedStringProp;
+ *   }
+ *
+ *   // Top-level prop is type checked and correctly reports an error
+ *   \@wire(Adapter, { num: "$propertyChainWorkaround" }) truePositiveGetter?: unknown;
+ *
+ *   // Type assertion is used and correctly reports an error
+ *   \@wire(Adapter, {
+ *     num: "$objectProp.nestedStringProp" as unknown as Component["objectProp"]["nestedStringProp"]
+ *   }) truePositiveTypeAssertion?: unknown;
+ * }
+ */
+export type ConfigWithReactiveProps<Config extends ConfigValue, Class> = {
+    [K in keyof Config]:
+        | Config[K] // The actual value, e.g. `number`
+        // Props on the class that match the config value, e.g. `$numberProp`
+        | `$${PropsOfType<Class, Config[K]>}`
+        // A nested prop on the class that matches the config value, e.g. `$obj.num` or `$1.2.3`
+        | `$${ChainableObjectProps<Class>}.${string}`;
 };

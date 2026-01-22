@@ -1,1 +1,1 @@
-[7:13]: Unexpected token: '{'
+[7:12-7:13]: Unexpected token: '{'
