@@ -38,7 +38,6 @@ import {
     appendChild,
     COMMENT_NODE,
     Node,
-    contains,
 } from '../env/node';
 
 import { getOuterHTML } from '../3rdparty/polymer/outer-html';
@@ -410,7 +409,7 @@ const NodePatchDescriptors = {
             if (this === otherNode) {
                 // "this" and "otherNode" are the same shadow root.
                 return 0;
-            } else if (contains.call(this, otherNode)) {
+            } else if (containsPatched.call(this, otherNode)) {
                 // "otherNode" belongs to the shadow tree where "this" is the shadow root.
                 return 20; // Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
             } else if (
@@ -560,6 +559,8 @@ const NodePatchDescriptors = {
         },
     },
 };
+// Cached for use in `compareDocumentPosition`
+const containsPatched = NodePatchDescriptors.contains.value;
 
 const ElementPatchDescriptors = {
     innerHTML: {
