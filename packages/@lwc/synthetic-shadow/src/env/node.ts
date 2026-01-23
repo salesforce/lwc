@@ -11,7 +11,7 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 const _Node = Node;
 const nodePrototype = _Node.prototype;
 
-const {
+export const {
     DOCUMENT_POSITION_CONTAINED_BY,
     DOCUMENT_POSITION_CONTAINS,
     DOCUMENT_POSITION_PRECEDING,
@@ -24,17 +24,17 @@ const {
     DOCUMENT_FRAGMENT_NODE,
 } = _Node;
 
-const {
+export const {
     appendChild,
     cloneNode,
     compareDocumentPosition,
+    contains,
+    getRootNode,
     insertBefore,
     removeChild,
     replaceChild,
     hasChildNodes,
 } = nodePrototype;
-
-const { contains } = HTMLElement.prototype;
 
 const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
     nodePrototype,
@@ -97,34 +97,14 @@ const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
 export {
     _Node as Node,
     // Node.prototype
-    appendChild,
     childNodesGetter,
-    cloneNode,
-    compareDocumentPosition,
-    insertBefore,
     isConnected,
     parentElementGetter,
     parentNodeGetter,
-    removeChild,
-    replaceChild,
     textContextSetter,
     ownerDocumentGetter,
-    hasChildNodes,
-    contains,
     firstChildGetter,
     lastChildGetter,
     textContentGetter,
     nextSiblingGetter,
-    // Node
-    DOCUMENT_POSITION_CONTAINS,
-    DOCUMENT_POSITION_CONTAINED_BY,
-    DOCUMENT_POSITION_PRECEDING,
-    DOCUMENT_POSITION_FOLLOWING,
-    // Node Types
-    ELEMENT_NODE,
-    TEXT_NODE,
-    CDATA_SECTION_NODE,
-    PROCESSING_INSTRUCTION_NODE,
-    COMMENT_NODE,
-    DOCUMENT_FRAGMENT_NODE,
 };
