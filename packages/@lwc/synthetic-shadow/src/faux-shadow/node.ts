@@ -21,7 +21,7 @@ import {
     parentNodeGetter as nativeParentNodeGetter,
     cloneNode as nativeCloneNode,
     cloneNode,
-    getRootNode,
+    getRootNode as nativeGetRootNode,
     hasChildNodes,
     contains,
     parentElementGetter,
@@ -47,6 +47,20 @@ import {
     getFilteredChildNodes,
     isSyntheticSlotElement,
 } from './traverse';
+
+const getRootNode =
+    nativeGetRootNode ??
+    // Polyfill for older browsers where it's not defined
+    function (this: Node): Node {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        let node = this;
+        let nodeParent = parentNodeGetter.call(node);
+        while (!isNull(nodeParent)) {
+            node = nodeParent;
+            nodeParent = parentElementGetter.call(node);
+        }
+        return node;
+    };
 
 /**
  * This method checks whether or not the content of the node is computed
