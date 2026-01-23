@@ -186,6 +186,19 @@ export function attachShadow(elm: Element, options: ShadowRootInit): ShadowRoot 
     return sr;
 }
 
+// Defined separately from others because it's used in `compareDocumentPosition`
+function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
+    if (this === otherNode) {
+        return true;
+    }
+    const host = getHost(this);
+    // must be child of the host and owned by it.
+    return (
+        (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+        isNodeOwnedBy(host, otherNode)
+    );
+}
+
 const SyntheticShadowRootDescriptors = {
     constructor: {
         writable: true,
@@ -427,17 +440,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: ShadowRoot, otherNode: Node) {
-            if (this === otherNode) {
-                return true;
-            }
-            const host = getHost(this);
-            // must be child of the host and owned by it.
-            return (
-                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !==
-                    0 && isNodeOwnedBy(host, otherNode)
-            );
-        },
+        value: containsPatched,
     },
     firstChild: {
         enumerable: true,
@@ -559,8 +562,6 @@ const NodePatchDescriptors = {
         },
     },
 };
-// Cached for use in `compareDocumentPosition`
-const containsPatched = NodePatchDescriptors.contains.value;
 
 const ElementPatchDescriptors = {
     innerHTML: {

@@ -125,22 +125,6 @@ function parentElementGetterPatched(this: Node): Element | null {
     return parentNode instanceof Element ? parentNode : null;
 }
 
-function compareDocumentPositionPatched(this: Node, otherNode: Node) {
-    if (this === otherNode) {
-        return 0;
-    } else if (getRootNodePatched.call(this) === otherNode) {
-        // "this" is in a shadow tree where the shadow root is the "otherNode".
-        return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
-    } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
-        // "this" and "otherNode" belongs to 2 different shadow tree.
-        return 35; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node.DOCUMENT_POSITION_PRECEDING
-    }
-
-    // Since "this" and "otherNode" are part of the same shadow tree we can safely rely to the native
-    // Node.compareDocumentPosition implementation.
-    return compareDocumentPosition.call(this, otherNode);
-}
-
 function containsPatched(this: Node, otherNode: Node) {
     if (otherNode == null || getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
         // it is from another shadow
@@ -225,6 +209,22 @@ function getNearestRoot(node: Node): Node {
  */
 function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
     return options?.composed ? getRootNode.call(this, options) : getNearestRoot(this);
+}
+
+function compareDocumentPositionPatched(this: Node, otherNode: Node) {
+    if (this === otherNode) {
+        return 0;
+    } else if (getRootNodePatched.call(this) === otherNode) {
+        // "this" is in a shadow tree where the shadow root is the "otherNode".
+        return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
+    } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+        // "this" and "otherNode" belongs to 2 different shadow tree.
+        return 35; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node.DOCUMENT_POSITION_PRECEDING
+    }
+
+    // Since "this" and "otherNode" are part of the same shadow tree we can safely rely to the native
+    // Node.compareDocumentPosition implementation.
+    return compareDocumentPosition.call(this, otherNode);
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
