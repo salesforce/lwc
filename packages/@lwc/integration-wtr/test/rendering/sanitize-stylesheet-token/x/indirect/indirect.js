@@ -5,7 +5,7 @@ export default class Indirect extends LightningElement {
     @api propToUse;
 
     render() {
-        const token = this.tagName;
+        const token = 'stylesheet.token';
 
         const { propToUse } = this;
         if (propToUse === 'stylesheetTokens') {
