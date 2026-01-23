@@ -1,6 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 import Scoping from 'x/scoping';
+import Indirect from 'x/indirect';
 import { spyOn } from '@vitest/spy';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
@@ -37,6 +38,11 @@ const components = [
         tagName: 'x-scoping',
         Ctor: Scoping,
         name: 'scoped styles',
+    },
+    {
+        tagName: 'x-indirect',
+        Ctor: Indirect,
+        name: 'indirect styles',
     },
 ];
 
