@@ -1,0 +1,46 @@
+global:
+  email-reply-to: raptorteam@salesforce.com
+  notifications:
+    on_production_branches_only: true
+  preprocessor-tag: jenkins-sfci-sfci-managed-preprocessor-PR-6322-latest-itest
+
+stages:
+  build:
+    - npm-setup:
+        yarn-modern: true
+    - step:
+        name: yarn-build
+        image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_nodejs20/sfdc_rhel9_nodejs20_build:latest
+        commands:
+          - yarn install --frozen-lockfile
+          - yarn build
+          - yarn test
+  integration-test:
+    - downstream-dependency:
+        downstream-repos:
+          - repo-url: https://github.com/salesforce-experience-platform-emu/lwc-platform
+            branches:
+              - master
+
+        packages-to-test:
+          npm:
+            - "@lwc/aria-reflection"
+            - "@lwc/babel-plugin-component"
+            - "@lwc/compiler"
+            - "@lwc/engine-core"
+            - "@lwc/engine-dom"
+            - "@lwc/engine-server"
+            - "@lwc/errors"
+            - "@lwc/features"
+            - "@lwc/module-resolver"
+            - "@lwc/rollup-plugin"
+            - "@lwc/shared"
+            - "@lwc/signals"
+            - "@lwc/ssr-client-utils"
+            - "@lwc/ssr-compiler"
+            - "@lwc/ssr-runtime"
+            - "@lwc/style-compiler"
+            - "@lwc/synthetic-shadow"
+            - "@lwc/template-compiler"
+            - "@lwc/types"
+            - "@lwc/wire-service"
