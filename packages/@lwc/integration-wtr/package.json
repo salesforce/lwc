@@ -18,14 +18,14 @@
         "@types/chai": "^5.2.3",
         "@types/jasmine": "^5.1.15",
         "@vitest/expect": "^4.0.16",
-        "@vitest/spy": "^4.0.17",
+        "@vitest/spy": "^4.0.18",
         "@web/dev-server-import-maps": "^0.2.1",
         "@web/dev-server-rollup": "^0.6.4",
         "@web/test-runner": "^0.20.2",
         "@web/test-runner-playwright": "^0.11.1",
         "@web/test-runner-saucelabs": "^0.13.0",
         "chai": "^6.2.2",
-        "playwright": "^1.57.0"
+        "playwright": "^1.58.0"
     },
     "volta": {
         "extends": "../../../package.json"
