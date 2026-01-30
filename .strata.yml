@@ -21,7 +21,6 @@ stages:
           - repo-url: https://github.com/salesforce-experience-platform-emu/lwc-platform
             branches:
               - master
-
         packages-to-test:
           npm:
             - "@lwc/aria-reflection"
