@@ -85,10 +85,9 @@ props.forEach((prop) => {
                         Ctor === Component &&
                         prop === 'legacyStylesheetToken'
                     ) {
-                        // If we're rendering in native shadow and the static content optimization is disabled,
-                        // then there's no problem with invalid stylesheet tokens because they are only rendered
-                        // as class attribute values using either `classList` or `setAttribute` (and this only applies
-                        // when `*.scoped.css` is being used).
+                        // When using legacy stylesheet tokens with unscoped CSS in native shadow with static content
+                        // optimization disabled, there's no problem with invalid stylesheet tokens because they are
+                        // only rendered as class attribute values using either `classList` or `setAttribute`
                         expect(elm.shadowRoot.children.length).toBe(1);
                     } else {
                         expect(elm.shadowRoot.children.length).toBe(0); // does not render
