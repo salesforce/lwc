@@ -82,7 +82,8 @@ props.forEach((prop) => {
                     if (
                         process.env.NATIVE_SHADOW &&
                         process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION &&
-                        Ctor !== Scoping
+                        Ctor === Component &&
+                        prop === 'legacyStylesheetToken'
                     ) {
                         // If we're rendering in native shadow and the static content optimization is disabled,
                         // then there's no problem with invalid stylesheet tokens because they are only rendered
