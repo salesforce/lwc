@@ -39,6 +39,5 @@ stages:
             - "@lwc/style-compiler"
             - "@lwc/synthetic-shadow"
             - "@lwc/template-compiler"
-
             - "@lwc/types"
             - "@lwc/wire-service"
