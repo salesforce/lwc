@@ -1,7 +1,5 @@
 global:
   email-reply-to: raptorteam@salesforce.com
-  notifications:
-    on_production_branches_only: true
   preprocessor-tag: jenkins-sfci-sfci-managed-preprocessor-PR-6322-latest-itest
 
 stages:
