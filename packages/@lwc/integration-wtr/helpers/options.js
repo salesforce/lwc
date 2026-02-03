@@ -75,6 +75,12 @@ export const COVERAGE_DIR_FOR_OPTIONS =
         .map(([key, val]) => `${key}=${val}`)
         .join('/') || 'no-options';
 
+/**
+ * Comma-delimited list of browsers to use. Can be any of `chromium`, `firefox`, or `webkit`.
+ * Does not apply when using SauceLabs.
+ */
+export const BROWSERS = process.env.BROWSERS?.replace(/\W+/g, ',');
+
 // --- CI config --- //
 
 /** Whether or not to report coverage. Currently unused. */

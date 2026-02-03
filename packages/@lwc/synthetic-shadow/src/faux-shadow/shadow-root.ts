@@ -19,6 +19,7 @@ import {
     setPrototypeOf,
     getPrototypeOf,
     isObject,
+    assert,
 } from '@lwc/shared';
 
 import { innerHTMLSetter } from '../env/element';
@@ -58,6 +59,12 @@ import {
     isNodeOwnedBy,
     isSlotElement,
 } from './traverse';
+
+const getRootNodePatched = Node.prototype.getRootNode;
+assert.isFalse(
+    String(getRootNodePatched).includes('[native code]'),
+    'Node prototype must be patched before patching shadow root.'
+);
 
 const InternalSlot = new WeakMap<any, ShadowRootRecord>();
 const { createDocumentFragment } = document;
@@ -177,6 +184,19 @@ export function attachShadow(elm: Element, options: ShadowRootInit): ShadowRoot 
     // correcting the proto chain
     setPrototypeOf(sr, SyntheticShadowRoot.prototype);
     return sr;
+}
+
+// Defined separately from others because it's used in `compareDocumentPosition`
+function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
+    if (this === otherNode) {
+        return true;
+    }
+    const host = getHost(this);
+    // must be child of the host and owned by it.
+    return (
+        (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
+        isNodeOwnedBy(host, otherNode)
+    );
 }
 
 const SyntheticShadowRootDescriptors = {
@@ -402,7 +422,7 @@ const NodePatchDescriptors = {
             if (this === otherNode) {
                 // "this" and "otherNode" are the same shadow root.
                 return 0;
-            } else if (this.contains(otherNode)) {
+            } else if (containsPatched.call(this, otherNode)) {
                 // "otherNode" belongs to the shadow tree where "this" is the shadow root.
                 return 20; // Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING
             } else if (
@@ -420,17 +440,7 @@ const NodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: ShadowRoot, otherNode: Node) {
-            if (this === otherNode) {
-                return true;
-            }
-            const host = getHost(this);
-            // must be child of the host and owned by it.
-            return (
-                (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !==
-                    0 && isNodeOwnedBy(host, otherNode)
-            );
-        },
+        value: containsPatched,
     },
     firstChild: {
         enumerable: true,
@@ -546,8 +556,8 @@ const NodePatchDescriptors = {
         enumerable: true,
         configurable: true,
         value(this: ShadowRoot, options?: GetRootNodeOptions): Node {
-            return !isUndefined(options) && isTrue(options.composed)
-                ? getHost(this).getRootNode(options)
+            return isTrue(options?.composed)
+                ? getRootNodePatched.call(getHost(this), { composed: true })
                 : this;
         },
     },
