@@ -52,7 +52,7 @@
         }
     },
     "dependencies": {
-        "@babel/types": "7.28.6",
+        "@babel/types": "7.29.0",
         "@lwc/errors": "9.0.0",
         "@lwc/shared": "9.0.0",
         "@lwc/template-compiler": "9.0.0",
