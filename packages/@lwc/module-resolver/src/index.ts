@@ -6,10 +6,10 @@
  */
 
 export { resolveModule } from './resolve-module';
-export {
+export { RegistryType } from './types';
+export type {
     ModuleResolverConfig,
     RegistryEntry,
-    RegistryType,
     ModuleRecord,
     AliasModuleRecord,
     DirModuleRecord,

@@ -30,12 +30,9 @@ export default function track(
     if (arguments.length === 1) {
         return getReactiveProxy(target);
     }
-    if (process.env.NODE_ENV !== 'production') {
-        assert.fail(
-            `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`
-        );
-    }
-    throw new Error();
+    assert.fail(
+        `@track decorator can only be used with one argument to return a trackable object, or as a decorator function.`
+    );
 }
 
 export function internalTrackDecorator(key: string): PropertyDescriptor {

@@ -33,7 +33,7 @@ export class CompilerError extends Error implements CompilerDiagnostic {
         message: string,
         filename?: string,
         location?: Location,
-        level = DiagnosticLevel.Error,
+        level: DiagnosticLevel = DiagnosticLevel.Error,
         url?: string
     ) {
         super(message);

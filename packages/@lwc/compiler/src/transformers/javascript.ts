@@ -41,8 +41,7 @@ export default function scriptTransform(
     const {
         isExplicitImport,
         enableSyntheticElementInternals,
-        // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
-        experimentalDynamicComponent: dynamicImports,
+        dynamicImports,
         outputConfig: { sourcemap },
         enableLightningWebSecurityTransforms,
         namespace,

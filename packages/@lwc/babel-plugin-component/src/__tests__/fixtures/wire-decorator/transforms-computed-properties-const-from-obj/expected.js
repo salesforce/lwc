@@ -1,5 +1,6 @@
-import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators } from "lwc";
 import _tmpl from "./test.html";
+import { LightningElement, registerComponent as _registerComponent } from "lwc";
 import { getFoo } from "data-service";
 import * as importee from 'some/importee';
 const obj = {

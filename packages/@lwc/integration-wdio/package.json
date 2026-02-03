@@ -2,6 +2,7 @@
     "name": "@lwc/integration-wdio",
     "private": true,
     "version": "8.28.2",
+    "type": "commonjs",
     "scripts": {
         "build": "node scripts/build.js",
         "build:dev": "MODE=dev yarn build",
@@ -29,7 +30,7 @@
         "dotenv": "^17.2.3",
         "lwc": "8.28.2",
         "minimist": "^1.2.8",
-        "webdriverio": "^9.21.0"
+        "webdriverio": "^9.23.2"
     },
     "volta": {
         "extends": "../../../package.json"

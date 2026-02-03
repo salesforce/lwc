@@ -21,8 +21,12 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
+    },
+    "engines": {
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"

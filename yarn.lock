@@ -1879,9 +1879,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -3138,10 +3140,10 @@
   dependencies:
     undici-types "~6.21.0"
 
-"@types/node@^22.19.1":
-  version "22.19.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.19.1.tgz#1188f1ddc9f46b4cc3aec76749050b4e1f459b7b"
-  integrity sha512-LCCV0HdSZZZb34qifBsyWlUmok6W7ouER+oQIGBScS8EsZsQbrtFTUrDX4hOl+CS6p7cnNC4td+qrSVGSCTUfQ==
+"@types/node@^22.19.5":
+  version "22.19.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-22.19.7.tgz#434094ee1731ae76c16083008590a5835a8c39c1"
+  integrity sha512-MciR4AKGHWl7xwxkBa6xUGxQJ4VBOmPTF7sL+iGzuahOFaO0jHCsuEfS80pan1ef4gWId1oWOweIhrDEYLuaOw==
   dependencies:
     undici-types "~6.21.0"
 
@@ -3405,7 +3407,7 @@
     "@typescript-eslint/scope-manager" "^8.51.0"
     "@typescript-eslint/utils" "^8.51.0"
 
-"@vitest/expect@4.0.17", "@vitest/expect@^4.0.16":
+"@vitest/expect@4.0.17", "@vitest/expect@^4.0.17":
   version "4.0.17"
   resolved "https://registry.yarnpkg.com/@vitest/expect/-/expect-4.0.17.tgz#67bb0d4a7d37054590a19dcf831f7936d14a8a02"
   integrity sha512-mEoqP3RqhKlbmUmntNDDCJeTDavDR+fVYkSOw8qRwJFaW/0/5zA9zFeTrHqNtcmwh6j26yMmwx2PqUDPzt5ZAQ==
@@ -8875,10 +8877,10 @@ merge2@^1.3.0, merge2@^1.4.1:
   resolved "https://registry.yarnpkg.com/merge2/-/merge2-1.4.1.tgz#4368892f885e907455a6fd7dc55c0c9d404990ae"
   integrity sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==
 
-meriyah@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/meriyah/-/meriyah-5.0.0.tgz#9f5fd811ee6e7952dcb48cf6962f27a885f108b8"
-  integrity sha512-tNlPDP4AzkH/7cROw7PKJ7mCLe/ZLpa2ja23uqB35vt63+8dgZi2NKLJMrkjxLcxArnLJVvd3Y/7pRl3OLR7yg==
+meriyah@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/meriyah/-/meriyah-7.0.0.tgz#a1b507c29ebb4157430fcc627215439044a28914"
+  integrity sha512-eM23BVAsVhOxLEKckm3DopvcEze2o1leYO11xIkYqeeJgaNbzfGS00y7BUp/KeQPcTzXx0cGJRD2V7BYEZnDcg==
 
 methods@~1.1.2:
   version "1.1.2"
@@ -11982,10 +11984,10 @@ typescript-eslint@8.53.1:
     "@typescript-eslint/typescript-estree" "8.53.1"
     "@typescript-eslint/utils" "8.53.1"
 
-typescript@5.8.2:
-  version "5.8.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.8.2.tgz#8170b3702f74b79db2e5a96207c15e65807999e4"
-  integrity sha512-aJn6wq13/afZp/jT9QZmwEjDqqvSGp1VT5GVg+f/t6/oVyrgXM6BY1h9BRh/O5p3PlUPAe+WuiEZOmb/49RqoQ==
+typescript@6.0.0-dev.20260112:
+  version "6.0.0-dev.20260112"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-6.0.0-dev.20260112.tgz#5a17c542972695cf975b1fbad753ca36a36cfc9f"
+  integrity sha512-2zxfhRUtvj6VgDvayl9Lc/bpH1Lx/TvnrI9rajmbT3ulhR2Mr6ACxnIfsaGI5JlTXa6Zk/BSFccXTRDT6H61Cw==
 
 typical@^4.0.0:
   version "4.0.0"
@@ -12289,7 +12291,7 @@ webdriver@^9.0.0:
     undici "^6.21.3"
     ws "^8.8.0"
 
-webdriverio@9.23.2, webdriverio@^9.0.0, webdriverio@^9.21.0:
+webdriverio@9.23.2, webdriverio@^9.0.0, webdriverio@^9.23.2:
   version "9.23.2"
   resolved "https://registry.yarnpkg.com/webdriverio/-/webdriverio-9.23.2.tgz#cebb24c86db79080d8b50fcd2187cf3338d12f39"
   integrity sha512-VjfTw1bRJdBrzjoCu7BGThxn1JK2V7mAGvxibaBrCNIayPPQjLhVDNJPOVEiR7txM6zmOUWxhkCDxHjhMYirfQ==

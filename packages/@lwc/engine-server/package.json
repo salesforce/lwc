@@ -5,6 +5,7 @@
     ],
     "name": "@lwc/engine-server",
     "version": "8.28.2",
+    "private": true,
     "description": "Renders LWC components in a server environment.",
     "keywords": [
         "lwc"
@@ -19,13 +20,17 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
+    },
+    "engines": {
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"
     },
-    "main": "dist/index.cjs.js",
+    "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
