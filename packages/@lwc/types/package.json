@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/types",
-    "version": "8.27.0",
+    "version": "9.0.0",
     "keywords": [
         "lwc",
         "types",
@@ -21,8 +21,12 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
+    },
+    "engines": {
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"
@@ -32,6 +36,6 @@
         "*.d.ts"
     ],
     "dependencies": {
-        "@lwc/engine-core": "8.27.0"
+        "@lwc/engine-core": "9.0.0"
     }
 }

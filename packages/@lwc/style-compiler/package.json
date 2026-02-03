@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/style-compiler",
-    "version": "8.27.0",
+    "version": "9.0.0",
     "description": "Transform style sheet to be consumed by the LWC engine",
     "keywords": [
         "lwc"
@@ -19,13 +19,17 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
+    },
+    "engines": {
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"
     },
-    "main": "dist/index.cjs.js",
+    "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -46,7 +50,7 @@
         }
     },
     "dependencies": {
-        "@lwc/shared": "8.27.0",
+        "@lwc/shared": "9.0.0",
         "postcss": "~8.5.6",
         "postcss-selector-parser": "~7.1.1",
         "postcss-value-parser": "~4.2.0"

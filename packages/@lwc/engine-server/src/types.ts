@@ -19,28 +19,28 @@ export const HostValueKey = Symbol('value');
 export const HostHostKey = Symbol('host');
 export const HostContextProvidersKey = Symbol('context-providers');
 
-export enum HostNodeType {
-    Text = 'text',
-    Comment = 'comment',
-    Raw = 'raw',
-    Element = 'element',
-    ShadowRoot = 'shadow-root',
-}
+export const HostNodeType = {
+    Text: 'text',
+    Comment: 'comment',
+    Raw: 'raw',
+    Element: 'element',
+    ShadowRoot: 'shadow-root',
+} as const;
 
 export interface HostText {
-    [HostTypeKey]: HostNodeType.Text;
+    [HostTypeKey]: typeof HostNodeType.Text;
     [HostParentKey]: HostElement | null;
     [HostValueKey]: string;
 }
 
 export interface HostComment {
-    [HostTypeKey]: HostNodeType.Comment;
+    [HostTypeKey]: typeof HostNodeType.Comment;
     [HostParentKey]: HostElement | null;
     [HostValueKey]: string;
 }
 
 export interface HostRaw {
-    [HostTypeKey]: HostNodeType.Raw;
+    [HostTypeKey]: typeof HostNodeType.Raw;
     [HostParentKey]: HostElement | null;
     [HostValueKey]: string;
 }
@@ -57,7 +57,7 @@ export interface HostAttribute {
 export type HostParentNode = HostElement | HostShadowRoot;
 
 export interface HostShadowRoot {
-    [HostTypeKey]: HostNodeType.ShadowRoot;
+    [HostTypeKey]: typeof HostNodeType.ShadowRoot;
     [HostChildrenKey]: HostChildNode[];
     mode: 'open' | 'closed';
     delegatesFocus: boolean;
@@ -65,7 +65,7 @@ export interface HostShadowRoot {
 }
 
 export interface HostElement {
-    [HostTypeKey]: HostNodeType.Element;
+    [HostTypeKey]: typeof HostNodeType.Element;
     // tagName cannot be used as a public component property as it is
     // explicitly given only a getter, so it doesn't need to be a Symbol.
     tagName: string;

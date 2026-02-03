@@ -16,7 +16,7 @@ export const GENERIC_COMPILER_ERROR = {
     level: DiagnosticLevel.Error,
     strictLevel: DiagnosticLevel.Fatal,
     url: '',
-};
+} as const satisfies LWCErrorInfo;
 
 export const CompilerValidationErrors = {
     INVALID_COMPAT_PROPERTY: {

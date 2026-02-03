@@ -9,26 +9,7 @@ branches:
             auto-start: true
             auto-start-from-forks: false
             merge-method: disabled # do not auto-merge; we'll do it ourselves
-            required-downstream-deps:
-                - BuilderFramework/builder-framework-salesforce
-                - MobilePlatform/lsdk-modules
-                - MobilePlatform/lwr-lightning-platform
-                - MobilePlatform/ui-fsm-components
-                - automation-platform/ui-externalservices-builder-components
-                - communities/microsite-template-marketing
-                - communities/shared-experience-components
-                - communities/ui-commerce-components
-                - communities/webruntime
-                - lds/lds-plugins
-                - salesforce-experience-platform-emu/komaci
-                - salesforce-experience-platform-emu/locker-pentest-app
-                - salesforce-experience-platform-emu/lwr
-                - salesforce-experience-platform-emu/lwr-everywhere
-                - salesforce-experience-platform-emu/lwr-recipes
-                - salesforce/lwc-test
-                # Using old major versions; tests in PRs will always fail
-                # - salesforce/o11y-sample-app
-                # - Skilling-and-Enablement/ui-external-enablement
+            required-downstream-deps: [] # none
     release:
         pull-request:
             <<: *branch-definition

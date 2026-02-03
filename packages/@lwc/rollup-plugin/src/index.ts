@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import fs from 'fs';
-import path from 'path';
-import { URLSearchParams } from 'url';
+import fs from 'node:fs';
+import path from 'node:path';
+import { URLSearchParams } from 'node:url';
 
 import pluginUtils from '@rollup/pluginutils';
 import { transformSync } from '@lwc/compiler';
@@ -43,9 +43,8 @@ export interface RollupLwcOptions {
     stylesheetConfig?: StylesheetConfig;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     preserveHtmlComments?: boolean;
-    // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
     /** The configuration to pass to `@lwc/compiler`. */
-    experimentalDynamicComponent?: DynamicImportConfig;
+    dynamicImports?: DynamicImportConfig;
     // TODO [#3331]: deprecate and remove lwc:dynamic
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalDynamicDirective?: boolean;
@@ -195,7 +194,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         stylesheetConfig,
         sourcemap = false,
         preserveHtmlComments,
-        experimentalDynamicComponent,
+        dynamicImports,
         experimentalDynamicDirective,
         enableDynamicComponents,
         enableSyntheticElementInternals,
@@ -404,7 +403,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                     namespace,
                     outputConfig: { sourcemap },
                     stylesheetConfig,
-                    experimentalDynamicComponent,
+                    dynamicImports,
                     experimentalDynamicDirective,
                     enableDynamicComponents,
                     enableSyntheticElementInternals,
@@ -437,10 +436,4 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
             return { code, map };
         },
     };
-}
-
-// For backward compatibility with commonjs format
-if (typeof module !== 'undefined') {
-    // Using Object.defineProperty because regular assignment breaks when running with vite
-    Object.defineProperty(module, 'exports', { value: lwc });
 }

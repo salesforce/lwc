@@ -55,8 +55,6 @@ function patchedTargetGetter(this: Event): EventTarget | null {
         }
         return retarget(doc, composedPath);
     } else if (originalCurrentTarget === doc || originalCurrentTarget === doc.body) {
-        // TODO [#1530]: If currentTarget is document or document.body (Third party libraries that have global event listeners)
-        // and the originalTarget is not a keyed element, do not retarget
         if (isUndefined(getNodeOwnerKey(originalTarget))) {
             return originalTarget;
         }

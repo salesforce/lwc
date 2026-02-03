@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/compiler",
-    "version": "8.27.0",
+    "version": "9.0.0",
     "description": "LWC compiler",
     "keywords": [
         "lwc"
@@ -19,13 +19,17 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
+    },
+    "engines": {
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"
     },
-    "main": "dist/index.cjs.js",
+    "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -46,17 +50,17 @@
         }
     },
     "dependencies": {
-        "@babel/core": "7.28.5",
-        "@babel/plugin-transform-async-generator-functions": "7.28.0",
-        "@babel/plugin-transform-async-to-generator": "7.27.1",
-        "@babel/plugin-transform-class-properties": "7.27.1",
-        "@babel/plugin-transform-object-rest-spread": "7.28.4",
+        "@babel/core": "7.28.6",
+        "@babel/plugin-transform-async-generator-functions": "7.28.6",
+        "@babel/plugin-transform-async-to-generator": "7.28.6",
+        "@babel/plugin-transform-class-properties": "7.28.6",
+        "@babel/plugin-transform-object-rest-spread": "7.28.6",
         "@locker/babel-plugin-transform-unforgeables": "0.22.0",
-        "@lwc/babel-plugin-component": "8.27.0",
-        "@lwc/errors": "8.27.0",
-        "@lwc/shared": "8.27.0",
-        "@lwc/ssr-compiler": "8.27.0",
-        "@lwc/style-compiler": "8.27.0",
-        "@lwc/template-compiler": "8.27.0"
+        "@lwc/babel-plugin-component": "9.0.0",
+        "@lwc/errors": "9.0.0",
+        "@lwc/shared": "9.0.0",
+        "@lwc/ssr-compiler": "9.0.0",
+        "@lwc/style-compiler": "9.0.0",
+        "@lwc/template-compiler": "9.0.0"
     }
 }

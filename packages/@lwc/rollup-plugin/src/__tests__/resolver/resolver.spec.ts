@@ -12,7 +12,7 @@ import nodeResolve from '@rollup/plugin-node-resolve';
 
 import lwc, { type RollupLwcOptions } from '../../index';
 
-const fixturesdir = path.resolve(__dirname, 'fixtures');
+const fixturesdir = path.resolve(import.meta.dirname, 'fixtures');
 
 async function runRollup(
     pathname: string,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isPseudoElement, isCombinator, isPseudoClass, attribute } from 'postcss-selector-parser';
+import postCssSelectorParser from 'postcss-selector-parser';
 
 import { isDirPseudoClass } from '../utils/rtl';
 import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
@@ -26,7 +26,7 @@ export interface SelectorScopingConfig {
 }
 
 function isHostPseudoClass(node: Node): node is Pseudo {
-    return isPseudoClass(node) && node.value === ':host';
+    return postCssSelectorParser.isPseudoClass(node) && node.value === ':host';
 }
 
 /**
@@ -41,7 +41,7 @@ function scopeSelector(selector: Selector) {
     // Split the selector per compound selector. Compound selectors are interleaved with combinator nodes.
     // https://drafts.csswg.org/selectors-4/#typedef-complex-selector
     selector.each((node) => {
-        if (isCombinator(node)) {
+        if (postCssSelectorParser.isCombinator(node)) {
             compoundSelectors.push([]);
         } else {
             const current = compoundSelectors[compoundSelectors.length - 1];
@@ -64,12 +64,12 @@ function scopeSelector(selector: Selector) {
 
             // In each compound selector we need to locate the last selector to scope.
             for (const node of compoundSelector) {
-                if (!isPseudoElement(node)) {
+                if (!postCssSelectorParser.isPseudoElement(node)) {
                     nodeToScope = node;
                 }
             }
 
-            const shadowAttribute = attribute({
+            const shadowAttribute = postCssSelectorParser.attribute({
                 attribute: SHADOW_ATTRIBUTE,
                 value: undefined,
                 raws: {},
@@ -112,7 +112,7 @@ function transformHost(selector: Selector) {
         const hostIndex = selector.index(hostNode);
 
         // Swap the :host pseudo-class with the host scoping token
-        const hostAttribute = attribute({
+        const hostAttribute = postCssSelectorParser.attribute({
             attribute: HOST_ATTRIBUTE,
             value: undefined,
             raws: {},

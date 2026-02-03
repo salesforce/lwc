@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
 /**
  *
  * @param value
@@ -31,7 +32,7 @@ export function isTrue(value: any, msg: string): asserts value {
  * @param value
  * @param msg
  */
-export function isFalse(value: any, msg: string) {
+export function isFalse(value: any, msg: string): void {
     if (value) {
         throw new Error(`Assert Violation: ${msg}`);
     }

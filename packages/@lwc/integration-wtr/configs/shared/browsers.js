@@ -45,10 +45,7 @@ export function getBrowsers(options) {
                   }),
               ];
     } else {
-        return [
-            playwrightLauncher({ product: 'chromium' }),
-            playwrightLauncher({ product: 'firefox' }),
-            playwrightLauncher({ product: 'webkit' }),
-        ];
+        const browsers = options.BROWSERS?.split(',') ?? ['chromium', 'firefox', 'webkit'];
+        return browsers.map((product) => playwrightLauncher({ product }));
     }
 }

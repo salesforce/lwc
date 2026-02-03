@@ -4,7 +4,8 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/engine-server",
-    "version": "8.27.0",
+    "version": "9.0.0",
+    "private": true,
     "description": "Renders LWC components in a server environment.",
     "keywords": [
         "lwc"
@@ -19,13 +20,17 @@
         "url": "https://github.com/salesforce/lwc/issues"
     },
     "license": "MIT",
+    "type": "module",
     "publishConfig": {
         "access": "public"
+    },
+    "engines": {
+        "node": ">=16.6.0"
     },
     "volta": {
         "extends": "../../../package.json"
     },
-    "main": "dist/index.cjs.js",
+    "main": "dist/index.js",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
     "files": [
@@ -46,11 +51,11 @@
         }
     },
     "devDependencies": {
-        "@lwc/engine-core": "8.27.0",
-        "@lwc/rollup-plugin": "8.27.0",
-        "@lwc/shared": "8.27.0",
-        "@lwc/features": "8.27.0",
-        "@lwc/signals": "8.27.0",
+        "@lwc/engine-core": "9.0.0",
+        "@lwc/rollup-plugin": "9.0.0",
+        "@lwc/shared": "9.0.0",
+        "@lwc/features": "9.0.0",
+        "@lwc/signals": "9.0.0",
         "@rollup/plugin-virtual": "^3.0.2",
         "parse5": "^8.0.0"
     }

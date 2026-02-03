@@ -1,6 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import Component from 'x/component';
 import Scoping from 'x/scoping';
+import Indirect from 'x/indirect';
 import { spyOn } from '@vitest/spy';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
@@ -37,6 +38,11 @@ const components = [
         tagName: 'x-scoping',
         Ctor: Scoping,
         name: 'scoped styles',
+    },
+    {
+        tagName: 'x-indirect',
+        Ctor: Indirect,
+        name: 'indirect styles',
     },
 ];
 
@@ -76,12 +82,12 @@ props.forEach((prop) => {
                     if (
                         process.env.NATIVE_SHADOW &&
                         process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION &&
-                        Ctor !== Scoping
+                        Ctor === Component &&
+                        prop === 'legacyStylesheetToken'
                     ) {
-                        // If we're rendering in native shadow and the static content optimization is disabled,
-                        // then there's no problem with invalid stylesheet tokens because they are only rendered
-                        // as class attribute values using either `classList` or `setAttribute` (and this only applies
-                        // when `*.scoped.css` is being used).
+                        // When using legacy stylesheet tokens with unscoped CSS in native shadow with static content
+                        // optimization disabled, there's no problem with invalid stylesheet tokens because they are
+                        // only rendered as class attribute values using either `classList` or `setAttribute`
                         expect(elm.shadowRoot.children.length).toBe(1);
                     } else {
                         expect(elm.shadowRoot.children.length).toBe(0); // does not render
