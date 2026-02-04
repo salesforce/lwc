@@ -120,6 +120,7 @@ describe('aria reflection', () => {
                                 await Promise.resolve();
                                 validateAria(elm, null);
                                 expect(elm.renderCount).toBe(1);
+                                document.body.removeChild(elm);
                             });
 
                             it('set externally', async () => {
@@ -147,6 +148,7 @@ describe('aria reflection', () => {
                                 await Promise.resolve();
                                 validateAria(elm, null);
                                 expect(elm.renderCount).toBe(3);
+                                document.body.removeChild(elm);
                             });
 
                             it('set internally', async () => {
@@ -174,6 +176,7 @@ describe('aria reflection', () => {
                                 await Promise.resolve();
                                 validateAria(elm, null);
                                 expect(elm.renderCount).toBe(3);
+                                document.body.removeChild(elm);
                             });
                         });
                     });

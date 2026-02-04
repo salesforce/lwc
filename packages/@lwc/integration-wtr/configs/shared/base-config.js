@@ -40,19 +40,18 @@ export default (options) => {
 
     const browsers = getBrowsers(options);
 
-    // WebKit on Linux (e.g. GitHub Actions) is slower; use longer timeouts in CI to avoid flaky timeouts.
-    const ciTimeouts = options.CI
-        ? {
-              browserStartTimeout: startTimeoutMS,
-              testsStartTimeout: startTimeoutMS,
-              testsFinishTimeout: endTimeoutMS,
-          }
-        : {};
+    // WebKit (and CI in general) often needs more time; use longer timeouts so tests don't flake with
+    // "Browser tests did not finish within 120000ms". Applies locally and in CI.
+    const timeouts = {
+        browserStartTimeout: startTimeoutMS,
+        testsStartTimeout: startTimeoutMS,
+        testsFinishTimeout: endTimeoutMS,
+    };
 
     return {
         browsers,
         browserLogs: false,
-        ...ciTimeouts,
+        ...timeouts,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
