@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import { LWC_VERSION } from '@lwc/shared';
 import { resolvePathOutsideRoot } from '../../helpers/utils.js';
-import { getBrowsers } from './browsers.js';
+import { startTimeoutMS, endTimeoutMS, getBrowsers } from './browsers.js';
 
 /**
  * We want to convert from parsed options (true/false) to a `process.env` with only strings.
@@ -40,9 +40,19 @@ export default (options) => {
 
     const browsers = getBrowsers(options);
 
+    // WebKit on Linux (e.g. GitHub Actions) is slower; use longer timeouts in CI to avoid flaky timeouts.
+    const ciTimeouts = options.CI
+        ? {
+              browserStartTimeout: startTimeoutMS,
+              testsStartTimeout: startTimeoutMS,
+              testsFinishTimeout: endTimeoutMS,
+          }
+        : {};
+
     return {
         browsers,
         browserLogs: false,
+        ...ciTimeouts,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...
         // Potential workaround: https://github.com/modernweb-dev/web/issues/2588
