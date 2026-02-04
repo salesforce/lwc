@@ -8,7 +8,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 
 import { rollup, type RollupLog } from 'rollup';
-import lwc from '../../index';
+import lwc from '../index';
 
 describe('rootDir', () => {
     it('warns if an "input" array is passed and when "rootDir" is not set', async () => {

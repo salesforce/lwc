@@ -8,7 +8,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
 
-import lwc from '../../index';
+import lwc from '../index';
 
 describe('integration', () => {
     describe('typescript', () => {

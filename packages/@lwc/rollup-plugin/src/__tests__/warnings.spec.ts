@@ -8,7 +8,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
 import { APIVersion } from '@lwc/shared';
-import lwc from '../../index';
+import lwc from '../index';
 import type { RollupLog } from 'rollup';
 
 function normalizeLog(log: RollupLog) {
@@ -33,7 +33,7 @@ describe('warnings', () => {
     it('should emit a warning for double </template> tags in older API versions', async () => {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({
-            input: path.resolve(import.meta.dirname, 'fixtures/test/test.js'),
+            input: path.resolve(import.meta.dirname, 'fixtures/warnings/warnings.js'),
             plugins: [
                 lwc({
                     apiVersion: APIVersion.V58_244_SUMMER_23,
@@ -57,7 +57,7 @@ describe('warnings', () => {
                 code: 'PLUGIN_WARNING',
                 frame: '</template>',
                 hook: 'transform',
-                id: 'fixtures/test/test.html',
+                id: 'fixtures/warnings/warnings.html',
                 message:
                     'LWC1148: Invalid HTML syntax: end-tag-without-matching-open-element. ' +
                     'This will not be supported in future versions of LWC. For more information, please visit ' +
@@ -67,7 +67,7 @@ describe('warnings', () => {
                 loc: {
                     column: 1,
                     line: 4,
-                    file: 'fixtures/test/test.html',
+                    file: 'fixtures/warnings/warnings.html',
                 },
             },
         ]);

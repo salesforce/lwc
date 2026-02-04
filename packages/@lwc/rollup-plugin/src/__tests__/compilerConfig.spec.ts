@@ -8,7 +8,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup, type RollupLog, type RollupBuild } from 'rollup';
 
-import lwc, { type RollupLwcOptions } from '../../index';
+import lwc, { type RollupLwcOptions } from '../index';
 
 async function runRollup(
     pathname: string,
