@@ -110,12 +110,14 @@ jobs:
               continue-on-error: true
               run: yarn test
               working-directory: packages/@lwc/integration-wtr
+              timeout-minutes: 35
 
             # Because sometimes things are flaky
             - name: Run integration tests (fallback)
               if: ${{ steps.test-integration.outcome == 'failure' }}
               run: yarn run test
               working-directory: packages/@lwc/integration-wtr
+              timeout-minutes: 35
 
             - name: Upload coverage report
               # Upload coverage even if the test step failed
@@ -203,12 +205,14 @@ jobs:
               continue-on-error: true
               run: yarn run test:hydration
               working-directory: packages/@lwc/integration-wtr
+              timeout-minutes: 35
 
             # Because sometimes things are flaky
             - name: Run hydration tests (fallback)
               if: ${{ steps.test-hydration.outcome == 'failure' }}
               run: yarn run test:hydration
               working-directory: packages/@lwc/integration-wtr
+              timeout-minutes: 35
 
             - name: Upload coverage report
               # Upload coverage even if the test step failed
