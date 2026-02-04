@@ -8,8 +8,8 @@ import path from 'node:path';
 import { it, expect } from 'vitest';
 import { rollup } from 'rollup';
 
-import lwc from '../../index';
-import type { RollupLwcOptions } from '../../index';
+import lwc from '../index';
+import type { RollupLwcOptions } from '../index';
 import type { RollupLog } from 'rollup';
 
 async function runRollup(
@@ -39,7 +39,7 @@ async function runRollup(
 // This test validates the behavior of rollup because import deduping was handled by
 // @lwc/babel-plugin-component prior to v9 and we want to ensure there are no regressions
 it('merges duplicate imports', async () => {
-    const { code, warnings } = await runRollup('fixtures/basic/basic.js', {});
+    const { code, warnings } = await runRollup('fixtures/importDedupe/importDedupe.js', {});
     const lwcImport = /import \{ ([^}]+?) \} from 'lwc'/g;
     const imports = Array.from(code.matchAll(lwcImport));
     expect(warnings).toHaveLength(0);
