@@ -10,7 +10,7 @@
                 "start": 22,
                 "length": 11
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1034"
         },
         {
             "code": 1034,
@@ -22,7 +22,7 @@
                 "start": 54,
                 "length": 18
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1034"
         },
         {
             "code": 1034,
@@ -34,7 +34,7 @@
                 "start": 86,
                 "length": 15
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1034"
         }
     ]
 }
