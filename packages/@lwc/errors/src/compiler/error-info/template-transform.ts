@@ -63,7 +63,7 @@ export const ParserDiagnostics = {
             'If you want to make it a valid identifier you should remove the surrounding quotes {1}. ' +
             'If you want to make it a string you should escape it {2}.',
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1034',
     },
 
     AMBIGUOUS_ATTRIBUTE_VALUE_STRING: {
@@ -81,7 +81,7 @@ export const ParserDiagnostics = {
             'To represent a false value, the attribute has to be omitted altogether.',
 
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1036',
     },
 
     BOOLEAN_ATTRIBUTE_TRUE: {
@@ -171,7 +171,7 @@ export const ParserDiagnostics = {
         code: 1048,
         message: 'srcdoc attribute is disallowed on <iframe> for security reasons',
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1048',
     },
 
     FORBIDDEN_SVG_NAMESPACE_IN_TEMPLATE: {
@@ -179,7 +179,7 @@ export const ParserDiagnostics = {
         message:
             "Forbidden svg namespace tag found in template: '<{0}>' tag is not allowed within <svg>",
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1049',
     },
 
     FORBIDDEN_MATHML_NAMESPACE_IN_TEMPLATE: {
@@ -187,7 +187,7 @@ export const ParserDiagnostics = {
         message:
             "Forbidden MathML namespace tag found in template: '<{0}>' tag is not allowed within <math>",
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1050',
     },
 
     FORBIDDEN_TAG_ON_TEMPLATE: {
@@ -398,7 +398,7 @@ export const ParserDiagnostics = {
         message: 'Error parsing template expression: {0}',
         level: DiagnosticLevel.Error,
         strictLevel: DiagnosticLevel.Fatal,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1083',
     },
 
     UNEXPECTED_IF_MODIFIER: {
@@ -450,7 +450,7 @@ export const ParserDiagnostics = {
         message:
             "Unknown html tag '<{0}>'. For more information refer to https://developer.mozilla.org/en-US/docs/Web/HTML/Element and https://developer.mozilla.org/en-US/docs/Web/SVG/Element",
         level: DiagnosticLevel.Warning,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1123',
     },
 
     ATTRIBUTE_NAME_STARTS_WITH_INVALID_CHARACTER: {
@@ -631,7 +631,7 @@ export const ParserDiagnostics = {
         message:
             'Invalid key attribute on element <{0}>. The key attribute should be applied to an element with for:each or iterator:*, or to a direct child of a <template> element with for:each or iterator:*. This key will be ignored, and may throw an error in future versions of LWC.',
         level: DiagnosticLevel.Warning,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1149',
     },
 
     INVALID_TEMPLATE_WARNING: {
@@ -946,7 +946,7 @@ export const ParserDiagnostics = {
         code: 1197,
         message: 'Use of comments is disallowed within template expressions.',
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1197',
     },
 
     IGNORED_SLOT_ATTRIBUTE_IN_CHILD: {
@@ -954,7 +954,7 @@ export const ParserDiagnostics = {
         message:
             'The slot attribute in {0} will be ignored due to its ancestor {1}. It must be a direct child of the containing component.',
         level: DiagnosticLevel.Warning,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1201',
     },
 
     INVALID_LWC_ON_ELEMENT: {
