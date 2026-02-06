@@ -3,7 +3,7 @@
         { "dir": "." },
         {
             "name": "aliased",
-            "path": "x/basic/basic.js"
+            "path": "x/basic/basic.html"
         }
     ]
 }
