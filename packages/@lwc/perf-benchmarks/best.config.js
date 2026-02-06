@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-module.exports = {
+export default {
     projectName: 'lwc',
     mainBranch: 'master',
     // This number is a tradeoff: higher = less variance, lower = less time spent running in CI

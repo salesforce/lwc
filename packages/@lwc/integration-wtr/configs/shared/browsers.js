@@ -1,6 +1,8 @@
 import { playwrightLauncher } from '@web/test-runner-playwright';
 import { createSauceLabsLauncher } from '@web/test-runner-saucelabs';
 
+export const startTimeoutMS = 60 * 1000;
+
 /** @type {(options: typeof import('../../helpers/options.js')) => import("@web/test-runner").BrowserLauncher[]} */
 export function getBrowsers(options) {
     if (options.USE_SAUCE) {
@@ -45,10 +47,9 @@ export function getBrowsers(options) {
                   }),
               ];
     } else {
-        let browsers = options.BROWSERS?.split(',');
-        if (!browsers) {
-            browsers = options.CI ? ['chromium', 'firefox', 'webkit'] : ['chromium'];
-        }
+        const browsers =
+            options.BROWSERS?.split(',') ??
+            (options.CI ? ['chromium', 'firefox', 'webkit'] : ['chromium']);
         return browsers.map((product) => playwrightLauncher({ product }));
     }
 }
