@@ -45,7 +45,10 @@ export function getBrowsers(options) {
                   }),
               ];
     } else {
-        const browsers = options.BROWSERS?.split(',') ?? ['chromium', 'firefox', 'webkit'];
+        let browsers = options.BROWSERS?.split(',');
+        if (!browsers) {
+            browsers = options.CI ? ['chromium', 'firefox', 'webkit'] : ['chromium'];
+        }
         return browsers.map((product) => playwrightLauncher({ product }));
     }
 }
