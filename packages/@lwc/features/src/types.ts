@@ -89,17 +89,11 @@ export interface FeatureFlagMap {
     DISABLE_SCOPE_TOKEN_VALIDATION: FeatureFlagValue;
 
     /**
-     * If true, then lightning legacy locker is supported, otherwise lightning legacy locker will not function
-     * properly.
+     * If true, disables the LightningElement constructor invocation validation (the new.target check
+     * that prevents calling the constructor as a function, e.g. LightningElement.call(iframe)).
+     * Default is false: validation is enabled and constructor must be invoked with `new`.
      */
-    LEGACY_LOCKER_ENABLED: FeatureFlagValue;
-
-    /**
-     * A manual override for `LEGACY_LOCKER_ENABLED`; should not be used if that flag is correctly set.
-     * If true, behave as if legacy Locker is enabled.
-     * If false or unset, then the value of the `LEGACY_LOCKER_ENABLED` flag is used.
-     */
-    DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
+    DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION: FeatureFlagValue;
 
     /**
      * If true, skips rehydration of DOM elements that are not connected.

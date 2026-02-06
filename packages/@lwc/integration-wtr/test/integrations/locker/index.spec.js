@@ -1,15 +1,9 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 
 import LockerIntegration from 'x/lockerIntegration';
 import LockerLiveComponent from 'x/lockerLiveComponent';
 import LockerHooks, { hooks } from 'x/lockerHooks';
 import { spyOn } from '@vitest/spy';
-beforeEach(() => {
-    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
-});
-afterEach(() => {
-    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
-});
 it('should support Locker integration which uses a wrapped LightningElement base class', () => {
     const elm = createElement('x-secure-parent', { is: LockerIntegration });
     document.body.appendChild(elm);
