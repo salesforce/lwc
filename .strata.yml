@@ -27,7 +27,6 @@ stages:
             - "@lwc/compiler"
             - "@lwc/engine-core"
             - "@lwc/engine-dom"
-            - "@lwc/engine-server"
             - "@lwc/errors"
             - "@lwc/features"
             - "@lwc/module-resolver"
