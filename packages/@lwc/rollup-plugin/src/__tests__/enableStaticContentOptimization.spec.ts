@@ -7,9 +7,9 @@
 import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
-import lwc from '../../index';
+import lwc from '../index';
 import type { RollupLog } from 'rollup';
-import type { RollupLwcOptions } from '../../index';
+import type { RollupLwcOptions } from '../index';
 
 describe('enableStaticContentOptimization:', () => {
     async function runRollup(
@@ -18,7 +18,7 @@ describe('enableStaticContentOptimization:', () => {
     ): Promise<{ code: string; warnings: RollupLog[] }> {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({
-            input: path.resolve(__dirname, pathname),
+            input: path.resolve(import.meta.dirname, pathname),
             plugins: [lwc(options)],
             external: ['lwc'],
             onwarn(warning) {
@@ -48,7 +48,7 @@ describe('enableStaticContentOptimization:', () => {
     ];
 
     it.for(configs)('$name', async ({ opts, expected }) => {
-        const { code, warnings } = await runRollup('fixtures/basic/basic.js', opts);
+        const { code, warnings } = await runRollup('fixtures/image/image.js', opts);
         expect(warnings).toEqual([]);
         expect(code.includes('<img')).toBe(expected);
     });

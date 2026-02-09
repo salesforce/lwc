@@ -5,10 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export enum RegistryType {
-    alias = 'alias',
-    dir = 'dir',
-}
+export const RegistryType = {
+    alias: 'alias',
+    dir: 'dir',
+} as const;
+
+export type RegistryType = (typeof RegistryType)[keyof typeof RegistryType];
 
 export interface RegistryEntry {
     entry: string;

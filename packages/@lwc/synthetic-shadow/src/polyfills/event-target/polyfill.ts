@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArraySlice, defineProperties } from '@lwc/shared';
+import { ArraySlice, assert, defineProperties } from '@lwc/shared';
 import {
     addEventListener as nativeAddEventListener,
     eventTargetPrototype,
@@ -19,6 +19,12 @@ import {
 import { isSyntheticShadowHost } from '../../faux-shadow/shadow-root';
 import { getEventListenerWrapper } from '../../shared/event-target';
 
+const getRootNodePatched = Node.prototype.getRootNode;
+assert.isFalse(
+    String(getRootNodePatched).includes('[native code]'),
+    'Node prototype must be patched before event target.'
+);
+
 function patchedAddEventListener(
     this: EventTarget,
     type: string,
@@ -31,7 +37,7 @@ function patchedAddEventListener(
         return addCustomElementEventListener.apply(this, arguments);
     }
 
-    if (this instanceof Node && isInstanceOfNativeShadowRoot(this.getRootNode())) {
+    if (this instanceof Node && isInstanceOfNativeShadowRoot(getRootNodePatched.call(this))) {
         // Typescript does not like it when you treat the `arguments` object as an array
         // @ts-expect-error type-mismatch
         return nativeAddEventListener.apply(this, arguments);

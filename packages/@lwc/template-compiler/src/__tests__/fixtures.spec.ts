@@ -15,7 +15,7 @@ import compiler, { type Config } from '../index';
 describe('fixtures', () => {
     testFixtureDir<Config>(
         {
-            root: path.resolve(__dirname, 'fixtures'),
+            root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/actual.html',
         },
         async ({ src, dirname, config }) => {

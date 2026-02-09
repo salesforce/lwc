@@ -6,6 +6,7 @@ import WithLwcDomManualNested from 'x/withLwcDomManualNested';
 import WithLwcDomManual from 'x/withLwcDomManual';
 import WithoutLwcDomManual from 'x/withoutLwcDomManual';
 import Text from 'x/text';
+import Internals from 'x/internals';
 import { spyOn } from '@vitest/spy';
 
 const composedTrueConfig = { composed: true };
@@ -352,5 +353,12 @@ describe('Node.getRootNode', () => {
                 expect(lwcTemplateNode.getRootNode()).toBe(syntheticShadowRoot);
             });
         });
+    });
+
+    // See W-17585571
+    it('should not rely on component implementation', () => {
+        const elm = createElement('x-internals', { is: Internals });
+        document.body.appendChild(elm);
+        expect(() => elm.shadowRoot.getRootNode.call(elm, { composed: true })).not.toThrow();
     });
 });

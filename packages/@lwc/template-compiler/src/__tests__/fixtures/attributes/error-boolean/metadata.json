@@ -22,7 +22,7 @@
                 "start": 43,
                 "length": 12
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1036"
         },
         {
             "code": 1037,
@@ -46,7 +46,7 @@
                 "start": 96,
                 "length": 14
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1036"
         }
     ]
 }

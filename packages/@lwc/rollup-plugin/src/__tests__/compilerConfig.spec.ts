@@ -8,7 +8,7 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup, type RollupLog, type RollupBuild } from 'rollup';
 
-import lwc, { type RollupLwcOptions } from '../../index';
+import lwc, { type RollupLwcOptions } from '../index';
 
 async function runRollup(
     pathname: string,
@@ -18,7 +18,7 @@ async function runRollup(
     const warnings: RollupLog[] = [];
 
     const bundle = await rollup({
-        input: path.resolve(__dirname, 'fixtures', pathname),
+        input: path.resolve(import.meta.dirname, 'fixtures', pathname),
         plugins: [lwc(options)],
         external: ['lwc', ...external],
         onwarn(warning) {
@@ -89,12 +89,12 @@ describe('templateConfig', () => {
 });
 
 describe('javaScriptConfig', () => {
-    it('should accept experimentalDynamicComponent config flag', async () => {
+    it('should accept dynamicImports config flag', async () => {
         const CUSTOM_LOADER = '@salesforce/loader';
         const { bundle } = await runRollup(
             'dynamicImportConfig/dynamicImportConfig.js',
             {
-                experimentalDynamicComponent: { loader: CUSTOM_LOADER, strictSpecifier: true },
+                dynamicImports: { loader: CUSTOM_LOADER, strictSpecifier: true },
             },
             {
                 external: [CUSTOM_LOADER],

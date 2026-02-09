@@ -15,6 +15,6 @@ test('TypeScript version should not change', () => {
     // potentially breaking change. Code that may compile using our version may
     // result in type errors in different versions (e.g. using new syntax).
     expect(version, 'TypeScript version should only change for major releases of LWC').toBe(
-        '5.8.2'
+        '6.0.0-dev.20260112'
     );
 });

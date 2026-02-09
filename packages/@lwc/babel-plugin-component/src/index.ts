@@ -11,7 +11,6 @@ import {
     validateImportedLwcDecoratorUsage,
 } from './decorators';
 
-import dedupeImports from './dedupe-imports';
 import dynamicImports from './dynamic-imports';
 import scopeCssImports from './scope-css-imports';
 import compilerVersionNumber from './compiler-version-number';
@@ -58,9 +57,6 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
                 exit(path) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);
                     removeImportedDecoratorSpecifiers(engineImportSpecifiers);
-
-                    // Will eventually be removed to eliminate unnecessary complexity. Rollup already does this for us.
-                    dedupeImports(api)(path);
                 },
             },
 

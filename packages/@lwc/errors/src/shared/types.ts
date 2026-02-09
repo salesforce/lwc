@@ -4,16 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export enum DiagnosticLevel {
+export const DiagnosticLevel = {
     /** Unexpected error, parsing error, bundling error */
-    Fatal = 0,
+    Fatal: 0,
     /** Linting error with error level, invalid external reference, invalid import, invalid transform */
-    Error = 1,
+    Error: 1,
     /** Linting error with warning level, usage of an API to be deprecated */
-    Warning = 2,
+    Warning: 2,
     /** Logging messages */
-    Log = 3,
-}
+    Log: 3,
+} as const;
+
+export type DiagnosticLevel = (typeof DiagnosticLevel)[keyof typeof DiagnosticLevel];
 
 export interface LWCErrorInfo {
     code: number;

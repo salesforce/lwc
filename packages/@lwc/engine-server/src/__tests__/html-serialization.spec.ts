@@ -24,7 +24,7 @@ import type { RollupLog } from 'rollup';
 
 // Compile a component to an HTML string, using the full LWC compilation pipeline
 async function compileComponent(tagName: string, componentName: string) {
-    const modulesDir = path.resolve(__dirname, './modules');
+    const modulesDir = path.resolve(import.meta.dirname, './modules');
     const componentPath = path.resolve(
         modulesDir,
         componentName,

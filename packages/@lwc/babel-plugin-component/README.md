@@ -21,8 +21,8 @@ This babel plugin does the following transform:
 ## Usage
 
 ```js
-const babel = require('@babel/core');
-const lwcPlugin = require('@lwc/babel-plugin-component');
+import babel from '@babel/core';
+import lwcPlugin from '@lwc/babel-plugin-component';
 
 const source = `
 import { LightningElement } from 'lwc';

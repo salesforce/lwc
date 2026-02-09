@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const path = require('path');
+const path = require('node:path');
 
 /**
  * This eslint rule always triggers an error for whichever files use it. It is intended for use as

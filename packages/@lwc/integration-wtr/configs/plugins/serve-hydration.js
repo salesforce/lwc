@@ -8,7 +8,10 @@ import { DISABLE_STATIC_CONTENT_OPTIMIZATION, ENGINE_SERVER } from '../../helper
 
 /** Code for the LWC SSR module. */
 const LWC_SSR = readFileSync(
-    new URL(import.meta.resolve(ENGINE_SERVER ? '@lwc/engine-server' : '@lwc/ssr-runtime')),
+    new URL(
+        'index.cjs',
+        import.meta.resolve(ENGINE_SERVER ? '@lwc/engine-server' : '@lwc/ssr-runtime')
+    ),
     'utf8'
 );
 
@@ -24,7 +27,7 @@ async function compileModule(input, targetSSR, format) {
             lwcRollupPlugin({
                 targetSSR,
                 modules: [{ dir: modulesDir }],
-                experimentalDynamicComponent: {
+                dynamicImports: {
                     loader: fileURLToPath(
                         new URL('../../helpers/loader.js', import.meta.url)
                     ).replaceAll(path.sep, path.posix.sep),

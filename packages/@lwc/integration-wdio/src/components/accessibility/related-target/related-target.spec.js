@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const assert = require('assert');
+const assert = require('node:assert');
 function getEvents(elm) {
     return browser.execute(function (elm) {
         // parse/stringify is necessary because this is a Proxy object that doesn't get

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const assert = require('assert');
+const assert = require('node:assert');
 
 // The bug: Cannot click into the first child of a shadow root when the active element is
 // the previous sibling to the custom element

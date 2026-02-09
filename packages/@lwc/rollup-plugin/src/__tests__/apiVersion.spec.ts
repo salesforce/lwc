@@ -9,8 +9,8 @@ import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
 import { APIVersion, HIGHEST_API_VERSION, LOWEST_API_VERSION } from '@lwc/shared';
 
-import lwc from '../../index';
-import type { RollupLwcOptions } from '../../index';
+import lwc from '../index';
+import type { RollupLwcOptions } from '../index';
 import type { RollupLog } from 'rollup';
 
 describe('API versioning', () => {
@@ -20,7 +20,7 @@ describe('API versioning', () => {
     ): Promise<{ code: string; warnings: RollupLog[] }> {
         const warnings: RollupLog[] = [];
         const bundle = await rollup({
-            input: path.resolve(__dirname, pathname),
+            input: path.resolve(import.meta.dirname, pathname),
             plugins: [lwc(options)],
             external: ['lwc'],
             onwarn(warning) {

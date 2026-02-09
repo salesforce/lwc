@@ -17,8 +17,8 @@ import type { CompilerDiagnostic } from '@lwc/errors';
 import type { Root, TemplateCompileResult, TemplateParseResult } from './shared/types';
 
 export * from './shared/types';
-export { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
-export { Config } from './config';
+export type { CustomRendererConfig, CustomRendererElementConfig } from './shared/renderer-hooks';
+export type { Config } from './config';
 export { toPropertyName } from './shared/utils';
 export { kebabcaseToCamelcase } from './shared/naming';
 export { generateScopeTokens } from './scopeTokens';

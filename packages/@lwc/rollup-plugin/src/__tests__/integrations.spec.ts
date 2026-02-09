@@ -8,13 +8,13 @@ import path from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { rollup } from 'rollup';
 
-import lwc from '../../index';
+import lwc from '../index';
 
 describe('integration', () => {
     describe('typescript', () => {
         it(`resolves and transform .ts files`, async () => {
             const bundle = await rollup({
-                input: path.resolve(__dirname, 'fixtures/typescript/typescript.ts'),
+                input: path.resolve(import.meta.dirname, 'fixtures/typescript/typescript.ts'),
                 plugins: [lwc()],
                 external: ['lwc'],
             });

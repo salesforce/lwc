@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import path from 'path';
+import path from 'node:path';
 
 // The reason this hash code implementation [1] is chosen is because:
 // 1. It has a very low hash collision rate - testing a list of 466,551 English words [2], it generates no collisions

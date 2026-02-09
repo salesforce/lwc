@@ -1,5 +1,6 @@
-import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators } from "lwc";
 import _tmpl from "./test.html";
+import { LightningElement, registerComponent as _registerComponent } from "lwc";
 class Test extends LightningElement {
   dataProperty;
   /*LWC compiler vX.X.X*/

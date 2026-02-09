@@ -80,8 +80,8 @@ async function compileFixture({
             lwcRollupPlugin({
                 enableDynamicComponents: true,
                 enableLwcOn: true,
-                experimentalDynamicComponent: {
-                    loader: path.join(__dirname, './utils/custom-loader.js'),
+                dynamicImports: {
+                    loader: path.join(import.meta.dirname, './utils/custom-loader.js'),
                     strictSpecifier: false,
                 },
                 modules: [
@@ -122,7 +122,7 @@ async function compileFixture({
 function testFixtures(options?: RollupLwcOptions) {
     testFixtureDir<FixtureConfig>(
         {
-            root: path.resolve(__dirname, '../../../ssr-compiler/src/__tests__/fixtures'),
+            root: path.resolve(import.meta.dirname, '../../../ssr-compiler/src/__tests__/fixtures'),
             ssrVersion: 1,
             pattern: '**/config.json',
         },

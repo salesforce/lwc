@@ -1,6 +1,9 @@
 import { playwrightLauncher } from '@web/test-runner-playwright';
 import { createSauceLabsLauncher } from '@web/test-runner-saucelabs';
 
+export const startTimeoutMS = 60 * 1000;
+export const endTimeoutMS = 5 * 60 * 1000;
+
 /** @type {(options: typeof import('../../helpers/options.js')) => import("@web/test-runner").BrowserLauncher[]} */
 export function getBrowsers(options) {
     if (options.USE_SAUCE) {
@@ -46,6 +49,11 @@ export function getBrowsers(options) {
               ];
     } else {
         const browsers = options.BROWSERS?.split(',') ?? ['chromium', 'firefox', 'webkit'];
-        return browsers.map((product) => playwrightLauncher({ product }));
+        return browsers.map((product) => {
+            // WebKit on Linux (e.g. GitHub Actions) can be slow to launch; give it more time in CI.
+            const launchOptions =
+                options.CI && product === 'webkit' ? { timeout: startTimeoutMS } : undefined;
+            return playwrightLauncher({ product, ...(launchOptions && { launchOptions }) });
+        });
     }
 }

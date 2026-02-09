@@ -20,7 +20,7 @@ yarn add --dev @lwc/style-compiler
 ## Usage
 
 ```js
-const { transform } = require('@lwc/style-compiler');
+import { transform } from '@lwc/style-compiler';
 
 const source = `
     :host {

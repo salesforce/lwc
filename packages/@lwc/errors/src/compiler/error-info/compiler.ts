@@ -15,8 +15,8 @@ export const GENERIC_COMPILER_ERROR = {
     message: 'Unexpected compilation error: {0}',
     level: DiagnosticLevel.Error,
     strictLevel: DiagnosticLevel.Fatal,
-    url: '',
-};
+    url: 'https://lwc.dev/guide/error_codes#lwc1001',
+} as const satisfies LWCErrorInfo;
 
 export const CompilerValidationErrors = {
     INVALID_COMPAT_PROPERTY: {
@@ -44,7 +44,7 @@ export const CompilerValidationErrors = {
         code: 1016,
         message: 'Expected an object with files to be compiled.',
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1016',
     },
 
     INVALID_NAME_PROPERTY: {
@@ -66,14 +66,14 @@ export const CompilerValidationErrors = {
         message:
             'Expected a boolean value or \'inline\' for outputConfig.sourcemap, received "{0}".',
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1021',
     },
 
     MISSING_OPTIONS_OBJECT: {
         code: 1023,
         message: 'Expected options object, received "{0}".',
         level: DiagnosticLevel.Error,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1023',
     },
 
     UNEXPECTED_FILE_CONTENT: {
@@ -162,7 +162,7 @@ export const TransformerErrors = {
         message: '{0}',
         level: DiagnosticLevel.Error,
         strictLevel: DiagnosticLevel.Fatal,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1009',
     },
     CSS_IN_HTML_ERROR: {
         code: 1026,
@@ -185,7 +185,7 @@ export const TransformerErrors = {
         message: 'Expect a string for id. Received {0}',
         level: DiagnosticLevel.Error,
         strictLevel: DiagnosticLevel.Fatal,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1027',
     },
 
     INVALID_SOURCE: {
@@ -201,7 +201,7 @@ export const TransformerErrors = {
         message: '{0}',
         level: DiagnosticLevel.Error,
         strictLevel: DiagnosticLevel.Fatal,
-        url: '',
+        url: 'https://lwc.dev/guide/error_codes#lwc1007',
     },
 
     NO_AVAILABLE_TRANSFORMER: {

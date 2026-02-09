@@ -22,7 +22,7 @@
                 "start": 65,
                 "length": 31
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1049"
         },
         {
             "code": 1050,
@@ -34,7 +34,7 @@
                 "start": 127,
                 "length": 31
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1050"
         }
     ]
 }

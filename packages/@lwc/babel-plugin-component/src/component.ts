@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { basename, extname } from 'path';
+import { basename, extname } from 'node:path';
 import { addDefault, addNamed } from '@babel/helper-module-imports';
 import { generateCustomElementTagName, getAPIVersionFromNumber } from '@lwc/shared';
 import {

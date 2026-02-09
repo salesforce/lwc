@@ -1,5 +1,6 @@
-import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
+import { registerDecorators as _registerDecorators } from "lwc";
 import _tmpl from "./test.html";
+import { registerComponent as _registerComponent } from "lwc";
 import MyCoolMixin from './mixin.js';
 class MyElement extends MyCoolMixin {
   foo;

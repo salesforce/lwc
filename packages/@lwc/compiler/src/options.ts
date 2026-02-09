@@ -102,9 +102,8 @@ export interface TransformOptions {
     namespace: string;
     /** @deprecated Ignored by compiler. */
     stylesheetConfig?: StylesheetConfig;
-    // TODO [#5031]: Unify dynamicImports and experimentalDynamicComponent options
     /** Config applied in usage of dynamic import statements in javascript */
-    experimentalDynamicComponent?: DynamicImportConfig;
+    dynamicImports?: DynamicImportConfig;
     // TODO [#3331]: deprecate and remove lwc:dynamic
     /** Flag to enable usage of dynamic component(lwc:dynamic) directive in HTML template */
     experimentalDynamicDirective?: boolean;
@@ -163,7 +162,7 @@ type OptionalTransformKeys =
     | 'enableDynamicComponents'
     | 'enableSyntheticElementInternals'
     | 'experimentalDynamicDirective'
-    | 'experimentalDynamicComponent'
+    | 'dynamicImports'
     | 'componentFeatureFlagModulePath'
     | 'instrumentation';
 
@@ -246,9 +245,9 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         },
     };
 
-    const experimentalDynamicComponent: Required<DynamicImportConfig> = {
+    const dynamicImports: Required<DynamicImportConfig> = {
         ...DEFAULT_DYNAMIC_IMPORT_CONFIG,
-        ...options.experimentalDynamicComponent,
+        ...options.dynamicImports,
     };
 
     const apiVersion = getAPIVersionFromNumber(options.apiVersion);
@@ -258,7 +257,7 @@ function normalizeOptions(options: TransformOptions): NormalizedTransformOptions
         ...options,
         stylesheetConfig,
         outputConfig,
-        experimentalDynamicComponent,
+        dynamicImports,
         apiVersion,
     };
 }

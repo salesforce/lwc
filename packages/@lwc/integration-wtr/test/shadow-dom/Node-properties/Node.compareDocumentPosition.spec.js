@@ -1,6 +1,7 @@
 import { createElement } from 'lwc';
 
 import ComplexSlotted from 'x/complexSlotted';
+import Internals from 'x/internals';
 
 describe('Node.compareDocumentPosition', () => {
     it('should return the right value for node outside the shadow tree', () => {
@@ -114,5 +115,14 @@ describe('Node.compareDocumentPosition', () => {
         expect(
             slot.compareDocumentPosition(slotted) & Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC
         ).not.toBe(0);
+    });
+
+    // See W-17585549
+    it('should not rely on component implementation', () => {
+        const elm = createElement('x-internals', { is: Internals });
+        document.body.appendChild(elm);
+        expect(() =>
+            elm.shadowRoot.compareDocumentPosition.call(elm, elm.shadowRoot)
+        ).not.toThrow();
     });
 });

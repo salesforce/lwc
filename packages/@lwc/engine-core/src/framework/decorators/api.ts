@@ -23,10 +23,7 @@ export default function api(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     context: ClassMemberDecoratorContext
 ): void {
-    if (process.env.NODE_ENV !== 'production') {
-        assert.fail(`@api decorator can only be used as a decorator function.`);
-    }
-    throw new Error();
+    assert.fail(`@api decorator can only be used as a decorator function.`);
 }
 
 export function createPublicPropertyDescriptor(key: string): PropertyDescriptor {

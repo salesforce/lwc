@@ -10,12 +10,10 @@ import {
     getOwnPropertyDescriptor,
     hasOwnProperty,
     isNull,
-    isTrue,
-    isUndefined,
 } from '@lwc/shared';
 
-import { Node } from '../env/node';
 import {
+    Node,
     parentNodeGetter,
     textContextSetter,
     compareDocumentPosition,
@@ -23,6 +21,7 @@ import {
     parentNodeGetter as nativeParentNodeGetter,
     cloneNode as nativeCloneNode,
     cloneNode,
+    getRootNode as nativeGetRootNode,
     hasChildNodes,
     contains,
     parentElementGetter,
@@ -48,6 +47,20 @@ import {
     getFilteredChildNodes,
     isSyntheticSlotElement,
 } from './traverse';
+
+const getRootNode =
+    nativeGetRootNode ??
+    // Polyfill for older browsers where it's not defined
+    function (this: Node): Node {
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        let node = this;
+        let nodeParent = parentNodeGetter.call(node);
+        while (!isNull(nodeParent)) {
+            node = nodeParent;
+            nodeParent = parentElementGetter.call(node);
+        }
+        return node;
+    };
 
 /**
  * This method checks whether or not the content of the node is computed
@@ -126,22 +139,6 @@ function parentElementGetterPatched(this: Node): Element | null {
     return parentNode instanceof Element ? parentNode : null;
 }
 
-function compareDocumentPositionPatched(this: Node, otherNode: Node) {
-    if (this === otherNode) {
-        return 0;
-    } else if (this.getRootNode() === otherNode) {
-        // "this" is in a shadow tree where the shadow root is the "otherNode".
-        return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
-    } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
-        // "this" and "otherNode" belongs to 2 different shadow tree.
-        return 35; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node.DOCUMENT_POSITION_PRECEDING
-    }
-
-    // Since "this" and "otherNode" are part of the same shadow tree we can safely rely to the native
-    // Node.compareDocumentPosition implementation.
-    return compareDocumentPosition.call(this, otherNode);
-}
-
 function containsPatched(this: Node, otherNode: Node) {
     if (otherNode == null || getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
         // it is from another shadow
@@ -185,27 +182,6 @@ function childNodesGetterPatched(this: Node): NodeListOf<Node> {
     return childNodesGetter.call(this);
 }
 
-const nativeGetRootNode = Node.prototype.getRootNode;
-
-/**
- * Get the root by climbing up the dom tree, beyond the shadow root
- * If Node.prototype.getRootNode is supported, use it
- * else, assume we are working in non-native shadow mode and climb using parentNode
- */
-const getDocumentOrRootNode: (this: Node, options?: GetRootNodeOptions) => Node = !isUndefined(
-    nativeGetRootNode
-)
-    ? nativeGetRootNode
-    : function (this: Node): Node {
-          // eslint-disable-next-line @typescript-eslint/no-this-alias
-          let node = this;
-          let nodeParent: Node | null;
-          while (!isNull((nodeParent = parentNodeGetter.call(node)))) {
-              node = nodeParent!;
-          }
-          return node;
-      };
-
 /**
  * Get the shadow root
  * getNodeOwner() returns the host element that owns the given node
@@ -220,7 +196,7 @@ function getNearestRoot(node: Node): Node {
 
     if (isNull(ownerNode)) {
         // we hit a wall, either we are in native shadow mode or the node is not in lwc boundary.
-        return getDocumentOrRootNode.call(node);
+        return getRootNode.call(node);
     }
 
     return getShadowRoot(ownerNode) as Node;
@@ -246,8 +222,23 @@ function getNearestRoot(node: Node): Node {
  * @param options
  */
 function getRootNodePatched(this: Node, options?: GetRootNodeOptions): Node {
-    const composed: boolean = isUndefined(options) ? false : !!options.composed;
-    return isTrue(composed) ? getDocumentOrRootNode.call(this, options) : getNearestRoot(this);
+    return options?.composed ? getRootNode.call(this, options) : getNearestRoot(this);
+}
+
+function compareDocumentPositionPatched(this: Node, otherNode: Node) {
+    if (this === otherNode) {
+        return 0;
+    } else if (getRootNodePatched.call(this) === otherNode) {
+        // "this" is in a shadow tree where the shadow root is the "otherNode".
+        return 10; // Node.DOCUMENT_POSITION_CONTAINS | Node.DOCUMENT_POSITION_PRECEDING
+    } else if (getNodeOwnerKey(this) !== getNodeOwnerKey(otherNode)) {
+        // "this" and "otherNode" belongs to 2 different shadow tree.
+        return 35; // Node.DOCUMENT_POSITION_DISCONNECTED | Node.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC | Node.DOCUMENT_POSITION_PRECEDING
+    }
+
+    // Since "this" and "otherNode" are part of the same shadow tree we can safely rely to the native
+    // Node.compareDocumentPosition implementation.
+    return compareDocumentPosition.call(this, otherNode);
 }
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that

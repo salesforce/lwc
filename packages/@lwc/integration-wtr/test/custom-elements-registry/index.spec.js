@@ -6,7 +6,7 @@ const tagAlreadyUsedErrorMessage =
 
 /** Fetches a text resource. */
 async function getModuleCode(pkg) {
-    const res = await fetch(resolvePathOutsideRoot(`../${pkg}/dist/index.cjs.js`));
+    const res = await fetch(resolvePathOutsideRoot(`../${pkg}/dist/index.cjs`));
     const code = await res.text();
     // CommonJS code needs to have `exports` defined, so we wrap in an IIFE
     // to provide it and to encapsulate the code.

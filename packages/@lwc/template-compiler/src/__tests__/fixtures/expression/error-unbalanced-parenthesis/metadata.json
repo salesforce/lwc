@@ -10,7 +10,7 @@
                 "start": 20,
                 "length": 8
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1083"
         },
         {
             "code": 1083,
@@ -22,7 +22,7 @@
                 "start": 44,
                 "length": 8
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1083"
         },
         {
             "code": 1083,
@@ -34,7 +34,7 @@
                 "start": 68,
                 "length": 14
             },
-            "url": ""
+            "url": "https://lwc.dev/guide/error_codes#lwc1083"
         }
     ]
 }

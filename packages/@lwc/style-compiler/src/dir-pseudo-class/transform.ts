@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { attribute, combinator, isCombinator } from 'postcss-selector-parser';
+import postCssSelectorParser from 'postcss-selector-parser';
 import { isDirPseudoClass } from '../utils/rtl';
 import {
     DIR_ATTRIBUTE_NATIVE_LTR,
@@ -55,14 +55,14 @@ export default function (root: Root, ctx: StyleCompilerCtx) {
                 // attribute added to the host element. So we need two placeholders:
                 // `<synthetic_placeholder> .foo<native_placeholder>:not(.bar)`
 
-                const nativeAttribute = attribute({
+                const nativeAttribute = postCssSelectorParser.attribute({
                     attribute:
                         value === 'ltr' ? DIR_ATTRIBUTE_NATIVE_LTR : DIR_ATTRIBUTE_NATIVE_RTL,
                     value: undefined,
                     raws: {},
                 });
 
-                const syntheticAttribute = attribute({
+                const syntheticAttribute = postCssSelectorParser.attribute({
                     attribute:
                         value === 'ltr' ? DIR_ATTRIBUTE_SYNTHETIC_LTR : DIR_ATTRIBUTE_SYNTHETIC_RTL,
                     value: undefined,
@@ -74,11 +74,13 @@ export default function (root: Root, ctx: StyleCompilerCtx) {
                 // If the selector is not empty and if the first node in the selector is not already a
                 // " " combinator, we need to use the descendant selector format
                 const shouldAddDescendantCombinator =
-                    selector.first && !isCombinator(selector.first) && selector.first.value !== ' ';
+                    selector.first &&
+                    !postCssSelectorParser.isCombinator(selector.first) &&
+                    selector.first.value !== ' ';
                 if (shouldAddDescendantCombinator) {
                     selector.insertBefore(
                         selector.first,
-                        combinator({
+                        postCssSelectorParser.combinator({
                             value: ' ',
                         })
                     );
