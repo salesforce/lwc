@@ -12,6 +12,7 @@ stages:
         image: docker.repo.local.sfdc.net/sfci/docker-images/sfdc_rhel9_nodejs20/sfdc_rhel9_nodejs20_build:latest
         commands:
           - yarn install
+          - yarn build
           - yarn test
   integration-test:
     - downstream-dependency:
