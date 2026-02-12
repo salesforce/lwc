@@ -30,7 +30,7 @@
         "dotenv": "^17.2.3",
         "lwc": "9.0.2",
         "minimist": "^1.2.8",
-        "webdriverio": "^9.23.2"
+        "webdriverio": "^9.24.0"
     },
     "volta": {
         "extends": "../../../package.json"
