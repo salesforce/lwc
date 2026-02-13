@@ -14,12 +14,29 @@ import {
 import dynamicImports from './dynamic-imports';
 import scopeCssImports from './scope-css-imports';
 import compilerVersionNumber from './compiler-version-number';
+import privateMethodTransform from './private-method-transform';
+import reversePrivateMethodTransform from './reverse-private-method-transform';
 import { getEngineImportSpecifiers } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { PluginObj } from '@babel/core';
 
 // This is useful for consumers of this package to define their options
 export type { LwcBabelPluginOptions } from './types';
+
+/**
+ * Standalone Babel plugin that reverses the private method transformation.
+ * This must be registered AFTER @babel/plugin-transform-class-properties so that
+ * class properties are fully transformed before private methods are restored.
+ */
+export function LwcReversePrivateMethodTransform(api: BabelAPI): PluginObj<LwcBabelPluginPass> {
+    const { ClassMethod: reverseTransformPrivateMethods } = reversePrivateMethodTransform(api);
+
+    return {
+        visitor: {
+            ClassMethod: reverseTransformPrivateMethods,
+        },
+    };
+}
 
 /**
  * The transform is done in 2 passes:
@@ -32,6 +49,7 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
     const { Class: transformDecorators } = decorators(api);
     const { Import: transformDynamicImports } = dynamicImports();
     const { ClassBody: addCompilerVersionNumber } = compilerVersionNumber(api);
+    const { Program: transformPrivateMethods } = privateMethodTransform(api);
 
     return {
         manipulateOptions(opts, parserOpts) {
@@ -53,6 +71,15 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
 
                     // Add ?scoped=true to *.scoped.css imports
                     scopeCssImports(api, path);
+
+                    // Transform private methods BEFORE any other plugin processes them
+                    if (
+                        transformPrivateMethods &&
+                        typeof transformPrivateMethods === 'object' &&
+                        'enter' in transformPrivateMethods
+                    ) {
+                        (transformPrivateMethods as any).enter(path, state);
+                    }
                 },
                 exit(path) {
                     const engineImportSpecifiers = getEngineImportSpecifiers(path);
