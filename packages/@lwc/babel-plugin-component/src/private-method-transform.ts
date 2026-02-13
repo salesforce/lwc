@@ -29,8 +29,8 @@ export default function privateMethodTransform({
                             methodState: LwcBabelPluginPass
                         ) {
                             const key = methodPath.get('key');
-                            
-                            // We only want kind: 'method'. 
+
+                            // We only want kind: 'method'.
                             // Other options not included are 'get', 'set', and 'constructor'.
                             const methodKind = 'method';
 

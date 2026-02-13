@@ -221,7 +221,8 @@ export const DecoratorErrors = {
 
     DECORATOR_ON_PRIVATE_METHOD: {
         code: 1212,
-        message: 'Decorators cannot be applied to private methods. Private methods are not part of the component API.',
+        message:
+            'Decorators cannot be applied to private methods. Private methods are not part of the component API.',
         level: DiagnosticLevel.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1212',
     },
