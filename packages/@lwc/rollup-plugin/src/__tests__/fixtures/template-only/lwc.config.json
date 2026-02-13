@@ -1,0 +1,9 @@
+{
+    "modules": [
+        { "dir": "." },
+        {
+            "name": "aliased",
+            "path": "x/basic/basic.html"
+        }
+    ]
+}

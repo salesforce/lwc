@@ -12,7 +12,7 @@ To run individual test files, provide them as CLI arguments. If using relative p
 
 Environment variables are used as controls to run tests in different modes (e.g native vs synthetic shadow, different API versions). The full list of controls is defined in [`helpers/options.js`](./helpers/options.js).
 
-To run tests only for a specific browser, set the `BROWSERS` environment variable. For example, `BROWSERS=chromium yarn test:wtr`.
+For local development, tests run by default in Chromium. In CI, tests run in Chromium, Firefox, and Safari. To run with specific browsers, set the `BROWSERS` env var to a comma-delimited list. For example, `BROWSERS=chromium,firefox,safari yarn test:wtr`.
 
 ## Architecture
 

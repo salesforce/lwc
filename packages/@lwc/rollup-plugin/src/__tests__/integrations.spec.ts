@@ -4,26 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { rollup } from 'rollup';
 
-import lwc from '../index';
+import { runRollup } from './util';
 
 describe('integration', () => {
     describe('typescript', () => {
         it(`resolves and transform .ts files`, async () => {
-            const bundle = await rollup({
-                input: path.resolve(import.meta.dirname, 'fixtures/typescript/typescript.ts'),
-                plugins: [lwc()],
-                external: ['lwc'],
-            });
-
-            const result = await bundle.generate({
-                format: 'esm',
-            });
-
-            const { code } = result.output[0];
+            const { code } = await runRollup('typescript/typescript.ts');
             expect(code).toContain('class TypeScript');
             expect(code).toContain('registerComponent');
         });
