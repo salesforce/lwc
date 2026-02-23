@@ -38,10 +38,6 @@ const PRIVATE_METHOD_PREFIX = '__lwc_component_class_internal_private_';
 const SYNTHETIC_ELEMENT_INTERNALS_KEY = 'enableSyntheticElementInternals';
 const COMPONENT_FEATURE_FLAG_KEY = 'componentFeatureFlag';
 
-// TODO: Implement a counter so we know how many functions are getting transformed
-// before and after (instead of hash)
-// TODO: Do I need to do anything else with the 1212?
-
 export {
     DECORATOR_TYPES,
     LWC_PACKAGE_ALIAS,

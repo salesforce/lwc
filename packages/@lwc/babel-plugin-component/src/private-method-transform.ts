@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { DecoratorErrors } from '@lwc/errors';
 import { PRIVATE_METHOD_PREFIX } from './constants';
+import { handleError } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { NodePath, Visitor } from '@babel/core';
 import type { types } from '@babel/core';
-import { handleError } from './utils';
-import { DecoratorErrors } from '@lwc/errors';
 
 /**
  * Transforms private method identifiers from #privateMethod to __lwc_component_class_internal_private_privateMethod
