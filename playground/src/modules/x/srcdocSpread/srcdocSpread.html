@@ -1,0 +1,16 @@
+<template>
+    <section class="poc">
+        <h2>lwc:spread iframe srcdoc PoC</h2>
+        <p>
+            This component applies an attacker-controlled object to an iframe via
+            <code>lwc:spread</code>, setting <code>srcdoc</code> at runtime.
+        </p>
+        <label for="payload">Payload (applied via lwc:spread)</label>
+        <textarea id="payload" oninput={handleInput}>{payload}</textarea>
+        <div class="actions">
+            <button onclick={applyPayload}>Apply payload</button>
+        </div>
+        <div class="status">Last message: {message}</div>
+        <iframe class="frame" lwc:spread={iframeProps}></iframe>
+    </section>
+</template>
