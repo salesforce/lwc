@@ -18,6 +18,7 @@ describe('lwc:spread', () => {
         overriddenChild,
         trackedChild,
         innerHTMLChild,
+        iframeChild,
         originalHook,
         warnSpy,
         logSpy;
@@ -33,6 +34,7 @@ describe('lwc:spread', () => {
         overriddenChild = elm.shadowRoot.querySelector('.x-child-overridden');
         trackedChild = elm.shadowRoot.querySelector('.x-child-tracked');
         innerHTMLChild = elm.shadowRoot.querySelector('.div-innerhtml');
+        iframeChild = elm.shadowRoot.querySelector('.iframe-srcdoc');
     });
     afterEach(() => {
         setSanitizeHtmlContentHookForTest(originalHook);
@@ -52,7 +54,9 @@ describe('lwc:spread', () => {
         if (process.env.NODE_ENV === 'production') {
             expect(warnSpy).not.toHaveBeenCalled();
         } else {
-            expect(warnSpy).toHaveBeenCalledExactlyOnceWith(
+            // Note: This test now sees warnings from both innerHTML and srcdoc
+            // Check that innerHTML warning was called at least once
+            expect(warnSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     message: expect.stringContaining(
                         `Cannot set property "innerHTML". Instead, use lwc:inner-html or lwc:dom-manual.`
@@ -129,5 +133,24 @@ describe('lwc:spread', () => {
         });
         await Promise.resolve();
         expect(trackedChild.shadowRoot.querySelector('span').textContent).toEqual('Name: Altered');
+    });
+
+    it('should block srcdoc on iframe elements for security', () => {
+        // The iframe should be rendered but srcdoc should not be set
+        expect(iframeChild).not.toBeNull();
+        expect(iframeChild.tagName).toBe('IFRAME');
+        expect(iframeChild.srcdoc).toBe('');
+
+        if (process.env.NODE_ENV === 'production') {
+            expect(warnSpy).not.toHaveBeenCalled();
+        } else {
+            expect(warnSpy).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    message: expect.stringContaining(
+                        `Cannot set property "srcdoc" on <iframe>. The srcdoc attribute is disallowed for security reasons.`
+                    ),
+                })
+            );
+        }
     });
 });

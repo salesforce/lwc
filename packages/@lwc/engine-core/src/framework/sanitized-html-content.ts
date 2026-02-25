@@ -67,6 +67,14 @@ export function safelySetProperty(
                 );
             }
         }
+    } else if (key === 'srcdoc' && elm.tagName === 'IFRAME') {
+        // Block srcdoc on iframe elements for security reasons (XSS vector)
+        // This mirrors the compile-time check (LWC1048) that blocks srcdoc in templates
+        if (process.env.NODE_ENV !== 'production') {
+            logWarn(
+                `Cannot set property "srcdoc" on <iframe>. The srcdoc attribute is disallowed for security reasons.`
+            );
+        }
     } else {
         setProperty(elm, key, value);
     }

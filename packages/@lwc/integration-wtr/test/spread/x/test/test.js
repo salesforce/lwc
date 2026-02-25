@@ -10,6 +10,7 @@ export default class Test extends LightningElement {
     @track trackedProps = { name: 'Tracked' };
     innerHTMLProps = { innerHTML: 'innerHTML from spread' };
     innerHTML = 'innerHTML from directive';
+    iframeProps = { srcdoc: '<script>alert("XSS")</script><p>Test content</p>' };
 
     spreadClick() {
         // eslint-disable-next-line no-console
