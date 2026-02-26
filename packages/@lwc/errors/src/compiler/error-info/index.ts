@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 /**
- * Next error code: 1213
+ * Next error code: 1214
  */
 
 export * from './compiler';

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { DecoratorErrors } from '@lwc/errors';
-import { PRIVATE_METHOD_PREFIX } from './constants';
+import { PRIVATE_METHOD_PREFIX, PRIVATE_METHOD_METADATA_KEY } from './constants';
 import { handleError } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { NodePath, Visitor } from '@babel/core';
@@ -21,6 +21,8 @@ export default function privateMethodTransform({
     return {
         Program: {
             enter(path: NodePath<types.Program>, state: LwcBabelPluginPass) {
+                const transformedNames = new Set<string>();
+
                 // Transform private methods BEFORE any other plugin processes them
                 path.traverse(
                     {
@@ -94,11 +96,14 @@ export default function privateMethodTransform({
                                 // Replace the entire ClassPrivateMethod node with the new ClassMethod node
                                 // (we can't just replace the key of type PrivateName with type Identifier)
                                 methodPath.replaceWith(classMethod);
+                                transformedNames.add(transformedName);
                             }
                         },
                     },
                     state
                 );
+
+                (state.file.metadata as any)[PRIVATE_METHOD_METADATA_KEY] = transformedNames;
             },
         },
     };

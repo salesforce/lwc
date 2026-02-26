@@ -29,12 +29,8 @@ export type { LwcBabelPluginOptions } from './types';
  * class properties are fully transformed before private methods are restored.
  */
 export function LwcReversePrivateMethodTransform(api: BabelAPI): PluginObj<LwcBabelPluginPass> {
-    const { ClassMethod: reverseTransformPrivateMethods } = reversePrivateMethodTransform(api);
-
     return {
-        visitor: {
-            ClassMethod: reverseTransformPrivateMethods,
-        },
+        visitor: reversePrivateMethodTransform(api),
     };
 }
 
