@@ -38,6 +38,7 @@
     "types": "dist/index.d.ts",
     "files": [
         "dist/**/*.js",
+        "dist/**/*.cjs",
         "dist/**/*.d.ts"
     ],
     "scripts": {
