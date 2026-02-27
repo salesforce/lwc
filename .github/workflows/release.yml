@@ -28,7 +28,7 @@ permissions:
 jobs:
     release:
         # Allow only on master, spring*, summer*, winter*;
-        if: ${{ github.repository_owner == 'salesforce' && (github.ref_name == 'master' || startsWith(github.ref_name, 'spring') || startsWith(github.ref_name, 'summer') || startsWith(github.ref_name, 'winter')) }}
+        if: ${{ github.repository_owner == 'salesforce' }}
         name: Release LWC - ${{ inputs.release_version }} ${{ inputs.bump }}
         environment: release
         runs-on: ubuntu-latest
@@ -44,8 +44,23 @@ jobs:
                       exit 1
                     fi
                   fi
-                  echo "Resolved input: '$RELEASE_VERSION'"
+
+                  if [ "$RELEASE_VERSION" = prerelease ]; then
+                    TAG=canary
+                  else
+                    case "$GITHUB_REF_NAME" in
+                      master) TAG=latest;;
+                      winter*) TAG="$GITHUB_REF_NAME";;
+                      spring*) TAG="$GITHUB_REF_NAME";;
+                      summer*) TAG="$GITHUB_REF_NAME";;
+                      *) echo "Could not determine tag for releasing $GITHUB_REF_NAME as v$NEW_VERSION." && exit 1;;
+                    esac
+                  fi
+
+                  echo "Resolved input: $RELEASE_VERSION"
                   echo "resolved=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+                  echo "Resolved tag: $TAG"
+                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
             - name: Checkout
               uses: actions/checkout@v5
@@ -66,42 +81,38 @@ jobs:
 
             - name: Update LWC version
               id: update_version
+              env:
+                  VERSION_INPUT: ${{ steps.resolve_input.outputs.resolved }}
               run: |
 
-                  node ./scripts/release/version.js '${{ steps.resolve_input.outputs.resolved }}'
+                  node ./scripts/release/version.js "$VERSION_INPUT"
                   RESOLVED_VERSION="$(jq -r .version package.json)"
                   echo "New version: $RESOLVED_VERSION"
                   echo "new_version=$RESOLVED_VERSION" >> "$GITHUB_OUTPUT"
 
+            - name: Build
+              run: yarn build
+
             - name: Set git identity (Actions bot)
+              if: ${{ steps.resolve_input.outputs.resolved != "prerelease" }}
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
             - name: Commit & push
+              if: ${{ steps.resolve_input.outputs.resolved != "prerelease" }}
               uses: actions-js/push@v1.4
               with:
                   github_token: ${{ secrets.WORKFLOW_PAT }}
                   branch: ${{ github.ref_name }}
                   message: 'chore: release v${{ steps.update_version.outputs.new_version }}'
 
-            - name: Build
-              run: yarn build
-
-            - name: Tag and create GitHub release
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  VERSION='${{ steps.update_version.outputs.new_version }}'
-                  git tag -a "v$VERSION" -m "Release v$VERSION"
-                  git push origin tag "v$VERSION"
-                  gh release create "v$VERSION" --title "v$VERSION" --generate-notes
-
             - name: Publish to npm
               env:
+                  NEW_VERSION: ${{ steps.update_version.outputs.new_version }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
                   NPM_CONFIG_ALWAYS_AUTH: 'true'
+                  TAG: ${{ steps.resolve_input.outputs.tag }}
               run: |
                   # Force both npm and yarn to use npmjs and pick up the token
                   yarn config set registry https://registry.npmjs.org
@@ -112,5 +123,16 @@ jobs:
                   echo "yarn registry: $(yarn config get registry)"
                   echo "npm registry:  $(npm config get registry)"
 
-                  TAG=$([ "$GITHUB_REF_NAME" = "master" ] && echo latest || echo "$GITHUB_REF_NAME")
+                  echo "Publishing $GITHUB_REF_NAME as v$NEW_VERSION using tag $TAG."
                   yarn nx release publish --yes --tag "$TAG"
+
+            - name: Tag and create GitHub release
+              if: ${{ steps.resolve_input.outputs.resolved != "prerelease" }}
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  VERSION: ${{ steps.update_version.outputs.new_version }}
+              run: |
+                  git tag -a "v$VERSION" -m "Release v$VERSION"
+                  git push origin tag "v$VERSION"
+                  gh release create "v$VERSION" --title "v$VERSION" --generate-notes
