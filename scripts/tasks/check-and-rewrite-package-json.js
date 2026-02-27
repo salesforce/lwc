@@ -68,7 +68,9 @@ for (const { package: pkg, path: dir } of SCOPED_PACKAGES) {
             module: 'dist/index.js',
             types: 'dist/index.d.ts',
             // It's important _not_ to use `./dist` here (with the `./`), because npm does not understand that
-            files: Array.from(new Set(['dist/**/*.js', 'dist/**/*.d.ts', ...pkg.files])),
+            files: Array.from(
+                new Set(['dist/**/*.js', 'dist/**/*.cjs', 'dist/**/*.d.ts', ...pkg.files])
+            ),
             scripts: {
                 build: 'rollup --config ../../../scripts/rollup/rollup.config.js',
                 dev: 'rollup  --config ../../../scripts/rollup/rollup.config.js --watch --no-watch.clearScreen',
