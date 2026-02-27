@@ -10,7 +10,10 @@ import babelAsyncToGenPlugin from '@babel/plugin-transform-async-to-generator';
 import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties';
 import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
-import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
+import lwcClassTransformPlugin, {
+    LwcReversePrivateMethodTransform,
+    type LwcBabelPluginOptions,
+} from '@lwc/babel-plugin-component';
 import {
     CompilerAggregateError,
     CompilerError,
@@ -66,6 +69,7 @@ export default function scriptTransform(
     const plugins: babel.PluginItem[] = [
         [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
+        LwcReversePrivateMethodTransform,
     ];
 
     if (!isAPIFeatureEnabled(APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION, apiVersion)) {

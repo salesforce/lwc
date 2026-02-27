@@ -10,5 +10,11 @@ export default class extends LightningElement {
     }
     decrement() {
         this.counter--;
+
+        this.#privateMethod();
+    }
+
+    #privateMethod() {
+        this.counter += 0;
     }
 }

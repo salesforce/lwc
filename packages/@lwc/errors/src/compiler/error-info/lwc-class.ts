@@ -218,4 +218,20 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1200',
     },
+
+    DECORATOR_ON_PRIVATE_METHOD: {
+        code: 1212,
+        message:
+            'Decorators cannot be applied to private methods. Private methods are not part of the component API.',
+        level: DiagnosticLevel.Error,
+        url: 'https://lwc.dev/guide/error_codes#lwc1212',
+    },
+
+    PRIVATE_METHOD_NAME_COLLISION: {
+        code: 1213,
+        message:
+            "Method '{0}' conflicts with internal naming conventions. Please rename this function to avoid conflict.",
+        level: DiagnosticLevel.Error,
+        url: 'https://lwc.dev/guide/error_codes#lwc1213',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;
