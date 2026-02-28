@@ -130,7 +130,7 @@ const HTML_ELEMENT_ATTRIBUTE_MAP = {
     colgroup: ['align', 'char', 'charoff', 'span', 'valign', 'width'],
     data: ['value'],
     del: ['cite', 'datetime'],
-    details: ['open'],
+    details: ['name', 'open'],
     dialog: ['open'],
     dir: ['compact'],
     div: ['align'],
