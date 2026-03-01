@@ -4,38 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { rollup } from 'rollup';
-import lwc from '../index';
-import type { RollupLog } from 'rollup';
-import type { RollupLwcOptions } from '../index';
+import { runRollup } from './util';
 
 describe('enableStaticContentOptimization:', () => {
-    async function runRollup(
-        pathname: string,
-        options: RollupLwcOptions
-    ): Promise<{ code: string; warnings: RollupLog[] }> {
-        const warnings: RollupLog[] = [];
-        const bundle = await rollup({
-            input: path.resolve(import.meta.dirname, pathname),
-            plugins: [lwc(options)],
-            external: ['lwc'],
-            onwarn(warning) {
-                warnings.push(warning);
-            },
-        });
-
-        const { output } = await bundle.generate({
-            format: 'esm',
-        });
-
-        return {
-            code: output[0].code,
-            warnings,
-        };
-    }
-
     const configs = [
         {
             name: 'undefined',
@@ -48,7 +20,7 @@ describe('enableStaticContentOptimization:', () => {
     ];
 
     it.for(configs)('$name', async ({ opts, expected }) => {
-        const { code, warnings } = await runRollup('fixtures/image/image.js', opts);
+        const { code, warnings } = await runRollup('image/image.js', opts);
         expect(warnings).toEqual([]);
         expect(code.includes('<img')).toBe(expected);
     });

@@ -4,48 +4,20 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import path from 'node:path';
 import { describe, it, expect } from 'vitest';
-import { rollup } from 'rollup';
 import { APIVersion, HIGHEST_API_VERSION, LOWEST_API_VERSION } from '@lwc/shared';
 
-import lwc from '../index';
-import type { RollupLwcOptions } from '../index';
-import type { RollupLog } from 'rollup';
+import { runRollup } from './util';
 
 describe('API versioning', () => {
-    async function runRollup(
-        pathname: string,
-        options: RollupLwcOptions
-    ): Promise<{ code: string; warnings: RollupLog[] }> {
-        const warnings: RollupLog[] = [];
-        const bundle = await rollup({
-            input: path.resolve(import.meta.dirname, pathname),
-            plugins: [lwc(options)],
-            external: ['lwc'],
-            onwarn(warning) {
-                warnings.push(warning);
-            },
-        });
-
-        const { output } = await bundle.generate({
-            format: 'esm',
-        });
-
-        return {
-            code: output[0].code,
-            warnings,
-        };
-    }
-
     it('uses highest API version by default', async () => {
-        const { code, warnings } = await runRollup('fixtures/basic/basic.js', {});
+        const { code, warnings } = await runRollup('basic/basic.js', {});
         expect(code).toContain(`apiVersion: ${HIGHEST_API_VERSION}`);
         expect(warnings).toEqual([]);
     });
 
     it('passes the apiVersion config on to the compiled JS component', async () => {
-        const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
+        const { code, warnings } = await runRollup('basic/basic.js', {
             apiVersion: APIVersion.V58_244_SUMMER_23,
         });
         expect(code).toContain(`apiVersion: ${LOWEST_API_VERSION}`);
@@ -53,7 +25,7 @@ describe('API versioning', () => {
     });
 
     it('handles apiVersion lower than lower bound', async () => {
-        const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
+        const { code, warnings } = await runRollup('basic/basic.js', {
             // @ts-expect-error Explicitly testing JS behavior that violates TS types
             apiVersion: 0,
         });
@@ -62,7 +34,7 @@ describe('API versioning', () => {
     });
 
     it('handles apiVersion higher than high bound', async () => {
-        const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
+        const { code, warnings } = await runRollup('basic/basic.js', {
             apiVersion: Number.MAX_SAFE_INTEGER,
         });
         expect(code).toContain(`apiVersion: ${HIGHEST_API_VERSION}`);
@@ -70,7 +42,7 @@ describe('API versioning', () => {
     });
 
     it('if within bounds, finds the lowest known version matching the specification', async () => {
-        const { code, warnings } = await runRollup('fixtures/basic/basic.js', {
+        const { code, warnings } = await runRollup('basic/basic.js', {
             // @ts-expect-error Explicitly testing JS behavior that violates TS types
             apiVersion: 58.5,
         });
