@@ -251,6 +251,13 @@ export const LightningElement: LightningElementConstructor = function (
         );
     }
 
+    // Prevent constructor from being invoked as a function (e.g. LightningElement.call(iframe)),
+    // which would allow overwriting vm.component and bypass LWC sandbox. Allow a single function-style
+    // call for Locker/mirror integrations (SecureBase that does LightningElement.prototype.constructor.call(this)).
+    if (!lwcRuntimeFlags.DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION && !new.target) {
+        throw new TypeError('Cannot call LightningElement constructor.');
+    }
+
     setPrototypeOf(elm, bridge.prototype);
 
     vm.component = this;

@@ -81,37 +81,40 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });
 
-it('should fail when the constructor returns something other than LightningElement when DISABLE_LEGACY_VALIDATION is true and LEGACY_LOCKER_ENABLED is falsy', () => {
-    setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
+it('should throw when the constructor returns something other than LightningElement', () => {
     expect(() => {
         createElement('x-returning-bad', { is: ReturningBad });
     }).toThrowError(
         TypeError,
         'Invalid component constructor, the class should extend LightningElement.'
     );
-    setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
 });
 
-it('should succeed when the constructor returns something other than LightningElement when DISABLE_LEGACY_VALIDATION is falsy and LEGACY_LOCKER_ENABLED is falsy', () => {
+it('should succeed when the constructor returns something other than LightningElement when DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION is true', () => {
+    setFeatureFlagForTest('DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION', true);
     expect(() => {
         createElement('x-returning-bad', { is: ReturningBad });
     }).not.toThrow();
+    setFeatureFlagForTest('DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION', false);
 });
 
-it('should succeed when the constructor returns something other than LightningElement when DISABLE_LEGACY_VALIDATION is falsy and LEGACY_LOCKER_ENABLED is true', () => {
-    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
-    expect(() => {
-        createElement('x-returning-bad', { is: ReturningBad });
-    }).not.toThrow();
-    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
+it('should throw when calling LightningElement constructor as a function (e.g. .call/.apply)', () => {
+    const func = () => {
+        const fakeThis = {};
+        LightningElement.call(fakeThis);
+    };
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Cannot call LightningElement constructor/);
 });
 
-it('should succeed when the constructor returns something other than LightningElement when DISABLE_LEGACY_VALIDATION is true and LEGACY_LOCKER_ENABLED is true', () => {
-    setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
-    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
-    expect(() => {
-        createElement('x-returning-bad', { is: ReturningBad });
-    }).not.toThrow();
-    setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
-    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
+it('should throw Illegal constructor (not Cannot call) when DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION is true', () => {
+    setFeatureFlagForTest('DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION', true);
+    const func = () => {
+        const fakeThis = {};
+        LightningElement.call(fakeThis);
+    };
+    expect(func).toThrowError(TypeError);
+    expect(func).toThrowError(/Illegal constructor/);
+    expect(func).not.toThrowError(/Cannot call LightningElement constructor/);
+    setFeatureFlagForTest('DISABLE_CONSTRUCTOR_INVOCATION_VALIDATION', false);
 });
