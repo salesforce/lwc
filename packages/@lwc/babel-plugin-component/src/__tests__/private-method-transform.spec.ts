@@ -6,7 +6,7 @@
  */
 import { describe, expect, test } from 'vitest';
 import { transformSync } from '@babel/core';
-import plugin, { LwcReversePrivateMethodTransform } from '../index';
+import plugin, { LwcPrivateMethodTransform, LwcReversePrivateMethodTransform } from '../index';
 
 const BASE_OPTS = {
     namespace: 'lwc',
@@ -23,7 +23,11 @@ const BASE_CONFIG = {
 function transformWithFullPipeline(source: string, opts = {}) {
     return transformSync(source, {
         ...BASE_CONFIG,
-        plugins: [[plugin, { ...BASE_OPTS, ...opts }], LwcReversePrivateMethodTransform],
+        plugins: [
+            LwcPrivateMethodTransform,
+            [plugin, { ...BASE_OPTS, ...opts }],
+            LwcReversePrivateMethodTransform,
+        ],
     });
 }
 
@@ -37,7 +41,7 @@ function transformReverseOnly(source: string) {
 function transformForwardOnly(source: string, opts = {}) {
     return transformSync(source, {
         ...BASE_CONFIG,
-        plugins: [[plugin, { ...BASE_OPTS, ...opts }]],
+        plugins: [LwcPrivateMethodTransform, [plugin, { ...BASE_OPTS, ...opts }]],
     });
 }
 
@@ -199,11 +203,10 @@ describe('private method transform validation', () => {
             }
         `;
 
-        // The @api decorator validation (LWC1103) fires before the private method
-        // transform, so the error comes from decorator validation rather than the
-        // private method decorator check (LWC1212).
+        // The forward private method transform runs as a separate plugin before the
+        // main LWC plugin, so LWC1212 fires before the @api decorator validation.
         expect(() => transformWithFullPipeline(source)).toThrowError(
-            /"@api" can only be applied on class properties/
+            /Decorators cannot be applied to private methods/
         );
     });
 
@@ -321,6 +324,7 @@ describe('private method transform validation', () => {
             transformSync(source, {
                 ...BASE_CONFIG,
                 plugins: [
+                    LwcPrivateMethodTransform,
                     [plugin, { ...BASE_OPTS }],
                     methodRemoverPlugin,
                     LwcReversePrivateMethodTransform,
@@ -528,6 +532,7 @@ describe('private method transform validation', () => {
         const result = transformSync(source, {
             ...BASE_CONFIG,
             plugins: [
+                LwcPrivateMethodTransform,
                 [plugin, { ...BASE_OPTS }],
                 bodyModifierPlugin,
                 LwcReversePrivateMethodTransform,
@@ -570,6 +575,7 @@ describe('private method transform validation', () => {
             transformSync(source, {
                 ...BASE_CONFIG,
                 plugins: [
+                    LwcPrivateMethodTransform,
                     [plugin, { ...BASE_OPTS }],
                     prefixedMethodInjectorPlugin,
                     LwcReversePrivateMethodTransform,

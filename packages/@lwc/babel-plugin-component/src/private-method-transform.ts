@@ -8,25 +8,34 @@ import { DecoratorErrors } from '@lwc/errors';
 import { PRIVATE_METHOD_PREFIX, PRIVATE_METHOD_METADATA_KEY } from './constants';
 import { copyMethodMetadata, handleError } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
-import type { NodePath, Visitor } from '@babel/core';
+import type { NodePath, PluginObj } from '@babel/core';
 import type { types } from '@babel/core';
 
 // We only transform kind: 'method'. Other kinds ('get', 'set', 'constructor') are left alone.
 const METHOD_KIND = 'method';
 
 /**
- * Transforms private method identifiers from #privateMethod to __lwc_component_class_internal_private_privateMethod
- * This function returns a Program visitor that transforms private methods before other plugins process them
+ * Standalone Babel plugin that transforms private method identifiers from
+ * `#privateMethod` to `__lwc_component_class_internal_private_privateMethod`.
+ *
+ * This must be registered BEFORE the main LWC class transform plugin so that
+ * private methods are converted to regular methods before decorator and class
+ * property processing.
+ *
+ * Uses Program > path.traverse() rather than a top-level ClassPrivateMethod visitor
+ * because the reverse transform has a ClassMethod visitor in the same Babel pass.
+ * A direct ClassPrivateMethod visitor would replace nodes that the reverse transform
+ * immediately converts back, creating an infinite loop. The manual traverse ensures
+ * all forward replacements complete before the reverse visitor sees any ClassMethod.
  */
 export default function privateMethodTransform({
     types: t,
-}: BabelAPI): Visitor<LwcBabelPluginPass> {
+}: BabelAPI): PluginObj<LwcBabelPluginPass> {
     return {
-        Program: {
-            enter(path: NodePath<types.Program>, state: LwcBabelPluginPass) {
+        visitor: {
+            Program(path: NodePath<types.Program>, state: LwcBabelPluginPass) {
                 const transformedNames = new Set<string>();
 
-                // Transform private methods BEFORE any other plugin processes them
                 path.traverse(
                     {
                         ClassPrivateMethod(
@@ -42,7 +51,9 @@ export default function privateMethodTransform({
                                 if (node.decorators && node.decorators.length > 0) {
                                     handleError(
                                         methodPath,
-                                        { errorInfo: DecoratorErrors.DECORATOR_ON_PRIVATE_METHOD },
+                                        {
+                                            errorInfo: DecoratorErrors.DECORATOR_ON_PRIVATE_METHOD,
+                                        },
                                         methodState
                                     );
                                     return;

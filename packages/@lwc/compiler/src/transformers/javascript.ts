@@ -11,6 +11,7 @@ import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties
 import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
 import lwcClassTransformPlugin, {
+    LwcPrivateMethodTransform,
     LwcReversePrivateMethodTransform,
     type LwcBabelPluginOptions,
 } from '@lwc/babel-plugin-component';
@@ -67,6 +68,7 @@ export default function scriptTransform(
     };
 
     const plugins: babel.PluginItem[] = [
+        LwcPrivateMethodTransform,
         [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
         LwcReversePrivateMethodTransform,
