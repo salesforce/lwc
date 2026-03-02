@@ -84,7 +84,7 @@ describe('private method transform validation', () => {
         `;
 
         expect(() => transformWithFullPipeline(source)).toThrowError(
-            /conflicts with internal naming conventions\. Please rename this function to avoid conflict/
+            /cannot start with reserved prefix `__lwc_`\. Please rename this function to avoid conflict/
         );
     });
 
@@ -100,7 +100,7 @@ describe('private method transform validation', () => {
         `;
 
         expect(() => transformWithFullPipeline(source)).toThrowError(
-            /conflicts with internal naming conventions\. Please rename this function to avoid conflict/
+            /cannot start with reserved prefix `__lwc_`\. Please rename this function to avoid conflict/
         );
     });
 
@@ -287,7 +287,7 @@ describe('private method transform validation', () => {
         `;
 
         expect(() => transformReverseOnly(source)).toThrowError(
-            /conflicts with internal naming conventions\. Please rename this function to avoid conflict/
+            /cannot start with reserved prefix `__lwc_`\. Please rename this function to avoid conflict/
         );
     });
 
@@ -575,7 +575,7 @@ describe('private method transform validation', () => {
                     LwcReversePrivateMethodTransform,
                 ],
             })
-        ).toThrowError(/conflicts with internal naming conventions/);
+        ).toThrowError(/cannot start with reserved prefix `__lwc_`/);
     });
 
     test('methods with similar but non-matching prefixes are not reverse-transformed', () => {
