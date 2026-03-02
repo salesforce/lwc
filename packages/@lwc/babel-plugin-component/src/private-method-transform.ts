@@ -6,7 +6,7 @@
  */
 import { DecoratorErrors } from '@lwc/errors';
 import { PRIVATE_METHOD_PREFIX, PRIVATE_METHOD_METADATA_KEY } from './constants';
-import { handleError } from './utils';
+import { copyMethodMetadata, handleError } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { NodePath, Visitor } from '@babel/core';
 import type { types } from '@babel/core';
@@ -65,32 +65,7 @@ export default function privateMethodTransform({
                                     node.async
                                 ) as types.ClassMethod;
 
-                                // Preserve TypeScript annotations and source location when present
-                                if (node.returnType != null) {
-                                    classMethod.returnType = node.returnType;
-                                }
-                                if (node.typeParameters != null) {
-                                    classMethod.typeParameters = node.typeParameters;
-                                }
-                                if (node.loc != null) {
-                                    classMethod.loc = node.loc;
-                                }
-                                // Preserve TypeScript/ECMAScript modifier flags (excluded from t.classMethod() builder)
-                                if (node.abstract != null) {
-                                    classMethod.abstract = node.abstract;
-                                }
-                                if (node.access != null) {
-                                    classMethod.access = node.access;
-                                }
-                                if (node.accessibility != null) {
-                                    classMethod.accessibility = node.accessibility;
-                                }
-                                if (node.optional != null) {
-                                    classMethod.optional = node.optional;
-                                }
-                                if (node.override != null) {
-                                    classMethod.override = node.override;
-                                }
+                                copyMethodMetadata(node, classMethod);
 
                                 // Replace the entire ClassPrivateMethod node with the new ClassMethod node
                                 // (we can't just replace the key of type PrivateName with type Identifier)

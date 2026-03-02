@@ -6,6 +6,7 @@
  */
 import { DecoratorErrors } from '@lwc/errors';
 import { PRIVATE_METHOD_PREFIX, PRIVATE_METHOD_METADATA_KEY } from './constants';
+import { copyMethodMetadata } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { types, NodePath, Visitor } from '@babel/core';
 
@@ -72,17 +73,7 @@ export default function reversePrivateMethodTransform({
                     classPrivateMethod.generator = node.generator;
                     classPrivateMethod.computed = node.computed;
 
-                    // Round-trip parity with private-method-transform: preserve TS annotations and modifier flags
-                    if (node.returnType != null) classPrivateMethod.returnType = node.returnType;
-                    if (node.typeParameters != null)
-                        classPrivateMethod.typeParameters = node.typeParameters;
-                    if (node.loc != null) classPrivateMethod.loc = node.loc;
-                    if (node.abstract != null) classPrivateMethod.abstract = node.abstract;
-                    if (node.access != null) classPrivateMethod.access = node.access;
-                    if (node.accessibility != null)
-                        classPrivateMethod.accessibility = node.accessibility;
-                    if (node.optional != null) classPrivateMethod.optional = node.optional;
-                    if (node.override != null) classPrivateMethod.override = node.override;
+                    copyMethodMetadata(node, classPrivateMethod);
 
                     // Replace the entire ClassMethod with the new ClassPrivateMethod
                     path.replaceWith(classPrivateMethod);
