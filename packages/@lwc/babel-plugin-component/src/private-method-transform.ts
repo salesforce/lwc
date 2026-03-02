@@ -43,46 +43,73 @@ export default function privateMethodTransform({
                             methodState: LwcBabelPluginPass
                         ) {
                             const key = methodPath.get('key');
-
-                            if (key.isPrivateName() && methodPath.node.kind === METHOD_KIND) {
-                                const node = methodPath.node;
-
-                                // Reject private methods with decorators (e.g. @api, @track, @wire)
-                                if (node.decorators && node.decorators.length > 0) {
-                                    handleError(
-                                        methodPath,
-                                        {
-                                            errorInfo: DecoratorErrors.DECORATOR_ON_PRIVATE_METHOD,
-                                        },
-                                        methodState
-                                    );
-                                    return;
-                                }
-
-                                const privateName = key.node.id.name;
-                                const transformedName = `${PRIVATE_METHOD_PREFIX}${privateName}`;
-                                const keyReplacement = t.identifier(transformedName);
-
-                                // Create a new ClassMethod node to replace the ClassPrivateMethod
-                                // https://babeljs.io/docs/babel-types#classmethod
-                                const classMethod = t.classMethod(
-                                    METHOD_KIND,
-                                    keyReplacement,
-                                    node.params,
-                                    node.body,
-                                    node.computed,
-                                    node.static,
-                                    node.generator,
-                                    node.async
-                                ) as types.ClassMethod;
-
-                                copyMethodMetadata(node, classMethod);
-
-                                // Replace the entire ClassPrivateMethod node with the new ClassMethod node
-                                // (we can't just replace the key of type PrivateName with type Identifier)
-                                methodPath.replaceWith(classMethod);
-                                transformedNames.add(transformedName);
+                            if (!key.isPrivateName()) {
+                                return;
                             }
+
+                            if (methodPath.node.kind !== METHOD_KIND) {
+                                handleError(
+                                    methodPath,
+                                    {
+                                        errorInfo: DecoratorErrors.UNSUPPORTED_PRIVATE_MEMBER,
+                                        messageArgs: ['accessor methods'],
+                                    },
+                                    methodState
+                                );
+                                return;
+                            }
+
+                            const node = methodPath.node;
+
+                            // Reject private methods with decorators (e.g. @api, @track, @wire)
+                            if (node.decorators && node.decorators.length > 0) {
+                                handleError(
+                                    methodPath,
+                                    {
+                                        errorInfo: DecoratorErrors.DECORATOR_ON_PRIVATE_METHOD,
+                                    },
+                                    methodState
+                                );
+                                return;
+                            }
+
+                            const privateName = key.node.id.name;
+                            const transformedName = `${PRIVATE_METHOD_PREFIX}${privateName}`;
+                            const keyReplacement = t.identifier(transformedName);
+
+                            // Create a new ClassMethod node to replace the ClassPrivateMethod
+                            // https://babeljs.io/docs/babel-types#classmethod
+                            const classMethod = t.classMethod(
+                                METHOD_KIND,
+                                keyReplacement,
+                                node.params,
+                                node.body,
+                                node.computed,
+                                node.static,
+                                node.generator,
+                                node.async
+                            ) as types.ClassMethod;
+
+                            copyMethodMetadata(node, classMethod);
+
+                            // Replace the entire ClassPrivateMethod node with the new ClassMethod node
+                            // (we can't just replace the key of type PrivateName with type Identifier)
+                            methodPath.replaceWith(classMethod);
+                            transformedNames.add(transformedName);
+                        },
+
+                        ClassPrivateProperty(
+                            propPath: NodePath<types.ClassPrivateProperty>,
+                            propState: LwcBabelPluginPass
+                        ) {
+                            handleError(
+                                propPath,
+                                {
+                                    errorInfo: DecoratorErrors.UNSUPPORTED_PRIVATE_MEMBER,
+                                    messageArgs: ['fields'],
+                                },
+                                propState
+                            );
                         },
                     },
                     state

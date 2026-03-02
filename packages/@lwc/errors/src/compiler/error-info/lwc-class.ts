@@ -234,4 +234,11 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1213',
     },
+
+    UNSUPPORTED_PRIVATE_MEMBER: {
+        code: 1214,
+        message: 'Private {0} are not currently supported. Only private methods are supported.',
+        level: DiagnosticLevel.Error,
+        url: 'https://lwc.dev/guide/error_codes#lwc1214',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;

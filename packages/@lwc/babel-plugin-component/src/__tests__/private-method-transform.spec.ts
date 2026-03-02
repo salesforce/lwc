@@ -169,23 +169,34 @@ describe('private method transform validation', () => {
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
-    test('private getters and setters are not transformed', () => {
+    test('private getter throws unsupported error', () => {
         const source = `
             import { LightningElement } from 'lwc';
             export default class Test extends LightningElement {
                 get #value() {
                     return this._val;
                 }
+            }
+        `;
+
+        expect(() => transformWithFullPipeline(source)).toThrowError(
+            /Private accessor methods are not currently supported\. Only private methods are supported\./
+        );
+    });
+
+    test('private setter throws unsupported error', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
                 set #value(v) {
                     this._val = v;
                 }
             }
         `;
 
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('get #value');
-        expect(result.code).toContain('set #value');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(() => transformWithFullPipeline(source)).toThrowError(
+            /Private accessor methods are not currently supported\. Only private methods are supported\./
+        );
     });
 
     test('decorated private method throws', () => {
@@ -590,20 +601,20 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('#foo');
     });
 
-    test('private fields are not transformed', () => {
+    test('private field throws unsupported error', () => {
         const source = `
             import { LightningElement } from 'lwc';
             export default class Test extends LightningElement {
                 #count = 0;
-                #name = 'test';
             }
         `;
 
-        const result = transformWithFullPipeline(source);
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(() => transformWithFullPipeline(source)).toThrowError(
+            /Private fields are not currently supported\. Only private methods are supported\./
+        );
     });
 
-    test('private fields alongside private methods are handled correctly', () => {
+    test('private field alongside private method throws unsupported error', () => {
         const source = `
             import { LightningElement } from 'lwc';
             export default class Test extends LightningElement {
@@ -614,9 +625,9 @@ describe('private method transform validation', () => {
             }
         `;
 
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#increment');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(() => transformWithFullPipeline(source)).toThrowError(
+            /Private fields are not currently supported/
+        );
     });
 
     test('private method call sites do not leak prefixed names after round-trip', () => {
@@ -637,36 +648,16 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('__lwc_component_class_internal_private_');
     });
 
-    test('private field reference in method body survives round-trip', () => {
+    test('private field with initializer throws unsupported error', () => {
         const source = `
             import { LightningElement } from 'lwc';
             export default class Test extends LightningElement {
                 #state = { ready: false };
-                #init() {
-                    this.#state.ready = true;
-                }
             }
         `;
 
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('#init');
-        expect(code).toContain('this.#state.ready = true');
-        expect(code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('forward transform only renames method declarations, not field declarations', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #secret = 42;
-                #getSecret() { return this.#secret; }
-            }
-        `;
-
-        const result = transformForwardOnly(source);
-        const code = result.code!;
-        expect(code).toContain('__lwc_component_class_internal_private_getSecret');
-        expect(code).toContain('#secret');
+        expect(() => transformWithFullPipeline(source)).toThrowError(
+            /Private fields are not currently supported/
+        );
     });
 });
