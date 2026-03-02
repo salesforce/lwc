@@ -135,8 +135,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#fetchData');
-        expect(result.code).toContain('async');
+        expect(result.code).toContain('async #fetchData');
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
@@ -151,8 +150,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#helper');
-        expect(result.code).toContain('static');
+        expect(result.code).toContain('static #helper');
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
@@ -167,10 +165,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#compute');
-        expect(result.code).toContain('a');
-        expect(result.code).toContain('b');
-        expect(result.code).toContain('...rest');
+        expect(result.code).toContain('#compute(a, b, ...rest)');
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
@@ -395,13 +390,8 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('static');
-        expect(code).toContain('async');
-        expect(code).toContain('#fetch');
-        expect(code).toContain('url');
-        expect(code).toContain('opts');
-        expect(code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('static async #fetch(url, opts = {})');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('method ordering is preserved through round-trip', () => {
