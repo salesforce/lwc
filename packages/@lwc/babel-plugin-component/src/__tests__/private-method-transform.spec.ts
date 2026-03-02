@@ -618,4 +618,55 @@ describe('private method transform validation', () => {
         expect(result.code).toContain('#increment');
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
+
+    test('private method call sites do not leak prefixed names after round-trip', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #doWork(x) { return x * 2; }
+                connectedCallback() {
+                    const result = this.#doWork(21);
+                    console.log(result);
+                }
+            }
+        `;
+
+        const result = transformWithFullPipeline(source);
+        const code = result.code!;
+        expect(code).toContain('this.#doWork(21)');
+        expect(code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('private field reference in method body survives round-trip', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #state = { ready: false };
+                #init() {
+                    this.#state.ready = true;
+                }
+            }
+        `;
+
+        const result = transformWithFullPipeline(source);
+        const code = result.code!;
+        expect(code).toContain('#init');
+        expect(code).toContain('this.#state.ready = true');
+        expect(code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('forward transform only renames method declarations, not field declarations', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #secret = 42;
+                #getSecret() { return this.#secret; }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        expect(code).toContain('__lwc_component_class_internal_private_getSecret');
+        expect(code).toContain('#secret');
+    });
 });
