@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/engine-dom",
-    "version": "9.0.2",
+    "version": "9.0.3",
     "description": "Renders LWC components in a DOM environment.",
     "keywords": [
         "lwc"
@@ -51,10 +51,10 @@
         }
     },
     "devDependencies": {
-        "@lwc/engine-core": "9.0.2",
-        "@lwc/shared": "9.0.2",
-        "@lwc/features": "9.0.2",
-        "@lwc/signals": "9.0.2"
+        "@lwc/engine-core": "9.0.3",
+        "@lwc/shared": "9.0.3",
+        "@lwc/features": "9.0.3",
+        "@lwc/signals": "9.0.3"
     },
     "lwc": {
         "modules": [
