@@ -11,6 +11,9 @@ import type { BabelAPI, LwcBabelPluginPass } from './types';
 import type { NodePath, Visitor } from '@babel/core';
 import type { types } from '@babel/core';
 
+// We only transform kind: 'method'. Other kinds ('get', 'set', 'constructor') are left alone.
+const METHOD_KIND = 'method';
+
 /**
  * Transforms private method identifiers from #privateMethod to __lwc_component_class_internal_private_privateMethod
  * This function returns a Program visitor that transforms private methods before other plugins process them
@@ -32,11 +35,7 @@ export default function privateMethodTransform({
                         ) {
                             const key = methodPath.get('key');
 
-                            // We only want kind: 'method'.
-                            // Other options not included are 'get', 'set', and 'constructor'.
-                            const methodKind = 'method';
-
-                            if (key.isPrivateName() && methodPath.node.kind === methodKind) {
+                            if (key.isPrivateName() && methodPath.node.kind === METHOD_KIND) {
                                 const node = methodPath.node;
 
                                 // Reject private methods with decorators (e.g. @api, @track, @wire)
@@ -56,7 +55,7 @@ export default function privateMethodTransform({
                                 // Create a new ClassMethod node to replace the ClassPrivateMethod
                                 // https://babeljs.io/docs/babel-types#classmethod
                                 const classMethod = t.classMethod(
-                                    methodKind,
+                                    METHOD_KIND,
                                     keyReplacement,
                                     node.params,
                                     node.body,
