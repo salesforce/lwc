@@ -28,21 +28,21 @@ function transformWithFullPipeline(source: string, opts = {}) {
             [plugin, { ...BASE_OPTS, ...opts }],
             LwcReversePrivateMethodTransform,
         ],
-    });
+    })!;
 }
 
 function transformReverseOnly(source: string) {
     return transformSync(source, {
         ...BASE_CONFIG,
         plugins: [LwcReversePrivateMethodTransform],
-    });
+    })!;
 }
 
 function transformForwardOnly(source: string, opts = {}) {
     return transformSync(source, {
         ...BASE_CONFIG,
         plugins: [LwcPrivateMethodTransform, [plugin, { ...BASE_OPTS, ...opts }]],
-    });
+    })!;
 }
 
 describe('private method transform validation', () => {
@@ -57,8 +57,8 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#privateMethod');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#privateMethod');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('multiple private methods round-trip successfully', () => {
@@ -72,9 +72,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#methodA');
-        expect(result!.code).toContain('#methodB');
-        expect(result!.code).toContain('#methodC');
+        expect(result.code).toContain('#methodA');
+        expect(result.code).toContain('#methodB');
+        expect(result.code).toContain('#methodC');
     });
 
     test('throws error when user-defined method collides with reserved prefix', () => {
@@ -119,9 +119,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#privateMethod');
-        expect(result!.code).toContain('normalPublicMethod');
-        expect(result!.code).toContain('_underscoreMethod');
+        expect(result.code).toContain('#privateMethod');
+        expect(result.code).toContain('normalPublicMethod');
+        expect(result.code).toContain('_underscoreMethod');
     });
 
     test('async private method round-trips successfully', () => {
@@ -135,9 +135,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#fetchData');
-        expect(result!.code).toContain('async');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#fetchData');
+        expect(result.code).toContain('async');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('static private method round-trips successfully', () => {
@@ -151,9 +151,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#helper');
-        expect(result!.code).toContain('static');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#helper');
+        expect(result.code).toContain('static');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('private method with parameters round-trips successfully', () => {
@@ -167,11 +167,11 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#compute');
-        expect(result!.code).toContain('a');
-        expect(result!.code).toContain('b');
-        expect(result!.code).toContain('...rest');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#compute');
+        expect(result.code).toContain('a');
+        expect(result.code).toContain('b');
+        expect(result.code).toContain('...rest');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('private getters and setters are not transformed', () => {
@@ -188,9 +188,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('get #value');
-        expect(result!.code).toContain('set #value');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('get #value');
+        expect(result.code).toContain('set #value');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('decorated private method throws', () => {
@@ -220,9 +220,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('publicMethod');
-        expect(result!.code).toContain('anotherPublic');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('publicMethod');
+        expect(result.code).toContain('anotherPublic');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('error message includes the specific offending method name', () => {
@@ -266,9 +266,9 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#generate');
-        expect(result!.code).toContain('yield');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#generate');
+        expect(result.code).toContain('yield');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('reverse standalone on clean code succeeds without forward metadata', () => {
@@ -279,7 +279,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformReverseOnly(source);
-        expect(result!.code).toContain('publicMethod');
+        expect(result.code).toContain('publicMethod');
     });
 
     test('reverse standalone with prefixed method throws collision when metadata is missing', () => {
@@ -345,8 +345,8 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
-        const matches = result!.code!.match(/#shared/g);
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+        const matches = result.code!.match(/#shared/g);
         expect(matches).toHaveLength(2);
     });
 
@@ -362,10 +362,10 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#helper');
-        expect(result!.code).toContain('#caller');
-        expect(result!.code).toContain('this.#helper()');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#helper');
+        expect(result.code).toContain('#caller');
+        expect(result.code).toContain('this.#helper()');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('forward-only output contains correct prefixed names', () => {
@@ -378,10 +378,10 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformForwardOnly(source);
-        expect(result!.code).toContain('__lwc_component_class_internal_private_foo');
-        expect(result!.code).toContain('__lwc_component_class_internal_private_bar');
-        expect(result!.code).not.toContain('#foo');
-        expect(result!.code).not.toContain('#bar');
+        expect(result.code).toContain('__lwc_component_class_internal_private_foo');
+        expect(result.code).toContain('__lwc_component_class_internal_private_bar');
+        expect(result.code).not.toContain('#foo');
+        expect(result.code).not.toContain('#bar');
     });
 
     test('combined flags (static, async, default param) survive round-trip', () => {
@@ -395,7 +395,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result!.code!;
+        const code = result.code!;
         expect(code).toContain('static');
         expect(code).toContain('async');
         expect(code).toContain('#fetch');
@@ -416,7 +416,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result!.code!;
+        const code = result.code!;
         const alphaIdx = code.indexOf('#alpha');
         const betaIdx = code.indexOf('publicBeta');
         const gammaIdx = code.indexOf('#gamma');
@@ -441,7 +441,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result!.code!;
+        const code = result.code!;
         expect(code).toContain('#greet');
         expect(code).toContain("'world'");
         expect(code).toContain('3');
@@ -459,7 +459,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result!.code!;
+        const code = result.code!;
         expect(code).toContain('#process');
         expect(code).toMatch(/\{\s*x,\s*y\s*\}/);
         expect(code).toMatch(/\[\s*a,\s*b\s*\]/);
@@ -475,8 +475,8 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        expect(result!.code).toContain('#noop');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#noop');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('private and public method with same name coexist', () => {
@@ -489,7 +489,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result!.code!;
+        const code = result.code!;
         expect(code).toContain('#foo');
         expect(code).toContain("return 'private'");
         expect(code).toContain("return 'public'");
@@ -538,9 +538,9 @@ describe('private method transform validation', () => {
                 LwcReversePrivateMethodTransform,
             ],
         });
-        expect(result!.code).toContain('#myMethod');
-        expect(result!.code).toContain('console.log("injected")');
-        expect(result!.code).not.toContain('__lwc_component_class_internal_private_');
+        expect(result.code).toContain('#myMethod');
+        expect(result.code).toContain('console.log("injected")');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('intermediate plugin that adds a prefixed method triggers collision', () => {
@@ -594,7 +594,7 @@ describe('private method transform validation', () => {
         `;
 
         const result = transformWithFullPipeline(source);
-        const code = result!.code!;
+        const code = result.code!;
         expect(code).toContain('__lwc_component_class_internal_foo');
         expect(code).toContain('__lwc_component_class_internal_privatefoo');
         expect(code).not.toContain('#foo');
