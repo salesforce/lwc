@@ -589,4 +589,33 @@ describe('private method transform validation', () => {
         expect(code).toContain('__lwc_component_class_internal_privatefoo');
         expect(code).not.toContain('#foo');
     });
+
+    test('private fields are not transformed', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #count = 0;
+                #name = 'test';
+            }
+        `;
+
+        const result = transformWithFullPipeline(source);
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('private fields alongside private methods are handled correctly', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #count = 0;
+                #increment() {
+                    this.#count++;
+                }
+            }
+        `;
+
+        const result = transformWithFullPipeline(source);
+        expect(result.code).toContain('#increment');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+    });
 });
