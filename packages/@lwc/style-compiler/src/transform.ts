@@ -82,6 +82,7 @@ export function transform(
     } catch (error) {
         if (errorRecoveryMode && error instanceof postcss.CssSyntaxError) {
             ctx.errors.push(error);
+            // eslint-disable-next-line preserve-caught-error
             throw AggregateError(ctx.errors);
         } else {
             throw error;
