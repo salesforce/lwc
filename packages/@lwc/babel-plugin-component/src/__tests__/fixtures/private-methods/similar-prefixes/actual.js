@@ -1,12 +1,9 @@
 import { LightningElement } from 'lwc';
 export default class Test extends LightningElement {
-    #method1() {
+    __lwc_component_class_internal_foo() {
         return 1;
     }
-    #method2() {
+    __lwc_component_class_internal_privatefoo() {
         return 2;
-    }
-    #method3() {
-        return 3;
     }
 }

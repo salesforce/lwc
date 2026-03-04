@@ -1,13 +1,11 @@
 import _tmpl from "./test.html";
 import { LightningElement, registerComponent as _registerComponent } from 'lwc';
 class Test extends LightningElement {
-  static async #fetchData(url) {
-    const response = await fetch(url);
-    return response.json();
+  __lwc_component_class_internal_foo() {
+    return 1;
   }
-  async connectedCallback() {
-    const data = await Test.#fetchData('/api/data');
-    console.log(data);
+  __lwc_component_class_internal_privatefoo() {
+    return 2;
   }
   /*LWC compiler vX.X.X*/
 }

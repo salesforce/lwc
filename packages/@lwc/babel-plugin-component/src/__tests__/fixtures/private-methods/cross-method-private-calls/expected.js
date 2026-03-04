@@ -1,14 +1,11 @@
 import _tmpl from "./test.html";
 import { LightningElement, registerComponent as _registerComponent } from 'lwc';
 class Test extends LightningElement {
-  #method1() {
-    return 1;
+  #helper() {
+    return 42;
   }
-  #method2() {
-    return 2;
-  }
-  #method3() {
-    return 3;
+  #caller() {
+    return this.#helper() + 1;
   }
   /*LWC compiler vX.X.X*/
 }

@@ -1,12 +1,9 @@
 import { LightningElement } from 'lwc';
 export default class Test extends LightningElement {
-    #method1() {
+    publicMethod() {
         return 1;
     }
-    #method2() {
+    anotherPublic() {
         return 2;
-    }
-    #method3() {
-        return 3;
     }
 }
