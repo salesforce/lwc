@@ -80,6 +80,7 @@ export function connectContext(le: LightningElement) {
         }
     } catch (err: any) {
         if (process.env.NODE_ENV !== 'production') {
+            // eslint-disable-next-line preserve-caught-error
             throw new Error(
                 `Attempted to connect to trusted context but received the following error: ${
                     err.message

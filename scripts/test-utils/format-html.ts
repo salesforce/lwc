@@ -19,7 +19,6 @@ import { HTML_NAMESPACE, isVoidElement } from '@lwc/shared';
 export function formatHTML(src: string): string {
     let res = '';
     let pos = 0;
-    let start = pos;
 
     let depth = 0;
 
@@ -46,7 +45,7 @@ export function formatHTML(src: string): string {
                     res += getPadding() + textContent + '\n';
                     depth--;
                     res += getPadding() + '</style>' + '\n';
-                    start = pos = pos + wholeMatch.length;
+                    pos = pos + wholeMatch.length;
                     continue;
                 }
             }
@@ -58,7 +57,7 @@ export function formatHTML(src: string): string {
                 src.charAt(pos + 2) === '-' &&
                 src.charAt(pos + 3) === '-';
 
-            start = pos;
+            const start = pos;
             while (src.charAt(pos++) !== '>') {
                 // Keep advancing until consuming the closing tag.
             }
@@ -88,7 +87,7 @@ export function formatHTML(src: string): string {
         }
 
         // Consume text content.
-        start = pos;
+        const start = pos;
         while (src.charAt(pos) !== '<' && pos < src.length) {
             pos++;
         }

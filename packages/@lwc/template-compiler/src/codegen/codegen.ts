@@ -782,7 +782,7 @@ export default class CodeGen {
                         this.isSyntheticShadow && (isIdOrIdRef || isScopedFragmentRef);
 
                     if (isExpression(value) || isSvgHref || needsScoping) {
-                        let partToken = '';
+                        let partToken: string;
                         if (name === 'style') {
                             partToken = `${STATIC_PART_TOKEN_ID.STYLE}${partId}`;
                             databag.push(

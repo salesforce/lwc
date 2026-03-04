@@ -379,21 +379,20 @@ function c(
     }
 
     const { key, slotAssignment } = data;
-    let elm, aChildren, vm;
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
         data,
         children,
-        elm,
+        elm: undefined,
         key,
         slotAssignment,
 
         ctor: Ctor,
         owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
-        aChildren,
-        vm,
+        aChildren: undefined,
+        vm: undefined,
     };
     addVNodeToChildLWC(vnode);
 
@@ -519,26 +518,24 @@ function f(items: ReadonlyArray<VNodes> | VNodes): VNodes {
 
 // [t]ext node
 function t(text: string): VText {
-    let key, elm;
     return {
         type: VNodeType.Text,
         sel: '__text__',
         text,
-        elm,
-        key,
+        elm: undefined,
+        key: undefined,
         owner: getVMBeingRendered()!,
     };
 }
 
 // [co]mment node
 function co(text: string): VComment {
-    let elm, key;
     return {
         type: VNodeType.Comment,
         sel: '__comment__',
         text,
-        elm,
-        key,
+        elm: undefined,
+        key: undefined,
         owner: getVMBeingRendered()!,
     };
 }
