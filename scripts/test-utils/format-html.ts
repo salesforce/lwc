@@ -39,12 +39,13 @@ export function formatHTML(src: string): string {
                 const styleMatch = src.slice(pos).match(/<style([\s\S]*?)>([\s\S]*?)<\/style>/);
                 if (styleMatch) {
                     // opening tag
-                    const [, attrs, textContent] = styleMatch;
+                    const [wholeMatch, attrs, textContent] = styleMatch;
                     res += getPadding() + `<style${attrs}>` + '\n';
                     depth++;
                     res += getPadding() + textContent + '\n';
                     depth--;
                     res += getPadding() + '</style>' + '\n';
+                    pos = pos + wholeMatch.length;
                     continue;
                 }
             }
