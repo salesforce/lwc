@@ -64,7 +64,7 @@
         "meriyah": "^7.1.0"
     },
     "devDependencies": {
-        "@lwc/babel-plugin-component": "9.0.3",
+        "@lwc/swc-plugin-component": "9.0.3",
         "@types/estree": "^1.0.8"
     }
 }

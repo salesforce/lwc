@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1092: @wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).",
+    "filename": "test.js"
+}

@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1106: @api cannot be applied to a computed property, getter, setter or method.",
+    "filename": "test.js"
+}

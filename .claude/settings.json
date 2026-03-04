@@ -1,0 +1,30 @@
+{
+    "$schema": "https://json.schemastore.org/claude-code-settings.json",
+    "permissions": {
+        "defaultMode": "bypassPermissions",
+        "allow": [
+            "Edit",
+            "Write",
+            "Read",
+            "Bash",
+            "WebFetch",
+            "WebSearch",
+            "Glob",
+            "Grep",
+            "NotebookEdit",
+            "Skill",
+            "Agent",
+            "ExitPlanMode",
+            "TaskCreate",
+            "TaskGet",
+            "TaskList",
+            "TaskUpdate",
+            "TaskStop",
+            "AskUserQuestion",
+            "TaskOutput",
+            "KillShell",
+            "MCPSearch",
+            "LSP"
+        ]
+    }
+}

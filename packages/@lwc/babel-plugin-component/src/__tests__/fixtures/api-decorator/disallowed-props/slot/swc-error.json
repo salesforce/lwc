@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1110: Invalid property name \"slot\". \"slot\" is a reserved attribute.",
+    "filename": "test.js"
+}

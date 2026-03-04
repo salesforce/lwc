@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1108: Invalid property name \"onClickHandler\". Properties starting with \"on\" are reserved for event handlers.",
+    "filename": "test.js"
+}

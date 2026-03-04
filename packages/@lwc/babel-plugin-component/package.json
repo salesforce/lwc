@@ -5,7 +5,7 @@
     ],
     "name": "@lwc/babel-plugin-component",
     "version": "9.0.3",
-    "description": "Babel plugin to transform a LWC module",
+    "description": "[DEPRECATED] Babel plugin to transform a LWC module — replaced by @lwc/swc-plugin-component",
     "keywords": [
         "lwc"
     ],

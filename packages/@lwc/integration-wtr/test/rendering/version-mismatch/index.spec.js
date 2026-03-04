@@ -59,10 +59,10 @@ describe('compiler version mismatch', () => {
 
         it('skip warning during local dev', () => {
             process.env.SKIP_LWC_VERSION_MISMATCH_CHECK = 'true';
-            function tmpl() {
-                return [];
-                /*LWC compiler v123.456.789*/
-            }
+            // Use new Function() so SWC does not strip the embedded version comment at compile time.
+            // The comment must be the last thing before the closing } so that LWC_VERSION_COMMENT_REGEX
+            // (/\/\*LWC compiler v([\d.]+)\*\/\s*}/) can match it via Function.prototype.toString().
+            const tmpl = new Function('return []; /*LWC compiler v123.456.789*/');
 
             expect(() => {
                 registerTemplate(tmpl);
@@ -71,10 +71,8 @@ describe('compiler version mismatch', () => {
         });
 
         it('template', () => {
-            function tmpl() {
-                return [];
-                /*LWC compiler v123.456.789*/
-            }
+            // Use new Function() so SWC does not strip the embedded version comment at compile time.
+            const tmpl = new Function('return []; /*LWC compiler v123.456.789*/');
 
             expect(() => {
                 registerTemplate(tmpl);
@@ -104,12 +102,8 @@ describe('compiler version mismatch', () => {
             }
 
             tmpl.stylesheetToken = 'x-component_component';
-            tmpl.stylesheets = [
-                function stylesheet() {
-                    return '';
-                    /*LWC compiler v123.456.789*/
-                },
-            ];
+            // Use new Function() so SWC does not strip the embedded version comment at compile time.
+            tmpl.stylesheets = [new Function("return ''; /*LWC compiler v123.456.789*/")];
             registerTemplate(tmpl);
 
             class CustomElement extends LightningElement {}
@@ -141,11 +135,13 @@ describe('compiler version mismatch', () => {
         });
 
         it('component', () => {
-            // deliberately using a function rather than a class so @lwc/babel-plugin-component doesn't add a comment
-            function CustomElement() {
-                return LightningElement.apply(this, arguments);
-                /*LWC compiler v123.456.789*/
-            }
+            // deliberately using a function rather than a class so @lwc/babel-plugin-component doesn't add a comment.
+            // Use new Function() so SWC does not strip the embedded version comment at compile time.
+            // The function body only needs to match LWC_VERSION_COMMENT_REGEX for the test assertion;
+            // the actual constructor behaviour is irrelevant here.
+            const CustomElement = new Function('/*LWC compiler v123.456.789*/');
+            // Assign a name for error messages (Function constructor creates anonymous functions)
+            Object.defineProperty(CustomElement, 'name', { value: 'CustomElement' });
 
             Object.setPrototypeOf(CustomElement, LightningElement);
 

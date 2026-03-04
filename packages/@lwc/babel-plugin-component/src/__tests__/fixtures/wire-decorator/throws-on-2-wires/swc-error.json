@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1105: Method or property can only have 1 @wire decorator",
+    "filename": "test.js"
+}

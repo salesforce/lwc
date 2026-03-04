@@ -7,6 +7,7 @@ export default defineConfig({
         projects: [
             'packages/@lwc/babel-plugin-component',
             'packages/@lwc/compiler',
+            'packages/@lwc/swc-plugin-component',
             'packages/@lwc/engine-core',
             'packages/@lwc/engine-dom',
             'packages/@lwc/engine-server',

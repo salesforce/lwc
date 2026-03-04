@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1096: Duplicate @api property \"foo\".",
+    "filename": "test.js"
+}

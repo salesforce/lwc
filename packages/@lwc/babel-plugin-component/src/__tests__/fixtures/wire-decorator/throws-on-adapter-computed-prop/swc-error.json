@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1131: @wire identifier cannot contain computed properties",
+    "filename": "test.js"
+}

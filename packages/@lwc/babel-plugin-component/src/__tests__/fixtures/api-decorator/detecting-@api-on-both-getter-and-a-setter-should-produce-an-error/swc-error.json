@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1112: @api get something and @api set something detected in class declaration. Only one of the two needs to be decorated with @api.",
+    "filename": "test.js"
+}

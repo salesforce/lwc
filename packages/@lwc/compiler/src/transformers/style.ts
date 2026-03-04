@@ -7,7 +7,6 @@
 import * as styleCompiler from '@lwc/style-compiler';
 import { normalizeToCompilerError, TransformerErrors, CompilerAggregateError } from '@lwc/errors';
 
-import type { BabelFileResult } from '@babel/core';
 import type { NormalizedTransformOptions } from '../options';
 import type { TransformResult } from './shared';
 
@@ -64,6 +63,7 @@ export default function styleTransform(
     // the styles doesn't make sense, the transform returns an empty mappings.
     return {
         code: res.code,
-        map: { mappings: '' } as BabelFileResult['map'],
+        // Style transform does not produce a meaningful source map.
+        map: undefined,
     };
 }
