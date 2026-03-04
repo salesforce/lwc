@@ -303,4 +303,42 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('#helper');
         expect(code).not.toContain('#caller');
     });
+
+    test('cross-class #privateName access is a parse error', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class A extends LightningElement {
+                #privateMethod() {}
+            }
+            class B extends LightningElement {
+                hax() {
+                    this.#privateMethod();
+                    this.__lwc_component_class_internal_private_privateMethod();
+                }
+            }
+        `;
+
+        expect(() => transformWithFullPipeline(source)).toThrowError(
+            /Private name #privateMethod is not defined/
+        );
+    });
+
+    test('cross-class spoofed mangled name is round-tripped back to a harmless private method', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class A extends LightningElement {
+                #privateMethod() {}
+            }
+            class B extends LightningElement {
+                __lwc_component_class_internal_private_privateMethod() {
+                    return 'spoofed';
+                }
+            }
+        `;
+
+        const result = transformWithFullPipeline(source);
+        const code = result.code!;
+        expect(code).not.toContain('__lwc_component_class_internal_private_');
+        expect((code.match(/#privateMethod/g) || []).length).toBe(2);
+    });
 });
