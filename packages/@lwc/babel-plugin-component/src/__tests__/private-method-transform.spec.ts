@@ -660,4 +660,132 @@ describe('private method transform validation', () => {
             /Private fields are not currently supported/
         );
     });
+
+    test('forward-only output transforms call sites to prefixed names', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #doWork(x) { return x * 2; }
+                connectedCallback() {
+                    const result = this.#doWork(21);
+                    console.log(result);
+                }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        expect(code).toContain('this.__lwc_component_class_internal_private_doWork(21)');
+        expect(code).not.toContain('this.#doWork');
+    });
+
+    test('forward references in call sites are transformed', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                connectedCallback() {
+                    return this.#helper();
+                }
+                #helper() { return 42; }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        expect(code).toContain('this.__lwc_component_class_internal_private_helper()');
+        expect(code).not.toContain('this.#helper');
+
+        const roundTrip = transformWithFullPipeline(source);
+        expect(roundTrip.code).toContain('this.#helper()');
+        expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('multiple invocations of the same private method are all transformed', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #compute(x) { return x * 2; }
+                run() {
+                    const a = this.#compute(1);
+                    const b = this.#compute(2);
+                    const c = this.#compute(3);
+                    return a + b + c;
+                }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        const matches = code.match(/__lwc_component_class_internal_private_compute/g);
+        // 1 definition + 3 call sites = 4 occurrences
+        expect(matches).toHaveLength(4);
+
+        const roundTrip = transformWithFullPipeline(source);
+        expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
+        const privateMatches = roundTrip.code!.match(/#compute/g);
+        expect(privateMatches).toHaveLength(4);
+    });
+
+    test('self-referencing private method round-trips', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #recursive(n) {
+                    if (n <= 0) return 0;
+                    return n + this.#recursive(n - 1);
+                }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        expect(code).toContain('this.__lwc_component_class_internal_private_recursive(n - 1)');
+
+        const roundTrip = transformWithFullPipeline(source);
+        expect(roundTrip.code).toContain('this.#recursive(n - 1)');
+        expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('private method reference without call round-trips', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #handler() { return 42; }
+                connectedCallback() {
+                    const fn = this.#handler;
+                    setTimeout(this.#handler, 100);
+                }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        expect(code).toContain('this.__lwc_component_class_internal_private_handler;');
+        expect(code).toContain('this.__lwc_component_class_internal_private_handler, 100');
+        expect(code).not.toContain('this.#handler');
+
+        const roundTrip = transformWithFullPipeline(source);
+        expect(roundTrip.code).toContain('this.#handler;');
+        expect(roundTrip.code).toContain('this.#handler, 100');
+        expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('cross-method private call sites in forward-only output', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #helper() { return 42; }
+                #caller() {
+                    return this.#helper() + 1;
+                }
+            }
+        `;
+
+        const result = transformForwardOnly(source);
+        const code = result.code!;
+        expect(code).toContain('this.__lwc_component_class_internal_private_helper()');
+        expect(code).toContain('__lwc_component_class_internal_private_caller');
+        expect(code).not.toContain('#helper');
+        expect(code).not.toContain('#caller');
+    });
 });

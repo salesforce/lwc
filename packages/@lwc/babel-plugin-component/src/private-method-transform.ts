@@ -36,6 +36,20 @@ export default function privateMethodTransform({
             Program(path: NodePath<types.Program>, state: LwcBabelPluginPass) {
                 const transformedNames = new Set<string>();
 
+                // Phase 1: Collect base names of all private methods (kind: 'method')
+                // so that Phase 2 can transform invocations even for forward references
+                // (call site visited before the method definition).
+                const privateMethodBaseNames = new Set<string>();
+                path.traverse({
+                    ClassPrivateMethod(methodPath: NodePath<types.ClassPrivateMethod>) {
+                        const key = methodPath.get('key');
+                        if (key.isPrivateName() && methodPath.node.kind === METHOD_KIND) {
+                            privateMethodBaseNames.add(key.node.id.name);
+                        }
+                    },
+                });
+
+                // Phase 2: Transform definitions and invocations
                 path.traverse(
                     {
                         ClassPrivateMethod(
@@ -96,6 +110,19 @@ export default function privateMethodTransform({
                             // (we can't just replace the key of type PrivateName with type Identifier)
                             methodPath.replaceWith(classMethod);
                             transformedNames.add(transformedName);
+                        },
+
+                        MemberExpression(memberPath: NodePath<types.MemberExpression>) {
+                            const property = memberPath.node.property;
+                            if (t.isPrivateName(property)) {
+                                const baseName = (property as types.PrivateName).id.name;
+                                if (privateMethodBaseNames.has(baseName)) {
+                                    const prefixedName = `${PRIVATE_METHOD_PREFIX}${baseName}`;
+                                    memberPath
+                                        .get('property')
+                                        .replaceWith(t.identifier(prefixedName));
+                                }
+                            }
                         },
 
                         ClassPrivateProperty(

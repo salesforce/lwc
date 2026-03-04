@@ -12,7 +12,8 @@ import type { types, NodePath, PluginObj } from '@babel/core';
 
 /**
  * Standalone Babel plugin that reverses the private method transformation by converting
- * methods with prefix {@link PRIVATE_METHOD_PREFIX} back to ClassPrivateMethod nodes.
+ * methods with prefix {@link PRIVATE_METHOD_PREFIX} back to ClassPrivateMethod nodes,
+ * and restoring prefixed MemberExpression properties back to PrivateName nodes.
  *
  * This must be registered AFTER @babel/plugin-transform-class-properties so that
  * class properties are fully transformed before private methods are restored.
@@ -78,6 +79,24 @@ export default function reversePrivateMethodTransform({
                         reverseTransformedNames.add(methodName);
                     }
                 }
+            },
+
+            MemberExpression(path: NodePath<types.MemberExpression>, state: LwcBabelPluginPass) {
+                const property = path.node.property;
+                if (!t.isIdentifier(property) || !property.name.startsWith(PRIVATE_METHOD_PREFIX)) {
+                    return;
+                }
+
+                const forwardTransformedNames: Set<string> | undefined = (
+                    state.file.metadata as any
+                )[PRIVATE_METHOD_METADATA_KEY];
+
+                if (!forwardTransformedNames || !forwardTransformedNames.has(property.name)) {
+                    return;
+                }
+
+                const originalName = property.name.replace(PRIVATE_METHOD_PREFIX, '');
+                path.get('property').replaceWith(t.privateName(t.identifier(originalName)));
             },
 
             // After all nodes have been visited, verify that every method the forward transform
