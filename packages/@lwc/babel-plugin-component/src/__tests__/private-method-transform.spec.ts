@@ -46,128 +46,7 @@ function transformForwardOnly(source: string, opts = {}) {
 }
 
 describe('private method transform validation', () => {
-    test('normal private methods round-trip successfully', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #privateMethod() {
-                    return 42;
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#privateMethod');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('multiple private methods round-trip successfully', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #methodA() { return 1; }
-                #methodB() { return 2; }
-                #methodC() { return 3; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#methodA');
-        expect(result.code).toContain('#methodB');
-        expect(result.code).toContain('#methodC');
-    });
-
-    test('throws error when collision exists alongside real private methods', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #realPrivate() { return 1; }
-                __lwc_component_class_internal_private_fakePrivate() {
-                    return 'collision';
-                }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /cannot start with reserved prefix `__lwc_`\. Please rename this function to avoid conflict/
-        );
-    });
-
-    test('does not flag methods that do not use the reserved prefix', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #privateMethod() { return 1; }
-                normalPublicMethod() { return 2; }
-                _underscoreMethod() { return 3; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#privateMethod');
-        expect(result.code).toContain('normalPublicMethod');
-        expect(result.code).toContain('_underscoreMethod');
-    });
-
-    test('static private method round-trips successfully', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                static #helper() {
-                    return 'static';
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('static #helper');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('class with zero private methods succeeds', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                publicMethod() { return 1; }
-                anotherPublic() { return 2; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('publicMethod');
-        expect(result.code).toContain('anotherPublic');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('error message includes the specific offending method name', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                __lwc_component_class_internal_private_mySpecificName() {
-                    return 'collision';
-                }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /__lwc_component_class_internal_private_mySpecificName/
-        );
-    });
-
-    test('multiple collision methods throws on first encountered', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                __lwc_component_class_internal_private_collisionA() { return 1; }
-                __lwc_component_class_internal_private_collisionB() { return 2; }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /__lwc_component_class_internal_private_collision[AB]/
-        );
-    });
-
+    // Kept inline: uses reverse-only pipeline (no forward transform)
     test('reverse standalone on clean code succeeds without forward metadata', () => {
         const source = `
             class Test {
@@ -179,6 +58,7 @@ describe('private method transform validation', () => {
         expect(result.code).toContain('publicMethod');
     });
 
+    // Kept inline: uses reverse-only pipeline (no forward transform)
     test('reverse standalone with prefixed method throws collision when metadata is missing', () => {
         const source = `
             class Test {
@@ -191,6 +71,7 @@ describe('private method transform validation', () => {
         );
     });
 
+    // Kept inline: uses custom intermediate Babel plugin in a 4-plugin pipeline
     test('Program.exit count mismatch throws when forward-transformed method is removed', () => {
         const PREFIX = '__lwc_component_class_internal_private_';
 
@@ -230,24 +111,7 @@ describe('private method transform validation', () => {
         ).toThrowError(/Private method transform count mismatch/);
     });
 
-    test('private method body with call sites round-trips', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #helper() { return 42; }
-                #caller() {
-                    return this.#helper() + 1;
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#helper');
-        expect(result.code).toContain('#caller');
-        expect(result.code).toContain('this.#helper()');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
+    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('forward-only output contains correct prefixed names', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -264,47 +128,7 @@ describe('private method transform validation', () => {
         expect(result.code).not.toContain('#bar');
     });
 
-    test('combined flags (static, async, default param) survive round-trip', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                static async #fetch(url, opts = {}) {
-                    return await fetch(url, opts);
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('static async #fetch(url, opts = {})');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('method ordering is preserved through round-trip', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #alpha() { return 'a'; }
-                publicBeta() { return 'b'; }
-                #gamma() { return 'c'; }
-                publicDelta() { return 'd'; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        const alphaIdx = code.indexOf('#alpha');
-        const betaIdx = code.indexOf('publicBeta');
-        const gammaIdx = code.indexOf('#gamma');
-        const deltaIdx = code.indexOf('publicDelta');
-        expect(alphaIdx).toBeGreaterThan(-1);
-        expect(betaIdx).toBeGreaterThan(-1);
-        expect(gammaIdx).toBeGreaterThan(-1);
-        expect(deltaIdx).toBeGreaterThan(-1);
-        expect(alphaIdx).toBeLessThan(betaIdx);
-        expect(betaIdx).toBeLessThan(gammaIdx);
-        expect(gammaIdx).toBeLessThan(deltaIdx);
-    });
-
+    // Kept inline: uses custom intermediate Babel plugin in a 4-plugin pipeline
     test('intermediate plugin that modifies method body does not break reverse transform', () => {
         function bodyModifierPlugin({ types: t }: any) {
             return {
@@ -352,6 +176,7 @@ describe('private method transform validation', () => {
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
+    // Kept inline: uses custom intermediate Babel plugin in a 4-plugin pipeline
     test('intermediate plugin that adds a prefixed method triggers collision', () => {
         function prefixedMethodInjectorPlugin({ types: t }: any) {
             let injected = false;
@@ -393,40 +218,7 @@ describe('private method transform validation', () => {
         ).toThrowError(/cannot start with reserved prefix `__lwc_`/);
     });
 
-    test('methods with similar but non-matching prefixes are not reverse-transformed', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                __lwc_component_class_internal_foo() { return 1; }
-                __lwc_component_class_internal_privatefoo() { return 2; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('__lwc_component_class_internal_foo');
-        expect(code).toContain('__lwc_component_class_internal_privatefoo');
-        expect(code).not.toContain('#foo');
-    });
-
-    test('private method call sites do not leak prefixed names after round-trip', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #doWork(x) { return x * 2; }
-                connectedCallback() {
-                    const result = this.#doWork(21);
-                    console.log(result);
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('this.#doWork(21)');
-        expect(code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
+    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('forward-only output transforms call sites to prefixed names', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -445,6 +237,7 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('this.#doWork');
     });
 
+    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('forward references in call sites are transformed', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -466,6 +259,7 @@ describe('private method transform validation', () => {
         expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
+    // Kept inline: uses forward-only pipeline to verify occurrence counts
     test('multiple invocations of the same private method are all transformed', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -492,6 +286,7 @@ describe('private method transform validation', () => {
         expect(privateMatches).toHaveLength(4);
     });
 
+    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('cross-method private call sites in forward-only output', () => {
         const source = `
             import { LightningElement } from 'lwc';
