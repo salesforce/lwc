@@ -1,2 +1,2 @@
-import defaultExport, * as name from 'foo';
-import { baz } from 'foo';
+import defaultExport, * as name from "foo";
+import { baz } from "foo";

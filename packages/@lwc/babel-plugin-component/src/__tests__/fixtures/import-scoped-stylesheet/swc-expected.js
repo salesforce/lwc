@@ -1,18 +1,17 @@
-import tmpl from './test.html';
+import tmpl from "./test.html";
 import { LightningElement, registerComponent } from 'lwc';
 import notScoped from './stylesheet.css';
-import scoped from './stylesheet.scoped.css?scoped=true';
-const __lwc_component_class_internal = registerComponent(
-    class extends LightningElement {
-        static {
-            this.stylesheets = [notScoped, scoped];
-        }
-        /*LWC compiler vX.X.X*/
-    },
-    {
-        tmpl: tmpl,
-        sel: 'lwc-test',
-        apiVersion: 9999999,
+import scoped from "./stylesheet.scoped.css?scoped=true";
+const __lwc_component_class_internal = registerComponent(class extends LightningElement {
+    static{
+        this.stylesheets = [
+            notScoped,
+            scoped
+        ];
     }
-);
+/*LWC compiler vX.X.X*/}, {
+    tmpl: tmpl,
+    sel: "lwc-test",
+    apiVersion: 9999999
+});
 export default __lwc_component_class_internal;

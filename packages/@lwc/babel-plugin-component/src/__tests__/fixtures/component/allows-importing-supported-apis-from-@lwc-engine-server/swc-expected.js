@@ -1,1 +1,1 @@
-import { renderComponent } from 'lwc';
+import { renderComponent } from "lwc";
