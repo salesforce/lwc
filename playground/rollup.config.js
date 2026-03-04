@@ -21,7 +21,7 @@ export default (args) => {
                 'process.env.NODE_ENV': JSON.stringify(__ENV__),
                 preventAssignment: true,
             }),
-            lwc({ enablePrivateMethods: true }),
+            lwc(),
             args.watch &&
                 serve({
                     open: false,

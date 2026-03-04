@@ -7,13 +7,8 @@ export default class extends LightningElement {
 
     increment() {
         this.counter++;
-        this.#privateMethod();
     }
     decrement() {
         this.counter--;
-    }
-
-    #privateMethod() {
-        this.counter++;
     }
 }
