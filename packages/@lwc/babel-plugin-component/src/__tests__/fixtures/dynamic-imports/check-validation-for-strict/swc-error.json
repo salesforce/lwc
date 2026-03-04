@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1121: Invalid import. The argument \"{\"type\":\"Identifier\",\"span\":{\"start\":15371,\"end\":15373},\"ctxt\":3,\"value\":\"id\",\"optional\":false}\" must be a stringLiteral for dynamic imports when strict mode is enabled.",
+    "filename": "test.js"
+}

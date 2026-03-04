@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1099: Boolean public property must default to false.",
+    "filename": "test.js"
+}

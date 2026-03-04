@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1095: @wire method or property cannot be used with @track",
+    "filename": "test.js"
+}

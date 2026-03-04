@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1111: Invalid property name \"part\". \"part\" is a future reserved attribute for web components.",
+    "filename": "test.js"
+}

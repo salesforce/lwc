@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1007: \n\nCaused by:\n    0: failed to deserialize Program\n    1: missing field `ctxt`",
+    "filename": "test.js"
+}

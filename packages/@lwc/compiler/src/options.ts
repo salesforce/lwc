@@ -116,7 +116,7 @@ export interface TransformOptions {
     experimentalComplexExpressions?: boolean;
     /** Options to control what output gets generated. */
     outputConfig?: OutputConfig;
-    /** Whether this is an explicit import. Passed to `@lwc/babel-plugin-component`. */
+    /** Whether this is an explicit import. Passed to `@lwc/swc-plugin-component`. */
     isExplicitImport?: boolean;
     /** Whether the compiled HTML should include comments present in the source. */
     preserveHtmlComments?: boolean;

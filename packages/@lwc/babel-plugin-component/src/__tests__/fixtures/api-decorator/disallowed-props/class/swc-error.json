@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1110: Invalid property name \"class\". \"class\" is a reserved attribute.",
+    "filename": "test.js"
+}

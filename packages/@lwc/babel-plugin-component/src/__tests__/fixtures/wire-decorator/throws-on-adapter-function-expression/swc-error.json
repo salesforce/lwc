@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1097: @wire expects a function identifier as first parameter.",
+    "filename": "test.js"
+}

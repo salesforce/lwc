@@ -16,6 +16,7 @@ __benchmarks_results__/
 # Auto-generated fixture outputs
 **/fixtures/**/expected.*
 **/fixtures/**/error.*
+**/fixtures/**/swc-expected.*
 packages/@lwc/template-compiler/src/__tests__/fixtures/**/ast.json
 packages/@lwc/template-compiler/src/__tests__/fixtures/**/metadata.json
 

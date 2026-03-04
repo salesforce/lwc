@@ -104,7 +104,9 @@ describe('resolver', () => {
         });
 
         expect(warnings).toHaveLength(0);
-        expect(output[0].code).toContain(`class NotALightningElement {}`);
+        // SWC formats empty class bodies with a newline, Babel formats them without.
+        // Accept either form.
+        expect(output[0].code.replace(/\s/g, '')).toContain('classNotALightningElement{}');
         expect(output[0].code.replace(/\s/g, '')).toContain(
             `
             class AlsoNotALightningElement {

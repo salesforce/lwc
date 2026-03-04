@@ -133,8 +133,10 @@ describe('lwsConfig', () => {
                 '(window === globalThis || window === document ? location : window.location).href'
             )
         );
-        expect(code).toContain('_asyncToGenerator');
-        expect(code).toContain('_wrapAsyncGenerator');
-        expect(code).toContain('_asyncIterator');
+        // SWC uses snake_case helper names; Babel used camelCase.
+        // Both serve the same purpose — async-generator polyfill helpers.
+        expect(code).toMatch(/_asyncToGenerator|_async_to_generator/);
+        expect(code).toMatch(/_wrapAsyncGenerator|_wrap_async_generator/);
+        expect(code).toMatch(/_asyncIterator|_async_iterator/);
     });
 });

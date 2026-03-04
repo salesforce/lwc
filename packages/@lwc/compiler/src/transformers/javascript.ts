@@ -5,21 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as babel from '@babel/core';
-import babelAsyncGeneratorFunctionsPlugin from '@babel/plugin-transform-async-generator-functions';
-import babelAsyncToGenPlugin from '@babel/plugin-transform-async-to-generator';
-import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties';
-import babelObjectRestSpreadPlugin from '@babel/plugin-transform-object-rest-spread';
 import lockerBabelPluginTransformUnforgeables from '@locker/babel-plugin-transform-unforgeables';
-import lwcClassTransformPlugin, { type LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
-import {
-    CompilerAggregateError,
-    CompilerError,
-    normalizeToCompilerError,
-    TransformerErrors,
-    type CompilerDiagnostic,
-    type LWCErrorInfo,
-} from '@lwc/errors';
-import { isAPIFeatureEnabled, APIFeature } from '@lwc/shared';
+import { transformComponentSync, type LwcSwcPluginOptions } from '@lwc/swc-plugin-component';
+import { normalizeToCompilerError, TransformerErrors } from '@lwc/errors';
 
 import type { NormalizedTransformOptions } from '../options';
 import type { TransformResult } from './shared';
@@ -52,82 +40,100 @@ export default function scriptTransform(
         componentFeatureFlagModulePath,
     } = options;
 
-    const lwcBabelPluginOptions: LwcBabelPluginOptions = {
-        isExplicitImport,
-        dynamicImports,
-        enableSyntheticElementInternals,
+    // -------------------------------------------------------------------------
+    // Pass 1 — @lwc/swc-plugin-component (LWC class transform + SWC syntax lowering)
+    //
+    // Replaces the previous two-step approach of:
+    //   (a) babel.transformSync with @lwc/babel-plugin-component (LWC class transforms)
+    //   (b) @swc/core transformSync (syntax lowering: class properties, spread, async)
+    //
+    // @lwc/swc-plugin-component consolidates both into a single call that:
+    //   1. Applies all LWC-specific AST transformations using @swc/core Visitor API:
+    //      - Decorator collection (@api, @track, @wire) → registerDecorators()
+    //      - Component registration → registerComponent()
+    //      - Scoped CSS import annotation (?scoped=true)
+    //      - Dynamic import rewriting (when dynamicImports.loader is set)
+    //      - Compiler version comment injection (/*LWC compiler vX.Y.Z*/)
+    //   2. Applies SWC built-in syntax lowering via jsc.target (computed internally):
+    //      - class properties (loose: useDefineForClassFields: false — CRITICAL for LWC reactivity)
+    //      - object rest/spread (lowered for older API versions)
+    //      - async/await + async generators (lowered when enableLightningWebSecurityTransforms)
+    //
+    // Returns { code, map, warnings } where map is a JSON string (or undefined).
+    // -------------------------------------------------------------------------
+    const lwcSwcPluginOptions: LwcSwcPluginOptions = {
         namespace,
         name,
-        instrumentation,
+        filename,
         apiVersion,
+        isExplicitImport,
+        enableSyntheticElementInternals,
+        enableLightningWebSecurityTransforms,
+        dynamicImports,
         componentFeatureFlagModulePath,
+        instrumentation,
+        sourcemap,
+        experimentalErrorRecoveryMode,
     };
 
-    const plugins: babel.PluginItem[] = [
-        [lwcClassTransformPlugin, lwcBabelPluginOptions],
-        [babelClassPropertiesPlugin, { loose: true }],
-    ];
-
-    if (!isAPIFeatureEnabled(APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION, apiVersion)) {
-        plugins.push(babelObjectRestSpreadPlugin);
-    }
-
-    if (enableLightningWebSecurityTransforms) {
-        plugins.push(
-            lockerBabelPluginTransformUnforgeables,
-            babelAsyncToGenPlugin,
-            babelAsyncGeneratorFunctionsPlugin
-        );
-    }
-
-    let result;
+    let swcTransformedCode: string;
+    let swcTransformedMap: string | undefined;
     try {
-        result = babel.transformSync(code, {
-            filename,
-            sourceMaps: sourcemap,
-
-            // Prevent Babel from loading local configuration.
-            babelrc: false,
-            configFile: false,
-
-            // Force Babel to generate new line and white spaces. This prevent Babel from generating
-            // an error when the generated code is over 500KB.
-            compact: false,
-            plugins,
-            parserOpts: {
-                errorRecovery: experimentalErrorRecoveryMode,
-            },
-        })!;
+        const swcResult = transformComponentSync(code, lwcSwcPluginOptions);
+        swcTransformedCode = swcResult.code;
+        swcTransformedMap = swcResult.map;
     } catch (e) {
-        // If we are here in errorRecoveryMode then it's most likely that we have run into
-        // an unforeseen error
-        let transformerError: LWCErrorInfo = TransformerErrors.JS_TRANSFORMER_ERROR;
-
-        // Sniff for a Babel decorator error, so we can provide a more helpful error message.
-        if (
-            (e as any).code === 'BABEL_TRANSFORM_ERROR' &&
-            (e as any).message?.includes('Decorators are not enabled.') &&
-            /\b(track|api|wire)\b/.test((e as any).message) // sniff for @track/@api/@wire
-        ) {
-            transformerError = TransformerErrors.JS_TRANSFORMER_DECORATOR_ERROR;
-        }
-        throw normalizeToCompilerError(transformerError, e, { filename });
+        // transformComponent throws CompilerError or CompilerAggregateError;
+        // these are already normalised LWC errors — re-throw directly.
+        throw e;
     }
 
-    if (experimentalErrorRecoveryMode) {
-        const metadata = result.metadata as { lwcErrors?: CompilerDiagnostic[] };
-        const errors = metadata?.lwcErrors;
-
-        if (errors) {
-            throw new CompilerAggregateError(
-                errors.map((diagnostic) => CompilerError.from(diagnostic)),
-                'Multiple errors occurred during compilation.'
-            );
+    // -------------------------------------------------------------------------
+    // Pass 2 (conditional) — @locker/babel-plugin-transform-unforgeables
+    //
+    // ADR: docs/adr/locker-plugin-decision.md
+    // Decision: Keep as a separate conditional Babel pass (NOT rewritten as SWC visitor).
+    //
+    // Rationale summary:
+    //   - Plugin is security-critical, owned by the Salesforce Locker team.
+    //   - Plugin uses @babel/core types, @babel/generator CodeGenerator, and Babel scope
+    //     analysis APIs (scope.bindings, scope.hasBinding, path.findParent) that have no
+    //     equivalent in SWC's TypeScript Visitor API.
+    //   - Reimplementing without Locker team involvement risks security regressions.
+    //   - The LWS path (enableLightningWebSecurityTransforms) is rare in practice.
+    //   - @babel/core is kept as a dependency ONLY for this conditional LWS pass.
+    //   - Locker team can independently provide an @swc/core-compatible plugin later.
+    //
+    // Implementation:
+    //   - Pass receives Pass 1 output code + its source map.
+    //   - inputSourceMap chains maps: original → Pass 1 (LWC transforms + SWC syntax lowering).
+    //   - babelrc/configFile: false ensures only the locker plugin runs in this pass.
+    // -------------------------------------------------------------------------
+    if (enableLightningWebSecurityTransforms) {
+        let lockerResult;
+        try {
+            lockerResult = babel.transformSync(swcTransformedCode, {
+                filename,
+                sourceMaps: sourcemap ? true : false,
+                babelrc: false,
+                configFile: false,
+                compact: false,
+                inputSourceMap: swcTransformedMap ? JSON.parse(swcTransformedMap) : undefined,
+                plugins: [lockerBabelPluginTransformUnforgeables],
+            })!;
+        } catch (e) {
+            throw normalizeToCompilerError(TransformerErrors.JS_TRANSFORMER_ERROR, e, { filename });
         }
+        return {
+            code: lockerResult.code!,
+            map: lockerResult.map ? JSON.stringify(lockerResult.map) : null,
+        };
     }
 
     return {
-        code: result.code!,
-        map: result.map,
+        code: swcTransformedCode,
+        // Return null (not undefined) when no sourcemap, consistent with the old Babel behavior.
+        // Tests assert `result.map` to be defined (toBeDefined passes for null), or to be null.
+        map: swcTransformedMap ?? null,
     };
 }

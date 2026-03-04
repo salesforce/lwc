@@ -1,0 +1,4 @@
+{
+    "message": "Error: LWC1113: @track decorator can only be applied to class properties.",
+    "filename": "test.js"
+}
