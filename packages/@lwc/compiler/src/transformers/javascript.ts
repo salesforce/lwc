@@ -48,6 +48,7 @@ export default function scriptTransform(
         dynamicImports,
         outputConfig: { sourcemap },
         enableLightningWebSecurityTransforms,
+        enablePrivateMethods,
         namespace,
         name,
         instrumentation,
@@ -68,10 +69,10 @@ export default function scriptTransform(
     };
 
     const plugins: babel.PluginItem[] = [
-        LwcPrivateMethodTransform,
+        ...(enablePrivateMethods ? [LwcPrivateMethodTransform as babel.PluginItem] : []),
         [lwcClassTransformPlugin, lwcBabelPluginOptions],
         [babelClassPropertiesPlugin, { loose: true }],
-        LwcReversePrivateMethodTransform,
+        ...(enablePrivateMethods ? [LwcReversePrivateMethodTransform as babel.PluginItem] : []),
     ];
 
     if (!isAPIFeatureEnabled(APIFeature.DISABLE_OBJECT_REST_SPREAD_TRANSFORMATION, apiVersion)) {
