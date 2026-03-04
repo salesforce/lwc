@@ -4,6 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+
+// These tests exercise Babel pipelines that cannot be represented as fixture tests.
+// Fixture tests run the full forward → main-plugin → class-properties → reverse pipeline,
+// but the tests here need one of the following non-standard setups:
+//   • Forward-only pipeline (transformForwardOnly) — no reverse transform
+//   • Reverse-only pipeline (transformReverseOnly) — no forward transform
+//   • Custom intermediate Babel plugin inserted between the forward and reverse transforms
+
 import { describe, expect, test } from 'vitest';
 import { transformSync } from '@babel/core';
 import plugin, { LwcPrivateMethodTransform, LwcReversePrivateMethodTransform } from '../index';
@@ -46,7 +54,6 @@ function transformForwardOnly(source: string, opts = {}) {
 }
 
 describe('private method transform validation', () => {
-    // Kept inline: uses reverse-only pipeline (no forward transform)
     test('reverse standalone on clean code succeeds without forward metadata', () => {
         const source = `
             class Test {
@@ -58,7 +65,6 @@ describe('private method transform validation', () => {
         expect(result.code).toContain('publicMethod');
     });
 
-    // Kept inline: uses reverse-only pipeline (no forward transform)
     test('reverse standalone with prefixed method throws collision when metadata is missing', () => {
         const source = `
             class Test {
@@ -71,7 +77,6 @@ describe('private method transform validation', () => {
         );
     });
 
-    // Kept inline: uses custom intermediate Babel plugin in a 4-plugin pipeline
     test('Program.exit count mismatch throws when forward-transformed method is removed', () => {
         const PREFIX = '__lwc_component_class_internal_private_';
 
@@ -111,7 +116,6 @@ describe('private method transform validation', () => {
         ).toThrowError(/Private method transform count mismatch/);
     });
 
-    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('forward-only output contains correct prefixed names', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -128,7 +132,6 @@ describe('private method transform validation', () => {
         expect(result.code).not.toContain('#bar');
     });
 
-    // Kept inline: uses custom intermediate Babel plugin in a 4-plugin pipeline
     test('intermediate plugin that modifies method body does not break reverse transform', () => {
         function bodyModifierPlugin({ types: t }: any) {
             return {
@@ -176,7 +179,6 @@ describe('private method transform validation', () => {
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
-    // Kept inline: uses custom intermediate Babel plugin in a 4-plugin pipeline
     test('intermediate plugin that adds a prefixed method triggers collision', () => {
         function prefixedMethodInjectorPlugin({ types: t }: any) {
             let injected = false;
@@ -218,7 +220,6 @@ describe('private method transform validation', () => {
         ).toThrowError(/cannot start with reserved prefix `__lwc_`/);
     });
 
-    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('forward-only output transforms call sites to prefixed names', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -237,7 +238,6 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('this.#doWork');
     });
 
-    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('forward references in call sites are transformed', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -259,7 +259,6 @@ describe('private method transform validation', () => {
         expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
-    // Kept inline: uses forward-only pipeline to verify occurrence counts
     test('multiple invocations of the same private method are all transformed', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -286,7 +285,6 @@ describe('private method transform validation', () => {
         expect(privateMatches).toHaveLength(4);
     });
 
-    // Kept inline: uses forward-only pipeline (no reverse transform)
     test('cross-method private call sites in forward-only output', () => {
         const source = `
             import { LightningElement } from 'lwc';
