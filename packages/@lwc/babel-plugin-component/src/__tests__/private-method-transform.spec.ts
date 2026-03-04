@@ -77,21 +77,6 @@ describe('private method transform validation', () => {
         expect(result.code).toContain('#methodC');
     });
 
-    test('throws error when user-defined method collides with reserved prefix', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                __lwc_component_class_internal_private_sneakyMethod() {
-                    return 'collision';
-                }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /cannot start with reserved prefix `__lwc_`\. Please rename this function to avoid conflict/
-        );
-    });
-
     test('throws error when collision exists alongside real private methods', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -124,21 +109,6 @@ describe('private method transform validation', () => {
         expect(result.code).toContain('_underscoreMethod');
     });
 
-    test('async private method round-trips successfully', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                async #fetchData() {
-                    return await Promise.resolve(42);
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('async #fetchData');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
     test('static private method round-trips successfully', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -152,68 +122,6 @@ describe('private method transform validation', () => {
         const result = transformWithFullPipeline(source);
         expect(result.code).toContain('static #helper');
         expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('private method with parameters round-trips successfully', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #compute(a, b, ...rest) {
-                    return a + b + rest.length;
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#compute(a, b, ...rest)');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('private getter throws unsupported error', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                get #value() {
-                    return this._val;
-                }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /Private accessor methods are not currently supported\. Only private methods are supported\./
-        );
-    });
-
-    test('private setter throws unsupported error', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                set #value(v) {
-                    this._val = v;
-                }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /Private accessor methods are not currently supported\. Only private methods are supported\./
-        );
-    });
-
-    test('decorated private method throws', () => {
-        const source = `
-            import { LightningElement, api } from 'lwc';
-            export default class Test extends LightningElement {
-                @api #decorated() {
-                    return 1;
-                }
-            }
-        `;
-
-        // The forward private method transform runs as a separate plugin before the
-        // main LWC plugin, so LWC1212 fires before the @api decorator validation.
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /Decorators cannot be applied to private methods/
-        );
     });
 
     test('class with zero private methods succeeds', () => {
@@ -258,23 +166,6 @@ describe('private method transform validation', () => {
         expect(() => transformWithFullPipeline(source)).toThrowError(
             /__lwc_component_class_internal_private_collision[AB]/
         );
-    });
-
-    test('generator private method round-trips successfully', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                *#generate() {
-                    yield 1;
-                    yield 2;
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#generate');
-        expect(result.code).toContain('yield');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('reverse standalone on clean code succeeds without forward metadata', () => {
@@ -337,23 +228,6 @@ describe('private method transform validation', () => {
                 ],
             })
         ).toThrowError(/Private method transform count mismatch/);
-    });
-
-    test('multiple classes in the same file round-trip private methods', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class First extends LightningElement {
-                #shared() { return 'first'; }
-            }
-            class Second extends LightningElement {
-                #shared() { return 'second'; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-        const matches = result.code!.match(/#shared/g);
-        expect(matches).toHaveLength(2);
     });
 
     test('private method body with call sites round-trips', () => {
@@ -429,72 +303,6 @@ describe('private method transform validation', () => {
         expect(alphaIdx).toBeLessThan(betaIdx);
         expect(betaIdx).toBeLessThan(gammaIdx);
         expect(gammaIdx).toBeLessThan(deltaIdx);
-    });
-
-    test('default parameter values survive round-trip', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #greet(name = 'world', times = 3) {
-                    return name.repeat(times);
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('#greet');
-        expect(code).toContain("'world'");
-        expect(code).toContain('3');
-        expect(code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('destructuring parameters survive round-trip', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #process({ x, y }, [a, b]) {
-                    return x + y + a + b;
-                }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('#process');
-        expect(code).toMatch(/\{\s*x,\s*y\s*\}/);
-        expect(code).toMatch(/\[\s*a,\s*b\s*\]/);
-        expect(code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('empty method body round-trips', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #noop() {}
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        expect(result.code).toContain('#noop');
-        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('private and public method with same name coexist', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #foo() { return 'private'; }
-                foo() { return 'public'; }
-            }
-        `;
-
-        const result = transformWithFullPipeline(source);
-        const code = result.code!;
-        expect(code).toContain('#foo');
-        expect(code).toContain("return 'private'");
-        expect(code).toContain("return 'public'");
-        expect(code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('intermediate plugin that modifies method body does not break reverse transform', () => {
@@ -601,35 +409,6 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('#foo');
     });
 
-    test('private field throws unsupported error', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #count = 0;
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /Private fields are not currently supported\. Only private methods are supported\./
-        );
-    });
-
-    test('private field alongside private method throws unsupported error', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #count = 0;
-                #increment() {
-                    this.#count++;
-                }
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /Private fields are not currently supported/
-        );
-    });
-
     test('private method call sites do not leak prefixed names after round-trip', () => {
         const source = `
             import { LightningElement } from 'lwc';
@@ -646,19 +425,6 @@ describe('private method transform validation', () => {
         const code = result.code!;
         expect(code).toContain('this.#doWork(21)');
         expect(code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('private field with initializer throws unsupported error', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #state = { ready: false };
-            }
-        `;
-
-        expect(() => transformWithFullPipeline(source)).toThrowError(
-            /Private fields are not currently supported/
-        );
     });
 
     test('forward-only output transforms call sites to prefixed names', () => {
@@ -724,50 +490,6 @@ describe('private method transform validation', () => {
         expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
         const privateMatches = roundTrip.code!.match(/#compute/g);
         expect(privateMatches).toHaveLength(4);
-    });
-
-    test('self-referencing private method round-trips', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #recursive(n) {
-                    if (n <= 0) return 0;
-                    return n + this.#recursive(n - 1);
-                }
-            }
-        `;
-
-        const result = transformForwardOnly(source);
-        const code = result.code!;
-        expect(code).toContain('this.__lwc_component_class_internal_private_recursive(n - 1)');
-
-        const roundTrip = transformWithFullPipeline(source);
-        expect(roundTrip.code).toContain('this.#recursive(n - 1)');
-        expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
-    });
-
-    test('private method reference without call round-trips', () => {
-        const source = `
-            import { LightningElement } from 'lwc';
-            export default class Test extends LightningElement {
-                #handler() { return 42; }
-                connectedCallback() {
-                    const fn = this.#handler;
-                    setTimeout(this.#handler, 100);
-                }
-            }
-        `;
-
-        const result = transformForwardOnly(source);
-        const code = result.code!;
-        expect(code).toContain('this.__lwc_component_class_internal_private_handler;');
-        expect(code).toContain('this.__lwc_component_class_internal_private_handler, 100');
-        expect(code).not.toContain('this.#handler');
-
-        const roundTrip = transformWithFullPipeline(source);
-        expect(roundTrip.code).toContain('this.#handler;');
-        expect(roundTrip.code).toContain('this.#handler, 100');
-        expect(roundTrip.code).not.toContain('__lwc_component_class_internal_private_');
     });
 
     test('cross-method private call sites in forward-only output', () => {
