@@ -12,9 +12,8 @@ import { ArrayPush, ArraySplice, isUndefined } from '@lwc/shared';
  * The goal is to avoid leaking the values, which is what would happen with a WeakMap<K, Set<V>>.
  *
  * Note that this is currently only intended to be used in dev/PRODDEBUG environments.
- * It leaks in legacy browsers, which may be undesired.
  *
- * This implementation relies on the WeakRef/FinalizationRegistry proposal.
+ * This implementation relies on WeakRefs and FinalizationRegistry.
  * For some background, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef
  */
 export class WeakMultiMap<K extends object, V extends object> {
