@@ -15,9 +15,9 @@ import { ArrayPush, ArraySplice, isUndefined } from '@lwc/shared';
  * It leaks in legacy browsers, which may be undesired.
  *
  * This implementation relies on the WeakRef/FinalizationRegistry proposal.
- * For some background, see: https://github.com/tc39/proposal-weakrefs
+ * For some background, see: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakRef
  */
-export class WeakMultimap<K extends object, V extends object> {
+export class WeakMultiMap<K extends object, V extends object> {
     private _map = new WeakMap<K, WeakRef<V>[]>();
 
     private _registry = new FinalizationRegistry((weakRefs: WeakRef<V>[]) => {
