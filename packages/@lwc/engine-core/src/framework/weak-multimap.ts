@@ -7,50 +7,17 @@
 
 import { ArrayPush, ArraySplice, isUndefined } from '@lwc/shared';
 
-const supportsWeakRefs =
-    typeof WeakRef === 'function' && typeof FinalizationRegistry === 'function';
-
 /**
  * A map where the keys are weakly held and the values are a Set that are also each weakly held.
  * The goal is to avoid leaking the values, which is what would happen with a WeakMap<K, Set<V>>.
  *
  * Note that this is currently only intended to be used in dev/PRODDEBUG environments.
  * It leaks in legacy browsers, which may be undesired.
+ *
+ * This implementation relies on the WeakRef/FinalizationRegistry proposal.
+ * For some background, see: https://github.com/tc39/proposal-weakrefs
  */
-export interface WeakMultiMap<T extends object, V extends object> {
-    get(key: T): ReadonlySet<V>;
-    add(key: T, vm: V): void;
-    delete(key: T): void;
-}
-
-// In browsers that doesn't support WeakRefs, the values will still leak, but at least the keys won't
-class LegacyWeakMultiMap<K extends object, V extends object> implements WeakMultiMap<K, V> {
-    private _map: WeakMap<K, Set<V>> = new WeakMap();
-
-    private _getValues(key: K): Set<V> {
-        let values = this._map.get(key);
-        if (isUndefined(values)) {
-            values = new Set();
-            this._map.set(key, values);
-        }
-        return values;
-    }
-
-    get(key: K): ReadonlySet<V> {
-        return this._getValues(key);
-    }
-    add(key: K, vm: V) {
-        const set = this._getValues(key);
-        set.add(vm);
-    }
-    delete(key: K) {
-        this._map.delete(key);
-    }
-}
-
-// This implementation relies on the WeakRef/FinalizationRegistry proposal.
-// For some background, see: https://github.com/tc39/proposal-weakrefs
-class ModernWeakMultiMap<K extends object, V extends object> implements WeakMultiMap<K, V> {
+export class WeakMultimap<K extends object, V extends object> {
     private _map = new WeakMap<K, WeakRef<V>[]>();
 
     private _registry = new FinalizationRegistry((weakRefs: WeakRef<V>[]) => {
@@ -88,8 +55,12 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
     }
     add(key: K, value: V) {
         const weakRefs = this._getWeakRefs(key);
-        // We could check for duplicate values here, but it doesn't seem worth it.
-        // We transform the output into a Set anyway
+        // Skip adding if already present
+        for (const weakRef of weakRefs) {
+            if (weakRef.deref() === value) {
+                return;
+            }
+        }
         ArrayPush.call(weakRefs, new WeakRef<V>(value));
 
         // It's important here not to leak the second argument, which is the "held value." The FinalizationRegistry
@@ -105,5 +76,3 @@ class ModernWeakMultiMap<K extends object, V extends object> implements WeakMult
         this._map.delete(key);
     }
 }
-
-export const WeakMultiMap = supportsWeakRefs ? ModernWeakMultiMap : LegacyWeakMultiMap;
