@@ -1885,9 +1885,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -2685,6 +2687,11 @@
   integrity sha512-+PmQX0PiAYPMeVYe237LJAYvOMYW1j2rH5YROyS3b4CTVJum34HfRvKvAzozHAQG0TnHNdUfY9nCeUyRAs//cw==
   dependencies:
     defer-to-connect "^2.0.1"
+
+"@tony.ganchev/eslint-plugin-header@^3.2.4":
+  version "3.2.4"
+  resolved "https://registry.npmjs.org/@tony.ganchev/eslint-plugin-header/-/eslint-plugin-header-3.2.4.tgz#cb955070b92dda8d05b008cee01c982a0e007d47"
+  integrity sha512-zqMKTW/KQmqKGINkhwEPoJFcJ0ewUkUAmvzHLB5N+n/6bsk7D/xkQ50VhUakG2P4JHHtqsncaXrPxgSeuBPmOw==
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -6025,11 +6032,6 @@ eslint-module-utils@^2.12.1:
   integrity sha512-L8jSWTze7K2mTg0vos/RuLRS5soomksDPoJLXIslC7c8Wmut3bx7CPpJijDcBZtxQ5lrbUdM+s0OlNbz0DCDNw==
   dependencies:
     debug "^3.2.7"
-
-eslint-plugin-header@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-header/-/eslint-plugin-header-3.1.1.tgz#6ce512432d57675265fac47292b50d1eff11acd6"
-  integrity sha512-9vlKxuJ4qf793CmeeSrZUvVClw6amtpghq3CuWcB5cUNnWHQhgcqy5eF8oVKFk1G3Y/CbchGfEaw3wiIJaNmVg==
 
 eslint-plugin-import@^2.32.0:
   version "2.32.0"

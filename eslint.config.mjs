@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import lwcInternal from '@lwc/eslint-plugin-lwc-internal';
+import header from '@tony.ganchev/eslint-plugin-header';
 import _import from 'eslint-plugin-import';
-import header from 'eslint-plugin-header';
 import globals from 'globals';
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
@@ -17,10 +17,6 @@ import * as espree from 'espree';
 import { PUBLIC_PACKAGES as publicPackageData } from './scripts/shared/packages.mjs';
 // convert filepath to eslint glob
 const PUBLIC_PACKAGES = publicPackageData.map(({ path }) => `${path}/**`);
-
-// Workaround for plugin schema validation failing in eslint v9
-// Ref: https://github.com/Stuk/eslint-plugin-header/issues/57#issuecomment-2378485611
-header.rules.header.meta.schema = false;
 
 export default tseslint.config(
     // ------------- //
@@ -285,21 +281,27 @@ export default tseslint.config(
         rules: {
             'header/header': [
                 'error',
-                'block',
-                [
-                    '',
-                    {
-                        pattern:
-                            '^ \\* Copyright \\(c\\) \\d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\\.$',
-                        // This copyright text should match the text used in the rollup config
-                        template: ` * Copyright (c) ${new Date().getFullYear()}, Salesforce, Inc.`,
+                {
+                    header: {
+                        commentType: 'block',
+                        lines: [
+                            '',
+                            {
+                                pattern:
+                                    /^ \* Copyright \(c\) \d{4}, ([sS]alesforce.com, inc|Salesforce, Inc)\.$/,
+                                // This copyright text should match the text used in the rollup config
+                                template: ` * Copyright (c) ${new Date().getFullYear()}, Salesforce, Inc.`,
+                            },
+                            ' * All rights reserved.',
+                            ' * SPDX-License-Identifier: MIT',
+                            ' * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT',
+                            ' ',
+                        ],
                     },
-                    ' * All rights reserved.',
-                    ' * SPDX-License-Identifier: MIT',
-                    ' * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT',
-                    ' ',
-                ],
-                1 /* newline after header */,
+                    trailingEmptyLines: {
+                        minimum: 1,
+                    },
+                }
             ],
         },
     },
