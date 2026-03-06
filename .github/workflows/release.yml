@@ -94,13 +94,13 @@ jobs:
               run: yarn build
 
             - name: Set git identity (Actions bot)
-              if: ${{ steps.resolve_input.outputs.resolved != "prerelease" }}
+              if: ${{ steps.resolve_input.outputs.resolved != 'prerelease' }}
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
             - name: Commit & push
-              if: ${{ steps.resolve_input.outputs.resolved != "prerelease" }}
+              if: ${{ steps.resolve_input.outputs.resolved != 'prerelease' }}
               uses: actions-js/push@v1.4
               with:
                   github_token: ${{ secrets.WORKFLOW_PAT }}
@@ -127,7 +127,7 @@ jobs:
                   yarn nx release publish --yes --tag "$TAG"
 
             - name: Tag and create GitHub release
-              if: ${{ steps.resolve_input.outputs.resolved != "prerelease" }}
+              if: ${{ steps.resolve_input.outputs.resolved != 'prerelease' }}
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
