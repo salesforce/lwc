@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-wtr",
     "private": true,
-    "version": "9.0.1",
+    "version": "9.0.3",
     "type": "module",
     "scripts": {
         "build": "playwright install || true",
@@ -10,11 +10,11 @@
         "test:hydration": "web-test-runner --config configs/hydration.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "9.0.1",
-        "@lwc/engine-dom": "9.0.1",
-        "@lwc/engine-server": "9.0.1",
-        "@lwc/rollup-plugin": "9.0.1",
-        "@lwc/synthetic-shadow": "9.0.1",
+        "@lwc/compiler": "9.0.3",
+        "@lwc/engine-dom": "9.0.3",
+        "@lwc/engine-server": "9.0.3",
+        "@lwc/rollup-plugin": "9.0.3",
+        "@lwc/synthetic-shadow": "9.0.3",
         "@types/chai": "^5.2.3",
         "@types/jasmine": "^6.0.0",
         "@vitest/expect": "^4.0.17",
@@ -25,7 +25,7 @@
         "@web/test-runner-playwright": "^0.11.1",
         "@web/test-runner-saucelabs": "^0.13.0",
         "chai": "^6.2.2",
-        "playwright": "^1.58.1"
+        "playwright": "^1.58.2"
     },
     "volta": {
         "extends": "../../../package.json"

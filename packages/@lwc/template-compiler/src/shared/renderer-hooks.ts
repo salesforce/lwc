@@ -62,9 +62,8 @@ function shouldAddCustomRenderer(element: BaseElement, state: State): boolean {
 
     const { attributes, directives } = element;
     if (directives.length) {
-        let directiveMatched = false;
         // If any directives require custom renderer
-        directiveMatched = directives.some((dir) => {
+        const directiveMatched = directives.some((dir) => {
             return state.crDirectives.has(ElementDirectiveName[dir.name]);
         });
         if (directiveMatched) {

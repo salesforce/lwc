@@ -137,14 +137,13 @@ export function addGenerateMarkupFunction(
     const defaultTagName = b.literal(tagName);
     const classIdentifier = b.identifier(state.lwcClassName!);
 
-    let exposeTemplateBlock: IfStatement | null = null;
     const defaultTmplPath = `./${pathParse(filename).name}.html`;
     const tmplVar = b.identifier('__lwcTmpl');
     program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
     program.body.unshift(
         bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
     );
-    exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
+    const exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
     let connectWireAdapterCode: Statement[] = [];

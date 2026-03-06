@@ -25,7 +25,7 @@ export function swapLwcStyleForStyleTag(src: string): string {
     // ([leading whitespace])(<style (id="(text)")...>...</style>)
     const styleCapture = /(\s*)(<style [^>]*(id="([^"]+)" ?)[^>]*>.*?<\/style>)/s;
     const capturedStyleTags: StyleTagInfo[] = [];
-    let styleTagMatch: RegExpExecArray | null = null;
+    let styleTagMatch: RegExpExecArray | null;
 
     // Find all <style> tags with an id, remove id attrs, capture information for later
     // replacement of <lwc-style> tags. The length of the `modifiedSrc` string will be
@@ -55,7 +55,7 @@ export function swapLwcStyleForStyleTag(src: string): string {
     const idToStyleTag = Object.fromEntries(
         capturedStyleTags.map((styleTagInfo) => [styleTagInfo.styleId, styleTagInfo])
     );
-    let lwcStyleTagMatch: RegExpExecArray | null = null;
+    let lwcStyleTagMatch: RegExpExecArray | null;
 
     // Find all <lwc-style> tags and replace them with corresponding <style> tags captured earlier.
     // The length of the `modifiedSrc` string will be changing as <style> tags are modified, so we

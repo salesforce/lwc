@@ -170,9 +170,7 @@ export function parseIdentifier(
     source: string,
     location: SourceLocation
 ): Identifier {
-    let isValid = true;
-
-    isValid = isIdentifierStart(source.charCodeAt(0));
+    let isValid = isIdentifierStart(source.charCodeAt(0));
     for (let i = 1; i < source.length && isValid; i++) {
         isValid = isIdentifierChar(source.charCodeAt(i));
     }

@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/signals",
-    "version": "9.0.1",
+    "version": "9.0.3",
     "description": "Provides the interface to interact with reactivity from outside the framework",
     "keywords": [
         "lwc"
@@ -34,6 +34,7 @@
     "types": "dist/index.d.ts",
     "files": [
         "dist/**/*.js",
+        "dist/**/*.cjs",
         "dist/**/*.d.ts"
     ],
     "scripts": {
@@ -50,6 +51,6 @@
         }
     },
     "devDependencies": {
-        "@lwc/shared": "9.0.1"
+        "@lwc/shared": "9.0.3"
     }
 }
