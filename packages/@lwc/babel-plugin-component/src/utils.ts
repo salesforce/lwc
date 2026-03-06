@@ -159,6 +159,26 @@ function isErrorRecoveryMode(state: LwcBabelPluginPass): boolean {
     return state.file.opts?.parserOpts?.errorRecovery ?? false;
 }
 
+/**
+ * Copies optional metadata properties between ClassMethod and ClassPrivateMethod nodes.
+ * These properties are not accepted by the t.classMethod() / t.classPrivateMethod() builders,
+ * so they must be transferred manually after node creation. Both the forward and reverse
+ * private-method transforms use this to maintain round-trip parity.
+ */
+function copyMethodMetadata(
+    source: types.ClassMethod | types.ClassPrivateMethod,
+    target: types.ClassMethod | types.ClassPrivateMethod
+): void {
+    if (source.returnType != null) target.returnType = source.returnType;
+    if (source.typeParameters != null) target.typeParameters = source.typeParameters;
+    if (source.loc != null) target.loc = source.loc;
+    if (source.abstract != null) target.abstract = source.abstract;
+    if (source.access != null) target.access = source.access;
+    if (source.accessibility != null) target.accessibility = source.accessibility;
+    if (source.optional != null) target.optional = source.optional;
+    if (source.override != null) target.override = source.override;
+}
+
 export {
     isClassMethod,
     isGetterClassMethod,
@@ -167,4 +187,5 @@ export {
     handleError,
     incrementMetricCounter,
     isErrorRecoveryMode,
+    copyMethodMetadata,
 };

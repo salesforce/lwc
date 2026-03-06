@@ -149,6 +149,8 @@ export interface TransformOptions {
     experimentalErrorRecoveryMode?: boolean;
     /** Full module path for a feature flag to import and enforce at runtime (e.g., '@salesforce/featureFlag/name'). */
     componentFeatureFlagModulePath?: string;
+    /** Flag to enable the private method round-trip transform. When false or omitted, private methods pass through to standard Babel handling. */
+    enablePrivateMethods?: boolean;
 }
 
 type OptionalTransformKeys =
@@ -164,6 +166,7 @@ type OptionalTransformKeys =
     | 'experimentalDynamicDirective'
     | 'dynamicImports'
     | 'componentFeatureFlagModulePath'
+    | 'enablePrivateMethods'
     | 'instrumentation';
 
 type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;

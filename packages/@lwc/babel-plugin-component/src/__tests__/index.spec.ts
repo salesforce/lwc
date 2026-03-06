@@ -7,9 +7,14 @@
 import path from 'node:path';
 import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
+import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
-import plugin, { type LwcBabelPluginOptions } from '../index';
+import plugin, {
+    LwcPrivateMethodTransform,
+    LwcReversePrivateMethodTransform,
+    type LwcBabelPluginOptions,
+} from '../index';
 
 interface TestConfig extends LwcBabelPluginOptions {
     experimentalErrorRecoveryMode?: boolean;
@@ -82,7 +87,7 @@ describe('fixtures', () => {
     testFixtureDir<TestConfig>(
         {
             root: path.resolve(import.meta.dirname, 'fixtures'),
-            pattern: '**/actual.js',
+            pattern: '!(private-methods)/**/actual.js',
             ssrVersion: 2,
         },
         ({ src, config }) => {
@@ -106,6 +111,58 @@ describe('fixtures', () => {
                 ...((config as any)?.parserOpts?.errorRecovery
                     ? { 'lwcErrors.json': lwcErrors }
                     : {}),
+            };
+        }
+    );
+});
+
+function transformWithPrivateMethodPipeline(source: string, opts = {}) {
+    const testConfig = {
+        ...BASE_CONFIG,
+        parserOpts: (opts as any).parserOpts ?? {},
+        plugins: [
+            LwcPrivateMethodTransform,
+            [plugin, { ...BASE_OPTS, ...opts }],
+            [babelClassPropertiesPlugin, { loose: true }],
+            LwcReversePrivateMethodTransform,
+        ],
+    };
+
+    const result = transformSync(source, testConfig)!;
+
+    let { code } = result;
+
+    code = code!.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
+
+    code = code.replace(
+        new RegExp(`apiVersion: ${HIGHEST_API_VERSION}`, 'g'),
+        `apiVersion: 9999999`
+    );
+
+    return { code };
+}
+
+describe.skip('private-methods fixtures', () => {
+    testFixtureDir(
+        {
+            root: path.resolve(import.meta.dirname, 'fixtures', 'private-methods'),
+            pattern: '**/actual.js',
+            ssrVersion: 2,
+        },
+        ({ src, config }) => {
+            let code;
+            let error;
+
+            try {
+                const result = transformWithPrivateMethodPipeline(src, config);
+                code = result.code;
+            } catch (err) {
+                error = JSON.stringify(normalizeError(err), null, 4);
+            }
+
+            return {
+                'expected.js': code,
+                'error.json': error,
             };
         }
     );

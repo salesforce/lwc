@@ -34,6 +34,8 @@ const TEMPLATE_KEY = 'tmpl';
 const COMPONENT_NAME_KEY = 'sel';
 const API_VERSION_KEY = 'apiVersion';
 const COMPONENT_CLASS_ID = '__lwc_component_class_internal';
+const PRIVATE_METHOD_PREFIX = '__lwc_component_class_internal_private_';
+const PRIVATE_METHOD_METADATA_KEY = '__lwcTransformedPrivateMethods';
 const SYNTHETIC_ELEMENT_INTERNALS_KEY = 'enableSyntheticElementInternals';
 const COMPONENT_FEATURE_FLAG_KEY = 'componentFeatureFlag';
 
@@ -48,6 +50,8 @@ export {
     COMPONENT_NAME_KEY,
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
+    PRIVATE_METHOD_PREFIX,
+    PRIVATE_METHOD_METADATA_KEY,
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
     COMPONENT_FEATURE_FLAG_KEY,
 };
