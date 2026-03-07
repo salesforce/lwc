@@ -45,7 +45,7 @@ function getTestOptions(dirname: string) {
     return isOnly ? { only: true } : isSkip ? { skip: true } : {};
 }
 
-/** Loads the the contents of the `config.json` in the provided directory, if present. */
+/** Loads the contents of the `config.json` in the provided directory, if present. */
 function getFixtureConfig<T>(dirname: string): T | undefined {
     const filepath = path.join(dirname, 'config.json');
     let contents: string;
