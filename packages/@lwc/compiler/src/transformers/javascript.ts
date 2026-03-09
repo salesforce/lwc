@@ -61,6 +61,7 @@ export default function scriptTransform(
         isExplicitImport,
         dynamicImports,
         enableSyntheticElementInternals,
+        enablePrivateMethods,
         namespace,
         name,
         instrumentation,
