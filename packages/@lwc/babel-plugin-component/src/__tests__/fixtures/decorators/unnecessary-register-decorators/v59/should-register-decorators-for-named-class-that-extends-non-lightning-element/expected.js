@@ -3,7 +3,10 @@ import _tmpl from "./test.html";
 import { registerComponent as _registerComponent } from "lwc";
 import MyCoolMixin from './mixin.js';
 class MyElement extends MyCoolMixin {
-  foo;
+  constructor(...args) {
+    super(...args);
+    this.foo = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(MyElement, {

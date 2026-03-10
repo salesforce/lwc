@@ -229,8 +229,7 @@ export const DecoratorErrors = {
 
     PRIVATE_METHOD_NAME_COLLISION: {
         code: 1213,
-        message:
-            "Method '{0}' cannot start with reserved prefix `__lwc_`. Please rename this function to avoid conflict.",
+        message: "Method '{0}' cannot start with reserved prefix `__lwc_`.",
         level: DiagnosticLevel.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1213',
     },

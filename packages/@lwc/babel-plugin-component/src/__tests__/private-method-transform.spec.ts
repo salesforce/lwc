@@ -73,7 +73,7 @@ describe('private method transform validation', () => {
         `;
 
         expect(() => transformReverseOnly(source)).toThrowError(
-            /cannot start with reserved prefix `__lwc_`\. Please rename this function to avoid conflict/
+            /cannot start with reserved prefix `__lwc_`\./
         );
     });
 

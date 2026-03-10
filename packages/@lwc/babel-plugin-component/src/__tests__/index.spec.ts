@@ -61,7 +61,12 @@ function transform(source: string, opts = {}) {
     const testConfig = {
         ...BASE_CONFIG,
         parserOpts: (opts as any).parserOpts ?? {},
-        plugins: [[plugin, { ...BASE_OPTS, ...opts }]],
+        plugins: [
+            LwcPrivateMethodTransform,
+            [plugin, { ...BASE_OPTS, ...opts }],
+            [babelClassPropertiesPlugin, { loose: true }],
+            LwcReversePrivateMethodTransform,
+        ],
     };
 
     const result = transformSync(source, testConfig)!;
@@ -87,7 +92,7 @@ describe('fixtures', () => {
     testFixtureDir<TestConfig>(
         {
             root: path.resolve(import.meta.dirname, 'fixtures'),
-            pattern: '!(private-methods)/**/actual.js',
+            pattern: '**/actual.js',
             ssrVersion: 2,
         },
         ({ src, config }) => {
@@ -111,58 +116,6 @@ describe('fixtures', () => {
                 ...((config as any)?.parserOpts?.errorRecovery
                     ? { 'lwcErrors.json': lwcErrors }
                     : {}),
-            };
-        }
-    );
-});
-
-function transformWithPrivateMethodPipeline(source: string, opts = {}) {
-    const testConfig = {
-        ...BASE_CONFIG,
-        parserOpts: (opts as any).parserOpts ?? {},
-        plugins: [
-            LwcPrivateMethodTransform,
-            [plugin, { ...BASE_OPTS, ...opts }],
-            [babelClassPropertiesPlugin, { loose: true }],
-            LwcReversePrivateMethodTransform,
-        ],
-    };
-
-    const result = transformSync(source, testConfig)!;
-
-    let { code } = result;
-
-    code = code!.replace(new RegExp(LWC_VERSION.replace(/\./g, '\\.'), 'g'), 'X.X.X');
-
-    code = code.replace(
-        new RegExp(`apiVersion: ${HIGHEST_API_VERSION}`, 'g'),
-        `apiVersion: 9999999`
-    );
-
-    return { code };
-}
-
-describe('private-methods fixtures', () => {
-    testFixtureDir(
-        {
-            root: path.resolve(import.meta.dirname, 'fixtures', 'private-methods'),
-            pattern: '**/actual.js',
-            ssrVersion: 2,
-        },
-        ({ src, config }) => {
-            let code;
-            let error;
-
-            try {
-                const result = transformWithPrivateMethodPipeline(src, config);
-                code = result.code;
-            } catch (err) {
-                error = JSON.stringify(normalizeError(err), null, 4);
-            }
-
-            return {
-                'expected.js': code,
-                'error.json': error,
             };
         }
     );

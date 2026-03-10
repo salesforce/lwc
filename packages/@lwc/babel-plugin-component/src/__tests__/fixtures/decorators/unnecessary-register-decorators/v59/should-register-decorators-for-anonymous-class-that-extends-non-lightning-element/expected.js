@@ -2,7 +2,10 @@ import _tmpl from "./test.html";
 import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 import MyCoolMixin from './mixin.js';
 const foo = _registerDecorators(class extends MyCoolMixin {
-  foo;
+  constructor(...args) {
+    super(...args);
+    this.foo = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }, {
   publicProps: {
