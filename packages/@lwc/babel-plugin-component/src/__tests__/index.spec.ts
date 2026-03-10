@@ -142,7 +142,7 @@ function transformWithPrivateMethodPipeline(source: string, opts = {}) {
     return { code };
 }
 
-describe.skip('private-methods fixtures', () => {
+describe('private-methods fixtures', () => {
     testFixtureDir(
         {
             root: path.resolve(import.meta.dirname, 'fixtures', 'private-methods'),
