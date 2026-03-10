@@ -7,10 +7,10 @@ on:
                 description: 'Version bump type'
                 type: choice
                 options:
+                    - prerelease
                     - major
                     - minor
                     - patch
-                    - prerelease
                 required: false
             release_version:
                 description: 'OR Explicit version number (must be greater than current root version)'
