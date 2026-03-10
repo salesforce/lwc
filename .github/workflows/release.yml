@@ -118,7 +118,7 @@ jobs:
                   branch: ${{ github.ref_name }}
                   message: 'chore: release v${{ steps.update_version.outputs.new_version }}'
 
-            - name: Publish to npm
+            - name: Publish to npm (v${{ steps.update_version.outputs.new_version }})
               env:
                   NEW_VERSION: ${{ steps.update_version.outputs.new_version }}
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
