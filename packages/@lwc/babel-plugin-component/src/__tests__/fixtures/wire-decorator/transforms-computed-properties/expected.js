@@ -4,8 +4,11 @@ import { LightningElement, registerComponent as _registerComponent } from "lwc";
 import { getFoo, getBar } from "data-service";
 const symbol = Symbol.for("key");
 class Test extends LightningElement {
-  wiredIdentifier;
-  wiredPrimitives;
+  constructor(...args) {
+    super(...args);
+    this.wiredIdentifier = void 0;
+    this.wiredPrimitives = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

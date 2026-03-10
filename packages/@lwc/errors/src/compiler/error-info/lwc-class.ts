@@ -218,4 +218,26 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1200',
     },
+
+    DECORATOR_ON_PRIVATE_METHOD: {
+        code: 1212,
+        message:
+            'Decorators cannot be applied to private methods. Private methods are not part of the component API.',
+        level: DiagnosticLevel.Error,
+        url: 'https://lwc.dev/guide/error_codes#lwc1212',
+    },
+
+    PRIVATE_METHOD_NAME_COLLISION: {
+        code: 1213,
+        message: "Method '{0}' cannot start with reserved prefix `__lwc_`.",
+        level: DiagnosticLevel.Error,
+        url: 'https://lwc.dev/guide/error_codes#lwc1213',
+    },
+
+    UNSUPPORTED_PRIVATE_MEMBER: {
+        code: 1214,
+        message: 'Private {0} are not currently supported. Only private methods are supported.',
+        level: DiagnosticLevel.Error,
+        url: 'https://lwc.dev/guide/error_codes#lwc1214',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;

@@ -2,11 +2,14 @@ import { registerDecorators as _registerDecorators } from "lwc";
 import _tmpl from "./test.html";
 import { createElement, LightningElement, registerComponent as _registerComponent } from "lwc";
 class Test extends LightningElement {
-  interface;
-  static foo = 3;
-  static baz = 1;
+  constructor(...args) {
+    super(...args);
+    this.interface = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
+Test.foo = 3;
+Test.baz = 1;
 _registerDecorators(Test, {
   fields: ["interface"]
 });

@@ -14,6 +14,7 @@ import {
     TEMPLATE_KEY,
     API_VERSION_KEY,
     COMPONENT_CLASS_ID,
+    ENABLE_PRIVATE_METHODS_KEY,
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
     COMPONENT_FEATURE_FLAG_KEY,
 } from './constants';
@@ -127,6 +128,11 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
                     t.identifier(SYNTHETIC_ELEMENT_INTERNALS_KEY),
                     t.booleanLiteral(true)
                 )
+            );
+        }
+        if (state.opts.enablePrivateMethods === true) {
+            properties.push(
+                t.objectProperty(t.identifier(ENABLE_PRIVATE_METHODS_KEY), t.booleanLiteral(true))
             );
         }
         const registerComponentExpression = t.callExpression(registerComponentId, [

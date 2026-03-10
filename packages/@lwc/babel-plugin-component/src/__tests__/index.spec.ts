@@ -7,9 +7,14 @@
 import path from 'node:path';
 import { describe } from 'vitest';
 import { transformSync } from '@babel/core';
+import babelClassPropertiesPlugin from '@babel/plugin-transform-class-properties';
 import { LWC_VERSION, HIGHEST_API_VERSION } from '@lwc/shared';
 import { testFixtureDir } from '@lwc/test-utils-lwc-internals';
-import plugin, { type LwcBabelPluginOptions } from '../index';
+import plugin, {
+    LwcPrivateMethodTransform,
+    LwcReversePrivateMethodTransform,
+    type LwcBabelPluginOptions,
+} from '../index';
 
 interface TestConfig extends LwcBabelPluginOptions {
     experimentalErrorRecoveryMode?: boolean;
@@ -56,7 +61,12 @@ function transform(source: string, opts = {}) {
     const testConfig = {
         ...BASE_CONFIG,
         parserOpts: (opts as any).parserOpts ?? {},
-        plugins: [[plugin, { ...BASE_OPTS, ...opts }]],
+        plugins: [
+            LwcPrivateMethodTransform,
+            [plugin, { ...BASE_OPTS, ...opts }],
+            [babelClassPropertiesPlugin, { loose: true }],
+            LwcReversePrivateMethodTransform,
+        ],
     };
 
     const result = transformSync(source, testConfig)!;
