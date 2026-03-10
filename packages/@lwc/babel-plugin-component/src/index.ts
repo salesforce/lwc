@@ -22,6 +22,9 @@ import type { PluginObj } from '@babel/core';
 // This is useful for consumers of this package to define their options
 export type { LwcBabelPluginOptions } from './types';
 
+export { default as LwcPrivateMethodTransform } from './private-method-transform';
+export { default as LwcReversePrivateMethodTransform } from './reverse-private-method-transform';
+
 /**
  * The transform is done in 2 passes:
  * - First, apply in a single AST traversal the decorators and the component transformation.

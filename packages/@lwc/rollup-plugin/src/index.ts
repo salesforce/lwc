@@ -75,6 +75,7 @@ export interface RollupLwcOptions {
      * @example '@salesforce/featureFlag/name'
      */
     componentFeatureFlagModulePath?: string;
+    enablePrivateMethods?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -199,6 +200,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         apiVersion,
         defaultModules = DEFAULT_MODULES,
         componentFeatureFlagModulePath,
+        enablePrivateMethods,
     } = pluginOptions;
 
     return {
@@ -396,6 +398,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 targetSSR,
                 ssrMode,
                 componentFeatureFlagModulePath,
+                enablePrivateMethods,
             });
 
             if (warnings) {

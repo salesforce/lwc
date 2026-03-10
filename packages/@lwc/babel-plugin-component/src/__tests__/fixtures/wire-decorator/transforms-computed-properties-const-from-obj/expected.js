@@ -17,7 +17,10 @@ const quux = obj.quux;
 
 // TODO [#3956]: Investigate whether we really want to support this
 class Test extends LightningElement {
-  wiredIdentifier;
+  constructor(...args) {
+    super(...args);
+    this.wiredIdentifier = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

@@ -2,7 +2,10 @@ import { registerDecorators as _registerDecorators, LightningElement, registerCo
 import _tmpl from "./test.html";
 import { getRecord } from "lightning/uiRecordApi";
 class Test extends LightningElement {
-  wiredApiProperty;
+  constructor(...args) {
+    super(...args);
+    this.wiredApiProperty = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

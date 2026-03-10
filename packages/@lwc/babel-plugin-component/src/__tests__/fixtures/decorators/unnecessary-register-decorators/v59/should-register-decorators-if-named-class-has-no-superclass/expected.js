@@ -1,7 +1,9 @@
 import { registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 class MyClazz {
-  foo;
+  constructor() {
+    this.foo = void 0;
+  }
 }
 _registerDecorators(MyClazz, {
   fields: ["foo"]

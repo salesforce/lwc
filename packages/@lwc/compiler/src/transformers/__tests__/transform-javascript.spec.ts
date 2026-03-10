@@ -209,6 +209,38 @@ describe('unnecessary registerDecorators', () => {
     });
 });
 
+describe('enablePrivateMethods', () => {
+    const source = `
+        import { LightningElement } from 'lwc';
+        export default class Foo extends LightningElement {
+            #secret() { return 42; }
+            connectedCallback() { this.#secret(); }
+        }
+    `;
+
+    it('should transform and restore private methods when enabled', async () => {
+        const { code } = await transform(source, 'foo.js', {
+            ...BASE_TRANSFORM_OPTIONS,
+            enablePrivateMethods: true,
+        });
+        expect(code).toContain('#secret');
+        expect(code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    it('should reject private methods when disabled', async () => {
+        await expect(
+            transform(source, 'foo.js', {
+                ...BASE_TRANSFORM_OPTIONS,
+                enablePrivateMethods: false,
+            })
+        ).rejects.toThrow();
+    });
+
+    it('should reject private methods when omitted', async () => {
+        await expect(transform(source, 'foo.js', BASE_TRANSFORM_OPTIONS)).rejects.toThrow();
+    });
+});
+
 describe('sourcemaps', () => {
     it("should generate inline sourcemaps when the output config includes the 'inline' option for sourcemaps", () => {
         const source = `

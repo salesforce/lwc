@@ -5,7 +5,10 @@ const spreadMe = {
   key1: "$prop2"
 };
 class Test extends LightningElement {
-  wiredProp;
+  constructor(...args) {
+    super(...args);
+    this.wiredProp = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

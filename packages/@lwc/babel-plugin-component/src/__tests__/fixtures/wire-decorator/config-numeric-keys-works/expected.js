@@ -2,8 +2,11 @@ import { registerDecorators as _registerDecorators, LightningElement, registerCo
 import _tmpl from "./test.html";
 import { getFoo } from "data-service";
 class Test extends LightningElement {
-  // Did you know numeric literals can be used as property keys? This becomes "123"!
-  wiredProp;
+  constructor(...args) {
+    super(...args);
+    // Did you know numeric literals can be used as property keys? This becomes "123"!
+    this.wiredProp = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

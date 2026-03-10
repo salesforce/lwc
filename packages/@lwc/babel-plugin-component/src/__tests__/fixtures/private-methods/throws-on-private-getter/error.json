@@ -1,0 +1,10 @@
+{
+    "message": "LWC1214: Private accessor methods are not currently supported. Only private methods are supported.",
+    "loc": {
+        "line": 3,
+        "column": 4,
+        "start": 97,
+        "length": 46
+    },
+    "filename": "test.js"
+}

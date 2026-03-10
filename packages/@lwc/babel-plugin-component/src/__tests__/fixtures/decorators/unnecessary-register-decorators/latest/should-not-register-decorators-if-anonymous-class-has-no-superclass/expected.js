@@ -1,7 +1,9 @@
 import _tmpl from "./test.html";
 import { registerComponent as _registerComponent } from "lwc";
-const foo = class {
-  foo;
+const foo = class foo {
+  constructor() {
+    this.foo = void 0;
+  }
 };
 const __lwc_component_class_internal = _registerComponent(foo, {
   tmpl: _tmpl,

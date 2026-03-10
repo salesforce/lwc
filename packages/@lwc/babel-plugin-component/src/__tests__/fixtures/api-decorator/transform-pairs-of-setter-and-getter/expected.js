@@ -1,8 +1,11 @@
 import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 class Test extends LightningElement {
-  _a = true;
-  _b = false;
+  constructor(...args) {
+    super(...args);
+    this._a = true;
+    this._b = false;
+  }
   get a() {
     return this._a;
   }

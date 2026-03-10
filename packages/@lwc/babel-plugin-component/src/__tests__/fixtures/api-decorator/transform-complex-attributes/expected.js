@@ -1,8 +1,11 @@
 import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 class Text extends LightningElement {
-  publicProp;
-  privateProp;
+  constructor(...args) {
+    super(...args);
+    this.publicProp = void 0;
+    this.privateProp = void 0;
+  }
   get aloneGet() {}
   get myget() {}
   set myget(x) {
@@ -10,12 +13,12 @@ class Text extends LightningElement {
   }
   m1() {}
   m2() {}
-  static ctor = "ctor";
   static get ctorGet() {
     return 1;
   }
   /*LWC compiler vX.X.X*/
 }
+Text.ctor = "ctor";
 _registerDecorators(Text, {
   publicProps: {
     publicProp: {

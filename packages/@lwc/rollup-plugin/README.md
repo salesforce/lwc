@@ -40,3 +40,4 @@ export default {
 - `enableStaticContentOptimization` (type: `boolean`, optional) - True if the static content optimization should be enabled. Passed to `@lwc/template-compiler`. True by default.
 - `targetSSR` (type: `boolean`) - Utilize the experimental SSR compilation mode. False by default. Do not use unless you know what you're doing.
 - `ssrMode` (type: `string`): The variety of SSR code that should be generated when using experimental SSR compilation mode. Should be one of `sync`, `async` or `asyncYield`.
+- `enablePrivateMethods` (type: `boolean`, default: `false`) - Enable the private method round-trip transform. When false or omitted, private methods are not supported. Passed to `@lwc/compiler`.

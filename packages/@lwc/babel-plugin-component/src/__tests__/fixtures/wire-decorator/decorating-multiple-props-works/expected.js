@@ -2,8 +2,11 @@ import { registerDecorators as _registerDecorators, LightningElement, registerCo
 import _tmpl from "./test.html";
 import { getFoo } from "data-service";
 class Test extends LightningElement {
-  wired1;
-  wired2;
+  constructor(...args) {
+    super(...args);
+    this.wired1 = void 0;
+    this.wired2 = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

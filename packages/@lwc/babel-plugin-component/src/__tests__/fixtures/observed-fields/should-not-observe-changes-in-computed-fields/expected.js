@@ -2,9 +2,12 @@ import { registerDecorators as _registerDecorators, createElement, LightningElem
 import _tmpl from "./test.html";
 const PREFIX = "prefix";
 class Test extends LightningElement {
-  interface;
-  ["a"] = 0;
-  [`${PREFIX}Field`] = "prefixed field";
+  constructor(...args) {
+    super(...args);
+    this.interface = void 0;
+    this["a"] = 0;
+    this[`${PREFIX}Field`] = "prefixed field";
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {

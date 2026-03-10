@@ -1,7 +1,10 @@
 import _tmpl from "./test.html";
 import { LightningElement, registerDecorators as _registerDecorators, registerComponent as _registerComponent } from "lwc";
 const foo = _registerDecorators(class extends LightningElement {
-  foo;
+  constructor(...args) {
+    super(...args);
+    this.foo = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }, {
   publicProps: {

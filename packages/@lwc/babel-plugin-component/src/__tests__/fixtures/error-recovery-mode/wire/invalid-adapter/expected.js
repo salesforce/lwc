@@ -1,8 +1,12 @@
 import { registerDecorators as _registerDecorators, LightningElement, registerComponent as _registerComponent } from "lwc";
 import _tmpl from "./test.html";
 class Test extends LightningElement {
-  // This should trigger error recovery mode handling
-  wiredProperty;
+  constructor(...args) {
+    super(...args);
+    this.
+    // This should trigger error recovery mode handling
+    wiredProperty = void 0;
+  }
   /*LWC compiler vX.X.X*/
 }
 _registerDecorators(Test, {
