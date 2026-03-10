@@ -1,0 +1,10 @@
+{
+    "message": "LWC1212: Decorators cannot be applied to private methods. Private methods are not part of the component API.",
+    "loc": {
+        "line": 3,
+        "column": 4,
+        "start": 102,
+        "length": 43
+    },
+    "filename": "test.js"
+}
