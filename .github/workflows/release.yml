@@ -82,8 +82,19 @@ jobs:
             - name: Update LWC version
               id: update_version
               env:
+                  TAG: ${{ steps.resolve_input.outputs.tag }}
                   VERSION_INPUT: ${{ steps.resolve_input.outputs.resolved }}
               run: |
+                  # We may have done prior canary releases from the currently released version,
+                  # or the latest canary may be from an older release. To pick the right canary
+                  # version, we need to comapre both. (Doing this here instead of in the input
+                  # validation because it needs to be post-install for access to `semver`.)
+                  if [[ "$TAG" == canary && "$VERSION_INPUT" == prerelease ]]; then
+                    CURRENT_VERSION="$(jq -r .version package.json)"
+                    LAST_CANARY="$(npm view lwc@canary version)"
+                    NEWER="$(yarn -s exec -- semver "$CURRENT_VERSION" "$LAST_CANARY" | tail -n1)"
+                    VERSION_INPUT="$(yarn -s exec -- semver "$NEWER" -i "$VERSION_INPUT" --preid alpha)"
+                  fi
 
                   node ./scripts/release/version.js "$VERSION_INPUT"
                   RESOLVED_VERSION="$(jq -r .version package.json)"
