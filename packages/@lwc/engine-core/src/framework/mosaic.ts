@@ -41,11 +41,7 @@ export interface MosaicActionParams {
         views: {
             // componentRef is a Mosaic specifier, default: the current Mosaic
             update(args: { componentRef?: string; props?: JSONObject }): void;
-            push(args: {
-                componentRef: string;
-                props?: JSONObject;
-                target?: TargetHint;
-            }): void;
+            push(args: { componentRef: string; props?: JSONObject; target?: TargetHint }): void;
             // error(err: { message: string; }): void; // use an explicit error type or just throw an error?
         };
     };
