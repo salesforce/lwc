@@ -57,20 +57,19 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // job
         const result = new Ctor();
 
-        let isInvalidConstructor: boolean;
-        const isMatchingConstructor = vmBeingConstructed.component === result;
+        // Enhanced check (rejecting iframe/embed/object/script) runs only in the browser. In SSR (Node)
+        // there is no DOM, so the constructor result is not a real element and has no tagName; the
+        // dangerous-element concern does not apply there.
+        const enhancedConstructorValidation =
+            !lwcRuntimeFlags.DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION && process.env.IS_BROWSER;
+        const isMismatchedConstructor = vmBeingConstructed.component !== result;
 
-        // When DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION is true, use legacy check (reference equality) only.
-        if (lwcRuntimeFlags.DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION) {
-            isInvalidConstructor = !isMatchingConstructor;
-            // use strict validation: result must match and must not be a dangerous element (iframe, embed,
-            // object, script). Only check Element in DOM environments (engine-server has no global Element).
-        } else {
-            const isDangerousElement =
-                result instanceof Element &&
-                dangerousElements.includes(result.tagName?.toLowerCase());
-            isInvalidConstructor = !isMatchingConstructor || isDangerousElement;
-        }
+        // When enabledEnhancedConstructorValidation is false, use legacy check (reference equality) only.
+        // See W-17528759
+        const isDangerousElement =
+            enhancedConstructorValidation &&
+            dangerousElements.includes(result?.tagName?.toLowerCase());
+        const isInvalidConstructor = isMismatchedConstructor || isDangerousElement;
 
         if (isInvalidConstructor) {
             throw new TypeError(
