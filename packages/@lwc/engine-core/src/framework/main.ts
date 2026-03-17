@@ -47,6 +47,14 @@ export { shouldBeFormAssociated } from './utils';
 export { getComponentConstructor } from './get-component-constructor';
 
 // Types -------------------------------------------------------------------------------------------
+export type {
+    MIR,
+    MIRNode,
+    MIRAction,
+    MIRAttributes,
+    MosaicAction,
+    MosaicActionParams,
+} from './mosaic';
 export type { RendererAPI, LifecycleCallback } from './renderer';
 export type { Template } from './template';
 export type {
@@ -66,6 +74,7 @@ export type { FormRestoreState, FormRestoreReason } from './vm';
 
 // Public APIs -------------------------------------------------------------------------------------
 export { LightningElement } from './base-lightning-element';
+export { Mosaic } from './mosaic';
 
 export { default as api } from './decorators/api';
 export { default as track } from './decorators/track';
