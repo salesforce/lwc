@@ -35,15 +35,15 @@ export interface MIRNode extends MIR {
 type TargetHint = 'modal' | 'panel' | 'toast' | 'pip'; // Surface hint for push transitions
 export interface MosaicActionParams {
     action: {
-        value?: Record<string, JSONValue>; // data for the action handler
+        value?: JSONObject; // data for the action handler
     };
     client: {
         views: {
             // componentRef is a Mosaic specifier, default: the current Mosaic
-            update(args: { componentRef?: string; props?: Record<string, JSONValue> }): void;
+            update(args: { componentRef?: string; props?: JSONObject }): void;
             push(args: {
                 componentRef: string;
-                props?: Record<string, JSONValue>;
+                props?: JSONObject;
                 target?: TargetHint;
             }): void;
             // error(err: { message: string; }): void; // use an explicit error type or just throw an error?
