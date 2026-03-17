@@ -11,11 +11,14 @@ import { addErrorComponentStack } from '../shared/error';
 import { evaluateTemplate, setVMBeingRendered, getVMBeingRendered } from './template';
 import { runWithBoundaryProtection } from './vm';
 import { logOperationStart, logOperationEnd, OperationId } from './profiler';
-import { LightningElement } from './base-lightning-element';
+import { type LightningElement } from './base-lightning-element';
 import type { Template } from './template';
 import type { VM } from './vm';
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { VNodes } from './vnodes';
+
+// Elements that could be used to escape LWS
+const dangerousElements = ['iframe', 'embed', 'object', 'script'];
 
 export let isInvokingRender: boolean = false;
 
@@ -54,18 +57,20 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // job
         const result = new Ctor();
 
-        // Check indirectly if the constructor result is an instance of LightningElement.
-        // When Locker is enabled, the "instanceof" operator would not work since Locker Service
-        // provides its own implementation of LightningElement, so we indirectly check
-        // if the base constructor is invoked by accessing the component on the vm.
-        // When the DISABLE_LOCKER_VALIDATION gate is false or LEGACY_LOCKER_ENABLED is false,
-        // then the instanceof LightningElement can be used.
-        const useLegacyConstructorCheck =
-            !lwcRuntimeFlags.DISABLE_LEGACY_VALIDATION || lwcRuntimeFlags.LEGACY_LOCKER_ENABLED;
+        let isInvalidConstructor: boolean;
+        const isMatchingConstructor = vmBeingConstructed.component === result;
 
-        const isInvalidConstructor = useLegacyConstructorCheck
-            ? vmBeingConstructed.component !== result
-            : !(result instanceof LightningElement);
+        // When DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION is true, use legacy check (reference equality) only.
+        if (lwcRuntimeFlags.DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION) {
+            isInvalidConstructor = !isMatchingConstructor;
+            // use strict validation: result must match and must not be a dangerous element (iframe, embed,
+            // object, script). Only check Element in DOM environments (engine-server has no global Element).
+        } else {
+            const isDangerousElement =
+                result instanceof Element &&
+                dangerousElements.includes(result.tagName?.toLowerCase());
+            isInvalidConstructor = !isMatchingConstructor || isDangerousElement;
+        }
 
         if (isInvalidConstructor) {
             throw new TypeError(
