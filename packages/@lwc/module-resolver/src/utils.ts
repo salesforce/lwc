@@ -148,7 +148,7 @@ export function findFirstUpwardConfigPath(dirname: string): string {
         }
 
         if (dirHasPkgJson) {
-            return path.dirname(pkgJsonPath);
+            return upwardsPath;
         }
 
         parts.pop();
