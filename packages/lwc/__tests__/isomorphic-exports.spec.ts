@@ -18,6 +18,7 @@ describe('isomorphic package exports', () => {
         }
         expect(Array.from(baseExports)).toEqual([
             // Exports that intentionally only exist in @lwc/engine-dom
+            'Mosaic',
             '__unstable__ProfilerControl',
             '__unstable__ReportingControl',
             'buildCustomElementConstructor',
