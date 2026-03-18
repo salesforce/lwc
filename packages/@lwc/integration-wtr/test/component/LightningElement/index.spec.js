@@ -84,17 +84,17 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });
 
-const DANGEROUS_ELEMENT_CASES = [
+const BLOCKLISTED_CASES = [
     ['iframe', ReturningIframe, 'x-returning-iframe'],
     ['embed', ReturningEmbed, 'x-returning-embed'],
     ['object', ReturningObject, 'x-returning-object'],
     ['script', ReturningScript, 'x-returning-script'],
 ];
 
-DANGEROUS_ELEMENT_CASES.forEach(([tagName, Component, tag]) => {
-    it(`should fail when the constructor returns a dangerous element (${tagName}) when DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION is true`, () => {
+BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
+    it(`should fail when the constructor returns a blocklisted element (${tagName}) when DISABLE_LEGACY_VALIDATION is true`, () => {
         // Make sure the flag is off
-        setFeatureFlagForTest('DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION', false);
+        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
         expect(() => {
             createElement(tag, { is: Component });
         }).toThrowError(
@@ -103,11 +103,11 @@ DANGEROUS_ELEMENT_CASES.forEach(([tagName, Component, tag]) => {
         );
     });
 
-    it('should succeed when the constructor returns a dangerous element (${tagName}) when DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION is true (legacy check)', () => {
-        setFeatureFlagForTest('DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION', true);
+    it('should succeed when the constructor returns a blocklisted element (${tagName}) when DISABLE_LEGACY_VALIDATION is true (legacy check)', () => {
+        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
         expect(() => {
             createElement(tag, { is: Component });
         }).not.toThrow();
-        setFeatureFlagForTest('DISABLE_ENHANCED_CONSTRUCTOR_VALIDATION', false);
+        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
     });
 });
