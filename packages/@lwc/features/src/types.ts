@@ -89,8 +89,8 @@ export interface FeatureFlagMap {
     DISABLE_SCOPE_TOKEN_VALIDATION: FeatureFlagValue;
 
     /**
-     * If true, use strict constructor validation (instanceof LightningElement and reject blocklisted elements).
-     * If false or unset, use legacy constructor check (reference equality only).
+     * If false or unset, use strict constructor validation.
+     * If true, use legacy constructor check (reference equality only).
      */
     DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
 

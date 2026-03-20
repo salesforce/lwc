@@ -17,9 +17,6 @@ import type { VM } from './vm';
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { VNodes } from './vnodes';
 
-// Elements that could be used to escape LWS (blocklisted from constructor return)
-const blocklistedElements = ['iframe', 'embed', 'object', 'script'];
-
 export let isInvokingRender: boolean = false;
 
 export let vmBeingConstructed: VM | null = null;
@@ -57,21 +54,14 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // job
         const result = new Ctor();
 
-        // Enhanced check (rejects blocklisted elements) runs only in the browser. In SSR (Node)
-        // there is no DOM, so the constructor result is not a real element and has no tagName; the
-        // blocklisted-element concern does not apply there.
-        const enhancedConstructorValidation =
-            !lwcRuntimeFlags.DISABLE_LEGACY_VALIDATION && process.env.IS_BROWSER;
+        // When strict, reject when the constructor returns a *native* HTMLElement—that is,
+        // result instanceof HTMLElement.
         const isMismatchedConstructor = vmBeingConstructed.component !== result;
+        const useStrictValidation =
+            lwcRuntimeFlags.DISABLE_LEGACY_VALIDATION && process.env.IS_BROWSER;
+        const isInvalidConstructor = useStrictValidation && result instanceof HTMLElement;
 
-        // When enabledEnhancedConstructorValidation is false, use legacy check (reference equality) only.
-        // See W-17528759
-        const isBlocklistedElement =
-            enhancedConstructorValidation &&
-            blocklistedElements.includes(result?.tagName?.toLowerCase());
-        const isInvalidConstructor = isMismatchedConstructor || isBlocklistedElement;
-
-        if (isInvalidConstructor) {
+        if (isMismatchedConstructor || isInvalidConstructor) {
             throw new TypeError(
                 'Invalid component constructor, the class should extend LightningElement.'
             );

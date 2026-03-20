@@ -92,9 +92,8 @@ const BLOCKLISTED_CASES = [
 ];
 
 BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
-    it(`should fail when the constructor returns a blocklisted element (${tagName}) when DISABLE_LEGACY_VALIDATION is true`, () => {
-        // Make sure the flag is off
-        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
+    it(`should fail when the constructor returns a blocklisted element (${tagName}) when DISABLE_LEGACY_VALIDATION is false (strict)`, () => {
+        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
         expect(() => {
             createElement(tag, { is: Component });
         }).toThrowError(
@@ -104,10 +103,10 @@ BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
     });
 
     it('should succeed when the constructor returns a blocklisted element (${tagName}) when DISABLE_LEGACY_VALIDATION is true (legacy check)', () => {
-        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
+        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
         expect(() => {
             createElement(tag, { is: Component });
         }).not.toThrow();
-        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
+        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
     });
 });
