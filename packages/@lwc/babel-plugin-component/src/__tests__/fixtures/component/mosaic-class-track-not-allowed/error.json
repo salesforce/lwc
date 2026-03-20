@@ -1,0 +1,10 @@
+{
+    "message": "LWC1218: @track is not allowed in Mosaic components. Mosaics are stateless; use @api props instead.",
+    "loc": {
+        "line": 3,
+        "column": 4,
+        "start": 84,
+        "length": 6
+    },
+    "filename": "test.js"
+}

@@ -6,7 +6,7 @@
  */
 import lineColumn from 'line-column';
 import { DiagnosticLevel, generateCompilerDiagnostic, generateErrorMessage } from '@lwc/errors';
-import { LWC_PACKAGE_ALIAS } from './constants';
+import { LWC_PACKAGE_ALIAS, LWC_PACKAGE_EXPORTS } from './constants';
 import type { types, NodePath } from '@babel/core';
 import type { CompilerMetrics } from '@lwc/errors';
 import type { DecoratorErrorOptions, ImportSpecifier } from './decorators/types';
@@ -179,6 +179,34 @@ function copyMethodMetadata(
     if (source.override != null) target.override = source.override;
 }
 
+/**
+ * Returns true if the given class path extends `Mosaic` imported from the `'lwc'` package.
+ * Used to apply Mosaic-specific compilation rules (no template, no @wire, etc.).
+ */
+function isMosaic(classPath: NodePath): boolean {
+    const node = classPath.node as types.Class;
+    const superClass = node.superClass;
+    if (!superClass || superClass.type !== 'Identifier') {
+        return false;
+    }
+    const superName = (superClass as types.Identifier).name;
+    const binding = classPath.scope.getBinding(superName);
+    if (!binding) {
+        return false;
+    }
+    const bindingPath = binding.path;
+    if (!bindingPath.isImportSpecifier()) {
+        return false;
+    }
+    const importDecl = bindingPath.parent as types.ImportDeclaration;
+    if (importDecl.source.value !== LWC_PACKAGE_ALIAS) {
+        return false;
+    }
+    const importedName = ((bindingPath.node as types.ImportSpecifier).imported as types.Identifier)
+        .name;
+    return importedName === LWC_PACKAGE_EXPORTS.MOSAIC_BASE_COMPONENT;
+}
+
 export {
     isClassMethod,
     isGetterClassMethod,
@@ -188,4 +216,5 @@ export {
     incrementMetricCounter,
     isErrorRecoveryMode,
     copyMethodMetadata,
+    isMosaic,
 };

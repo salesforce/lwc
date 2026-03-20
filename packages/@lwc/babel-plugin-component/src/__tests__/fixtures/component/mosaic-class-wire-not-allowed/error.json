@@ -1,0 +1,10 @@
+{
+    "message": "LWC1215: @wire is not allowed in Mosaic components.",
+    "loc": {
+        "line": 4,
+        "column": 4,
+        "start": 122,
+        "length": 13
+    },
+    "filename": "test.js"
+}

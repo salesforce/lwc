@@ -151,6 +151,15 @@ export interface TransformOptions {
     componentFeatureFlagModulePath?: string;
     /** Flag to enable the private method round-trip transform. When false or omitted, private methods pass through to standard Babel handling. */
     enablePrivateMethods?: boolean;
+    /**
+     * Set to `true` when compiling a Mosaic bundle. Causes the compiler to reject HTML template
+     * and CSS files, which are not valid in a Mosaic bundle.
+     *
+     * Future: This check likely belongs one layer up in the platform compiler,
+     * which has authoritative knowledge of bundle type from platform
+     * metadata rather than relying on a developer-settable flag.
+     */
+    isMosaic?: boolean;
 }
 
 type OptionalTransformKeys =
@@ -167,6 +176,7 @@ type OptionalTransformKeys =
     | 'dynamicImports'
     | 'componentFeatureFlagModulePath'
     | 'enablePrivateMethods'
+    | 'isMosaic'
     | 'instrumentation';
 
 type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;
