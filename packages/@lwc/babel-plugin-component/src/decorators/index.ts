@@ -7,8 +7,19 @@
 import { addNamed } from '@babel/helper-module-imports';
 import { DecoratorErrors } from '@lwc/errors';
 import { APIFeature, getAPIVersionFromNumber, isAPIFeatureEnabled } from '@lwc/shared';
-import { DECORATOR_TYPES, LWC_PACKAGE_ALIAS, REGISTER_DECORATORS_ID } from '../constants';
-import { handleError, isClassMethod, isGetterClassMethod, isSetterClassMethod } from '../utils';
+import {
+    DECORATOR_TYPES,
+    LWC_PACKAGE_ALIAS,
+    LWC_PACKAGE_EXPORTS,
+    REGISTER_DECORATORS_ID,
+} from '../constants';
+import {
+    handleError,
+    isClassMethod,
+    isGetterClassMethod,
+    isMosaic,
+    isSetterClassMethod,
+} from '../utils';
 import api from './api';
 import wire from './wire';
 import track from './track';
@@ -315,6 +326,20 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
             const decoratorMetas = decoratorPaths
                 .map((path) => getDecoratorMetadata(path, state))
                 .filter((meta) => meta !== null);
+
+            // Mosaic classes may only use @api. @wire and @track are not allowed.
+            if (isMosaic(path)) {
+                const mosaicForbiddenDecorators = {
+                    [LWC_PACKAGE_EXPORTS.WIRE_DECORATOR]: DecoratorErrors.MOSAIC_CANNOT_USE_WIRE,
+                    [LWC_PACKAGE_EXPORTS.TRACK_DECORATOR]: DecoratorErrors.MOSAIC_CANNOT_USE_TRACK,
+                } as const;
+                for (const meta of decoratorMetas) {
+                    const errorInfo = mosaicForbiddenDecorators[meta.name];
+                    if (errorInfo) {
+                        handleError(meta.path, { errorInfo }, state);
+                    }
+                }
+            }
 
             validate(decoratorMetas, state);
 

@@ -240,4 +240,19 @@ export const DecoratorErrors = {
         level: DiagnosticLevel.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1214',
     },
+
+    MOSAIC_CANNOT_USE_WIRE: {
+        code: 1215,
+        message: '@wire is not allowed in Mosaic components.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
+
+    MOSAIC_CANNOT_USE_TRACK: {
+        code: 1218,
+        message:
+            '@track is not allowed in Mosaic components. Mosaics are stateless; use @api props instead.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;

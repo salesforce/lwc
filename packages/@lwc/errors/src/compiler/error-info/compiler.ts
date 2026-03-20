@@ -219,4 +219,22 @@ export const TransformerErrors = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    MOSAIC_DISALLOWS_HTML_TEMPLATE: {
+        code: 1216,
+        message:
+            'Mosaic components do not support HTML templates. Remove the "{0}" file from this bundle.',
+        level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
+        url: '',
+    },
+
+    MOSAIC_DISALLOWS_CSS: {
+        code: 1217,
+        message:
+            'Mosaic components do not support CSS stylesheets. Remove the "{0}" file from this bundle.',
+        level: DiagnosticLevel.Error,
+        strictLevel: DiagnosticLevel.Fatal,
+        url: '',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;

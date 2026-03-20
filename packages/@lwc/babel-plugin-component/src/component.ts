@@ -18,6 +18,7 @@ import {
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
     COMPONENT_FEATURE_FLAG_KEY,
 } from './constants';
+import { isMosaic } from './utils';
 import type { types, NodePath, Visitor } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
@@ -39,6 +40,10 @@ function importDefaultTemplate(path: DeclarationPath, state: LwcBabelPluginPass)
 }
 
 function needsComponentRegistration(path: DeclarationPath) {
+    if (path.isClassDeclaration() && isMosaic(path)) {
+        // Mosaics don't use an HTML template so are not registered as LWC components.
+        return false;
+    }
     return (
         (path.isIdentifier() && path.node.name !== 'undefined' && path.node.name !== 'null') ||
         path.isCallExpression() ||

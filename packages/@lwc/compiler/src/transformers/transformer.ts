@@ -95,12 +95,24 @@ function transformFile(
 ): TransformResult {
     switch (path.extname(filename)) {
         case '.html':
+            if (options.isMosaic) {
+                throw generateCompilerError(TransformerErrors.MOSAIC_DISALLOWS_HTML_TEMPLATE, {
+                    messageArgs: [filename],
+                    origin: { filename },
+                });
+            }
             if (options.targetSSR) {
                 return compileTemplateForSSR(src, filename, options, options.ssrMode);
             }
             return templateTransformer(src, filename, options);
 
         case '.css':
+            if (options.isMosaic) {
+                throw generateCompilerError(TransformerErrors.MOSAIC_DISALLOWS_CSS, {
+                    messageArgs: [filename],
+                    origin: { filename },
+                });
+            }
             return styleTransform(src, filename, options);
 
         case '.tsx':
