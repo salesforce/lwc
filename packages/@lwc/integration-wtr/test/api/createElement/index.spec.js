@@ -100,8 +100,8 @@ describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
 });
 
 describe('locker integration', () => {
-    it('should support component class that extend a mirror of the LightningElement when DISABLE_LEGACY_VALIDATION is true', () => {
-        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', true);
+    it('should support component class that extend a mirror of the LightningElement when DISABLE_STRICT_VALIDATION is true', () => {
+        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', true);
         function SecureBaseClass() {
             if (this instanceof SecureBaseClass) {
                 LightningElement.prototype.constructor.call(this);
@@ -114,11 +114,11 @@ describe('locker integration', () => {
         class Component extends SecureBaseClass {}
         const elm = createElement('x-component', { is: Component });
         expect(elm instanceof HTMLElement).toBe(true);
-        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
+        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
     });
 
-    it('should support component class that extend a mirror of the LightningElement when DISABLE_LEGACY_VALIDATION is false', () => {
-        setFeatureFlagForTest('DISABLE_LEGACY_VALIDATION', false);
+    it('should support component class that extend a mirror of the LightningElement when DISABLE_STRICT_VALIDATION is false', () => {
+        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
         function SecureBaseClass() {
             if (this instanceof SecureBaseClass) {
                 LightningElement.prototype.constructor.call(this);

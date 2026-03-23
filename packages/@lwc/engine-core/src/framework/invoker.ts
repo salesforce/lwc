@@ -54,14 +54,15 @@ export function invokeComponentConstructor(vm: VM, Ctor: LightningElementConstru
         // job
         const result = new Ctor();
 
-        // When strict, reject when the constructor returns a *native* HTMLElement—that is,
+        // When strict, reject when the constructor returns a *native* HTMLElement — that is,
         // result instanceof HTMLElement.
-        const isMismatchedConstructor = vmBeingConstructed.component !== result;
         const useStrictValidation =
-            lwcRuntimeFlags.DISABLE_LEGACY_VALIDATION && process.env.IS_BROWSER;
-        const isInvalidConstructor = useStrictValidation && result instanceof HTMLElement;
+            !lwcRuntimeFlags.DISABLE_STRICT_VALIDATION && process.env.IS_BROWSER;
+        const isMismatchedConstructor = vmBeingConstructed.component !== result;
+        const isInvalidConstructor =
+            isMismatchedConstructor || (useStrictValidation && result instanceof HTMLElement);
 
-        if (isMismatchedConstructor || isInvalidConstructor) {
+        if (isInvalidConstructor) {
             throw new TypeError(
                 'Invalid component constructor, the class should extend LightningElement.'
             );

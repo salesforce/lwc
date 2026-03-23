@@ -92,7 +92,7 @@ export interface FeatureFlagMap {
      * If false or unset, use strict constructor validation.
      * If true, use legacy constructor check (reference equality only).
      */
-    DISABLE_LEGACY_VALIDATION: FeatureFlagValue;
+    DISABLE_STRICT_VALIDATION: FeatureFlagValue;
 
     /**
      * If true, skips rehydration of DOM elements that are not connected.
