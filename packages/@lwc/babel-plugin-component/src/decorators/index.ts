@@ -329,14 +329,11 @@ function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
 
             // Mosaic classes may only use @api. @wire and @track are not allowed.
             if (isMosaic(path)) {
-                const mosaicForbiddenDecorators = {
-                    [LWC_PACKAGE_EXPORTS.WIRE_DECORATOR]: DecoratorErrors.MOSAIC_CANNOT_USE_WIRE,
-                    [LWC_PACKAGE_EXPORTS.TRACK_DECORATOR]: DecoratorErrors.MOSAIC_CANNOT_USE_TRACK,
-                } as const;
                 for (const meta of decoratorMetas) {
-                    const errorInfo = mosaicForbiddenDecorators[meta.name];
-                    if (errorInfo) {
-                        handleError(meta.path, { errorInfo }, state);
+                    if (meta.name === LWC_PACKAGE_EXPORTS.WIRE_DECORATOR) {
+                        handleError(meta.path, { errorInfo: DecoratorErrors.MOSAIC_CANNOT_USE_WIRE }, state);
+                    } else if (meta.name === LWC_PACKAGE_EXPORTS.TRACK_DECORATOR) {
+                        handleError(meta.path, { errorInfo: DecoratorErrors.MOSAIC_CANNOT_USE_TRACK }, state);
                     }
                 }
             }
