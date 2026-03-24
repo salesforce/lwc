@@ -41,18 +41,11 @@ export {
     getComponentConstructor,
     __unstable__ProfilerControl,
     __unstable__ReportingControl,
-    Mosaic,
     SignalBaseClass,
 } from '@lwc/engine-core';
 
 // Engine-core public types ------------------------------------------------------------------------
 export type {
-    MIR,
-    MIRNode,
-    MIRAction,
-    MIRAttributes,
-    MosaicActionParams,
-    MosaicAction,
     WireAdapter,
     WireAdapterConstructor,
     WireConfigValue,
