@@ -3,12 +3,12 @@ import { ClassList } from '../class-list';
 import type { LightningElement } from '../lightning-element';
 
 describe('ClassList SSR Polyfill', () => {
-    let mockElement: any;
+    let mockElement: LightningElement;
     let classList: ClassList;
 
     beforeEach(() => {
-        mockElement = { className: 'apple banana' };
-        classList = new ClassList(mockElement as unknown as LightningElement);
+        mockElement = { className: 'apple banana' } as unknown as LightningElement;
+        classList = new ClassList(mockElement);
     });
 
     it('adds new classes without duplicating', () => {
