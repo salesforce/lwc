@@ -170,7 +170,7 @@ describe('render.ts internals', () => {
 
         it('should render in light mode (no shadow root)', async () => {
             class LightComponent extends LightningElement {
-                static renderMode = 'light';
+                static renderMode = 'light' as const;
                 static [SYMBOL__GENERATE_MARKUP] = () => '<div>light</div>';
             }
             const result = await serverSideRenderComponent('x-light', LightComponent as any);
