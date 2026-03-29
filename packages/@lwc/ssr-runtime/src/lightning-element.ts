@@ -119,8 +119,11 @@ export class LightningElement implements PropsAvailableAtConstruction {
     }
 
     set className(newVal: any) {
-        this.#props.class = newVal;
-        this.#attrs.class = newVal;
+        // Coerce to string to match browser behaviour:
+        // e.g. `element.className = undefined` → className is "undefined"
+        const strVal = String(newVal);
+        this.#props.class = strVal;
+        this.#attrs.class = strVal;
         mutationTracker.add(this, 'class');
     }
 
