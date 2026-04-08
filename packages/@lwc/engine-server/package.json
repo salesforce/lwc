@@ -5,7 +5,6 @@
     ],
     "name": "@lwc/engine-server",
     "version": "9.1.1",
-    "private": true,
     "description": "Renders LWC components in a server environment.",
     "keywords": [
         "lwc"
@@ -35,6 +34,7 @@
     "types": "dist/index.d.ts",
     "files": [
         "dist/**/*.js",
+        "dist/**/*.cjs",
         "dist/**/*.d.ts"
     ],
     "scripts": {
