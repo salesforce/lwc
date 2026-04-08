@@ -49,7 +49,7 @@ import {
 import { assignedSlotGetterPatched } from './slot';
 import { getInternalChildNodes, hasMountedChildren } from './node';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
-import { attachShadow, getShadowRoot, isSyntheticShadowHost } from './shadow-root';
+import { attachShadow, getShadowRoot, hasInternalSlot, isSyntheticShadowHost } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -72,10 +72,34 @@ function outerHTMLGetterPatched(this: Element) {
     return getOuterHTML(this);
 }
 
+// Capture the browser's native error message for duplicate attachShadow calls
+// so the guard below throws an identical error regardless of browser.
+const nativeAttachShadowErrorMessage = (() => {
+    const el = document.createElement('div');
+    el.attachShadow({ mode: 'open' });
+    try {
+        el.attachShadow({ mode: 'open' });
+    } catch ({ message }: any) {
+        return message;
+    }
+    return '';
+})();
+
 function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot {
     // To retain native behavior of the API, provide synthetic shadowRoot only when specified
     if ((options as any)[KEY__SYNTHETIC_MODE]) {
         return attachShadow(this, options);
+    }
+    // An LWC component's host element already has a synthetic shadow root
+    // attached by the framework. The native attachShadow doesn't know about
+    // synthetic shadow roots, so without this guard it would succeed and
+    // return a second (native) ShadowRoot on the same host — violating the
+    // spec invariant that an element can only host one shadow tree. That
+    // native ShadowRoot's innerHTML setter is not patched, allowing
+    // unsanitized HTML injection (e.g. iframe+srcdoc) that bypasses Lightning Web Security
+    // sandbox protections.
+    if (hasInternalSlot(this)) {
+        throw new Error(nativeAttachShadowErrorMessage);
     }
     return originalAttachShadow.call(this, options);
 }
