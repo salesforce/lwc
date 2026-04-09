@@ -84,10 +84,15 @@ jobs:
                   for i in $(seq 1 5); do
                     echo "Installing playwright (attempt $i)"
                     # Timeout because sometimes it hangs forever... :\
-                    timeout 4m yarn playwright install chrome firefox webkit --with-deps && break
+                    if timeout 4m yarn playwright install chrome firefox webkit --with-deps; then
+                      success=true
+                      break
+                    fi
                     # Wait 30-90 seconds before trying again
-                    sleep "$((30 + 60 * $RANDOM / 32767))"
+                    [[ $i < 5 ]] && sleep "$((30 + 60 * $RANDOM / 32767))"
                   done
+                  # Exit with error if all retries failed
+                  [[ $success != true ]] && exit 1
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
