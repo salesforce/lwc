@@ -92,7 +92,10 @@ jobs:
                     [[ $i < 5 ]] && sleep "$((30 + 60 * $RANDOM / 32767))"
                   done
                   # Exit with error if all retries failed
-                  [[ $success != true ]] && exit 1
+                  if [[ $success != true ]]; then
+                    echo 'Failed to install playwright.'
+                    exit 1
+                  fi
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
