@@ -250,6 +250,20 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
             return result;
         });
 
+    // Void elements cannot have innerHTML. Throw at runtime to align with engine-server.
+    // See: https://github.com/salesforce/lwc/issues/5006
+    if (innerHtmlDirective && isVoidElement(node.name, HTML_NAMESPACE)) {
+        return [
+            b.throwStatement(
+                b.newExpression(b.identifier('Error'), [
+                    b.literal(
+                        `Invalid lwc:inner-html usage on void element "<${node.name}>". Void elements cannot have content.`
+                    ),
+                ])
+            ),
+        ];
+    }
+
     let childContent: EsStatement[];
     // An element can have children or lwc:inner-html, but not both
     // If it has both, the template compiler will throw an error before reaching here

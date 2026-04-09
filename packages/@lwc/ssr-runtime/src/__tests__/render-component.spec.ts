@@ -13,11 +13,13 @@ interface ComponentModule {
 async function compileComponent({
     input,
     files,
+    name = 'default',
 }: {
     input: string;
     files: { [name: string]: string };
+    name?: string;
 }) {
-    const dirname = path.resolve(import.meta.dirname, 'dist/render-component');
+    const dirname = path.resolve(import.meta.dirname, `dist/render-component-${name}`);
     const modulesDir = path.resolve(dirname, './src');
     const outputFile = path.resolve(dirname, './dist/index.js');
 
@@ -84,5 +86,34 @@ describe('renderComponent', () => {
         await expect(() => renderComponent(undefined as any, module!.default, {})).rejects.toThrow(
             'tagName must be a string, found: undefined'
         );
+    });
+});
+
+describe('lwc:inner-html on void elements', () => {
+    test('throws at runtime when lwc:inner-html is used on a void element', async () => {
+        const files = {
+            'x/voidInnerHtml/voidInnerHtml.js': `
+                import { LightningElement, api } from 'lwc';
+                export default class extends LightningElement {
+                    @api content = '<b>hello</b>';
+                }
+            `,
+            'x/voidInnerHtml/voidInnerHtml.html': `
+                <template>
+                    <input lwc:inner-html={content}>
+                </template>
+            `,
+        };
+        const outputFile = await compileComponent({
+            input: 'x/voidInnerHtml/voidInnerHtml.js',
+            files,
+            name: 'void-inner-html',
+        });
+
+        const module = (await import(outputFile)) as ComponentModule;
+
+        await expect(() =>
+            renderComponent('x-void-inner-html', module.default, { content: '<b>hello</b>' })
+        ).rejects.toThrow('Invalid lwc:inner-html usage on void element "<input>"');
     });
 });
