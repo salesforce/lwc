@@ -63,6 +63,9 @@ jobs:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
 
+            - name: Random delay to see if that fixes flaky installs
+              run: sleep "$((90 * $RANDOM / 32767))" # 0-90 seconds
+
             - name: Get installed playwright version
               id: playwright-version
               run: |
