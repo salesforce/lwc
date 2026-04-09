@@ -88,7 +88,6 @@ jobs:
                     # Wait 30-90 seconds before trying again
                     sleep "$((30 + 60 * $RANDOM / 32767))"
                   done
-              timeout-minutes: 4
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
