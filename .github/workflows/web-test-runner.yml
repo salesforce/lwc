@@ -79,7 +79,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
             - name: Install playwright dependencies
-              if: ${{ steps.install-playwright.outcome != 'success' }}
               run: |
                   # Flaky and I don't know why, let's just retry 5 times
                   for i in $(seq 1 5); do
