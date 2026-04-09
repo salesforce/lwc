@@ -1,7 +1,7 @@
 import { describe, it, expect, afterEach, beforeEach } from 'vitest';
 import { LightningElement, SYMBOL__SET_INTERNALS } from '../lightning-element';
 
-describe('LightningElement SSR Polyfill', () => {
+describe('SSR LightningElement', () => {
     beforeEach(() => {
         if (!(globalThis as any).lwcRuntimeFlags) {
             (globalThis as any).lwcRuntimeFlags = {};
@@ -67,9 +67,9 @@ describe('LightningElement SSR Polyfill', () => {
         });
     });
 
-    describe('Experimental Signals (Line 92)', () => {
+    describe('with signals enabled', () => {
         afterEach(() => {
-            (globalThis as any).lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS = false;
+            delete (globalThis as any).lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS;
         });
 
         it('calls connectContext when signals are enabled', () => {
