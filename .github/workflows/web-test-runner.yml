@@ -63,9 +63,6 @@ jobs:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
 
-            - name: Random delay to see if that fixes flaky installs
-              run: sleep "$((90 * $RANDOM / 32767))" # 0-90 seconds
-
             - name: Get installed playwright version
               id: playwright-version
               run: |
@@ -81,17 +78,17 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
-
             - name: Install playwright dependencies
-              id: install-playwright
-              continue-on-error: true
-              run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 3 # Sometimes seems to just hang forever? :|
-
-            # If installing playwright times out, wait 1 minute then try again
-            - name: Install playwright dependencies (fallback)
               if: ${{ steps.install-playwright.outcome != 'success' }}
-              run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
+              run: |
+                  # Flaky and I don't know why, let's just retry 5 times
+                  for i in $(seq 1 5); do
+                    echo "Installing playwright (attempt $i)"
+                    # Timeout because sometimes it hangs forever... :\
+                    timeout 4m yarn playwright install chrome firefox webkit --with-deps && break
+                    # Wait 30-90 seconds before trying again
+                    sleep "$((30 + 60 * $RANDOM / 32767))"
+                  done
               timeout-minutes: 4
 
             - name: Set env vars
