@@ -1,0 +1,1 @@
+Invalid lwc:inner-html usage on void element "<input>". Void elements cannot have content.

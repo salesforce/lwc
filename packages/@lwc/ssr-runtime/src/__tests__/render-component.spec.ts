@@ -88,5 +88,3 @@ describe('renderComponent', () => {
         );
     });
 });
-
-

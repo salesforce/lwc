@@ -19,7 +19,7 @@ import {
     type Literal as IrLiteral,
     type Property as IrProperty,
 } from '@lwc/template-compiler';
-import { esTemplateWithYield } from '../../estemplate';
+import { esTemplate, esTemplateWithYield } from '../../estemplate';
 import { expressionIrToEs, getScopedExpression } from '../expression';
 import { irChildrenToEs } from '../ir-to-es';
 import { normalizeClassAttributeValue } from '../shared';
@@ -33,8 +33,13 @@ import type {
     Expression as EsExpression,
     Statement as EsStatement,
     IfStatement as EsIfStatement,
+    ThrowStatement as EsThrowStatement,
 } from 'estree';
 import type { Transformer, TransformerContext } from '../types';
+
+const bThrowError = esTemplate`
+  throw new Error(${is.literal});
+`<EsThrowStatement>;
 
 const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
@@ -254,12 +259,10 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     // See: https://github.com/salesforce/lwc/issues/5006
     if (innerHtmlDirective && isVoidElement(node.name, HTML_NAMESPACE)) {
         return [
-            b.throwStatement(
-                b.newExpression(b.identifier('Error'), [
-                    b.literal(
-                        `Invalid lwc:inner-html usage on void element "<${node.name}>". Void elements cannot have content.`
-                    ),
-                ])
+            bThrowError(
+                b.literal(
+                    `Invalid lwc:inner-html usage on void element "<${node.name}>". Void elements cannot have content.`
+                )
             ),
         ];
     }
