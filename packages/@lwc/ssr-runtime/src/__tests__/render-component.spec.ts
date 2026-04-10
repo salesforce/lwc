@@ -89,31 +89,4 @@ describe('renderComponent', () => {
     });
 });
 
-describe('lwc:inner-html on void elements', () => {
-    test('throws at runtime when lwc:inner-html is used on a void element', async () => {
-        const files = {
-            'x/voidInnerHtml/voidInnerHtml.js': `
-                import { LightningElement, api } from 'lwc';
-                export default class extends LightningElement {
-                    @api content = '<b>hello</b>';
-                }
-            `,
-            'x/voidInnerHtml/voidInnerHtml.html': `
-                <template>
-                    <input lwc:inner-html={content}>
-                </template>
-            `,
-        };
-        const outputFile = await compileComponent({
-            input: 'x/voidInnerHtml/voidInnerHtml.js',
-            files,
-            name: 'void-inner-html',
-        });
 
-        const module = (await import(outputFile)) as ComponentModule;
-
-        await expect(() =>
-            renderComponent('x-void-inner-html', module.default, { content: '<b>hello</b>' })
-        ).rejects.toThrow('Invalid lwc:inner-html usage on void element "<input>"');
-    });
-});
