@@ -342,7 +342,7 @@ describe('private method transform validation', () => {
         expect((code.match(/#privateMethod/g) || []).length).toBe(2);
     });
 
-    test('private field compiles successfully without LWC1214 error', () => {
+    test('private field compiles successfully without error', () => {
         const source = `
             import { LightningElement } from 'lwc';
             export default class Test extends LightningElement {
@@ -408,7 +408,6 @@ describe('private method transform validation', () => {
             }
         `;
 
-        // Should compile without throwing LWC1214
         const result = transformWithFullPipeline(source);
         expect(result.code).toContain('setData');
         expect(result.code).toContain('getData');

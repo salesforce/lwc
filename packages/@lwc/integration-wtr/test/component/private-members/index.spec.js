@@ -2,9 +2,9 @@ import { createElement } from 'lwc';
 import PrivateField from 'x/privateField';
 import MultiplePrivateFields from 'x/multiplePrivateFields';
 
-// These tests verify that private fields no longer throw LWC1214.
+// These tests verify that private fields no longer throw.
 // Previously, private fields would throw:
-// "LWC1214: Private fields are not currently supported. Only private methods are supported."
+// Private fields are not currently supported. Only private methods are supported."
 describe('private fields', () => {
     it('should compile and run with a single private field', () => {
         const elm = createElement('x-private-field', { is: PrivateField });
