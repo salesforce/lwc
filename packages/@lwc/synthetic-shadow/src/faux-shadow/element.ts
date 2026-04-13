@@ -90,14 +90,10 @@ function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot
     if ((options as any)[KEY__SYNTHETIC_MODE]) {
         return attachShadow(this, options);
     }
-    // An LWC component's host element already has a synthetic shadow root
-    // attached by the framework. The native attachShadow doesn't know about
-    // synthetic shadow roots, so without this guard it would succeed and
-    // return a second (native) ShadowRoot on the same host — violating the
-    // spec invariant that an element can only host one shadow tree. That
-    // native ShadowRoot's innerHTML setter is not patched, allowing
-    // unsanitized HTML injection (e.g. iframe+srcdoc) that bypasses Lightning Web Security
-    // sandbox protections.
+    // LWC hosts already use a synthetic shadow root. Without this guard, native
+    // attachShadow would still succeed and attach a second (native) shadow tree,
+    // which violates the one-shadow-per-element model this polyfill assumes and
+    // leaves that subtree on a different patching path than synthetic shadow.
     if (!lwcRuntimeFlags.DISABLE_HOST_ATTACH_SHADOW_GUARD && hasInternalSlot(this)) {
         throw new Error(nativeAttachShadowErrorMessage);
     }
