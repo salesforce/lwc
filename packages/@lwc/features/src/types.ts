@@ -84,6 +84,13 @@ export interface FeatureFlagMap {
     DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
 
     /**
+     * If true, skips the guard that blocks native `attachShadow` on LWC component hosts that already use
+     * synthetic shadow (a second native shadow root’s unpatchable surface can bypass Lightning Web Security).
+     * When false or unset, the guard is active (default).
+     */
+    DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
+
+    /**
      * If true, the contents of stylesheet scope tokens are not validated.
      */
     DISABLE_SCOPE_TOKEN_VALIDATION: FeatureFlagValue;
