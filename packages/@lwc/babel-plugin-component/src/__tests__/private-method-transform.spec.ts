@@ -341,4 +341,77 @@ describe('private method transform validation', () => {
         expect(code).not.toContain('__lwc_component_class_internal_private_');
         expect((code.match(/#privateMethod/g) || []).length).toBe(2);
     });
+
+    test('private field compiles successfully without LWC1214 error', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #count = 0;
+
+                increment() {
+                    this.#count++;
+                }
+            }
+        `;
+
+        // Should not throw - private fields are now allowed
+        const result = transformWithFullPipeline(source);
+        expect(result.code).toContain('increment');
+        // Private field gets transformed by Babel's class properties plugin
+        expect(result.code).toBeDefined();
+    });
+
+    test('private field with private method compiles successfully', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #count = 0;
+
+                #increment() {
+                    this.#count++;
+                }
+
+                publicIncrement() {
+                    this.#increment();
+                }
+            }
+        `;
+
+        const result = transformWithFullPipeline(source);
+        expect(result.code).toContain('publicIncrement');
+        expect(result.code).toContain('#increment');
+        expect(result.code).not.toContain('__lwc_component_class_internal_private_');
+    });
+
+    test('multiple private fields compile successfully', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class Test extends LightningElement {
+                #payload;
+                #cache = new Map();
+                #isDirty = false;
+
+                constructor() {
+                    super();
+                    this.#payload = {};
+                }
+
+                setData(data) {
+                    this.#payload = data;
+                    this.#isDirty = true;
+                    this.#cache.set('data', data);
+                }
+
+                getData() {
+                    return this.#payload;
+                }
+            }
+        `;
+
+        // Should compile without throwing LWC1214
+        const result = transformWithFullPipeline(source);
+        expect(result.code).toContain('setData');
+        expect(result.code).toContain('getData');
+        expect(result.code).toBeDefined();
+    });
 });
