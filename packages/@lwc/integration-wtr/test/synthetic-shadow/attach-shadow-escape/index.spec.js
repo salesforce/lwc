@@ -31,7 +31,14 @@ describe('attachShadow on synthetic shadow host', () => {
         setFeatureFlagForTest('DISABLE_HOST_ATTACH_SHADOW_GUARD', true);
         const elm = createElement('x-component', { is: Component });
         document.body.appendChild(elm);
-        expect(elm.error).toBeNull();
+        if (process.env.NATIVE_SHADOW) {
+            // Native shadow: @lwc/synthetic-shadow is not loaded; the flag does not apply. The host
+            // already has a shadow root, so the engine still rejects a second attachShadow.
+            expect(elm.error).not.toBeNull();
+            expect(elm.error.message).toBe(nativeAttachShadowErrorMessage);
+        } else {
+            expect(elm.error).toBeNull();
+        }
         document.body.removeChild(elm);
     });
 });
