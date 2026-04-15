@@ -78,6 +78,7 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
+
             - name: Install playwright dependencies
               run: |
                   # Flaky and I don't know why, let's just retry 5 times
@@ -182,15 +183,6 @@ jobs:
             - name: Install dependencies
               run: yarn install --frozen-lockfile
 
-            - name: Install playwright dependencies
-              id: install-playwright
-              continue-on-error: true
-              run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 3 # Sometimes seems to just hang forever? :|
-
-            # If installing playwright times out, wait 1 minute then try again
-            - name: Install playwright dependencies (fallback)
-              if: ${{ steps.install-playwright.outcome != 'success' }}
             - name: Install playwright dependencies
               run: |
                   # Flaky and I don't know why, let's just retry 5 times
