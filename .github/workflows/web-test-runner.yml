@@ -78,18 +78,24 @@ jobs:
 
             - name: Install dependencies
               run: yarn install --frozen-lockfile
-
             - name: Install playwright dependencies
-              id: install-playwright
-              continue-on-error: true
-              run: yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 3 # Sometimes seems to just hang forever? :|
-
-            # If installing playwright times out, wait 1 minute then try again
-            - name: Install playwright dependencies (fallback)
-              if: ${{ steps.install-playwright.outcome != 'success' }}
-              run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 4
+              run: |
+                  # Flaky and I don't know why, let's just retry 5 times
+                  for i in $(seq 1 5); do
+                    echo "Installing playwright (attempt $i)"
+                    # Timeout because sometimes it hangs forever... :\
+                    if timeout 4m yarn playwright install chrome firefox webkit --with-deps; then
+                      success=true
+                      break
+                    fi
+                    # Wait 30-90 seconds before trying again
+                    [[ $i < 5 ]] && sleep "$((30 + 60 * $RANDOM / 32767))"
+                  done
+                  # Exit with error if all retries failed
+                  if [[ $success != true ]]; then
+                    echo 'Failed to install playwright.'
+                    exit 1
+                  fi
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"
@@ -185,8 +191,24 @@ jobs:
             # If installing playwright times out, wait 1 minute then try again
             - name: Install playwright dependencies (fallback)
               if: ${{ steps.install-playwright.outcome != 'success' }}
-              run: sleep 60 && yarn playwright install chrome firefox webkit --with-deps
-              timeout-minutes: 4
+            - name: Install playwright dependencies
+              run: |
+                  # Flaky and I don't know why, let's just retry 5 times
+                  for i in $(seq 1 5); do
+                    echo "Installing playwright (attempt $i)"
+                    # Timeout because sometimes it hangs forever... :\
+                    if timeout 4m yarn playwright install chrome firefox webkit --with-deps; then
+                      success=true
+                      break
+                    fi
+                    # Wait 30-90 seconds before trying again
+                    [[ $i < 5 ]] && sleep "$((30 + 60 * $RANDOM / 32767))"
+                  done 
+                  # Exit with error if all retries failed
+                  if [[ $success != true ]]; then
+                    echo 'Failed to install playwright.'
+                    exit 1
+                  fi
 
             - name: Set env vars
               run: echo '${{ matrix.env }}' | tr ' ' '\n' >> "$GITHUB_ENV"

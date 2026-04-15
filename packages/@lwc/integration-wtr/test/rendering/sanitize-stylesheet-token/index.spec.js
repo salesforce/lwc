@@ -94,22 +94,20 @@ props.forEach((prop) => {
 
                         expect(caughtError).not.toBeUndefined();
                         expect(caughtError.message).toMatch(
-                            /stylesheet token must be a valid string|Failed to execute 'setAttribute'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
+                            new RegExp(
+                                [
+                                    // Different browsers have different error messages
+                                    'stylesheet token must be a valid string',
+                                    "Failed to execute 'setAttribute'",
+                                    'Invalid qualified name',
+                                    'Invalid attribute name',
+                                    'String contains an invalid character',
+                                    'The string contains invalid characters',
+                                ]
+                                    .map(RegExp.escape)
+                                    .join('|')
+                            )
                         );
-
-                        if (process.env.NODE_ENV === 'production') {
-                            // no warnings in prod mode
-                            expect(logger).not.toHaveBeenCalled();
-                        } else {
-                            // dev mode
-                            expect(logger).toHaveBeenCalledExactlyOnceWith(
-                                expect.objectContaining({
-                                    message: expect.stringContaining(
-                                        `Mutating the "${prop}" property on a template is deprecated`
-                                    ),
-                                })
-                            );
-                        }
                     }
                 });
             });

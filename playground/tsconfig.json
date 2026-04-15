@@ -1,6 +1,7 @@
 // A tsconfig.json file is only required for TypeScript projects
 {
     "compilerOptions": {
+        "outDir": "dist",
         "allowJs": true,
         "experimentalDecorators": false, // Required for LWC decorators to work
         "module": "nodenext",

@@ -61,14 +61,6 @@ export default function privateMethodTransform({
                         }
 
                         if (methodPath.node.kind !== METHOD_KIND) {
-                            handleError(
-                                methodPath,
-                                {
-                                    errorInfo: DecoratorErrors.UNSUPPORTED_PRIVATE_MEMBER,
-                                    messageArgs: ['accessor methods'],
-                                },
-                                methodState
-                            );
                             return;
                         }
 
@@ -116,20 +108,6 @@ export default function privateMethodTransform({
                             const prefixedName = `${PRIVATE_METHOD_PREFIX}${baseName}`;
                             privatePath.replaceWith(t.identifier(prefixedName));
                         }
-                    },
-
-                    ClassPrivateProperty(
-                        propPath: NodePath<types.ClassPrivateProperty>,
-                        propState: LwcBabelPluginPass
-                    ) {
-                        handleError(
-                            propPath,
-                            {
-                                errorInfo: DecoratorErrors.UNSUPPORTED_PRIVATE_MEMBER,
-                                messageArgs: ['fields'],
-                            },
-                            propState
-                        );
                     },
                 },
                 state
