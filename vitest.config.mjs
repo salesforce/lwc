@@ -27,6 +27,8 @@ export default defineConfig({
             provider: 'v8',
             exclude: [
                 // Ignore test files, config files, scripts, deps, and generated files
+                '**/index.ts',
+                '**/stubs.ts',
                 '**/*.config.*',
                 '**/.nx-cache/**',
                 '**/.rollup.cache/**',
