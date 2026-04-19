@@ -59,9 +59,8 @@ describe('styles.ts internals', () => {
                 false
             );
 
-            // We only care that it renders a standard style tag!
             expect(result).toContain('<style type="text/css">');
-            expect(result).toContain('.foo'); // We just check that the selector survived
+            expect(result).toContain('.foo');
         });
 
         it('renders initial deduplicated style block with IDs', () => {
@@ -83,7 +82,7 @@ describe('styles.ts internals', () => {
 
             expect(result).toContain('id="lwc-style-test-prefix-0"');
             expect(result).toContain('<lwc-style style-id="lwc-style-test-prefix-0"></lwc-style>');
-            expect(result).toContain('.foo'); // Just check the selector
+            expect(result).toContain('.foo');
         });
 
         it('renders only the marker tag when deduplication hits an existing sheet', () => {
@@ -105,7 +104,6 @@ describe('styles.ts internals', () => {
                 false
             );
 
-            // Only the marker should be present, not the actual style tag or content
             expect(result2).toBe('<lwc-style style-id="lwc-style-test-prefix-0"></lwc-style>');
             expect(result2).not.toContain('.foo');
         });
