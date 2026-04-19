@@ -15,6 +15,7 @@ export default defineConfig({
             'packages/@lwc/module-resolver',
             'packages/@lwc/rollup-plugin',
             'packages/@lwc/shared',
+            'packages/@lwc/ssr-client-utils',
             'packages/@lwc/signals',
             'packages/@lwc/ssr-compiler',
             'packages/@lwc/ssr-runtime',
@@ -41,8 +42,6 @@ export default defineConfig({
                 '**/packages/@lwc/engine-dom/**',
                 '**/packages/@lwc/engine-core/**',
                 '**/packages/@lwc/synthetic-shadow/**',
-                // TODO [#5272]: add tests
-                '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages
                 '**/packages/@lwc/integration-wtr/**',
                 '**/packages/@lwc/integration-wdio/**',
