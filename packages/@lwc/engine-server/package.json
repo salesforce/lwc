@@ -57,6 +57,6 @@
         "@lwc/features": "9.2.0",
         "@lwc/signals": "9.2.0",
         "@rollup/plugin-virtual": "^3.0.2",
-        "parse5": "^8.0.0"
+        "parse5": "^8.0.1"
     }
 }
