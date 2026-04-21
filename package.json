@@ -99,11 +99,13 @@
                 "Used by us and our dependencies. Because it's a type definition package,",
                 "we need everyone to use the same types (mixing versions breaks stuff)."
             ],
-            "baseline-browser-mapping": "Nested dependency of babel. It complains if it gets outdated."
+            "baseline-browser-mapping": "Nested dependency of babel. It complains if it gets outdated.",
+            "postcss": "Pinned to 8.5.9 to maintain CSS validation behavior"
         },
         "http-cache-semantics": "4.2.0",
         "@types/estree": "^1.0.8",
-        "baseline-browser-mapping": "^2.9.11"
+        "baseline-browser-mapping": "^2.9.11",
+        "postcss": "8.5.9"
     },
     "dependencies": {},
     "packageManager": "yarn@1.22.22"
