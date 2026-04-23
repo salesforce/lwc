@@ -49,7 +49,7 @@ import {
 import { assignedSlotGetterPatched } from './slot';
 import { getInternalChildNodes, hasMountedChildren } from './node';
 import { getNonPatchedFilteredArrayOfNodes } from './no-patch-utils';
-import { attachShadow, getShadowRoot, isSyntheticShadowHost } from './shadow-root';
+import { attachShadow, getShadowRoot, hasInternalSlot, isSyntheticShadowHost } from './shadow-root';
 import {
     getNodeOwner,
     getAllMatches,
@@ -72,10 +72,30 @@ function outerHTMLGetterPatched(this: Element) {
     return getOuterHTML(this);
 }
 
+// Capture the browser's native error message for duplicate attachShadow calls
+// so the guard below throws an identical error regardless of browser.
+const nativeAttachShadowErrorMessage = (() => {
+    const el = document.createElement('div');
+    el.attachShadow({ mode: 'open' });
+    try {
+        el.attachShadow({ mode: 'open' });
+    } catch ({ message }: any) {
+        return message;
+    }
+    return '';
+})();
+
 function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot {
     // To retain native behavior of the API, provide synthetic shadowRoot only when specified
     if ((options as any)[KEY__SYNTHETIC_MODE]) {
         return attachShadow(this, options);
+    }
+    // LWC hosts already use a synthetic shadow root. Without this guard, native
+    // attachShadow would still succeed and attach a second (native) shadow tree,
+    // which violates the one-shadow-per-element model this polyfill assumes and
+    // leaves that subtree on a different patching path than synthetic shadow.
+    if (!lwcRuntimeFlags.DISABLE_HOST_ATTACH_SHADOW_GUARD && hasInternalSlot(this)) {
+        throw new Error(nativeAttachShadowErrorMessage);
     }
     return originalAttachShadow.call(this, options);
 }

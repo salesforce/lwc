@@ -106,6 +106,12 @@ export interface FeatureFlagMap {
      * this flag to have an effect. See PR #5536 for more information.
      */
     ENABLE_LEGACY_CONTEXT_CONNECTION: FeatureFlagValue;
+
+    /**
+     * If true, skips the guard that blocks native `attachShadow` on LWC component hosts that already use
+     * synthetic shadow. When false or unset, the guard is active (default).
+     */
+    DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
