@@ -101,13 +101,6 @@ export interface FeatureFlagMap {
     DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
 
     /**
-     * If true, enables legacy context connection and disconnection which can result in the component lifecycle
-     * observing properties that are not typically observed. ENABLE_EXPERIMENTAL_SIGNALS must also be enabled for
-     * this flag to have an effect. See PR #5536 for more information.
-     */
-    ENABLE_LEGACY_CONTEXT_CONNECTION: FeatureFlagValue;
-
-    /**
      * If true, skips the guard that blocks native `attachShadow` on LWC component hosts that already use
      * synthetic shadow. When false or unset, the guard is active (default).
      */
