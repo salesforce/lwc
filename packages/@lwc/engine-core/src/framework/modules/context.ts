@@ -13,7 +13,6 @@ import {
     isTrustedContext,
     type ContextProvidedCallback,
     type ContextBinding as IContextBinding,
-    getPrototypeOf,
 } from '@lwc/shared';
 import { type VM } from '../vm';
 import { logWarnOnce } from '../../shared/logger';
@@ -81,35 +80,17 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
 }
 
 export function connectContext(vm: VM) {
-    /**
-     * If ENABLE_LEGACY_CONTEXT_CONNECTION is true, enumerates directly on the component
-     * which can result in the component lifecycle observing properties that are not typically observed.
-     * See PR #5536 for more information.
-     */
-    if (lwcRuntimeFlags.ENABLE_LEGACY_CONTEXT_CONNECTION) {
-        connect(vm, keys(getPrototypeOf(vm.component)), vm.component);
-    } else {
-        // Non-decorated objects
-        connect(vm, keys(vm.cmpFields), vm.cmpFields);
-        // Decorated objects like @api context
-        connect(vm, keys(vm.cmpProps), vm.cmpProps);
-    }
+    // Non-decorated objects
+    connect(vm, keys(vm.cmpFields), vm.cmpFields);
+    // Decorated objects like @api context
+    connect(vm, keys(vm.cmpProps), vm.cmpProps);
 }
 
 export function disconnectContext(vm: VM) {
-    /**
-     * If ENABLE_LEGACY_CONTEXT_CONNECTION is true, enumerates directly on the component
-     * which can result in the component lifecycle observing properties that are not typically observed.
-     * See PR #5536 for more information.
-     */
-    if (lwcRuntimeFlags.ENABLE_LEGACY_CONTEXT_CONNECTION) {
-        connect(vm, keys(getPrototypeOf(vm.component)), vm.component);
-    } else {
-        // Non-decorated objects
-        disconnect(vm, keys(vm.cmpFields), vm.cmpFields);
-        // Decorated objects like @api context
-        disconnect(vm, keys(vm.cmpProps), vm.cmpProps);
-    }
+    // Non-decorated objects
+    disconnect(vm, keys(vm.cmpFields), vm.cmpFields);
+    // Decorated objects like @api context
+    disconnect(vm, keys(vm.cmpProps), vm.cmpProps);
 }
 
 function connect(vm: VM, enumerableKeys: string[], contextContainer: any) {
