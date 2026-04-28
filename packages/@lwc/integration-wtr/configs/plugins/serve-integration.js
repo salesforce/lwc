@@ -102,6 +102,7 @@ const transform = async (ctx) => {
         plugins: [customLwcRollupPlugin, featureFlagResolver],
 
         external: [
+            '@lwc/ssr-client-utils',
             '@vitest/expect',
             '@vitest/spy',
             'lwc',
