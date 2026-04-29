@@ -45,12 +45,13 @@ updates:
                   - '@nx/*'
               update-types:
                   - 'major'
-          rollup:
+          # Changes to rollup can sometimes introduce subtle changes that break our users.
+          # If bumping rollup, make sure it's in a release with no code changes
+          # (other dep bumps are okay).
+          ROLLUP-BE-CAREFUL:
               patterns:
                   - 'rollup'
                   - '@rollup/*'
-              update-types:
-                  - 'major'
           webdriverio:
               patterns:
                   - 'webdriverio'
