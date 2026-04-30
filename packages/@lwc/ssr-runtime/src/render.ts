@@ -74,7 +74,7 @@ function renderAttrsPrivate(
     instance: LightningElement,
     attrs: Attributes,
     hostScopeToken: string | undefined,
-    scopeToken: string | undefined
+    scopeToken: string | null
 ): string {
     // The scopeToken is e.g. `lwc-xyz123` which is the token our parent gives us.
     // The hostScopeToken is e.g. `lwc-abc456-host` which is the token for our own component.
@@ -138,7 +138,7 @@ export function* renderAttrs(
     instance: LightningElement,
     attrs: Attributes,
     hostScopeToken: string | undefined,
-    scopeToken: string | undefined
+    scopeToken: string | null
 ) {
     yield renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken);
 }
@@ -147,7 +147,7 @@ export function renderAttrsNoYield(
     instance: LightningElement,
     attrs: Attributes,
     hostScopeToken: string | undefined,
-    scopeToken: string | undefined
+    scopeToken: string | null
 ) {
     return renderAttrsPrivate(instance, attrs, hostScopeToken, scopeToken);
 }
