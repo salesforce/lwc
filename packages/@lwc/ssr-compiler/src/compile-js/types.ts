@@ -10,6 +10,7 @@ import type { ImportManager } from '../imports';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     ClassDeclaration,
+    ClassExpression,
     Identifier,
     MemberExpression,
     MethodDefinition,
@@ -30,7 +31,7 @@ export interface ComponentMetaState {
     /** indicates whether a subclass of LightningElement is found in the JS being traversed */
     isLWC: boolean;
     /** the class declaration currently being traversed, if it is an LWC component */
-    currentComponent: ClassDeclaration | null;
+    currentComponent: ClassDeclaration | ClassExpression | null;
     /** indicates whether the LightningElement subclass includes a constructor method */
     hasConstructor: boolean;
     /** indicates whether the subclass has a connectedCallback method */
