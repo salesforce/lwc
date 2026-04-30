@@ -83,8 +83,15 @@ const visitors: Visitors = {
     ClassDeclaration: {
         enter(path, state) {
             const { node } = path;
-            if (node?.superClass) {
-                // If it's a default-exported class with a superclass, then it's an LWC component!
+            if (
+                node?.superClass &&
+                // export default class extends LightningElement {}
+                (is.exportDefaultDeclaration(path.parentPath) ||
+                    // class Cmp extends LightningElement {}; export default Cmp
+                    path.scope
+                        ?.getBinding(node.id?.name ?? '')
+                        ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
+            ) {
                 state.isLWC = true;
                 state.currentComponent = node;
                 if (node.id) {
@@ -113,6 +120,48 @@ const visitors: Visitors = {
         },
         leave(path, state) {
             // Indicate that we're no longer traversing an LWC component
+            if (state.currentComponent && path.node === state.currentComponent) {
+                state.currentComponent = null;
+            }
+        },
+    },
+    ClassExpression: {
+        enter(path, state) {
+            const { node } = path;
+            if (
+                node?.superClass &&
+                is.identifier(node.superClass) &&
+                node.superClass.name === state.lightningElementIdentifier
+            ) {
+                state.isLWC = true;
+                state.currentComponent = node;
+                // Get the class name from the enclosing variable declarator, if any
+                // e.g. `const Component = class extends LightningElement {}`
+                if (
+                    is.variableDeclarator(path.parentPath?.node) &&
+                    is.identifier(path.parentPath.node.id)
+                ) {
+                    state.lwcClassName = path.parentPath.node.id.name;
+                } else if (node.id) {
+                    state.lwcClassName = node.id.name;
+                }
+
+                // There's no builder for comment nodes :\
+                const lwcVersionComment: EsComment = {
+                    type: 'Block',
+                    value: LWC_VERSION_COMMENT,
+                };
+
+                // Add LWC version comment to end of class body
+                const { body } = node;
+                if (body.trailingComments) {
+                    body.trailingComments.push(lwcVersionComment);
+                } else {
+                    body.trailingComments = [lwcVersionComment];
+                }
+            }
+        },
+        leave(path, state) {
             if (state.currentComponent && path.node === state.currentComponent) {
                 state.currentComponent = null;
             }
