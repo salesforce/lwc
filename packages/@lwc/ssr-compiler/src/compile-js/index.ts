@@ -83,21 +83,15 @@ const visitors: Visitors = {
     ClassDeclaration: {
         enter(path, state) {
             const { node } = path;
-            if (
-                node?.superClass &&
-                // export default class extends LightningElement {}
-                (is.exportDefaultDeclaration(path.parentPath) ||
-                    // class Cmp extends LightningElement {}; export default Cmp
-                    path.scope
-                        ?.getBinding(node.id.name)
-                        ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
-            ) {
+            if (node?.superClass) {
                 // If it's a default-exported class with a superclass, then it's an LWC component!
                 state.isLWC = true;
                 state.currentComponent = node;
                 if (node.id) {
                     state.lwcClassName = node.id.name;
                 } else {
+                    // A class declaration can omit a name if and only if it is default-exported.
+                    // There is only one default export, so this won't cause collisions.
                     node.id = b.identifier('DefaultComponentName');
                     state.lwcClassName = 'DefaultComponentName';
                 }
@@ -315,7 +309,7 @@ export default function compileJS(
         };
     }
 
-    addGenerateMarkupFunction(ast, state, tagName, filename);
+    addGenerateMarkupFunction(ast, state, tagName, filename, compilationMode);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);

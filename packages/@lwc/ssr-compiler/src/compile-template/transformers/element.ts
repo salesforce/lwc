@@ -237,7 +237,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
             let result;
             if (value.type === 'Literal') {
-                result = yieldAttrOrPropLiteralValue(name, value);
+                result = yieldAttrOrPropLiteralValue(name, value, cxt);
             } else {
                 result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
@@ -270,6 +270,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
     const isSelfClosingElement =
         isVoidElement(node.name, HTML_NAMESPACE) || isForeignSelfClosingElement;
 
+    cxt.import('hasScopedStaticStylesheets');
     return [
         bYield(b.literal(`<${node.name}`)),
         bConditionallyYieldDanglingSlotName(),
