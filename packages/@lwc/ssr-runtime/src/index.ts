@@ -51,3 +51,4 @@ export { toIteratorDirective } from './to-iterator-directive';
 export { validateStyleTextContents } from './validate-style-text-contents';
 export { createContextProvider, establishContextfulRelationship, connectContext } from './wire';
 export { readonly } from './get-read-only-proxy';
+export { setStaticInternals } from './set-static-internals';

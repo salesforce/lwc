@@ -13,6 +13,7 @@ import { generateError } from '../errors';
 import type { NodePath } from 'estree-toolkit';
 
 import type {
+    ArrayExpression,
     PropertyDefinition,
     ObjectExpression,
     MethodDefinition,
@@ -21,7 +22,6 @@ import type {
     Identifier,
     MemberExpression,
     Property,
-    BlockStatement,
     Decorator,
     CallExpression,
     SpreadElement,
@@ -188,39 +188,34 @@ const bCallWiredMethod = esTemplate`
     instance.${/*wire-decorated method*/ is.identifier}(newValue)
 `<ExpressionStatement>;
 
-const bWireAdapterPlumbing = esTemplate`{
-    // Callable adapters are expressed as a function having an 'adapter' property, which
-    // is the actual wire constructor.
-    const AdapterCtor = ${/*wire adapter constructor*/ is.expression}?.adapter ?? ${/*wire adapter constructor*/ 0};
-    const wireInstance = new AdapterCtor((newValue) => {
-        ${/*update the decorated property or call the decorated method*/ is.expressionStatement};
-    });
-    wireInstance.connect?.();
-    if (wireInstance.update) {
-        const getLiveConfig = () => {
-            return ${/* reactive wire config */ is.objectExpression};
-        };
-        // This may look a bit weird, in that the 'update' function is called twice: once with
-        // an 'undefined' value and possibly again with a context-provided value. While weird,
-        // this preserves the behavior of the browser-side wire implementation as well as the
-        // original SSR implementation.
-        wireInstance.update(getLiveConfig(), undefined);
-        __connectContext(AdapterCtor, instance, (newContextValue) => {
-            wireInstance.update(getLiveConfig(), newContextValue);
-        });
-    }
-}`<BlockStatement>;
+// Object expression must be wrapped in () to be parsed correctly,
+// which turns it into an expression statement
+const bWireAdapterInfo = esTemplate`({
+  adapter: ${
+      // ideally would be or(is.memberExpression, is.identifier), but we don't have `or()`
+      is.expression
+  },
+  dataCallback: (instance) => (newValue) => { ${is.expressionStatement} },
+  config: (instance) => (${is.objectExpression})
+})`<ExpressionStatement>;
 
-export function bWireAdaptersPlumbing(adapters: WireAdapter[]): BlockStatement[] {
-    return adapters.map(({ adapterId, config, field }) => {
+export function bWireAdaptersPlumbing(adapters: WireAdapter[]): ArrayExpression {
+    const info = adapters.map(({ adapterId, config, field }) => {
         const actionUponNewValue =
             is.methodDefinition(field) && field.kind === 'method'
                 ? // Validation in compile-js/index.ts `visitors` ensures `key` is an identifier
                   bCallWiredMethod(field.key as Identifier)
                 : bSetWiredProp(field.key as Identifier);
 
-        return bWireAdapterPlumbing(adapterId, actionUponNewValue, config);
+        // parsed as expression statement rather than object expression, so let's unwrap
+        const { expression } = bWireAdapterInfo(
+            adapterId as Identifier,
+            actionUponNewValue,
+            config
+        );
+        return expression;
     });
+    return b.arrayExpression(info);
 }
 
 export function isWireDecorator(decorator: Decorator | undefined): decorator is Decorator & {

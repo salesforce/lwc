@@ -10,90 +10,18 @@ import { is, builders as b } from 'estree-toolkit';
 import { esTemplate } from '../estemplate';
 import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './decorators/wire';
+import type { CompilationMode } from '@lwc/shared';
 
-import type { Program, Statement, IfStatement } from 'estree';
+import type { Program, IfStatement } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const bGenerateMarkup = esTemplate`
-    // These variables may mix with component-authored variables, so should be reasonably unique
-    const __lwcSuperPublicProperties__ = Array.from(Object.getPrototypeOf(${/* Component class */ is.identifier})?.__lwcPublicProperties__?.values?.() ?? []);
-    const __lwcPublicProperties__ = new Set(${/*public properties*/ is.arrayExpression}.concat(__lwcSuperPublicProperties__));
-
-    Object.defineProperty(
-    ${/* component class */ 0},
-    __SYMBOL__GENERATE_MARKUP,
-    {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: async function* __lwcGenerateMarkup(
-            tagName, 
-            props, 
-            attrs,
-            parent, 
-            scopeToken,
-            contextfulParent,
-            renderContext,
-            shadowSlottedContent,
-            lightSlottedContent, 
-            scopedSlottedContent,
-        ) {
-            tagName = tagName ?? ${/*component tag name*/ is.literal};
-            attrs = attrs ?? Object.create(null);
-            props = props ?? Object.create(null);
-            const instance = new ${/* Component class */ 0}({
-                tagName: tagName.toUpperCase(),
-            });
-
-            __establishContextfulRelationship(contextfulParent, instance);
-
-            instance[__SYMBOL__SET_INTERNALS](
-                props,
-                attrs,
-                __lwcPublicProperties__
-            );
-            ${/*connect wire*/ is.statement}
-            instance.isConnected = true;
-            if (instance.connectedCallback) {
-                __mutationTracker.enable(instance);
-                instance.connectedCallback();
-                __mutationTracker.disable(instance);
-            }
-            // If a render() function is defined on the class or any of its superclasses, then that takes priority.
-            // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
-            // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
-            const tmplFn = instance.render?.() ?? ${/*component class*/ 0}[__SYMBOL__DEFAULT_TEMPLATE] ?? __fallbackTmpl;
-            yield \`<\${tagName}\`;
-
-            const hostHasScopedStylesheets =
-                tmplFn.hasScopedStylesheets ||
-                hasScopedStaticStylesheets(${/*component class*/ 0});
-            const hostScopeToken = hostHasScopedStylesheets ? tmplFn.stylesheetScopeToken + "-host" : undefined;
-
-            yield* __renderAttrs(instance, attrs, hostScopeToken, scopeToken);
-            yield '>';
-            yield* tmplFn(
-                shadowSlottedContent,
-                lightSlottedContent,
-                scopedSlottedContent,
-                ${/*component class*/ 0},
-                instance,
-                renderContext
-            );
-            yield \`</\${tagName}>\`;
-        }
-    });
-    Object.defineProperty(
-        ${/* component class */ 0},
-        '__lwcPublicProperties__',
-        {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: __lwcPublicProperties__
-        }
-    );
-`<[Statement]>;
+const bSetStaticInternals = esTemplate`__setStaticInternals(
+${/* Component */ is.identifier},
+${/* tag name */ is.literal},
+${/* public props */ is.arrayExpression},
+${/* wire adapters */ is.expression} ?? null,
+${/* compilation mode */ is.literal}
+)`;
 
 const bExposeTemplate = esTemplate`
     if (${/*template*/ is.identifier}) {
@@ -126,7 +54,8 @@ export function addGenerateMarkupFunction(
     program: Program,
     state: ComponentMetaState,
     tagName: string,
-    filename: string
+    filename: string,
+    compilationMode: CompilationMode
 ) {
     const { publicProperties } = state;
 
@@ -146,29 +75,21 @@ export function addGenerateMarkupFunction(
     const exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
-    let connectWireAdapterCode: Statement[] = [];
-    if (state.wireAdapters.length) {
-        connectWireAdapterCode = bWireAdaptersPlumbing(state.wireAdapters);
-        program.body.unshift(bImportDeclaration({ connectContext: '__connectContext' }));
-    }
+    const wireAdapterInfo =
+        state.wireAdapters.length > 0 ? bWireAdaptersPlumbing(state.wireAdapters) : b.literal(null);
 
     program.body.unshift(
         bImportDeclaration({
-            fallbackTmpl: '__fallbackTmpl',
-            hasScopedStaticStylesheets: undefined,
-            mutationTracker: '__mutationTracker',
-            renderAttrs: '__renderAttrs',
-            SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
-            SYMBOL__SET_INTERNALS: '__SYMBOL__SET_INTERNALS',
-            establishContextfulRelationship: '__establishContextfulRelationship',
+            setStaticInternals: '__setStaticInternals',
         })
     );
     program.body.push(
-        ...bGenerateMarkup(
+        bSetStaticInternals(
             classIdentifier,
-            b.arrayExpression([...publicProperties.keys()].map(b.literal)),
             defaultTagName,
-            connectWireAdapterCode
+            b.arrayExpression([...publicProperties.keys()].map(b.literal)),
+            wireAdapterInfo,
+            b.literal(compilationMode)
         )
     );
 
