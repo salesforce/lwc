@@ -27,6 +27,8 @@ export default defineConfig({
             provider: 'v8',
             exclude: [
                 // Ignore test files, config files, scripts, deps, and generated files
+                'packages/@lwc/ssr-runtime/src/index.ts',
+                'packages/@lwc/ssr-runtime/src/stubs.ts',
                 '**/*.config.*',
                 '**/.nx-cache/**',
                 '**/.rollup.cache/**',
