@@ -143,6 +143,21 @@ export interface LightningElementConstructor {
     renderMode?: 'light' | 'shadow';
     formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
+    /**
+     * Declares that this component accepts arbitrary (non-`@api`) properties
+     * from its parent's template bindings. When `true`, the dev-mode
+     * "Unknown public property" warning is suppressed for this component.
+     *
+     * Intended for generic wrapper / "shape-shifter" components that cannot
+     * statically enumerate the props they will receive (for example, a single
+     * component that substitutes for many different authored components and
+     * forwards their props through a postMessage bridge).
+     *
+     * The runtime behavior of prop assignment is otherwise unchanged: writes
+     * still land as plain own properties on the host element just as they do
+     * today for any undeclared prop.
+     */
+    dynamicProps?: boolean;
     stylesheets: Stylesheets;
 }
 
