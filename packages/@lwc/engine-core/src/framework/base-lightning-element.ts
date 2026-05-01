@@ -143,6 +143,19 @@ export interface LightningElementConstructor {
     renderMode?: 'light' | 'shadow';
     formAssociated?: boolean;
     shadowSupportMode?: ShadowSupportMode;
+    /**
+     * Controls the mode of the component's shadow root. Defaults to `'open'`.
+     * Set to `'closed'` to hide the shadow root from outside script access —
+     * `element.shadowRoot` will return `null` from outside the component.
+     *
+     * Works in both native and synthetic shadow: the synthetic shadow polyfill
+     * stores the mode internally and its patched `shadowRoot` getter only
+     * exposes the faux root when the mode is `'open'`.
+     *
+     * This setting has no effect when the component uses light DOM
+     * (`static renderMode = 'light'`).
+     */
+    shadowRootMode?: 'open' | 'closed';
     stylesheets: Stylesheets;
 }
 
