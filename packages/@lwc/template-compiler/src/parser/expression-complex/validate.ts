@@ -99,7 +99,7 @@ function validateLiteral(node: t.Literal) {
         ['BigInts']
     );
     // Regular expression literals are difficult to visually parse, and
-    // may be difficult to programatically parse with future parsing methods. For those
+    // may be difficult to programmatically parse with future parsing methods. For those
     // reasons, they are also disallowed.
     invariant(
         (node as t.RegExpLiteral).regex === undefined,

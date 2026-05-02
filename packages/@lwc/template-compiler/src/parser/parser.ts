@@ -187,7 +187,7 @@ export default class ParserCtx {
     }
 
     /**
-     * This method searchs the current scope and returns the value that satisfies the predicate.
+     * This method searches the current scope and returns the value that satisfies the predicate.
      * @param predicate This callback is called once for each sibling in the current scope
      * until it finds one where predicate returns true.
      */

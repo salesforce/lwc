@@ -11,7 +11,7 @@ export default class extends LightningElement {
         this.foo.mutated = true;
 
         // Mutating the proxy should not work in V1 but will work in V2.
-        // The V2 implementation returns the original object as readonly invokation
+        // The V2 implementation returns the original object as readonly invocation
         // is deprecated and will be removed.
         try {
             this.readonlyFoo.readonlyMutated = true;
