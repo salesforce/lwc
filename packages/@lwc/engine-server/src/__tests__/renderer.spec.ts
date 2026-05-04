@@ -186,17 +186,22 @@ describe('renderer', () => {
         });
 
         test('logs an error in development for unexpected property access', () => {
-            const el = renderer.createElement('div');
-            const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            vi.stubEnv('NODE_ENV', 'development');
+            try {
+                const el = renderer.createElement('div');
+                const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-            const result = renderer.getProperty(el, 'notARealProp');
+                const result = renderer.getProperty(el, 'notARealProp');
 
-            expect(result).toBeUndefined();
-            expect(spy).toHaveBeenCalledWith(
-                expect.stringContaining('Unexpected "notARealProp" property access')
-            );
+                expect(result).toBeUndefined();
+                expect(spy).toHaveBeenCalledWith(
+                    expect.stringContaining('Unexpected "notARealProp" property access')
+                );
 
-            spy.mockRestore();
+                spy.mockRestore();
+            } finally {
+                vi.unstubAllEnvs();
+            }
         });
     });
 
