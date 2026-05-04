@@ -143,6 +143,32 @@ describe('context', () => {
             process.env.NODE_ENV = originalNodeEnv;
         });
 
+        it('silently ignores duplicate provideContext calls in production', () => {
+            vi.stubEnv('NODE_ENV', 'production');
+            try {
+                const component = new LightningElement({ tagName: 'div' });
+                const binding = new ContextBinding(component);
+                const firstSignal: Signal<unknown> = {
+                    value: 'first',
+                    subscribe: () => () => {},
+                };
+                const secondSignal: Signal<unknown> = {
+                    value: 'second',
+                    subscribe: () => () => {},
+                };
+
+                binding.provideContext(mockContextVariety, firstSignal);
+                expect(() => {
+                    binding.provideContext(mockContextVariety, secondSignal);
+                }).not.toThrow();
+                expect(component[SYMBOL__CONTEXT_VARIETIES].get(mockContextVariety)).toBe(
+                    firstSignal
+                );
+            } finally {
+                vi.unstubAllEnvs();
+            }
+        });
+
         it('should consume context from ancestor', () => {
             const component = new LightningElement({ tagName: 'div' });
             const binding = new ContextBinding(component);

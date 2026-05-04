@@ -1,5 +1,6 @@
 import { parseModule } from 'meriyah';
 import { generate } from 'astring';
+import { is } from 'estree-toolkit';
 import { describe, beforeAll, test, expect } from 'vitest';
 import { transmogrify } from '../transmogrify';
 import type { Program as EsProgram } from 'estree';
@@ -133,6 +134,53 @@ describe('transmogrify', () => {
             expect(COMPILED_CMP_ASYNC).toContain('yield "doit"');
             expect(COMPILED_CMP_ASYNC).toContain('yield "foobar"');
             expect(COMPILED_CMP_ASYNC).toContain('yield* somethingElse()');
+        });
+    });
+
+    describe('invalid generator body', () => {
+        test('throws when a targeted function yields without an argument', () => {
+            const src = `
+                async function* __lwcTmpl(props, attrs, slottedContent, Cmp, instance) {
+                    yield;
+                }
+            `;
+            const ast = parseModule(src, { module: true, next: true }) as EsProgram;
+            expect(() => transmogrify(ast, 'sync')).toThrow(
+                /Cannot transmogrify yield statement without an argument/
+            );
+        });
+
+        test('throws when a targeted function uses yield* without an argument', () => {
+            const src = `
+                async function* __lwcTmpl(props, attrs, slottedContent, Cmp, instance) {
+                    yield 'placeholder';
+                }
+            `;
+            const ast = parseModule(src, { module: true, next: true }) as EsProgram;
+            const fn = ast.body[0];
+            if (!is.functionDeclaration(fn)) throw new Error('expected FunctionDeclaration');
+            const exprStmt = fn.body.body[0];
+            if (!is.expressionStatement(exprStmt)) throw new Error('expected ExpressionStatement');
+            const yieldExpr = exprStmt.expression;
+            if (!is.yieldExpression(yieldExpr)) throw new Error('expected YieldExpression');
+            yieldExpr.argument = null;
+            yieldExpr.delegate = true;
+
+            expect(() => transmogrify(ast, 'sync')).toThrow(
+                /Cannot transmogrify yield\* statement without an argument/
+            );
+        });
+
+        test('throws when a targeted function has a non-__lwcYield return statement', () => {
+            const src = `
+                async function* __lwcGenerateMarkup(tagName, props, attrs, slotted) {
+                    return 42;
+                }
+            `;
+            const ast = parseModule(src, { module: true, next: true }) as EsProgram;
+            expect(() => transmogrify(ast, 'sync')).toThrow(
+                /Cannot transmogrify function with return statement/
+            );
         });
     });
 });

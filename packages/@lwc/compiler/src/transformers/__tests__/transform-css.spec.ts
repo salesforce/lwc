@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { describe, expect, it } from 'vitest';
+import { CompilerAggregateError } from '@lwc/errors';
 import { transform } from '../transformer';
 import type { TransformOptions } from '../../options';
 
@@ -43,6 +44,19 @@ describe('custom properties', () => {
         });
 
         expect(code).toContain('var(--bg-color)');
+    });
+});
+
+describe('experimentalErrorRecoveryMode', () => {
+    it('wraps underlying AggregateError into a CompilerAggregateError', async () => {
+        const promise = transform(`<`, 'foo.css', {
+            ...TRANSFORMATION_OPTIONS,
+            experimentalErrorRecoveryMode: true,
+        });
+        await expect(promise).rejects.toBeInstanceOf(CompilerAggregateError);
+        await expect(promise).rejects.toMatchObject({
+            message: expect.stringContaining('Multiple CSS errors'),
+        });
     });
 });
 

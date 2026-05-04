@@ -95,4 +95,21 @@ describe('SSR LightningElement', () => {
             expect(el.template).toEqual({ synthetic: false });
         });
     });
+
+    describe('hidden reflection', () => {
+        it('toggling hidden adds and removes the attribute', () => {
+            const el = createTestElement();
+
+            expect(el.hidden).toBe(false);
+            el.hidden = true;
+            expect(el.hidden).toBe(true);
+
+            el.hidden = false;
+            expect(el.hidden).toBe(false);
+
+            // Setting false when the attribute is already absent is a no-op.
+            el.hidden = false;
+            expect(el.hidden).toBe(false);
+        });
+    });
 });
