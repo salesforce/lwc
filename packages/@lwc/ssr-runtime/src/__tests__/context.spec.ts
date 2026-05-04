@@ -144,7 +144,8 @@ describe('context', () => {
         });
 
         it('silently ignores duplicate provideContext calls in production', () => {
-            vi.stubEnv('NODE_ENV', 'production');
+            const originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
             try {
                 const component = new LightningElement({ tagName: 'div' });
                 const binding = new ContextBinding(component);
@@ -165,7 +166,7 @@ describe('context', () => {
                     firstSignal
                 );
             } finally {
-                vi.unstubAllEnvs();
+                process.env.NODE_ENV = originalNodeEnv;
             }
         });
 

@@ -98,7 +98,8 @@ describe('renderer', () => {
         });
 
         test('throws when given a non-Raw node in development', () => {
-            vi.stubEnv('NODE_ENV', 'development');
+            const originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'development';
             try {
                 const text = renderer.createText('nope');
 
@@ -106,18 +107,19 @@ describe('renderer', () => {
                     /cloneNode was called with invalid NodeType/
                 );
             } finally {
-                vi.unstubAllEnvs();
+                process.env.NODE_ENV = originalNodeEnv;
             }
         });
 
         test('does not throw when given a non-Raw node in production', () => {
-            vi.stubEnv('NODE_ENV', 'production');
+            const originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'production';
             try {
                 const text = renderer.createText('nope');
 
                 expect(() => renderer.cloneNode(text)).not.toThrow();
             } finally {
-                vi.unstubAllEnvs();
+                process.env.NODE_ENV = originalNodeEnv;
             }
         });
     });
@@ -186,7 +188,8 @@ describe('renderer', () => {
         });
 
         test('logs an error in development for unexpected property access', () => {
-            vi.stubEnv('NODE_ENV', 'development');
+            const originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'development';
             try {
                 const el = renderer.createElement('div');
                 const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -200,7 +203,7 @@ describe('renderer', () => {
 
                 spy.mockRestore();
             } finally {
-                vi.unstubAllEnvs();
+                process.env.NODE_ENV = originalNodeEnv;
             }
         });
     });
