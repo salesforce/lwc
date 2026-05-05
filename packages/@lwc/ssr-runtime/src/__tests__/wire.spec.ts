@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createContextProvider } from '../wire';
 import { LightningElement, SYMBOL__SET_INTERNALS } from '../lightning-element';
 import type { WireAdapterConstructor } from '@lwc/engine-core';
@@ -24,9 +24,11 @@ function createElement() {
 
 describe('wire', () => {
     beforeEach(() => {
-        if (!(globalThis as any).lwcRuntimeFlags) {
-            (globalThis as any).lwcRuntimeFlags = {};
-        }
+        (globalThis as any).lwcRuntimeFlags = {};
+    });
+
+    afterEach(() => {
+        delete (globalThis as any).lwcRuntimeFlags;
     });
 
     describe('createContextProvider', () => {
