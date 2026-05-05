@@ -96,7 +96,7 @@ describe('SSR LightningElement', () => {
         });
     });
 
-    describe('hidden reflection', () => {
+    describe('hidden attribute reflection', () => {
         it('toggling hidden adds and removes the attribute', () => {
             const el = createTestElement();
 

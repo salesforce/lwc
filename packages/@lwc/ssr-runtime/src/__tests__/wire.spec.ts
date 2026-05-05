@@ -7,14 +7,13 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createContextProvider } from '../wire';
 import { LightningElement, SYMBOL__SET_INTERNALS } from '../lightning-element';
-import type { WireAdapterConstructor } from '@lwc/engine-core';
 
 class FakeAdapter {
+    constructor(_cb: any) {}
     update() {}
     connect() {}
     disconnect() {}
 }
-const fakeAdapter: WireAdapterConstructor = FakeAdapter;
 
 function createElement() {
     const el = new LightningElement({ tagName: 'x-test' });
@@ -33,7 +32,7 @@ describe('wire', () => {
 
     describe('createContextProvider', () => {
         test('throws when called with a non-LightningElement', () => {
-            const provide = createContextProvider(fakeAdapter);
+            const provide = createContextProvider(FakeAdapter);
             expect(() =>
                 provide({} as unknown as LightningElement, {
                     consumerConnectedCallback: () => {},
@@ -42,7 +41,7 @@ describe('wire', () => {
         });
 
         test('is a no-op when the element is not connected', () => {
-            const provide = createContextProvider(fakeAdapter);
+            const provide = createContextProvider(FakeAdapter);
             const el = createElement();
             const callback = vi.fn();
             provide(el, { consumerConnectedCallback: callback });
@@ -50,7 +49,7 @@ describe('wire', () => {
         });
 
         test('is a no-op when no consumerConnectedCallback is provided', () => {
-            const provide = createContextProvider(fakeAdapter);
+            const provide = createContextProvider(FakeAdapter);
             const el = createElement();
             el.isConnected = true;
             expect(() => provide(el)).not.toThrow();

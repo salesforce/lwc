@@ -1,0 +1,1 @@
+LWC1094: @wire expects a configuration object expression as second parameter.

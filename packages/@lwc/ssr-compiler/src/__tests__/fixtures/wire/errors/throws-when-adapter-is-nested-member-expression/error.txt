@@ -1,0 +1,1 @@
+LWC1132: @wire identifier cannot contain nested member expressions

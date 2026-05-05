@@ -1,6 +1,6 @@
 import path from 'node:path';
 import { describe, test, expect } from 'vitest';
-import { CompilerError, DecoratorErrors } from '@lwc/errors';
+import { CompilerError } from '@lwc/errors';
 import { LWC_VERSION_COMMENT_REGEX } from '@lwc/shared';
 import { compileComponentForSSR, compileTemplateForSSR } from '../index';
 
@@ -134,110 +134,6 @@ export default class Test extends LightningElement {
                     "message": "LWC1200: Computed property in @wire config must be a constant or primitive literal.",
                   }
                 `);
-        });
-
-        test('throws when @wire is called with no arguments', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-export default class Test extends LightningElement {
-  @wire()
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER.code,
-                })
-            );
-        });
-
-        test('throws when @wire adapter uses a computed member expression', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-import { adapters } from "data-service";
-export default class Test extends LightningElement {
-  @wire(adapters["getFoo"])
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS.code,
-                })
-            );
-        });
-
-        test('throws when @wire adapter is a nested member expression', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-import { adapters } from "data-service";
-export default class Test extends LightningElement {
-  @wire(adapters.getters.getFoo)
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS
-                        .code,
-                })
-            );
-        });
-
-        test('throws when @wire adapter is a literal', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-export default class Test extends LightningElement {
-  @wire("not-an-identifier")
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER.code,
-                })
-            );
-        });
-
-        test('throws when @wire adapter references a non-module binding', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-const getFoo = () => null;
-export default class Test extends LightningElement {
-  @wire(getFoo)
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL.code,
-                })
-            );
-        });
-
-        test('throws when @wire config is not an object expression', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-import { getFoo } from "data-service";
-export default class Test extends LightningElement {
-  @wire(getFoo, 42)
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER.code,
-                })
-            );
-        });
-
-        test('throws when @wire config uses a template literal as a computed key', () => {
-            const src = `import { wire, LightningElement } from "lwc";
-import { getFoo } from "data-service";
-export default class Test extends LightningElement {
-  @wire(getFoo, { [\`dynamic\`]: "$prop" })
-  wiredFoo;
-}
-`;
-            expect(() => compileComponentForSSR(src, 'test.js', {})).toThrow(
-                expect.objectContaining({
-                    code: DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL.code,
-                })
-            );
         });
     });
 });
