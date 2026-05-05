@@ -18,7 +18,7 @@ if specific code snippet, paste the example here
 -->
 
 ```js
-const your => (code) => here;
+const your = (code) => here;
 ```
 
 #### Expected Results
