@@ -28,6 +28,16 @@ describe('assert', () => {
         });
     });
 
+    describe('#isTrue()', () => {
+        it('should throw error that includes custom message', () => {
+            expect(() => assert.isTrue(false, 'foo bar')).toThrow(/Assert Violation: foo bar/);
+        });
+
+        it('should not throw error for true', () => {
+            expect(() => assert.isTrue(true, 'foo bar')).not.toThrow();
+        });
+    });
+
     describe('#fail()', () => {
         it('should throw error that includes custom message', () => {
             expect(() => assert.fail('foo bar')).toThrowError(/foo bar/);

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import * as shared from '@lwc/shared';
 import { connectContext, ContextBinding } from '../context';
 import { LightningElement, SYMBOL__CONTEXT_VARIETIES } from '../lightning-element';
@@ -32,6 +32,11 @@ describe('context', () => {
     let mockContextVariety: object;
     let mockContextSignal: Signal<unknown>;
     let mockContextProvidedCallback: ContextProvidedCallback;
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    afterEach(() => {
+        process.env.NODE_ENV = originalNodeEnv;
+    });
 
     beforeEach(() => {
         // Reset mocks
@@ -93,7 +98,6 @@ describe('context', () => {
         });
 
         it('should throw error in development when connecting context fails', () => {
-            const originalNodeEnv = process.env.NODE_ENV;
             process.env.NODE_ENV = 'development';
 
             const component = new LightningElement({ tagName: 'div' });
@@ -110,8 +114,6 @@ describe('context', () => {
             expect(() => connectContext(component)).toThrow(
                 'Attempted to connect to trusted context'
             );
-
-            process.env.NODE_ENV = originalNodeEnv;
         });
     });
 
@@ -129,7 +131,6 @@ describe('context', () => {
         });
 
         it('should not allow multiple contexts of the same variety in development', () => {
-            const originalNodeEnv = process.env.NODE_ENV;
             process.env.NODE_ENV = 'development';
 
             const component = new LightningElement({ tagName: 'div' });
@@ -139,8 +140,27 @@ describe('context', () => {
             expect(() => {
                 binding.provideContext(mockContextVariety, mockContextSignal);
             }).toThrow('Multiple contexts of the same variety were provided');
+        });
 
-            process.env.NODE_ENV = originalNodeEnv;
+        it('silently ignores duplicate provideContext calls in production', () => {
+            process.env.NODE_ENV = 'production';
+
+            const component = new LightningElement({ tagName: 'div' });
+            const binding = new ContextBinding(component);
+            const firstSignal: Signal<unknown> = {
+                value: 'first',
+                subscribe: () => () => {},
+            };
+            const secondSignal: Signal<unknown> = {
+                value: 'second',
+                subscribe: () => () => {},
+            };
+
+            binding.provideContext(mockContextVariety, firstSignal);
+            expect(() => {
+                binding.provideContext(mockContextVariety, secondSignal);
+            }).not.toThrow();
+            expect(component[SYMBOL__CONTEXT_VARIETIES].get(mockContextVariety)).toBe(firstSignal);
         });
 
         it('should consume context from ancestor', () => {

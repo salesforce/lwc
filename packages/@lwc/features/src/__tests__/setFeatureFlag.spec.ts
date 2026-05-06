@@ -6,7 +6,7 @@
  */
 
 import { vi, describe, afterEach, beforeEach, expect, it, type MockInstance } from 'vitest';
-import { lwcRuntimeFlags, setFeatureFlag } from '../index';
+import { lwcRuntimeFlags, setFeatureFlag, setFeatureFlagForTest } from '../index';
 
 describe('setFeatureFlag', () => {
     ['development', 'production'].forEach((env) => {
@@ -62,6 +62,19 @@ describe('setFeatureFlag', () => {
                 expect(lwcRuntimeFlags.DOES_NOT_EXIST).toBeUndefined();
             });
 
+            it.runIf(env === 'production')('setFeatureFlagForTest is a no-op in production', () => {
+                setFeatureFlagForTest('PLACEHOLDER_TEST_FLAG', true);
+                expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toBeUndefined();
+            });
+
+            it.runIf(env !== 'production')(
+                'setFeatureFlagForTest sets the flag in non-production',
+                () => {
+                    setFeatureFlagForTest('PLACEHOLDER_TEST_FLAG', true);
+                    expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toBe(true);
+                }
+            );
+
             it('disallows setting a flag more than once', () => {
                 setFeatureFlag('PLACEHOLDER_TEST_FLAG', true);
                 expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(true);
@@ -80,6 +93,25 @@ describe('setFeatureFlag', () => {
                     expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toEqual(false);
                 }
             });
+        });
+    });
+
+    describe('test-lwc-integration mode', () => {
+        let originalNodeEnv: string | undefined;
+
+        beforeEach(() => {
+            originalNodeEnv = process.env.NODE_ENV;
+            process.env.NODE_ENV = 'test-lwc-integration';
+        });
+
+        afterEach(() => {
+            process.env.NODE_ENV = originalNodeEnv;
+            delete (globalThis as any).lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG;
+        });
+
+        it('setFeatureFlagForTest sets the flag', () => {
+            setFeatureFlagForTest('PLACEHOLDER_TEST_FLAG', true);
+            expect(lwcRuntimeFlags.PLACEHOLDER_TEST_FLAG).toBe(true);
         });
     });
 });

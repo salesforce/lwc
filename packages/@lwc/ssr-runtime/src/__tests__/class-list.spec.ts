@@ -42,6 +42,20 @@ describe('ClassList SSR Polyfill', () => {
         expect(mockElement.className).toBe('banana grape');
     });
 
+    it('toggle with force=true does not remove the class when present', () => {
+        expect(classList.toggle('apple', true)).toBe(true);
+        expect(mockElement.className).toBe('apple banana');
+        expect(classList.toggle('grape', true)).toBe(true);
+        expect(mockElement.className).toBe('apple banana grape');
+    });
+
+    it('toggle with force=false only removes the class', () => {
+        expect(classList.toggle('apple', false)).toBe(false);
+        expect(mockElement.className).toBe('banana');
+        expect(classList.toggle('grape', false)).toBe(false);
+        expect(mockElement.className).toBe('banana');
+    });
+
     it('returns the className for value and toString()', () => {
         expect(classList.value).toBe('apple banana');
         expect(classList.toString()).toBe('apple banana');

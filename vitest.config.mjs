@@ -54,11 +54,10 @@ export default defineConfig({
                 '**/packages/lwc/**',
             ],
             thresholds: {
-                // TODO [#5564]: Restore to 95 across the board
-                branches: 90,
-                functions: 89,
-                lines: 93,
-                statements: 90,
+                branches: 95,
+                functions: 95,
+                lines: 95,
+                statements: 95,
             },
             reporter: [
                 'clover',

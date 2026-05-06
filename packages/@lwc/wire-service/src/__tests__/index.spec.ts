@@ -8,6 +8,23 @@ import { vi, describe, it, expect } from 'vitest';
 import { register, ValueChangedEvent } from '../index';
 import type { WireEventTarget } from '../index';
 
+// Mirrors the non-exported LegacyAdapterDataCallback interface in ../index.
+interface LegacyAdapterDataCallback {
+    (value: unknown): void;
+    $$DeprecatedWiredElementHostKey$$?: EventTarget;
+    $$DeprecatedWiredParamsMetaKey$$: string[];
+}
+
+interface AdapterInstance {
+    update(config: Record<string, unknown>): void;
+    connect(): void;
+    disconnect(): void;
+}
+
+interface RegisteredAdapterId {
+    adapter: new (cb: LegacyAdapterDataCallback) => AdapterInstance;
+}
+
 describe('WireEventTarget from register', () => {
     describe('connected', () => {
         it('should invoke connected listeners', () => {
@@ -113,6 +130,55 @@ describe('WireEventTarget from register', () => {
 
             expect(listener).toHaveBeenCalledTimes(1);
             expect(listener.mock.calls[0][0]).toBe(expectedConfig);
+        });
+
+        it('fires the config listener on the first update when there are no dynamic params', () => {
+            const adapterId = {} as RegisteredAdapterId;
+            let wireEventTarget: WireEventTarget;
+            const dataCallback: LegacyAdapterDataCallback = Object.assign(vi.fn(), {
+                // Empty dynamic params list exercises the `params.length === 0` short-circuit
+                // in isValidConfig.
+                $$DeprecatedWiredParamsMetaKey$$: [],
+            });
+            const adapterFactory = (wireEvtTarget: WireEventTarget) =>
+                (wireEventTarget = wireEvtTarget);
+
+            register(adapterId, adapterFactory);
+            const adapter = new adapterId.adapter(dataCallback);
+
+            const listener = vi.fn();
+            wireEventTarget!.addEventListener('config', listener);
+
+            const config = { key: 'value' };
+            adapter.update(config);
+
+            expect(listener).toHaveBeenCalledTimes(1);
+            expect(listener.mock.calls[0][0]).toBe(config);
+        });
+
+        it('skips the first update when dynamic params are present but all undefined', () => {
+            const adapterId = {} as RegisteredAdapterId;
+            let wireEventTarget: WireEventTarget;
+            const dataCallback: LegacyAdapterDataCallback = Object.assign(vi.fn(), {
+                $$DeprecatedWiredParamsMetaKey$$: ['recordId'],
+            });
+            const adapterFactory = (wireEvtTarget: WireEventTarget) =>
+                (wireEventTarget = wireEvtTarget);
+
+            register(adapterId, adapterFactory);
+            const adapter = new adapterId.adapter(dataCallback);
+
+            const listener = vi.fn();
+            wireEventTarget!.addEventListener('config', listener);
+
+            // recordId is undefined and the config is non-empty, so the first update is skipped.
+            adapter.update({ other: 'value' });
+            expect(listener).not.toHaveBeenCalled();
+
+            const secondConfig = { recordId: '001' };
+            adapter.update(secondConfig);
+            expect(listener).toHaveBeenCalledTimes(1);
+            expect(listener.mock.calls[0][0]).toBe(secondConfig);
         });
     });
 

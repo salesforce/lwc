@@ -25,4 +25,16 @@ describe('toIteratorDirective', () => {
         ]);
         expect(generator.next()).toEqual({ value: undefined, done: true });
     });
+
+    it('throws when the value is not iterable', () => {
+        const generator = toIteratorDirective({} as Iterable<unknown>);
+        expect(() => generator.next()).toThrow(/Invalid template iteration for value/);
+    });
+
+    it('returns an empty iterator for null and undefined', () => {
+        // @ts-expect-error testing runtime behavior with a nullish value
+        expect([...toIteratorDirective(null)]).toEqual([]);
+        // @ts-expect-error testing runtime behavior with a nullish value
+        expect([...toIteratorDirective(undefined)]).toEqual([]);
+    });
 });

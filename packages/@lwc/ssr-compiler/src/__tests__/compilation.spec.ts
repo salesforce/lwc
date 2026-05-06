@@ -145,4 +145,14 @@ describe('template compilation', () => {
         const { code } = compileTemplateForSSR(src, filename, {});
         expect(code).toMatch(LWC_VERSION_COMMENT_REGEX);
     });
+
+    test('iterator directive resolves a nested member expression against the instance', () => {
+        const src = `<template>
+            <template iterator:it={items.nested.data}>
+                <li key={it.value}>{it.value}</li>
+            </template>
+        </template>`;
+        const { code } = compileTemplateForSSR(src, path.resolve('component.html'), {});
+        expect(code).toContain('instance.items.nested.data');
+    });
 });

@@ -1,0 +1,1 @@
+LWC1131: @wire identifier cannot contain computed properties
