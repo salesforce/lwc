@@ -5,12 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { type traverse } from 'estree-toolkit';
+import { type traverse, type NodePath } from 'estree-toolkit';
 import type { ImportManager } from '../imports';
 import type { ComponentTransformOptions } from '../shared';
 import type {
     ClassDeclaration,
     ClassExpression,
+    ExportDefaultDeclaration,
     Identifier,
     MemberExpression,
     MethodDefinition,
@@ -46,6 +47,10 @@ export interface ComponentMetaState {
     lightningElementIdentifier: string | null;
     /** the class name of the subclass */
     lwcClassName: string | null;
+    /** the identifier name of the default export (may differ from lwcClassName for wrapped exports) */
+    lwcDefaultExportName: string | null;
+    /** path to an expression-form `export default <expr>` node, deferred for extraction in Program.leave */
+    exportDefaultExpressionPath: NodePath<ExportDefaultDeclaration> | null;
     /** ties local variable names to explicitly-imported CSS files */
     cssExplicitImports: Map<string, string> | null;
     /** the set of variable names associated with explicitly imported CSS files */
