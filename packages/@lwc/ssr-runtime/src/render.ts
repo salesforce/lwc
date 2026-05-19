@@ -24,9 +24,6 @@ type BaseGenerateMarkupParams = readonly [
     tagName: string,
     props: Properties | null,
     attrs: Attributes | null,
-    // Not always null when invoked internally, but should always be
-    // null when invoked by ssr-runtime
-    parent: LightningElement | null,
     scopeToken: string | null,
     contextfulParent: LightningElement | null,
     renderContext: RenderContext,
@@ -274,7 +271,6 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
-            null,
             renderContext,
             null,
             null,
@@ -290,7 +286,6 @@ export async function serverSideRenderComponent(
             null,
             null,
             null,
-            null,
             renderContext,
             null,
             null,
@@ -300,7 +295,6 @@ export async function serverSideRenderComponent(
         return (generateMarkup as GenerateMarkupSync)(
             tagName,
             props,
-            null,
             null,
             null,
             null,
