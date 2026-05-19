@@ -12,7 +12,7 @@ import { bImportDeclaration } from '../estree/builders';
 import { bWireAdaptersPlumbing } from './decorators/wire';
 import type { CompilationMode } from '@lwc/shared';
 
-import type { Program, IfStatement } from 'estree';
+import type { Program } from 'estree';
 import type { ComponentMetaState } from './types';
 
 const bSetStaticInternals = esTemplate`__setStaticInternals(
@@ -20,23 +20,9 @@ ${/* Component */ is.identifier},
 ${/* tag name */ is.literal},
 ${/* public props */ is.arrayExpression},
 ${/* wire adapters */ is.expression} ?? null,
-${/* compilation mode */ is.literal}
+${/* compilation mode */ is.literal},
+${/* default template */ is.identifier}
 )`;
-
-const bExposeTemplate = esTemplate`
-    if (${/*template*/ is.identifier}) {
-        Object.defineProperty(
-            ${/* component class */ is.identifier},
-            __SYMBOL__DEFAULT_TEMPLATE,
-            {
-                configurable: false,
-                enumerable: false,
-                writable: false,
-                value: ${/*template*/ 0}
-            }
-        );
-    }
-`<IfStatement>;
 
 /**
  * This builds a generator function `generateMarkup` and adds it to the component JS's
@@ -70,10 +56,6 @@ export function addGenerateMarkupFunction(
     const defaultTmplPath = `./${pathParse(filename).name}.html`;
     const tmplVar = b.identifier('__lwcTmpl');
     program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
-    program.body.unshift(
-        bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
-    );
-    const exposeTemplateBlock = bExposeTemplate(tmplVar, exportedIdentifier);
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
     const wireAdapterInfo =
@@ -90,11 +72,8 @@ export function addGenerateMarkupFunction(
             defaultTagName,
             b.arrayExpression([...publicProperties.keys()].map(b.literal)),
             wireAdapterInfo,
-            b.literal(compilationMode)
+            b.literal(compilationMode),
+            tmplVar
         )
     );
-
-    if (exposeTemplateBlock) {
-        program.body.push(exposeTemplateBlock);
-    }
 }

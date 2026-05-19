@@ -217,7 +217,8 @@ export function setStaticInternals(
     defaultTagName: string,
     cmpPublicProps: string[],
     wireAdapters: WireAdapterInfo[],
-    compilationMode: CompilationMode
+    compilationMode: CompilationMode,
+    defaultTemplate?: Template
 ): void {
     const SuperClass: ComponentStaticInternals = Object.getPrototypeOf(Component);
     const superPublicProps = SuperClass.__lwcPublicProperties__ ?? [];
@@ -239,4 +240,13 @@ export function setStaticInternals(
                 ? makeGenerateMarkupAsyncYield(Component, defaultTagName, publicProps, wireAdapters)
                 : makeGenerateMarkupSync(Component, defaultTagName, publicProps, wireAdapters),
     });
+
+    if (defaultTemplate) {
+        Object.defineProperty(Component, SYMBOL__DEFAULT_TEMPLATE, {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: defaultTemplate,
+        });
+    }
 }
