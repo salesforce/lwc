@@ -64,7 +64,8 @@ export function addGenerateMarkupFunction(
     // the generateMarkup function on the constructor.
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
     const defaultTagName = b.literal(tagName);
-    const classIdentifier = b.identifier(state.lwcClassName!);
+    // Use the default export identifier if available; fall back to the class name.
+    const exportedIdentifier = b.identifier((state.lwcDefaultExportName ?? state.lwcClassName)!);
 
     const defaultTmplPath = `./${pathParse(filename).name}.html`;
     const tmplVar = b.identifier('__lwcTmpl');
@@ -72,7 +73,7 @@ export function addGenerateMarkupFunction(
     program.body.unshift(
         bImportDeclaration({ SYMBOL__DEFAULT_TEMPLATE: '__SYMBOL__DEFAULT_TEMPLATE' })
     );
-    const exposeTemplateBlock = bExposeTemplate(tmplVar, classIdentifier);
+    const exposeTemplateBlock = bExposeTemplate(tmplVar, exportedIdentifier);
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
     const wireAdapterInfo =
@@ -85,7 +86,7 @@ export function addGenerateMarkupFunction(
     );
     program.body.push(
         bSetStaticInternals(
-            classIdentifier,
+            exportedIdentifier,
             defaultTagName,
             b.arrayExpression([...publicProperties.keys()].map(b.literal)),
             wireAdapterInfo,
