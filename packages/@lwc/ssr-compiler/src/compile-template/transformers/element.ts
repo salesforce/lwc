@@ -237,7 +237,7 @@ export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = fu
 
             let result;
             if (value.type === 'Literal') {
-                result = yieldAttrOrPropLiteralValue(name, value, cxt);
+                result = yieldAttrOrPropLiteralValue(name, value);
             } else {
                 result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
