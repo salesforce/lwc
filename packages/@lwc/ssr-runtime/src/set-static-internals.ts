@@ -82,7 +82,7 @@ function createComponent<T extends Template>(
         tagName: tagName.toUpperCase(),
     });
 
-    establishContextfulRelationship(contextfulParent!, instance);
+    establishContextfulRelationship(contextfulParent, instance);
     instance[SYMBOL__SET_INTERNALS](props, attrs, publicProps);
     if (wireAdapters?.length) {
         for (const {
@@ -121,7 +121,7 @@ function makeGenerateMarkupAsyncYield(
     publicProps: Set<string>,
     wireAdapters: WireAdapterInfo[]
 ): GenerateMarkupAsyncYield {
-    return async function* generateMarkupAsyncYield(
+    return async function* generateMarkup(
         tagName,
         props,
         attrs,
@@ -148,7 +148,7 @@ function makeGenerateMarkupAsyncYield(
         );
 
         yield `<${tagName}`;
-        yield* renderAttrs(instance, attrs!, hostScopeToken, scopeToken!);
+        yield* renderAttrs(instance, attrs, hostScopeToken, scopeToken!);
         yield '>';
         yield* renderTemplate(
             shadowSlottedContent,
@@ -168,7 +168,7 @@ function makeGenerateMarkupSync(
     publicProps: Set<string>,
     wireAdapters: WireAdapterInfo[]
 ): GenerateMarkupSync {
-    return function generateMarkupAsyncYield(
+    return function generateMarkup(
         tagName,
         props,
         attrs,
