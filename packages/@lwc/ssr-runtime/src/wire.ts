@@ -14,9 +14,9 @@ import type {
 
 type SsrContextProvider = (le: LightningElement, options?: WireContextProviderOptions) => void;
 
-const contextfulRelationships = new WeakMap<LightningElement, LightningElement>();
+const contextfulRelationships = new WeakMap<LightningElement, LightningElement | null>();
 export function establishContextfulRelationship(
-    parentLe: LightningElement,
+    parentLe: LightningElement | null,
     childLe: LightningElement
 ): void {
     contextfulRelationships.set(childLe, parentLe);
