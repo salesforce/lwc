@@ -75,6 +75,26 @@ describe('dynamic imports', () => {
         }
     );
 
+    test('throws error with numeric literal when strictSpecifier is true', () => {
+        const source = `
+            import { LightningElement } from 'lwc';
+            export default class extends LightningElement {}
+            export default async function rando () {
+                await import(123);
+            }
+        `;
+        const filename = path.resolve('component.js');
+
+        expect(() => {
+            compileComponentForSSR(source, filename, {
+                dynamicImports: {
+                    loader: 'myLoader',
+                    strictSpecifier: true,
+                },
+            });
+        }).toThrowError(/LWC1121/);
+    });
+
     test('imports are hoisted only once', () => {
         const source = `
                 import { LightningElement } from 'lwc';

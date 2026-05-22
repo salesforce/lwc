@@ -58,6 +58,10 @@ export class LightningElement implements PropsAvailableAtConstruction {
     static formAssociated?: boolean;
     static shadowSupportMode?: 'any' | 'reset' | 'native';
 
+    // Potentially defined by subclasses
+    connectedCallback?: () => void;
+    render?: () => unknown;
+
     // Using ! because these are defined by descriptors in ./reflection
     accessKey!: string;
     dir!: string;

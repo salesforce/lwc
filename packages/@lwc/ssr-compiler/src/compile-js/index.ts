@@ -31,8 +31,8 @@ import type {
     Program as EsProgram,
     PropertyDefinition as EsPropertyDefinition,
     MethodDefinition as EsMethodDefinition,
-    Identifier,
     Comment as EsComment,
+    Expression as EsExpression,
 } from 'estree';
 
 const visitors: Visitors = {
@@ -42,6 +42,28 @@ const visitors: Visitors = {
     },
     ExportAllDeclaration(path) {
         replaceAllLwcExport(path);
+    },
+    ExportDefaultDeclaration(path, state) {
+        const { node } = path;
+        if (!node) return;
+
+        const decl = node.declaration;
+        if (decl.type === 'ClassDeclaration') {
+            // export default class Foo extends LE {}
+            // lwcClassName will be set by the ClassDeclaration visitor; mirror it here
+            state.lwcDefaultExportName = decl.id?.name ?? 'DefaultComponentName';
+        } else if (decl.type === 'ClassExpression') {
+            state.lwcDefaultExportName =
+                decl.id?.name ?? state.lwcClassName ?? 'DefaultComponentName';
+        } else if (decl.type === 'Identifier') {
+            // export default Foo
+            state.lwcDefaultExportName = decl.name;
+        } else if (decl.type !== 'FunctionDeclaration' && decl.type !== 'FunctionExpression') {
+            // export default <expression> — store the path for deferred extraction in Program.leave,
+            // where we know whether this is an LWC file (state.isLWC). We don't want to mutate
+            // non-LWC modules (e.g. wire adapters with `export default { Adapter }`).
+            state.exportDefaultExpressionPath = path;
+        }
     },
     ImportDeclaration(path, state) {
         if (!path.node || !path.node.source.value || typeof path.node.source.value !== 'string') {
@@ -89,15 +111,16 @@ const visitors: Visitors = {
                 (is.exportDefaultDeclaration(path.parentPath) ||
                     // class Cmp extends LightningElement {}; export default Cmp
                     path.scope
-                        ?.getBinding(node.id.name)
+                        ?.getBinding(node.id?.name ?? '')
                         ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
             ) {
-                // If it's a default-exported class with a superclass, then it's an LWC component!
                 state.isLWC = true;
                 state.currentComponent = node;
                 if (node.id) {
                     state.lwcClassName = node.id.name;
                 } else {
+                    // A class declaration can omit a name if and only if it is default-exported.
+                    // There is only one default export, so this won't cause collisions.
                     node.id = b.identifier('DefaultComponentName');
                     state.lwcClassName = 'DefaultComponentName';
                 }
@@ -119,6 +142,48 @@ const visitors: Visitors = {
         },
         leave(path, state) {
             // Indicate that we're no longer traversing an LWC component
+            if (state.currentComponent && path.node === state.currentComponent) {
+                state.currentComponent = null;
+            }
+        },
+    },
+    ClassExpression: {
+        enter(path, state) {
+            const { node } = path;
+            if (
+                node?.superClass &&
+                is.identifier(node.superClass) &&
+                node.superClass.name === state.lightningElementIdentifier
+            ) {
+                state.isLWC = true;
+                state.currentComponent = node;
+                // Get the class name from the enclosing variable declarator, if any
+                // e.g. `const Component = class extends LightningElement {}`
+                if (
+                    is.variableDeclarator(path.parentPath?.node) &&
+                    is.identifier(path.parentPath.node.id)
+                ) {
+                    state.lwcClassName = path.parentPath.node.id.name;
+                } else if (node.id) {
+                    state.lwcClassName = node.id.name;
+                }
+
+                // There's no builder for comment nodes :\
+                const lwcVersionComment: EsComment = {
+                    type: 'Block',
+                    value: LWC_VERSION_COMMENT,
+                };
+
+                // Add LWC version comment to end of class body
+                const { body } = node;
+                if (body.trailingComments) {
+                    body.trailingComments.push(lwcVersionComment);
+                } else {
+                    body.trailingComments = [lwcVersionComment];
+                }
+            }
+        },
+        leave(path, state) {
             if (state.currentComponent && path.node === state.currentComponent) {
                 state.currentComponent = null;
             }
@@ -254,6 +319,25 @@ const visitors: Visitors = {
     },
     Program: {
         leave(path, state) {
+            // If the default export is an expression (not class/identifier), extract it into a
+            // const so setStaticInternals has a stable identifier to call. Only do this for LWC
+            // files — non-LWC modules (e.g. wire adapters) must not be mutated.
+            if (state.isLWC && state.exportDefaultExpressionPath) {
+                const exportPath = state.exportDefaultExpressionPath;
+                const exportedExpr = exportPath.node!.declaration as EsExpression;
+                // Each b.identifier() call creates a distinct node object; all must be trusted
+                const declId = b.identifier('__lwcDefaultExport');
+                const exportId = b.identifier('__lwcDefaultExport');
+                state.trustedLwcIdentifiers.add(declId);
+                state.trustedLwcIdentifiers.add(exportId);
+                // insertBefore must precede replaceWith: replaceWith marks the path as removed
+                exportPath.insertBefore([
+                    b.variableDeclaration('const', [b.variableDeclarator(declId, exportedExpr)]),
+                ]);
+                exportPath.replaceWith(b.exportDefaultDeclaration(exportId));
+                state.lwcDefaultExportName = '__lwcDefaultExport';
+            }
+
             // After parsing the whole tree, insert needed imports
             const importDeclarations = state.importManager.getImportDeclarations();
             if (importDeclarations.length > 0) {
@@ -294,6 +378,8 @@ export default function compileJS(
         hadErrorCallback: false,
         lightningElementIdentifier: null,
         lwcClassName: null,
+        lwcDefaultExportName: null,
+        exportDefaultExpressionPath: null,
         cssExplicitImports: null,
         staticStylesheetIds: null,
         publicProperties: new Map(),
@@ -315,7 +401,7 @@ export default function compileJS(
         };
     }
 
-    addGenerateMarkupFunction(ast, state, tagName, filename);
+    addGenerateMarkupFunction(ast, state, tagName, filename, compilationMode);
 
     if (compilationMode === 'async' || compilationMode === 'sync') {
         ast = transmogrify(ast, compilationMode);
@@ -332,6 +418,6 @@ export default function compileJS(
 
 function isKeyIdentifier<T extends EsPropertyDefinition | EsMethodDefinition>(
     node: T | undefined | null
-): node is T & { key: Identifier } {
+): node is T & { key: EsIdentifier } {
     return is.identifier(node?.key);
 }

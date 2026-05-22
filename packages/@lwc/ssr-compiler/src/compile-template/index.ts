@@ -123,7 +123,7 @@ export default function compileTemplate(
         experimentalComplexExpressions,
         apiVersion,
     });
-    addImport(['renderStylesheets', 'hasScopedStaticStylesheets']);
+    addImport(['renderStylesheets']);
     for (const [imports, source] of getStylesheetImports(filename)) {
         addImport(imports, source);
     }
