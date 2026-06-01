@@ -121,21 +121,16 @@ jobs:
             - name: Publish to npm (v${{ steps.update_version.outputs.new_version }})
               env:
                   NEW_VERSION: ${{ steps.update_version.outputs.new_version }}
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  NPM_CONFIG_ALWAYS_AUTH: 'true'
                   TAG: ${{ steps.resolve_input.outputs.tag }}
               run: |
-                  # Force both npm and yarn to use npmjs and pick up the token
-                  yarn config set registry https://registry.npmjs.org
-                  npm config set registry https://registry.npmjs.org
-                  printf "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}\nalways-auth=true\n" > ~/.npmrc
-
-                  # Sanity checks
-                  echo "yarn registry: $(yarn config get registry)"
-                  echo "npm registry:  $(npm config get registry)"
+                  # Trusted publishing via OIDC: must NOT ship an _authToken or
+                  # npm skips the OIDC exchange. Override setup-node's temp
+                  # .npmrc (which embeds NODE_AUTH_TOKEN) with a clean one.
+                  echo 'registry=https://registry.npmjs.org/' > ~/.npmrc
+                  export NPM_CONFIG_USERCONFIG="$HOME/.npmrc"
 
                   echo "Publishing $GITHUB_REF_NAME as v$NEW_VERSION using tag $TAG."
-                  yarn nx release publish --yes --tag "$TAG"
+                  npm publish --workspaces --provenance --tag "$TAG"
 
             - name: Tag and create GitHub release
               if: ${{ steps.resolve_input.outputs.resolved != 'prerelease' }}
