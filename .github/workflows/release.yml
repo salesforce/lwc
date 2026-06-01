@@ -130,7 +130,11 @@ jobs:
                   export NPM_CONFIG_USERCONFIG="$HOME/.npmrc"
 
                   echo "Publishing $GITHUB_REF_NAME as v$NEW_VERSION using tag $TAG."
-                  npm publish --workspaces --provenance --tag "$TAG"
+                  # --registry overrides the project-level .npmrc which points
+                  # at registry.yarnpkg.com (a read-only mirror that rejects
+                  # publishes); CLI flags beat project .npmrc in npm config
+                  # precedence, so OIDC trusted publishing targets npmjs.org.
+                  npm publish --workspaces --provenance --tag "$TAG" --registry=https://registry.npmjs.org/
 
             - name: Tag and create GitHub release
               if: ${{ steps.resolve_input.outputs.resolved != 'prerelease' }}
