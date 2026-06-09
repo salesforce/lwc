@@ -42,8 +42,46 @@ export function transformSource(ast, source, analysis) {
     const replacements = [];
     const { publicIdentifiers } = analysis;
 
+    // Helper to check if we're inside a TypeScript type context
+    function isInTypeContext(path) {
+        let current = path;
+        while (current) {
+            const type = current.parent?.type;
+            if (
+                type === 'TSTypeAnnotation' ||
+                type === 'TSTypeReference' ||
+                type === 'TSTypeParameter' ||
+                type === 'TSTypeParameterDeclaration' ||
+                type === 'TSTypeParameterInstantiation' ||
+                type === 'TSQualifiedName' ||
+                type === 'TSInterfaceBody' ||
+                type === 'TSTypeLiteral' ||
+                type === 'TSArrayType' ||
+                type === 'TSUnionType' ||
+                type === 'TSIntersectionType' ||
+                type === 'TSTupleType' ||
+                type === 'TSFunctionType' ||
+                type === 'TSConstructorType' ||
+                type === 'TSIndexedAccessType' ||
+                type === 'TSMappedType' ||
+                type === 'TSConditionalType' ||
+                type === 'TSInferType' ||
+                type === 'TSParenthesizedType'
+            ) {
+                return true;
+            }
+            current = current.parentPath;
+        }
+        return false;
+    }
+
     // Helper to check if an identifier should be skipped
     function shouldSkip(path, name) {
+        // Skip if in TypeScript type context
+        if (isInTypeContext(path)) {
+            return true;
+        }
+
         // Skip public identifiers
         if (publicIdentifiers.has(name)) {
             return true;
