@@ -61,7 +61,11 @@ function discoverFiles() {
             'packages/@lwc/babel-plugin-component/**',
             'packages/@lwc/style-compiler/**',
             'packages/@lwc/engine-core/**',
+            'packages/@lwc/engine-dom/**',
             'packages/@lwc/synthetic-shadow/**',
+            'packages/@lwc/ssr-compiler/**',
+            'packages/@lwc/ssr-runtime/**',
+            'packages/@lwc/wire-service/**',
         ],
         absolute: true,
     });
