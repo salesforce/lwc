@@ -33,9 +33,12 @@ export function analyzeFile(ast) {
             // export class Bar {}
             // export const baz = ...
             if (path.node.declaration) {
-                const id = extractIdentifier(path.node.declaration.id);
-                if (id) {
-                    publicIdentifiers.add(id);
+                // Only try to extract id if it exists (not all declarations have an id)
+                if (path.node.declaration.id) {
+                    const id = extractIdentifier(path.node.declaration.id);
+                    if (id) {
+                        publicIdentifiers.add(id);
+                    }
                 }
 
                 // export const { a, b } = ...
@@ -64,9 +67,11 @@ export function analyzeFile(ast) {
         ExportDefaultDeclaration(path) {
             // export default class Foo
             // export default function bar
-            const id = extractIdentifier(path.node.declaration.id);
-            if (id) {
-                publicIdentifiers.add(id);
+            if (path.node.declaration.id) {
+                const id = extractIdentifier(path.node.declaration.id);
+                if (id) {
+                    publicIdentifiers.add(id);
+                }
             }
         },
 
