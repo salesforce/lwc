@@ -43,9 +43,10 @@ export function transformSource(ast, source, analysis) {
     const replacements = [];
     const { publicIdentifiers } = analysis;
 
-    // First pass: collect all imported identifiers and function parameter names
+    // First pass: collect all imported identifiers, function parameter names, and destructured identifiers
     const importedIdentifiers = new Set();
     const parameterNames = new Set();
+    const destructuredIdentifiers = new Set();
 
     traverse(ast, {
         // Collect all imported identifiers
@@ -85,6 +86,55 @@ export function transformSource(ast, source, analysis) {
                     });
                 }
             });
+        },
+
+        // Collect all identifiers created by destructuring (const { x } = ..., const [y] = ...)
+        VariableDeclarator(path) {
+            function collectFromPattern(pattern) {
+                if (pattern.type === 'ObjectPattern') {
+                    pattern.properties.forEach((prop) => {
+                        if (prop.type === 'ObjectProperty') {
+                            if (prop.value.type === 'Identifier') {
+                                destructuredIdentifiers.add(prop.value.name);
+                            } else if (
+                                prop.value.type === 'ObjectPattern' ||
+                                prop.value.type === 'ArrayPattern'
+                            ) {
+                                collectFromPattern(prop.value);
+                            }
+                        } else if (
+                            prop.type === 'RestElement' &&
+                            prop.argument.type === 'Identifier'
+                        ) {
+                            destructuredIdentifiers.add(prop.argument.name);
+                        }
+                    });
+                } else if (pattern.type === 'ArrayPattern') {
+                    pattern.elements.forEach((el) => {
+                        if (el && el.type === 'Identifier') {
+                            destructuredIdentifiers.add(el.name);
+                        } else if (
+                            el &&
+                            (el.type === 'ObjectPattern' || el.type === 'ArrayPattern')
+                        ) {
+                            collectFromPattern(el);
+                        } else if (
+                            el &&
+                            el.type === 'RestElement' &&
+                            el.argument.type === 'Identifier'
+                        ) {
+                            destructuredIdentifiers.add(el.argument.name);
+                        }
+                    });
+                }
+            }
+
+            if (
+                path.node.id &&
+                (path.node.id.type === 'ObjectPattern' || path.node.id.type === 'ArrayPattern')
+            ) {
+                collectFromPattern(path.node.id);
+            }
         },
     });
 
@@ -149,6 +199,11 @@ export function transformSource(ast, source, analysis) {
 
         // Skip function parameter names (anywhere they appear)
         if (parameterNames.has(name)) {
+            return true;
+        }
+
+        // Skip destructured identifiers (from const { x } = ..., etc.)
+        if (destructuredIdentifiers.has(name)) {
             return true;
         }
 
