@@ -53,12 +53,15 @@ function discoverFiles() {
             '**/*.spec.ts',
             '**/dist/**',
             '**/node_modules/**',
-            // Exclude packages with complex type inference issues
-            // These packages have edge cases that interact poorly with transformation:
-            // - @lwc/errors: Type annotation inference issues with transformed variable names
-            // - @lwc/shared: Arrow function in IIFE has implicit 'any' parameter type
+            // Exclude packages with TypeScript strict mode or type inference issues:
+            // These trigger implicit 'any' errors or type resolution failures when transformed
             'packages/@lwc/errors/**',
             'packages/@lwc/shared/**',
+            'packages/@lwc/template-compiler/**',
+            'packages/@lwc/babel-plugin-component/**',
+            'packages/@lwc/style-compiler/**',
+            'packages/@lwc/engine-core/**',
+            'packages/@lwc/synthetic-shadow/**',
         ],
         absolute: true,
     });
