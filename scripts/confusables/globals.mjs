@@ -144,6 +144,7 @@ export const GLOBAL_IDENTIFIERS = new Set([
 
     // Node.js globals
     'process',
+    'env', // process.env
     'Buffer',
     'setTimeout',
     'setImmediate',
@@ -153,6 +154,18 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'require',
     'module',
     'exports',
+
+    // Common property names that shouldn't be transformed
+    'length',
+    'name',
+    'value',
+    'type',
+    'id',
+    'key',
+    'data',
+    'error',
+    'message',
+    'stack',
 
     // Common library types
     'Awaited',
