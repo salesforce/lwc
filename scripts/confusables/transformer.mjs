@@ -47,7 +47,10 @@ export function transformSource(ast, source, analysis) {
     function isInTypeContext(path) {
         let current = path;
         while (current) {
-            const type = current.parent?.type;
+            const parent = current.parent;
+            const type = parent?.type;
+
+            // Check if we're in any TypeScript type-related node
             if (
                 type === 'TSTypeAnnotation' ||
                 type === 'TSTypeReference' ||
@@ -71,6 +74,22 @@ export function transformSource(ast, source, analysis) {
             ) {
                 return true;
             }
+
+            // Check if we're the type annotation of an 'as' expression
+            if (type === 'TSAsExpression' && parent.typeAnnotation === current.node) {
+                return true;
+            }
+
+            // Check if we're in a type assertion (<Type>value)
+            if (type === 'TSTypeAssertion' && parent.typeAnnotation === current.node) {
+                return true;
+            }
+
+            // Check if we're the type in a satisfies expression
+            if (type === 'TSSatisfiesExpression' && parent.typeAnnotation === current.node) {
+                return true;
+            }
+
             current = current.parentPath;
         }
         return false;
