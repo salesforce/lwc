@@ -1,4 +1,7 @@
-import traverse from '@babel/traverse';
+import traverseModule from '@babel/traverse';
+
+// ESM/CommonJS compatibility
+const traverse = traverseModule.default || traverseModule;
 
 /**
  * Analyzes an AST to identify which identifiers are public (exported)

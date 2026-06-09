@@ -1,6 +1,9 @@
-import traverse from '@babel/traverse';
+import traverseModule from '@babel/traverse';
 import { CONFUSABLES } from './confusables-map.mjs';
 import { simpleHash } from './hash.mjs';
+
+// ESM/CommonJS compatibility
+const traverse = traverseModule.default || traverseModule;
 
 /**
  * Selects a confusable character deterministically based on the full identifier.
