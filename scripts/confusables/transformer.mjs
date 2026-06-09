@@ -43,7 +43,7 @@ export function transformSource(ast, source, analysis) {
     const replacements = [];
     const { publicIdentifiers } = analysis;
 
-    // First pass: collect all imported identifiers, function parameter names, destructured identifiers, and shorthand properties
+    // First pass: collect all identifiers that create bindings or have syntax constraints
     const importedIdentifiers = new Set();
     const parameterNames = new Set();
     const destructuredIdentifiers = new Set();
