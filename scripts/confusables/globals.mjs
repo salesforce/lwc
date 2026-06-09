@@ -57,6 +57,7 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'Element',
     'HTMLElement',
     'Document',
+    'document',
     'Node',
     'NodeList',
     'Event',
@@ -64,6 +65,7 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'EventTarget',
     'DOMTokenList',
     'CSSStyleDeclaration',
+    'CSSStyleSheet',
     'Window',
     'console',
     'setTimeout',
@@ -97,6 +99,11 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'CharacterData',
     'CDATASection',
     'ProcessingInstruction',
+    'navigator',
+    'location',
+    'history',
+    'localStorage',
+    'sessionStorage',
 
     // TypeScript globals
     'Partial',

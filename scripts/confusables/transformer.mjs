@@ -173,6 +173,30 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
+        // Skip ALL function/method parameters (too risky - causes TypeScript errors)
+        // Check if this identifier is a function parameter
+        let currentPath = path;
+        while (currentPath) {
+            const parent = currentPath.parent;
+            if (
+                parent &&
+                (parent.type === 'FunctionDeclaration' ||
+                    parent.type === 'FunctionExpression' ||
+                    parent.type === 'ArrowFunctionExpression' ||
+                    parent.type === 'ObjectMethod' ||
+                    parent.type === 'ClassMethod') &&
+                parent.params &&
+                parent.params.some(
+                    (p) =>
+                        p === currentPath.node ||
+                        (p.type === 'Identifier' && p === currentPath.node)
+                )
+            ) {
+                return true;
+            }
+            currentPath = currentPath.parentPath;
+        }
+
         return false;
     }
 
