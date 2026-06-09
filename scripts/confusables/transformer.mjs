@@ -43,6 +43,39 @@ export function transformSource(ast, source, analysis) {
     const replacements = [];
     const { publicIdentifiers } = analysis;
 
+    // First pass: collect all function parameter names
+    const parameterNames = new Set();
+    traverse(ast, {
+        'FunctionDeclaration|FunctionExpression|ArrowFunctionExpression|ObjectMethod|ClassMethod'(
+            path
+        ) {
+            path.node.params.forEach((param) => {
+                if (param.type === 'Identifier') {
+                    parameterNames.add(param.name);
+                } else if (param.type === 'AssignmentPattern' && param.left.type === 'Identifier') {
+                    parameterNames.add(param.left.name);
+                } else if (param.type === 'RestElement' && param.argument.type === 'Identifier') {
+                    parameterNames.add(param.argument.name);
+                }
+                // Also handle destructuring parameters
+                if (param.type === 'ObjectPattern') {
+                    param.properties.forEach((prop) => {
+                        if (prop.type === 'ObjectProperty' && prop.value.type === 'Identifier') {
+                            parameterNames.add(prop.value.name);
+                        }
+                    });
+                }
+                if (param.type === 'ArrayPattern') {
+                    param.elements.forEach((el) => {
+                        if (el && el.type === 'Identifier') {
+                            parameterNames.add(el.name);
+                        }
+                    });
+                }
+            });
+        },
+    });
+
     // Helper to check if we're inside a TypeScript type context
     function isInTypeContext(path) {
         let current = path;
@@ -97,6 +130,11 @@ export function transformSource(ast, source, analysis) {
 
     // Helper to check if an identifier should be skipped
     function shouldSkip(path, name) {
+        // Skip function parameter names (anywhere they appear)
+        if (parameterNames.has(name)) {
+            return true;
+        }
+
         // Skip global identifiers (Object, Array, Map, etc.)
         if (GLOBAL_IDENTIFIERS.has(name)) {
             return true;
@@ -171,30 +209,6 @@ export function transformSource(ast, source, analysis) {
             path.parent.label === path.node
         ) {
             return true;
-        }
-
-        // Skip ALL function/method parameters (too risky - causes TypeScript errors)
-        // Check if this identifier is a function parameter
-        let currentPath = path;
-        while (currentPath) {
-            const parent = currentPath.parent;
-            if (
-                parent &&
-                (parent.type === 'FunctionDeclaration' ||
-                    parent.type === 'FunctionExpression' ||
-                    parent.type === 'ArrowFunctionExpression' ||
-                    parent.type === 'ObjectMethod' ||
-                    parent.type === 'ClassMethod') &&
-                parent.params &&
-                parent.params.some(
-                    (p) =>
-                        p === currentPath.node ||
-                        (p.type === 'Identifier' && p === currentPath.node)
-                )
-            ) {
-                return true;
-            }
-            currentPath = currentPath.parentPath;
         }
 
         return false;
