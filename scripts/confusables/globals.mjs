@@ -104,6 +104,7 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'history',
     'localStorage',
     'sessionStorage',
+    'customElements',
 
     // TypeScript globals
     'Partial',
