@@ -2,7 +2,7 @@
 import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-    public counter: number = 0;
+    public сοṳпṫёг: number = 0;
 
     connectedCallback(): void {
         console.log('connected counter');

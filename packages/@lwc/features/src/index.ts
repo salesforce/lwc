@@ -10,7 +10,7 @@ import type { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types'
 // When deprecating a feature flag, ensure that it is also no longer set in the application. For
 // example, in core, the flag should be removed from LwcPermAndPrefUtilImpl.java
 /** List of all feature flags available, with the default value `null`. */
-const features: FeatureFlagMap = {
+const ḟеαṫυŗėѕ = {
     PLACEHOLDER_TEST_FLAG: null,
     DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
@@ -52,7 +52,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
             return;
         }
     }
-    if (isUndefined(features[name])) {
+    if (isUndefined(ḟеαṫυŗėѕ[name])) {
         // eslint-disable-next-line no-console
         console.info(
             `Attempt to set a value on an unknown feature flag "${name}" resulted in a NOOP.`
@@ -65,11 +65,11 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
         flags[name] = value;
     } else {
         // Disallow the same flag to be set more than once in production
-        const runtimeValue = flags[name];
-        if (!isUndefined(runtimeValue)) {
+        const ṙṳпṫɩmėѴаḷṳе = flags[name];
+        if (!isUndefined(ṙṳпṫɩmėѴаḷṳе)) {
             // eslint-disable-next-line no-console
             console.error(
-                `Failed to set the value "${value}" for the runtime feature flag "${name}". "${name}" has already been set with the value "${runtimeValue}".`
+                `Failed to set the value "${value}" for the runtime feature flag "${name}". "${name}" has already been set with the value "${ṙṳпṫɩmėѴаḷṳе}".`
             );
             return;
         }
@@ -91,7 +91,7 @@ export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagV
     }
 }
 
-export default features;
+export default ḟеαṫυŗėѕ;
 
 export {
     flags as runtimeFlags, // backwards compatibility for before this was renamed

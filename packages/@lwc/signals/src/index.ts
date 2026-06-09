@@ -35,8 +35,8 @@ export abstract class SignalBaseClass<T> implements Signal<T> {
     }
 
     protected notify() {
-        for (const subscriber of this.subscribers) {
-            subscriber();
+        for (const şυḃşсṙɩЬėŗ of this.subscribers) {
+            şυḃşсṙɩЬėŗ();
         }
     }
 }

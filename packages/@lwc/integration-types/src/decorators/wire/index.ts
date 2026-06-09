@@ -8,20 +8,20 @@ import { LightningElement, wire } from 'lwc';
 import type { WireAdapterConstructor } from 'lwc';
 
 // Helper types
-type TestConfig = { config: number };
-type DeepConfig = { deep: { config: number } };
+type ṪеṡţСοņfıģ = { config: number };
+type ÐėеṗϹоņḟіģ = { deep: { config: number } };
 export type TestValue = 'test value';
 
 // Adapters
-export declare const TestAdapter: WireAdapterConstructor<TestConfig, TestValue>;
+export declare const TestAdapter: WireAdapterConstructor<ṪеṡţСοņfıģ, TestValue>;
 export declare const AnyAdapter: any;
 export declare const InvalidAdapter: object;
 export declare const NoConfigAdapter: WireAdapterConstructor<never, TestValue>;
-export declare const DeepConfigAdapter: WireAdapterConstructor<DeepConfig, TestValue>;
+export declare const DeepConfigAdapter: WireAdapterConstructor<ÐėеṗϹоņḟіģ, TestValue>;
 export declare const ImperativeAdapter: { adapter: typeof TestAdapter };
 
 // Values
-export declare const testConfig: TestConfig;
+export declare const testConfig: ṪеṡţСοņfıģ;
 export declare const testValue: TestValue;
 
 /** Defines the props used in the other test classes */

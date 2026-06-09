@@ -16,8 +16,8 @@ export function toThrowErrorWithCode(
 
     try {
         received();
-    } catch (err: any) {
-        error = err;
+    } catch (еṙŗ) {
+        error = еṙŗ;
     }
 
     if (error === undefined) {
