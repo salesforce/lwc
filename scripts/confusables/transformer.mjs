@@ -43,9 +43,21 @@ export function transformSource(ast, source, analysis) {
     const replacements = [];
     const { publicIdentifiers } = analysis;
 
-    // First pass: collect all function parameter names
+    // First pass: collect all imported identifiers and function parameter names
+    const importedIdentifiers = new Set();
     const parameterNames = new Set();
+
     traverse(ast, {
+        // Collect all imported identifiers
+        ImportDeclaration(path) {
+            path.node.specifiers.forEach((spec) => {
+                if (spec.local && spec.local.type === 'Identifier') {
+                    importedIdentifiers.add(spec.local.name);
+                }
+            });
+        },
+
+        // Collect all function parameter names
         'FunctionDeclaration|FunctionExpression|ArrowFunctionExpression|ObjectMethod|ClassMethod'(
             path
         ) {
@@ -130,6 +142,11 @@ export function transformSource(ast, source, analysis) {
 
     // Helper to check if an identifier should be skipped
     function shouldSkip(path, name) {
+        // Skip imported identifiers (from any import statement)
+        if (importedIdentifiers.has(name)) {
+            return true;
+        }
+
         // Skip function parameter names (anywhere they appear)
         if (parameterNames.has(name)) {
             return true;
