@@ -1,6 +1,7 @@
 import traverseModule from '@babel/traverse';
 import { CONFUSABLES } from './confusables-map.mjs';
 import { simpleHash } from './hash.mjs';
+import { GLOBAL_IDENTIFIERS } from './globals.mjs';
 
 // ESM/CommonJS compatibility
 const traverse = traverseModule.default || traverseModule;
@@ -77,6 +78,11 @@ export function transformSource(ast, source, analysis) {
 
     // Helper to check if an identifier should be skipped
     function shouldSkip(path, name) {
+        // Skip global identifiers (Object, Array, Map, etc.)
+        if (GLOBAL_IDENTIFIERS.has(name)) {
+            return true;
+        }
+
         // Skip if in TypeScript type context
         if (isInTypeContext(path)) {
             return true;
