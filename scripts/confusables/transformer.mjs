@@ -43,10 +43,11 @@ export function transformSource(ast, source, analysis) {
     const replacements = [];
     const { publicIdentifiers } = analysis;
 
-    // First pass: collect all imported identifiers, function parameter names, and destructured identifiers
+    // First pass: collect all imported identifiers, function parameter names, destructured identifiers, and shorthand properties
     const importedIdentifiers = new Set();
     const parameterNames = new Set();
     const destructuredIdentifiers = new Set();
+    const shorthandPropertyIdentifiers = new Set();
 
     traverse(ast, {
         // Collect all imported identifiers
@@ -56,6 +57,13 @@ export function transformSource(ast, source, analysis) {
                     importedIdentifiers.add(spec.local.name);
                 }
             });
+        },
+
+        // Collect all identifiers used in shorthand properties { x } which means { x: x }
+        ObjectProperty(path) {
+            if (path.node.shorthand && path.node.value.type === 'Identifier') {
+                shorthandPropertyIdentifiers.add(path.node.value.name);
+            }
         },
 
         // Collect all function parameter names
@@ -204,6 +212,11 @@ export function transformSource(ast, source, analysis) {
 
         // Skip destructured identifiers (from const { x } = ..., etc.)
         if (destructuredIdentifiers.has(name)) {
+            return true;
+        }
+
+        // Skip identifiers used in shorthand properties ({ x } means { x: x })
+        if (shorthandPropertyIdentifiers.has(name)) {
             return true;
         }
 
