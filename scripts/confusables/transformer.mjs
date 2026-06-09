@@ -123,8 +123,18 @@ export function transformSource(ast, source, analysis) {
         }
 
         // Skip if it's a property key in object literal (might be public API)
+        // This includes shorthand properties like { get, set }
         if (
             path.parent?.type === 'ObjectProperty' &&
+            (path.parent.key === path.node || path.parent.shorthand) &&
+            !path.parent.computed
+        ) {
+            return true;
+        }
+
+        // Skip if it's a method key in object/class
+        if (
+            (path.parent?.type === 'ObjectMethod' || path.parent?.type === 'ClassMethod') &&
             path.parent.key === path.node &&
             !path.parent.computed
         ) {

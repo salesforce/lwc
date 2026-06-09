@@ -149,4 +149,11 @@ export const GLOBAL_IDENTIFIERS = new Set([
     // Common library types
     'Awaited',
     'PromiseLike',
+
+    // LWC-specific types (common internal types that shouldn't be transformed)
+    'APIVersion',
+    'RootNode',
+    'LightningElement',
+    'ShadowRoot',
+    'TemplateFunction',
 ]);
