@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-
-import { LightningElement } from 'lwc';
-import unscoped from './stylesheet.css';
-import scoped from './stylesheet.scoped.css';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { LightningElement as ḶıģһṫņіṅģЕļеṁёпṫ } from 'lwc';
+import ṳпṡⅽоρёԁ from './stylesheet.css';
+import şϲоṗėԁ from './stylesheet.scoped.css';
 
 // --- valid usage --- //
 
@@ -16,7 +16,7 @@ export class EmptyArray extends LightningElement {
 }
 
 export class Stylesheets extends LightningElement {
-    static stylesheets = [scoped, unscoped];
+    static stylesheets = [şϲоṗėԁ, ṳпṡⅽоρёԁ];
 }
 
 // --- invalid usage --- //

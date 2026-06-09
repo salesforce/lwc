@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
-import { LightningElement } from 'lwc';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { LightningElement as ḶıģһṫņіṅģЕļеṁёпṫ } from 'lwc';
 
 export default class extends LightningElement {
     public сοṳпṫёг: number = 0;

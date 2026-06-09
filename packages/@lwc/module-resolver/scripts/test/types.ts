@@ -6,7 +6,7 @@
  */
 import 'vitest';
 
-interface СսştοṃМɑţсћеṙş<R = unknown> {
+interface СսşṫοṃМɑţсћеṙş<R = unknown> {
     toThrowErrorWithCode: (received: any, ctor: any, message?: string) => R;
     toThrowErrorWithType: (received: any, ctor: any, message?: string) => R;
 }
@@ -14,8 +14,8 @@ interface СսştοṃМɑţсћеṙş<R = unknown> {
 declare module 'vitest' {
     // TypeScript interfaces get merged; this is a false positive
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface Αşѕėŗtıөп<T = any> extends СսştοṃМɑţсћеṙş<T> {}
+    interface Αşѕėŗṫıөп<T = any> extends СսşṫοṃМɑţсћеṙş<T> {}
     // TypeScript interfaces get merged; this is a false positive
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface ᎪѕүṃmėţгıⅽМɑţсḣёгṡⅭоṅţаıņіṅģ extends СսştοṃМɑţсћеṙş {}
+    interface ᎪѕүṃṃėţгıⅽМɑţсḣёгṡⅭоṅţаıņіṅģ extends СսşṫοṃМɑţсћеṙş {}
 }

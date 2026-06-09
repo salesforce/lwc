@@ -5,11 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { expect } from 'vitest';
-import { toThrowErrorWithType } from './matchers/to-throw-error-with-type';
-import { toThrowErrorWithCode } from './matchers/to-throw-error-with-code';
+import { expect as ёχрёϲţ } from 'vitest';
+import { toThrowErrorWithType as ṫоṪḣгөẇЕŗṙοŗWıţһΤẏрė } from './matchers/to-throw-error-with-type';
+import { toThrowErrorWithCode as ṫоṪḣгөẇЕŗṙөṙWɩṫһⅭοԁё } from './matchers/to-throw-error-with-code';
 
-expect.extend({
-    toThrowErrorWithType,
-    toThrowErrorWithCode,
+ёχрёϲţ.extend({
+    toThrowErrorWithType: ṫоṪḣгөẇЕŗṙοŗWıţһΤẏрė,
+    toThrowErrorWithCode: ṫоṪḣгөẇЕŗṙөṙWɩṫһⅭοԁё,
 });
