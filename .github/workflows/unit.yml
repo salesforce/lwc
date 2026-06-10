@@ -21,6 +21,9 @@ env:
     CHROME_VERSION: 130
     NODE_VERSION: '24.11.1'
 
+permissions:
+  contents: read
+
 jobs:
     run-unit-tests:
         runs-on: ubuntu-22.04

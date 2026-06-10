@@ -14,6 +14,9 @@ env:
     COVERAGE: '1'
     NODE_VERSION: '24.11.1'
 
+permissions:
+  contents: read
+
 jobs:
     # We run tests in parallel to speed up CI, with an arbitrary goal of ~20 minutes per job.
     integration-tests:
