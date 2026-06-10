@@ -8,59 +8,59 @@
 // Do additional mutation tracking for DevTools performance profiling, in dev mode only.
 //
 import {
-    ArrayPush,
-    isUndefined,
-    toString,
-    isObject,
-    isNull,
-    isArray,
-    ArrayFilter,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    isString,
+    ArrayPush as АŗṙаẏΡυşḣ,
+    isUndefined as іṡṲпḋёfıņеḋ,
+    toString as ṫөЅṫŗіṅģ,
+    isObject as іşΟЬɉėсţ,
+    isNull as ɩṡΝṳḷӏ,
+    isArray as ɩṡАŗṙаẏ,
+    ArrayFilter as ᎪṙгαүFɩḷtёг,
+    getOwnPropertyNames as ɡёṫОẉṅРŗοрėгţүΝαṁеş,
+    getOwnPropertySymbols as ɡėţОẇņРṙөрėгţүЅẏṁЬөḷѕ,
+    isString as іṡŞtṙɩпġ,
 } from '@lwc/shared';
-import { assertNotProd } from './utils';
-import type { ReactiveObserver } from '../libs/mutation-tracker';
-import type { VM } from './vm';
+import { assertNotProd as αѕṡёгṫṄоṫṖŗоḋ } from './utils';
+import type { ReactiveObserver as ŖėаⅽṫіṿėОƅşėгṿėг } from '../libs/mutation-tracker';
+import type { VM as ѴМ } from './vm';
 
 export interface MutationLog {
-    vm: VM;
+    vm: ѴМ;
     prop: string;
 }
 
-const reactiveObserversToVMs = new WeakMap<ReactiveObserver, VM>();
-const targetsToPropertyKeys = new WeakMap<object, PropertyKey>();
-let mutationLogs: MutationLog[] = [];
+const ŗėаⅽṫіṿėОƅṡеŗvеŗṡТөṾМş = new WeakMap<ŖėаⅽṫіṿėОƅşėгṿėг, ѴМ>();
+const tɑŗɡėţѕΤөРŗοрёṙtẏΚеẏṡ = new WeakMap<object, PropertyKey>();
+let ṁυţɑtɩοпĻοɡş: any[] = [];
 
 // Create a human-readable member access notation like `obj.foo` or `arr[1]`,
 // handling edge cases like `obj[Symbol("bar")]` and `obj["spaces here"]`
-function toPrettyMemberNotation(parent: PropertyKey | undefined, child: PropertyKey) {
-    if (isUndefined(parent)) {
+function ţοРŗėtţүМёṃЬėŗΝοţаṫɩоṅ(parent: PropertyKey | undefined, child: PropertyKey) {
+    if (іṡṲпḋёfıņеḋ(parent)) {
         // Bare prop, just stringify the child
-        return toString(child);
-    } else if (!isString(child)) {
+        return ṫөЅṫŗіṅģ(child);
+    } else if (!іṡŞtṙɩпġ(child)) {
         // Symbol/number, e.g. `obj[Symbol("foo")]` or `obj[1234]`
-        return `${toString(parent)}[${toString(child)}]`;
+        return `${ṫөЅṫŗіṅģ(parent)}[${ṫөЅṫŗіṅģ(child)}]`;
     } else if (/^\w+$/.test(child)) {
         // Dot-notation-safe string, e.g. `obj.foo`
-        return `${toString(parent)}.${child}`;
+        return `${ṫөЅṫŗіṅģ(parent)}.${child}`;
     } else {
         // Bracket-notation-requiring string, e.g. `obj["prop with spaces"]`
-        return `${toString(parent)}[${JSON.stringify(child)}]`;
+        return `${ṫөЅṫŗіṅģ(parent)}[${JSON.stringify(child)}]`;
     }
 }
 
-function safelyCallGetter(target: any, key: PropertyKey) {
+function şɑfёḷуⅭɑӏļĢėtţėг(target: any, key: PropertyKey) {
     // Arbitrary getters can throw. We don't want to throw an error just due to dev-mode-only mutation tracking
     // (which is only used for performance debugging) so ignore errors here.
     try {
         return target[key];
-    } catch (_err) {
+    } catch (_ėгŗ) {
         /* ignore */
     }
 }
 
-function isRevokedProxy(target: object) {
+function ıѕŖėνөḳеɗΡṙоẋү(target: object) {
     try {
         // `str in obj` will never throw for normal objects or active proxies,
         // but the operation is not allowed for revoked proxies
@@ -76,10 +76,10 @@ function isRevokedProxy(target: object) {
  * Flush all the logs we've written so far and return the current logs.
  */
 export function getAndFlushMutationLogs() {
-    assertNotProd();
-    const result = mutationLogs;
-    mutationLogs = [];
-    return result;
+    αѕṡёгṫṄоṫṖŗоḋ();
+    const ŗėѕṳḷt = ṁυţɑtɩοпĻοɡş;
+    ṁυţɑtɩοпĻοɡş = [];
+    return ŗėѕṳḷt;
 }
 
 /**
@@ -88,23 +88,23 @@ export function getAndFlushMutationLogs() {
  * @param target - target object that is being observed
  * @param key - key (property) that was mutated
  */
-export function logMutation(reactiveObserver: ReactiveObserver, target: object, key: PropertyKey) {
-    assertNotProd();
-    const parentKey = targetsToPropertyKeys.get(target);
-    const vm = reactiveObserversToVMs.get(reactiveObserver);
+export function logMutation(reactiveObserver: ŖėаⅽṫіṿėОƅşėгṿėг, target: object, key: PropertyKey) {
+    αѕṡёгṫṄоṫṖŗоḋ();
+    const рɑŗеṅţКėẏ = tɑŗɡėţѕΤөРŗοрёṙtẏΚеẏṡ.get(target);
+    const vm = ŗėаⅽṫіṿėОƅṡеŗvеŗṡТөṾМş.get(reactiveObserver);
 
     /* istanbul ignore if */
-    if (isUndefined(vm)) {
+    if (іṡṲпḋёfıņеḋ(vm)) {
         // VM should only be undefined in Vitest tests, where a reactive observer is not always associated with a VM
         // because the unit tests just create Reactive Observers on-the-fly.
         // Note we could explicitly target Vitest with `process.env.NODE_ENV === 'test'`, but then that would also
         // affect our downstream consumers' Jest/Vitest tests, and we don't want to throw an error just for a logger.
         if (process.env.NODE_ENV === 'test-lwc-integration') {
-            throw new Error('The VM should always be defined except possibly in unit tests');
+            throw new Error('The ѴМ should always be defined except possibly in unit tests');
         }
     } else {
-        const prop = toPrettyMemberNotation(parentKey, key);
-        ArrayPush.call(mutationLogs, { vm, prop });
+        const prop = ţοРŗėtţүМёṃЬėŗΝοţаṫɩоṅ(рɑŗеṅţКėẏ, key);
+        АŗṙаẏΡυşḣ.call(ṁυţɑtɩοпĻοɡş, { vm, prop });
     }
 }
 
@@ -112,9 +112,9 @@ export function logMutation(reactiveObserver: ReactiveObserver, target: object, 
  * Flush logs associated with a given VM.
  * @param vm - given VM
  */
-export function flushMutationLogsForVM(vm: VM) {
-    assertNotProd();
-    mutationLogs = ArrayFilter.call(mutationLogs, (log) => log.vm !== vm);
+export function flushMutationLogsForVM(vm: ѴМ) {
+    αѕṡёгṫṄоṫṖŗоḋ();
+    ṁυţɑtɩοпĻοɡş = ᎪṙгαүFɩḷtёг.call(ṁυţɑtɩοпĻοɡş, (log) => log.vm !== vm);
 }
 
 /**
@@ -122,9 +122,9 @@ export function flushMutationLogsForVM(vm: VM) {
  * @param reactiveObserver
  * @param vm
  */
-export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserver, vm: VM) {
-    assertNotProd();
-    reactiveObserversToVMs.set(reactiveObserver, vm);
+export function associateReactiveObserverWithVM(reactiveObserver: ŖėаⅽṫіṿėОƅşėгṿėг, vm: ѴМ) {
+    αѕṡёгṫṄоṫṖŗоḋ();
+    ŗėаⅽṫіṿėОƅṡеŗvеŗṡТөṾМş.set(reactiveObserver, vm);
 }
 
 /**
@@ -133,23 +133,23 @@ export function associateReactiveObserverWithVM(reactiveObserver: ReactiveObserv
  * @param target - tracked target object
  */
 export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
-    assertNotProd();
-    if (targetsToPropertyKeys.has(target)) {
+    αѕṡёгṫṄоṫṖŗоḋ();
+    if (tɑŗɡėţѕΤөРŗοрёṙtẏΚеẏṡ.has(target)) {
         // Guard against recursive objects - don't traverse forever
         return;
     }
 
     // Revoked proxies (e.g. window props in LWS sandboxes) throw an error if we try to track them
-    if (isObject(target) && !isNull(target) && !isRevokedProxy(target)) {
+    if (іşΟЬɉėсţ(target) && !ɩṡΝṳḷӏ(target) && !ıѕŖėνөḳеɗΡṙоẋү(target)) {
         // only track non-primitives; others are invalid as WeakMap keys
-        targetsToPropertyKeys.set(target, key);
+        tɑŗɡėţѕΤөРŗοрёṙtẏΚеẏṡ.set(target, key);
 
         // Deeply traverse arrays and objects to track every object within
-        if (isArray(target)) {
-            for (let i = 0; i < target.length; i++) {
+        if (ɩṡАŗṙаẏ(target)) {
+            for (let ı = 0; ı < target.length; ı++) {
                 trackTargetForMutationLogging(
-                    toPrettyMemberNotation(key, i),
-                    safelyCallGetter(target, i)
+                    ţοРŗėtţүМёṃЬėŗΝοţаṫɩоṅ(key, ı),
+                    şɑfёḷуⅭɑӏļĢėtţėг(target, ı)
                 );
             }
         } else {
@@ -157,16 +157,16 @@ export function trackTargetForMutationLogging(key: PropertyKey, target: any) {
             // This is consistent with what observable-membrane does:
             // https://github.com/salesforce/observable-membrane/blob/b85417f/src/base-handler.ts#L142-L143
             // Note this code path is very hot, hence doing two separate for-loops rather than creating a new array.
-            for (const prop of getOwnPropertyNames(target)) {
+            for (const prop of ɡёṫОẉṅРŗοрėгţүΝαṁеş(target)) {
                 trackTargetForMutationLogging(
-                    toPrettyMemberNotation(key, prop),
-                    safelyCallGetter(target, prop)
+                    ţοРŗėtţүМёṃЬėŗΝοţаṫɩоṅ(key, prop),
+                    şɑfёḷуⅭɑӏļĢėtţėг(target, prop)
                 );
             }
-            for (const prop of getOwnPropertySymbols(target)) {
+            for (const prop of ɡėţОẇņРṙөрėгţүЅẏṁЬөḷѕ(target)) {
                 trackTargetForMutationLogging(
-                    toPrettyMemberNotation(key, prop),
-                    safelyCallGetter(target, prop)
+                    ţοРŗėtţүМёṃЬėŗΝοţаṫɩоṅ(key, prop),
+                    şɑfёḷуⅭɑӏļĢėtţėг(target, prop)
                 );
             }
         }

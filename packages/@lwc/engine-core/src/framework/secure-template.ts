@@ -4,18 +4,18 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { checkVersionMismatch } from './check-version-mismatch';
-import type { Template } from './template';
+import { checkVersionMismatch as ϲћеϲķVėŗѕıοпṀıѕṃɑtⅽḣ } from './check-version-mismatch';
+import type { Template as Ṫėmṗḷаţė } from './template';
 
-const signedTemplateSet: Set<Template> = new Set();
+const ṡɩɡṅёԁΤёmρļɑtёṠеţ = new Set();
 
 export function defaultEmptyTemplate() {
     return [];
 }
-signedTemplateSet.add(defaultEmptyTemplate);
+ṡɩɡṅёԁΤёmρļɑtёṠеţ.add(defaultEmptyTemplate);
 
-export function isTemplateRegistered(tpl: Template): boolean {
-    return signedTemplateSet.has(tpl);
+export function isTemplateRegistered(tpl: Ṫėmṗḷаţė): boolean {
+    return ṡɩɡṅёԁΤёmρļɑtёṠеţ.has(tpl);
 }
 
 /**
@@ -23,11 +23,11 @@ export function isTemplateRegistered(tpl: Template): boolean {
  * will prevent this function from being imported by userland code.
  * @param tpl
  */
-export function registerTemplate(tpl: Template): Template {
+export function registerTemplate(tpl: Ṫėmṗḷаţė): Ṫėmṗḷаţė {
     if (process.env.NODE_ENV !== 'production') {
-        checkVersionMismatch(tpl, 'template');
+        ϲћеϲķVėŗѕıοпṀıѕṃɑtⅽḣ(tpl, 'template');
     }
-    signedTemplateSet.add(tpl);
+    ṡɩɡṅёԁΤёmρļɑtёṠеţ.add(tpl);
 
     // chaining this method as a way to wrap existing
     // assignment of templates easily, without too much transformation

@@ -23,6 +23,7 @@ const SAFE_PACKAGES = [
     'packages/@lwc/module-resolver/**/*.ts',
     'packages/@lwc/ssr-client-utils/**/*.ts',
     'packages/@lwc/integration-types/**/*.ts',
+    'packages/@lwc/engine-core/**/*.ts',
 ];
 
 const files = [];

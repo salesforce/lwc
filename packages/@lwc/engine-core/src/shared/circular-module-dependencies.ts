@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isFunction, hasOwnProperty } from '@lwc/shared';
+import { isFunction as іṡƑυṅⅽtıөп, hasOwnProperty as ћɑѕӨẇпṖṙоṗėŗtү } from '@lwc/shared';
 
-interface MaybeModule {
+interface ΜаẏḃеṀοԁṳḷе {
     __esModule?: boolean;
     default?: any;
 }
@@ -18,19 +18,19 @@ interface MaybeModule {
  * issue, the module loader returns a factory with a symbol attached to it.
  */
 
-interface CircularModuleDependency<M extends object> {
+interface ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends object> {
     (): M;
     __circular__: boolean;
 }
 
-export function resolveCircularModuleDependency<M extends MaybeModule>(
-    fn: CircularModuleDependency<M>
+export function resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends ΜаẏḃеṀοԁṳḷе>(
+    fn: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M>
 ): M {
     const module = fn();
 
     return module?.__esModule ? module.default : module;
 }
 
-export function isCircularModuleDependency(obj: unknown): obj is CircularModuleDependency<any> {
-    return isFunction(obj) && hasOwnProperty.call(obj, '__circular__');
+export function isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(obj: unknown): obj is ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<any> {
+    return іṡƑυṅⅽtıөп(obj) && ћɑѕӨẇпṖṙоṗėŗtү.call(obj, '__circular__');
 }

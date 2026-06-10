@@ -28,8 +28,8 @@ import {
 
 import { RenderMode } from '../framework/vm';
 import {
-    isCircularModuleDependency,
-    resolveCircularModuleDependency,
+    isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү,
+    resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү,
 } from '../shared/circular-module-dependencies';
 
 import { logError, logWarn } from '../shared/logger';
@@ -48,7 +48,7 @@ import { defaultEmptyTemplate } from './secure-template';
 import { BaseBridgeElement, HTMLBridgeElementFactory } from './base-bridge-element';
 import { getComponentOrSwappedComponent } from './hot-swaps';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
-import type { HTMLElementConstructor } from './base-bridge-element';
+import type { НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ } from './base-bridge-element';
 import type { PropType } from './decorators/register';
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { Template } from './template';
@@ -65,7 +65,7 @@ export interface ComponentDef {
     shadowSupportMode: ShadowSupportMode;
     formAssociated: boolean | undefined;
     ctor: LightningElementConstructor;
-    bridge: HTMLElementConstructor;
+    bridge: НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ;
     connectedCallback?: LightningElement['connectedCallback'];
     disconnectedCallback?: LightningElement['disconnectedCallback'];
     renderedCallback?: LightningElement['renderedCallback'];
@@ -87,8 +87,8 @@ function getCtorProto(Ctor: LightningElementConstructor): LightningElementConstr
         );
     }
     // covering the cases where the ref is circular in AMD
-    if (isCircularModuleDependency(proto)) {
-        const p = resolveCircularModuleDependency(proto);
+    if (isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(proto)) {
+        const p = resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(proto);
         if (process.env.NODE_ENV !== 'production') {
             if (isNull(p)) {
                 throw new ReferenceError(
@@ -292,8 +292,8 @@ export function isComponentConstructor(ctor: unknown): ctor is LightningElementC
     // to resolve.
     let current = ctor;
     do {
-        if (isCircularModuleDependency(current)) {
-            const circularResolved = resolveCircularModuleDependency(current);
+        if (isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(current)) {
+            const circularResolved = resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(current);
 
             // If the circular function returns itself, that's the signal that we have hit the end
             // of the proto chain, which must always be a valid base constructor.
@@ -320,8 +320,8 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
     let def = CtorToDefMap.get(Ctor);
 
     if (isUndefined(def)) {
-        if (isCircularModuleDependency(Ctor)) {
-            const resolvedCtor = resolveCircularModuleDependency(Ctor);
+        if (isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(Ctor)) {
+            const resolvedCtor = resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(Ctor);
             def = getComponentInternalDef(resolvedCtor);
             // Cache the unresolved component ctor too. The next time if the same unresolved ctor is used,
             // look up the definition in cache instead of re-resolving and recreating the def.
@@ -342,7 +342,7 @@ export function getComponentInternalDef(Ctor: unknown): ComponentDef {
     return def;
 }
 
-export function getComponentHtmlPrototype(Ctor: unknown): HTMLElementConstructor {
+export function getComponentHtmlPrototype(Ctor: unknown): НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ {
     const def = getComponentInternalDef(Ctor);
     return def.bridge;
 }

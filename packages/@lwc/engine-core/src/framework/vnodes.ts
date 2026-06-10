@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import type { VM } from './vm';
-import type { RendererAPI } from './renderer';
+import type { VM as ѴМ } from './vm';
+import type { RendererAPI as ṘёпḋёгėŗАΡΙ } from './renderer';
 
 export type Key = string | number;
 
@@ -50,7 +50,7 @@ export interface BaseVNode {
     elm: Node | undefined;
     sel: string;
     key: Key | undefined;
-    owner: VM;
+    owner: ѴМ;
 }
 
 export interface VScopedSlotFragment extends BaseVNode {
@@ -139,7 +139,7 @@ export interface VCustomElement extends VBaseElement {
     mode: 'closed' | 'open';
     ctor: any;
     aChildren: VNodes | undefined;
-    vm: VM | undefined;
+    vm: ѴМ | undefined;
 }
 
 export interface VNodeData {
@@ -156,7 +156,7 @@ export interface VNodeData {
     readonly dynamicOn?: Readonly<Record<string, (event: Event) => any>>; // clone of object passed to lwc:on, used to patch event listeners
     readonly dynamicOnRaw?: Readonly<Record<string, (event: Event) => any>>; // object passed to lwc:on, used to verify whether object reference has changed
     readonly svg?: boolean;
-    readonly renderer?: RendererAPI;
+    readonly renderer?: ṘёпḋёгėŗАΡΙ;
 }
 
 export interface VElementData extends VNodeData {

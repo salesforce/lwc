@@ -49,6 +49,7 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'undefined',
     'null',
     'globalThis',
+    'arguments',
     'window',
     'self',
     'global',
@@ -177,4 +178,7 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'LightningElement',
     'ShadowRoot',
     'TemplateFunction',
+
+    // LWC globals declared via 'declare global'
+    'lwcRuntimeFlags',
 ]);

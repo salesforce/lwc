@@ -55,7 +55,7 @@ import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
 import { instrumentInstance } from './runtime-instrumentation';
 import { applyShadowMigrateMode } from './shadow-migration-mode';
-import type { HTMLElementConstructor } from './base-bridge-element';
+import type { НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ } from './base-bridge-element';
 import type { Template } from './template';
 import type { RefVNodes, ShadowSupportMode, VM } from './vm';
 import type { Stylesheets, AccessibleElementProperties } from '@lwc/shared';
@@ -137,7 +137,7 @@ function createBridgeToElementDescriptor(
 export interface LightningElementConstructor {
     new (): LightningElement;
     readonly prototype: LightningElement;
-    readonly CustomElementConstructor: HTMLElementConstructor;
+    readonly CustomElementConstructor: НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ;
 
     delegatesFocus?: boolean;
     renderMode?: 'light' | 'shadow';
