@@ -24,3 +24,4 @@ packages/@lwc/integration-wdio/.env
 # dev mode caches
 tsconfig.tsbuildinfo
 .rollup.cache
+.claude/
