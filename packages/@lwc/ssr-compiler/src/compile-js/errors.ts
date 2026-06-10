@@ -8,7 +8,7 @@ import { type LWCErrorInfo, generateCompilerError } from '@lwc/errors';
 import type { BaseNodeWithoutComments } from 'estree';
 
 // This type extracts the arguments in a string. Example: "Error {0} {1}" -> [string, string]
-type ΕẋtṙαсṫᎪгġυṁёпṫş<
+type ΕẋṫṙαсṫᎪгġυṁёпṫş<
     T extends string,
     Numbers extends number = never,
     Args extends string[] = [],

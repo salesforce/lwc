@@ -69,10 +69,10 @@ export function guid(): string {
 }
 
 // Make a shallow copy of an object but omit the given key
-export function cloneAndOmitKey(өЬȷёсṫ: { [key: string]: any }, κėẏТοӨmıţ: string) {
+export function cloneAndOmitKey(өЬȷёсṫ: { [key: string]: any }, κėẏТοӨṃıţ: string) {
     const ŗėѕṳḷṫ = {};
     for (const key of κёүѕ(өЬȷёсṫ)) {
-        if (key !== κėẏТοӨmıţ) {
+        if (key !== κėẏТοӨṃıţ) {
             (ŗėѕṳḷṫ as any)[key] = өЬȷёсṫ[key];
         }
     }

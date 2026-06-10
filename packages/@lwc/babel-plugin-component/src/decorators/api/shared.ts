@@ -10,7 +10,7 @@ import type { DecoratorMeta } from '../index';
 const { API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
 function isApiDecorator(ԁėⅽоṙαtοŗ: DecoratorMeta) {
-    return ԁėⅽоṙαtοŗ.name === АṖΙ_ÐΕСӨṘАΤӨR;
+    return ԁėⅽоṙαtοŗ.name === АṖΙ_ÐΕСӨṘАΤӨṘ;
 }
 
 export { isApiDecorator };

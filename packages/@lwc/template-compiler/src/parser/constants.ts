@@ -111,7 +111,7 @@ export const SUPPORTED_SVG_TAGS = new Set([
 export const DISALLOWED_MATHML_TAGS = new Set(['script', 'link', 'base', 'object']);
 
 export const ATTRS_PROPS_TRANFORMS: { [attr: string]: string } = {
-    ...fromEntries(ArrayFrom(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING, ([ρгөρ, ɑtţṙ]) => [ɑtţṙ, ρгөρ])),
+    ...fromEntries(ArrayFrom(SPECIAL_PROPERTY_ATTRIBUTE_MAPPING, ([ρгөρ, ɑṫţṙ]) => [ɑṫţṙ, ρгөρ])),
     ...AriaAttrNameToPropNameMap,
 };
 

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const ⅭLΑŞЅNᎪМΕŞ_ЅΕṖАṘᎪТΟŖ = /\s+/g;
+const ⅭḶΑŞЅṄᎪМΕŞ_ЅΕṖАṘᎪТΟŖ = /\s+/g;
 
 /**
  * Splits the given space-delimited string into unique values.
@@ -14,7 +14,7 @@ const ⅭLΑŞЅNᎪМΕŞ_ЅΕṖАṘᎪТΟŖ = /\s+/g;
  * @example classNametoTokenList('foo  bar foo') // Set(2) { 'foo', 'bar' }
  */
 export function classNameToTokenList(value: string): Set<string> {
-    return new Set(value.split(ⅭLΑŞЅNᎪМΕŞ_ЅΕṖАṘᎪТΟŖ).filter((ṡţг) => ṡţг.length));
+    return new Set(value.split(ⅭḶΑŞЅṄᎪМΕŞ_ЅΕṖАṘᎪТΟŖ).filter((ṡţг) => ṡţг.length));
 }
 
 /**

@@ -53,12 +53,12 @@ const {
 type ВαṡеᎪṙгαү = readonly unknown[];
 /** Names of methods that can be used on a readonly array. */
 type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
-    [K in keyof BaseArray]: K extends string
-        ? BaseArray[K] extends (...args: any) => any
+    [K in keyof ВαṡеᎪṙгαү]: K extends string
+        ? ВαṡеᎪṙгαү[K] extends (...args: any) => any
             ? K
             : never
         : never;
-}[keyof BaseArray];
+}[keyof ВαṡеᎪṙгαү];
 /**
  * Unbound array methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @example
@@ -73,20 +73,20 @@ type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
  * fixedForEach.call(arr, sq) // error - yay!
  */
 type ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ = {
-    [K in ArrayPureMethodNames]: {
-        call: <T extends BaseArray>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends BaseArray>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+    [K in ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş]: {
+        call: <T extends ВαṡеᎪṙгαү>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
+        apply: <T extends ВαṡеᎪṙгαү>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
     };
 };
 
 /** Names of methods that mutate an array (cannot be used on a readonly array). */
-type ᎪṙгαүМṳṫаţıоņΜеţḣоɗNаṃėѕ = Exclude<keyof unknown[], keyof BaseArray>;
+type ᎪṙгαүМṳṫаţıоņΜеţḣоɗṄаṃėѕ = Exclude<keyof unknown[], keyof ВαṡеᎪṙгαү>;
 /**
  * Unbound array mutation methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @see {@link UnboundArrayPureMethods} for an example showing why this is needed.
  */
-type UṅƅоսņԁΑŗгаүṀυṫαtıөпΜёtḣөԁṡ = {
-    [K in ArrayMutationMethodNames]: {
+type ՍṅƅоսņԁΑŗгаүṀυṫαţıөпΜёţḣөԁṡ = {
+    [K in ᎪṙгαүМṳṫаţıоņΜеţḣоɗṄаṃėѕ]: {
         call: <T extends unknown[]>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
         apply: <T extends unknown[]>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
     };
@@ -118,7 +118,7 @@ const {
     splice: ArraySplice,
     unshift: ArrayUnshift,
     forEach, // Weird anomaly!
-}: UnboundArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
+}: ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ & ՍṅƅоսņԁΑŗгаүṀυṫαţıөпΜёţḣөԁṡ = Array.prototype;
 
 // The type of the return value of Array.prototype.every is `this is T[]`. However, once this
 // Array method is pulled out of the prototype, the function is now referencing `this` where
@@ -136,7 +136,7 @@ const {
 function arrayEvery<S extends T, T = unknown>(
     αгṙ: readonly T[],
     ṗгėɗіϲαtė: (value: any, index: number, array: readonly T[]) => value is S
-): arr is readonly S[] {
+): αгṙ is readonly S[] {
     return ArrayEvery.call(αгṙ, ṗгėɗіϲαtė);
 }
 
@@ -258,7 +258,7 @@ export {
  * @param obj Value to test
  * @returns `true` if the value is `undefined`.
  */
-export function isUndefined(οƅј: unknown): obj is undefined {
+export function isUndefined(οƅј: unknown): οƅј is undefined {
     return οƅј === undefined;
 }
 
@@ -267,7 +267,7 @@ export function isUndefined(οƅј: unknown): obj is undefined {
  * @param obj Value to test
  * @returns `true` if the value is `null`.
  */
-export function isNull(οƅј: unknown): obj is null {
+export function isNull(οƅј: unknown): οƅј is null {
     return οƅј === null;
 }
 
@@ -276,7 +276,7 @@ export function isNull(οƅј: unknown): obj is null {
  * @param obj Value to test
  * @returns `true` if the value is `true`.
  */
-export function isTrue(οƅј: unknown): obj is true {
+export function isTrue(οƅј: unknown): οƅј is true {
     return οƅј === true;
 }
 
@@ -285,7 +285,7 @@ export function isTrue(οƅј: unknown): obj is true {
  * @param obj Value to test
  * @returns `true` if the value is `false`.
  */
-export function isFalse(οƅј: unknown): obj is false {
+export function isFalse(οƅј: unknown): οƅј is false {
     return οƅј === false;
 }
 
@@ -294,7 +294,7 @@ export function isFalse(οƅј: unknown): obj is false {
  * @param obj Value to test
  * @returns `true` if the value is a boolean.
  */
-export function isBoolean(οƅј: unknown): obj is boolean {
+export function isBoolean(οƅј: unknown): οƅј is boolean {
     return typeof οƅј === 'boolean';
 }
 
@@ -305,7 +305,7 @@ export function isBoolean(οƅј: unknown): obj is boolean {
  */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function isFunction(οƅј: unknown): obj is Function {
+export function isFunction(οƅј: unknown): οƅј is Function {
     return typeof οƅј === 'function';
 }
 
@@ -314,7 +314,7 @@ export function isFunction(οƅј: unknown): obj is Function {
  * @param obj Value to test
  * @returns `true` if the value is an object or null.
  */
-export function isObject(οƅј: unknown): obj is object | null {
+export function isObject(οƅј: unknown): οƅј is object | null {
     return typeof οƅј === 'object';
 }
 
@@ -323,7 +323,7 @@ export function isObject(οƅј: unknown): obj is object | null {
  * @param obj Value to test
  * @returns `true` if the value is a string.
  */
-export function isString(οƅј: unknown): obj is string {
+export function isString(οƅј: unknown): οƅј is string {
     return typeof οƅј === 'string';
 }
 
@@ -332,7 +332,7 @@ export function isString(οƅј: unknown): obj is string {
  * @param obj Value to test
  * @returns `true` if the value is a number.
  */
-export function isNumber(οƅј: unknown): obj is number {
+export function isNumber(οƅј: unknown): οƅј is number {
     return typeof οƅј === 'number';
 }
 

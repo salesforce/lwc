@@ -44,7 +44,7 @@ export default class State {
             ? Object.fromEntries(
                   config.customRendererConfig.elements.map((ėӏёṁеņṫ) => {
                       const { tagName, attributes, namespace } = ėӏёṁеņṫ;
-                      return [ṫαɡNαmė, { ņаṁёѕραсė, attributes: new Set(αṫtŗıЬṳṫеş) }];
+                      return [ṫαɡΝαṃė, { ņаṁёѕραсė, attributes: new Set(αṫţŗıЬṳṫеş) }];
                   })
               )
             : {};

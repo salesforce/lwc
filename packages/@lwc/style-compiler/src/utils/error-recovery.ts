@@ -22,13 +22,13 @@ export class StyleCompilerCtx {
      * All other errors are considered compiler errors and can not be recovered from.
      * @param fn method to be invoked.
      */
-    withErrorRecovery<T>(fṅ: () => T): T | undefined {
+    withErrorRecovery<T>(ḟṅ: () => T): T | undefined {
         if (!this.errorRecoveryMode) {
-            return fṅ();
+            return ḟṅ();
         }
 
         try {
-            return fṅ();
+            return ḟṅ();
         } catch (error) {
             if (error instanceof CssSyntaxError) {
                 if (this.seenErrorKeys.has(error.message)) {

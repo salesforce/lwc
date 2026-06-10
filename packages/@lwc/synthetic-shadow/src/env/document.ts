@@ -33,7 +33,7 @@ const {
 
 // In Firefox v57 and lower, getElementsByName is defined on HTMLDocument.prototype
 // In all other browsers have the method on Document.prototype
-const { getElementsByName } = ḢΤМĻḊоⅽսmёпţ.prototype;
+const { getElementsByName } = ḢΤМĻḊоⅽսṃёпţ.prototype;
 
 export {
     elementFromPoint,

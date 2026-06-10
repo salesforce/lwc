@@ -250,7 +250,7 @@ export const TemplateDirectiveName = {
     ScopedSlotFragment: 'lwc:slot-data',
 } as const;
 
-interface ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<T extends keyof typeof TemplateDirectiveName> extends BaseParentNode {
+interface ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<T extends keyof typeof TemplateDirectiveName> extends BaseParentNode {
     directiveLocation: SourceLocation;
     type: T;
 }
@@ -258,7 +258,7 @@ interface ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<T extends keyof typeof Temp
 /**
  * Node representing the if:true and if:false directives
  */
-export interface If extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'If'> {
+export interface If extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'If'> {
     modifier: string;
     condition: Expression;
 }
@@ -266,7 +266,7 @@ export interface If extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'If'> {
 /**
  * Node representing the lwc:if directive
  */
-export interface IfBlock extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'IfBlock'> {
+export interface IfBlock extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'IfBlock'> {
     condition: Expression;
     else?: ElseifBlock | ElseBlock;
 }
@@ -274,7 +274,7 @@ export interface IfBlock extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'IfB
 /**
  * Node representing the lwc:elseif directive
  */
-export interface ElseifBlock extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'ElseifBlock'> {
+export interface ElseifBlock extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'ElseifBlock'> {
     condition: Expression;
     else?: ElseifBlock | ElseBlock;
 }
@@ -283,15 +283,15 @@ export interface ElseifBlock extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<
  * Node representing the lwc:else directive
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ElseBlock extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'ElseBlock'> {}
+export interface ElseBlock extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'ElseBlock'> {}
 
-export interface ForEach extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'ForEach'> {
+export interface ForEach extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'ForEach'> {
     expression: Expression;
     item: Identifier;
     index?: Identifier;
 }
 
-export interface ForOf extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'ForOf'> {
+export interface ForOf extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'ForOf'> {
     expression: Expression;
     iterator: Identifier;
 }
@@ -299,7 +299,7 @@ export interface ForOf extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'ForOf
 /**
  * Node representing lwc:slot-data directive
  */
-export interface ScopedSlotFragment extends ÐіṙёсṫɩνėṖɑгёṅtṄοԁё<'ScopedSlotFragment'> {
+export interface ScopedSlotFragment extends ÐіṙёсṫɩνėṖɑгёṅţṄοԁё<'ScopedSlotFragment'> {
     slotData: SlotDataDirective;
     slotName: Literal | Expression;
 }

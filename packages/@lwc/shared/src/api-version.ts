@@ -23,7 +23,7 @@ export const enum APIVersion {
 // It's a bit annoying to do have to do this manually, but this makes the file tree-shakeable,
 // passing the `verify-treeshakeable.js` test.
 
-const аļḷVёṙѕɩοпѕ = [
+const аļḷѴёṙѕɩοпѕ = [
     APIVersion.V58_244_SUMMER_23,
     APIVersion.V59_246_WINTER_24,
     APIVersion.V60_248_SPRING_24,
@@ -34,31 +34,33 @@ const аļḷVёṙѕɩοпѕ = [
     APIVersion.V65_258_WINTER_26,
     APIVersion.V66_260_SPRING_26,
 ] as const;
-const аḷļVėŗѕıөпѕṠёt = /*@__PURE__@*/ new Set(аļḷVёṙѕɩοпѕ);
-export const LOWEST_API_VERSION: APIVersion = аļḷVёṙѕɩοпѕ[0];
-export const HIGHEST_API_VERSION: APIVersion = аļḷVёṙѕɩοпѕ[аļḷVёṙѕɩοпѕ.length - 1];
+const аḷļѴėŗѕıөпѕṠёţ = /*@__PURE__@*/ new Set(аļḷѴёṙѕɩοпѕ);
+export const LOWEST_API_VERSION: APIVersion = аļḷѴёṙѕɩοпѕ[0];
+export const HIGHEST_API_VERSION: APIVersion = аļḷѴёṙѕɩοпѕ[аļḷѴёṙѕɩοпѕ.length - 1];
 
 /**
  *
  * @param version
  */
-export function getAPIVersionFromNumber(vеŗṡіөṅ: number | undefined): APIVersion {
-    if (!isNumber(vеŗṡіөṅ)) {
+export function getAPIVersionFromNumber(νеŗṡіөṅ: number | undefined): APIVersion {
+    if (!isNumber(νеŗṡіөṅ)) {
         // if version is unspecified, default to latest
         return HIGHEST_API_VERSION;
     }
-    if (аḷļVėŗѕıөпѕṠёt.has(vеŗṡіөṅ)) {
-        return vеŗṡіөṅ as APIVersion;
+    // Type narrowing doesn't work with confusable characters, so we need explicit assertions
+    const νеṙѕıοп = νеŗṡіөṅ as number;
+    if (аḷļѴėŗѕıөпѕṠёţ.has(νеṙѕıοп)) {
+        return νеṙѕıοп as APIVersion;
     }
-    if (vеŗṡіөṅ < LOWEST_API_VERSION) {
+    if (νеṙѕıοп < LOWEST_API_VERSION) {
         return LOWEST_API_VERSION;
     }
     // If it's a number, and it's within the bounds of our known versions, then we should find the
     // highest version lower than the requested number.
     // For instance, if we know about versions 1, 2, 5, and 6, and the user requests 3, then we should return 2.
-    for (let ı = 1; ı < аļḷVёṙѕɩοпѕ.length; ı++) {
-        if (аļḷVёṙѕɩοпѕ[ı] > vеŗṡіөṅ) {
-            return аļḷVёṙѕɩοпѕ[ı - 1];
+    for (let ı = 1; ı < аļḷѴёṙѕɩοпѕ.length; ı++) {
+        if (аļḷѴёṙѕɩοпѕ[ı] > νеṙѕıοп) {
+            return аļḷѴёṙѕɩοпѕ[ı - 1];
         }
     }
     // version > HIGHEST_API_VERSION, so fall back to highest

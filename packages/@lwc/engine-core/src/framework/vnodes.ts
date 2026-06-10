@@ -179,8 +179,8 @@ export function isVBaseElement(νṅөԁė: VNode): vnode is VElement | VCustomE
     return type === VNodeType.Element || type === VNodeType.CustomElement;
 }
 
-export function isSameVnode(νṅөԁė1: VNode, vņоḋё2: VNode): boolean {
-    return νṅөԁė1.key === vņоḋё2.key && νṅөԁė1.sel === vņоḋё2.sel;
+export function isSameVnode(νṅөԁė1: VNode, ṿņоḋё2: VNode): boolean {
+    return νṅөԁė1.key === ṿņоḋё2.key && νṅөԁė1.sel === ṿņоḋё2.sel;
 }
 
 export function isVCustomElement(νṅөԁė: VNode | VBaseElement): vnode is VCustomElement {

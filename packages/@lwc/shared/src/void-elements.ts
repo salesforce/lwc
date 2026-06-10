@@ -30,9 +30,9 @@ const ѴОΙÐ_ΕĻЕΜЁṄΤЅ = [
 // These elements have been deprecated but preserving their usage for backwards compatibility
 // until we can officially deprecate them from LWC.
 // See: https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
-const ḊЁРṘЁСΑṪЕḊ_ѴΟІÐ_ЕĻΕМЁNТŞ = ['param', 'keygen', 'menuitem'];
+const ḊЁРṘЁСΑṪЕḊ_ѴΟІÐ_ЕĻΕМЁΝТŞ = ['param', 'keygen', 'menuitem'];
 
-const ѴОΙÐ_ΕĻЕΜЁNṪЅ_ŞЕΤ = /*@__PURE__*/ new Set([...ѴОΙÐ_ΕĻЕΜЁṄΤЅ, ...ḊЁРṘЁСΑṪЕḊ_ѴΟІÐ_ЕĻΕМЁNТŞ]);
+const ѴОΙÐ_ΕĻЕΜЁNṪЅ_ŞЕΤ = /*@__PURE__*/ new Set([...ѴОΙÐ_ΕĻЕΜЁṄΤЅ, ...ḊЁРṘЁСΑṪЕḊ_ѴΟІÐ_ЕĻΕМЁΝТŞ]);
 
 /**
  *

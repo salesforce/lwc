@@ -7,7 +7,7 @@
 
 // https://262.ecma-international.org/12.0/#sec-keywords-and-reserved-words
 // prettier-ignore
-const ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ = new Set([
+const ŖΕṾЁṘЅЁḊ_ḲЁΥẆӨŖḊŞ = new Set([
     // Reserved keywords
     'await', 'break', 'case', 'catch', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 
     'do', 'else', 'enum', 'export', 'extends', 'false', 'finally', 'for', 'function', 'if', 'import', 
@@ -19,5 +19,5 @@ const ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ = new Set([
 ]);
 
 export function isReservedES6Keyword(ṡţг: string): boolean {
-    return ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ.has(ṡţг);
+    return ŖΕṾЁṘЅЁḊ_ḲЁΥẆӨŖḊŞ.has(ṡţг);
 }

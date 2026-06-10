@@ -44,7 +44,7 @@ export function updateTextContent(
     if (process.env.NODE_ENV !== 'production') {
         ṳṅӏөϲκÐοmṀυṫαtıөп();
     }
-    ṡёtΤёхṫ(ėļm, tёχt);
+    ṡёṫΤёхṫ(ėļṃ, tёχt);
     if (process.env.NODE_ENV !== 'production') {
         ḷөсḳÐоṁṀυṫɑţіοņ();
     }

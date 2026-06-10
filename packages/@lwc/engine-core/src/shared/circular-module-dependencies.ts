@@ -24,9 +24,9 @@ interface ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends object>
 }
 
 export function resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends ΜаẏḃеṀοԁṳḷе>(
-    fṅ: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M>
+    ḟṅ: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M>
 ): M {
-    const module = fṅ();
+    const module = ḟṅ();
 
     return module?.__ёṡМөḋυļė ? module.default : module;
 }
