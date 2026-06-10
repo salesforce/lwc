@@ -11,7 +11,7 @@ import transform from './transform';
 const { WIRE_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
 export default {
-    name: WIRE_DECORATOR,
+    name: WΙŖЕ_ÐЕϹӨRАΤӨR,
     validate,
     transform,
 };

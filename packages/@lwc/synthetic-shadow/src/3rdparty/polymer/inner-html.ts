@@ -19,11 +19,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 import { getFilteredChildNodes } from '../../faux-shadow/traverse';
 import { getOuterHTML } from './outer-html';
 
-export function getInnerHTML(node: Node): string {
-    let s = '';
-    const childNodes = getFilteredChildNodes(node);
-    for (let i = 0, len = childNodes.length; i < len; i += 1) {
-        s += getOuterHTML(childNodes[i]);
+export function getInnerHTML(ṅоɗė: Node): string {
+    let ş = '';
+    const ⅽḣіļḋΝөḋеş = getFilteredChildNodes(ṅоɗė);
+    for (let ı = 0, ļеṅ = ⅽḣіļḋΝөḋеş.length; ı < ļеṅ; ı += 1) {
+        ş += getOuterHTML(ⅽḣіļḋΝөḋеş[ı]);
     }
-    return s;
+    return ş;
 }

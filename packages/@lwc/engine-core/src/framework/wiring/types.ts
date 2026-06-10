@@ -104,7 +104,7 @@ type ΡгөρѕӨḟТẏρе<Class, Target> = ṘеαϲtɩvеṖṙοрşΟпļ
 >;
 
 /** Gets the property keys that can be used in a reactive property chain. */
-type СḣαіṅαЬḷёОḃјёϲtṖṙоṗṡ<Class> = ṘеαϲtɩvеṖṙοрşΟпļү<
+type СḣαіṅαЬḷёОḃјёϲţṖṙоṗṡ<Class> = ṘеαϲtɩvеṖṙοрşΟпļү<
     {
         [K in keyof Class]-?: NonNullable<Class[K]> extends object
             ? keyof NonNullable<Class[K]> extends never

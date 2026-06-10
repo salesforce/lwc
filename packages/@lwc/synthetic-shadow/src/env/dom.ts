@@ -17,7 +17,7 @@ const eventCurrentTargetGetter: (this: Event) => EventTarget | null = getOwnProp
 )!.get!;
 
 const focusEventRelatedTargetGetter: (this: FocusEvent) => EventTarget | null =
-    getOwnPropertyDescriptor(FocusEvent.prototype, 'relatedTarget')!.get!;
+    getOwnPropertyDescriptor(FөϲυşΕνёṅt.prototype, 'relatedTarget')!.get!;
 
 // IE does not implement composedPath() but that's ok because we only use this instead of our
 // composedPath() polyfill when dealing with native shadow DOM components in mixed mode. Defaulting

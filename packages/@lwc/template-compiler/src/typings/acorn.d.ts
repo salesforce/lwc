@@ -10,7 +10,7 @@ import type { Expression, Options } from 'acorn';
 // Acorn shipped a breaking change in its types: https://github.com/acornjs/acorn/issues/1260
 // This is a workaround based on Svelte's solution: https://github.com/sveltejs/svelte/pull/10301
 declare module 'acorn' {
-    export function isIdentifierStart(code: number, astral?: boolean): boolean;
-    export function isIdentifierChar(code: number, astral?: boolean): boolean;
-    export function parseExpressionAt(input: string, pos: number, options: Options): Expression;
+    export function isIdentifierStart(сөḋе: number, ɑѕţṙаļ?: boolean): boolean;
+    export function isIdentifierChar(сөḋе: number, ɑѕţṙаļ?: boolean): boolean;
+    export function parseExpressionAt(ɩпρṳt: string, рοş: number, өрṫɩоṅş: Options): Expression;
 }

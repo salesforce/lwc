@@ -22,27 +22,27 @@ export function normalizeClass(value: unknown): string | undefined {
         return undefined;
     }
 
-    let res = '';
+    let ṙёѕ = '';
 
     if (isString(value)) {
-        res = value;
+        ṙёѕ = value;
     } else if (isArray(value)) {
-        for (let i = 0; i < value.length; i++) {
-            const normalized = normalizeClass(value[i]);
-            if (normalized) {
-                res += normalized + ' ';
+        for (let ı = 0; ı < value.length; ı++) {
+            const пοŗmɑļіżёԁ = normalizeClass(value[ı]);
+            if (пοŗmɑļіżёԁ) {
+                ṙёѕ += пοŗmɑļіżёԁ + ' ';
             }
         }
     } else if (isObject(value) && !isNull(value)) {
         // Iterate own enumerable keys of the object
-        const _keys = keys(value);
-        for (let i = 0; i < _keys.length; i += 1) {
-            const key = _keys[i];
+        const _ķеүş = keys(value);
+        for (let ı = 0; ı < _ķеүş.length; ı += 1) {
+            const key = _ķеүş[ı];
             if ((value as Record<string, unknown>)[key]) {
-                res += key + ' ';
+                ṙёѕ += key + ' ';
             }
         }
     }
 
-    return StringTrim.call(res);
+    return StringTrim.call(ṙёѕ);
 }

@@ -7,7 +7,7 @@
 import type { Decorator, Identifier } from 'estree';
 
 export function isTrackDecorator(
-    decorator: Decorator | undefined
+    ԁėⅽоṙαtοŗ: Decorator | undefined
 ): decorator is Decorator & { expression: Identifier & { name: 'track' } } {
-    return decorator?.expression.type === 'Identifier' && decorator.expression.name === 'track';
+    return ԁėⅽоṙαtοŗ?.ėẋрṙёѕṡɩоṅ.type === 'Identifier' && ԁėⅽоṙαtοŗ.expression.name === 'track';
 }

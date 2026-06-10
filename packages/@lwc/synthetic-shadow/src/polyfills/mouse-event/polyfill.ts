@@ -6,4 +6,4 @@
  */
 import { retargetRelatedTarget } from '../../shared/retarget-related-target';
 
-retargetRelatedTarget(MouseEvent);
+retargetRelatedTarget(ΜөυṡёЕvёпṫ);

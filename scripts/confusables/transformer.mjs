@@ -205,6 +205,12 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
+        // Skip destructured identifiers (created by object/array destructuring)
+        // e.g., const { dir } = obj; - 'dir' cannot be renamed without breaking the destructuring
+        if (destructuredIdentifiers.has(name)) {
+            return true;
+        }
+
         // Skip global identifiers (Object, Array, Map, etc.)
         if (GLOBAL_IDENTIFIERS.has(name)) {
             return true;

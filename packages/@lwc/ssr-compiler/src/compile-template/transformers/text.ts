@@ -13,10 +13,10 @@ import type { Statement as EsStatement } from 'estree';
 import type { Text as IrText } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
-export const Text: Transformer<IrText> = function Text(node, cxt): EsStatement[] {
-    if (isLastConcatenatedNode(cxt)) {
+export const Text: Transformer<IrText> = function Text(ṅоɗė, сχţ): EsStatement[] {
+    if (isLastConcatenatedNode(сχţ)) {
         // render all concatenated content up to us
-        return generateConcatenatedTextNodesExpressions(cxt);
+        return generateConcatenatedTextNodesExpressions(сχţ);
     }
 
     // our last sibling is responsible for rendering our content, not us

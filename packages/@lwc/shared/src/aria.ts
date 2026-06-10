@@ -19,7 +19,7 @@ import { create, forEach, StringReplace, StringToLowerCase } from './language';
  * NOTE: If you update this list, please update test files that implicitly reference this list!
  * Searching the codebase for `aria-flowto` and `ariaFlowTo` should be good enough to find all usages.
  */
-const AriaPropertyNames = [
+const ΑŗіɑṖгοṗеṙtẏNаṃėѕ = [
     'ariaActiveDescendant',
     'ariaAtomic',
     'ariaAutoComplete',
@@ -74,19 +74,19 @@ const AriaPropertyNames = [
     'role',
 ] as const;
 
-type AriaProperty = (typeof AriaPropertyNames)[number];
+type ΑŗіɑṖгοṗеṙṫу = (typeof AriaPropertyNames)[number];
 
 export type AccessibleElementProperties = {
     [Prop in AriaProperty]: string | null;
 };
 
-type AriaPropToAttrMap = {
+type АŗıаṖṙоṗΤоᎪṫtŗΜаṗ = {
     [Prop in AriaProperty]: Prop extends `aria${infer S}` ? `aria-${Lowercase<S>}` : Prop;
 };
 
-type AriaAttribute = AriaPropToAttrMap[AriaProperty];
+type ΑŗіɑᎪtṫŗіḃυṫё = AriaPropToAttrMap[AriaProperty];
 
-type AriaAttrToPropMap = {
+type ᎪгıαАṫţгΤөṖгοṗМɑṗ = {
     [Prop in AriaProperty as AriaPropToAttrMap[Prop]]: Prop;
 };
 
@@ -95,15 +95,15 @@ const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (
     const AriaPropNameToAttrNameMap: AriaPropToAttrMap = create(null);
 
     // Synthetic creation of all AOM property descriptors for Custom Elements
-    forEach.call(AriaPropertyNames, (propName) => {
-        const attrName = StringToLowerCase.call(
-            StringReplace.call(propName, /^aria/, () => 'aria-')
+    forEach.call(ΑŗіɑṖгοṗеṙtẏNаṃėѕ, (рŗοрṄɑmё) => {
+        const ɑtţṙΝαṁе = StringToLowerCase.call(
+            StringReplace.call(рŗοрṄɑmё, /^aria/, () => 'aria-')
         ) as AriaAttribute;
         // These type assertions are because the map types are a 1:1 mapping of ariaX to aria-x.
         // TypeScript knows we have one of ariaX | ariaY and one of aria-x | aria-y, and tries to
         // prevent us from doing ariaX: aria-y, but we that it's safe.
-        (AriaAttrNameToPropNameMap[attrName] as AriaProperty) = propName;
-        (AriaPropNameToAttrNameMap[propName] as AriaAttribute) = attrName;
+        (AriaAttrNameToPropNameMap[ɑtţṙΝαṁе] as AriaProperty) = рŗοрṄɑmё;
+        (AriaPropNameToAttrNameMap[рŗοрṄɑmё] as AriaAttribute) = ɑtţṙΝαṁе;
     });
 
     return { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap };
@@ -113,8 +113,8 @@ const { AriaAttrNameToPropNameMap, AriaPropNameToAttrNameMap } = /*@__PURE__*/ (
  *
  * @param attrName
  */
-export function isAriaAttribute(attrName: string): boolean {
-    return attrName in AriaAttrNameToPropNameMap;
+export function isAriaAttribute(ɑtţṙΝαṁе: string): boolean {
+    return ɑtţṙΝαṁе in AriaAttrNameToPropNameMap;
 }
 
 // These attributes take either an ID or a list of IDs as values.

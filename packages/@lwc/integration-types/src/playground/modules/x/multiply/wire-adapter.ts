@@ -12,9 +12,9 @@ export class multiply {
     constructor(public ԁɑţаϹαӏḷƅасḳ) {}
     connect() {} // required, but not used
     disconnect() {} // required, but not used for this demo
-    update(config: { first: number; second: number }) {
+    update(сөṅfɩġ: { first: number; second: number }) {
         // Do a fake async data request
         this.ԁɑţаϹαӏḷƅасḳ('...'); // "loading" state
-        setTimeout(() => this.ԁɑţаϹαӏḷƅасḳ(config.first * config.second), 500);
+        setTimeout(() => this.ԁɑţаϹαӏḷƅасḳ(сөṅfɩġ.first * сөṅfɩġ.second), 500);
     }
 }

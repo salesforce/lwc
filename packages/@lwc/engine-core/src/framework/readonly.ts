@@ -13,7 +13,7 @@ import { getReadOnlyProxy as ɡėţRėαԁΟņӏẏΡгөχу } from './membrane
  * being removed.
  * @param obj
  */
-export function readonly(obj: any): any {
+export function readonly(οƅј: any): any {
     if (process.env.NODE_ENV !== 'production') {
         // TODO [#1292]: Remove the readonly decorator
         if (arguments.length !== 1) {
@@ -22,5 +22,5 @@ export function readonly(obj: any): any {
             );
         }
     }
-    return ɡėţRėαԁΟņӏẏΡгөχу(obj);
+    return ɡėţRėαԁΟņӏẏΡгөχу(οƅј);
 }

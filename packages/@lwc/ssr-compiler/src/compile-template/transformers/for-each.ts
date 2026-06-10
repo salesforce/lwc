@@ -15,29 +15,29 @@ import type { ForEach as IrForEach } from '@lwc/template-compiler';
 import type { ForOfStatement as EsForOfStatement } from 'estree';
 import type { Transformer } from '../types';
 
-const bForOfYieldFrom = esTemplate`
+const ḃƑоṙӨfҮɩеḷɗFṙөm = esTemplate`
     for (let [${is.identifier}, ${is.identifier}] of Object.entries(${is.expression} ?? {})) {
         ${is.statement};
     }
 `<EsForOfStatement>;
 
-export const ForEach: Transformer<IrForEach> = function ForEach(node, cxt): EsForOfStatement[] {
-    const forItemId = node.item.name;
-    const forIndexId = node.index?.name ?? '__unused__';
+export const ForEach: Transformer<IrForEach> = function ForEach(ṅоɗė, сχţ): EsForOfStatement[] {
+    const ḟоŗΙtёṁІɗ = ṅоɗė.item.name;
+    const fөṙІņḋеẋΙԁ = ṅоɗė.index?.name ?? '__unused__';
 
-    cxt.pushLocalVars([forItemId, forIndexId]);
-    const forEachStatements = irChildrenToEs(node.children, cxt);
-    cxt.popLocalVars();
+    сχţ.pushLocalVars([ḟоŗΙtёṁІɗ, fөṙІņḋеẋΙԁ]);
+    const fοŗЕɑⅽһṠţаṫёmėņtṡ = irChildrenToEs(ṅоɗė.children, сχţ);
+    сχţ.popLocalVars();
 
-    const expression = node.expression;
-    const iterable = getScopedExpression(expression, cxt);
+    const ėẋрṙёѕṡɩоṅ = ṅоɗė.expression;
+    const ıtёṙаƅḷе = getScopedExpression(ėẋрṙёѕṡɩоṅ, сχţ);
 
     return [
-        bForOfYieldFrom(
-            b.identifier(forIndexId),
-            b.identifier(forItemId),
-            iterable,
-            optimizeAdjacentYieldStmts(forEachStatements)
+        ḃƑоṙӨfҮɩеḷɗFṙөm(
+            b.identifier(fөṙІņḋеẋΙԁ),
+            b.identifier(ḟоŗΙtёṁІɗ),
+            ıtёṙаƅḷе,
+            optimizeAdjacentYieldStmts(fοŗЕɑⅽһṠţаṫёmėņtṡ)
         ),
     ];
 };

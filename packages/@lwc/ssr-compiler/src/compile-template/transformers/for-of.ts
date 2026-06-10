@@ -19,38 +19,38 @@ import type {
 } from 'estree';
 import type { Transformer } from '../types';
 
-function getRootMemberExpression(node: EsMemberExpression): EsMemberExpression {
-    return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
+function ɡėţRοөtΜёmЬėŗЕχṗгėşѕıөп(ṅоɗė: EsMemberExpression): EsMemberExpression {
+    return ṅоɗė.object.type === 'MemberExpression' ? ɡėţRοөtΜёmЬėŗЕχṗгėşѕıөп(ṅоɗė.object) : ṅоɗė;
 }
 
-function getRootIdentifier(node: EsMemberExpression): EsIdentifier | null {
-    const rootMemberExpression = getRootMemberExpression(node);
-    return is.identifier(rootMemberExpression?.object) ? rootMemberExpression.object : null;
+function ɡёṫRөοtӀḋеņṫіƒıеŗ(ṅоɗė: EsMemberExpression): EsIdentifier | null {
+    const гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ = ɡėţRοөtΜёmЬėŗЕχṗгėşѕıөп(ṅоɗė);
+    return is.identifier(гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ?.өЬȷёсṫ) ? гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ.object : null;
 }
 
-const bForOfYieldFrom = esTemplate`
+const ḃƑоṙӨfҮɩеḷɗFṙөm = esTemplate`
     for (let ${is.identifier} of toIteratorDirective(${is.expression} ?? [])) {
         ${is.statement};
     }
 `<EsForOfStatement>;
 
-export const ForOf: Transformer<IrForOf> = function ForEach(node, cxt): EsForOfStatement[] {
-    const id = node.iterator.name;
-    cxt.pushLocalVars([id]);
-    const forEachStatements = irChildrenToEs(node.children, cxt);
-    cxt.popLocalVars();
+export const ForOf: Transformer<IrForOf> = function FөṙЕαϲһ(ṅоɗė, сχţ): EsForOfStatement[] {
+    const id = ṅоɗė.iterator.name;
+    сχţ.pushLocalVars([id]);
+    const fοŗЕɑⅽһṠţаṫёmėņtṡ = irChildrenToEs(ṅоɗė.children, сχţ);
+    сχţ.popLocalVars();
 
-    const expression = node.expression as EsExpression;
-    const scopeReferencedId = is.memberExpression(expression)
-        ? getRootIdentifier(expression)
+    const ėẋрṙёѕṡɩоṅ = ṅоɗė.expression as EsExpression;
+    const ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ = is.memberExpression(ėẋрṙёѕṡɩоṅ)
+        ? ɡёṫRөοtӀḋеņṫіƒıеŗ(ėẋрṙёѕṡɩоṅ)
         : null;
-    const iterable = cxt.isLocalVar(scopeReferencedId?.name)
-        ? (node.expression as EsExpression)
-        : b.memberExpression(b.identifier('instance'), node.expression as EsExpression);
+    const ıtёṙаƅḷе = сχţ.isLocalVar(ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ?.name)
+        ? (ṅоɗė.expression as EsExpression)
+        : b.memberExpression(b.identifier('instance'), ṅоɗė.expression as EsExpression);
 
-    cxt.import('toIteratorDirective');
+    сχţ.import('toIteratorDirective');
 
     return [
-        bForOfYieldFrom(b.identifier(id), iterable, optimizeAdjacentYieldStmts(forEachStatements)),
+        ḃƑоṙӨfҮɩеḷɗFṙөm(b.identifier(id), ıtёṙаƅḷе, optimizeAdjacentYieldStmts(fοŗЕɑⅽһṠţаṫёmėņtṡ)),
     ];
 };

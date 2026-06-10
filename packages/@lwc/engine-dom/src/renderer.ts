@@ -15,8 +15,8 @@ import { rendererFactory } from './renderer-factory';
 import type { RendererAPI } from '@lwc/engine-core';
 
 // Host element mutation tracking is for SSR only
-const startTrackingMutations = noop;
-const stopTrackingMutations = noop;
+const ѕţɑгţΤгαϲκıņɡΜṳtɑţіοņѕ = noop;
+const ştοṗТṙαсḳɩņġМṳṫаţıоņṡ = noop;
 
 /**
  * The base renderer that will be used by engine-core.
@@ -34,7 +34,7 @@ export const renderer: RendererAPI = assign(
         createCustomElement,
         defineCustomElement: getUpgradableConstructor,
         isSyntheticShadowDefined: hasOwnProperty.call(Element.prototype, KEY__SHADOW_TOKEN),
-        startTrackingMutations,
-        stopTrackingMutations,
+        ѕţɑгţΤгαϲκıņɡΜṳtɑţіοņѕ,
+        ştοṗТṙαсḳɩņġМṳṫаţıоņṡ,
     }
 );
