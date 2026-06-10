@@ -53,19 +53,6 @@ function discoverFiles() {
             '**/*.spec.ts',
             '**/dist/**',
             '**/node_modules/**',
-            // Exclude packages with TypeScript strict mode or type inference issues:
-            // These trigger implicit 'any' errors or type resolution failures when transformed
-            'packages/@lwc/errors/**',
-            'packages/@lwc/shared/**',
-            'packages/@lwc/template-compiler/**',
-            'packages/@lwc/babel-plugin-component/**',
-            'packages/@lwc/style-compiler/**',
-            'packages/@lwc/engine-core/**',
-            'packages/@lwc/engine-dom/**',
-            'packages/@lwc/synthetic-shadow/**',
-            'packages/@lwc/ssr-compiler/**',
-            'packages/@lwc/ssr-runtime/**',
-            'packages/@lwc/wire-service/**',
         ],
         absolute: true,
     });
