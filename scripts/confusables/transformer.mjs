@@ -205,21 +205,6 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
-        // Skip function parameter names (anywhere they appear)
-        if (parameterNames.has(name)) {
-            return true;
-        }
-
-        // Skip destructured identifiers (from const { x } = ..., etc.)
-        if (destructuredIdentifiers.has(name)) {
-            return true;
-        }
-
-        // Skip identifiers used in shorthand properties ({ x } means { x: x })
-        if (shorthandPropertyIdentifiers.has(name)) {
-            return true;
-        }
-
         // Skip global identifiers (Object, Array, Map, etc.)
         if (GLOBAL_IDENTIFIERS.has(name)) {
             return true;
@@ -230,7 +215,7 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
-        // Skip public identifiers
+        // Skip public identifiers (exported names only, not their internal implementation)
         if (publicIdentifiers.has(name)) {
             return true;
         }
@@ -246,10 +231,11 @@ export function transformSource(ast, source, analysis) {
         }
 
         // Skip if it's a property key in object literal (might be public API)
-        // This includes shorthand properties like { get, set }
+        // But allow shorthand properties to be transformed
         if (
             path.parent?.type === 'ObjectProperty' &&
-            (path.parent.key === path.node || path.parent.shorthand) &&
+            path.parent.key === path.node &&
+            !path.parent.shorthand &&
             !path.parent.computed
         ) {
             return true;
