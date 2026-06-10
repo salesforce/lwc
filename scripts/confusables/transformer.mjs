@@ -241,6 +241,23 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
+        // Skip if it's a property key or value in object destructuring pattern
+        // e.g., const { dir } = obj; - 'dir' must match the actual property name
+        // For shorthand { dir }, both key and value must be skipped
+        if (
+            path.parent?.type === 'ObjectProperty' &&
+            path.parentPath?.parent?.type === 'ObjectPattern'
+        ) {
+            // Skip if it's the key
+            if (path.parent.key === path.node) {
+                return true;
+            }
+            // Skip if it's the value in a shorthand property
+            if (path.parent.shorthand && path.parent.value === path.node) {
+                return true;
+            }
+        }
+
         // Skip if it's a method key in object/class
         if (
             (path.parent?.type === 'ObjectMethod' || path.parent?.type === 'ClassMethod') &&
