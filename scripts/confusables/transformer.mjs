@@ -296,10 +296,14 @@ export function transformSource(ast, source, analysis) {
             // Transform the identifier
             const transformed = transformIdentifier(name);
 
-            if (transformed !== name && path.node.start != null && path.node.end != null) {
+            if (transformed !== name && path.node.start != null) {
+                // For identifiers with type annotations, we need to only replace the name part
+                // not the entire node which might include `: Type`
+                // Calculate the end position as start + name length
+                const identifierEnd = path.node.start + name.length;
                 replacements.push({
                     start: path.node.start,
-                    end: path.node.end,
+                    end: identifierEnd,
                     text: transformed,
                 });
             }
