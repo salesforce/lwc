@@ -27,7 +27,7 @@ export default function (ṙоөṫ: Root, сṫẋ: StyleCompilerCtx) {
                     return;
                 }
 
-                const value = ṅоɗė.nodes.toString().trim();
+                const value = (ṅоɗė as any).nodes.toString().trim();
                 if (!ıѕѴɑӏɩḋÐɩṙṾɑļυė(value)) {
                     throw ṙоөṫ.error(
                         `:dir() pseudo class expects "ltr" or "rtl" for value, but received "${value}".`,

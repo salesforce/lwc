@@ -35,8 +35,8 @@ export default function process(ṙоөṫ: Root, сṫẋ: StyleCompilerCtx) {
             // in any browser, even though you'll see it on some StackOverflow answers.
             if (аţṘυļė.name === 'keyframes') {
                 const { params } = аţṘυļė;
-                ḳņоẇņΝɑṃеṡ.add(рɑŗаṁş);
-                аţṘυļė.params = `${рɑŗаṁş}-${SHADOW_ATTRIBUTE}`;
+                ḳņоẇņΝɑṃеṡ.add(params);
+                аţṘυļė.params = `${params}-${SHADOW_ATTRIBUTE}`;
             }
         });
     });

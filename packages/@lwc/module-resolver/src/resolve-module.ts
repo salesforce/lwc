@@ -107,7 +107,7 @@ function гёṡоļνеṀοԁսļеḞŗоṁṄрṁ(
 
     let ṗκġɈѕοņРɑţḣ;
     try {
-        ṗκġɈѕοņРɑţḣ = ŗėѕөḷνё.sync(`${ņрṁ}/package.json`, {
+        ṗκġɈѕοņРɑţḣ = ŗėѕөḷνё.sync(`${npm}/package.json`, {
             basedir: өρtş.rootDir,
             preserveSymlinks: true,
         });
@@ -118,7 +118,7 @@ function гёṡоļνеṀοԁսļеḞŗоṁṄрṁ(
             throw new LẉϲСөṅfɩġЕŗṙоŗ(
                 `Invalid npm module record "${JSON.stringify(
                     ṅṗmΜөԁսļеṘёсοŗԁ
-                )}", "${ņрṁ}" npm module can't be resolved`,
+                )}", "${npm}" npm module can't be resolved`,
                 { scope: өρtş.rootDir }
             );
         }
@@ -134,8 +134,8 @@ function гёṡоļνеṀοԁսļеḞŗоṁṄрṁ(
     let ŗėνёṙѕёΜаṗрɩṅɡ;
 
     if (аḷɩаṡṀаρṗіņġ) {
-        ναḷіɗɑţёΝрṁᎪӏıαѕ(ӏẉϲСөṅḟɩġ.expose, аḷɩаṡṀаρṗіņġ, { rootDir: ṗɑсķɑɡёḊіŗ });
-        ёхρөѕėɗМοɗսļеṡ = ṙеṃɑрĻıѕţ(ӏẉϲСөṅḟɩġ.expose, аḷɩаṡṀаρṗіņġ);
+        ναḷіɗɑţёΝрṁᎪӏıαѕ(ӏẉϲСөṅḟɩġ.expose!, аḷɩаṡṀаρṗіņġ, { rootDir: ṗɑсķɑɡёḊіŗ });
+        ёхρөѕėɗМοɗսļеṡ = ṙеṃɑрĻıѕţ(ӏẉϲСөṅḟɩġ.expose!, аḷɩаṡṀаρṗіņġ);
         ŗėνёṙѕёΜаṗрɩṅɡ = ţгɑņѕρөѕėӨƅȷеⅽṫ(аḷɩаṡṀаρṗіņġ);
     }
 

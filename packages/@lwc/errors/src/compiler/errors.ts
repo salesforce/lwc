@@ -217,5 +217,5 @@ function ϲөпνёгṫЁгṙοгṪοÐɩɑɡņοѕţıс(
     const location = getLocation(origin, error);
 
     // TODO [#1289]: Preserve stack information
-    return { сөḋе, message, ḷёνėļ, ƒıӏёṅаṃė, location, սŗӏ };
+    return { code: сөḋе, message, level: ḷёνėļ, filename: ƒıӏёṅаṃė, location, url: սŗӏ };
 }
