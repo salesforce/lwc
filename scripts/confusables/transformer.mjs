@@ -205,11 +205,8 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
-        // Skip destructured identifiers (created by object/array destructuring)
-        // e.g., const { dir } = obj; - 'dir' cannot be renamed without breaking the destructuring
-        if (destructuredIdentifiers.has(name)) {
-            return true;
-        }
+        // Don't skip destructured identifiers - we'll handle them with aliases
+        // e.g., const { dir } = obj; becomes const { dir: ḋɩṙ } = obj;
 
         // Skip global identifiers (Object, Array, Map, etc.)
         if (GLOBAL_IDENTIFIERS.has(name)) {
@@ -247,21 +244,19 @@ export function transformSource(ast, source, analysis) {
             return true;
         }
 
-        // Skip if it's a property key or value in object destructuring pattern
-        // e.g., const { dir } = obj; - 'dir' must match the actual property name
-        // For shorthand { dir }, both key and value must be skipped
+        // Handle object destructuring patterns specially
+        // e.g., const { dir } = obj; becomes const { dir: ḋɩṙ } = obj;
         if (
             path.parent?.type === 'ObjectProperty' &&
             path.parentPath?.parent?.type === 'ObjectPattern'
         ) {
-            // Skip if it's the key
+            // Always skip the key (must match source property)
             if (path.parent.key === path.node) {
                 return true;
             }
-            // Skip if it's the value in a shorthand property
-            if (path.parent.shorthand && path.parent.value === path.node) {
-                return true;
-            }
+            // For shorthand properties, we need to expand to non-shorthand
+            // This is handled below by transforming the value
+            // Don't skip the value - let it be transformed
         }
 
         // Skip if it's a method key in object/class
@@ -308,11 +303,48 @@ export function transformSource(ast, source, analysis) {
         return false;
     }
 
+    // Track shorthand destructuring that needs to be expanded
+    const shorthandExpansions = [];
+
     traverse(ast, {
+        // Expand shorthand object destructuring to aliased form
+        ObjectProperty(path) {
+            if (
+                path.node.shorthand &&
+                path.parent?.type === 'ObjectPattern' &&
+                path.node.value.type === 'Identifier'
+            ) {
+                const name = path.node.value.name;
+                const transformed = transformIdentifier(name);
+
+                if (transformed !== name && path.node.start != null) {
+                    // Expand { dir } to { dir: ḋɩṙ }
+                    // We need to add ": transformed" after the key
+                    const keyEnd = path.node.key.start + name.length;
+                    shorthandExpansions.push({
+                        start: keyEnd,
+                        end: keyEnd,
+                        text: `: ${transformed}`,
+                    });
+                }
+            }
+        },
+
         Identifier(path) {
             const name = path.node.name;
 
             if (shouldSkip(path, name)) {
+                return;
+            }
+
+            // Skip if this is the value in a shorthand destructuring that we're expanding
+            if (
+                path.parent?.type === 'ObjectProperty' &&
+                path.parent.shorthand &&
+                path.parent.value === path.node &&
+                path.parentPath?.parent?.type === 'ObjectPattern'
+            ) {
+                // This will be handled by shorthandExpansions
                 return;
             }
 
@@ -332,6 +364,9 @@ export function transformSource(ast, source, analysis) {
             }
         },
     });
+
+    // Merge shorthand expansions into replacements
+    replacements.push(...shorthandExpansions);
 
     // Apply replacements from end to start (to maintain offsets)
     replacements.sort((a, b) => b.start - a.start);
