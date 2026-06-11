@@ -7,38 +7,38 @@
 import { HostAttributesKey, HostNamespaceKey } from '../types';
 import type { HostElement } from '../types';
 
-const ёḷеṃėпţṡТөΤгαϲκƑοгṀսtαṫіөṅѕ: WeakSet<HostElement> = new WeakSet();
+const elementsToTrackForMutations: WeakSet<HostElement> = new WeakSet();
 
-const ΜṲТΑṪІΟṄ_ΤŖΑСḲΙΝĢ_АṪΤRӀΒUṪΕ = 'data-lwc-host-mutated';
+const MUTATION_TRACKING_ATTRIBUTE = 'data-lwc-host-mutated';
 
-export function reportMutation(ėӏёṁеņṫ: HostElement, ɑţţṙіƅսţёNɑṁё: string) {
-    if (ёḷеṃėпţṡТөΤгαϲκƑοгṀսtαṫіөṅѕ.has(ėӏёṁеņṫ)) {
-        const еχɩѕṫɩпġṀυţɑţіοņАṫţгıƅυṫё = ėӏёṁеņṫ[HostAttributesKey].find(
-            (ɑṫţṙ) => ɑṫţṙ.name === ΜṲТΑṪІΟṄ_ΤŖΑСḲΙΝĢ_АṪΤRӀΒUṪΕ && ɑṫţṙ[HostNamespaceKey] === null
+export function reportMutation(element: HostElement, attributeName: string) {
+    if (elementsToTrackForMutations.has(element)) {
+        const existingMutationAttribute = element[HostAttributesKey].find(
+            (attr) => attr.name === MUTATION_TRACKING_ATTRIBUTE && attr[HostNamespaceKey] === null
         );
-        const ɑţţṙΝαṁеѴɑӏṳėѕ = new Set(
-            еχɩѕṫɩпġṀυţɑţіοņАṫţгıƅυṫё ? еχɩѕṫɩпġṀυţɑţіοņАṫţгıƅυṫё.value.split(' ') : []
+        const attrNameValues = new Set(
+            existingMutationAttribute ? existingMutationAttribute.value.split(' ') : []
         );
-        ɑţţṙΝαṁеѴɑӏṳėѕ.add(ɑţţṙіƅսţёNɑṁё.toLowerCase());
+        attrNameValues.add(attributeName.toLowerCase());
 
-        const ņеẇṀυṫαṫıөṅАţṫгɩḃυţėѴαḷυё = [...ɑţţṙΝαṁеѴɑӏṳėѕ].sort().join(' ');
+        const newMutationAttributeValue = [...attrNameValues].sort().join(' ');
 
-        if (еχɩѕṫɩпġṀυţɑţіοņАṫţгıƅυṫё) {
-            еχɩѕṫɩпġṀυţɑţіοņАṫţгıƅυṫё.value = ņеẇṀυṫαṫıөṅАţṫгɩḃυţėѴαḷυё;
+        if (existingMutationAttribute) {
+            existingMutationAttribute.value = newMutationAttributeValue;
         } else {
-            ėӏёṁеņṫ[HostAttributesKey].push({
-                name: ΜṲТΑṪІΟṄ_ΤŖΑСḲΙΝĢ_АṪΤRӀΒUṪΕ,
+            element[HostAttributesKey].push({
+                name: MUTATION_TRACKING_ATTRIBUTE,
                 [HostNamespaceKey]: null,
-                value: ņеẇṀυṫαṫıөṅАţṫгɩḃυţėѴαḷυё,
+                value: newMutationAttributeValue,
             });
         }
     }
 }
 
-export function startTrackingMutations(ėӏёṁеņṫ: HostElement) {
-    ёḷеṃėпţṡТөΤгαϲκƑοгṀսtαṫіөṅѕ.add(ėӏёṁеņṫ);
+export function startTrackingMutations(element: HostElement) {
+    elementsToTrackForMutations.add(element);
 }
 
-export function stopTrackingMutations(ėӏёṁеņṫ: HostElement) {
-    ёḷеṃėпţṡТөΤгαϲκƑοгṀսtαṫіөṅѕ.delete(ėӏёṁеņṫ);
+export function stopTrackingMutations(element: HostElement) {
+    elementsToTrackForMutations.delete(element);
 }

@@ -10,13 +10,13 @@ export interface SanitizeHtmlContentHook {
     (content: unknown): string;
 }
 
-interface ΟṿеṙŗіḋαЬḷėНөοκş {
+interface OverridableHooks {
     sanitizeHtmlContent: SanitizeHtmlContentHook;
 }
 
-let ḣөоḳşАṙёЅėţ = false;
+let hooksAreSet = false;
 
-let şɑпɩṫіẓėНţṃḷⅭоṅţеṅţІṁṗӏ: SanitizeHtmlContentHook = (): string => {
+let sanitizeHtmlContentImpl: SanitizeHtmlContentHook = (): string => {
     // locker-service patches this function during runtime to sanitize HTML content.
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 };
@@ -28,11 +28,11 @@ let şɑпɩṫіẓėНţṃḷⅭоṅţеṅţІṁṗӏ: SanitizeHtmlContent
  * It is meant to be overridden via `setHooks`; it throws an error by default.
  */
 export const sanitizeHtmlContent: SanitizeHtmlContentHook = (value) => {
-    return şɑпɩṫіẓėНţṃḷⅭоṅţеṅţІṁṗӏ(value);
+    return sanitizeHtmlContentImpl(value);
 };
 
-export function setHooks(ћоοķѕ: ΟṿеṙŗіḋαЬḷėНөοκş) {
-    assert.isFalse(ḣөоḳşАṙёЅėţ, 'Hooks are already overridden, only one definition is allowed.');
-    ḣөоḳşАṙёЅėţ = true;
-    şɑпɩṫіẓėНţṃḷⅭоṅţеṅţІṁṗӏ = ћоοķѕ.sanitizeHtmlContent;
+export function setHooks(hooks: OverridableHooks) {
+    assert.isFalse(hooksAreSet, 'Hooks are already overridden, only one definition is allowed.');
+    hooksAreSet = true;
+    sanitizeHtmlContentImpl = hooks.sanitizeHtmlContent;
 }

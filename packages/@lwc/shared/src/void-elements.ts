@@ -11,7 +11,7 @@ import { HTML_NAMESPACE } from './namespaces';
 // e.g. `</tagName>` or `<tagName />`. For instance, `<meta>` closes on its own; no need for a slash.
 // These only come from HTML; there are no void elements in the SVG or MathML namespaces.
 // See: https://html.spec.whatwg.org/multipage/syntax.html#syntax-tags
-const ѴОΙÐ_ΕĻЕΜЁṄΤЅ = [
+const VOID_ELEMENTS = [
     'area',
     'base',
     'br',
@@ -30,15 +30,15 @@ const ѴОΙÐ_ΕĻЕΜЁṄΤЅ = [
 // These elements have been deprecated but preserving their usage for backwards compatibility
 // until we can officially deprecate them from LWC.
 // See: https://html.spec.whatwg.org/multipage/obsolete.html#obsolete-but-conforming-features
-const ḊЁРṘЁСΑṪЕḊ_ѴΟІÐ_ЕĻΕМЁΝТŞ = ['param', 'keygen', 'menuitem'];
+const DEPRECATED_VOID_ELEMENTS = ['param', 'keygen', 'menuitem'];
 
-const ѴОΙÐ_ΕĻЕΜЁNṪЅ_ŞЕΤ = /*@__PURE__*/ new Set([...ѴОΙÐ_ΕĻЕΜЁṄΤЅ, ...ḊЁРṘЁСΑṪЕḊ_ѴΟІÐ_ЕĻΕМЁΝТŞ]);
+const VOID_ELEMENTS_SET = /*@__PURE__*/ new Set([...VOID_ELEMENTS, ...DEPRECATED_VOID_ELEMENTS]);
 
 /**
  *
  * @param name
  * @param namespace
  */
-export function isVoidElement(name: string, ņаṁёѕραсė: string): boolean {
-    return ņаṁёѕραсė === HTML_NAMESPACE && ѴОΙÐ_ΕĻЕΜЁNṪЅ_ŞЕΤ.has(name.toLowerCase());
+export function isVoidElement(name: string, namespace: string): boolean {
+    return namespace === HTML_NAMESPACE && VOID_ELEMENTS_SET.has(name.toLowerCase());
 }

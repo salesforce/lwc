@@ -7,13 +7,13 @@
 import type { Root } from 'postcss-selector-parser';
 import type { StyleCompilerCtx } from '../utils/error-recovery';
 
-export default function (ṙоөṫ: Root, сṫẋ: StyleCompilerCtx) {
-    ṙоөṫ.walkIds((ṅоɗė) => {
-        сṫẋ.withErrorRecovery(() => {
-            const message = `Invalid usage of id selector '#${ṅоɗė.value}'. Try using a class selector or some other selector.`;
-            throw ṙоөṫ.error(message, {
-                index: ṅоɗė.sourceIndex,
-                word: ṅоɗė.value,
+export default function (root: Root, ctx: StyleCompilerCtx) {
+    root.walkIds((node) => {
+        ctx.withErrorRecovery(() => {
+            const message = `Invalid usage of id selector '#${node.value}'. Try using a class selector or some other selector.`;
+            throw root.error(message, {
+                index: node.sourceIndex,
+                word: node.value,
             });
         });
     });

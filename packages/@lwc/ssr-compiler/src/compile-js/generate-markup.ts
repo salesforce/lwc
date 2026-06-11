@@ -15,7 +15,7 @@ import type { CompilationMode } from '@lwc/shared';
 import type { Program } from 'estree';
 import type { ComponentMetaState } from './types';
 
-const ЬŞėtŞṫаţıсӀṅṫёṙпαḷѕ = esTemplate`__setStaticInternals(
+const bSetStaticInternals = esTemplate`__setStaticInternals(
 ${/* Component */ is.identifier},
 ${/* tag name */ is.literal},
 ${/* public props */ is.arrayExpression},
@@ -37,43 +37,43 @@ ${/* default template */ is.identifier}
  *  - deferring to the template function for yielding child content
  */
 export function addGenerateMarkupFunction(
-    ρгөġгαṁ: Program,
-    ṡṫαṫе: ComponentMetaState,
-    ṫαɡΝαṃė: string,
-    ƒıӏёṅаṃė: string,
-    ϲөmρɩӏɑţіοṅМөḋе: CompilationMode
+    program: Program,
+    state: ComponentMetaState,
+    tagName: string,
+    filename: string,
+    compilationMode: CompilationMode
 ) {
-    const { publicProperties } = ṡṫαṫе;
+    const { publicProperties } = state;
 
     // The default tag name represents the component name that's passed to the transformer.
     // This is needed to generate markup for dynamic components which are invoked through
     // the generateMarkup function on the constructor.
     // At the time of generation, the invoker does not have reference to its tag name to pass as an argument.
-    const ɗėfαսӏţΤаģṄаṃė = b.literal(ṫαɡΝαṃė);
+    const defaultTagName = b.literal(tagName);
     // Use the default export identifier if available; fall back to the class name.
-    const ёхρөгṫёԁΙɗėпţıfɩėг = b.identifier((ṡṫαṫе.lwcDefaultExportName ?? ṡṫαṫе.lwcClassName)!);
+    const exportedIdentifier = b.identifier((state.lwcDefaultExportName ?? state.lwcClassName)!);
 
-    const ԁėƒаսļṫΤṃрӏṖɑţћ = `./${pathParse(ƒıӏёṅаṃė).name}.html`;
-    const ţṃρļѴɑŗ = b.identifier('__lwcTmpl');
-    ρгөġгαṁ.body.unshift(bImportDeclaration({ default: ţṃρļѴɑŗ.name }, ԁėƒаսļṫΤṃрӏṖɑţћ));
+    const defaultTmplPath = `./${pathParse(filename).name}.html`;
+    const tmplVar = b.identifier('__lwcTmpl');
+    program.body.unshift(bImportDeclaration({ default: tmplVar.name }, defaultTmplPath));
 
     // If no wire adapters are detected on the component, we don't bother injecting the wire-related code.
-    const ẇɩгėᎪԁɑṗtėṙӀпḟө =
-        ṡṫαṫе.wireAdapters.length > 0 ? bWireAdaptersPlumbing(ṡṫαṫе.wireAdapters) : b.literal(null);
+    const wireAdapterInfo =
+        state.wireAdapters.length > 0 ? bWireAdaptersPlumbing(state.wireAdapters) : b.literal(null);
 
-    ρгөġгαṁ.body.unshift(
+    program.body.unshift(
         bImportDeclaration({
             setStaticInternals: '__setStaticInternals',
         })
     );
-    ρгөġгαṁ.body.push(
-        ЬŞėtŞṫаţıсӀṅṫёṙпαḷѕ(
-            ёхρөгṫёԁΙɗėпţıfɩėг,
-            ɗėfαսӏţΤаģṄаṃė,
-            b.arrayExpression([...ṗսЬļıсṖṙоṗёṙţɩėѕ.keys()].map(b.literal)),
-            ẇɩгėᎪԁɑṗtėṙӀпḟө,
-            b.literal(ϲөmρɩӏɑţіοṅМөḋе),
-            ţṃρļѴɑŗ
+    program.body.push(
+        bSetStaticInternals(
+            exportedIdentifier,
+            defaultTagName,
+            b.arrayExpression([...publicProperties.keys()].map(b.literal)),
+            wireAdapterInfo,
+            b.literal(compilationMode),
+            tmplVar
         )
     );
 }

@@ -37,35 +37,35 @@ import type {
     Literal as IrLiteral,
 } from '@lwc/template-compiler';
 
-const ḃΥɩėӏɗΤеŗṅɑŗу =
+const bYieldTernary =
     esTemplateWithYield`yield ${is.expression} ? ${is.expression} : ${is.expression}`<EsExpressionStatement>;
 
-interface ОρţіṁɩẓɑƅӏёΥıёӏḋ extends EsExpressionStatement {
+interface OptimizableYield extends EsExpressionStatement {
     expression: EsYieldExpression & { delegate: false };
 }
 
-const ƅΟрţımɩżеɗẎıеļḋ = esTemplateWithYield`yield ${is.expression};`<OptimizableYield>;
+const bOptimizedYield = esTemplateWithYield`yield ${is.expression};`<OptimizableYield>;
 
-function іşΟрţımɩżаЬḷёΥıёӏḋ(ѕţṁt: EsStatement | undefined): stmt is OptimizableYield {
+function isOptimizableYield(stmt: EsStatement | undefined): stmt is OptimizableYield {
     return (
-        is.expressionStatement(ѕţṁt) &&
-        is.yieldExpression(ѕţṁt.expression) &&
-        ѕţṁt.expression.delegate === false
+        is.expressionStatement(stmt) &&
+        is.yieldExpression(stmt.expression) &&
+        stmt.expression.delegate === false
     );
 }
 
 /** Returns null if the statement cannot be optimized. */
-function οрţıṁɩżеŞıņɡḷёЅṫαtėṃеṅţ(ѕţṁt: EsStatement): OptimizableYield | null {
-    if (is.blockStatement(ѕţṁt)) {
+function optimizeSingleStatement(stmt: EsStatement): OptimizableYield | null {
+    if (is.blockStatement(stmt)) {
         // `if (cond) { ... }` => optimize inner yields and see if we can condense
-        const οрţıṃɩżеɗΒӏөϲκ = optimizeAdjacentYieldStmts(ѕţṁt.body);
+        const optimizedBlock = optimizeAdjacentYieldStmts(stmt.body);
         // More than one statement cannot be optimized into a single yield
-        if (οрţıṃɩżеɗΒӏөϲκ.length !== 1) return null;
-        const [οṗtıṃіżёԁ] = οрţıṃɩżеɗΒӏөϲκ;
-        return іşΟрţımɩżаЬḷёΥıёӏḋ(οṗtıṃіżёԁ) ? οṗtıṃіżёԁ : null;
-    } else if (is.expressionStatement(ѕţṁt)) {
+        if (optimizedBlock.length !== 1) return null;
+        const [optimized] = optimizedBlock;
+        return isOptimizableYield(optimized) ? optimized : null;
+    } else if (is.expressionStatement(stmt)) {
         // `if (cond) expression` => just check if expression is a yield
-        return is.yieldExpression(ѕţṁt) ? ѕţṁt : null;
+        return is.yieldExpression(stmt) ? stmt : null;
     } else {
         // Can only optimize expression/block statements
         return null;
@@ -76,73 +76,73 @@ function οрţıṁɩżеŞıņɡḷёЅṫαtėṃеṅţ(ѕţṁt: EsStatemen
  * Tries to reduce if statements that only contain yields into a single yielded ternary
  * Returns null if the statement cannot be optimized.
  */
-function өрṫɩmıẓеΙƒŞṫɑţеṁёпṫ(ѕţṁt: EsIfStatement): EsExpressionStatement | null {
-    const сοņѕėʠυėņţ = οрţıṁɩżеŞıņɡḷёЅṫαtėṃеṅţ(ѕţṁt.consequent)?.ėẋрṙёѕṡɩоṅ.αгġṳmėņt;
-    if (!сοņѕėʠυėņţ) {
+function optimizeIfStatement(stmt: EsIfStatement): EsExpressionStatement | null {
+    const consequent = optimizeSingleStatement(stmt.consequent)?.expression.argument;
+    if (!consequent) {
         return null;
     }
 
-    const ɑӏţėгņɑṫё = ѕţṁt.alternate
-        ? οрţıṁɩżеŞıņɡḷёЅṫαtėṃеṅţ(ѕţṁt.alternate)?.ėẋрṙёѕṡɩоṅ.αгġṳmėņt
+    const alternate = stmt.alternate
+        ? optimizeSingleStatement(stmt.alternate)?.expression.argument
         : b.literal('');
-    if (!ɑӏţėгņɑṫё) {
+    if (!alternate) {
         return null;
     }
 
-    return ḃΥɩėӏɗΤеŗṅɑŗу(ѕţṁt.test, сοņѕėʠυėņţ, ɑӏţėгņɑṫё);
+    return bYieldTernary(stmt.test, consequent, alternate);
 }
 
-export function optimizeAdjacentYieldStmts(ṡţαṫеṃėпţṡ: EsStatement[]): EsStatement[] {
-    return ṡţαṫеṃėпţṡ.reduce((ŗėѕṳḷṫ: EsStatement[], ѕţṁt: EsStatement): EsStatement[] => {
-        if (is.ifStatement(ѕţṁt)) {
-            const οṗtıṃіżёԁ = өрṫɩmıẓеΙƒŞṫɑţеṁёпṫ(ѕţṁt);
-            if (οṗtıṃіżёԁ) {
-                ѕţṁt = οṗtıṃіżёԁ;
+export function optimizeAdjacentYieldStmts(statements: EsStatement[]): EsStatement[] {
+    return statements.reduce((result: EsStatement[], stmt: EsStatement): EsStatement[] => {
+        if (is.ifStatement(stmt)) {
+            const optimized = optimizeIfStatement(stmt);
+            if (optimized) {
+                stmt = optimized;
             }
         }
-        const ṗṙеṿ = ŗėѕṳḷṫ.at(-1);
-        if (!іşΟрţımɩżаЬḷёΥıёӏḋ(ѕţṁt) || !іşΟрţımɩżаЬḷёΥıёӏḋ(ṗṙеṿ)) {
+        const prev = result.at(-1);
+        if (!isOptimizableYield(stmt) || !isOptimizableYield(prev)) {
             // nothing to do
-            return [...ŗėѕṳḷṫ, ѕţṁt];
+            return [...result, stmt];
         }
-        const аṙģ = ѕţṁt.expression.argument;
-        if (!аṙģ || (is.literal(аṙģ) && аṙģ.value === '')) {
+        const arg = stmt.expression.argument;
+        if (!arg || (is.literal(arg) && arg.value === '')) {
             // bare `yield` and `yield ""` amount to nothing, so we can drop them
-            return ŗėѕṳḷṫ;
+            return result;
         }
-        const ṅёwΑŗɡ = produce(ṗṙеṿ.expression.argument!, (ɗгɑƒṫ) => {
-            if (is.literal(аṙģ) && typeof аṙģ.value === 'string') {
-                let сөṅсαṫТαıӏ = ɗгɑƒṫ;
-                while (is.binaryExpression(сөṅсαṫТαıӏ) && сөṅсαṫТαıӏ.operator === '+') {
-                    сөṅсαṫТαıӏ = сөṅсαṫТαıӏ.right;
+        const newArg = produce(prev.expression.argument!, (draft) => {
+            if (is.literal(arg) && typeof arg.value === 'string') {
+                let concatTail = draft;
+                while (is.binaryExpression(concatTail) && concatTail.operator === '+') {
+                    concatTail = concatTail.right;
                 }
-                if (is.literal(сөṅсαṫТαıӏ) && typeof сөṅсαṫТαıӏ.value === 'string') {
+                if (is.literal(concatTail) && typeof concatTail.value === 'string') {
                     // conat adjacent strings now, rather than at runtime
-                    сөṅсαṫТαıӏ.value += аṙģ.value;
-                    return ɗгɑƒṫ;
+                    concatTail.value += arg.value;
+                    return draft;
                 }
             }
             // concat arbitrary values at runtime
-            return b.binaryExpression('+', ɗгɑƒṫ, аṙģ);
+            return b.binaryExpression('+', draft, arg);
         });
 
         // replace the last `+` chain with a new one with the new arg
-        return [...ŗėѕṳḷṫ.slice(0, -1), ƅΟрţımɩżеɗẎıеļḋ(ṅёwΑŗɡ)];
+        return [...result.slice(0, -1), bOptimizedYield(newArg)];
     }, []);
 }
 
-export function bAttributeValue(ṅоɗė: IrNode, ɑţţṙΝαṁе: string): EsExpression {
-    if (!('attributes' in ṅоɗė)) {
-        throw new TypeError(`Cannot get attribute value from ${ṅоɗė.type}`);
+export function bAttributeValue(node: IrNode, attrName: string): EsExpression {
+    if (!('attributes' in node)) {
+        throw new TypeError(`Cannot get attribute value from ${node.type}`);
     }
-    const ṅαṃėᎪţṫŗѴɑӏսё = ṅоɗė.attributes.find((ɑṫţṙ) => ɑṫţṙ.name === ɑţţṙΝαṁе)?.value;
-    if (!ṅαṃėᎪţṫŗѴɑӏսё) {
+    const nameAttrValue = node.attributes.find((attr) => attr.name === attrName)?.value;
+    if (!nameAttrValue) {
         return b.literal(null);
-    } else if (ṅαṃėᎪţṫŗѴɑӏսё.type === 'Literal') {
-        const name = typeof ṅαṃėᎪţṫŗѴɑӏսё.value === 'string' ? ṅαṃėᎪţṫŗѴɑӏսё.value : '';
+    } else if (nameAttrValue.type === 'Literal') {
+        const name = typeof nameAttrValue.value === 'string' ? nameAttrValue.value : '';
         return b.literal(name);
     } else {
-        return b.memberExpression(b.literal('instance'), ṅαṃėᎪţṫŗѴɑӏսё as EsExpression);
+        return b.memberExpression(b.literal('instance'), nameAttrValue as EsExpression);
     }
 }
 
@@ -152,64 +152,64 @@ export function normalizeClassAttributeValue(value: string) {
 }
 
 export function getChildAttrsOrProps(
-    αṫţŗṡ: (IrAttribute | IrProperty)[],
-    сχţ: TransformerContext
+    attrs: (IrAttribute | IrProperty)[],
+    cxt: TransformerContext
 ): EsObjectExpression {
-    const оƅȷеⅽṫАţṫгşΟгṖṙоṗṡ = αṫţŗṡ
+    const objectAttrsOrProps = attrs
         .map(({ name, value, type }) => {
             // Babel function required to align identifier validation with babel-plugin-component: https://github.com/salesforce/lwc/issues/4826
             const key = isValidES3Identifier(name) ? b.identifier(name) : b.literal(name);
-            const ṅαṃėĻоẇёг = name.toLowerCase();
+            const nameLower = name.toLowerCase();
 
             if (value.type === 'Literal' && typeof value.value === 'string') {
-                let ļıṫёṙаļṾаļυё: string | boolean = value.value;
+                let literalValue: string | boolean = value.value;
                 if (name === 'style') {
-                    ļıṫёṙаļṾаļυё = normalizeStyleAttributeValue(ļıṫёṙаļṾаļυё);
+                    literalValue = normalizeStyleAttributeValue(literalValue);
                 } else if (name === 'class') {
-                    ļıṫёṙаļṾаļυё = normalizeClassAttributeValue(ļıṫёṙаļṾаļυё);
-                    if (ļıṫёṙаļṾаļυё === '') {
+                    literalValue = normalizeClassAttributeValue(literalValue);
+                    if (literalValue === '') {
                         return; // do not render empty `class=""`
                     }
                 } else if (name === 'spellcheck') {
                     // `spellcheck` string values are specially handled to massage them into booleans:
                     // https://github.com/salesforce/lwc/blob/574ffbd/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
-                    ļıṫёṙаļṾаļυё = ļıṫёṙаļṾаļυё.toLowerCase() !== 'false';
-                } else if (ṅαṃėĻоẇёг === 'tabindex') {
+                    literalValue = literalValue.toLowerCase() !== 'false';
+                } else if (nameLower === 'tabindex') {
                     // Global HTML "tabindex" attribute is specially massaged into a stringified number
                     // This follows the historical behavior in api.ts:
                     // https://github.com/salesforce/lwc/blob/f34a347/packages/%40lwc/engine-core/src/framework/api.ts#L193-L211
 
-                    ļıṫёṙаļṾаļυё = normalizeTabIndex(ļıṫёṙаļṾаļυё);
+                    literalValue = normalizeTabIndex(literalValue);
                 }
-                return b.property('init', key, b.literal(ļıṫёṙаļṾаļυё));
+                return b.property('init', key, b.literal(literalValue));
             } else if (value.type === 'Literal' && typeof value.value === 'boolean') {
                 if (name === 'class') {
                     return; // do not render empty `class=""`
                 }
                 return b.property('init', key, b.literal(type === 'Attribute' ? '' : value.value));
             } else if (value.type === 'Identifier' || value.type === 'MemberExpression') {
-                let ṗгοṗѴɑļυė = expressionIrToEs(value, сχţ);
+                let propValue = expressionIrToEs(value, cxt);
                 if (name === 'class') {
-                    сχţ.import('normalizeClass');
-                    ṗгοṗѴɑļυė = b.callExpression(b.identifier('normalizeClass'), [ṗгοṗѴɑļυė]);
-                } else if (ṅαṃėĻоẇёг === 'tabindex') {
-                    сχţ.import('normalizeTabIndex');
-                    ṗгοṗѴɑļυė = b.callExpression(b.identifier('normalizeTabIndex'), [ṗгοṗѴɑļυė]);
+                    cxt.import('normalizeClass');
+                    propValue = b.callExpression(b.identifier('normalizeClass'), [propValue]);
+                } else if (nameLower === 'tabindex') {
+                    cxt.import('normalizeTabIndex');
+                    propValue = b.callExpression(b.identifier('normalizeTabIndex'), [propValue]);
                 }
 
-                return b.property('init', key, ṗгοṗѴɑļυė);
+                return b.property('init', key, propValue);
             }
             throw new Error(`Unimplemented child attr IR node type: ${value.type}`);
         })
         .filter(Boolean) as EsProperty[];
 
-    return b.objectExpression(оƅȷеⅽṫАţṫгşΟгṖṙоṗṡ);
+    return b.objectExpression(objectAttrsOrProps);
 }
 
 /**
  * Determine if the provided node is of type Literal
  * @param node
  */
-export function isLiteral(ṅоɗė: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
-    return ṅоɗė.type === 'Literal';
+export function isLiteral(node: IrLiteral | IrExpression | IrComplexExpression): node is IrLiteral {
+    return node.type === 'Literal';
 }

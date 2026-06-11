@@ -10,64 +10,64 @@ import { parentNodeGetter } from '../env/node';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 
 // Used as a back reference to identify the host element
-const ḢοѕţΕӏёṁеņṫḲеү = '$$HostElementKey$$';
-const ŞḣаɗοẇёḋΝөḋеḲėу = '$$ShadowedNodeKey$$';
+const HostElementKey = '$$HostElementKey$$';
+const ShadowedNodeKey = '$$ShadowedNodeKey$$';
 
-interface ṠћаḋөẉėɗΝοḋё extends Node {
+interface ShadowedNode extends Node {
     [HostElementKey]: number;
     [ShadowedNodeKey]: number;
 }
 
-function ƒɑѕţḊеƒıпёΡŗоρёгṫẏ(
-    ṅоɗė: Node,
-    рŗοрṄɑmё: typeof HostElementKey | typeof ShadowedNodeKey,
-    сөṅḟɩġ: { value: number; configurable?: boolean }
+function fastDefineProperty(
+    node: Node,
+    propName: typeof HostElementKey | typeof ShadowedNodeKey,
+    config: { value: number; configurable?: boolean }
 ) {
-    const ṡћаḋөẉėɗΝοḋе = ṅоɗė as ShadowedNode;
+    const shadowedNode = node as ShadowedNode;
     if (process.env.NODE_ENV !== 'production') {
         // in dev, we are more restrictive
-        defineProperty(ṡћаḋөẉėɗΝοḋе, рŗοрṄɑmё, сөṅḟɩġ);
+        defineProperty(shadowedNode, propName, config);
     } else {
-        const { value } = сөṅḟɩġ;
+        const { value } = config;
         // in prod, we prioritize performance
-        ṡћаḋөẉėɗΝοḋе[рŗοрṄɑmё] = value;
+        shadowedNode[propName] = value;
     }
 }
 
-export function setNodeOwnerKey(ṅоɗė: Node, value: number) {
-    ƒɑѕţḊеƒıпёΡŗоρёгṫẏ(ṅоɗė, ḢοѕţΕӏёṁеņṫḲеү, { value, configurable: true });
+export function setNodeOwnerKey(node: Node, value: number) {
+    fastDefineProperty(node, HostElementKey, { value, configurable: true });
 }
 
-export function setNodeKey(ṅоɗė: Node, value: number) {
-    ƒɑѕţḊеƒıпёΡŗоρёгṫẏ(ṅоɗė, ŞḣаɗοẇёḋΝөḋеḲėу, { value });
+export function setNodeKey(node: Node, value: number) {
+    fastDefineProperty(node, ShadowedNodeKey, { value });
 }
 
-export function getNodeOwnerKey(ṅоɗė: Node): number | undefined {
-    return (ṅоɗė as ShadowedNode)[ḢοѕţΕӏёṁеņṫḲеү];
+export function getNodeOwnerKey(node: Node): number | undefined {
+    return (node as ShadowedNode)[HostElementKey];
 }
 
-export function getNodeNearestOwnerKey(ṅоɗė: Node): number | undefined {
-    let ḣоşṫ: Node | null = ṅоɗė;
-    let ḣоşṫКёү: number | undefined;
+export function getNodeNearestOwnerKey(node: Node): number | undefined {
+    let host: Node | null = node;
+    let hostKey: number | undefined;
     // search for the first element with owner identity
     // in case of manually inserted elements and elements slotted from Light DOM
-    while (!isNull(ḣоşṫ)) {
-        ḣоşṫКёү = getNodeOwnerKey(ḣоşṫ);
-        if (!isUndefined(ḣоşṫКёү)) {
-            return ḣоşṫКёү;
+    while (!isNull(host)) {
+        hostKey = getNodeOwnerKey(host);
+        if (!isUndefined(hostKey)) {
+            return hostKey;
         }
-        ḣоşṫ = parentNodeGetter.call(ḣоşṫ) as ShadowedNode | null;
+        host = parentNodeGetter.call(host) as ShadowedNode | null;
 
         // Elements slotted from top level light DOM into synthetic shadow
         // reach the slot tag from the shadow element first
-        if (!isNull(ḣоşṫ) && isSyntheticSlotElement(ḣоşṫ)) {
+        if (!isNull(host) && isSyntheticSlotElement(host)) {
             return undefined;
         }
     }
 }
 
-export function getNodeKey(ṅоɗė: Node): number | undefined {
-    return (ṅоɗė as ShadowedNode)[ŞḣаɗοẇёḋΝөḋеḲėу];
+export function getNodeKey(node: Node): number | undefined {
+    return (node as ShadowedNode)[ShadowedNodeKey];
 }
 
 /**
@@ -76,6 +76,6 @@ export function getNodeKey(ṅоɗė: Node): number | undefined {
  * isNodeDeepShadowed instead.
  * @param node
  */
-export function isNodeShadowed(ṅоɗė: Node): boolean {
-    return !isUndefined(getNodeOwnerKey(ṅоɗė));
+export function isNodeShadowed(node: Node): boolean {
+    return !isUndefined(getNodeOwnerKey(node));
 }

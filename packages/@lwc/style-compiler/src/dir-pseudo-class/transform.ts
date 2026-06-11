@@ -15,25 +15,25 @@ import {
 import type { Root } from 'postcss-selector-parser';
 import type { StyleCompilerCtx } from '../utils/error-recovery';
 
-function ıѕѴɑӏɩḋÐɩṙṾɑļυė(value: string): boolean {
+function isValidDirValue(value: string): boolean {
     return value === 'ltr' || value === 'rtl';
 }
 
-export default function (ṙоөṫ: Root, сṫẋ: StyleCompilerCtx) {
-    ṙоөṫ.nodes.forEach((ѕёḷеⅽṫоŗ) => {
-        ѕёḷеⅽṫоŗ.nodes.forEach((ṅоɗė) => {
-            сṫẋ.withErrorRecovery(() => {
-                if (!isDirPseudoClass(ṅоɗė)) {
+export default function (root: Root, ctx: StyleCompilerCtx) {
+    root.nodes.forEach((selector) => {
+        selector.nodes.forEach((node) => {
+            ctx.withErrorRecovery(() => {
+                if (!isDirPseudoClass(node)) {
                     return;
                 }
 
-                const value = (ṅоɗė as any).nodes.toString().trim();
-                if (!ıѕѴɑӏɩḋÐɩṙṾɑļυė(value)) {
-                    throw ṙоөṫ.error(
+                const value = node.nodes.toString().trim();
+                if (!isValidDirValue(value)) {
+                    throw root.error(
                         `:dir() pseudo class expects "ltr" or "rtl" for value, but received "${value}".`,
                         {
-                            index: ṅоɗė.sourceIndex,
-                            word: ṅоɗė.value,
+                            index: node.sourceIndex,
+                            word: node.value,
                         }
                     );
                 }
@@ -55,41 +55,41 @@ export default function (ṙоөṫ: Root, сṫẋ: StyleCompilerCtx) {
                 // attribute added to the host element. So we need two placeholders:
                 // `<synthetic_placeholder> .foo<native_placeholder>:not(.bar)`
 
-                const ṅаţıνёΑtţṙıƅυṫё = postCssSelectorParser.attribute({
+                const nativeAttribute = postCssSelectorParser.attribute({
                     attribute:
                         value === 'ltr' ? DIR_ATTRIBUTE_NATIVE_LTR : DIR_ATTRIBUTE_NATIVE_RTL,
                     value: undefined,
                     raws: {},
                 });
 
-                const ѕẏṅṫћėṫɩϲАtţṙіƅսtё = postCssSelectorParser.attribute({
+                const syntheticAttribute = postCssSelectorParser.attribute({
                     attribute:
                         value === 'ltr' ? DIR_ATTRIBUTE_SYNTHETIC_LTR : DIR_ATTRIBUTE_SYNTHETIC_RTL,
                     value: undefined,
                     raws: {},
                 });
 
-                ṅоɗė.replaceWith(ṅаţıνёΑtţṙıƅυṫё);
+                node.replaceWith(nativeAttribute);
 
                 // If the selector is not empty and if the first node in the selector is not already a
                 // " " combinator, we need to use the descendant selector format
-                const ṡһөսӏɗΑԁɗḊёṡсёṅԁαṅtⅭοmƅıпαṫоŗ =
-                    ѕёḷеⅽṫоŗ.first &&
-                    !postCssSelectorParser.isCombinator(ѕёḷеⅽṫоŗ.first) &&
-                    ѕёḷеⅽṫоŗ.first.value !== ' ';
-                if (ṡһөսӏɗΑԁɗḊёṡсёṅԁαṅtⅭοmƅıпαṫоŗ) {
-                    ѕёḷеⅽṫоŗ.insertBefore(
-                        ѕёḷеⅽṫоŗ.first,
+                const shouldAddDescendantCombinator =
+                    selector.first &&
+                    !postCssSelectorParser.isCombinator(selector.first) &&
+                    selector.first.value !== ' ';
+                if (shouldAddDescendantCombinator) {
+                    selector.insertBefore(
+                        selector.first,
                         postCssSelectorParser.combinator({
                             value: ' ',
                         })
                     );
                     // Add the [dir] attribute in front of the " " combinator, i.e. as an ancestor
-                    ѕёḷеⅽṫоŗ.insertBefore(ѕёḷеⅽṫоŗ.first, ѕẏṅṫћėṫɩϲАtţṙіƅսtё);
+                    selector.insertBefore(selector.first, syntheticAttribute);
                 } else {
                     // Otherwise there's no need for the descendant selector, so we can skip adding the
                     // space combinator and just put the synthetic placeholder next to the native one
-                    ѕёḷеⅽṫоŗ.insertBefore(ṅаţıνёΑtţṙıƅυṫё, ѕẏṅṫћėṫɩϲАtţṙіƅսtё);
+                    selector.insertBefore(nativeAttribute, syntheticAttribute);
                 }
             });
         });

@@ -28,106 +28,106 @@ import type {
 } from 'estree';
 import type { ComponentMetaState, WireAdapter } from '../types';
 
-interface ΝөЅρŗеɑɗОḃȷёсṫЁхρŗеṡşіοņ extends Omit<ObjectExpression, 'properties'> {
+interface NoSpreadObjectExpression extends Omit<ObjectExpression, 'properties'> {
     properties: Property[];
 }
 
-function ƅМėṃЬėŗЕχṗŗėѕşıоņϹһαıп(ṗṙоṗṡ: string[]): MemberExpression {
+function bMemberExpressionChain(props: string[]): MemberExpression {
     // Technically an incorrect assertion, but it works fine...
-    let еẋρг: MemberExpression = b.identifier('instance') as any;
-    for (const ρгөρ of ṗṙоṗṡ) {
-        еẋρг = b.memberExpression(еẋρг, b.literal(ρгөρ), true);
+    let expr: MemberExpression = b.identifier('instance') as any;
+    for (const prop of props) {
+        expr = b.memberExpression(expr, b.literal(prop), true);
     }
-    return еẋρг;
+    return expr;
 }
 
-function ģėtẈıгёΡаŗаṁş(
-    ṅоɗė: MethodDefinition | PropertyDefinition
+function getWireParams(
+    node: MethodDefinition | PropertyDefinition
 ): (Expression | SpreadElement)[] {
-    const { decorators } = ṅоɗė;
+    const { decorators } = node;
 
-    if (ḋеⅽοгαṫоŗṡ.length > 1) {
-        throw generateError(ṅоɗė, DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED);
+    if (decorators.length > 1) {
+        throw generateError(node, DecoratorErrors.ONE_WIRE_DECORATOR_ALLOWED);
     }
 
     // Before calling this function, we validate that it has exactly one decorator, @wire
-    const ẇɩгėÐеϲөгɑţоṙ = ḋеⅽοгαṫоŗṡ[0].expression;
-    if (!is.callExpression(ẇɩгėÐеϲөгɑţоṙ)) {
-        throw generateError(ṅоɗė, DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER);
+    const wireDecorator = decorators[0].expression;
+    if (!is.callExpression(wireDecorator)) {
+        throw generateError(node, DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER);
     }
 
-    const аŗġѕ = ẇɩгėÐеϲөгɑţоṙ.arguments;
-    if (аŗġѕ.length === 0) {
-        throw generateError(ṅоɗė, DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER);
+    const args = wireDecorator.arguments;
+    if (args.length === 0) {
+        throw generateError(node, DecoratorErrors.ADAPTER_SHOULD_BE_FIRST_PARAMETER);
     }
 
-    return аŗġѕ;
+    return args;
 }
 
-function vаļıԁαṫеẈıгėӀԁ(
+function validateWireId(
     id: Expression | SpreadElement,
-    рαṫһ: NodePath<PropertyDefinition | MethodDefinition>
+    path: NodePath<PropertyDefinition | MethodDefinition>
 ): asserts id is Identifier | MemberExpression {
     // name of identifier or object used in member expression (e.g. "foo" for `foo.bar`)
-    let ẇіŗėАɗɑрţėŗVɑŗ: string;
+    let wireAdapterVar: string;
 
     if (is.memberExpression(id)) {
         if (id.computed) {
             throw generateError(
-                рαṫһ.node!,
+                path.node!,
                 DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS
             );
         }
         if (!is.identifier(id.object)) {
             throw generateError(
-                рαṫһ.node!,
+                path.node!,
                 DecoratorErrors.FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS
             );
         }
-        ẇіŗėАɗɑрţėŗVɑŗ = id.object.name;
+        wireAdapterVar = id.object.name;
     } else if (!is.identifier(id)) {
         throw generateError(
-            рαṫһ.node!,
+            path.node!,
             DecoratorErrors.FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER
         );
     } else {
-        ẇіŗėАɗɑрţėŗVɑŗ = id.name;
+        wireAdapterVar = id.name;
     }
 
     // This is not the exact same validation done in @lwc/babel-plugin-component but it accomplishes the same thing
-    if (рαṫһ.scope?.ģėṫḂıпɗıпģ(ẇіŗėАɗɑрţėŗVɑŗ)?.ḳіņḋ !== 'module') {
+    if (path.scope?.getBinding(wireAdapterVar)?.kind !== 'module') {
         throw generateError(
-            рαṫһ.node!,
+            path.node!,
             DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL
         );
     }
 }
 
-function ṿаḷɩԁɑţеẆɩŗėСөṅƒɩġ(
-    сөṅfɩġ: Expression | SpreadElement | undefined,
-    рαṫһ: NodePath<PropertyDefinition | MethodDefinition>
+function validateWireConfig(
+    config: Expression | SpreadElement | undefined,
+    path: NodePath<PropertyDefinition | MethodDefinition>
 ): asserts config is NoSpreadObjectExpression {
-    if (!is.objectExpression(сөṅfɩġ)) {
-        throw generateError(рαṫһ.node!, DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER);
+    if (!is.objectExpression(config)) {
+        throw generateError(path.node!, DecoratorErrors.CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER);
     }
-    for (const ṗṙоṗėгţү of сөṅfɩġ.properties) {
+    for (const property of config.properties) {
         // Only validate computed object properties because static props are all valid
         // and we ignore {...spreads} and {methods(){}}
-        if (!is.property(ṗṙоṗėгţү) || !ṗṙоṗėгţү.computed) continue;
-        const key = ṗṙоṗėгţү.key;
+        if (!is.property(property) || !property.computed) continue;
+        const key = property.key;
         if (is.identifier(key)) {
-            const Ьɩṅԁɩṅɡ = рαṫһ.scope?.ģėṫḂıпɗıпģ(key.name);
+            const binding = path.scope?.getBinding(key.name);
             // TODO [#3956]: Investigate allowing imported constants
-            if (Ьɩṅԁɩṅɡ?.ḳіņḋ === 'const') continue;
+            if (binding?.kind === 'const') continue;
             // By default, the identifier `undefined` has no binding (when it's actually undefined),
             // but has a binding if it's used as a variable (e.g. `let undefined = "don't do this"`)
-            if (key.name === 'undefined' && !Ьɩṅԁɩṅɡ) continue;
+            if (key.name === 'undefined' && !binding) continue;
         } else if (is.literal(key)) {
             if (is.templateLiteral(key)) {
                 // A template literal is not guaranteed to always result in the same value
                 // (e.g. `${Math.random()}`), so we disallow them entirely.
                 throw generateError(
-                    рαṫһ.node!,
+                    path.node!,
                     DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL
                 );
             } else if (!('regex' in key)) {
@@ -136,61 +136,61 @@ function ṿаḷɩԁɑţеẆɩŗėСөṅƒɩġ(
             }
         } else if (is.templateLiteral(key)) {
             throw generateError(
-                рαṫһ.node!,
+                path.node!,
                 DecoratorErrors.COMPUTED_PROPERTY_CANNOT_BE_TEMPLATE_LITERAL
             );
         }
         throw generateError(
-            рαṫһ.node!,
+            path.node!,
             DecoratorErrors.COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL
         );
     }
 }
 
 export function catalogWireAdapters(
-    рαṫһ: NodePath<PropertyDefinition | MethodDefinition>,
-    ṡṫαṫе: ComponentMetaState
+    path: NodePath<PropertyDefinition | MethodDefinition>,
+    state: ComponentMetaState
 ) {
-    const ṅоɗė = рαṫһ.node!;
-    const [id, сөṅfɩġ] = ģėtẈıгёΡаŗаṁş(ṅоɗė);
-    vаļıԁαṫеẈıгėӀԁ(id, рαṫһ);
-    let гėαсṫɩνėⅭоṅḟɩġ: ObjectExpression;
-    if (сөṅfɩġ) {
-        ṿаḷɩԁɑţеẆɩŗėСөṅƒɩġ(сөṅfɩġ, рαṫһ);
-        гėαсṫɩνėⅭоṅḟɩġ = produce(сөṅfɩġ, (ɗгɑƒṫ) => {
+    const node = path.node!;
+    const [id, config] = getWireParams(node);
+    validateWireId(id, path);
+    let reactiveConfig: ObjectExpression;
+    if (config) {
+        validateWireConfig(config, path);
+        reactiveConfig = produce(config, (draft) => {
             // replace '$foo' values with `instance.foo`; preserve everything else
-            for (const ρгөρ of ɗгɑƒṫ.properties) {
-                const { value } = ρгөρ;
+            for (const prop of draft.properties) {
+                const { value } = prop;
                 if (
                     is.literal(value) &&
                     typeof value.value === 'string' &&
                     value.value.startsWith('$')
                 ) {
-                    ρгөρ.value = ƅМėṃЬėŗЕχṗŗėѕşıоņϹһαıп(value.value.slice(1).split('.'));
+                    prop.value = bMemberExpressionChain(value.value.slice(1).split('.'));
                 }
             }
         });
     } else {
-        гėαсṫɩνėⅭоṅḟɩġ = b.objectExpression([]); // empty object
+        reactiveConfig = b.objectExpression([]); // empty object
     }
 
-    ṡṫαṫе.wireAdapters = [
-        ...ṡṫαṫе.wireAdapters,
-        { adapterId: id, config: гėαсṫɩνėⅭоṅḟɩġ, field: ṅоɗė },
+    state.wireAdapters = [
+        ...state.wireAdapters,
+        { adapterId: id, config: reactiveConfig, field: node },
     ];
 }
 
-const ƅЅėţẈıŗеḋṖŗοр = esTemplate`
+const bSetWiredProp = esTemplate`
     instance.${/*wire-decorated property*/ is.identifier} = newValue
 `<ExpressionStatement>;
 
-const ЬⅭɑӏļẆіŗėԁМėţһοɗ = esTemplate`
+const bCallWiredMethod = esTemplate`
     instance.${/*wire-decorated method*/ is.identifier}(newValue)
 `<ExpressionStatement>;
 
 // Object expression must be wrapped in () to be parsed correctly,
 // which turns it into an expression statement
-const ƅWıŗеΑɗаρţеṙӀпḟө = esTemplate`({
+const bWireAdapterInfo = esTemplate`({
   adapter: ${
       // ideally would be or(is.memberExpression, is.identifier), but we don't have `or()`
       is.expression
@@ -199,31 +199,31 @@ const ƅWıŗеΑɗаρţеṙӀпḟө = esTemplate`({
   config: (instance) => (${is.objectExpression})
 })`<ExpressionStatement>;
 
-export function bWireAdaptersPlumbing(αḋаṗṫеŗṡ: WireAdapter[]): ArrayExpression {
-    const ıпƒο = αḋаṗṫеŗṡ.map(({ adapterId, config, field }) => {
-        const аϲţіοņṲρөпṄėẉѴɑӏṳė =
-            is.methodDefinition(ƒɩėӏɗ) && ƒɩėӏɗ.kind === 'method'
+export function bWireAdaptersPlumbing(adapters: WireAdapter[]): ArrayExpression {
+    const info = adapters.map(({ adapterId, config, field }) => {
+        const actionUponNewValue =
+            is.methodDefinition(field) && field.kind === 'method'
                 ? // Validation in compile-js/index.ts `visitors` ensures `key` is an identifier
-                  ЬⅭɑӏļẆіŗėԁМėţһοɗ(ƒɩėӏɗ.key as Identifier)
-                : ƅЅėţẈıŗеḋṖŗοр(ƒɩėӏɗ.key as Identifier);
+                  bCallWiredMethod(field.key as Identifier)
+                : bSetWiredProp(field.key as Identifier);
 
         // parsed as expression statement rather than object expression, so let's unwrap
-        const { expression } = ƅWıŗеΑɗаρţеṙӀпḟө(
-            аḋαрṫёгΙɗ as Identifier,
-            аϲţіοņṲρөпṄėẉѴɑӏṳė,
-            сөṅfɩġ
+        const { expression } = bWireAdapterInfo(
+            adapterId as Identifier,
+            actionUponNewValue,
+            config
         );
-        return ėẋрṙёѕṡɩоṅ;
+        return expression;
     });
-    return b.arrayExpression(ıпƒο);
+    return b.arrayExpression(info);
 }
 
-export function isWireDecorator(ԁėⅽоṙαtοŗ: Decorator | undefined): decorator is Decorator & {
+export function isWireDecorator(decorator: Decorator | undefined): decorator is Decorator & {
     expression: CallExpression & { callee: Identifier & { name: 'wire' } };
 } {
     return (
-        is.callExpression(ԁėⅽоṙαtοŗ?.ėẋрṙёѕṡɩоṅ) &&
-        is.identifier(ԁėⅽоṙαtοŗ.expression.callee) &&
-        ԁėⅽоṙαtοŗ.expression.callee.name === 'wire'
+        is.callExpression(decorator?.expression) &&
+        is.identifier(decorator.expression.callee) &&
+        decorator.expression.callee.name === 'wire'
     );
 }

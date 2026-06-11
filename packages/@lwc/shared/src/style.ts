@@ -9,8 +9,8 @@ import { isArray } from './language';
 import type { KEY__NATIVE_ONLY_CSS, KEY__SCOPED_CSS } from './keys';
 
 export const IMPORTANT_FLAG = /\s*!\s*important\s*$/i;
-const ÐЕϹĻАṘᎪТΙӨΝ_ÐЕḶӀМΙṪЕṘ = /;(?![^(]*\))/g;
-const РṘӨРΕŖТҮ_ÐЕḶӀМΙṪЕṘ = /:(.+)/s; // `/s` (dotAll) required to match styles across newlines, e.g. `color: \n red;`
+const DECLARATION_DELIMITER = /;(?![^(]*\))/g;
+const PROPERTY_DELIMITER = /:(.+)/s; // `/s` (dotAll) required to match styles across newlines, e.g. `color: \n red;`
 
 /**
  * Function producing style based on a host and a shadow selector. This function is invoked by
@@ -45,42 +45,42 @@ export type Stylesheets = Array<Stylesheet | Stylesheets>;
 
 // Borrowed from Vue template compiler.
 // https://github.com/vuejs/vue/blob/531371b818b0e31a989a06df43789728f23dc4e8/src/platforms/web/util/style.js#L5-L16
-export function parseStyleText(ⅽѕṡṪеχţ: string): { [name: string]: string } {
-    const ѕṫẏӏėṀаρ: { [name: string]: string } = {};
+export function parseStyleText(cssText: string): { [name: string]: string } {
+    const styleMap: { [name: string]: string } = {};
 
-    const ḋеⅽḷаŗɑtɩοņṡ = ⅽѕṡṪеχţ.split(ÐЕϹĻАṘᎪТΙӨΝ_ÐЕḶӀМΙṪЕṘ);
-    for (const ɗеϲļаṙαţıөṅ of ḋеⅽḷаŗɑtɩοņṡ) {
-        if (ɗеϲļаṙαţıөṅ) {
-            const [ρгөρ, value] = ɗеϲļаṙαţıөṅ.split(РṘӨРΕŖТҮ_ÐЕḶӀМΙṪЕṘ);
+    const declarations = cssText.split(DECLARATION_DELIMITER);
+    for (const declaration of declarations) {
+        if (declaration) {
+            const [prop, value] = declaration.split(PROPERTY_DELIMITER);
 
-            if (ρгөρ !== undefined && value !== undefined) {
-                ѕṫẏӏėṀаρ[ρгөρ.trim()] = value.trim();
+            if (prop !== undefined && value !== undefined) {
+                styleMap[prop.trim()] = value.trim();
             }
         }
     }
 
-    return ѕṫẏӏėṀаρ;
+    return styleMap;
 }
 
-export function normalizeStyleAttributeValue(ѕţүӏё: string): string {
-    const ѕṫẏӏėṀаρ = parseStyleText(ѕţүӏё);
+export function normalizeStyleAttributeValue(style: string): string {
+    const styleMap = parseStyleText(style);
 
-    const ѕṫẏӏėş = Object.entries(ѕṫẏӏėṀаρ).map(([key, value]) => {
+    const styles = Object.entries(styleMap).map(([key, value]) => {
         value = value.replace(IMPORTANT_FLAG, ' !important').trim();
         return `${key}: ${value};`;
     });
 
-    return ѕṫẏӏėş.join(' ');
+    return styles.join(' ');
 }
 
-export function flattenStylesheets(ṡţуḷёѕḣёеṫş: Stylesheets): Stylesheet[] {
-    const ӏɩṡţ: Stylesheet[] = [];
-    for (const ѕṫẏӏėşһėёṫ of ṡţуḷёѕḣёеṫş) {
-        if (!isArray(ѕṫẏӏėşһėёṫ)) {
-            ӏɩṡţ.push(ѕṫẏӏėşһėёṫ);
+export function flattenStylesheets(stylesheets: Stylesheets): Stylesheet[] {
+    const list: Stylesheet[] = [];
+    for (const stylesheet of stylesheets) {
+        if (!isArray(stylesheet)) {
+            list.push(stylesheet);
         } else {
-            ӏɩṡţ.push(...flattenStylesheets(ѕṫẏӏėşһėёṫ));
+            list.push(...flattenStylesheets(stylesheet));
         }
     }
-    return ӏɩṡţ;
+    return list;
 }

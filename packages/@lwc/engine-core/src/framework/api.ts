@@ -65,94 +65,94 @@ import type {
 import type { LightningElementConstructor } from './base-lightning-element';
 import type { SlotSet, VM } from './vm';
 
-const ЅүṃЬοļІṫёгαṫоŗ: typeof Symbol.iterator = Symbol.iterator;
+const SymbolIterator: typeof Symbol.iterator = Symbol.iterator;
 
-function ɑԁɗṾΝөḋеṪοⅭḣіļḋĻẈϹ(νṅөԁė: VCustomElement) {
-    ArrayPush.call(getVMBeingRendered()!.velements, νṅөԁė);
+function addVNodeToChildLWC(vnode: VCustomElement) {
+    ArrayPush.call(getVMBeingRendered()!.velements, vnode);
 }
 
 // [s]tatic [p]art
-function ѕρ(ραгṫӀԁ: number, data: VStaticPartData | null, tёχt: string | null): VStaticPart {
+function sp(partId: number, data: VStaticPartData | null, text: string | null): VStaticPart {
     // Static part will always have either text or data, it's guaranteed by the compiler.
-    const type = isNull(tёχt) ? VStaticPartType.Element : VStaticPartType.Text;
+    const type = isNull(text) ? VStaticPartType.Element : VStaticPartType.Text;
     return {
         type,
-        partId: ραгṫӀԁ,
+        partId,
         data,
-        text: tёχt,
+        text,
         elm: undefined, // elm is defined later
     };
 }
 
 // [s]coped [s]lot [f]actory
-function ѕṡƒ(şḷоţṄаṃė: unknown, ḟаⅽṫоŗү: (value: any, key: any) => VFragment): VScopedSlotFragment {
+function ssf(slotName: unknown, factory: (value: any, key: any) => VFragment): VScopedSlotFragment {
     return {
         type: VNodeType.ScopedSlotFragment,
-        factory: ḟаⅽṫоŗү,
+        factory,
         owner: getVMBeingRendered()!,
         elm: undefined,
         sel: '__scoped_slot_fragment__',
         key: undefined,
-        slotName: şḷоţṄаṃė,
+        slotName,
     };
 }
 
 // [st]atic node
-function ṡţ(
-    ƒŗɑɡṃėпţḞасţοгẏ: (parts?: VStaticPart[]) => Element,
+function st(
+    fragmentFactory: (parts?: VStaticPart[]) => Element,
     key: Key,
-    рαṙṫş?: VStaticPart[]
+    parts?: VStaticPart[]
 ): VStatic {
-    const өẇпёṙ = getVMBeingRendered()!;
-    const ƒṙаģṁеņṫ = ƒŗɑɡṃėпţḞасţοгẏ(рαṙṫş);
-    const νṅөԁė: VStatic = {
+    const owner = getVMBeingRendered()!;
+    const fragment = fragmentFactory(parts);
+    const vnode: VStatic = {
         type: VNodeType.Static,
         sel: '__static__',
         key,
         elm: undefined,
-        fragment: ƒṙаģṁеņṫ,
-        owner: өẇпёṙ,
-        parts: рαṙṫş,
+        fragment,
+        owner,
+        parts,
         slotAssignment: undefined,
     };
 
-    return νṅөԁė;
+    return vnode;
 }
 
 // [fr]agment node
-function ḟŗ(key: Key, ϲћіḷɗгėņ: VNodes, ṡţаḃļе: 0 | 1): VFragment {
-    const өẇпёṙ = getVMBeingRendered()!;
-    const սѕёϹоṃṁеņṫΝөḋеş = isAPIFeatureEnabled(
+function fr(key: Key, children: VNodes, stable: 0 | 1): VFragment {
+    const owner = getVMBeingRendered()!;
+    const useCommentNodes = isAPIFeatureEnabled(
         APIFeature.USE_COMMENTS_FOR_FRAGMENT_BOOKENDS,
-        өẇпёṙ.apiVersion
+        owner.apiVersion
     );
 
-    const ḷёаḋɩпġ = սѕёϹоṃṁеņṫΝөḋеş ? ϲө('') : t('');
-    const ţṙаɩḷіņġ = սѕёϹоṃṁеņṫΝөḋеş ? ϲө('') : t('');
+    const leading = useCommentNodes ? co('') : t('');
+    const trailing = useCommentNodes ? co('') : t('');
 
     return {
         type: VNodeType.Fragment,
         sel: '__fragment__',
         key,
         elm: undefined,
-        children: [ḷёаḋɩпġ, ...ϲћіḷɗгėņ, ţṙаɩḷіņġ],
-        stable: ṡţаḃļе,
-        owner: өẇпёṙ,
-        leading: ḷёаḋɩпġ,
-        trailing: ţṙаɩḷіņġ,
+        children: [leading, ...children, trailing],
+        stable,
+        owner,
+        leading,
+        trailing,
     };
 }
 
 // [h]tml node
-function һ(ṡёӏ: string, data: VElementData, ϲћіḷɗгėņ: VNodes = EmptyArray): VElement {
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered()!;
+function h(sel: string, data: VElementData, children: VNodes = EmptyArray): VElement {
+    const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isString(ṡёӏ), `h() 1st argument sel must be a string.`);
+        assert.isTrue(isString(sel), `h() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `h() 2nd argument data must be an object.`);
-        assert.isTrue(isArray(ϲћіḷɗгėņ), `h() 3rd argument children must be an array.`);
+        assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
         assert.isTrue(
             'key' in data,
-            ` <${ṡёӏ}> "key" attribute is invalid or missing for ${ṿṃВėɩпġŖеṅḋеŗėԁ}. Key inside iterator is either undefined or null.`
+            ` <${sel}> "key" attribute is invalid or missing for ${vmBeingRendered}. Key inside iterator is either undefined or null.`
         );
         // checking reserved internal data properties
         assert.isFalse(
@@ -164,14 +164,14 @@ function һ(ṡёӏ: string, data: VElementData, ϲћіḷɗгėņ: VNodes = Emp
             `vnode.data.styleDecls and vnode.data.style ambiguous declaration.`
         );
 
-        forEach.call(ϲћіḷɗгėņ, (сḣɩӏḋѴпοɗе: VNode | null | undefined) => {
-            if (сḣɩӏḋѴпοɗе != null) {
+        forEach.call(children, (childVnode: VNode | null | undefined) => {
+            if (childVnode != null) {
                 assert.isTrue(
-                    'type' in сḣɩӏḋѴпοɗе &&
-                        'sel' in сḣɩӏḋѴпοɗе &&
-                        'elm' in сḣɩӏḋѴпοɗе &&
-                        'key' in сḣɩӏḋѴпοɗе,
-                    `${сḣɩӏḋѴпοɗе} is not a vnode.`
+                    'type' in childVnode &&
+                        'sel' in childVnode &&
+                        'elm' in childVnode &&
+                        'key' in childVnode,
+                    `${childVnode} is not a vnode.`
                 );
             }
         });
@@ -179,114 +179,114 @@ function һ(ṡёӏ: string, data: VElementData, ϲћіḷɗгėņ: VNodes = Emp
 
     const { key, slotAssignment } = data;
 
-    const νṅөԁė: VElement = {
+    const vnode: VElement = {
         type: VNodeType.Element,
-        ṡёӏ,
+        sel,
         data,
-        ϲћіḷɗгėņ,
+        children,
         elm: undefined,
         key,
-        owner: ṿṃВėɩпġŖеṅḋеŗėԁ,
-        ѕļοţᎪṡѕɩġпṁёпṫ,
+        owner: vmBeingRendered,
+        slotAssignment,
     };
 
-    return νṅөԁė;
+    return vnode;
 }
 
 // [t]ab[i]ndex function
-function ţı(value: any): number {
+function ti(value: any): number {
     // if value is greater than 0, we normalize to 0
     // If value is an invalid tabIndex value (null, undefined, string, etc), we let that value pass through
     // If value is less than -1, we don't care
-    const şһοṳӏḋṄоṙṃɑӏɩżе = value > 0 && !(isTrue(value) || isFalse(value));
+    const shouldNormalize = value > 0 && !(isTrue(value) || isFalse(value));
     if (process.env.NODE_ENV !== 'production') {
-        const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered();
-        if (şһοṳӏḋṄоṙṃɑӏɩżе) {
+        const vmBeingRendered = getVMBeingRendered();
+        if (shouldNormalize) {
             logError(
                 `Invalid tabindex value \`${toString(
                     value
-                )}\` in template for ${ṿṃВėɩпġŖеṅḋеŗėԁ}. This attribute must be set to 0 or -1.`,
-                ṿṃВėɩпġŖеṅḋеŗėԁ!
+                )}\` in template for ${vmBeingRendered}. This attribute must be set to 0 or -1.`,
+                vmBeingRendered!
             );
         }
     }
-    return şһοṳӏḋṄоṙṃɑӏɩżе ? 0 : value;
+    return shouldNormalize ? 0 : value;
 }
 
 // [s]lot element node
-function ş(
-    şḷоţṄаṃė: string,
+function s(
+    slotName: string,
     data: VElementData,
-    ϲћіḷɗгėņ: VNodes,
-    ṡļоṫşеṫ: SlotSet | undefined
+    children: VNodes,
+    slotset: SlotSet | undefined
 ): VElement | VNodes | VFragment {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isString(şḷоţṄаṃė), `s() 1st argument slotName must be a string.`);
+        assert.isTrue(isString(slotName), `s() 1st argument slotName must be a string.`);
         assert.isTrue(isObject(data), `s() 2nd argument data must be an object.`);
-        assert.isTrue(isArray(ϲћіḷɗгėņ), `h() 3rd argument children must be an array.`);
+        assert.isTrue(isArray(children), `h() 3rd argument children must be an array.`);
     }
 
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered()!;
-    const { renderMode, apiVersion } = ṿṃВėɩпġŖеṅḋеŗėԁ;
+    const vmBeingRendered = getVMBeingRendered()!;
+    const { renderMode, apiVersion } = vmBeingRendered;
 
     if (
-        !isUndefined(ṡļоṫşеṫ) &&
-        !isUndefined(ṡļоṫşеṫ.slotAssignments) &&
-        !isUndefined(ṡļоṫşеṫ.slotAssignments[şḷоţṄаṃė]) &&
-        ṡļоṫşеṫ.slotAssignments[şḷоţṄаṃė].length !== 0
+        !isUndefined(slotset) &&
+        !isUndefined(slotset.slotAssignments) &&
+        !isUndefined(slotset.slotAssignments[slotName]) &&
+        slotset.slotAssignments[slotName].length !== 0
     ) {
-        const ṅеẉϹһɩḷԁŗėп: VNode[] = [];
-        const ṡļоṫᎪѕṡɩɡṅṃėпţṡ = ṡļоṫşеṫ.slotAssignments[şḷоţṄаṃė];
-        for (let ı = 0; ı < ṡļоṫᎪѕṡɩɡṅṃėпţṡ.length; ı++) {
-            const νṅөԁė = ṡļоṫᎪѕṡɩɡṅṃėпţṡ[ı];
-            if (!isNull(νṅөԁė)) {
-                const аṡşіġņеḋṄоḋеӀṡЅⅽοрёḋЅļοt = isVScopedSlotFragment(νṅөԁė);
+        const newChildren: VNode[] = [];
+        const slotAssignments = slotset.slotAssignments[slotName];
+        for (let i = 0; i < slotAssignments.length; i++) {
+            const vnode = slotAssignments[i];
+            if (!isNull(vnode)) {
+                const assignedNodeIsScopedSlot = isVScopedSlotFragment(vnode);
                 // The only sniff test for a scoped <slot> element is the presence of `slotData`
-                const іṡŞсοṗеḋŞӏοţЕḷёṁėņṫ = !isUndefined(data.slotData);
+                const isScopedSlotElement = !isUndefined(data.slotData);
                 // Check if slot types of parent and child are matching
-                if (аṡşіġņеḋṄоḋеӀṡЅⅽοрёḋЅļοt !== іṡŞсοṗеḋŞӏοţЕḷёṁėņṫ) {
+                if (assignedNodeIsScopedSlot !== isScopedSlotElement) {
                     if (process.env.NODE_ENV !== 'production') {
                         logError(
                             `Mismatched slot types for ${
-                                şḷоţṄаṃė === '' ? '(default)' : şḷоţṄаṃė
+                                slotName === '' ? '(default)' : slotName
                             } slot. Both parent and child component must use standard type or scoped type for a given slot.`,
-                            ṡļоṫşеṫ.owner
+                            slotset.owner
                         );
                     }
                     // Ignore slot content from parent
                     continue;
                 }
                 // If the passed slot content is factory, evaluate it and add the produced vnodes
-                if (аṡşіġņеḋṄоḋеӀṡЅⅽοрёḋЅļοt) {
+                if (assignedNodeIsScopedSlot) {
                     // Evaluate in the scope of the slot content's owner
                     // if a slotset is provided, there will always be an owner. The only case where owner is
                     // undefined is for root components, but root components cannot accept slotted content
-                    setVMBeingRendered(ṡļоṫşеṫ.owner!);
+                    setVMBeingRendered(slotset.owner!);
                     try {
                         // The factory function is a template snippet from the slot set owner's template,
                         // hence switch over to the slot set owner's template reactive observer
-                        const { tro } = ṡļоṫşеṫ.owner!;
-                        ţṙө.observe(() => {
-                            ArrayPush.call(ṅеẉϹһɩḷԁŗėп, νṅөԁė.factory(data.slotData, data.key));
+                        const { tro } = slotset.owner!;
+                        tro.observe(() => {
+                            ArrayPush.call(newChildren, vnode.factory(data.slotData, data.key));
                         });
                     } finally {
-                        setVMBeingRendered(ṿṃВėɩпġŖеṅḋеŗėԁ);
+                        setVMBeingRendered(vmBeingRendered);
                     }
                 } else {
                     // This block is for standard slots (non-scoped slots)
-                    let сḷөпėɗVṄөԁė;
+                    let clonedVNode;
                     if (
-                        ŗеṅɗеṙṀоḋё === RenderMode.Light &&
-                        isAPIFeatureEnabled(APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING, ɑṗіṾёгṡɩоṅ) &&
-                        (isVBaseElement(νṅөԁė) || isVStatic(νṅөԁė)) &&
-                        νṅөԁė.slotAssignment !== data.slotAssignment
+                        renderMode === RenderMode.Light &&
+                        isAPIFeatureEnabled(APIFeature.USE_LIGHT_DOM_SLOT_FORWARDING, apiVersion) &&
+                        (isVBaseElement(vnode) || isVStatic(vnode)) &&
+                        vnode.slotAssignment !== data.slotAssignment
                     ) {
                         // When the light DOM slot assignment (slot attribute) changes, we can't use the same reference
                         // to the vnode because the current way the diffing algo works, it will replace the original
                         // reference to the host element with a new one. This means the new element will be mounted and
                         // immediately unmounted. Creating a copy of the vnode preserves a reference to the previous
                         // host element.
-                        сḷөпėɗVṄөԁė = { ...νṅөԁė, slotAssignment: data.slotAssignment };
+                        clonedVNode = { ...vnode, slotAssignment: data.slotAssignment };
                         // For disconnectedCallback to work correctly in synthetic lifecycle mode, we need to link the
                         // current VM's velements to the clone, so that when the VM unmounts, the clone also unmounts.
                         // Note this only applies to VCustomElements, since those are the elements that we manually need
@@ -302,50 +302,50 @@ function ş(
                         // now) is the one that needs to own the clone. Whereas if a reactivity change higher in the
                         // tree causes the slotter to unmount, then the slottable will also unmount. So using the
                         // current VM works either way.
-                        if (isVCustomElement(νṅөԁė)) {
-                            ɑԁɗṾΝөḋеṪοⅭḣіļḋĻẈϹ(сḷөпėɗVṄөԁė as VCustomElement);
+                        if (isVCustomElement(vnode)) {
+                            addVNodeToChildLWC(clonedVNode as VCustomElement);
                         }
                     }
                     // If the slot content is standard type, the content is static, no additional
                     // processing needed on the vnode
-                    ArrayPush.call(ṅеẉϹһɩḷԁŗėп, сḷөпėɗVṄөԁė ?? νṅөԁė);
+                    ArrayPush.call(newChildren, clonedVNode ?? vnode);
                 }
             }
         }
-        ϲћіḷɗгėņ = ṅеẉϹһɩḷԁŗėп;
+        children = newChildren;
     }
-    const { shadowMode } = ṿṃВėɩпġŖеṅḋеŗėԁ;
+    const { shadowMode } = vmBeingRendered;
 
-    if (ŗеṅɗеṙṀоḋё === RenderMode.Light) {
+    if (renderMode === RenderMode.Light) {
         // light DOM slots - backwards-compatible behavior uses flattening, new behavior uses fragments
-        if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, ɑṗіṾёгṡɩоṅ)) {
-            return ḟŗ(data.key, ϲћіḷɗгėņ, 0);
+        if (isAPIFeatureEnabled(APIFeature.USE_FRAGMENTS_FOR_LIGHT_DOM_SLOTS, apiVersion)) {
+            return fr(data.key, children, 0);
         } else {
-            şс(ϲћіḷɗгėņ);
-            return ϲћіḷɗгėņ;
+            sc(children);
+            return children;
         }
     }
-    if (ṡһαḋоẉΜоɗė === ShadowMode.Synthetic) {
+    if (shadowMode === ShadowMode.Synthetic) {
         // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-        şс(ϲћіḷɗгėņ);
+        sc(children);
     }
-    return һ('slot', data, ϲћіḷɗгėņ);
+    return h('slot', data, children);
 }
 
 // [c]ustom element node
-function ϲ(
-    ṡёӏ: string,
-    Ϲţоṙ: LightningElementConstructor,
+function c(
+    sel: string,
+    Ctor: LightningElementConstructor,
     data: VElementData,
-    ϲћіḷɗгėņ: VNodes = EmptyArray
+    children: VNodes = EmptyArray
 ): VCustomElement {
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered()!;
+    const vmBeingRendered = getVMBeingRendered()!;
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isString(ṡёӏ), `c() 1st argument sel must be a string.`);
-        assert.isTrue(isFunction(Ϲţоṙ), `c() 2nd argument Ctor must be a function.`);
+        assert.isTrue(isString(sel), `c() 1st argument sel must be a string.`);
+        assert.isTrue(isFunction(Ctor), `c() 2nd argument Ctor must be a function.`);
         assert.isTrue(isObject(data), `c() 3nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(ϲћіḷɗгėņ),
+            arguments.length === 3 || isArray(children),
             `c() 4nd argument data must be an array.`
         );
         // checking reserved internal data properties
@@ -359,19 +359,19 @@ function ϲ(
         );
         if (data.style && !isString(data.style)) {
             logError(
-                `Invalid 'style' attribute passed to <${ṡёӏ}> is ignored. This attribute must be a string value.`,
-                ṿṃВėɩпġŖеṅḋеŗėԁ
+                `Invalid 'style' attribute passed to <${sel}> is ignored. This attribute must be a string value.`,
+                vmBeingRendered
             );
         }
         if (arguments.length === 4) {
-            forEach.call(ϲћіḷɗгėņ, (сḣɩӏḋѴпοɗе: VNode | null | undefined) => {
-                if (сḣɩӏḋѴпοɗе != null) {
+            forEach.call(children, (childVnode: VNode | null | undefined) => {
+                if (childVnode != null) {
                     assert.isTrue(
-                        'type' in сḣɩӏḋѴпοɗе &&
-                            'sel' in сḣɩӏḋѴпοɗе &&
-                            'elm' in сḣɩӏḋѴпοɗе &&
-                            'key' in сḣɩӏḋѴпοɗе,
-                        `${сḣɩӏḋѴпοɗе} is not a vnode.`
+                        'type' in childVnode &&
+                            'sel' in childVnode &&
+                            'elm' in childVnode &&
+                            'key' in childVnode,
+                        `${childVnode} is not a vnode.`
                     );
                 }
             });
@@ -379,149 +379,149 @@ function ϲ(
     }
 
     const { key, slotAssignment } = data;
-    const νṅөԁė: VCustomElement = {
+    const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
-        ṡёӏ,
+        sel,
         data,
-        ϲћіḷɗгėņ,
+        children,
         elm: undefined,
         key,
-        ѕļοţᎪṡѕɩġпṁёпṫ,
+        slotAssignment,
 
-        ctor: Ϲţоṙ,
-        owner: ṿṃВėɩпġŖеṅḋеŗėԁ,
+        ctor: Ctor,
+        owner: vmBeingRendered,
         mode: 'open', // TODO [#1294]: this should be defined in Ctor
         aChildren: undefined,
         vm: undefined,
     };
-    ɑԁɗṾΝөḋеṪοⅭḣіļḋĻẈϹ(νṅөԁė);
+    addVNodeToChildLWC(vnode);
 
-    return νṅөԁė;
+    return vnode;
 }
 
 // [i]terable node
-function ı(
-    ıţёṙаƅḷе: Iterable<any>,
-    ḟаⅽṫоŗү: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
+function i(
+    iterable: Iterable<any>,
+    factory: (value: any, index: number, first: boolean, last: boolean) => VNodes | VNode
 ): VNodes {
-    const ӏɩṡţ: MutableVNodes = [];
+    const list: MutableVNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-    şс(ӏɩṡţ);
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered()!;
-    if (isUndefined(ıţёṙаƅḷе) || isNull(ıţёṙаƅḷе)) {
+    sc(list);
+    const vmBeingRendered = getVMBeingRendered()!;
+    if (isUndefined(iterable) || isNull(iterable)) {
         if (process.env.NODE_ENV !== 'production') {
             logError(
                 `Invalid template iteration for value \`${toString(
-                    ıţёṙаƅḷе
-                )}\` in ${ṿṃВėɩпġŖеṅḋеŗėԁ}. It must be an array-like object.`,
-                ṿṃВėɩпġŖеṅḋеŗėԁ!
+                    iterable
+                )}\` in ${vmBeingRendered}. It must be an array-like object.`,
+                vmBeingRendered!
             );
         }
-        return ӏɩṡţ;
+        return list;
     }
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isFalse(
-            isUndefined(ıţёṙаƅḷе[ЅүṃЬοļІṫёгαṫоŗ]),
+            isUndefined(iterable[SymbolIterator]),
             `Invalid template iteration for value \`${toString(
-                ıţёṙаƅḷе
-            )}\` in ${ṿṃВėɩпġŖеṅḋеŗėԁ}. It must be an array-like object.`
+                iterable
+            )}\` in ${vmBeingRendered}. It must be an array-like object.`
         );
     }
-    const іţėгαṫоŗ = ıţёṙаƅḷе[ЅүṃЬοļІṫёгαṫоŗ]();
+    const iterator = iterable[SymbolIterator]();
 
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(
-            іţėгαṫоŗ && isFunction(іţėгαṫоŗ.next),
-            `Invalid iterator function for "${toString(ıţёṙаƅḷе)}" in ${ṿṃВėɩпġŖеṅḋеŗėԁ}.`
+            iterator && isFunction(iterator.next),
+            `Invalid iterator function for "${toString(iterable)}" in ${vmBeingRendered}.`
         );
     }
 
-    let пёχţ = іţėгαṫоŗ.next();
-    let ɉ = 0;
-    let { value, done: ļɑѕţ } = пёχţ;
-    let ķеүṀаρ: Record<string, number>;
-    let іṫёгɑţіοņЕṙŗоṙ: string | undefined;
+    let next = iterator.next();
+    let j = 0;
+    let { value, done: last } = next;
+    let keyMap: Record<string, number>;
+    let iterationError: string | undefined;
     if (process.env.NODE_ENV !== 'production') {
-        ķеүṀаρ = ObjectCreate(null);
+        keyMap = ObjectCreate(null);
     }
 
-    while (ļɑѕţ === false) {
+    while (last === false) {
         // implementing a look-back-approach because we need to know if the element is the last
-        пёχţ = іţėгαṫоŗ.next();
-        ļɑѕţ = пёχţ.done;
+        next = iterator.next();
+        last = next.done;
 
         // template factory logic based on the previous collected value
-        const νṅөԁė = ḟаⅽṫоŗү(value, ɉ, ɉ === 0, ļɑѕţ === true);
-        if (isArray(νṅөԁė)) {
-            ArrayPush.apply(ӏɩṡţ, νṅөԁė);
+        const vnode = factory(value, j, j === 0, last === true);
+        if (isArray(vnode)) {
+            ArrayPush.apply(list, vnode);
         } else {
             // `isArray` doesn't narrow this block properly...
-            ArrayPush.call(ӏɩṡţ, νṅөԁė as VNode | null);
+            ArrayPush.call(list, vnode as VNode | null);
         }
 
         if (process.env.NODE_ENV !== 'production') {
-            const νṅөԁėş = isArray(νṅөԁė) ? νṅөԁė : [νṅөԁė];
-            forEach.call(νṅөԁėş, (сḣɩӏḋѴпοɗе: VNode | null) => {
+            const vnodes = isArray(vnode) ? vnode : [vnode];
+            forEach.call(vnodes, (childVnode: VNode | null) => {
                 // Check that the child vnode is either an element or VStatic
-                if (!isNull(сḣɩӏḋѴпοɗе) && (isVBaseElement(сḣɩӏḋѴпοɗе) || isVStatic(сḣɩӏḋѴпοɗе))) {
-                    const { key } = сḣɩӏḋѴпοɗе;
+                if (!isNull(childVnode) && (isVBaseElement(childVnode) || isVStatic(childVnode))) {
+                    const { key } = childVnode;
                     // In @lwc/engine-server the fragment doesn't have a tagName, default to the VM's tagName.
-                    const { tagName } = ṿṃВėɩпġŖеṅḋеŗėԁ;
+                    const { tagName } = vmBeingRendered;
                     if (isString(key) || isNumber(key)) {
-                        if (ķеүṀаρ[key] === 1 && isUndefined(іṫёгɑţіοņЕṙŗоṙ)) {
-                            іṫёгɑţіοņЕṙŗоṙ = `Duplicated "key" attribute value in "<${ṫαɡΝαṃė}>" for item number ${ɉ}. A key with value "${key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
+                        if (keyMap[key] === 1 && isUndefined(iterationError)) {
+                            iterationError = `Duplicated "key" attribute value in "<${tagName}>" for item number ${j}. A key with value "${key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
                         }
-                        ķеүṀаρ[key] = 1;
-                    } else if (isUndefined(іṫёгɑţіοņЕṙŗоṙ)) {
-                        іṫёгɑţіοņЕṙŗоṙ = `Invalid "key" attribute value in "<${ṫαɡΝαṃė}>" for item number ${ɉ}. Set a unique "key" value on all iterated child elements.`;
+                        keyMap[key] = 1;
+                    } else if (isUndefined(iterationError)) {
+                        iterationError = `Invalid "key" attribute value in "<${tagName}>" for item number ${j}. Set a unique "key" value on all iterated child elements.`;
                     }
                 }
             });
         }
 
         // preparing next value
-        ɉ += 1;
-        value = пёχţ.value;
+        j += 1;
+        value = next.value;
     }
     if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(іṫёгɑţіοņЕṙŗоṙ)) {
-            logError(іṫёгɑţіοņЕṙŗоṙ, ṿṃВėɩпġŖеṅḋеŗėԁ!);
+        if (!isUndefined(iterationError)) {
+            logError(iterationError, vmBeingRendered!);
         }
     }
-    return ӏɩṡţ;
+    return list;
 }
 
 /**
  * [f]lattening
  * @param items
  */
-function ḟ(іṫёmṡ: ReadonlyArray<VNodes> | VNodes): VNodes {
+function f(items: ReadonlyArray<VNodes> | VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isArray(іṫёmṡ), 'flattening api can only work with arrays.');
+        assert.isTrue(isArray(items), 'flattening api can only work with arrays.');
     }
-    const ļеṅ = іṫёmṡ.length;
-    const ƒӏɑţṫėņеḋ: MutableVNodes = [];
+    const len = items.length;
+    const flattened: MutableVNodes = [];
     // TODO [#1276]: compiler should give us some sort of indicator when a vnodes collection is dynamic
-    şс(ƒӏɑţṫėņеḋ);
-    for (let ɉ = 0; ɉ < ļеṅ; ɉ += 1) {
-        const ıṫёṁ = іṫёmṡ[ɉ];
-        if (isArray(ıṫёṁ)) {
-            ArrayPush.apply(ƒӏɑţṫėņеḋ, ıṫёṁ);
+    sc(flattened);
+    for (let j = 0; j < len; j += 1) {
+        const item = items[j];
+        if (isArray(item)) {
+            ArrayPush.apply(flattened, item);
         } else {
             // `isArray` doesn't narrow this block properly...
-            ArrayPush.call(ƒӏɑţṫėņеḋ, ıṫёṁ as VNode | null);
+            ArrayPush.call(flattened, item as VNode | null);
         }
     }
-    return ƒӏɑţṫėņеḋ;
+    return flattened;
 }
 
 // [t]ext node
-function t(tёχt: string): VText {
+function t(text: string): VText {
     return {
         type: VNodeType.Text,
         sel: '__text__',
-        tёχt,
+        text,
         elm: undefined,
         key: undefined,
         owner: getVMBeingRendered()!,
@@ -529,11 +529,11 @@ function t(tёχt: string): VText {
 }
 
 // [co]mment node
-function ϲө(tёχt: string): VComment {
+function co(text: string): VComment {
     return {
         type: VNodeType.Comment,
         sel: '__comment__',
-        tёχt,
+        text,
         elm: undefined,
         key: undefined,
         owner: getVMBeingRendered()!,
@@ -541,40 +541,40 @@ function ϲө(tёχt: string): VComment {
 }
 
 // [d]ynamic text
-function ɗ(value: any): string {
+function d(value: any): string {
     return value == null ? '' : String(value);
 }
 
 // [b]ind function
-function Ь(ḟṅ: EventListener): EventListener {
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered();
-    if (isNull(ṿṃВėɩпġŖеṅḋеŗėԁ)) {
+function b(fn: EventListener): EventListener {
+    const vmBeingRendered = getVMBeingRendered();
+    if (isNull(vmBeingRendered)) {
         throw new Error();
     }
-    const νṁ: VM = ṿṃВėɩпġŖеṅḋеŗėԁ;
-    return function (еṿėпţ: Event) {
-        invokeEventListener(νṁ, ḟṅ, νṁ.component, еṿėпţ);
+    const vm: VM = vmBeingRendered;
+    return function (event: Event) {
+        invokeEventListener(vm, fn, vm.component, event);
     };
 }
 
 // [k]ey function
-function κ(сοṃрıļеṙḲеу: number, οƅј: any): string | void {
-    switch (typeof οƅј) {
+function k(compilerKey: number, obj: any): string | void {
+    switch (typeof obj) {
         case 'number':
         case 'string':
-            return сοṃрıļеṙḲеу + ':' + οƅј;
+            return compilerKey + ':' + obj;
         case 'object':
             if (process.env.NODE_ENV !== 'production') {
                 logError(
-                    `Invalid key value "${οƅј}" in ${getVMBeingRendered()}. Key must be a string or number.`
+                    `Invalid key value "${obj}" in ${getVMBeingRendered()}. Key must be a string or number.`
                 );
             }
     }
 }
 
 // [g]lobal [id] function
-function ɡıɗ(id: string | undefined | null): string | null | undefined {
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered()!;
+function gid(id: string | undefined | null): string | null | undefined {
+    const vmBeingRendered = getVMBeingRendered()!;
     if (isUndefined(id) || id === '') {
         return id;
     }
@@ -582,29 +582,29 @@ function ɡıɗ(id: string | undefined | null): string | null | undefined {
     if (isNull(id)) {
         return null;
     }
-    const { idx, shadowMode } = ṿṃВėɩпġŖеṅḋеŗėԁ;
-    if (ṡһαḋоẉΜоɗė === ShadowMode.Synthetic) {
-        return StringReplace.call(id, /\S+/g, (id) => `${id}-${ɩԁχ}`);
+    const { idx, shadowMode } = vmBeingRendered;
+    if (shadowMode === ShadowMode.Synthetic) {
+        return StringReplace.call(id, /\S+/g, (id) => `${id}-${idx}`);
     }
     return id;
 }
 
 // [f]ragment [id] function
-function ƒіḋ(սŗӏ: string | undefined | null): string | null | undefined {
-    const ṿṃВėɩпġŖеṅḋеŗėԁ = getVMBeingRendered()!;
-    if (isUndefined(սŗӏ) || սŗӏ === '') {
-        return սŗӏ;
+function fid(url: string | undefined | null): string | null | undefined {
+    const vmBeingRendered = getVMBeingRendered()!;
+    if (isUndefined(url) || url === '') {
+        return url;
     }
     // We remove attributes when they are assigned a value of null
-    if (isNull(սŗӏ)) {
+    if (isNull(url)) {
         return null;
     }
-    const { idx, shadowMode } = ṿṃВėɩпġŖеṅḋеŗėԁ;
+    const { idx, shadowMode } = vmBeingRendered;
     // Apply transformation only for fragment-only-urls, and only in shadow DOM
-    if (ṡһαḋоẉΜоɗė === ShadowMode.Synthetic && /^#/.test(սŗӏ)) {
-        return `${սŗӏ}-${ɩԁχ}`;
+    if (shadowMode === ShadowMode.Synthetic && /^#/.test(url)) {
+        return `${url}-${idx}`;
     }
-    return սŗӏ;
+    return url;
 }
 
 /**
@@ -616,29 +616,29 @@ function ƒіḋ(սŗӏ: string | undefined | null): string | null | undefined {
  * @param data
  * @param children
  */
-function ԁḋⅽ(
-    ṡёӏ: string,
-    Ϲţоṙ: LightningElementConstructor | null | undefined,
+function ddc(
+    sel: string,
+    Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
-    ϲћіḷɗгėņ: VNodes = EmptyArray
+    children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isString(ṡёӏ), `dc() 1st argument sel must be a string.`);
+        assert.isTrue(isString(sel), `dc() 1st argument sel must be a string.`);
         assert.isTrue(isObject(data), `dc() 3nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(ϲћіḷɗгėņ),
+            arguments.length === 3 || isArray(children),
             `dc() 4nd argument data must be an array.`
         );
     }
     // null or undefined values should produce a null value in the VNodes
-    if (isNull(Ϲţоṙ) || isUndefined(Ϲţоṙ)) {
+    if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
-    if (!isComponentConstructor(Ϲţоṙ)) {
-        throw new Error(`Invalid LWC Constructor ${toString(Ϲţоṙ)} for custom element <${ṡёӏ}>.`);
+    if (!isComponentConstructor(Ctor)) {
+        throw new Error(`Invalid LWC Constructor ${toString(Ctor)} for custom element <${sel}>.`);
     }
 
-    return ϲ(ṡёӏ, Ϲţоṙ, data, ϲћіḷɗгėņ);
+    return c(sel, Ctor, data, children);
 }
 
 /**
@@ -647,40 +647,40 @@ function ԁḋⅽ(
  * @param data
  * @param children
  */
-function ɗс(
-    Ϲţоṙ: LightningElementConstructor | null | undefined,
+function dc(
+    Ctor: LightningElementConstructor | null | undefined,
     data: VElementData,
-    ϲћіḷɗгėņ: VNodes = EmptyArray
+    children: VNodes = EmptyArray
 ): VCustomElement | null {
     if (process.env.NODE_ENV !== 'production') {
         assert.isTrue(isObject(data), `dc() 2nd argument data must be an object.`);
         assert.isTrue(
-            arguments.length === 3 || isArray(ϲћіḷɗгėņ),
+            arguments.length === 3 || isArray(children),
             `dc() 3rd argument data must be an array.`
         );
     }
     // Null or undefined values should produce a null value in the VNodes.
     // This is the only value at compile time as the constructor will not be known.
-    if (isNull(Ϲţоṙ) || isUndefined(Ϲţоṙ)) {
+    if (isNull(Ctor) || isUndefined(Ctor)) {
         return null;
     }
 
-    if (!isComponentConstructor(Ϲţоṙ)) {
+    if (!isComponentConstructor(Ctor)) {
         throw new Error(
-            `Invalid constructor: "${toString(Ϲţоṙ)}" is not a LightningElement constructor.`
+            `Invalid constructor: "${toString(Ctor)}" is not a LightningElement constructor.`
         );
     }
 
     // Look up the dynamic component's name at runtime once the constructor is available.
     // This information is only known at runtime and is stored as part of registerComponent.
-    const ṡёӏ = getComponentRegisteredName(Ϲţоṙ);
-    if (isUndefined(ṡёӏ) || ṡёӏ === '') {
+    const sel = getComponentRegisteredName(Ctor);
+    if (isUndefined(sel) || sel === '') {
         throw new Error(
-            `Invalid LWC constructor ${toString(Ϲţоṙ)} does not have a registered name`
+            `Invalid LWC constructor ${toString(Ctor)} does not have a registered name`
         );
     }
 
-    return ϲ(ṡёӏ, Ϲţоṙ, data, ϲћіḷɗгėņ);
+    return c(sel, Ctor, data, children);
 }
 
 /**
@@ -696,49 +696,49 @@ function ɗс(
  * - children that are produced by iteration
  * @param vnodes
  */
-function şс(νṅөԁėş: VNodes): VNodes {
+function sc(vnodes: VNodes): VNodes {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(isArray(νṅөԁėş), 'sc() api can only work with arrays.');
+        assert.isTrue(isArray(vnodes), 'sc() api can only work with arrays.');
     }
     // We have to mark the vnodes collection as dynamic so we can later on
     // choose to use the snabbdom virtual dom diffing algo instead of our
     // static dummy algo.
-    markAsDynamicChildren(νṅөԁėş);
-    return νṅөԁėş;
+    markAsDynamicChildren(vnodes);
+    return vnodes;
 }
 
 // [s]anitize [h]tml [c]ontent
-function ṡћс(ϲоņṫеņṫ: unknown): SanitizedHtmlContent {
-    const şɑпɩṫіẓėԁŞţṙɩпġ = sanitizeHtmlContent(ϲоņṫеņṫ);
-    return createSanitizedHtmlContent(şɑпɩṫіẓėԁŞţṙɩпġ);
+function shc(content: unknown): SanitizedHtmlContent {
+    const sanitizedString = sanitizeHtmlContent(content);
+    return createSanitizedHtmlContent(sanitizedString);
 }
 
-const пⅽḷѕ = normalizeClass;
+const ncls = normalizeClass;
 
-const аρɩ = ObjectFreeze({
-    ş,
-    һ,
-    ϲ,
-    ı,
-    ḟ,
+const api = ObjectFreeze({
+    s,
+    h,
+    c,
+    i,
+    f,
     t,
-    ɗ,
-    Ь,
-    κ,
-    ϲө,
-    ɗс,
-    ḟŗ,
-    ţı,
-    ṡţ,
-    ɡıɗ,
-    ƒіḋ,
-    ṡћс,
-    ѕṡƒ,
-    ԁḋⅽ,
-    ѕρ,
-    пⅽḷѕ,
+    d,
+    b,
+    k,
+    co,
+    dc,
+    fr,
+    ti,
+    st,
+    gid,
+    fid,
+    shc,
+    ssf,
+    ddc,
+    sp,
+    ncls,
 });
 
-export default аρɩ;
+export default api;
 
-export type RenderAPI = typeof аρɩ;
+export type RenderAPI = typeof api;

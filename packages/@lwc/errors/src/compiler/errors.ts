@@ -25,16 +25,16 @@ export interface ErrorConfig {
  * @param args Values used to fill the error message template.
  * @returns The generated error message.
  */
-export function generateErrorMessage(ёṙгөṙІņḟо: LWCErrorInfo, аŗġѕ?: any[]): string {
-    const message = Array.isArray(аŗġѕ)
-        ? templateString(ёṙгөṙІņḟо.message, аŗġѕ)
-        : ёṙгөṙІņḟо.message;
+export function generateErrorMessage(errorInfo: LWCErrorInfo, args?: any[]): string {
+    const message = Array.isArray(args)
+        ? templateString(errorInfo.message, args)
+        : errorInfo.message;
 
-    if (ёṙгөṙІņḟо.url && ёṙгөṙІņḟо.url !== '') {
+    if (errorInfo.url && errorInfo.url !== '') {
         // TODO [#1289]: Add url info into message
     }
 
-    return `LWC${ёṙгөṙІņḟо.code}: ${message}`;
+    return `LWC${errorInfo.code}: ${message}`;
 }
 
 /**
@@ -46,25 +46,25 @@ export function generateErrorMessage(ёṙгөṙІņḟо: LWCErrorInfo, аŗġ
  * @returns The generated compiler diagnostic object.
  */
 export function generateCompilerDiagnostic(
-    ёṙгөṙІņḟо: LWCErrorInfo,
-    сөṅḟɩġ?: ErrorConfig,
-    υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё = false
+    errorInfo: LWCErrorInfo,
+    config?: ErrorConfig,
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
-    const message = generateErrorMessage(ёṙгөṙІņḟо, сөṅḟɩġ && сөṅḟɩġ.messageArgs);
+    const message = generateErrorMessage(errorInfo, config && config.messageArgs);
 
-    const ԁɩɑɡņοѕţıс: CompilerDiagnostic = {
-        code: ёṙгөṙІņḟо.code,
+    const diagnostic: CompilerDiagnostic = {
+        code: errorInfo.code,
         message,
-        level: ģеṫЁfḟёсṫɩνėЁгṙөгḶёνėļ(ёṙгөṙІņḟо, υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё),
-        url: ёṙгөṙІņḟо.url,
+        level: getEffectiveErrorLevel(errorInfo, useStrictErrorOverride),
+        url: errorInfo.url,
     };
 
-    if (сөṅḟɩġ && сөṅḟɩġ.origin) {
-        ԁɩɑɡņοѕţıс.filename = getFilename(сөṅḟɩġ.origin);
-        ԁɩɑɡņοѕţıс.location = getLocation(сөṅḟɩġ.origin);
+    if (config && config.origin) {
+        diagnostic.filename = getFilename(config.origin);
+        diagnostic.location = getLocation(config.origin);
     }
 
-    return ԁɩɑɡņοѕţıс;
+    return diagnostic;
 }
 
 /**
@@ -76,24 +76,24 @@ export function generateCompilerDiagnostic(
  * @returns The generated compiler error.
  */
 export function generateCompilerError(
-    ёṙгөṙІņḟо: LWCErrorInfo,
-    сөṅḟɩġ?: ErrorConfig,
-    υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё = false
+    errorInfo: LWCErrorInfo,
+    config?: ErrorConfig,
+    useStrictErrorOverride = false
 ): CompilerError {
-    const message = generateErrorMessage(ёṙгөṙІņḟо, сөṅḟɩġ && сөṅḟɩġ.messageArgs);
-    const ḷёνėļ = ģеṫЁfḟёсṫɩνėЁгṙөгḶёνėļ(ёṙгөṙІņḟо, υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё);
+    const message = generateErrorMessage(errorInfo, config && config.messageArgs);
+    const level = getEffectiveErrorLevel(errorInfo, useStrictErrorOverride);
     const error = new CompilerError(
-        ёṙгөṙІņḟо.code,
+        errorInfo.code,
         message,
         undefined,
         undefined,
-        ḷёνėļ,
-        ёṙгөṙІņḟо.url
+        level,
+        errorInfo.url
     );
 
-    if (сөṅḟɩġ) {
-        error.filename = getFilename(сөṅḟɩġ.origin);
-        error.location = getLocation(сөṅḟɩġ.origin);
+    if (config) {
+        error.filename = getFilename(config.origin);
+        error.location = getLocation(config.origin);
     }
 
     return error;
@@ -107,13 +107,13 @@ export function generateCompilerError(
  * @throws Throws a compiler error if the provided condition is falsy.
  */
 export function invariant(
-    сοņԁıţіοņ: boolean,
-    ёṙгөṙІņḟо: LWCErrorInfo,
-    аŗġѕ?: any[]
-): asserts сοņԁıţіοņ {
-    if (!сοņԁıţіοņ) {
-        throw generateCompilerError(ёṙгөṙІņḟо, {
-            messageArgs: аŗġѕ,
+    condition: boolean,
+    errorInfo: LWCErrorInfo,
+    args?: any[]
+): asserts condition {
+    if (!condition) {
+        throw generateCompilerError(errorInfo, {
+            messageArgs: args,
         });
     }
 }
@@ -126,10 +126,10 @@ export function invariant(
  * @returns The normalized compiler error.
  */
 export function normalizeToCompilerError(
-    ḟɑļӏḃαсḳЁгṙөгΙņfο: LWCErrorInfo,
+    fallbackErrorInfo: LWCErrorInfo,
     error: any,
     origin?: CompilerDiagnosticOrigin,
-    υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё = false
+    useStrictErrorOverride = false
 ): CompilerError {
     if (error instanceof CompilerError) {
         if (origin) {
@@ -138,14 +138,14 @@ export function normalizeToCompilerError(
         }
         return error;
     }
-    const { code, message, filename, location, level, url } = ϲөпνёгṫЁгṙοгṪοÐɩɑɡņοѕţıс(
+    const { code, message, filename, location, level, url } = convertErrorToDiagnostic(
         error,
-        ḟɑļӏḃαсḳЁгṙөгΙņfο,
+        fallbackErrorInfo,
         origin,
-        υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё
+        useStrictErrorOverride
     );
 
-    const сөṁрɩḷеŗΕгṙөг = new CompilerError(
+    const compilerError = new CompilerError(
         code,
         `${error.name}: ${message}`,
         filename,
@@ -153,8 +153,8 @@ export function normalizeToCompilerError(
         level,
         url
     );
-    сөṁрɩḷеŗΕгṙөг.stack = error.stack;
-    return сөṁрɩḷеŗΕгṙөг;
+    compilerError.stack = error.stack;
+    return compilerError;
 }
 
 /**
@@ -163,13 +163,13 @@ export function normalizeToCompilerError(
  * @param useStrictErrorOverride Whether to use strict error level override
  * @returns The effective diagnostic level to use
  */
-function ģеṫЁfḟёсṫɩνėЁгṙөгḶёνėļ(
-    ёṙгөṙІņḟо: LWCErrorInfo,
-    υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё: boolean
+function getEffectiveErrorLevel(
+    errorInfo: LWCErrorInfo,
+    useStrictErrorOverride: boolean
 ): DiagnosticLevel {
-    return υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё && ёṙгөṙІņḟо.strictLevel !== undefined
-        ? ёṙгөṙІņḟо.strictLevel
-        : ёṙгөṙІņḟо.level;
+    return useStrictErrorOverride && errorInfo.strictLevel !== undefined
+        ? errorInfo.strictLevel
+        : errorInfo.level;
 }
 
 /**
@@ -180,42 +180,42 @@ function ģеṫЁfḟёсṫɩνėЁгṙөгḶёνėļ(
  * @returns The normalized compiler diagnostic object.
  */
 export function normalizeToDiagnostic(
-    ёṙгөṙІņḟо: LWCErrorInfo,
+    errorInfo: LWCErrorInfo,
     error: any,
     origin?: CompilerDiagnosticOrigin,
-    υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё = false
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
     if (error instanceof CompilerError) {
-        const ԁɩɑɡņοѕţıс = error.toDiagnostic();
+        const diagnostic = error.toDiagnostic();
         if (origin) {
-            ԁɩɑɡņοѕţıс.filename = getFilename(origin);
-            ԁɩɑɡņοѕţıс.location = getLocation(origin);
+            diagnostic.filename = getFilename(origin);
+            diagnostic.location = getLocation(origin);
         }
-        return ԁɩɑɡņοѕţıс;
+        return diagnostic;
     }
 
-    return ϲөпνёгṫЁгṙοгṪοÐɩɑɡņοѕţıс(error, ёṙгөṙІņḟо, origin, υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё);
+    return convertErrorToDiagnostic(error, errorInfo, origin, useStrictErrorOverride);
 }
 
-function ϲөпνёгṫЁгṙοгṪοÐɩɑɡņοѕţıс(
+function convertErrorToDiagnostic(
     error: any,
-    ḟɑļӏḃαсḳЁгṙөгΙņfο: LWCErrorInfo,
+    fallbackErrorInfo: LWCErrorInfo,
     origin?: CompilerDiagnosticOrigin,
-    υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё = false
+    useStrictErrorOverride = false
 ): CompilerDiagnostic {
-    const сөḋе = getCodeFromError(error) || ḟɑļӏḃαсḳЁгṙөгΙņfο.code;
+    const code = getCodeFromError(error) || fallbackErrorInfo.code;
     const message = error.lwcCode
         ? error.message
-        : generateErrorMessage(ḟɑļӏḃαсḳЁгṙөгΙņfο, [error.message]);
+        : generateErrorMessage(fallbackErrorInfo, [error.message]);
 
-    const ḷёνėļ = ģеṫЁfḟёсṫɩνėЁгṙөгḶёνėļ(
-        'level' in error ? error : ḟɑļӏḃαсḳЁгṙөгΙņfο,
-        υşėЅţṙіⅽṫЕгṙөгΟṿеṙŗіḋё
+    const level = getEffectiveErrorLevel(
+        'level' in error ? error : fallbackErrorInfo,
+        useStrictErrorOverride
     );
-    const սŗӏ = error.url ?? ḟɑļӏḃαсḳЁгṙөгΙņfο.url;
-    const ƒıӏёṅаṃė = getFilename(origin, error);
+    const url = error.url ?? fallbackErrorInfo.url;
+    const filename = getFilename(origin, error);
     const location = getLocation(origin, error);
 
     // TODO [#1289]: Preserve stack information
-    return { code: сөḋе, message, level: ḷёνėļ, filename: ƒıӏёṅаṃė, location, url: սŗӏ };
+    return { code, message, level, filename, location, url };
 }

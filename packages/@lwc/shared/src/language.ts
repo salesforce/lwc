@@ -50,15 +50,15 @@ const {
 } = Array;
 
 /** The most extensible array type. */
-type ВαṡеᎪṙгαү = readonly unknown[];
+type BaseArray = readonly unknown[];
 /** Names of methods that can be used on a readonly array. */
-type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
-    [K in keyof ВαṡеᎪṙгαү]: K extends string
-        ? ВαṡеᎪṙгαү[K] extends (...args: any) => any
+type ArrayPureMethodNames = {
+    [K in keyof BaseArray]: K extends string
+        ? BaseArray[K] extends (...args: any) => any
             ? K
             : never
         : never;
-}[keyof ВαṡеᎪṙгαү];
+}[keyof BaseArray];
 /**
  * Unbound array methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @example
@@ -72,21 +72,21 @@ type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
  * fixedForEach.call(arr, trim) // passes - good
  * fixedForEach.call(arr, sq) // error - yay!
  */
-type ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ = {
-    [K in ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş]: {
-        call: <T extends ВαṡеᎪṙгαү>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends ВαṡеᎪṙгαү>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+type UnboundArrayPureMethods = {
+    [K in ArrayPureMethodNames]: {
+        call: <T extends BaseArray>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
+        apply: <T extends BaseArray>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
     };
 };
 
 /** Names of methods that mutate an array (cannot be used on a readonly array). */
-type ᎪṙгαүМṳṫаţıоņΜеţḣоɗṄаṃėѕ = Exclude<keyof unknown[], keyof ВαṡеᎪṙгαү>;
+type ArrayMutationMethodNames = Exclude<keyof unknown[], keyof BaseArray>;
 /**
  * Unbound array mutation methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @see {@link UnboundArrayPureMethods} for an example showing why this is needed.
  */
-type ՍṅƅоսņԁΑŗгаүṀυṫαţıөпΜёţḣөԁṡ = {
-    [K in ᎪṙгαүМṳṫаţıоņΜеţḣоɗṄаṃėѕ]: {
+type UnboundArrayMutationMethods = {
+    [K in ArrayMutationMethodNames]: {
         call: <T extends unknown[]>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
         apply: <T extends unknown[]>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
     };
@@ -118,7 +118,7 @@ const {
     splice: ArraySplice,
     unshift: ArrayUnshift,
     forEach, // Weird anomaly!
-}: ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ & ՍṅƅоսņԁΑŗгаүṀυṫαţıөпΜёţḣөԁṡ = Array.prototype;
+}: UnboundArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
 
 // The type of the return value of Array.prototype.every is `this is T[]`. However, once this
 // Array method is pulled out of the prototype, the function is now referencing `this` where
@@ -134,10 +134,10 @@ const {
  * @returns Whether all elements in the array pass the test provided by the predicate.
  */
 function arrayEvery<S extends T, T = unknown>(
-    αгṙ: readonly T[],
-    ṗгėɗіϲαtė: (value: any, index: number, array: readonly T[]) => value is S
-): αгṙ is readonly S[] {
-    return ArrayEvery.call(αгṙ, ṗгėɗіϲαtė);
+    arr: readonly T[],
+    predicate: (value: any, index: number, array: readonly T[]) => value is S
+): arr is readonly S[] {
+    return ArrayEvery.call(arr, predicate);
 }
 
 /** Detached {@linkcode String.fromCharCode}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode MDN Reference}. */
@@ -258,8 +258,8 @@ export {
  * @param obj Value to test
  * @returns `true` if the value is `undefined`.
  */
-export function isUndefined(οƅј: unknown): οƅј is undefined {
-    return οƅј === undefined;
+export function isUndefined(obj: unknown): obj is undefined {
+    return obj === undefined;
 }
 
 /**
@@ -267,8 +267,8 @@ export function isUndefined(οƅј: unknown): οƅј is undefined {
  * @param obj Value to test
  * @returns `true` if the value is `null`.
  */
-export function isNull(οƅј: unknown): οƅј is null {
-    return οƅј === null;
+export function isNull(obj: unknown): obj is null {
+    return obj === null;
 }
 
 /**
@@ -276,8 +276,8 @@ export function isNull(οƅј: unknown): οƅј is null {
  * @param obj Value to test
  * @returns `true` if the value is `true`.
  */
-export function isTrue(οƅј: unknown): οƅј is true {
-    return οƅј === true;
+export function isTrue(obj: unknown): obj is true {
+    return obj === true;
 }
 
 /**
@@ -285,8 +285,8 @@ export function isTrue(οƅј: unknown): οƅј is true {
  * @param obj Value to test
  * @returns `true` if the value is `false`.
  */
-export function isFalse(οƅј: unknown): οƅј is false {
-    return οƅј === false;
+export function isFalse(obj: unknown): obj is false {
+    return obj === false;
 }
 
 /**
@@ -294,8 +294,8 @@ export function isFalse(οƅј: unknown): οƅј is false {
  * @param obj Value to test
  * @returns `true` if the value is a boolean.
  */
-export function isBoolean(οƅј: unknown): οƅј is boolean {
-    return typeof οƅј === 'boolean';
+export function isBoolean(obj: unknown): obj is boolean {
+    return typeof obj === 'boolean';
 }
 
 /**
@@ -305,8 +305,8 @@ export function isBoolean(οƅј: unknown): οƅј is boolean {
  */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function isFunction(οƅј: unknown): οƅј is Function {
-    return typeof οƅј === 'function';
+export function isFunction(obj: unknown): obj is Function {
+    return typeof obj === 'function';
 }
 
 /**
@@ -314,8 +314,8 @@ export function isFunction(οƅј: unknown): οƅј is Function {
  * @param obj Value to test
  * @returns `true` if the value is an object or null.
  */
-export function isObject(οƅј: unknown): οƅј is object | null {
-    return typeof οƅј === 'object';
+export function isObject(obj: unknown): obj is object | null {
+    return typeof obj === 'object';
 }
 
 /**
@@ -323,8 +323,8 @@ export function isObject(οƅј: unknown): οƅј is object | null {
  * @param obj Value to test
  * @returns `true` if the value is a string.
  */
-export function isString(οƅј: unknown): οƅј is string {
-    return typeof οƅј === 'string';
+export function isString(obj: unknown): obj is string {
+    return typeof obj === 'string';
 }
 
 /**
@@ -332,8 +332,8 @@ export function isString(οƅј: unknown): οƅј is string {
  * @param obj Value to test
  * @returns `true` if the value is a number.
  */
-export function isNumber(οƅј: unknown): οƅј is number {
-    return typeof οƅј === 'number';
+export function isNumber(obj: unknown): obj is number {
+    return typeof obj === 'number';
 }
 
 /** Does nothing! 🚀 */
@@ -341,19 +341,19 @@ export function noop(): void {
     /* Do nothing */
 }
 
-const ОṫŞ = {}.toString;
+const OtS = {}.toString;
 /**
  * Converts the argument to a string, safely accounting for objects with "null" prototype.
  * Note that `toString(null)` returns `"[object Null]"` rather than `"null"`.
  * @param obj Value to convert to a string.
  * @returns String representation of the value.
  */
-export function toString(οƅј: unknown): string {
-    if (οƅј?.toString) {
+export function toString(obj: unknown): string {
+    if (obj?.toString) {
         // Arrays might hold objects with "null" prototype So using
         // Array.prototype.toString directly will cause an error Iterate through
         // all the items and handle individually.
-        if (isArray(οƅј)) {
+        if (isArray(obj)) {
             // This behavior is slightly different from Array#toString:
             // 1. Array#toString calls `this.join`, rather than Array#join
             // Ex: arr = []; arr.join = () => 1; arr.toString() === 1; toString(arr) === ''
@@ -364,14 +364,14 @@ export function toString(οƅј: unknown): string {
             // 4. Array#toString converts recursive references to arrays to ''
             // Ex: arr = [1]; arr.push(arr, 2); arr.toString() === '1,,2'; toString(arr) throws
             // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString
-            return ArrayJoin.call(ArrayMap.call(οƅј, toString), ',');
+            return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
         }
-        return οƅј.toString();
-    } else if (typeof οƅј === 'object') {
+        return obj.toString();
+    } else if (typeof obj === 'object') {
         // This catches null and returns "[object Null]". Weird, but kept for backwards compatibility.
-        return ОṫŞ.call(οƅј);
+        return OtS.call(obj);
     } else {
-        return String(οƅј);
+        return String(obj);
     }
 }
 
@@ -382,12 +382,12 @@ export function toString(οƅј: unknown): string {
  * @param p Property key to get the descriptor for
  * @returns The property descriptor for the given object and property key.
  */
-export function getPropertyDescriptor(ο: unknown, ṗ: PropertyKey): PropertyDescriptor | undefined {
+export function getPropertyDescriptor(o: unknown, p: PropertyKey): PropertyDescriptor | undefined {
     do {
-        const ɗ = getOwnPropertyDescriptor(ο, ṗ);
-        if (!isUndefined(ɗ)) {
-            return ɗ;
+        const d = getOwnPropertyDescriptor(o, p);
+        if (!isUndefined(d)) {
+            return d;
         }
-        ο = getPrototypeOf(ο);
-    } while (ο !== null);
+        o = getPrototypeOf(o);
+    } while (o !== null);
 }

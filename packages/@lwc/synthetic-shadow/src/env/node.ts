@@ -9,7 +9,7 @@ import { getOwnPropertyDescriptor, hasOwnProperty } from '@lwc/shared';
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
 const _Node = Node;
-const пοɗеΡŗоṫөtүрё = _Node.prototype;
+const nodePrototype = _Node.prototype;
 
 export const {
     DOCUMENT_POSITION_CONTAINED_BY,
@@ -34,63 +34,63 @@ export const {
     removeChild,
     replaceChild,
     hasChildNodes,
-} = пοɗеΡŗоṫөtүрё;
+} = nodePrototype;
 
 const firstChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'firstChild'
 )!.get!;
 
 const lastChildGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'lastChild'
 )!.get!;
 
 const textContentGetter: (this: Node) => string = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'textContent'
 )!.get!;
 
 const parentNodeGetter: (this: Node) => (Node & ParentNode) | null = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'parentNode'
 )!.get!;
 
 const ownerDocumentGetter: (this: Node) => Document | null = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'ownerDocument'
 )!.get!;
 
 const parentElementGetter: (this: Node) => Element | null = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'parentElement'
 )!.get!;
 
 const textContextSetter: (this: Node, s: string) => void = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'textContent'
 )!.set!;
 
 const childNodesGetter: (this: Node) => NodeListOf<Node & Element> = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'childNodes'
 )!.get!;
 
 const nextSiblingGetter: (this: Node) => ChildNode | null = getOwnPropertyDescriptor(
-    пοɗеΡŗоṫөtүрё,
+    nodePrototype,
     'nextSibling'
 )!.get!;
 
-const isConnected = hasOwnProperty.call(пοɗеΡŗоṫөtүрё, 'isConnected')
-    ? getOwnPropertyDescriptor(пοɗеΡŗоṫөtүрё, 'isConnected')!.get!
-    : function (ṫһɩṡ: Node): boolean {
-          const ɗоϲ = ownerDocumentGetter.call(this);
+const isConnected = hasOwnProperty.call(nodePrototype, 'isConnected')
+    ? getOwnPropertyDescriptor(nodePrototype, 'isConnected')!.get!
+    : function (this: Node): boolean {
+          const doc = ownerDocumentGetter.call(this);
           // IE11
           return (
               // if doc is null, it means `this` is actually a document instance which
               // is always connected
-              ɗоϲ === null ||
-              (ⅽоṁṗаṙёḊοⅽսṁёṅṫṖοѕɩṫіөṅ.call(ɗоϲ, this) & ḊОⅭՍМЁNТ_ΡОŞΙТӀΟΝ_ϹОṄΤАӀNЕÐ_ВẎ) !== 0
+              doc === null ||
+              (compareDocumentPosition.call(doc, this) & DOCUMENT_POSITION_CONTAINED_BY) !== 0
           );
       };
 

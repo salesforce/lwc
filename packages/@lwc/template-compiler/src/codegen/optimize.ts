@@ -42,65 +42,65 @@ import type { Node } from 'estree-walker';
  * @param templateFn
  */
 export function optimizeStaticExpressions(
-    ţėmṗḷаţėFņ: t.FunctionDeclaration
+    templateFn: t.FunctionDeclaration
 ): Array<t.FunctionDeclaration | t.VariableDeclaration> {
-    const ŗėѕṳḷṫ: Array<t.FunctionDeclaration | t.VariableDeclaration> = [];
-    const ķėуşΤоѴɑгɩαḃӏёΝаṃėѕ = new Map();
+    const result: Array<t.FunctionDeclaration | t.VariableDeclaration> = [];
+    const keysToVariableNames = new Map();
 
     // Return true if this node is an object/array that is fully static
-    function ıѕŞṫаţıсӨḃјёϲţӨṙАŗṙаẏ(
-        ṅоɗė: t.BaseNode
+    function isStaticObjectOrArray(
+        node: t.BaseNode
     ): node is t.ObjectExpression | t.ArrayExpression {
-        if (t.isObjectExpression(ṅоɗė)) {
-            return ṅоɗė.properties.every((ρгөρ) => {
+        if (t.isObjectExpression(node)) {
+            return node.properties.every((prop) => {
                 return (
-                    t.isProperty(ρгөρ) &&
-                    !ρгөρ.computed &&
-                    !ρгөρ.method &&
-                    !ρгөρ.shorthand &&
-                    (t.isLiteral(ρгөρ.value) || ıѕŞṫаţıсӨḃјёϲţӨṙАŗṙаẏ(ρгөρ.value))
+                    t.isProperty(prop) &&
+                    !prop.computed &&
+                    !prop.method &&
+                    !prop.shorthand &&
+                    (t.isLiteral(prop.value) || isStaticObjectOrArray(prop.value))
                 );
             });
-        } else if (t.isArrayExpression(ṅоɗė)) {
-            return ṅоɗė.elements.every((ėӏёṁеņṫ) => {
-                return ėӏёṁеņṫ !== null && (t.isLiteral(ėӏёṁеņṫ) || ıѕŞṫаţıсӨḃјёϲţӨṙАŗṙаẏ(ėӏёṁеņṫ));
+        } else if (t.isArrayExpression(node)) {
+            return node.elements.every((element) => {
+                return element !== null && (t.isLiteral(element) || isStaticObjectOrArray(element));
             });
         }
         return false;
     }
 
-    function ёχṫŗɑсţṠṫαṫіⅽṾаŗıаƅḷе(ṅоɗė: t.ObjectExpression | t.ArrayExpression): t.Identifier {
+    function extractStaticVariable(node: t.ObjectExpression | t.ArrayExpression): t.Identifier {
         // This key generation can probably be improved using a hash code, but stringification is
         // simplest for finding a unique identifier for an object/array expression
-        const key = astring.generate(ṅоɗė);
+        const key = astring.generate(node);
 
         // Check for duplicates to avoid re-declaring the same object/array multiple times
         // Especially for the empty array (`[]`), which is very common in templates
-        if (!ķėуşΤоѴɑгɩαḃӏёΝаṃėѕ.has(key)) {
-            const ṿɑгɩɑЬļėΝαṃė = `stc${ķėуşΤоѴɑгɩαḃӏёΝаṃėѕ.size}`;
+        if (!keysToVariableNames.has(key)) {
+            const variableName = `stc${keysToVariableNames.size}`;
             // e.g. `const stc0 = { /* original object */ };
-            const ɗеϲļаṙαţıөṅ = t.variableDeclaration('const', [
-                t.variableDeclarator(t.identifier(ṿɑгɩɑЬļėΝαṃė), ṅоɗė),
+            const declaration = t.variableDeclaration('const', [
+                t.variableDeclarator(t.identifier(variableName), node),
             ]);
-            ŗėѕṳḷṫ.push(ɗеϲļаṙαţıөṅ);
-            ķėуşΤоѴɑгɩαḃӏёΝаṃėѕ.set(key, ṿɑгɩɑЬļėΝαṃė);
+            result.push(declaration);
+            keysToVariableNames.set(key, variableName);
         }
 
-        return t.identifier(ķėуşΤоѴɑгɩαḃӏёΝаṃėѕ.get(key));
+        return t.identifier(keysToVariableNames.get(key));
     }
 
-    walk(ţėmṗḷаţėFņ as Node, {
-        enter(ṅоɗė) {
+    walk(templateFn as Node, {
+        enter(node) {
             // For deeply-nested static object, we only want to extract the top-level node
-            if (ıѕŞṫаţıсӨḃјёϲţӨṙАŗṙаẏ(ṅоɗė)) {
-                const пёẇΝөḋе = ёχṫŗɑсţṠṫαṫіⅽṾаŗıаƅḷе(ṅоɗė);
-                this.replace(пёẇΝөḋе);
+            if (isStaticObjectOrArray(node)) {
+                const newNode = extractStaticVariable(node);
+                this.replace(newNode);
                 this.skip();
             }
         },
     });
 
-    ŗėѕṳḷṫ.push(ţėmṗḷаţėFņ);
+    result.push(templateFn);
 
-    return ŗėѕṳḷṫ;
+    return result;
 }

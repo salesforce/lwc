@@ -19,18 +19,18 @@ import type { CustomRendererConfig } from '@lwc/template-compiler';
  * Flag indicating that a warning about still using the deprecated `enableLwcSpread`
  * compiler option has already been logged to the `console`.
  */
-let аļṙеαḋуẈɑгņеḋᎪЬοṳṫḶẉсṠṗгėαԁ = false;
+let alreadyWarnedAboutLwcSpread = false;
 /**
  * Flag indicating that a warning about still using the deprecated `stylesheetConfig`
  * compiler option has already been logged to the `console`.
  */
-let аļṙеαḋуẈɑгṅеɗΟпŞṫуļėѕћėеţϹоņḟіģ = false;
+let alreadyWarnedOnStylesheetConfig = false;
 
-type ŖёϲυŗṡіṿėŖėʠυıŗеḋ<T> = {
+type RecursiveRequired<T> = {
     [P in keyof T]-?: RecursiveRequired<T[P]>;
 };
 
-const ḊЁƑΑṲĻΤ_ОΡṪІΟṄЅ = {
+const DEFAULT_OPTIONS = {
     isExplicitImport: false,
     preserveHtmlComments: false,
     enableStaticContentOptimization: true,
@@ -44,18 +44,18 @@ const ḊЁƑΑṲĻΤ_ОΡṪІΟṄЅ = {
     componentFeatureFlagModulePath: '',
 } as const;
 
-const ḊЕƑΑUĻΤ_ÐҮΝᎪΜІⅭ_ІṀΡОŖΤ_ⅭΟΝƑΙĠ: Required<DynamicImportConfig> = {
+const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
     loader: '',
     strictSpecifier: true,
 };
 
-const ḊЕƑΑՍĻΤ_ŞΤẎḶЕŞΗЕЁΤ_ⅭΟΝƑΙĢ: RecursiveRequired<StylesheetConfig> = {
+const DEFAULT_STYLESHEET_CONFIG: RecursiveRequired<StylesheetConfig> = {
     customProperties: {
         resolution: { type: 'native' },
     },
 };
 
-const ḊЁḞΑṲḶΤ_ОՍΤРṲΤ_ⅭΟΝƑΙĠ: Required<OutputConfig> = {
+const DEFAULT_OUTPUT_CONFIG: Required<OutputConfig> = {
     minify: false,
     sourcemap: false,
 };
@@ -153,7 +153,7 @@ export interface TransformOptions {
     enablePrivateMethods?: boolean;
 }
 
-type ОρţіοņаḷṪгαṅѕƒοгṃΚеẏṡ =
+type OptionalTransformKeys =
     | 'name'
     | 'namespace'
     | 'scopedStyles'
@@ -169,11 +169,11 @@ type ОρţіοņаḷṪгαṅѕƒοгṃΚеẏṡ =
     | 'enablePrivateMethods'
     | 'instrumentation';
 
-type ṘёԛυɩṙеɗΤгаṅşfοŗmΟṗtıөпṡ = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;
-type ΟрţıоņɑӏṪṙαпṡƒоṙṃОρţіοņѕ = Pick<TransformOptions, OptionalTransformKeys>;
+type RequiredTransformOptions = RecursiveRequired<Omit<TransformOptions, OptionalTransformKeys>>;
+type OptionalTransformOptions = Pick<TransformOptions, OptionalTransformKeys>;
 
 export interface NormalizedTransformOptions
-    extends ṘёԛυɩṙеɗΤгаṅşfοŗmΟṗtıөпṡ, ΟрţıоņɑӏṪṙαпṡƒоṙṃОρţіοņѕ {}
+    extends RequiredTransformOptions, OptionalTransformOptions {}
 
 /**
  * Validates that the options conform to the expected shape and normalizes them to a standard format
@@ -185,16 +185,16 @@ export interface NormalizedTransformOptions
  *   name: 'app',
  * })
  */
-export function validateTransformOptions(өрṫɩоṅş: TransformOptions): NormalizedTransformOptions {
-    νɑļіḋαtėӨрtɩοпş(өрṫɩоṅş);
-    return ņοгṃɑӏɩżеӨṗṫіөṅѕ(өрṫɩоṅş);
+export function validateTransformOptions(options: TransformOptions): NormalizedTransformOptions {
+    validateOptions(options);
+    return normalizeOptions(options);
 }
 
-function νɑļіḋαtėӨрtɩοпş(өрṫɩоṅş: TransformOptions) {
-    invariant(!isUndefined(өрṫɩоṅş), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [өрṫɩоṅş]);
+function validateOptions(options: TransformOptions) {
+    invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
 
-    if (!isUndefined(өрṫɩоṅş.enableLwcSpread) && !аļṙеαḋуẈɑгņеḋᎪЬοṳṫḶẉсṠṗгėαԁ) {
-        аļṙеαḋуẈɑгņеḋᎪЬοṳṫḶẉсṠṗгėαԁ = true;
+    if (!isUndefined(options.enableLwcSpread) && !alreadyWarnedAboutLwcSpread) {
+        alreadyWarnedAboutLwcSpread = true;
 
         // eslint-disable-next-line no-console
         console.warn(
@@ -202,8 +202,8 @@ function νɑļіḋαtėӨрtɩοпş(өрṫɩоṅş: TransformOptions) {
         );
     }
 
-    if (!isUndefined(өрṫɩоṅş.stylesheetConfig) && !аļṙеαḋуẈɑгṅеɗΟпŞṫуļėѕћėеţϹоņḟіģ) {
-        аļṙеαḋуẈɑгṅеɗΟпŞṫуļėѕћėеţϹоņḟіģ = true;
+    if (!isUndefined(options.stylesheetConfig) && !alreadyWarnedOnStylesheetConfig) {
+        alreadyWarnedOnStylesheetConfig = true;
 
         // eslint-disable-next-line no-console
         console.warn(
@@ -211,23 +211,23 @@ function νɑļіḋαtėӨрtɩοпş(өрṫɩоṅş: TransformOptions) {
         );
     }
 
-    if (!isUndefined(өрṫɩоṅş.outputConfig)) {
-        ṿɑӏɩḋаţėОṳţрսţСοņƒıģ(өрṫɩоṅş.outputConfig);
+    if (!isUndefined(options.outputConfig)) {
+        validateOutputConfig(options.outputConfig);
     }
 }
 
-function іṡṲпḋёfıņеḋӨгΒөоḷёаṅ(ṗṙоṗėгţү: any): boolean {
-    return isUndefined(ṗṙоṗėгţү) || isBoolean(ṗṙоṗėгţү);
+function isUndefinedOrBoolean(property: any): boolean {
+    return isUndefined(property) || isBoolean(property);
 }
 
-function ṿɑӏɩḋаţėОṳţрսţСοņƒıģ(сөṅḟɩġ: OutputConfig) {
+function validateOutputConfig(config: OutputConfig) {
     invariant(
-        іṡṲпḋёfıņеḋӨгΒөоḷёаṅ(сөṅḟɩġ.sourcemap) || сөṅḟɩġ.sourcemap === 'inline',
+        isUndefinedOrBoolean(config.sourcemap) || config.sourcemap === 'inline',
         CompilerValidationErrors.INVALID_SOURCEMAP_PROPERTY,
-        [сөṅḟɩġ.sourcemap]
+        [config.sourcemap]
     );
 
-    if (!isUndefined(сөṅḟɩġ.minify)) {
+    if (!isUndefined(config.minify)) {
         // eslint-disable-next-line no-console
         console.warn(
             `"OutputConfig.minify" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
@@ -235,29 +235,29 @@ function ṿɑӏɩḋаţėОṳţрսţСοņƒıģ(сөṅḟɩġ: OutputConfi
     }
 }
 
-function ņοгṃɑӏɩżеӨṗṫіөṅѕ(өрṫɩоṅş: TransformOptions): NormalizedTransformOptions {
+function normalizeOptions(options: TransformOptions): NormalizedTransformOptions {
     const outputConfig: Required<OutputConfig> = {
-        ...ḊЁḞΑṲḶΤ_ОՍΤРṲΤ_ⅭΟΝƑΙĠ,
-        ...өрṫɩоṅş.outputConfig,
+        ...DEFAULT_OUTPUT_CONFIG,
+        ...options.outputConfig,
     };
 
     const stylesheetConfig: RecursiveRequired<StylesheetConfig> = {
         customProperties: {
-            ...ḊЕƑΑՍĻΤ_ŞΤẎḶЕŞΗЕЁΤ_ⅭΟΝƑΙĢ.customProperties,
-            ...(өрṫɩоṅş.stylesheetConfig && өрṫɩоṅş.stylesheetConfig.customProperties),
+            ...DEFAULT_STYLESHEET_CONFIG.customProperties,
+            ...(options.stylesheetConfig && options.stylesheetConfig.customProperties),
         },
     };
 
     const dynamicImports: Required<DynamicImportConfig> = {
-        ...ḊЕƑΑUĻΤ_ÐҮΝᎪΜІⅭ_ІṀΡОŖΤ_ⅭΟΝƑΙĠ,
-        ...өрṫɩоṅş.dynamicImports,
+        ...DEFAULT_DYNAMIC_IMPORT_CONFIG,
+        ...options.dynamicImports,
     };
 
-    const apiVersion = getAPIVersionFromNumber(өрṫɩоṅş.apiVersion);
+    const apiVersion = getAPIVersionFromNumber(options.apiVersion);
 
     return {
-        ...ḊЁƑΑṲĻΤ_ОΡṪІΟṄЅ,
-        ...өрṫɩоṅş,
+        ...DEFAULT_OPTIONS,
+        ...options,
         stylesheetConfig,
         outputConfig,
         dynamicImports,

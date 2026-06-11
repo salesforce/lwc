@@ -43,43 +43,43 @@ const lastElementChildGetter: (this: ParentNode) => Element | null = getOwnPrope
     'lastElementChild'
 )!.get!;
 
-const ıпņėгṪėхţḊёѕϲŗіρţоṙ = getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
+const innerTextDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
 
-const innerTextGetter: ((this: Element) => string) | null = ıпņėгṪėхţḊёѕϲŗіρţоṙ
-    ? ıпņėгṪėхţḊёѕϲŗіρţоṙ.get!
+const innerTextGetter: ((this: Element) => string) | null = innerTextDescriptor
+    ? innerTextDescriptor.get!
     : null;
-const innerTextSetter: ((this: Element, s: string) => void) | null = ıпņėгṪėхţḊёѕϲŗіρţоṙ
-    ? ıпņėгṪėхţḊёѕϲŗіρţоṙ.set!
+const innerTextSetter: ((this: Element, s: string) => void) | null = innerTextDescriptor
+    ? innerTextDescriptor.set!
     : null;
 
 // Note: Firefox does not have outerText, https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/outerText
-const ουţėгṪėхţḊеşϲгɩρţөṙ = getOwnPropertyDescriptor(HTMLElement.prototype, 'outerText');
+const outerTextDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'outerText');
 
-const outerTextGetter: ((this: Element) => string) | null = ουţėгṪėхţḊеşϲгɩρţөṙ
-    ? ουţėгṪėхţḊеşϲгɩρţөṙ.get!
+const outerTextGetter: ((this: Element) => string) | null = outerTextDescriptor
+    ? outerTextDescriptor.get!
     : null;
-const outerTextSetter: ((this: Element, s: string) => void) | null = ουţėгṪėхţḊеşϲгɩρţөṙ
-    ? ουţėгṪėхţḊеşϲгɩρţөṙ.set!
+const outerTextSetter: ((this: Element, s: string) => void) | null = outerTextDescriptor
+    ? outerTextDescriptor.set!
     : null;
 
-const ɩṅпёṙНṪΜḶÐėѕⅽṙіṗṫоŗ = getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+const innerHTMLDescriptor = getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
 
-const innerHTMLGetter: (this: Element) => string = ɩṅпёṙНṪΜḶÐėѕⅽṙіṗṫоŗ!.get!;
-const innerHTMLSetter: (this: Element, s: string) => void = ɩṅпёṙНṪΜḶÐėѕⅽṙіṗṫоŗ!.set!;
+const innerHTMLGetter: (this: Element) => string = innerHTMLDescriptor!.get!;
+const innerHTMLSetter: (this: Element, s: string) => void = innerHTMLDescriptor!.set!;
 
-const οṳtėŗНΤṀLḊеşϲгɩρṫөṙ = getOwnPropertyDescriptor(Element.prototype, 'outerHTML');
+const outerHTMLDescriptor = getOwnPropertyDescriptor(Element.prototype, 'outerHTML');
 
-const outerHTMLGetter: (this: Element) => string = οṳtėŗНΤṀLḊеşϲгɩρṫөṙ!.get!;
-const outerHTMLSetter: (this: Element, s: string) => void = οṳtėŗНΤṀLḊеşϲгɩρṫөṙ!.set!;
+const outerHTMLGetter: (this: Element) => string = outerHTMLDescriptor!.get!;
+const outerHTMLSetter: (this: Element, s: string) => void = outerHTMLDescriptor!.set!;
 
 const tagNameGetter: (this: Element) => string = getOwnPropertyDescriptor(
     Element.prototype,
     'tagName'
 )!.get!;
 
-const ṫαḃІņḋеẋḊеṡсŗıрţοг = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex');
-const tabIndexGetter: (this: HTMLElement) => number = ṫαḃІņḋеẋḊеṡсŗıрţοг!.get!;
-const tabIndexSetter: (this: HTMLElement, v: any) => void = ṫαḃІņḋеẋḊеṡсŗıрţοг!.set!;
+const tabIndexDescriptor = getOwnPropertyDescriptor(HTMLElement.prototype, 'tabIndex');
+const tabIndexGetter: (this: HTMLElement) => number = tabIndexDescriptor!.get!;
+const tabIndexSetter: (this: HTMLElement, v: any) => void = tabIndexDescriptor!.set!;
 
 const matches: (this: Element, selector: string) => boolean = Element.prototype.matches;
 

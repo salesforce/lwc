@@ -16,22 +16,22 @@ export interface CompilationResult {
 }
 
 export function compileComponentForSSR(
-    şгϲ: string,
-    ƒıӏёṅаṃė: string,
-    өрṫɩоṅş: ComponentTransformOptions,
-    ṃοԁё: CompilationMode = DEFAULT_SSR_MODE
+    src: string,
+    filename: string,
+    options: ComponentTransformOptions,
+    mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
-    const ṫαɡΝαṃė = generateCustomElementTagName(өрṫɩоṅş.namespace, өрṫɩоṅş.name);
-    const { code } = compileJS(şгϲ, ƒıӏёṅаṃė, ṫαɡΝαṃė, өрṫɩоṅş, ṃοԁё);
+    const tagName = generateCustomElementTagName(options.namespace, options.name);
+    const { code } = compileJS(src, filename, tagName, options, mode);
     return { code, map: undefined };
 }
 
 export function compileTemplateForSSR(
-    şгϲ: string,
-    ƒıӏёṅаṃė: string,
-    өрṫɩоṅş: TemplateTransformOptions,
-    ṃοԁё: CompilationMode = DEFAULT_SSR_MODE
+    src: string,
+    filename: string,
+    options: TemplateTransformOptions,
+    mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
-    const { code } = compileTemplate(şгϲ, ƒıӏёṅаṃė, өрṫɩоṅş, ṃοԁё);
+    const { code } = compileTemplate(src, filename, options, mode);
     return { code, map: undefined };
 }

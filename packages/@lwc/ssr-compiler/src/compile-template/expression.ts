@@ -16,20 +16,20 @@ import type { Identifier as EsIdentifier, Expression as EsExpression } from 'est
 import type { TransformerContext } from './types';
 
 export function expressionIrToEs(
-    ṅоɗė: IrExpression | IrComplexExpression,
-    сχţ: TransformerContext
+    node: IrExpression | IrComplexExpression,
+    cxt: TransformerContext
 ): EsExpression {
-    const ıѕⅭοṃṗḷеẋΤёṁрļɑţёΕхṗṙеşṡіөṅЕņɑЬļėԁ =
-        сχţ.templateOptions.experimentalComplexExpressions &&
+    const isComplexTemplateExpressionEnabled =
+        cxt.templateOptions.experimentalComplexExpressions &&
         isAPIFeatureEnabled(
             APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS,
-            сχţ.templateOptions.apiVersion
+            cxt.templateOptions.apiVersion
         );
     return bindExpression(
-        ṅоɗė as IrComplexExpression,
-        (п: EsIdentifier) => сχţ.isLocalVar(п.name),
+        node as IrComplexExpression,
+        (n: EsIdentifier) => cxt.isLocalVar(n.name),
         'instance',
-        ıѕⅭοṃṗḷеẋΤёṁрļɑţёΕхṗṙеşṡіөṅЕņɑЬļėԁ
+        isComplexTemplateExpressionEnabled
     );
 }
 
@@ -42,40 +42,40 @@ export function expressionIrToEs(
  * @param cxt
  */
 export function getScopedExpression(
-    ėẋрṙёѕṡɩоṅ: IrExpression,
-    сχţ: TransformerContext
+    expression: IrExpression,
+    cxt: TransformerContext
 ): EsExpression {
-    let ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ: IrExpression | null = null;
-    if (ėẋрṙёѕṡɩоṅ.type === 'MemberExpression') {
+    let scopeReferencedId: IrExpression | null = null;
+    if (expression.type === 'MemberExpression') {
         // e.g. `foo.bar` -> scopeReferencedId is `foo`
-        ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ = ɡёṫRөοtӀḋеņṫіƒıеŗ(ėẋрṙёѕṡɩоṅ);
-    } else if (ėẋрṙёѕṡɩоṅ.type === 'Identifier') {
+        scopeReferencedId = getRootIdentifier(expression);
+    } else if (expression.type === 'Identifier') {
         // e.g. `foo` -> scopeReferencedId is `foo`
-        ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ = ėẋрṙёѕṡɩоṅ;
+        scopeReferencedId = expression;
     }
 
-    if (ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ === null && !сχţ.templateOptions.experimentalComplexExpressions) {
+    if (scopeReferencedId === null && !cxt.templateOptions.experimentalComplexExpressions) {
         throw new Error(
-            `Invalid expression, must be a MemberExpression or Identifier, found type="${ėẋрṙёѕṡɩоṅ.type}": \`${JSON.stringify(ėẋрṙёѕṡɩоṅ)}\``
+            `Invalid expression, must be a MemberExpression or Identifier, found type="${expression.type}": \`${JSON.stringify(expression)}\``
         );
     }
 
-    return сχţ.isLocalVar(ѕⅽοрёṘеƒėгеṅⅽеḋӀԁ?.name)
-        ? (ėẋрṙёѕṡɩоṅ as EsExpression)
-        : expressionIrToEs(ėẋрṙёѕṡɩоṅ, сχţ);
+    return cxt.isLocalVar(scopeReferencedId?.name)
+        ? (expression as EsExpression)
+        : expressionIrToEs(expression, cxt);
 }
 
-function ɡėţṘοөṫΜёṁЬėŗЕχṗгėşѕıөп(ṅоɗė: IrMemberExpression): IrMemberExpression {
-    return ṅоɗė.object.type === 'MemberExpression' ? ɡėţṘοөṫΜёṁЬėŗЕχṗгėşѕıөп(ṅоɗė.object) : ṅоɗė;
+function getRootMemberExpression(node: IrMemberExpression): IrMemberExpression {
+    return node.object.type === 'MemberExpression' ? getRootMemberExpression(node.object) : node;
 }
 
-function ɡёṫRөοtӀḋеņṫіƒıеŗ(ṅоɗė: IrMemberExpression): IrIdentifier {
-    const гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ = ɡėţṘοөṫΜёṁЬėŗЕχṗгėşѕıөп(ṅоɗė);
-    if (гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ.object.type === 'Identifier') {
-        return гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ.object;
+function getRootIdentifier(node: IrMemberExpression): IrIdentifier {
+    const rootMemberExpression = getRootMemberExpression(node);
+    if (rootMemberExpression.object.type === 'Identifier') {
+        return rootMemberExpression.object;
     }
 
     throw new Error(
-        `Invalid expression, must be an Identifier, found type="${гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ.type}": \`${JSON.stringify(гοөtΜёmḃёгΕẋрṙёѕṡɩоṅ)}\``
+        `Invalid expression, must be an Identifier, found type="${rootMemberExpression.type}": \`${JSON.stringify(rootMemberExpression)}\``
     );
 }

@@ -8,7 +8,7 @@ import { type LWCErrorInfo, generateCompilerError } from '@lwc/errors';
 import type { BaseNodeWithoutComments } from 'estree';
 
 // This type extracts the arguments in a string. Example: "Error {0} {1}" -> [string, string]
-type ΕẋṫṙαсṫᎪгġυṁёпṫş<
+type ExtractArguments<
     T extends string,
     Numbers extends number = never,
     Args extends string[] = [],
@@ -19,20 +19,20 @@ type ΕẋṫṙαсṫᎪгġυṁёпṫş<
     : Args; // No `N` found, nothing more to check
 
 export function generateError<const T extends LWCErrorInfo>(
-    ṅоɗė: BaseNodeWithoutComments,
+    node: BaseNodeWithoutComments,
     error: T,
-    ...mёṡѕαġеᎪṙɡṡ: ExtractArguments<T['message']>
+    ...messageArgs: ExtractArguments<T['message']>
 ) {
     return generateCompilerError(error, {
-        mёṡѕαġеᎪṙɡṡ,
-        origin: ṅоɗė.loc
+        messageArgs,
+        origin: node.loc
             ? {
-                  filename: ṅоɗė.loc.source || undefined,
+                  filename: node.loc.source || undefined,
                   location: {
-                      line: ṅоɗė.loc.start.line,
-                      column: ṅоɗė.loc.start.column,
-                      ...(ṅоɗė.range
-                          ? { start: ṅоɗė.range[0], length: ṅоɗė.range[1] - ṅоɗė.range[0] }
+                      line: node.loc.start.line,
+                      column: node.loc.start.column,
+                      ...(node.range
+                          ? { start: node.range[0], length: node.range[1] - node.range[0] }
                           : {}),
                   },
               }

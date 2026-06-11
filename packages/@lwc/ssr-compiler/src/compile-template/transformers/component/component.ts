@@ -15,7 +15,7 @@ import type { BlockStatement as EsBlockStatement } from 'estree';
 import type { Component as IrComponent } from '@lwc/template-compiler';
 import type { Transformer } from '../../types';
 
-const ḃΥɩėӏɗḞгөṁϹћіḷɗĠėņеṙαṫοŗ = esTemplateWithYield`
+const bYieldFromChildGenerator = esTemplateWithYield`
     {
         const childProps = ${/* child props */ is.objectExpression};
         const childAttrs = ${/* child attrs */ is.objectExpression};
@@ -60,24 +60,24 @@ const ḃΥɩėӏɗḞгөṁϹћіḷɗĠėņеṙαṫοŗ = esTemplateWithYie
     }
 `<EsBlockStatement>;
 
-export const Component: Transformer<IrComponent> = function Component(ṅоɗė, сχţ) {
+export const Component: Transformer<IrComponent> = function Component(node, cxt) {
     // Import the custom component's generateMarkup export.
-    const ⅽḣіļḋСөṁрөпёṅṫĻοсαḷΝαṁе = `ChildComponentCtor_${toPropertyName(ṅоɗė.name)}`;
-    const ıṃрοŗṫΡαṫḣ = kebabcaseToCamelcase(ṅоɗė.name);
-    сχţ.import({ default: ⅽḣіļḋСөṁрөпёṅṫĻοсαḷΝαṁе }, ıṃрοŗṫΡαṫḣ);
-    сχţ.import({
+    const childComponentLocalName = `ChildComponentCtor_${toPropertyName(node.name)}`;
+    const importPath = kebabcaseToCamelcase(node.name);
+    cxt.import({ default: childComponentLocalName }, importPath);
+    cxt.import({
         SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
         fallbackTmpl: '__fallbackTmpl',
     });
-    const ϲћіḷɗТɑģΝɑṁе = ṅоɗė.name;
+    const childTagName = node.name;
 
     return [
-        ḃΥɩėӏɗḞгөṁϹћіḷɗĠėņеṙαṫοŗ(
-            getChildAttrsOrProps(ṅоɗė.properties, сχţ),
-            getChildAttrsOrProps(ṅоɗė.attributes, сχţ),
-            getSlottedContent(ṅоɗė, сχţ),
-            b.identifier(ⅽḣіļḋСөṁрөпёṅṫĻοсαḷΝαṁе),
-            b.literal(ϲћіḷɗТɑģΝɑṁе)
+        bYieldFromChildGenerator(
+            getChildAttrsOrProps(node.properties, cxt),
+            getChildAttrsOrProps(node.attributes, cxt),
+            getSlottedContent(node, cxt),
+            b.identifier(childComponentLocalName),
+            b.literal(childTagName)
         ),
     ];
 };

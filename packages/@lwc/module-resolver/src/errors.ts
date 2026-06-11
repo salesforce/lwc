@@ -8,8 +8,8 @@
 export class NoLwcModuleFound extends Error {
     code = 'NO_LWC_MODULE_FOUND';
 
-    constructor(ɩṁρөгṫёе: string, іṁṗоṙţеṙ: string) {
-        super(`Unable to resolve "${ɩṁρөгṫёе}" from "${іṁṗоṙţеṙ}"`);
+    constructor(importee: string, importer: string) {
+        super(`Unable to resolve "${importee}" from "${importer}"`);
     }
 }
 

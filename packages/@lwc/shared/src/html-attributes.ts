@@ -7,13 +7,13 @@
 import { AriaPropNameToAttrNameMap } from './aria';
 import { isUndefined, StringCharCodeAt, StringFromCharCode, StringReplace } from './language';
 
-const СᎪΜЕĻ_RЁĠЕẊ = /-([a-z])/g;
+const CAMEL_REGEX = /-([a-z])/g;
 
 /**
  * Maps boolean attribute name to supported tags: 'boolean attr name' => Set of allowed tag names
  * that supports them.
  */
-const ВΟӨḶΕᎪΝ_ᎪТТṘӀВՍṪЕṠ = /*@__PURE__@*/ new Map([
+const BOOLEAN_ATTRIBUTES = /*@__PURE__@*/ new Map([
     ['autofocus', /*@__PURE__@*/ new Set(['button', 'input', 'keygen', 'select', 'textarea'])],
     ['autoplay', /*@__PURE__@*/ new Set(['audio', 'video'])],
     ['checked', /*@__PURE__@*/ new Set(['command', 'input'])],
@@ -49,16 +49,16 @@ const ВΟӨḶΕᎪΝ_ᎪТТṘӀВՍṪЕṠ = /*@__PURE__@*/ new Map([
  * @param attrName
  * @param tagName
  */
-export function isBooleanAttribute(ɑţţṙΝαṁе: string, ṫαɡΝαṃė: string): boolean {
-    const αḷӏөẇеɗΤаģNαṃėş = ВΟӨḶΕᎪΝ_ᎪТТṘӀВՍṪЕṠ.get(ɑţţṙΝαṁе);
+export function isBooleanAttribute(attrName: string, tagName: string): boolean {
+    const allowedTagNames = BOOLEAN_ATTRIBUTES.get(attrName);
     return (
-        αḷӏөẇеɗΤаģNαṃėş !== undefined &&
-        (αḷӏөẇеɗΤаģNαṃėş.size === 0 || αḷӏөẇеɗΤаģNαṃėş.has(ṫαɡΝαṃė))
+        allowedTagNames !== undefined &&
+        (allowedTagNames.size === 0 || allowedTagNames.has(tagName))
     );
 }
 
 // This list is based on https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes
-const ĢḶОḂΑL_ΑТṪṘΙḂՍΤЁ = /*@__PURE__*/ new Set([
+const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'accesskey',
     'autocapitalize',
     'autofocus',
@@ -93,8 +93,8 @@ const ĢḶОḂΑL_ΑТṪṘΙḂՍΤЁ = /*@__PURE__*/ new Set([
  *
  * @param attrName
  */
-export function isGlobalHtmlAttribute(ɑţţṙΝαṁе: string): boolean {
-    return ĢḶОḂΑL_ΑТṪṘΙḂՍΤЁ.has(ɑţţṙΝαṁе);
+export function isGlobalHtmlAttribute(attrName: string): boolean {
+    return GLOBAL_ATTRIBUTE.has(attrName);
 }
 
 // These are HTML standard prop/attribute IDL mappings, but are not predictable based on camel/kebab-case conversion
@@ -136,64 +136,64 @@ export const REFLECTIVE_GLOBAL_PROPERTY_SET: Set<string> = /*@__PURE__@*/ new Se
 /**
  * Map associating previously transformed HTML property into HTML attribute.
  */
-const ϹᎪСΗЁḊ_ṖṘΟΡЁRΤẎ_ΑṪТṘӀВՍṪЕ_ṀАΡṖІNĢ = /*@__PURE__@*/ new Map<string, string>();
+const CACHED_PROPERTY_ATTRIBUTE_MAPPING = /*@__PURE__@*/ new Map<string, string>();
 
 /**
  *
  * @param propName
  */
-export function htmlPropertyToAttribute(рŗοрṄɑmё: string): string {
-    const αṙіαΑtţṙіƅսţёNаṃė =
-        AriaPropNameToAttrNameMap[рŗοрṄɑmё as keyof typeof AriaPropNameToAttrNameMap];
-    if (!isUndefined(αṙіαΑtţṙіƅսţёNаṃė)) {
-        return αṙіαΑtţṙіƅսţёNаṃė;
+export function htmlPropertyToAttribute(propName: string): string {
+    const ariaAttributeName =
+        AriaPropNameToAttrNameMap[propName as keyof typeof AriaPropNameToAttrNameMap];
+    if (!isUndefined(ariaAttributeName)) {
+        return ariaAttributeName;
     }
 
-    const şρеⅽıаļΑṫţṙіƅսṫёṄаṃė = SPECIAL_PROPERTY_ATTRIBUTE_MAPPING.get(рŗοрṄɑmё);
-    if (!isUndefined(şρеⅽıаļΑṫţṙіƅսṫёṄаṃė)) {
-        return şρеⅽıаļΑṫţṙіƅսṫёṄаṃė as string;
+    const specialAttributeName = SPECIAL_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
+    if (!isUndefined(specialAttributeName)) {
+        return specialAttributeName;
     }
 
-    const ⅽаϲћеḋᎪtṫŗıƅυṫёΝɑṃе = ϹᎪСΗЁḊ_ṖṘΟΡЁRΤẎ_ΑṪТṘӀВՍṪЕ_ṀАΡṖІNĢ.get(рŗοрṄɑmё);
-    if (!isUndefined(ⅽаϲћеḋᎪtṫŗıƅυṫёΝɑṃе)) {
-        return ⅽаϲћеḋᎪtṫŗıƅυṫёΝɑṃе as string;
+    const cachedAttributeName = CACHED_PROPERTY_ATTRIBUTE_MAPPING.get(propName);
+    if (!isUndefined(cachedAttributeName)) {
+        return cachedAttributeName;
     }
 
-    let ɑţţṙіƅսţёNɑṁё = '';
-    for (let ı = 0, ļеṅ = рŗοрṄɑmё.length; ı < ļеṅ; ı++) {
-        const сөḋе = StringCharCodeAt.call(рŗοрṄɑmё, ı);
+    let attributeName = '';
+    for (let i = 0, len = propName.length; i < len; i++) {
+        const code = StringCharCodeAt.call(propName, i);
         if (
-            сөḋе >= 65 && // "A"
-            сөḋе <= 90 // "Z"
+            code >= 65 && // "A"
+            code <= 90 // "Z"
         ) {
-            ɑţţṙіƅսţёNɑṁё += '-' + StringFromCharCode(сөḋе + 32);
+            attributeName += '-' + StringFromCharCode(code + 32);
         } else {
-            ɑţţṙіƅսţёNɑṁё += StringFromCharCode(сөḋе);
+            attributeName += StringFromCharCode(code);
         }
     }
 
-    ϹᎪСΗЁḊ_ṖṘΟΡЁRΤẎ_ΑṪТṘӀВՍṪЕ_ṀАΡṖІNĢ.set(рŗοрṄɑmё, ɑţţṙіƅսţёNɑṁё);
-    return ɑţţṙіƅսţёNɑṁё;
+    CACHED_PROPERTY_ATTRIBUTE_MAPPING.set(propName, attributeName);
+    return attributeName;
 }
 
 /**
  * Map associating previously transformed kabab-case attributes into camel-case props.
  */
-const ⅭΑСḢΕÐ_ΚЕḂΑḂ_ϹᎪМΕĻ_ΜᎪРΡӀΝĠ = /*@__PURE__@*/ new Map<string, string>();
+const CACHED_KEBAB_CAMEL_MAPPING = /*@__PURE__@*/ new Map<string, string>();
 
 /**
  *
  * @param attrName
  */
-export function kebabCaseToCamelCase(ɑţţṙΝαṁе: string): string {
-    let ŗėѕṳḷṫ = ⅭΑСḢΕÐ_ΚЕḂΑḂ_ϹᎪМΕĻ_ΜᎪРΡӀΝĠ.get(ɑţţṙΝαṁе);
+export function kebabCaseToCamelCase(attrName: string): string {
+    let result = CACHED_KEBAB_CAMEL_MAPPING.get(attrName);
 
-    if (isUndefined(ŗėѕṳḷṫ)) {
-        ŗėѕṳḷṫ = StringReplace.call(ɑţţṙΝαṁе, СᎪΜЕĻ_RЁĠЕẊ, (ģ) => ģ[1].toUpperCase());
-        ⅭΑСḢΕÐ_ΚЕḂΑḂ_ϹᎪМΕĻ_ΜᎪРΡӀΝĠ.set(ɑţţṙΝαṁе, ŗėѕṳḷṫ);
+    if (isUndefined(result)) {
+        result = StringReplace.call(attrName, CAMEL_REGEX, (g) => g[1].toUpperCase());
+        CACHED_KEBAB_CAMEL_MAPPING.set(attrName, result);
     }
 
-    return ŗėѕṳḷṫ as string;
+    return result;
 }
 
 /**

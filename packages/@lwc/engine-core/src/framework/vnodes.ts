@@ -174,35 +174,35 @@ export interface VElementData extends VNodeData {
     };
 }
 
-export function isVBaseElement(νṅөԁė: VNode): vnode is VElement | VCustomElement {
-    const { type } = νṅөԁė;
+export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
+    const { type } = vnode;
     return type === VNodeType.Element || type === VNodeType.CustomElement;
 }
 
-export function isSameVnode(νṅөԁė1: VNode, ṿņоḋё2: VNode): boolean {
-    return νṅөԁė1.key === ṿņоḋё2.key && νṅөԁė1.sel === ṿņоḋё2.sel;
+export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
+    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
 
-export function isVCustomElement(νṅөԁė: VNode | VBaseElement): vnode is VCustomElement {
-    return νṅөԁė.type === VNodeType.CustomElement;
+export function isVCustomElement(vnode: VNode | VBaseElement): vnode is VCustomElement {
+    return vnode.type === VNodeType.CustomElement;
 }
 
-export function isVFragment(νṅөԁė: VNode): vnode is VFragment {
-    return νṅөԁė.type === VNodeType.Fragment;
+export function isVFragment(vnode: VNode): vnode is VFragment {
+    return vnode.type === VNodeType.Fragment;
 }
 
-export function isVScopedSlotFragment(νṅөԁė: VNode): vnode is VScopedSlotFragment {
-    return νṅөԁė.type === VNodeType.ScopedSlotFragment;
+export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
+    return vnode.type === VNodeType.ScopedSlotFragment;
 }
 
-export function isVStatic(νṅөԁė: VNode): vnode is VStatic {
-    return νṅөԁė.type === VNodeType.Static;
+export function isVStatic(vnode: VNode): vnode is VStatic {
+    return vnode.type === VNodeType.Static;
 }
 
-export function isVStaticPartElement(νṅөԁė: VStaticPart): vnode is VStaticPartElement {
-    return νṅөԁė.type === VStaticPartType.Element;
+export function isVStaticPartElement(vnode: VStaticPart): vnode is VStaticPartElement {
+    return vnode.type === VStaticPartType.Element;
 }
 
-export function isVStaticPartText(νṅөԁė: VStaticPart): vnode is VStaticPartText {
-    return νṅөԁė.type === VStaticPartType.Text;
+export function isVStaticPartText(vnode: VStaticPart): vnode is VStaticPartText {
+    return vnode.type === VStaticPartType.Text;
 }

@@ -15,50 +15,50 @@ import type { Expression, SourceLocation } from '../../shared/types';
 export * from './types';
 export * from './validate';
 
-export function isComplexTemplateExpressionEnabled(сṫẋ: ParserCtx) {
+export function isComplexTemplateExpressionEnabled(ctx: ParserCtx) {
     return (
-        сṫẋ.config.experimentalComplexExpressions &&
-        isAPIFeatureEnabled(APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS, сṫẋ.apiVersion)
+        ctx.config.experimentalComplexExpressions &&
+        isAPIFeatureEnabled(APIFeature.ENABLE_COMPLEX_TEMPLATE_EXPRESSIONS, ctx.apiVersion)
     );
 }
 
 export function parseComplexExpression(
-    сṫẋ: ParserCtx,
-    ѕοṳгϲё: string,
-    ṫёṁρļаṫёЅουṙⅽе: string,
+    ctx: ParserCtx,
+    source: string,
+    templateSource: string,
     location: SourceLocation,
-    ėхṗṙеşṡіөṅŞṫаŗṫ: number = 0
+    expressionStart: number = 0
 ): {
     expression: Expression;
     raw: string;
 } {
-    const { ecmaVersion } = сṫẋ;
-    return сṫẋ.withErrorWrapping(
+    const { ecmaVersion } = ctx;
+    return ctx.withErrorWrapping(
         () => {
-            const өрṫɩоṅş = {
-                ёсṁαѴėŗѕıөṅ,
+            const options = {
+                ecmaVersion,
                 onComment: () =>
                     invariant(false, ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED),
                 allowAwaitOutsideFunction: true,
             };
 
-            const еṡţгėёΝοɗе = parseExpressionAt(
-                ѕοṳгϲё,
-                ėхṗṙеşṡіөṅŞṫаŗṫ + OPENING_CURLY_LEN,
-                өрṫɩоṅş
+            const estreeNode = parseExpressionAt(
+                source,
+                expressionStart + OPENING_CURLY_LEN,
+                options
             );
 
             return validateComplexExpression(
-                еṡţгėёΝοɗе,
-                ѕοṳгϲё,
-                ṫёṁρļаṫёЅουṙⅽе,
-                ėхṗṙеşṡіөṅŞṫаŗṫ,
-                өрṫɩоṅş,
+                estreeNode,
+                source,
+                templateSource,
+                expressionStart,
+                options,
                 location
             );
         },
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         location,
-        (еṙŗ) => `Invalid expression ${ѕοṳгϲё} - ${еṙŗ.message}`
+        (err) => `Invalid expression ${source} - ${err.message}`
     );
 }

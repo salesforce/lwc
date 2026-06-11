@@ -21,45 +21,45 @@ import type { Transformer, TransformerContext } from '../types';
 // lwc:if/lwc:elseif/lwc:else use bookend comments due to VFragment vdom node using them
 // The bookends should surround the entire if/elseif/else series
 // Note: these should only be rendered if _something_ is rendered by a series of if/elseif/else's
-function ḃΥɩėӏɗΒоөḳёпḋⅭоṁṃеṅţ() {
+function bYieldBookendComment() {
     return b.expressionStatement(b.yieldExpression(b.literal(`<!---->`)));
 }
 
-function ЬΒļоϲķЅṫαtёṃėņţ(ⅽḣіļḋΝөḋеş: IrChildNode[], сχţ: TransformerContext): EsBlockStatement {
-    const ⅽһıļԁṠţаṫёṃėпţṡ = irChildrenToEs(ⅽḣіļḋΝөḋеş, сχţ);
+function bBlockStatement(childNodes: IrChildNode[], cxt: TransformerContext): EsBlockStatement {
+    const childStatements = irChildrenToEs(childNodes, cxt);
 
     // Due to `flattenFragmentsInChildren`, we have to remove bookends for all _top-level_ slotted
     // content. This applies to both light DOM and shadow DOM slots, although light DOM slots have
     // the additional wrinkle that they themselves are VFragments with their own bookends.
     // https://github.com/salesforce/lwc/blob/a33b390/packages/%40lwc/engine-core/src/framework/rendering.ts#L718-L753
-    const ṡţαṫеṃėпţṡ = сχţ.isSlotted
-        ? ⅽһıļԁṠţаṫёṃėпţṡ
-        : [ḃΥɩėӏɗΒоөḳёпḋⅭоṁṃеṅţ(), ...ⅽһıļԁṠţаṫёṃėпţṡ, ḃΥɩėӏɗΒоөḳёпḋⅭоṁṃеṅţ()];
-    return b.blockStatement(optimizeAdjacentYieldStmts(ṡţαṫеṃėпţṡ));
+    const statements = cxt.isSlotted
+        ? childStatements
+        : [bYieldBookendComment(), ...childStatements, bYieldBookendComment()];
+    return b.blockStatement(optimizeAdjacentYieldStmts(statements));
 }
 
-function ЬΙƒЅṫαṫėṃеņṫ(
-    ɩƒΕļѕėӀƒNөɗе: IrIfBlock | IrElseifBlock,
-    сχţ: TransformerContext
+function bIfStatement(
+    ifElseIfNode: IrIfBlock | IrElseifBlock,
+    cxt: TransformerContext
 ): EsIfStatement {
-    const { children, condition, else: еḷşеNөԁė } = ɩƒΕļѕėӀƒNөɗе;
+    const { children, condition, else: elseNode } = ifElseIfNode;
 
-    let ёḷѕёΒӏөϲκ = null;
-    if (еḷşеNөԁė) {
-        if (еḷşеNөԁė.type === 'ElseBlock') {
-            ёḷѕёΒӏөϲκ = ЬΒļоϲķЅṫαtёṃėņţ(еḷşеNөԁė.children, сχţ);
+    let elseBlock = null;
+    if (elseNode) {
+        if (elseNode.type === 'ElseBlock') {
+            elseBlock = bBlockStatement(elseNode.children, cxt);
         } else {
-            ёḷѕёΒӏөϲκ = ЬΙƒЅṫαṫėṃеņṫ(еḷşеNөԁė, сχţ);
+            elseBlock = bIfStatement(elseNode, cxt);
         }
     }
 
     return b.ifStatement(
-        expressionIrToEs(сοņԁıţіοņ, сχţ),
-        ЬΒļоϲķЅṫαtёṃėņţ(ϲћіḷɗгėņ, сχţ),
-        ёḷѕёΒӏөϲκ
+        expressionIrToEs(condition, cxt),
+        bBlockStatement(children, cxt),
+        elseBlock
     );
 }
 
-export const IfBlock: Transformer<IrIfBlock | IrElseifBlock> = function IfBlock(ṅоɗė, сχţ) {
-    return [ЬΙƒЅṫαṫėṃеņṫ(ṅоɗė, сχţ)];
+export const IfBlock: Transformer<IrIfBlock | IrElseifBlock> = function IfBlock(node, cxt) {
+    return [bIfStatement(node, cxt)];
 };

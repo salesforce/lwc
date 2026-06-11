@@ -5,18 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 declare module '@babel/plugin-transform-async-generator-functions' {
-    const ṗṙоṗṡ: any;
-    export = ṗṙоṗṡ;
+    const props: any;
+    export = props;
 }
 declare module '@babel/plugin-transform-class-properties' {
-    const ṗṙоṗṡ: any;
-    export = ṗṙоṗṡ;
+    const props: any;
+    export = props;
 }
 declare module '@babel/plugin-transform-object-rest-spread' {
-    const ṡрŗėаɗ: any;
-    export = ṡрŗėаɗ;
+    const spread: any;
+    export = spread;
 }
 declare module '@babel/plugin-transform-async-to-generator' {
-    const ṗṙоṗṡ: any;
-    export = ṗṙоṗṡ;
+    const props: any;
+    export = props;
 }

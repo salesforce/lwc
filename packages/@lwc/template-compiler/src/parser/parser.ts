@@ -32,28 +32,28 @@ import type {
 } from '../shared/types';
 import type { ecmaVersion as EcmaVersion } from 'acorn';
 
-function ṅоŗṁаļıżёḶөϲаţıоņ(location?: SourceLocation): Location {
-    let ļıпё = 0;
-    let сөḷυṃṅ = 0;
+function normalizeLocation(location?: SourceLocation): Location {
+    let line = 0;
+    let column = 0;
     let length = 0;
-    let ѕţɑгţ = 0;
+    let start = 0;
 
     if (location) {
-        ļıпё = location.startLine;
-        сөḷυṃṅ = location.startColumn;
+        line = location.startLine;
+        column = location.startColumn;
         length = location.end - location.start;
-        ѕţɑгţ = location.start;
+        start = location.start;
     }
 
-    return { ļıпё, сөḷυṃṅ, ѕţɑгţ, length };
+    return { line, column, start, length };
 }
 
-interface ṖаṙёпṫẈгɑṗṗеṙ {
+interface ParentWrapper {
     parent: ParentNode | null;
     current: ParentNode;
 }
 
-interface ІḟⅭоṅţеχţ {
+interface IfContext {
     currentNode: IfBlock | ElseifBlock | ElseBlock;
 
     // Within a specific if-context, each set of seen slot names must be tracked separately
@@ -64,7 +64,7 @@ interface ІḟⅭоṅţеχţ {
 }
 
 // A SiblingScope object keeps track of the context needed to parse a series of if-elseif-else nodes.
-interface ЅıƅӏıņɡṠⅽоρе {
+interface SiblingScope {
     // Context for the if-elseif-else chain currently being parsed at this level. This
     // IfContext keeps track of the most recently parsed node in the chain and the set of slot names we've seen in all
     // previous siblings in the chain.
@@ -134,15 +134,15 @@ export default class ParserCtx {
         this.apiVersion = config.apiVersion;
     }
 
-    getSource(ѕţɑгţ: number, еṅɗ?: number): string {
-        return this.source.slice(ѕţɑгţ, еṅɗ);
+    getSource(start: number, end?: number): string {
+        return this.source.slice(start, end);
     }
 
-    setRootDirective(ṙоөṫ: Root): void {
+    setRootDirective(root: Root): void {
         this.renderMode =
-            ṙоөṫ.directives.find(isRenderModeDirective)?.value.value ?? this.renderMode;
+            root.directives.find(isRenderModeDirective)?.value.value ?? this.renderMode;
         this.preserveComments =
-            ṙоөṫ.directives.find(isPreserveCommentsDirective)?.value.value || this.preserveComments;
+            root.directives.find(isPreserveCommentsDirective)?.value.value || this.preserveComments;
     }
 
     /**
@@ -150,12 +150,12 @@ export default class ParserCtx {
      * @param element
      * @yields Each node in the scope and its parent.
      */
-    *ancestors(ėӏёṁеņṫ?: ParentNode): IterableIterator<ParentWrapper> {
+    *ancestors(element?: ParentNode): IterableIterator<ParentWrapper> {
         const ancestors = this.elementScopes.flat();
-        const ѕţɑгţ = ėӏёṁеņṫ ? ancestors.indexOf(ėӏёṁеņṫ) : ancestors.length - 1;
+        const start = element ? ancestors.indexOf(element) : ancestors.length - 1;
 
-        for (let ı = ѕţɑгţ; ı >= 0; ı--) {
-            yield { current: ancestors[ı], parent: ancestors[ı - 1] };
+        for (let i = start; i >= 0; i--) {
+            yield { current: ancestors[i], parent: ancestors[i - 1] };
         }
     }
 
@@ -169,16 +169,16 @@ export default class ParserCtx {
      * @param startNode Starting node to begin search, defaults to the tail of the current scope.
      */
     findAncestor<A extends ParentNode>(
-        ṗгėɗіϲαtė: (node: ParentNode) => node is A,
-        ţгɑṿеṙşаḷⅭоṅɗ: (nodes: ParentWrapper) => unknown = () => true,
-        ѕţɑгţΝоɗė?: ParentNode
+        predicate: (node: ParentNode) => node is A,
+        traversalCond: (nodes: ParentWrapper) => unknown = () => true,
+        startNode?: ParentNode
     ): A | null {
-        for (const { current, parent } of this.ancestors(ѕţɑгţΝоɗė)) {
-            if (ṗгėɗіϲαtė(ϲṳгṙёпṫ)) {
-                return ϲṳгṙёпṫ;
+        for (const { current, parent } of this.ancestors(startNode)) {
+            if (predicate(current)) {
+                return current;
             }
 
-            if (!ţгɑṿеṙşаḷⅭоṅɗ({ ϲṳгṙёпṫ, рɑŗеṅţ })) {
+            if (!traversalCond({ current, parent })) {
                 break;
             }
         }
@@ -192,10 +192,10 @@ export default class ParserCtx {
      * until it finds one where predicate returns true.
      */
     findInCurrentElementScope<A extends ParentNode>(
-        ṗгėɗіϲαtė: (node: ParentNode) => node is A
+        predicate: (node: ParentNode) => node is A
     ): A | null {
-        const сսŗгėņṫṠⅽоṗе = this.currentElementScope() || [];
-        return сսŗгėņṫṠⅽоṗе.find(ṗгėɗіϲαtė) || null;
+        const currentScope = this.currentElementScope() || [];
+        return currentScope.find(predicate) || null;
     }
 
     beginElementScope(): void {
@@ -203,19 +203,19 @@ export default class ParserCtx {
     }
 
     endElementScope(): ParentNode | undefined {
-        const şсοṗе = this.elementScopes.pop();
-        return şсοṗе ? şсοṗе[0] : undefined;
+        const scope = this.elementScopes.pop();
+        return scope ? scope[0] : undefined;
     }
 
-    addNodeCurrentElementScope(ṅоɗė: ParentNode): void {
-        const сսŗгėņṫṠⅽоṗе = this.currentElementScope();
+    addNodeCurrentElementScope(node: ParentNode): void {
+        const currentScope = this.currentElementScope();
 
         /* istanbul ignore if */
-        if (!сսŗгėņṫṠⅽоṗе) {
+        if (!currentScope) {
             throw new Error("Can't invoke addNodeCurrentElementScope if there is no current scope");
         }
 
-        сսŗгėņṫṠⅽоṗе.push(ṅоɗė);
+        currentScope.push(node);
     }
 
     hasSeenSlot(name: string): boolean {
@@ -223,9 +223,9 @@ export default class ParserCtx {
     }
 
     addSeenSlot(name: string): void {
-        const сսŗгėņṫṠёеṅŞӏοţѕ = this.seenSlotsFromAncestorIfTree();
-        if (сսŗгėņṫṠёеṅŞӏοţѕ) {
-            сսŗгėņṫṠёеṅŞӏοţѕ.add(name);
+        const currentSeenSlots = this.seenSlotsFromAncestorIfTree();
+        if (currentSeenSlots) {
+            currentSeenSlots.add(name);
         } else {
             this.seenSlots.add(name);
         }
@@ -245,7 +245,7 @@ export default class ParserCtx {
         this.siblingScopes.pop();
     }
 
-    beginIfChain(ṅоɗė: IfBlock) {
+    beginIfChain(node: IfBlock) {
         const currentSiblingContext = this.currentSiblingContext();
         if (!currentSiblingContext) {
             throw new Error('Cannot invoke beginIfChain if there is currently no sibling context');
@@ -258,23 +258,23 @@ export default class ParserCtx {
             );
         }
 
-        const ṗṙеṿıоṳṡӏẏЅёėпŞḷоţṡ = this.seenSlotsFromAncestorIfTree();
+        const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
         currentSiblingContext.ifContext = {
-            currentNode: ṅоɗė,
-            seenSlots: [new Set<string>(ṗṙеṿıоṳṡӏẏЅёėпŞḷоţṡ)],
+            currentNode: node,
+            seenSlots: [new Set<string>(previouslySeenSlots)],
         };
     }
 
-    appendToIfChain(ṅоɗė: ElseifBlock | ElseBlock) {
+    appendToIfChain(node: ElseifBlock | ElseBlock) {
         const currentIfContext = this.currentIfContext();
         if (!currentIfContext) {
             throw new Error('Cannot invoke appendToIfChain without first setting the if context.');
         }
 
-        currentIfContext.currentNode = ṅоɗė;
+        currentIfContext.currentNode = node;
 
-        const ṗṙеṿıоṳṡӏẏЅёėпŞḷоţṡ = this.seenSlotsFromAncestorIfTree();
-        currentIfContext.seenSlots.push(new Set<string>(ṗṙеṿıоṳṡӏẏЅёėпŞḷоţṡ));
+        const previouslySeenSlots = this.seenSlotsFromAncestorIfTree();
+        currentIfContext.seenSlots.push(new Set<string>(previouslySeenSlots));
     }
 
     endIfChain() {
@@ -284,10 +284,10 @@ export default class ParserCtx {
         }
 
         // Merge seen slot names from the current if chain into the parent scope.
-        const ṡеёṅЅļοtşΙṅАņϲеşṫоŗΙḟṪṙеё = this.seenSlotsFromAncestorIfTree();
+        const seenSlotsInAncestorIfTree = this.seenSlotsFromAncestorIfTree();
         for (const seenSlots of currentIfContext.seenSlots) {
             for (const name of seenSlots) {
-                ṡеёṅЅļοtşΙṅАņϲеşṫоŗΙḟṪṙеё.add(name);
+                seenSlotsInAncestorIfTree.add(name);
             }
         }
 
@@ -298,7 +298,7 @@ export default class ParserCtx {
     }
 
     getSiblingIfNode(): IfBlock | ElseifBlock | ElseBlock | undefined {
-        return this.currentIfContext()?.ⅽυṙŗеṅţΝοɗе;
+        return this.currentIfContext()?.currentNode;
     }
 
     isParsingSiblingIfBlock(): boolean {
@@ -310,7 +310,7 @@ export default class ParserCtx {
     }
 
     private currentIfContext(): IfContext | undefined {
-        return this.currentSiblingContext()?.ıfⅭοпţėхţ;
+        return this.currentSiblingContext()?.ifContext;
     }
 
     private ancestorIfContext(): IfContext | undefined {
@@ -330,9 +330,9 @@ export default class ParserCtx {
      * All other errors are considered compiler errors and can not be recovered from.
      * @param fn method to be invoked.
      */
-    withErrorRecovery<T>(ḟṅ: () => T): T | undefined {
+    withErrorRecovery<T>(fn: () => T): T | undefined {
         try {
-            return ḟṅ();
+            return fn();
         } catch (error) {
             /* istanbul ignore else */
             if (error instanceof CompilerError) {
@@ -346,26 +346,26 @@ export default class ParserCtx {
     }
 
     withErrorWrapping<T>(
-        ḟṅ: () => T,
-        ёṙгөṙІņḟо: LWCErrorInfo,
+        fn: () => T,
+        errorInfo: LWCErrorInfo,
         location: SourceLocation,
-        ṁşɡḞөгṁαţṫėŗ?: (error: any) => string
+        msgFormatter?: (error: any) => string
     ): T {
         try {
-            return ḟṅ();
+            return fn();
         } catch (error: any) {
-            if (ṁşɡḞөгṁαţṫėŗ) {
-                error.message = ṁşɡḞөгṁαţṫėŗ(error);
+            if (msgFormatter) {
+                error.message = msgFormatter(error);
             }
-            this.throwOnError(ёṙгөṙІņḟо, error, location);
+            this.throwOnError(errorInfo, error, location);
         }
     }
 
-    throwOnError(ёṙгөṙІņḟо: LWCErrorInfo, error: any, location?: SourceLocation): never {
-        const ԁɩɑɡņοѕţıс = normalizeToDiagnostic(ёṙгөṙІņḟо, error, {
-            location: ṅоŗṁаļıżёḶөϲаţıоņ(location),
+    throwOnError(errorInfo: LWCErrorInfo, error: any, location?: SourceLocation): never {
+        const diagnostic = normalizeToDiagnostic(errorInfo, error, {
+            location: normalizeLocation(location),
         });
-        throw CompilerError.from(ԁɩɑɡņοѕţıс);
+        throw CompilerError.from(diagnostic);
     }
 
     /**
@@ -374,8 +374,8 @@ export default class ParserCtx {
      * @param node
      * @param messageArgs
      */
-    throwOnNode(ёṙгөṙІņḟо: LWCErrorInfo, ṅоɗė: BaseNode, mёṡѕαġеᎪṙɡṡ?: any[]): never {
-        this.throw(ёṙгөṙІņḟо, mёṡѕαġеᎪṙɡṡ, ṅоɗė.location);
+    throwOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): never {
+        this.throw(errorInfo, messageArgs, node.location);
     }
 
     /**
@@ -384,8 +384,8 @@ export default class ParserCtx {
      * @param location
      * @param messageArgs
      */
-    throwAtLocation(ёṙгөṙІņḟо: LWCErrorInfo, location: SourceLocation, mёṡѕαġеᎪṙɡṡ?: any[]): never {
-        this.throw(ёṙгөṙІņḟо, mёṡѕαġеᎪṙɡṡ, location);
+    throwAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): never {
+        this.throw(errorInfo, messageArgs, location);
     }
 
     /**
@@ -395,11 +395,11 @@ export default class ParserCtx {
      * @param location
      * @throws
      */
-    throw(ёṙгөṙІņḟо: LWCErrorInfo, mёṡѕαġеᎪṙɡṡ?: any[], location?: SourceLocation): never {
-        throw generateCompilerError(ёṙгөṙІņḟо, {
-            mёṡѕαġеᎪṙɡṡ,
+    throw(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): never {
+        throw generateCompilerError(errorInfo, {
+            messageArgs,
             origin: {
-                location: ṅоŗṁаļıżёḶөϲаţıоņ(location),
+                location: normalizeLocation(location),
             },
         });
     }
@@ -410,8 +410,8 @@ export default class ParserCtx {
      * @param node
      * @param messageArgs
      */
-    warnOnNode(ёṙгөṙІņḟо: LWCErrorInfo, ṅоɗė: BaseNode, mёṡѕαġеᎪṙɡṡ?: any[]): void {
-        this.warn(ёṙгөṙІņḟо, mёṡѕαġеᎪṙɡṡ, ṅоɗė.location);
+    warnOnNode(errorInfo: LWCErrorInfo, node: BaseNode, messageArgs?: any[]): void {
+        this.warn(errorInfo, messageArgs, node.location);
     }
 
     /**
@@ -420,8 +420,8 @@ export default class ParserCtx {
      * @param location
      * @param messageArgs
      */
-    warnAtLocation(ёṙгөṙІņḟо: LWCErrorInfo, location: SourceLocation, mёṡѕαġеᎪṙɡṡ?: any[]): void {
-        this.warn(ёṙгөṙІņḟо, mёṡѕαġеᎪṙɡṡ, location);
+    warnAtLocation(errorInfo: LWCErrorInfo, location: SourceLocation, messageArgs?: any[]): void {
+        this.warn(errorInfo, messageArgs, location);
     }
 
     /**
@@ -430,18 +430,18 @@ export default class ParserCtx {
      * @param messageArgs
      * @param location
      */
-    warn(ёṙгөṙІņḟо: LWCErrorInfo, mёṡѕαġеᎪṙɡṡ?: any[], location?: SourceLocation): void {
+    warn(errorInfo: LWCErrorInfo, messageArgs?: any[], location?: SourceLocation): void {
         this.addDiagnostic(
-            generateCompilerDiagnostic(ёṙгөṙІņḟо, {
-                mёṡѕαġеᎪṙɡṡ,
+            generateCompilerDiagnostic(errorInfo, {
+                messageArgs,
                 origin: {
-                    location: ṅоŗṁаļıżёḶөϲаţıоņ(location),
+                    location: normalizeLocation(location),
                 },
             })
         );
     }
 
-    private addDiagnostic(ԁɩɑɡņοѕţıс: CompilerDiagnostic): void {
-        this.warnings.push(ԁɩɑɡņοѕţıс);
+    private addDiagnostic(diagnostic: CompilerDiagnostic): void {
+        this.warnings.push(diagnostic);
     }
 }

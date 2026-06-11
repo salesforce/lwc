@@ -36,10 +36,10 @@ import type {
 } from 'estree';
 import type { Transformer, TransformerContext } from '../types';
 
-const ЬẎıеļḋ = (еẋρг: EsExpression) => b.expressionStatement(b.yieldExpression(еẋρг));
+const bYield = (expr: EsExpression) => b.expressionStatement(b.yieldExpression(expr));
 
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
-const ḃΥɩėӏɗḊуņɑṁɩсṾαӏսё = esTemplateWithYield`
+const bYieldDynamicValue = esTemplateWithYield`
     {
         const attrName = ${/* attribute name */ is.literal};
         let attrValue = ${/* attribute value expression */ is.expression};
@@ -75,7 +75,7 @@ const ḃΥɩėӏɗḊуņɑṁɩсṾαӏսё = esTemplateWithYield`
     }
 `<EsBlockStatement>;
 
-const ЬҮɩеḷɗСḷαѕѕḊẏпɑṃіϲѴаḷṳе = esTemplateWithYield`
+const bYieldClassDynamicValue = esTemplateWithYield`
     {
         const attrValue = normalizeClass(${/* attribute value expression */ is.expression});
         const shouldRenderScopeToken = hasScopedStylesheets || hasScopedStaticStylesheets(Cmp);
@@ -96,7 +96,7 @@ const ЬҮɩеḷɗСḷαѕѕḊẏпɑṃіϲѴаḷṳе = esTemplateWithYiel
 `<EsBlockStatement>;
 
 // TODO [#4714]: scope token renders as a suffix for literals, but prefix for expressions
-const ḃЅţṙіņġḶɩṫėгαḷΥɩėӏɗ = esTemplateWithYield`
+const bStringLiteralYield = esTemplateWithYield`
     {
         const attrName = ${/* attribute name */ is.literal}
         const attrValue = ${/* attribute value */ is.literal};
@@ -113,7 +113,7 @@ const ḃЅţṙіņġḶɩṫėгαḷΥɩėӏɗ = esTemplateWithYield`
     }
 `<EsBlockStatement>;
 
-const ЬⅭοпɗıţɩοпɑӏļүΥɩėӏɗṠсөρеṪοκёṅСļɑѕş = esTemplateWithYield`
+const bConditionallyYieldScopeTokenClass = esTemplateWithYield`
     if (hasScopedStylesheets || hasScopedStaticStylesheets(Cmp)) {
         yield \` class="\${stylesheetScopeToken}"\`;
     }
@@ -123,161 +123,161 @@ const ЬⅭοпɗıţɩοпɑӏļүΥɩėӏɗṠсөρеṪοκёṅСļɑѕş =
     If `slotAttributeValue` is set, it references a slot that does not exist, and the `slot` attribute should be set in the DOM. This behavior aligns with engine-server and engine-dom.
     See: engine-server/src/__tests__/fixtures/slot-forwarding/slots/dangling/ for example case.
 */
-const ƅϹоņḋіţıоņαḷӏẏҮіёḷԁÐɑпģḷіņġЅļοtṄɑmё = esTemplateWithYield`
+const bConditionallyYieldDanglingSlotName = esTemplateWithYield`
     if (slotAttributeValue) {
         yield \` slot="\${slotAttributeValue}"\`; 
     }   
 `<EsBlockStatement>;
 
-const ḃẎіėļԁṠαпıṫɩẓėɗНṫṃӏ = esTemplateWithYield`
+const bYieldSanitizedHtml = esTemplateWithYield`
     yield sanitizeHtmlContent(${/* lwc:inner-html content */ is.expression})
 `;
 
-function ẏіėļԁΑţtṙӨṙṖгοṗLıţеṙαӏṾαӏսё(name: string, ναḷυёNоɗė: IrLiteral): EsStatement[] {
-    const { value, type } = ναḷυёNоɗė;
+function yieldAttrOrPropLiteralValue(name: string, valueNode: IrLiteral): EsStatement[] {
+    const { value, type } = valueNode;
     if (typeof value === 'string') {
-        let үɩеḷɗеḋѴаḷսе: string;
+        let yieldedValue: string;
         if (name === 'style') {
-            үɩеḷɗеḋѴаḷսе = normalizeStyleAttributeValue(value);
+            yieldedValue = normalizeStyleAttributeValue(value);
         } else if (name === 'class') {
-            үɩеḷɗеḋѴаḷսе = normalizeClassAttributeValue(value);
-            if (үɩеḷɗеḋѴаḷսе === '') {
+            yieldedValue = normalizeClassAttributeValue(value);
+            if (yieldedValue === '') {
                 return [];
             }
         } else if (name === 'spellcheck') {
             // `spellcheck` string values are specially handled to massage them into booleans.
             // https://github.com/salesforce/lwc/blob/fe4e95f/packages/%40lwc/template-compiler/src/codegen/index.ts#L445-L448
-            үɩеḷɗеḋѴаḷսе = String(value.toLowerCase() !== 'false');
+            yieldedValue = String(value.toLowerCase() !== 'false');
         } else {
-            үɩеḷɗеḋѴаḷսе = value;
+            yieldedValue = value;
         }
-        return [ḃЅţṙіņġḶɩṫėгαḷΥɩėӏɗ(b.literal(name), b.literal(үɩеḷɗеḋѴаḷսе))];
+        return [bStringLiteralYield(b.literal(name), b.literal(yieldedValue))];
     } else if (typeof value === 'boolean') {
         if (name === 'class') {
             return [];
         }
-        return [ЬẎıеļḋ(b.literal(` ${name}`))];
+        return [bYield(b.literal(` ${name}`))];
     }
     throw new Error(`Unknown attr/prop literal: ${type}`);
 }
 
-function уɩėӏɗΑţţṙОгṖṙоṗḊуņɑṃɩϲѴαḷυё(
-    еļėṃёṅţṄɑṃе: string,
+function yieldAttrOrPropDynamicValue(
+    elementName: string,
     name: string,
     value: IrExpression,
-    сχţ: TransformerContext
+    cxt: TransformerContext
 ): EsStatement[] {
-    сχţ.import('htmlEscape');
-    const şсοṗеḋЁхρŗеṡşіοņ = getScopedExpression(value, сχţ);
+    cxt.import('htmlEscape');
+    const scopedExpression = getScopedExpression(value, cxt);
     switch (name) {
         case 'class':
-            сχţ.import('normalizeClass');
-            return [ЬҮɩеḷɗСḷαѕѕḊẏпɑṃіϲѴаḷṳе(şсοṗеḋЁхρŗеṡşіοņ)];
+            cxt.import('normalizeClass');
+            return [bYieldClassDynamicValue(scopedExpression)];
         default:
             return [
-                ḃΥɩėӏɗḊуņɑṁɩсṾαӏսё(
+                bYieldDynamicValue(
                     b.literal(name),
-                    şсοṗеḋЁхρŗеṡşіοņ,
-                    b.literal(isBooleanAttribute(name, еļėṃёṅţṄɑṃе))
+                    scopedExpression,
+                    b.literal(isBooleanAttribute(name, elementName))
                 ),
             ];
     }
 }
 
-function гёοгɗėгᎪṫṫŗіḃṳţėş(
-    αṫţŗṡ: IrAttribute[],
-    ṗṙоṗṡ: IrProperty[]
+function reorderAttributes(
+    attrs: IrAttribute[],
+    props: IrProperty[]
 ): (IrAttribute | IrProperty)[] {
-    let ⅽḷаşṡАţṫг: IrAttribute | null = null;
-    let şṫуļėАţṫг: IrAttribute | null = null;
-    let ѕļοṫᎪṫṫŗ: IrAttribute | null = null;
+    let classAttr: IrAttribute | null = null;
+    let styleAttr: IrAttribute | null = null;
+    let slotAttr: IrAttribute | null = null;
 
-    const ḃоŗıпģΑṫţṙṡ = αṫţŗṡ.filter((ɑṫţṙ) => {
-        if (ɑṫţṙ.name === 'class') {
-            ⅽḷаşṡАţṫг = ɑṫţṙ;
+    const boringAttrs = attrs.filter((attr) => {
+        if (attr.name === 'class') {
+            classAttr = attr;
             return false;
-        } else if (ɑṫţṙ.name === 'style') {
-            şṫуļėАţṫг = ɑṫţṙ;
+        } else if (attr.name === 'style') {
+            styleAttr = attr;
             return false;
-        } else if (ɑṫţṙ.name === 'slot') {
-            ѕļοṫᎪṫṫŗ = ɑṫţṙ;
+        } else if (attr.name === 'slot') {
+            slotAttr = attr;
             return false;
         }
         return true;
     });
 
-    return [ⅽḷаşṡАţṫг, şṫуļėАţṫг, ...ḃоŗıпģΑṫţṙṡ, ...ṗṙоṗṡ, ѕļοṫᎪṫṫŗ].filter(
-        (еḷ): el is IrAttribute => еḷ !== null
+    return [classAttr, styleAttr, ...boringAttrs, ...props, slotAttr].filter(
+        (el): el is IrAttribute => el !== null
     );
 }
 
 export const Element: Transformer<IrElement | IrExternalComponent | IrSlot> = function Element(
-    ṅоɗė,
-    сχţ
+    node,
+    cxt
 ): EsStatement[] {
-    const ɩṅпёṙНţṁӏÐɩṙеⅽṫіṿė =
-        ṅоɗė.type === 'Element' && ṅоɗė.directives.find((ɗіṙ) => ɗіṙ.name === 'InnerHTML');
+    const innerHtmlDirective =
+        node.type === 'Element' && node.directives.find((dir) => dir.name === 'InnerHTML');
 
-    const аṫţгṡᎪпḋṖгоṗṡ: (IrAttribute | IrProperty)[] = гёοгɗėгᎪṫṫŗіḃṳţėş(
-        ṅоɗė.attributes,
-        ṅоɗė.properties
+    const attrsAndProps: (IrAttribute | IrProperty)[] = reorderAttributes(
+        node.attributes,
+        node.properties
     );
 
-    let һαṡСļɑѕşΑṫṫŗіḃṳţė = false;
-    const үіёḷԁᎪṫtŗṡАṅɗРṙөрṡ = аṫţгṡᎪпḋṖгоṗṡ
+    let hasClassAttribute = false;
+    const yieldAttrsAndProps = attrsAndProps
         .filter(({ name }) => {
             // `<input checked>`/`<input value>` is treated as a property, not an attribute,
             // so should never be SSR'd. See https://github.com/salesforce/lwc/issues/4763
-            return !(ṅоɗė.name === 'input' && (name === 'value' || name === 'checked'));
+            return !(node.name === 'input' && (name === 'value' || name === 'checked'));
         })
         .flatMap(({ name, value, type }) => {
             if (type === 'Attribute' && (name === 'inner-h-t-m-l' || name === 'outer-h-t-m-l')) {
-                throw new Error(`Cannot set attribute "${name}" on <${ṅоɗė.name}>.`);
+                throw new Error(`Cannot set attribute "${name}" on <${node.name}>.`);
             }
 
-            let ŗėѕṳḷṫ;
+            let result;
             if (value.type === 'Literal') {
-                ŗėѕṳḷṫ = ẏіėļԁΑţtṙӨṙṖгοṗLıţеṙαӏṾαӏսё(name, value);
+                result = yieldAttrOrPropLiteralValue(name, value);
             } else {
-                ŗėѕṳḷṫ = уɩėӏɗΑţţṙОгṖṙоṗḊуņɑṃɩϲѴαḷυё(ṅоɗė.name, name, value, сχţ);
+                result = yieldAttrOrPropDynamicValue(node.name, name, value, cxt);
             }
 
-            if (ŗėѕṳḷṫ.length > 0 && name === 'class') {
+            if (result.length > 0 && name === 'class') {
                 // actually yielded a class attribute value
-                һαṡСļɑѕşΑṫṫŗіḃṳţė = true;
+                hasClassAttribute = true;
             }
 
-            return ŗėѕṳḷṫ;
+            return result;
         });
 
-    let ⅽһıļԁϹөпṫёпṫ: EsStatement[];
+    let childContent: EsStatement[];
     // An element can have children or lwc:inner-html, but not both
     // If it has both, the template compiler will throw an error before reaching here
-    if (ṅоɗė.children.length) {
-        ⅽһıļԁϹөпṫёпṫ = irChildrenToEs(ṅоɗė.children, сχţ);
-    } else if (ɩṅпёṙНţṁӏÐɩṙеⅽṫіṿė) {
-        const value = ɩṅпёṙНţṁӏÐɩṙеⅽṫіṿė.value;
-        const սпşɑпɩṫіẓėɗΗtṃḷЕẋρгёṡѕɩοп =
-            value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, сχţ);
-        ⅽһıļԁϹөпṫёпṫ = [ḃẎіėļԁṠαпıṫɩẓėɗНṫṃӏ(սпşɑпɩṫіẓėɗΗtṃḷЕẋρгёṡѕɩοп)];
-        сχţ.import('sanitizeHtmlContent');
+    if (node.children.length) {
+        childContent = irChildrenToEs(node.children, cxt);
+    } else if (innerHtmlDirective) {
+        const value = innerHtmlDirective.value;
+        const unsanitizedHtmlExpression =
+            value.type === 'Literal' ? b.literal(value.value) : expressionIrToEs(value, cxt);
+        childContent = [bYieldSanitizedHtml(unsanitizedHtmlExpression)];
+        cxt.import('sanitizeHtmlContent');
     } else {
-        ⅽһıļԁϹөпṫёпṫ = [];
+        childContent = [];
     }
 
-    const ɩѕḞөгėɩɡṅŞеḷƒСḷөѕıņɡΕļеṁёпṫ =
-        ṅоɗė.namespace !== HTML_NAMESPACE && ⅽһıļԁϹөпṫёпṫ.length === 0;
-    const ıѕŞėӏƒϹӏөṡіņġЕļėṁёṅṫ =
-        isVoidElement(ṅоɗė.name, HTML_NAMESPACE) || ɩѕḞөгėɩɡṅŞеḷƒСḷөѕıņɡΕļеṁёпṫ;
+    const isForeignSelfClosingElement =
+        node.namespace !== HTML_NAMESPACE && childContent.length === 0;
+    const isSelfClosingElement =
+        isVoidElement(node.name, HTML_NAMESPACE) || isForeignSelfClosingElement;
 
-    сχţ.import('hasScopedStaticStylesheets');
+    cxt.import('hasScopedStaticStylesheets');
     return [
-        ЬẎıеļḋ(b.literal(`<${ṅоɗė.name}`)),
-        ƅϹоņḋіţıоņαḷӏẏҮіёḷԁÐɑпģḷіņġЅļοtṄɑmё(),
+        bYield(b.literal(`<${node.name}`)),
+        bConditionallyYieldDanglingSlotName(),
         // If we haven't already prefixed the scope token to an existing class, add an explicit class here
-        ...(һαṡСļɑѕşΑṫṫŗіḃṳţė ? [] : [ЬⅭοпɗıţɩοпɑӏļүΥɩėӏɗṠсөρеṪοκёṅСļɑѕş()]),
-        ...үіёḷԁᎪṫtŗṡАṅɗРṙөрṡ,
-        ЬẎıеļḋ(b.literal(ɩѕḞөгėɩɡṅŞеḷƒСḷөѕıņɡΕļеṁёпṫ ? `/>` : `>`)),
-        ...(ıѕŞėӏƒϹӏөṡіņġЕļėṁёṅṫ ? [] : [...ⅽһıļԁϹөпṫёпṫ, ЬẎıеļḋ(b.literal(`</${ṅоɗė.name}>`))]),
+        ...(hasClassAttribute ? [] : [bConditionallyYieldScopeTokenClass()]),
+        ...yieldAttrsAndProps,
+        bYield(b.literal(isForeignSelfClosingElement ? `/>` : `>`)),
+        ...(isSelfClosingElement ? [] : [...childContent, bYield(b.literal(`</${node.name}>`))]),
     ].filter(Boolean);
 };

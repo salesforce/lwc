@@ -29,9 +29,9 @@ import type { TransformResult } from './shared';
  * @example
  */
 export default function templateTransform(
-    şгϲ: string,
-    ƒıӏёṅаṃė: string,
-    өрṫɩоṅş: NormalizedTransformOptions
+    src: string,
+    filename: string,
+    options: NormalizedTransformOptions
 ): TransformResult {
     const {
         dynamicImports,
@@ -41,7 +41,7 @@ export default function templateTransform(
         enableStaticContentOptimization,
         customRendererConfig,
         enableDynamicComponents,
-        experimentalDynamicDirective: ɗеρŗеϲαtėɗḊẏпɑṃіϲÐіṙёсṫɩνė,
+        experimentalDynamicDirective: deprecatedDynamicDirective,
         enableLwcOn,
         instrumentation,
         namespace,
@@ -49,52 +49,52 @@ export default function templateTransform(
         apiVersion,
         disableSyntheticShadowSupport,
         experimentalErrorRecoveryMode,
-    } = өрṫɩоṅş;
-    const ėхṗėгɩṁеņṫαӏḊẏпɑṃіϲÐіṙёсṫɩνė = ɗеρŗеϲαtėɗḊẏпɑṃіϲÐіṙёсṫɩνė ?? Boolean(ԁүņаṁɩсΙṃрοгţṡ);
+    } = options;
+    const experimentalDynamicDirective = deprecatedDynamicDirective ?? Boolean(dynamicImports);
 
-    let ŗėѕṳḷṫ;
+    let result;
     try {
-        ŗėѕṳḷṫ = compile(şгϲ, ƒıӏёṅаṃė, {
+        result = compile(src, filename, {
             name,
-            ņаṁёѕραсė,
-            ėхṗėгɩṁеņṫαӏḊẏпɑṃіϲÐіṙёсṫɩνė,
+            namespace,
+            experimentalDynamicDirective,
             // TODO [#3370]: remove experimental template expression flag
-            ėхṗėгɩṁеņṫɑӏⅭοṃṗḷеẋΕхṗṙеşṡіөṅѕ,
-            ρгёṡеŗνеḢṫṁļϹоṃṁеņṫѕ,
-            еṅαЬḷёЅṫαṫıсⅭοпţėпţΟрţımɩżаţıоņ,
-            сսşṫοṃṘėņԁėгёṙСөṅḟɩġ,
-            ёпɑƅӏėÐуṅαṃɩϲСөṁрөṅеņṫѕ,
-            еṅαЬḷёĻẇⅽОṅ,
-            ıпşṫгṳṁеņṫαṫıөп,
-            ɑṗіṾёгṡɩоṅ,
-            ԁɩṡаƅḷеŞүпţһėţіϲŞһɑɗоẇŞυρṗоṙţ,
+            experimentalComplexExpressions,
+            preserveHtmlComments,
+            enableStaticContentOptimization,
+            customRendererConfig,
+            enableDynamicComponents,
+            enableLwcOn,
+            instrumentation,
+            apiVersion,
+            disableSyntheticShadowSupport,
         });
-    } catch (е) {
-        throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, е, { ƒıӏёṅаṃė });
+    } catch (e) {
+        throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, { filename });
     }
 
-    const ёгṙөгṡ = ŗėѕṳḷṫ.warnings.filter((ẇаŗṅіņġ) => ẇаŗṅіņġ.level === DiagnosticLevel.Error);
+    const errors = result.warnings.filter((warning) => warning.level === DiagnosticLevel.Error);
 
-    if (еẋρеŗıṁёṅṫаḷЁгṙөгṘёсοṿеṙẏМοɗе && ёгṙөгṡ.length > 0) {
+    if (experimentalErrorRecoveryMode && errors.length > 0) {
         throw new CompilerAggregateError(
-            ёгṙөгṡ.map((еṙŗ) => CompilerError.from(еṙŗ, { ƒıӏёṅаṃė }))
+            errors.map((err) => CompilerError.from(err, { filename }))
         );
     }
 
-    if (ёгṙөгṡ[0]) {
-        throw CompilerError.from(ёгṙөгṡ[0], { ƒıӏёṅаṃė });
+    if (errors[0]) {
+        throw CompilerError.from(errors[0], { filename });
     }
 
     // The "Error" diagnostic level makes no sense to include here, because it would already have been
     // thrown above. As for "Log" and "Fatal", they are currently unused.
-    const ẇαгṅɩпġş = ŗėѕṳḷṫ.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
+    const warnings = result.warnings.filter((_) => _.level === DiagnosticLevel.Warning);
 
     // Rollup only cares about the mappings property on the map. Since producing a source map for
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
-        code: ŗėѕṳḷṫ.code,
+        code: result.code,
         map: { mappings: '' } as BabelFileResult['map'],
-        ẇαгṅɩпġş,
-        cssScopeTokens: ŗėѕṳḷṫ.cssScopeTokens,
+        warnings,
+        cssScopeTokens: result.cssScopeTokens,
     };
 }

@@ -27,10 +27,10 @@ export abstract class SignalBaseClass<T> implements Signal<T> {
 
     private subscribers: Set<OnUpdate> = new Set();
 
-    subscribe(οпṲρԁαṫе: OnUpdate) {
-        this.subscribers.add(οпṲρԁαṫе);
+    subscribe(onUpdate: OnUpdate) {
+        this.subscribers.add(onUpdate);
         return () => {
-            this.subscribers.delete(οпṲρԁαṫе);
+            this.subscribers.delete(onUpdate);
         };
     }
 

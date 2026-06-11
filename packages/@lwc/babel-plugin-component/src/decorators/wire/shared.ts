@@ -9,8 +9,8 @@ import type { DecoratorMeta } from '../index';
 
 const { WIRE_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
-function isWireDecorator(ԁėⅽоṙαtοŗ: DecoratorMeta) {
-    return ԁėⅽоṙαtοŗ.name === WΙŖЕ_ÐЕϹӨRАΤӨŖ;
+function isWireDecorator(decorator: DecoratorMeta) {
+    return decorator.name === WIRE_DECORATOR;
 }
 
 export { isWireDecorator };

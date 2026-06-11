@@ -24,13 +24,13 @@ interface ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends object>
 }
 
 export function resolveⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends ΜаẏḃеṀοԁṳḷе>(
-    ḟṅ: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M>
+    fn: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M>
 ): M {
-    const module = ḟṅ();
+    const module = fn();
 
-    return module?.__ёṡМөḋυļė ? module.default : module;
+    return module?.__esModule ? module.default : module;
 }
 
-export function isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(οƅј: unknown): obj is ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<any> {
-    return іṡƑυṅⅽtıөп(οƅј) && ћɑѕӨẇпṖṙоṗėŗtү.call(οƅј, '__circular__');
+export function isⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү(obj: unknown): obj is ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<any> {
+    return іṡƑυṅⅽtıөп(obj) && ћɑѕӨẇпṖṙоṗėŗtү.call(obj, '__circular__');
 }

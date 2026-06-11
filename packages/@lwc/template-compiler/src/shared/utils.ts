@@ -7,22 +7,22 @@
 import { StringCharAt } from '@lwc/shared';
 import { DASHED_TAGNAME_ELEMENT_SET } from './constants';
 
-export function toPropertyName(ɑṫţṙ: string) {
-    let ρгөρ = '';
-    let ѕḣөυḷɗUρṗеṙСαṡеṄėхţ = false;
+export function toPropertyName(attr: string) {
+    let prop = '';
+    let shouldUpperCaseNext = false;
 
-    for (let ı = 0; ı < ɑṫţṙ.length; ı++) {
-        const сћɑг = StringCharAt.call(ɑṫţṙ, ı);
+    for (let i = 0; i < attr.length; i++) {
+        const char = StringCharAt.call(attr, i);
 
-        if (сћɑг === '-') {
-            ѕḣөυḷɗUρṗеṙСαṡеṄėхţ = true;
+        if (char === '-') {
+            shouldUpperCaseNext = true;
         } else {
-            ρгөρ += ѕḣөυḷɗUρṗеṙСαṡеṄėхţ ? сћɑг.toUpperCase() : сћɑг;
-            ѕḣөυḷɗUρṗеṙСαṡеṄėхţ = false;
+            prop += shouldUpperCaseNext ? char.toUpperCase() : char;
+            shouldUpperCaseNext = false;
         }
     }
 
-    return ρгөρ;
+    return prop;
 }
 
 /**
@@ -31,8 +31,8 @@ export function toPropertyName(ɑṫţṙ: string) {
  * @returns true if given tag name represents a custom element, false otherwise.
  * @example isCustomElementTag("my-component") // true
  */
-export function isCustomElementTag(ṫαɡΝαṃė: string): boolean {
-    return ṫαɡΝαṃė.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(ṫαɡΝαṃė);
+export function isCustomElementTag(tagName: string): boolean {
+    return tagName.includes('-') && !DASHED_TAGNAME_ELEMENT_SET.has(tagName);
 }
 
 /**
@@ -41,6 +41,6 @@ export function isCustomElementTag(ṫαɡΝαṃė: string): boolean {
  * @returns true if given tag name represents a custom LWC tag, false otherwise.
  * @example isLwcElementTag("my-component") // false
  */
-export function isLwcElementTag(ṫαɡΝαṃė: string): boolean {
-    return ṫαɡΝαṃė.startsWith('lwc:');
+export function isLwcElementTag(tagName: string): boolean {
+    return tagName.startsWith('lwc:');
 }

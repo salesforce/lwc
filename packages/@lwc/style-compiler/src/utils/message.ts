@@ -6,23 +6,23 @@
  */
 import type { Message } from 'postcss';
 
-interface ІṃρоŗṫМёṡѕαġе extends Message {
+interface ImportMessage extends Message {
     type: 'import';
     id: string;
 }
 
-const РḶṲĢΙṄ_NᎪМΕ = '@lwc/style-compiler';
+const PLUGIN_NAME = '@lwc/style-compiler';
 
-const ΙṀРΟŖТ_ṪΥΡЁ = 'import';
+const IMPORT_TYPE = 'import';
 
 export function importMessage(id: string): ImportMessage {
     return {
-        plugin: РḶṲĢΙṄ_NᎪМΕ,
-        type: ΙṀРΟŖТ_ṪΥΡЁ,
+        plugin: PLUGIN_NAME,
+        type: IMPORT_TYPE,
         id,
     };
 }
 
 export function isImportMessage(message: any): message is ImportMessage {
-    return message.type === ΙṀРΟŖТ_ṪΥΡЁ && message.id;
+    return message.type === IMPORT_TYPE && message.id;
 }

@@ -50,7 +50,7 @@ export class InvalidMethodDecorators extends Рṙөрṡ {
     tooManyWireParams(_: TestValue) {}
     // @ts-expect-error Too many method parameters
     @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: 123 })
-    tooManyParameters(_α: TestValue, _Ь: TestValue) {}
+    tooManyParameters(_a: TestValue, _b: TestValue) {}
     // @ts-expect-error Bad config type
     @ẉıгё(ṪėѕţΑԁαρtёŗ, { bad: 'value' })
     badConfig(_: TestValue): void {}

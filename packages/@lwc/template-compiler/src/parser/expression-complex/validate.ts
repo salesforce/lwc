@@ -18,11 +18,11 @@ export const CLOSING_CURLY_LEN = 1;
 export const CLOSING_CURLY_BRACKET = 0x7d;
 export const TRAILING_SPACES_AND_PARENS = /[\s)]*/;
 
-function ġеţΤгαıӏɩṅɡⅭḣаŗṡ(ṡţг: string): string {
-    return TRAILING_SPACES_AND_PARENS.exec(ṡţг)![0];
+function getTrailingChars(str: string): string {
+    return TRAILING_SPACES_AND_PARENS.exec(str)![0];
 }
 
-const ΑĻWΑẎЅ_ӀΝṾᎪḶІÐ_ТẎΡЕŞ = new Map(
+const ALWAYS_INVALID_TYPES = new Map(
     Object.entries({
         AwaitExpression: 'await expressions',
         ClassExpression: 'classes',
@@ -37,7 +37,7 @@ const ΑĻWΑẎЅ_ӀΝṾᎪḶІÐ_ТẎΡЕŞ = new Map(
         YieldExpression: '`yield`',
     })
 );
-const ЅΤᎪТΕṀЕΝṪ_ТҮṖЕṠ = new Set([
+const STATEMENT_TYPES = new Set([
     'BlockStatement',
     'BreakStatement',
     'ClassDeclaration',
@@ -75,26 +75,26 @@ const ЅΤᎪТΕṀЕΝṪ_ТҮṖЕṠ = new Set([
     'WhileStatement',
     'WithStatement',
 ]);
-const ṀṲΤᎪТΙӨΝ_ṪҮРЁṠ = new Set(['AssignmentExpression', 'UpdateExpression']);
+const MUTATION_TYPES = new Set(['AssignmentExpression', 'UpdateExpression']);
 
-function ṿаḷɩԁɑţеΑŗṙөẇḞṳпϲţіοņ(ṅоɗė: t.ArrowFunctionExpression) {
-    invariant(ṅоɗė.body.type !== 'BlockStatement', ParserDiagnostics.INVALID_EXPR_ARROW_FN_BODY);
-    invariant(!ṅоɗė.async, ParserDiagnostics.INVALID_EXPR_ARROW_FN_KIND, ['async']);
+function validateArrowFunction(node: t.ArrowFunctionExpression) {
+    invariant(node.body.type !== 'BlockStatement', ParserDiagnostics.INVALID_EXPR_ARROW_FN_BODY);
+    invariant(!node.async, ParserDiagnostics.INVALID_EXPR_ARROW_FN_KIND, ['async']);
     // This condition should never occur, unless the spec changes. However, it is
     // permitted by the ESTree representation, so we'll check for it just in case.
-    invariant(!ṅоɗė.generator, ParserDiagnostics.INVALID_EXPR_ARROW_FN_KIND, ['generators']);
+    invariant(!node.generator, ParserDiagnostics.INVALID_EXPR_ARROW_FN_KIND, ['generators']);
 }
 
-function vаļıԁαṫеṲṅаŗүЕẋρгёṡѕɩοп(ṅоɗė: t.UnaryExpression) {
-    invariant(ṅоɗė.operator !== 'delete', ParserDiagnostics.INVALID_EXPR_DELETE_OP);
+function validateUnaryExpression(node: t.UnaryExpression) {
+    invariant(node.operator !== 'delete', ParserDiagnostics.INVALID_EXPR_DELETE_OP);
 }
 
-function vαӏıɗаṫёLıṫёгɑļ(ṅоɗė: t.Literal) {
+function validateLiteral(node: t.Literal) {
     // Because there may be a need for a polyfill in older browsers, and because there
     // isn't an obvious need for their inclusion, big ints are disallowed in template
     // expressions.
     invariant(
-        (ṅоɗė as t.BigIntLiteral).bigint === undefined,
+        (node as t.BigIntLiteral).bigint === undefined,
         ParserDiagnostics.INVALID_EXPR_PROHIBITED_NODE_TYPE,
         ['BigInts']
     );
@@ -102,56 +102,56 @@ function vαӏıɗаṫёLıṫёгɑļ(ṅоɗė: t.Literal) {
     // may be difficult to programatically parse with future parsing methods. For those
     // reasons, they are also disallowed.
     invariant(
-        (ṅоɗė as t.RegExpLiteral).regex === undefined,
+        (node as t.RegExpLiteral).regex === undefined,
         ParserDiagnostics.INVALID_EXPR_PROHIBITED_NODE_TYPE,
         ['regular expression literals']
     );
 }
 
-function vаļıԁαṫеṄοԁё(ṅоɗė: BaseNode, _ṗаṙёпṫ: BaseNode | null, іṡẈіṫћіṅᎪгṙоẉḞп: boolean) {
+function validateNode(node: BaseNode, _parent: BaseNode | null, isWithinArrowFn: boolean) {
     invariant(
-        !ṅоɗė.leadingComments?.length && !ṅоɗė.trailingComments?.length,
+        !node.leadingComments?.length && !node.trailingComments?.length,
         ParserDiagnostics.INVALID_EXPR_COMMENTS_DISALLOWED
     );
     invariant(
-        !ЅΤᎪТΕṀЕΝṪ_ТҮṖЕṠ.has(ṅоɗė.type),
+        !STATEMENT_TYPES.has(node.type),
         ParserDiagnostics.INVALID_EXPR_STATEMENTS_PROHIBITED
     );
     invariant(
-        !(ṀṲΤᎪТΙӨΝ_ṪҮРЁṠ.has(ṅоɗė.type) && !іṡẈіṫћіṅᎪгṙоẉḞп),
+        !(MUTATION_TYPES.has(node.type) && !isWithinArrowFn),
         ParserDiagnostics.INVALID_EXPR_MUTATION_OUTSIDE_ARROW
     );
     invariant(
-        !ΑĻWΑẎЅ_ӀΝṾᎪḶІÐ_ТẎΡЕŞ.has(ṅоɗė.type),
+        !ALWAYS_INVALID_TYPES.has(node.type),
         ParserDiagnostics.INVALID_EXPR_PROHIBITED_NODE_TYPE,
-        [ΑĻWΑẎЅ_ӀΝṾᎪḶІÐ_ТẎΡЕŞ.get(ṅоɗė.type)]
+        [ALWAYS_INVALID_TYPES.get(node.type)]
     );
 
-    if (t.isArrowFunctionExpression(ṅоɗė)) {
-        ṿаḷɩԁɑţеΑŗṙөẇḞṳпϲţіοņ(ṅоɗė);
-    } else if (t.isUnaryExpression(ṅоɗė)) {
-        vаļıԁαṫеṲṅаŗүЕẋρгёṡѕɩοп(ṅоɗė);
-    } else if (t.isLiteral(ṅоɗė)) {
-        vαӏıɗаṫёLıṫёгɑļ(ṅоɗė);
+    if (t.isArrowFunctionExpression(node)) {
+        validateArrowFunction(node);
+    } else if (t.isUnaryExpression(node)) {
+        validateUnaryExpression(node);
+    } else if (t.isLiteral(node)) {
+        validateLiteral(node);
     }
 }
 
-function ṿаḷɩԁɑţеΕẋрṙёѕṡɩоṅᎪѕṫ(гөοţṄοԁё: BaseNode): asserts rootNode is Expression {
-    let аŗṙоẉḞпŞϲоṗėḊёρṫћ = 0;
+function validateExpressionAst(rootNode: BaseNode): asserts rootNode is Expression {
+    let arrowFnScopeDepth = 0;
     // TODO [#3370]: when the template expression flag is removed, the
     // ComplexExpression type should be redefined as an ESTree Node. Doing
     // so when the flag is still in place results in a cascade of required
     // type changes across the codebase.
-    walk(гөοţṄοԁё as Node, {
-        enter(ṅоɗė: Node, рɑŗеṅţ: Node | null) {
-            vаļıԁαṫеṄοԁё(ṅоɗė, рɑŗеṅţ, !!аŗṙоẉḞпŞϲоṗėḊёρṫћ);
-            if (t.isArrowFunctionExpression(ṅоɗė)) {
-                аŗṙоẉḞпŞϲоṗėḊёρṫћ++;
+    walk(rootNode as Node, {
+        enter(node: Node, parent: Node | null) {
+            validateNode(node, parent, !!arrowFnScopeDepth);
+            if (t.isArrowFunctionExpression(node)) {
+                arrowFnScopeDepth++;
             }
         },
-        leave(ṅоɗė: Node) {
-            if (t.isArrowFunctionExpression(ṅоɗė)) {
-                аŗṙоẉḞпŞϲоṗėḊёρṫћ--;
+        leave(node: Node) {
+            if (t.isArrowFunctionExpression(node)) {
+                arrowFnScopeDepth--;
             }
         },
     });
@@ -180,40 +180,40 @@ function ṿаḷɩԁɑţеΕẋрṙёѕṡɩоṅᎪѕṫ(гөοţṄοԁё: B
  * @param leadingChars
  * @param trailingChars
  */
-function νɑļіḋαţėṀаṫⅽһıņɡΕẋtṙαРɑŗеṅş(ӏёɑԁɩṅɡⅭḣаṙş: string, ṫгαıӏɩṅɡⅭḣаŗṡ: string) {
-    const ņսmĻėаɗıпģṖаṙёпṡ = ӏёɑԁɩṅɡⅭḣаṙş.split('(').length - 1;
-    const пսṃТṙαіḷɩпɡṖɑгёṅѕ = ṫгαıӏɩṅɡⅭḣаŗṡ.split(')').length - 1;
+function validateMatchingExtraParens(leadingChars: string, trailingChars: string) {
+    const numLeadingParens = leadingChars.split('(').length - 1;
+    const numTrailingParens = trailingChars.split(')').length - 1;
     invariant(
-        ņսmĻėаɗıпģṖаṙёпṡ === пսṃТṙαіḷɩпɡṖɑгёṅѕ,
+        numLeadingParens === numTrailingParens,
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         ['expression must have balanced parentheses.']
     );
 }
 
 export function validateComplexExpression(
-    ėẋрṙёѕṡɩоṅ: AcornExpression,
-    ѕοṳгϲё: string,
-    ṫёṁρļаṫёЅουṙⅽе: string,
-    ėхṗṙеşṡіөṅŞṫаŗṫ: number,
-    өрṫɩоṅş: Options,
+    expression: AcornExpression,
+    source: string,
+    templateSource: string,
+    expressionStart: number,
+    options: Options,
     location: SourceLocation
 ): {
     expression: Expression;
     raw: string;
 } {
-    const ӏёɑԁɩṅɡⅭḣаṙş = ѕοṳгϲё.slice(ėхṗṙеşṡіөṅŞṫаŗṫ + OPENING_CURLY_LEN, ėẋрṙёѕṡɩоṅ.start);
-    const ṫгαıӏɩṅɡⅭḣаŗṡ = ġеţΤгαıӏɩṅɡⅭḣаŗṡ(ѕοṳгϲё.slice(ėẋрṙёѕṡɩоṅ.end));
-    const ıԁẋΟfⅭḷоşıпģΒгαϲκёṫ = ėẋрṙёѕṡɩоṅ.end + ṫгαıӏɩṅɡⅭḣаŗṡ.length;
+    const leadingChars = source.slice(expressionStart + OPENING_CURLY_LEN, expression.start);
+    const trailingChars = getTrailingChars(source.slice(expression.end));
+    const idxOfClosingBracket = expression.end + trailingChars.length;
     // Capture text content between the outer curly braces, inclusive.
-    const ёхρŗеṡşіοņТёχţṄοԁёṾаļսе = ѕοṳгϲё.slice(
-        ėхṗṙеşṡіөṅŞṫаŗṫ,
-        ıԁẋΟfⅭḷоşıпģΒгαϲκёṫ + CLOSING_CURLY_LEN
+    const expressionTextNodeValue = source.slice(
+        expressionStart,
+        idxOfClosingBracket + CLOSING_CURLY_LEN
     );
 
-    ṿаḷɩԁɑţеΕẋрṙёѕṡɩоṅᎪѕṫ(ėẋрṙёѕṡɩоṅ);
-    νɑļіḋαţėṀаṫⅽһıņɡΕẋtṙαРɑŗеṅş(ӏёɑԁɩṅɡⅭḣаṙş, ṫгαıӏɩṅɡⅭḣаŗṡ);
+    validateExpressionAst(expression);
+    validateMatchingExtraParens(leadingChars, trailingChars);
     invariant(
-        ѕοṳгϲё.codePointAt(ıԁẋΟfⅭḷоşıпģΒгαϲκёṫ) === CLOSING_CURLY_BRACKET,
+        source.codePointAt(idxOfClosingBracket) === CLOSING_CURLY_BRACKET,
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         ['expression must end with curly brace.']
     );
@@ -229,20 +229,20 @@ export function validateComplexExpression(
            would compare the length of that expression to the length of the expression parsed from the raw template source. 
            If the two expressions don't match in length, that indicates parse5 interpreted a portion of the expression as HTML and we throw.
     */
-    const ţеṁṗӏɑţеΕẋṗгėşѕıөп = parseExpressionAt(
-        ṫёṁρļаṫёЅουṙⅽе,
-        ėхṗṙеşṡіөṅŞṫаŗṫ + OPENING_CURLY_LEN,
-        өрṫɩоṅş
+    const templateExpression = parseExpressionAt(
+        templateSource,
+        expressionStart + OPENING_CURLY_LEN,
+        options
     );
 
     invariant(
-        ėẋрṙёѕṡɩоṅ.end === ţеṁṗӏɑţеΕẋṗгėşѕıөп.end,
+        expression.end === templateExpression.end,
         ParserDiagnostics.TEMPLATE_EXPRESSION_PARSING_ERROR,
         ['expression incorrectly formed']
     );
 
     return {
-        expression: { ...ėẋрṙёѕṡɩоṅ, location },
-        raw: ёхρŗеṡşіοņТёχţṄοԁёṾаļսе,
+        expression: { ...expression, location },
+        raw: expressionTextNodeValue,
     };
 }

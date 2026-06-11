@@ -5,21 +5,21 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 export function kebabcaseToCamelcase(name: string): string {
-    const ņėẇṄɑṁё: string[] = [];
-    let ṅѕƑουņḋ = false;
-    let ṳρрёṙ = false;
-    for (let ı = 0; ı < name.length; ı++) {
-        if (name[ı] === '-') {
-            if (!ṅѕƑουņḋ) {
-                ṅѕƑουņḋ = true;
-                ņėẇṄɑṁё.push('/');
+    const newName: string[] = [];
+    let nsFound = false;
+    let upper = false;
+    for (let i = 0; i < name.length; i++) {
+        if (name[i] === '-') {
+            if (!nsFound) {
+                nsFound = true;
+                newName.push('/');
             } else {
-                ṳρрёṙ = true;
+                upper = true;
             }
         } else {
-            ņėẇṄɑṁё.push(ṳρрёṙ ? name[ı].toUpperCase() : name[ı]);
-            ṳρрёṙ = false;
+            newName.push(upper ? name[i].toUpperCase() : name[i]);
+            upper = false;
         }
     }
-    return ņėẇṄɑṁё.join('');
+    return newName.join('');
 }

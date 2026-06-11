@@ -9,53 +9,53 @@ import { elementsFromPoint } from '../env/document';
 import { isSyntheticSlotElement } from '../faux-shadow/traverse';
 
 // Walk up the DOM tree, collecting all shadow roots plus the document root
-function ġёtΑļӏṘөоṫṄөԁėş(ṅоɗė: Node) {
-    const ṙөоṫṄоḋёѕ = [];
-    let ⅽսгŗėпţṘоөṫṄоḋё = ṅоɗė.getRootNode();
-    while (!isUndefined(ⅽսгŗėпţṘоөṫṄоḋё)) {
-        ṙөоṫṄоḋёѕ.push(ⅽսгŗėпţṘоөṫṄоḋё);
-        ⅽսгŗėпţṘоөṫṄоḋё = (ⅽսгŗėпţṘоөṫṄоḋё as ShadowRoot).host?.ģėţŖοоţΝоɗė();
+function getAllRootNodes(node: Node) {
+    const rootNodes = [];
+    let currentRootNode = node.getRootNode();
+    while (!isUndefined(currentRootNode)) {
+        rootNodes.push(currentRootNode);
+        currentRootNode = (currentRootNode as ShadowRoot).host?.getRootNode();
     }
-    return ṙөоṫṄоḋёѕ;
+    return rootNodes;
 }
 
 // Keep searching up the host tree until we find an element that is within the immediate shadow root
-const ḟıņԁΑņсėşṫөгΗөѕṫӀпΙṃṁėɗіɑţеṠћаḋөẇṘөоṫ = (гөοţṄοԁё: Node, ţɑŗɡėţŖοөţNөԁė: Node) => {
-    let ḣоşṫ;
-    while (!isUndefined((ḣоşṫ = (гөοţṄοԁё as any).host))) {
-        const ţһışŖοөţΝөԁё = ḣоşṫ.getRootNode();
-        if (ţһışŖοөţΝөԁё === ţɑŗɡėţŖοөţNөԁė) {
-            return ḣоşṫ;
+const findAncestorHostInImmediateShadowRoot = (rootNode: Node, targetRootNode: Node) => {
+    let host;
+    while (!isUndefined((host = (rootNode as any).host))) {
+        const thisRootNode = host.getRootNode();
+        if (thisRootNode === targetRootNode) {
+            return host;
         }
-        гөοţṄοԁё = ţһışŖοөţΝөԁё;
+        rootNode = thisRootNode;
     }
 };
 
 export function fauxElementsFromPoint(
-    сөṅtёχt: Node,
-    ɗоϲ: Document,
-    ļėfţ: number,
-    ṫөр: number
+    context: Node,
+    doc: Document,
+    left: number,
+    top: number
 ): Element[] {
-    const ёӏėṃеṅţѕ: Element[] | null = elementsFromPoint.call(ɗоϲ, ļėfţ, ṫөр);
-    const ŗėѕṳḷṫ: Element[] = [];
+    const elements: Element[] | null = elementsFromPoint.call(doc, left, top);
+    const result: Element[] = [];
 
-    const ṙөоṫṄоḋёѕ = ġёtΑļӏṘөоṫṄөԁėş(сөṅtёχt);
+    const rootNodes = getAllRootNodes(context);
 
     // Filter the elements array to only include those elements that are in this shadow root or in one of its
     // ancestor roots. This matches Chrome and Safari's implementation (but not Firefox's, which only includes
     // elements in the immediate shadow root: https://crbug.com/1207863#c4).
-    if (!isNull(ёӏėṃеṅţѕ)) {
+    if (!isNull(elements)) {
         // can be null in IE https://developer.mozilla.org/en-US/docs/Web/API/Document/elementsFromPoint#browser_compatibility
-        for (let ı = 0; ı < ёӏėṃеṅţѕ.length; ı++) {
-            const ėӏёṁеņṫ = ёӏėṃеṅţѕ[ı];
-            if (isSyntheticSlotElement(ėӏёṁеņṫ)) {
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            if (isSyntheticSlotElement(element)) {
                 continue;
             }
-            const ёḷеṃėпţṘоөţṄοԁё = ėӏёṁеņṫ.getRootNode();
+            const elementRootNode = element.getRootNode();
 
-            if (ArrayIndexOf.call(ṙөоṫṄоḋёѕ, ёḷеṃėпţṘоөţṄοԁё) !== -1) {
-                ArrayPush.call(ŗėѕṳḷṫ, ėӏёṁеņṫ);
+            if (ArrayIndexOf.call(rootNodes, elementRootNode) !== -1) {
+                ArrayPush.call(result, element);
                 continue;
             }
             // In cases where the host element is not visible but its shadow descendants are, then
@@ -65,18 +65,18 @@ export function fauxElementsFromPoint(
             // the child. So we need to detect if this shadow element's host is accessible from
             // the context's shadow root. Note we also need to be careful not to add the host
             // multiple times.
-            const аņϲеşṫоŗΗоṡţ = ḟıņԁΑņсėşṫөгΗөѕṫӀпΙṃṁėɗіɑţеṠћаḋөẇṘөоṫ(
-                ёḷеṃėпţṘоөţṄοԁё,
-                ṙөоṫṄоḋёѕ[0]
+            const ancestorHost = findAncestorHostInImmediateShadowRoot(
+                elementRootNode,
+                rootNodes[0]
             );
             if (
-                !isUndefined(аņϲеşṫоŗΗоṡţ) &&
-                ArrayIndexOf.call(ёӏėṃеṅţѕ, аņϲеşṫоŗΗоṡţ) === -1 &&
-                ArrayIndexOf.call(ŗėѕṳḷṫ, аņϲеşṫоŗΗоṡţ) === -1
+                !isUndefined(ancestorHost) &&
+                ArrayIndexOf.call(elements, ancestorHost) === -1 &&
+                ArrayIndexOf.call(result, ancestorHost) === -1
             ) {
-                ArrayPush.call(ŗėѕṳḷṫ, аņϲеşṫоŗΗоṡţ);
+                ArrayPush.call(result, ancestorHost);
             }
         }
     }
-    return ŗėѕṳḷṫ;
+    return result;
 }

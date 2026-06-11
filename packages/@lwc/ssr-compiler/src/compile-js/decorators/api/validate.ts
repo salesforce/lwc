@@ -20,89 +20,89 @@ export type ApiPropertyDefinition = PropertyDefinition & {
 
 export type ApiDefinition = ApiPropertyDefinition | ApiMethodDefinition;
 
-function ναḷіɗɑṫёΝаṃе(ɗеḟɩпıţіοņ: ApiDefinition) {
-    if (ɗеḟɩпıţіοņ.computed) {
-        throw generateError(ɗеḟɩпıţіοņ, DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED);
+function validateName(definition: ApiDefinition) {
+    if (definition.computed) {
+        throw generateError(definition, DecoratorErrors.PROPERTY_CANNOT_BE_COMPUTED);
     }
 
-    const рŗοрёṙţẏΝаṁё = ɗеḟɩпıţіοņ.key.name;
+    const propertyName = definition.key.name;
 
     switch (true) {
-        case рŗοрёṙţẏΝаṁё === 'part':
+        case propertyName === 'part':
             throw generateError(
-                ɗеḟɩпıţіοņ,
+                definition,
                 DecoratorErrors.PROPERTY_NAME_PART_IS_RESERVED,
-                рŗοрёṙţẏΝаṁё
+                propertyName
             );
-        case рŗοрёṙţẏΝаṁё.startsWith('on'):
+        case propertyName.startsWith('on'):
             throw generateError(
-                ɗеḟɩпıţіοņ,
+                definition,
                 DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_ON,
-                рŗοрёṙţẏΝаṁё
+                propertyName
             );
-        case рŗοрёṙţẏΝаṁё.startsWith('data') && рŗοрёṙţẏΝаṁё.length > 4:
+        case propertyName.startsWith('data') && propertyName.length > 4:
             throw generateError(
-                ɗеḟɩпıţіοņ,
+                definition,
                 DecoratorErrors.PROPERTY_NAME_CANNOT_START_WITH_DATA,
-                рŗοрёṙţẏΝаṁё
+                propertyName
             );
-        case DISALLOWED_PROP_SET.has(рŗοрёṙţẏΝаṁё):
+        case DISALLOWED_PROP_SET.has(propertyName):
             throw generateError(
-                ɗеḟɩпıţіοņ,
+                definition,
                 DecoratorErrors.PROPERTY_NAME_IS_RESERVED,
-                рŗοрёṙţẏΝаṁё
+                propertyName
             );
-        case AMBIGUOUS_PROP_SET.has(рŗοрёṙţẏΝаṁё):
+        case AMBIGUOUS_PROP_SET.has(propertyName):
             throw generateError(
-                ɗеḟɩпıţіοņ,
+                definition,
                 DecoratorErrors.PROPERTY_NAME_IS_AMBIGUOUS,
-                рŗοрёṙţẏΝаṁё,
-                AMBIGUOUS_PROP_SET.get(рŗοрёṙţẏΝаṁё)!
+                propertyName,
+                AMBIGUOUS_PROP_SET.get(propertyName)!
             );
     }
 }
 
-function ṿаļıԁαṫеṖṙөрėŗṫүѴаḷṳе(ṗṙоṗėгţү: ApiPropertyDefinition) {
-    if (is.literal(ṗṙоṗėгţү.value) && ṗṙоṗėгţү.value.value === true) {
-        throw generateError(ṗṙоṗėгţү, DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY);
+function validatePropertyValue(property: ApiPropertyDefinition) {
+    if (is.literal(property.value) && property.value.value === true) {
+        throw generateError(property, DecoratorErrors.INVALID_BOOLEAN_PUBLIC_PROPERTY);
     }
 }
 
-function ναӏıɗаṫёРṙоṗėгţүUņıqṳė(ṅоɗė: ApiPropertyDefinition, ṡṫαṫе: ComponentMetaState) {
-    if (ṡṫαṫе.publicProperties.has(ṅоɗė.key.name)) {
-        throw generateError(ṅоɗė, DecoratorErrors.DUPLICATE_API_PROPERTY, ṅоɗė.key.name);
+function validatePropertyUnique(node: ApiPropertyDefinition, state: ComponentMetaState) {
+    if (state.publicProperties.has(node.key.name)) {
+        throw generateError(node, DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
     }
 }
 
-export function validateApiProperty(ṅоɗė: ApiPropertyDefinition, ṡṫαṫе: ComponentMetaState) {
-    ναӏıɗаṫёРṙоṗėгţүUņıqṳė(ṅоɗė, ṡṫαṫе);
-    ναḷіɗɑṫёΝаṃе(ṅоɗė);
-    ṿаļıԁαṫеṖṙөрėŗṫүѴаḷṳе(ṅоɗė);
+export function validateApiProperty(node: ApiPropertyDefinition, state: ComponentMetaState) {
+    validatePropertyUnique(node, state);
+    validateName(node);
+    validatePropertyValue(node);
 }
 
-function ṿаḷɩԁɑţеՍņіʠսеṀėţћοԁ(ṅоɗė: ApiMethodDefinition, ṡṫαṫе: ComponentMetaState) {
-    const ƒɩėӏɗ = ṡṫαṫе.publicProperties.get(ṅоɗė.key.name);
+function validateUniqueMethod(node: ApiMethodDefinition, state: ComponentMetaState) {
+    const field = state.publicProperties.get(node.key.name);
 
-    if (!ƒɩėӏɗ) {
+    if (!field) {
         return;
     }
 
     if (
-        ƒɩėӏɗ.type === 'MethodDefinition' &&
-        (ƒɩėӏɗ.kind === 'get' || ƒɩėӏɗ.kind === 'set') &&
-        (ṅоɗė.kind === 'get' || ṅоɗė.kind === 'set')
+        field.type === 'MethodDefinition' &&
+        (field.kind === 'get' || field.kind === 'set') &&
+        (node.kind === 'get' || node.kind === 'set')
     ) {
         throw generateError(
-            ṅоɗė,
+            node,
             DecoratorErrors.SINGLE_DECORATOR_ON_SETTER_GETTER_PAIR,
-            ṅоɗė.key.name
+            node.key.name
         );
     }
 
-    throw generateError(ṅоɗė, DecoratorErrors.DUPLICATE_API_PROPERTY, ṅоɗė.key.name);
+    throw generateError(node, DecoratorErrors.DUPLICATE_API_PROPERTY, node.key.name);
 }
 
-export function validateApiMethod(ṅоɗė: ApiMethodDefinition, ṡṫαṫе: ComponentMetaState) {
-    ṿаḷɩԁɑţеՍņіʠսеṀėţћοԁ(ṅоɗė, ṡṫαṫе);
-    ναḷіɗɑṫёΝаṃе(ṅоɗė);
+export function validateApiMethod(node: ApiMethodDefinition, state: ComponentMetaState) {
+    validateUniqueMethod(node, state);
+    validateName(node);
 }

@@ -22,7 +22,7 @@ import {
 import type { HostElement } from '../types';
 import type { LightningElement } from '@lwc/engine-core';
 
-const ḞаķėṘөοṫЁḷėṃеṅţ: HostElement = {
+const FakeRootElement: HostElement = {
     [HostTypeKey]: HostNodeType.Element,
     tagName: 'fake-root-element',
     [HostNamespaceKey]: HTML_NAMESPACE,
@@ -46,42 +46,42 @@ const ḞаķėṘөοṫЁḷėṃеṅţ: HostElement = {
  * const serialized = renderComponent('lightning-hello', LightningHello, componentProps);
  */
 export function renderComponent(
-    ṫαɡΝαṃė: string,
-    Ϲţоṙ: typeof LightningElement,
-    ṗṙоṗṡ: { [name: string]: any } = {}
+    tagName: string,
+    Ctor: typeof LightningElement,
+    props: { [name: string]: any } = {}
 ): string {
-    if (!isString(ṫαɡΝαṃė)) {
+    if (!isString(tagName)) {
         throw new TypeError(
-            `"renderComponent" expects a string as the first parameter but instead received ${ṫαɡΝαṃė}.`
+            `"renderComponent" expects a string as the first parameter but instead received ${tagName}.`
         );
     }
 
-    if (!isFunction(Ϲţоṙ)) {
+    if (!isFunction(Ctor)) {
         throw new TypeError(
-            `"renderComponent" expects a valid component constructor as the second parameter but instead received ${Ϲţоṙ}.`
+            `"renderComponent" expects a valid component constructor as the second parameter but instead received ${Ctor}.`
         );
     }
 
-    if (!isObject(ṗṙоṗṡ) || isNull(ṗṙоṗṡ)) {
+    if (!isObject(props) || isNull(props)) {
         throw new TypeError(
-            `"renderComponent" expects an object as the third parameter but instead received ${ṗṙоṗṡ}.`
+            `"renderComponent" expects an object as the third parameter but instead received ${props}.`
         );
     }
 
-    const ėӏёṁеņṫ = renderer.createElement(ṫαɡΝαṃė);
-    createVM(ėӏёṁеņṫ, Ϲţоṙ, renderer, {
+    const element = renderer.createElement(tagName);
+    createVM(element, Ctor, renderer, {
         mode: 'open',
         owner: null,
-        ṫαɡΝαṃė,
+        tagName,
     });
 
-    for (const [key, value] of Object.entries(ṗṙоṗṡ)) {
-        (ėӏёṁеņṫ as any)[key] = value;
+    for (const [key, value] of Object.entries(props)) {
+        (element as any)[key] = value;
     }
 
-    ėӏёṁеņṫ[HostParentKey] = ḞаķėṘөοṫЁḷėṃеṅţ;
+    element[HostParentKey] = FakeRootElement;
 
-    connectRootElement(ėӏёṁеņṫ);
+    connectRootElement(element);
 
-    return serializeElement(ėӏёṁеņṫ);
+    return serializeElement(element);
 }

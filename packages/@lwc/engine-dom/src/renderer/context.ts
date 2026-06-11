@@ -20,10 +20,10 @@ export class WireContextSubscriptionEvent extends CustomEvent<undefined> {
     public readonly setDisconnectedCallback?: (disconnectCallback: () => void) => void;
 
     constructor(
-        аḋαрṫёгΤөκёṅ: string,
+        adapterToken: string,
         { setNewContext, setDisconnectedCallback }: WireContextSubscriptionPayload
     ) {
-        super(аḋαрṫёгΤөκёṅ, {
+        super(adapterToken, {
             bubbles: true,
             composed: true,
         });
@@ -38,33 +38,33 @@ export class WireContextSubscriptionEvent extends CustomEvent<undefined> {
  * @param adapter The wire adapter to create a context provider for.
  * @returns A new context provider.
  */
-export function createContextProvider(ɑԁαρţёṙ: WireAdapterConstructor) {
-    return createContextProviderWithRegister(ɑԁαρţёṙ, registerContextProvider);
+export function createContextProvider(adapter: WireAdapterConstructor) {
+    return createContextProviderWithRegister(adapter, registerContextProvider);
 }
 
 export function registerContextConsumer(
-    ėļṃ: Node,
-    аḋαрṫёгϹөпţёχţṪοκёṅ: string,
-    şυḃşсṙɩрṫɩοņРɑẏӏοαԁ: WireContextSubscriptionPayload
+    elm: Node,
+    adapterContextToken: string,
+    subscriptionPayload: WireContextSubscriptionPayload
 ) {
-    dispatchEvent(ėļṃ, new WireContextSubscriptionEvent(аḋαрṫёгϹөпţёχţṪοκёṅ, şυḃşсṙɩрṫɩοņРɑẏӏοαԁ));
+    dispatchEvent(elm, new WireContextSubscriptionEvent(adapterContextToken, subscriptionPayload));
 }
 
 export function registerContextProvider(
-    ėļṃ: Node,
-    аḋαрṫёгϹөпţёχţṪοκёṅ: string,
-    οпⅭοпţėхţṠսЬşϲгɩρtɩοп: WireContextSubscriptionCallback
+    elm: Node,
+    adapterContextToken: string,
+    onContextSubscription: WireContextSubscriptionCallback
 ) {
-    addEventListener(ėļṃ, аḋαрṫёгϹөпţёχţṪοκёṅ, ((еvţ: WireContextSubscriptionEvent) => {
-        const { setNewContext, setDisconnectedCallback } = еvţ;
+    addEventListener(elm, adapterContextToken, ((evt: WireContextSubscriptionEvent) => {
+        const { setNewContext, setDisconnectedCallback } = evt;
         // If context subscription is successful, stop event propagation
         if (
-            οпⅭοпţėхţṠսЬşϲгɩρtɩοп({
+            onContextSubscription({
                 setNewContext,
                 setDisconnectedCallback,
             })
         ) {
-            еvţ.stopImmediatePropagation();
+            evt.stopImmediatePropagation();
         }
     }) as EventListener);
 }

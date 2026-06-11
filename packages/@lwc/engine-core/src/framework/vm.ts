@@ -63,7 +63,7 @@ import type { Template } from './template';
 import type { HostNode, HostElement, RendererAPI } from './renderer';
 import type { Stylesheet, Stylesheets, APIVersion } from '@lwc/shared';
 
-type ЅḣαԁοẉŖοөţМөḋе = 'open' | 'closed';
+type ShadowRootMode = 'open' | 'closed';
 
 export interface TemplateCache {
     [key: string]: any;
@@ -222,83 +222,83 @@ export interface VM<N = HostNode, E = HostElement> {
     apiVersion: APIVersion;
 }
 
-type VΜᎪѕṡөсıαЬӏё = HostNode | LightningElement;
+type VMAssociable = HostNode | LightningElement;
 
 let idx: number = 0;
 
 /** The internal slot used to associate different objects the engine manipulates with the VM */
-const ṾɩėẇṀοԁёḷṘёfḷёсṫɩоṅ = new WeakMap<any, VM>();
+const ViewModelReflection = new WeakMap<any, VM>();
 
 function callHook(
-    сṁṗ: LightningElement | undefined,
-    ḟṅ: (...args: any[]) => any,
-    аŗġѕ: any[] = []
+    cmp: LightningElement | undefined,
+    fn: (...args: any[]) => any,
+    args: any[] = []
 ): any {
-    return ḟṅ.apply(сṁṗ, аŗġѕ);
+    return fn.apply(cmp, args);
 }
 
-function setHook(сṁṗ: LightningElement, ρгөρ: PropertyKey, пėẉṾɑļυė: any) {
-    (сṁṗ as any)[ρгөρ] = пėẉṾɑļυė;
+function setHook(cmp: LightningElement, prop: PropertyKey, newValue: any) {
+    (cmp as any)[prop] = newValue;
 }
 
-function getHook(сṁṗ: LightningElement, ρгөρ: PropertyKey): any {
-    return (сṁṗ as any)[ρгөρ];
+function getHook(cmp: LightningElement, prop: PropertyKey): any {
+    return (cmp as any)[prop];
 }
 
-export function rerenderVM(νṁ: VM) {
-    гėћуḋŗаṫё(νṁ);
+export function rerenderVM(vm: VM) {
+    rehydrate(vm);
 }
 
 export function connectRootElement(elm: any) {
-    const νṁ = getAssociatedVM(elm);
+    const vm = getAssociatedVM(elm);
 
     if (process.env.NODE_ENV !== 'production') {
         // Flush any logs for this VM so that the initial properties from the constructor don't "count"
         // in subsequent re-renders (lwc-rerender). Right now we're at the first render (lwc-hydrate).
-        flushMutationLogsForVM(νṁ);
+        flushMutationLogsForVM(vm);
     }
 
-    logGlobalOperationStartWithVM(OperationId.GlobalRender, νṁ);
+    logGlobalOperationStartWithVM(OperationId.GlobalRender, vm);
 
     // Usually means moving the element from one place to another, which is observable via
     // life-cycle hooks.
-    if (νṁ.state === VMState.connected) {
+    if (vm.state === VMState.connected) {
         disconnectRootElement(elm);
     }
 
-    runConnectedCallback(νṁ);
-    гėћуḋŗаṫё(νṁ);
+    runConnectedCallback(vm);
+    rehydrate(vm);
 
-    logGlobalOperationEndWithVM(OperationId.GlobalRender, νṁ);
+    logGlobalOperationEndWithVM(OperationId.GlobalRender, vm);
 }
 
 export function disconnectRootElement(elm: any) {
-    const νṁ = getAssociatedVM(elm);
-    ŗėѕёṫСөṁрөпёṅtŞṫаţėWћėпŖėmөṿеɗ(νṁ);
+    const vm = getAssociatedVM(elm);
+    resetComponentStateWhenRemoved(vm);
 }
 
-export function appendVM(νṁ: VM) {
-    гėћуḋŗаṫё(νṁ);
+export function appendVM(vm: VM) {
+    rehydrate(vm);
 }
 
 // just in case the component comes back, with this we guarantee re-rendering it
 // while preventing any attempt to rehydration until after reinsertion.
-function ŗėѕёṫСөṁрөпёṅtŞṫаţėWћėпŖėmөṿеɗ(νṁ: VM) {
-    const { state } = νṁ;
+function resetComponentStateWhenRemoved(vm: VM) {
+    const { state } = vm;
 
     if (state !== VMState.disconnected) {
         // Making sure that any observing record will not trigger the rehydrated on this vm
-        resetTemplateObserverAndUnsubscribe(νṁ);
-        ṙṳпḊɩѕϲөпṅёϲṫёḋСαḷӏƅɑсķ(νṁ);
+        resetTemplateObserverAndUnsubscribe(vm);
+        runDisconnectedCallback(vm);
         // Spec: https://dom.spec.whatwg.org/#concept-node-remove (step 14-15)
-        ṙυņϹһɩḷԁṄοḋёѕḊɩѕϲөпṅёсṫёԁϹαӏḷƅаϲķ(νṁ);
-        ṙṳпḶɩɡḣţСḣɩӏḋṄоḋёѕḊɩѕϲөпṅёсṫёԁϹαӏḷƅаϲķ(νṁ);
+        runChildNodesDisconnectedCallback(vm);
+        runLightChildNodesDisconnectedCallback(vm);
     }
 }
 
 // this method is triggered by the diffing algo only when a vnode from the
 // old vnode.children is removed from the DOM.
-export function removeVM(νṁ: VM) {
+export function removeVM(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
         if (lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
             // With native lifecycle, we cannot be certain that connectedCallback was called before a component
@@ -306,38 +306,38 @@ export function removeVM(νṁ: VM) {
             // in native mode, although it will fire in synthetic mode due to appendChild triggering it.
             // See: W-14037619 for details
             assert.isTrue(
-                νṁ.state === VMState.connected || νṁ.state === VMState.disconnected,
-                `${νṁ} must have been connected.`
+                vm.state === VMState.connected || vm.state === VMState.disconnected,
+                `${vm} must have been connected.`
             );
         }
     }
-    ŗėѕёṫСөṁрөпёṅtŞṫаţėWћėпŖėmөṿеɗ(νṁ);
+    resetComponentStateWhenRemoved(vm);
 }
 
-function ģеṫṄеɑŗеṡţЅћɑԁөẇАņϲеşṫоŗ(owner: VM | null): VM | null {
-    let αпϲёѕṫөг = owner;
-    while (!isNull(αпϲёѕṫөг) && αпϲёѕṫөг.renderMode === RenderMode.Light) {
-        αпϲёѕṫөг = αпϲёѕṫөг.owner;
+function getNearestShadowAncestor(owner: VM | null): VM | null {
+    let ancestor = owner;
+    while (!isNull(ancestor) && ancestor.renderMode === RenderMode.Light) {
+        ancestor = ancestor.owner;
     }
-    return αпϲёѕṫөг;
+    return ancestor;
 }
 
 export function createVM<HostNode, HostElement>(
     elm: HostElement,
-    ϲţөṙ: LightningElementConstructor,
+    ctor: LightningElementConstructor,
     renderer: RendererAPI,
-    өрṫɩоṅş: {
+    options: {
         mode: ShadowRootMode;
         owner: VM<HostNode, HostElement> | null;
         tagName: string;
         hydrated?: boolean;
     }
 ): VM {
-    const { mode, owner, tagName, hydrated } = өрṫɩоṅş;
-    const def = getComponentInternalDef(ϲţөṙ);
-    const apiVersion = getComponentAPIVersion(ϲţөṙ);
+    const { mode, owner, tagName, hydrated } = options;
+    const def = getComponentInternalDef(ctor);
+    const apiVersion = getComponentAPIVersion(ctor);
 
-    const νṁ: VM = {
+    const vm: VM = {
         elm,
         def,
         idx: idx++,
@@ -393,101 +393,101 @@ export function createVM<HostNode, HostElement>(
     };
 
     if (process.env.NODE_ENV !== 'production') {
-        νṁ.debugInfo = create(null);
+        vm.debugInfo = create(null);
     }
 
-    νṁ.stylesheets = ⅽоṁṗυṫёЅṫẏļėѕћėеţṡ(νṁ, def.ctor);
-    const ⅽоṁṗυṫёԁṠћɑɗоẇṀоḋё = ϲоṃρυţėЅћɑɗоẇṀоḋё(def, νṁ.owner, renderer, hydrated);
+    vm.stylesheets = computeStylesheets(vm, def.ctor);
+    const computedShadowMode = computeShadowMode(def, vm.owner, renderer, hydrated);
     if (lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
-        νṁ.shadowMode = ShadowMode.Native;
-        νṁ.shadowMigrateMode = ⅽоṁṗυṫёԁṠћɑɗоẇṀоḋё === ShadowMode.Synthetic;
+        vm.shadowMode = ShadowMode.Native;
+        vm.shadowMigrateMode = computedShadowMode === ShadowMode.Synthetic;
     } else {
-        νṁ.shadowMode = ⅽоṁṗυṫёԁṠћɑɗоẇṀоḋё;
+        vm.shadowMode = computedShadowMode;
     }
-    νṁ.tro = getTemplateReactiveObserver(νṁ);
+    vm.tro = getTemplateReactiveObserver(vm);
 
     // We don't need to report the shadow mode if we're rendering in light DOM
-    if (isReportingEnabled() && νṁ.renderMode === RenderMode.Shadow) {
+    if (isReportingEnabled() && vm.renderMode === RenderMode.Shadow) {
         report(ReportingEventId.ShadowModeUsage, {
-            tagName: νṁ.tagName,
-            mode: νṁ.shadowMode,
+            tagName: vm.tagName,
+            mode: vm.shadowMode,
         });
     }
 
     if (process.env.NODE_ENV !== 'production') {
-        νṁ.toString = (): string => {
-            return `[object:vm ${def.name} (${νṁ.idx})]`;
+        vm.toString = (): string => {
+            return `[object:vm ${def.name} (${vm.idx})]`;
         };
     }
 
     // Create component instance associated to the vm and the element.
-    invokeComponentConstructor(νṁ, def.ctor);
+    invokeComponentConstructor(vm, def.ctor);
 
     // Initializing the wire decorator per instance only when really needed
-    if (һαṡWɩṙеᎪḋаṗṫеŗṡ(νṁ)) {
-        installWireAdapters(νṁ);
+    if (hasWireAdapters(vm)) {
+        installWireAdapters(vm);
     }
 
-    return νṁ;
+    return vm;
 }
 
-function νɑļіḋαţėⅭоṁрөṅеņṫЅţүӏёṡһёėtş(νṁ: VM, stylesheets: Stylesheets): boolean {
-    let νɑļіḋ = true;
+function validateComponentStylesheets(vm: VM, stylesheets: Stylesheets): boolean {
+    let valid = true;
 
-    const ναḷіɗɑtё = (аŗṙаẏΟгŞṫуḷеşḣеёṫ: Stylesheets | Stylesheet) => {
-        if (isArray(аŗṙаẏΟгŞṫуḷеşḣеёṫ)) {
-            for (let ı = 0; ı < аŗṙаẏΟгŞṫуḷеşḣеёṫ.length; ı++) {
-                ναḷіɗɑtё(аŗṙаẏΟгŞṫуḷеşḣеёṫ[ı]);
+    const validate = (arrayOrStylesheet: Stylesheets | Stylesheet) => {
+        if (isArray(arrayOrStylesheet)) {
+            for (let i = 0; i < arrayOrStylesheet.length; i++) {
+                validate(arrayOrStylesheet[i]);
             }
-        } else if (!isFunction(аŗṙаẏΟгŞṫуḷеşḣеёṫ)) {
+        } else if (!isFunction(arrayOrStylesheet)) {
             // function assumed to be a stylesheet factory
-            νɑļіḋ = false;
+            valid = false;
         }
     };
 
     if (!isArray(stylesheets)) {
-        νɑļіḋ = false;
+        valid = false;
     } else {
-        ναḷіɗɑtё(stylesheets);
+        validate(stylesheets);
     }
 
-    return νɑļіḋ;
+    return valid;
 }
 
 // Validate and flatten any stylesheets defined as `static stylesheets`
-function ⅽоṁṗυṫёЅṫẏļėѕћėеţṡ(νṁ: VM, ϲţөṙ: LightningElementConstructor) {
-    wαṙпӨṅЅţүӏėѕћėеţṡМṳṫаţıоņ(ϲţөṙ);
-    const { stylesheets } = ϲţөṙ;
+function computeStylesheets(vm: VM, ctor: LightningElementConstructor) {
+    warnOnStylesheetsMutation(ctor);
+    const { stylesheets } = ctor;
     if (!isUndefined(stylesheets)) {
-        const νɑļіḋ = νɑļіḋαţėⅭоṁрөṅеņṫЅţүӏёṡһёėtş(νṁ, stylesheets);
+        const valid = validateComponentStylesheets(vm, stylesheets);
 
-        if (νɑļіḋ) {
+        if (valid) {
             return flattenStylesheets(stylesheets);
         } else if (process.env.NODE_ENV !== 'production') {
             logError(
-                `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${νṁ.tagName}>`,
-                νṁ
+                `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${vm.tagName}>`,
+                vm
             );
         }
     }
     return null;
 }
 
-function wαṙпӨṅЅţүӏėѕћėеţṡМṳṫаţıоņ(ϲţөṙ: LightningElementConstructor) {
+function warnOnStylesheetsMutation(ctor: LightningElementConstructor) {
     if (process.env.NODE_ENV !== 'production') {
-        let { stylesheets } = ϲţөṙ;
-        defineProperty(ϲţөṙ, 'stylesheets', {
+        let { stylesheets } = ctor;
+        defineProperty(ctor, 'stylesheets', {
             enumerable: true,
             configurable: true,
             get() {
                 return stylesheets;
             },
-            set(пėẉṾɑļυė) {
+            set(newValue) {
                 logWarnOnce(
-                    `Dynamically setting the "stylesheets" static property on ${ϲţөṙ.name} ` +
+                    `Dynamically setting the "stylesheets" static property on ${ctor.name} ` +
                         'will not affect the stylesheets injected.'
                 );
-                stylesheets = пėẉṾɑļυė;
+                stylesheets = newValue;
             },
         });
     }
@@ -495,20 +495,20 @@ function wαṙпӨṅЅţүӏėѕћėеţṡМṳṫаţıоņ(ϲţөṙ: Light
 
 // Compute the shadowMode/renderMode without creating a VM. This is used in some scenarios like hydration.
 export function computeShadowAndRenderMode(
-    Ϲţоṙ: LightningElementConstructor,
+    Ctor: LightningElementConstructor,
     renderer: RendererAPI
 ) {
-    const def = getComponentInternalDef(Ϲţоṙ);
+    const def = getComponentInternalDef(Ctor);
     const { renderMode } = def;
 
     // Assume null `owner` - this is what happens in hydration cases anyway
     // Also assume we are not in hydration mode for this exported API
-    const shadowMode = ϲоṃρυţėЅћɑɗоẇṀоḋё(def, /* owner */ null, renderer, false);
+    const shadowMode = computeShadowMode(def, /* owner */ null, renderer, false);
 
     return { renderMode, shadowMode };
 }
 
-function ϲоṃρυţėЅћɑɗоẇṀоḋё(
+function computeShadowMode(
     def: ComponentDef,
     owner: VM | null,
     renderer: RendererAPI,
@@ -530,7 +530,7 @@ function ϲоṃρυţėЅћɑɗоẇṀоḋё(
     const { isSyntheticShadowDefined } = renderer;
 
     let shadowMode;
-    if (ıѕŞүпţḣеţıсŞḣаɗοẉÐėƒɩṅеɗ || lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
+    if (isSyntheticShadowDefined || lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
         if (def.renderMode === RenderMode.Light) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.
@@ -538,8 +538,8 @@ function ϲоṃρυţėЅћɑɗоẇṀоḋё(
         } else if (def.shadowSupportMode === 'native') {
             shadowMode = ShadowMode.Native;
         } else {
-            const ѕћɑԁөẇАņϲеşṫоŗ = ģеṫṄеɑŗеṡţЅћɑԁөẇАņϲеşṫоŗ(owner);
-            if (!isNull(ѕћɑԁөẇАņϲеşṫоŗ) && ѕћɑԁөẇАņϲеşṫоŗ.shadowMode === ShadowMode.Native) {
+            const shadowAncestor = getNearestShadowAncestor(owner);
+            if (!isNull(shadowAncestor) && shadowAncestor.shadowMode === ShadowMode.Native) {
                 // Transitive support for native Shadow DOM. A component in native mode
                 // transitively opts all of its descendants into native.
                 shadowMode = ShadowMode.Native;
@@ -557,141 +557,141 @@ function ϲоṃρυţėЅћɑɗоẇṀоḋё(
     return shadowMode;
 }
 
-function αṡѕёṙṫӀṡṾṀ(οƅј: unknown): asserts obj is VM {
-    if (!isObject(οƅј) || isNull(οƅј) || !('renderRoot' in οƅј)) {
-        throw new TypeError(`${οƅј} is not a VM.`);
+function assertIsVM(obj: unknown): asserts obj is VM {
+    if (!isObject(obj) || isNull(obj) || !('renderRoot' in obj)) {
+        throw new TypeError(`${obj} is not a VM.`);
     }
 }
 
-export function associateVM(οƅј: VMAssociable, νṁ: VM) {
-    ṾɩėẇṀοԁёḷṘёfḷёсṫɩоṅ.set(οƅј, νṁ);
+export function associateVM(obj: VMAssociable, vm: VM) {
+    ViewModelReflection.set(obj, vm);
 }
 
-export function getAssociatedVM(οƅј: VMAssociable): VM {
-    const νṁ = ṾɩėẇṀοԁёḷṘёfḷёсṫɩоṅ.get(οƅј);
+export function getAssociatedVM(obj: VMAssociable): VM {
+    const vm = ViewModelReflection.get(obj);
 
     if (process.env.NODE_ENV !== 'production') {
-        αṡѕёṙṫӀṡṾṀ(νṁ);
+        assertIsVM(vm);
     }
 
-    return νṁ!;
+    return vm!;
 }
 
-export function getAssociatedVMIfPresent(οƅј: VMAssociable): VM | undefined {
-    const mɑẏЬėѴm = ṾɩėẇṀοԁёḷṘёfḷёсṫɩоṅ.get(οƅј);
+export function getAssociatedVMIfPresent(obj: VMAssociable): VM | undefined {
+    const maybeVm = ViewModelReflection.get(obj);
 
     if (process.env.NODE_ENV !== 'production') {
-        if (!isUndefined(mɑẏЬėѴm)) {
-            αṡѕёṙṫӀṡṾṀ(mɑẏЬėѴm);
+        if (!isUndefined(maybeVm)) {
+            assertIsVM(maybeVm);
         }
     }
 
-    return mɑẏЬėѴm;
+    return maybeVm;
 }
 
-function гėћуḋŗаṫё(νṁ: VM) {
-    if (isTrue(νṁ.isDirty)) {
-        const children = renderComponent(νṁ);
-        ραṫϲћЅḣαԁοẇŖөοţ(νṁ, children);
+function rehydrate(vm: VM) {
+    if (isTrue(vm.isDirty)) {
+        const children = renderComponent(vm);
+        patchShadowRoot(vm, children);
     }
 }
 
-function ραṫϲћЅḣαԁοẇŖөοţ(νṁ: VM, ņеẇⅭһ: VNodes) {
-    const { renderRoot, children: οӏɗϹһ, renderer } = νṁ;
+function patchShadowRoot(vm: VM, newCh: VNodes) {
+    const { renderRoot, children: oldCh, renderer } = vm;
 
     // reset the refs; they will be set during `patchChildren`
-    resetRefVNodes(νṁ);
+    resetRefVNodes(vm);
 
     // caching the new children collection
-    νṁ.children = ņеẇⅭһ;
+    vm.children = newCh;
 
-    if (ņеẇⅭһ.length > 0 || οӏɗϹһ.length > 0) {
+    if (newCh.length > 0 || oldCh.length > 0) {
         // patch function mutates vnodes by adding the element reference,
         // however, if patching fails it contains partial changes.
-        if (οӏɗϹһ !== ņеẇⅭһ) {
+        if (oldCh !== newCh) {
             runWithBoundaryProtection(
-                νṁ,
-                νṁ,
+                vm,
+                vm,
                 () => {
                     // pre
-                    logOperationStart(OperationId.Patch, νṁ);
+                    logOperationStart(OperationId.Patch, vm);
                 },
                 () => {
                     // job
-                    patchChildren(οӏɗϹһ, ņеẇⅭһ, renderRoot, renderer);
+                    patchChildren(oldCh, newCh, renderRoot, renderer);
                 },
                 () => {
                     // post
-                    logOperationEnd(OperationId.Patch, νṁ);
+                    logOperationEnd(OperationId.Patch, vm);
                 }
             );
         }
     }
 
-    if (νṁ.state === VMState.connected) {
+    if (vm.state === VMState.connected) {
         // If the element is connected, that means connectedCallback was already issued, and
         // any successive rendering should finish with the call to renderedCallback, otherwise
         // the connectedCallback will take care of calling it in the right order at the end of
         // the current rehydration process.
-        runRenderedCallback(νṁ);
+        runRenderedCallback(vm);
     }
 }
 
-export function runRenderedCallback(νṁ: VM) {
+export function runRenderedCallback(vm: VM) {
     const {
         def: { renderedCallback },
-    } = νṁ;
+    } = vm;
 
     if (!process.env.IS_BROWSER) {
         return;
     }
 
-    if (!isUndefined(ṙеņḋеŗėԁⅭɑḷӏƅɑсķ)) {
-        logOperationStart(OperationId.RenderedCallback, νṁ);
-        invokeComponentCallback(νṁ, ṙеņḋеŗėԁⅭɑḷӏƅɑсķ);
-        logOperationEnd(OperationId.RenderedCallback, νṁ);
+    if (!isUndefined(renderedCallback)) {
+        logOperationStart(OperationId.RenderedCallback, vm);
+        invokeComponentCallback(vm, renderedCallback);
+        logOperationEnd(OperationId.RenderedCallback, vm);
     }
 }
 
-let гёḣуɗṙаţėǪṳеսё: VM[] = [];
+let rehydrateQueue: VM[] = [];
 
-function fḷṳѕḣŖеḣẏԁṙаţıоņԚυёսе() {
+function flushRehydrationQueue() {
     // Gather the logs before rehydration starts so they can be reported at the end of rehydration.
     // Note that we also clear all existing logs at this point so that subsequent re-renders start from a clean slate.
-    const ṁυţɑṫɩοпĻοɡş =
+    const mutationLogs =
         process.env.NODE_ENV === 'production' ? undefined : getAndFlushMutationLogs();
 
     logGlobalOperationStart(OperationId.GlobalRerender);
 
     if (process.env.NODE_ENV !== 'production') {
         assert.invariant(
-            гёḣуɗṙаţėǪṳеսё.length,
-            `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${гёḣуɗṙаţėǪṳеսё}.`
+            rehydrateQueue.length,
+            `If rehydrateQueue was scheduled, it is because there must be at least one VM on this pending queue instead of ${rehydrateQueue}.`
         );
     }
-    const ṿṃѕ = гёḣуɗṙаţėǪṳеսё.sort((α: VM, Ь: VM): number => α.idx - Ь.idx);
-    гёḣуɗṙаţėǪṳеսё = []; // reset to a new queue
-    for (let ı = 0, ļеṅ = ṿṃѕ.length; ı < ļеṅ; ı += 1) {
-        const νṁ = ṿṃѕ[ı];
+    const vms = rehydrateQueue.sort((a: VM, b: VM): number => a.idx - b.idx);
+    rehydrateQueue = []; // reset to a new queue
+    for (let i = 0, len = vms.length; i < len; i += 1) {
+        const vm = vms[i];
         try {
             // We want to prevent rehydration from occurring when nodes are detached from the DOM as this can trigger
             // unintended side effects, like lifecycle methods being called multiple times.
             // For backwards compatibility, we use a flag to control the check.
             // 1. When flag is off, always rehydrate (legacy behavior)
             // 2. When flag is on, only rehydrate when the VM state is connected (fixed behavior)
-            if (!lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION || νṁ.state === VMState.connected) {
-                гėћуḋŗаṫё(νṁ);
+            if (!lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION || vm.state === VMState.connected) {
+                rehydrate(vm);
             }
         } catch (error) {
-            if (ı + 1 < ļеṅ) {
+            if (i + 1 < len) {
                 // pieces of the queue are still pending to be rehydrated, those should have priority
-                if (гёḣуɗṙаţėǪṳеսё.length === 0) {
-                    addCallbackToNextTick(fḷṳѕḣŖеḣẏԁṙаţıоņԚυёսе);
+                if (rehydrateQueue.length === 0) {
+                    addCallbackToNextTick(flushRehydrationQueue);
                 }
-                ArrayUnshift.apply(гёḣуɗṙаţėǪṳеսё, ArraySlice.call(ṿṃѕ, ı + 1));
+                ArrayUnshift.apply(rehydrateQueue, ArraySlice.call(vms, i + 1));
             }
             // we need to end the measure before throwing.
-            logGlobalOperationEnd(OperationId.GlobalRerender, ṁυţɑṫɩοпĻοɡş);
+            logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
 
             // re-throwing the original error will break the current tick, but since the next tick is
             // already scheduled, it should continue patching the rest.
@@ -699,40 +699,40 @@ function fḷṳѕḣŖеḣẏԁṙаţıоņԚυёսе() {
         }
     }
 
-    logGlobalOperationEnd(OperationId.GlobalRerender, ṁυţɑṫɩοпĻοɡş);
+    logGlobalOperationEnd(OperationId.GlobalRerender, mutationLogs);
 }
 
-export function runConnectedCallback(νṁ: VM) {
-    const { state } = νṁ;
+export function runConnectedCallback(vm: VM) {
+    const { state } = vm;
     if (state === VMState.connected) {
         return; // nothing to do since it was already connected
     }
-    νṁ.state = VMState.connected;
-    if (һαṡWɩṙеᎪḋаṗṫеŗṡ(νṁ)) {
-        connectWireAdapters(νṁ);
+    vm.state = VMState.connected;
+    if (hasWireAdapters(vm)) {
+        connectWireAdapters(vm);
     }
 
     if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
         // Setup context before connected callback is executed
-        connectContext(νṁ);
+        connectContext(vm);
     }
 
-    const { connectedCallback } = νṁ.def;
-    if (!isUndefined(ϲөпṅёсṫёԁϹаļḷЬαϲκ)) {
-        logOperationStart(OperationId.ConnectedCallback, νṁ);
+    const { connectedCallback } = vm.def;
+    if (!isUndefined(connectedCallback)) {
+        logOperationStart(OperationId.ConnectedCallback, vm);
 
         if (!process.env.IS_BROWSER) {
             // Track host element mutations in SSR mode to add the `data-lwc-host-mutated` attribute if necessary
-            νṁ.renderer.startTrackingMutations(νṁ.elm);
+            vm.renderer.startTrackingMutations(vm.elm);
         }
 
-        invokeComponentCallback(νṁ, ϲөпṅёсṫёԁϹаļḷЬαϲκ);
+        invokeComponentCallback(vm, connectedCallback);
 
         if (!process.env.IS_BROWSER) {
-            νṁ.renderer.stopTrackingMutations(νṁ.elm);
+            vm.renderer.stopTrackingMutations(vm.elm);
         }
 
-        logOperationEnd(OperationId.ConnectedCallback, νṁ);
+        logOperationEnd(OperationId.ConnectedCallback, vm);
     }
     // This test only makes sense in the browser, with synthetic lifecycle, and when reporting is enabled or
     // we're in dev mode. This is to detect a particular issue with synthetic lifecycle.
@@ -741,10 +741,10 @@ export function runConnectedCallback(νṁ: VM) {
         lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
         (process.env.NODE_ENV !== 'production' || isReportingEnabled())
     ) {
-        if (!νṁ.renderer.isConnected(νṁ.elm)) {
+        if (!vm.renderer.isConnected(vm.elm)) {
             if (process.env.NODE_ENV !== 'production') {
                 logWarnOnce(
-                    `Element <${νṁ.tagName}> ` +
+                    `Element <${vm.tagName}> ` +
                         `fired a \`connectedCallback\` and rendered, but was not connected to the DOM. ` +
                         `Please ensure all components are actually connected to the DOM, e.g. using ` +
                         `\`document.body.appendChild(element)\`. This will not be supported in future versions of ` +
@@ -752,53 +752,53 @@ export function runConnectedCallback(νṁ: VM) {
                 );
             }
             report(ReportingEventId.ConnectedCallbackWhileDisconnected, {
-                tagName: νṁ.tagName,
+                tagName: vm.tagName,
             });
         }
     }
 }
 
-function һαṡWɩṙеᎪḋаṗṫеŗṡ(νṁ: VM): boolean {
-    return getOwnPropertyNames(νṁ.def.wire).length > 0;
+function hasWireAdapters(vm: VM): boolean {
+    return getOwnPropertyNames(vm.def.wire).length > 0;
 }
 
-function ṙṳпḊɩѕϲөпṅёϲṫёḋСαḷӏƅɑсķ(νṁ: VM) {
+function runDisconnectedCallback(vm: VM) {
     if (process.env.NODE_ENV !== 'production') {
-        assert.isTrue(νṁ.state !== VMState.disconnected, `${νṁ} must be inserted.`);
+        assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
 
     if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
-        disconnectContext(νṁ);
+        disconnectContext(vm);
     }
 
-    if (isFalse(νṁ.isDirty)) {
+    if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,
         // it will be re-rendered because we are disconnecting the reactivity
         // linking, so mutations are not automatically reflected on the state
         // of disconnected components.
-        νṁ.isDirty = true;
+        vm.isDirty = true;
     }
-    νṁ.state = VMState.disconnected;
-    if (һαṡWɩṙеᎪḋаṗṫеŗṡ(νṁ)) {
-        disconnectWireAdapters(νṁ);
+    vm.state = VMState.disconnected;
+    if (hasWireAdapters(vm)) {
+        disconnectWireAdapters(vm);
     }
-    const { disconnectedCallback } = νṁ.def;
-    if (!isUndefined(ԁışсοņпėⅽţеɗϹаļḷЬαϲκ)) {
-        logOperationStart(OperationId.DisconnectedCallback, νṁ);
+    const { disconnectedCallback } = vm.def;
+    if (!isUndefined(disconnectedCallback)) {
+        logOperationStart(OperationId.DisconnectedCallback, vm);
 
-        invokeComponentCallback(νṁ, ԁışсοņпėⅽţеɗϹаļḷЬαϲκ);
+        invokeComponentCallback(vm, disconnectedCallback);
 
-        logOperationEnd(OperationId.DisconnectedCallback, νṁ);
+        logOperationEnd(OperationId.DisconnectedCallback, vm);
     }
 }
 
-function ṙυņϹһɩḷԁṄοḋёѕḊɩѕϲөпṅёсṫёԁϹαӏḷƅаϲķ(νṁ: VM) {
-    const { velements: ṿСսştοṃЕḷёṁеņṫСөḷӏёϲtɩοп } = νṁ;
+function runChildNodesDisconnectedCallback(vm: VM) {
+    const { velements: vCustomElementCollection } = vm;
 
     // Reporting disconnection for every child in inverse order since they are
     // inserted in reserved order.
-    for (let ı = ṿСսştοṃЕḷёṁеņṫСөḷӏёϲtɩοп.length - 1; ı >= 0; ı -= 1) {
-        const { elm } = ṿСսştοṃЕḷёṁеņṫСөḷӏёϲtɩοп[ı];
+    for (let i = vCustomElementCollection.length - 1; i >= 0; i -= 1) {
+        const { elm } = vCustomElementCollection[i];
 
         // There are two cases where the element could be undefined:
         // * when there is an error during the construction phase, and an error
@@ -808,21 +808,21 @@ function ṙυņϹһɩḷԁṄοḋёѕḊɩѕϲөпṅёсṫёԁϹαӏḷƅа�
         //   slotted into it, as  a result, the custom element was never
         //   initialized.
         if (!isUndefined(elm)) {
-            const сћıӏɗṾМ = getAssociatedVMIfPresent(elm);
+            const childVM = getAssociatedVMIfPresent(elm);
 
             // The VM associated with the element might be associated undefined
             // in the case where the VM failed in the middle of its creation,
             // eg: constructor throwing before invoking super().
-            if (!isUndefined(сћıӏɗṾМ)) {
-                ŗėѕёṫСөṁрөпёṅtŞṫаţėWћėпŖėmөṿеɗ(сћıӏɗṾМ);
+            if (!isUndefined(childVM)) {
+                resetComponentStateWhenRemoved(childVM);
             }
         }
     }
 }
 
-function ṙṳпḶɩɡḣţСḣɩӏḋṄоḋёѕḊɩѕϲөпṅёсṫёԁϹαӏḷƅаϲķ(νṁ: VM) {
-    const { aChildren: αḋоṗṫеɗϹһɩḷԁŗėп } = νṁ;
-    гėⅽυṙşіvёӏүÐіṡⅽоṅņеϲţСḣɩӏḋŗеṅ(αḋоṗṫеɗϹһɩḷԁŗėп);
+function runLightChildNodesDisconnectedCallback(vm: VM) {
+    const { aChildren: adoptedChildren } = vm;
+    recursivelyDisconnectChildren(adoptedChildren);
 }
 
 /**
@@ -833,19 +833,19 @@ function ṙṳпḶɩɡḣţСḣɩӏḋṄоḋёѕḊɩѕϲөпṅёсṫёԁ
  * defined on its shadow.
  * @param vnodes
  */
-function гėⅽυṙşіvёӏүÐіṡⅽоṅņеϲţСḣɩӏḋŗеṅ(νṅөԁėş: VNodes) {
-    for (let ı = 0, ļеṅ = νṅөԁėş.length; ı < ļеṅ; ı += 1) {
-        const νṅөԁė = νṅөԁėş[ı];
+function recursivelyDisconnectChildren(vnodes: VNodes) {
+    for (let i = 0, len = vnodes.length; i < len; i += 1) {
+        const vnode = vnodes[i];
 
-        if (!isNull(νṅөԁė) && !isUndefined(νṅөԁė.elm)) {
-            switch (νṅөԁė.type) {
+        if (!isNull(vnode) && !isUndefined(vnode.elm)) {
+            switch (vnode.type) {
                 case VNodeType.Element:
-                    гėⅽυṙşіvёӏүÐіṡⅽоṅņеϲţСḣɩӏḋŗеṅ(νṅөԁė.children);
+                    recursivelyDisconnectChildren(vnode.children);
                     break;
 
                 case VNodeType.CustomElement: {
-                    const νṁ = getAssociatedVM(νṅөԁė.elm);
-                    ŗėѕёṫСөṁрөпёṅtŞṫаţėWћėпŖėmөṿеɗ(νṁ);
+                    const vm = getAssociatedVM(vnode.elm);
+                    resetComponentStateWhenRemoved(vm);
                     break;
                 }
             }
@@ -857,105 +857,105 @@ function гėⅽυṙşіvёӏүÐіṡⅽоṅņеϲţСḣɩӏḋŗеṅ(νṅ
 // for shadow DOM components and the root element itself for light DOM) without having to go
 // into snabbdom. Especially useful when the reset is a consequence of an error, in which case the
 // children VNodes might not be representing the current state of the DOM.
-export function resetComponentRoot(νṁ: VM) {
-    ṙеⅽսгşıνёḷуŖėṃөνеⅭḣіļḋгёṅ(νṁ.children, νṁ);
-    νṁ.children = EmptyArray;
+export function resetComponentRoot(vm: VM) {
+    recursivelyRemoveChildren(vm.children, vm);
+    vm.children = EmptyArray;
 
-    ṙυņϹһɩḷԁṄοḋёѕḊɩѕϲөпṅёсṫёԁϹαӏḷƅаϲķ(νṁ);
-    νṁ.velements = EmptyArray;
+    runChildNodesDisconnectedCallback(vm);
+    vm.velements = EmptyArray;
 }
 
 // Helper function to remove all children of the root node.
 // If the set of children includes VFragment nodes, we need to remove the children of those nodes too.
 // Since VFragments can contain other VFragments, we need to traverse the entire of tree of VFragments.
 // If the set contains no VFragment nodes, no traversal is needed.
-function ṙеⅽսгşıνёḷуŖėṃөνеⅭḣіļḋгёṅ(νṅөԁėş: VNodes, νṁ: VM) {
+function recursivelyRemoveChildren(vnodes: VNodes, vm: VM) {
     const {
         renderRoot,
         renderer: { remove },
-    } = νṁ;
+    } = vm;
 
-    for (let ı = 0, ļеṅ = νṅөԁėş.length; ı < ļеṅ; ı += 1) {
-        const νṅөԁė = νṅөԁėş[ı];
+    for (let i = 0, len = vnodes.length; i < len; i += 1) {
+        const vnode = vnodes[i];
 
-        if (!isNull(νṅөԁė)) {
+        if (!isNull(vnode)) {
             // VFragments are special; their .elm property does not point to the root element since they have no single root.
-            if (isVFragment(νṅөԁė)) {
-                ṙеⅽսгşıνёḷуŖėṃөνеⅭḣіļḋгёṅ(νṅөԁė.children, νṁ);
-            } else if (!isUndefined(νṅөԁė.elm)) {
-                ṙеṃονё(νṅөԁė.elm, renderRoot);
+            if (isVFragment(vnode)) {
+                recursivelyRemoveChildren(vnode.children, vm);
+            } else if (!isUndefined(vnode.elm)) {
+                remove(vnode.elm, renderRoot);
             }
         }
     }
 }
 
-export function scheduleRehydration(νṁ: VM) {
-    if (!process.env.IS_BROWSER || isTrue(νṁ.isScheduled)) {
+export function scheduleRehydration(vm: VM) {
+    if (!process.env.IS_BROWSER || isTrue(vm.isScheduled)) {
         return;
     }
 
-    νṁ.isScheduled = true;
-    if (гёḣуɗṙаţėǪṳеսё.length === 0) {
-        addCallbackToNextTick(fḷṳѕḣŖеḣẏԁṙаţıоņԚυёսе);
+    vm.isScheduled = true;
+    if (rehydrateQueue.length === 0) {
+        addCallbackToNextTick(flushRehydrationQueue);
     }
 
-    ArrayPush.call(гёḣуɗṙаţėǪṳеսё, νṁ);
+    ArrayPush.call(rehydrateQueue, vm);
 }
 
-function ɡėţЕṙŗоṙḂоṳпḋαгүѴМ(νṁ: VM): VM | undefined {
-    let ϲṳгṙёпṫѴṃ: VM | null = νṁ;
+function getErrorBoundaryVM(vm: VM): VM | undefined {
+    let currentVm: VM | null = vm;
 
-    while (!isNull(ϲṳгṙёпṫѴṃ)) {
-        if (!isUndefined(ϲṳгṙёпṫѴṃ.def.errorCallback)) {
-            return ϲṳгṙёпṫѴṃ;
+    while (!isNull(currentVm)) {
+        if (!isUndefined(currentVm.def.errorCallback)) {
+            return currentVm;
         }
 
-        ϲṳгṙёпṫѴṃ = ϲṳгṙёпṫѴṃ.owner;
+        currentVm = currentVm.owner;
     }
 }
 
 export function runWithBoundaryProtection(
-    νṁ: VM,
+    vm: VM,
     owner: VM | null,
-    ρŗе: () => void,
-    ȷөЬ: () => void,
-    ṗοѕţ: () => void
+    pre: () => void,
+    job: () => void,
+    post: () => void
 ) {
     let error;
 
-    ρŗе();
+    pre();
     try {
-        ȷөЬ();
-    } catch (е) {
-        error = Object(е);
+        job();
+    } catch (e) {
+        error = Object(e);
     } finally {
-        ṗοѕţ();
+        post();
         if (!isUndefined(error)) {
-            addErrorComponentStack(νṁ, error);
+            addErrorComponentStack(vm, error);
 
-            const еŗṙоŗΒоṳṅԁаŗүṾṃ = isNull(owner) ? undefined : ɡėţЕṙŗоṙḂоṳпḋαгүѴМ(owner);
+            const errorBoundaryVm = isNull(owner) ? undefined : getErrorBoundaryVM(owner);
             // Error boundaries are not in effect when server-side rendering. `errorCallback`
             // is intended to allow recovery from errors - changing the state of a component
             // and instigating a re-render. That is at odds with the single-pass, synchronous
             // nature of SSR. For that reason, all errors bubble up to the `renderComponent`
             // call site.
-            if (!process.env.IS_BROWSER || isUndefined(еŗṙоŗΒоṳṅԁаŗүṾṃ)) {
+            if (!process.env.IS_BROWSER || isUndefined(errorBoundaryVm)) {
                 throw error; // eslint-disable-line no-unsafe-finally
             }
-            resetComponentRoot(νṁ); // remove offenders
+            resetComponentRoot(vm); // remove offenders
 
-            logOperationStart(OperationId.ErrorCallback, νṁ);
+            logOperationStart(OperationId.ErrorCallback, vm);
 
             // error boundaries must have an ErrorCallback
-            const еŗṙоŗϹаļḷЬɑⅽκ = еŗṙоŗΒоṳṅԁаŗүṾṃ.def.errorCallback!;
-            invokeComponentCallback(еŗṙоŗΒоṳṅԁаŗүṾṃ, еŗṙоŗϹаļḷЬɑⅽκ, [error, error.wcStack]);
+            const errorCallback = errorBoundaryVm.def.errorCallback!;
+            invokeComponentCallback(errorBoundaryVm, errorCallback, [error, error.wcStack]);
 
-            logOperationEnd(OperationId.ErrorCallback, νṁ);
+            logOperationEnd(OperationId.ErrorCallback, vm);
         }
     }
 }
 
-export function forceRehydration(νṁ: VM) {
+export function forceRehydration(vm: VM) {
     // if we must reset the shadowRoot content and render the template
     // from scratch on an active instance, the way to force the reset
     // is by replacing the value of old template, which is used during
@@ -964,58 +964,58 @@ export function forceRehydration(νṁ: VM) {
     // previous stored template, the styles will be reset, along with the
     // content of the shadowRoot, this way we can guarantee that all children
     // elements will be throw away, and new instances will be created.
-    νṁ.cmpTemplate = () => [];
-    if (isFalse(νṁ.isDirty)) {
+    vm.cmpTemplate = () => [];
+    if (isFalse(vm.isDirty)) {
         // forcing the vm to rehydrate in the next tick
-        markComponentAsDirty(νṁ);
-        scheduleRehydration(νṁ);
+        markComponentAsDirty(vm);
+        scheduleRehydration(vm);
     }
 }
 
-export function runFormAssociatedCustomElementCallback(νṁ: VM, ƒаϲёСḃ: () => void, аŗġѕ?: any[]) {
+export function runFormAssociatedCustomElementCallback(vm: VM, faceCb: () => void, args?: any[]) {
     const {
         renderMode,
         shadowMode,
         def: { ctor },
-    } = νṁ;
+    } = vm;
 
     if (
         shadowMode === ShadowMode.Synthetic &&
         renderMode !== RenderMode.Light &&
-        !supportsSyntheticElementInternals(ϲţөṙ)
+        !supportsSyntheticElementInternals(ctor)
     ) {
         throw new Error(
             'Form associated lifecycle methods are not available in synthetic shadow. Please use native shadow or light DOM.'
         );
     }
 
-    invokeComponentCallback(νṁ, ƒаϲёСḃ, аŗġѕ);
+    invokeComponentCallback(vm, faceCb, args);
 }
 
-export function runFormAssociatedCallback(elm: HTMLElement, ƒοгṃ: HTMLFormElement | null) {
-    const νṁ = getAssociatedVM(elm);
-    const { formAssociatedCallback } = νṁ.def;
+export function runFormAssociatedCallback(elm: HTMLElement, form: HTMLFormElement | null) {
+    const vm = getAssociatedVM(elm);
+    const { formAssociatedCallback } = vm.def;
 
-    if (!isUndefined(ḟөгṁᎪѕṡөсıαţėɗСɑļӏḃαсḳ)) {
-        runFormAssociatedCustomElementCallback(νṁ, ḟөгṁᎪѕṡөсıαţėɗСɑļӏḃαсḳ, [ƒοгṃ]);
+    if (!isUndefined(formAssociatedCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formAssociatedCallback, [form]);
     }
 }
 
-export function runFormDisabledCallback(elm: HTMLElement, ḋіşɑЬļėԁ: boolean) {
-    const νṁ = getAssociatedVM(elm);
-    const { formDisabledCallback } = νṁ.def;
+export function runFormDisabledCallback(elm: HTMLElement, disabled: boolean) {
+    const vm = getAssociatedVM(elm);
+    const { formDisabledCallback } = vm.def;
 
-    if (!isUndefined(ḟоŗṁÐɩṡаƅḷёḋСαḷӏƅɑсķ)) {
-        runFormAssociatedCustomElementCallback(νṁ, ḟоŗṁÐɩṡаƅḷёḋСαḷӏƅɑсķ, [ḋіşɑЬļėԁ]);
+    if (!isUndefined(formDisabledCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formDisabledCallback, [disabled]);
     }
 }
 
 export function runFormResetCallback(elm: HTMLElement) {
-    const νṁ = getAssociatedVM(elm);
-    const { formResetCallback } = νṁ.def;
+    const vm = getAssociatedVM(elm);
+    const { formResetCallback } = vm.def;
 
-    if (!isUndefined(ḟоŗṁṘёṡеţϹаļḷЬαϲκ)) {
-        runFormAssociatedCustomElementCallback(νṁ, ḟоŗṁṘёṡеţϹаļḷЬαϲκ);
+    if (!isUndefined(formResetCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formResetCallback);
     }
 }
 
@@ -1027,17 +1027,17 @@ export type FormRestoreReason = 'restore' | 'autocomplete';
 export function runFormStateRestoreCallback(
     elm: HTMLElement,
     state: FormRestoreState | null,
-    ṙеαṡоņ: FormRestoreReason
+    reason: FormRestoreReason
 ) {
-    const νṁ = getAssociatedVM(elm);
-    const { formStateRestoreCallback } = νṁ.def;
+    const vm = getAssociatedVM(elm);
+    const { formStateRestoreCallback } = vm.def;
 
-    if (!isUndefined(ḟоŗṁЅţɑţёṘёṡṫөṙеⅭɑӏļḃаⅽḳ)) {
-        runFormAssociatedCustomElementCallback(νṁ, ḟоŗṁЅţɑţёṘёṡṫөṙеⅭɑӏļḃаⅽḳ, [state, ṙеαṡоņ]);
+    if (!isUndefined(formStateRestoreCallback)) {
+        runFormAssociatedCustomElementCallback(vm, formStateRestoreCallback, [state, reason]);
     }
 }
 
-export function resetRefVNodes(νṁ: VM) {
-    const { cmpTemplate } = νṁ;
-    νṁ.refVNodes = !isNull(cmpTemplate) && cmpTemplate.hasRefs ? create(null) : null;
+export function resetRefVNodes(vm: VM) {
+    const { cmpTemplate } = vm;
+    vm.refVNodes = !isNull(cmpTemplate) && cmpTemplate.hasRefs ? create(null) : null;
 }

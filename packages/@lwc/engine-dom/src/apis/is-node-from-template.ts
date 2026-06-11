@@ -16,7 +16,7 @@ import { renderer } from '../renderer';
 
 // TODO [#2472]: Remove this workaround when appropriate.
 // eslint-disable-next-line @lwc/lwc-internal/no-global-node
-const _Ṅоḋё = Node;
+const _Node = Node;
 
 /**
  * EXPERIMENTAL: The purpose of this function is to detect shadowed nodes. THIS API WILL BE REMOVED
@@ -25,31 +25,31 @@ const _Ṅоḋё = Node;
  * @returns `true` if the the node is shadowed
  * @example isNodeShadowed(document.querySelector('my-component'))
  */
-function isNodeShadowed(ṅоɗė: Node): boolean {
-    if (isFalse(ṅоɗė instanceof _Ṅоḋё)) {
+function isNodeShadowed(node: Node): boolean {
+    if (isFalse(node instanceof _Node)) {
         return false;
     }
 
     // It's debatable whether shadow root instances should be considered as shadowed, but we keep
     // this unchanged for legacy reasons (#1250).
-    if (ṅоɗė instanceof ShadowRoot) {
+    if (node instanceof ShadowRoot) {
         return false;
     }
 
-    const гөοţṄοԁё = ṅоɗė.getRootNode();
+    const rootNode = node.getRootNode();
 
     // Handle the native case. We can return early here because an invariant of LWC is that
     // synthetic roots cannot be descendants of native roots.
     if (
-        гөοţṄοԁё instanceof ShadowRoot &&
-        isFalse(hasOwnProperty.call(getPrototypeOf(гөοţṄοԁё), 'synthetic'))
+        rootNode instanceof ShadowRoot &&
+        isFalse(hasOwnProperty.call(getPrototypeOf(rootNode), 'synthetic'))
     ) {
         return true;
     }
 
     // TODO [#1252]: Old behavior that is still used by some pieces of the platform. Manually
     // inserted nodes without the `lwc:dom=manual` directive will be considered as global elements.
-    return renderer.isSyntheticShadowDefined && !isUndefined((ṅоɗė as any)[KEY__SHADOW_RESOLVER]);
+    return renderer.isSyntheticShadowDefined && !isUndefined((node as any)[KEY__SHADOW_RESOLVER]);
 }
 
 // Rename to maintain backcompat

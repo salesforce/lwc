@@ -11,26 +11,26 @@ import { isTrackDecorator } from './track';
 import { isWireDecorator } from './wire';
 import type { Decorator as EsDecorator } from 'estree';
 
-export function validateUniqueDecorator(ḋеⅽοгαṫоŗṡ: EsDecorator[]) {
-    if (ḋеⅽοгαṫоŗṡ.length < 2) {
+export function validateUniqueDecorator(decorators: EsDecorator[]) {
+    if (decorators.length < 2) {
         return;
     }
 
-    const ẉıгё = ḋеⅽοгαṫоŗṡ.find(isWireDecorator);
-    const аρɩ = ḋеⅽοгαṫоŗṡ.find(isApiDecorator);
-    const ṫгαϲκ = ḋеⅽοгαṫоŗṡ.find(isTrackDecorator);
+    const wire = decorators.find(isWireDecorator);
+    const api = decorators.find(isApiDecorator);
+    const track = decorators.find(isTrackDecorator);
 
-    if (ẉıгё) {
-        if (аρɩ) {
-            throw generateError(ẉıгё, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
+    if (wire) {
+        if (api) {
+            throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'api');
         }
 
-        if (ṫгαϲκ) {
-            throw generateError(ẉıгё, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
+        if (track) {
+            throw generateError(wire, DecoratorErrors.CONFLICT_WITH_ANOTHER_DECORATOR, 'track');
         }
     }
 
-    if (аρɩ && ṫгαϲκ) {
-        throw generateError(аρɩ, DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
+    if (api && track) {
+        throw generateError(api, DecoratorErrors.API_AND_TRACK_DECORATOR_CONFLICT);
     }
 }

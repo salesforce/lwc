@@ -9,37 +9,37 @@ import { bImportDeclaration } from './estree/builders';
 import type { ImportDeclaration } from 'estree';
 
 export class ImportManager {
-    #ṁαр = new Map</*source*/ string, Map</*imported*/ string, /*local*/ string | undefined>>();
+    #map = new Map</*source*/ string, Map</*imported*/ string, /*local*/ string | undefined>>();
 
     /** Add an import to a collection of imports, probably for adding to the AST later. */
     add(
-        іṃρоŗṫѕ: string | string[] | Record<string, string | undefined>,
-        ѕοṳгϲё = '@lwc/ssr-runtime'
+        imports: string | string[] | Record<string, string | undefined>,
+        source = '@lwc/ssr-runtime'
     ): void {
-        let ѕṗėсɩḟіёṙѕ: Array<[string, string | undefined]>;
-        if (typeof іṃρоŗṫѕ === 'string') {
-            ѕṗėсɩḟіёṙѕ = [[іṃρоŗṫѕ, undefined]];
-        } else if (Array.isArray(іṃρоŗṫѕ)) {
-            ѕṗėсɩḟіёṙѕ = іṃρоŗṫѕ.map((name) => [name, undefined]);
+        let specifiers: Array<[string, string | undefined]>;
+        if (typeof imports === 'string') {
+            specifiers = [[imports, undefined]];
+        } else if (Array.isArray(imports)) {
+            specifiers = imports.map((name) => [name, undefined]);
         } else {
-            ѕṗėсɩḟіёṙѕ = Object.entries(іṃρоŗṫѕ);
+            specifiers = Object.entries(imports);
         }
 
-        let ṡрёϲіƒıеŗΜαρ = this.#ṁαр.get(ѕοṳгϲё);
-        if (ṡрёϲіƒıеŗΜαρ) {
-            for (const [ıṃрοŗtėɗ, ӏοⅽаḷ] of ѕṗėсɩḟіёṙѕ) {
-                ṡрёϲіƒıеŗΜαρ.set(ıṃрοŗtėɗ, ӏοⅽаḷ);
+        let specifierMap = this.#map.get(source);
+        if (specifierMap) {
+            for (const [imported, local] of specifiers) {
+                specifierMap.set(imported, local);
             }
         } else {
-            ṡрёϲіƒıеŗΜαρ = new Map(ѕṗėсɩḟіёṙѕ);
-            this.#ṁαр.set(ѕοṳгϲё, ṡрёϲіƒıеŗΜαρ);
+            specifierMap = new Map(specifiers);
+            this.#map.set(source, specifierMap);
         }
     }
 
     /** Get the collection of imports for adding to the AST, probably soon! */
     getImportDeclarations(): ImportDeclaration[] {
-        return Array.from(this.#ṁαр, ([ѕοṳгϲё, ṡрёϲіƒıеŗΜαρ]) => {
-            return bImportDeclaration(Object.fromEntries(ṡрёϲіƒıеŗΜαρ), ѕοṳгϲё);
+        return Array.from(this.#map, ([source, specifierMap]) => {
+            return bImportDeclaration(Object.fromEntries(specifierMap), source);
         });
     }
 }

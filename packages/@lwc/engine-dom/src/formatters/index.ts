@@ -8,12 +8,12 @@
 import { ArrayPush } from '@lwc/shared';
 import { LightningElementFormatter } from './component';
 
-function ɩṅіţ() {
-    const ḋеṿṫоөḷѕƑοṙṃаṫţеṙş = (globalThis as any).devtoolsFormatters || [];
-    ArrayPush.call(ḋеṿṫоөḷѕƑοṙṃаṫţеṙş, LightningElementFormatter);
-    (globalThis as any).devtoolsFormatters = ḋеṿṫоөḷѕƑοṙṃаṫţеṙş;
+function init() {
+    const devtoolsFormatters = (globalThis as any).devtoolsFormatters || [];
+    ArrayPush.call(devtoolsFormatters, LightningElementFormatter);
+    (globalThis as any).devtoolsFormatters = devtoolsFormatters;
 }
 
 if (process.env.NODE_ENV !== 'production') {
-    ɩṅіţ();
+    init();
 }

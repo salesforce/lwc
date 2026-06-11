@@ -14,17 +14,17 @@ import {
 import type { Comment as IrComment } from '@lwc/template-compiler';
 import type { Transformer } from '../types';
 
-export const Comment: Transformer<IrComment> = function Comment(ṅоɗė, сχţ) {
-    if (сχţ.templateOptions.preserveComments) {
-        return [b.expressionStatement(b.yieldExpression(b.literal(`<!--${ṅоɗė.value}-->`)))];
+export const Comment: Transformer<IrComment> = function Comment(node, cxt) {
+    if (cxt.templateOptions.preserveComments) {
+        return [b.expressionStatement(b.yieldExpression(b.literal(`<!--${node.value}-->`)))];
     } else {
-        const іşḶаşṫІņṠегıёѕ = isLastConcatenatedNode(сχţ);
+        const isLastInSeries = isLastConcatenatedNode(cxt);
 
         // If preserve comments is off, we check if we should flush text content
         // for adjacent text nodes. (If preserve comments is on, then the previous
         // text node already flushed.)
-        if (іşḶаşṫІņṠегıёѕ) {
-            return generateConcatenatedTextNodesExpressions(сχţ);
+        if (isLastInSeries) {
+            return generateConcatenatedTextNodesExpressions(cxt);
         }
         return [];
     }

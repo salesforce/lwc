@@ -12,7 +12,7 @@ import transform from './transform';
 const { API_DECORATOR } = LWC_PACKAGE_EXPORTS;
 
 export default {
-    name: АṖΙ_ÐΕСӨṘАΤӨṘ,
+    name: API_DECORATOR,
     validate,
     transform,
 };

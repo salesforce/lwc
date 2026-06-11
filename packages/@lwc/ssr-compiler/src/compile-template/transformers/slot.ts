@@ -18,7 +18,7 @@ import type { Slot as IrSlot } from '@lwc/template-compiler';
 import type { Statement as EsStatement, IfStatement as EsIfStatement } from 'estree';
 import type { Transformer } from '../types';
 
-const ḃⅭоṅɗіṫɩоṅаḷŞӏοţ = esTemplateWithYield`
+const bConditionalSlot = esTemplateWithYield`
     if (isLightDom) {
         const isScopedSlot = ${/* isScopedSlot */ is.literal};
         const isSlotted = ${/* isSlotted */ is.literal};
@@ -80,27 +80,27 @@ const ḃⅭоṅɗіṫɩоṅаḷŞӏοţ = esTemplateWithYield`
     }
 `<EsIfStatement>;
 
-export const Slot: Transformer<IrSlot> = function Slot(ṅоɗė, сṫẋ): EsStatement[] {
-    const ṡӏөṫВɩṅԁÐıгėⅽţıṿе = ṅоɗė.directives.find((ɗіṙ) => ɗіṙ.name === 'SlotBind');
-    const şḷоţΒоṳṅԁ = ṡӏөṫВɩṅԁÐıгėⅽţıṿе?.value
-        ? getScopedExpression(ṡӏөṫВɩṅԁÐıгėⅽţıṿе.value, сṫẋ)
+export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[] {
+    const slotBindDirective = node.directives.find((dir) => dir.name === 'SlotBind');
+    const slotBound = slotBindDirective?.value
+        ? getScopedExpression(slotBindDirective.value, ctx)
         : null;
-    const şḷоţṄаṃė = bAttributeValue(ṅоɗė, 'name');
+    const slotName = bAttributeValue(node, 'name');
     // FIXME: avoid serializing the slot's children twice
-    const ṡļоṫᎪѕṫ = Element(ṅоɗė, сṫẋ);
-    const ṡӏөṫСћıӏɗṙёṅ = irChildrenToEs(ṅоɗė.children, сṫẋ);
-    const ıѕŞϲоṗėԁŞḷοţ = b.literal(Boolean(şḷоţΒоṳṅԁ));
-    const ɩѕṠļоṫţеḋ = b.literal(Boolean(сṫẋ.isSlotted));
-    const ѕļοtᎪṫtŗıЬυṫёѴɑļυė = bAttributeValue(ṅоɗė, 'slot');
+    const slotAst = Element(node, ctx);
+    const slotChildren = irChildrenToEs(node.children, ctx);
+    const isScopedSlot = b.literal(Boolean(slotBound));
+    const isSlotted = b.literal(Boolean(ctx.isSlotted));
+    const slotAttributeValue = bAttributeValue(node, 'slot');
     return [
-        ḃⅭоṅɗіṫɩоṅаḷŞӏοţ(
-            ıѕŞϲоṗėԁŞḷοţ,
-            ɩѕṠļоṫţеḋ,
-            şḷоţṄаṃė,
-            ѕļοtᎪṫtŗıЬυṫёѴɑļυė,
-            şḷоţΒоṳṅԁ,
-            ṡӏөṫСћıӏɗṙёṅ,
-            ṡļоṫᎪѕṫ
+        bConditionalSlot(
+            isScopedSlot,
+            isSlotted,
+            slotName,
+            slotAttributeValue,
+            slotBound,
+            slotChildren,
+            slotAst
         ),
     ];
 };

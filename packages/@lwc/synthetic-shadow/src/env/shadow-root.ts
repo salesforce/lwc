@@ -6,6 +6,6 @@
  */
 
 // Capture the global `ShadowRoot` since synthetic shadow will override it later
-const ṄаṫɩνėŞһɑɗоẇŖоοţ = ShadowRoot;
+const NativeShadowRoot = ShadowRoot;
 
-export const isInstanceOfNativeShadowRoot = (ṅоɗė: any) => ṅоɗė instanceof ṄаṫɩνėŞһɑɗоẇŖоοţ;
+export const isInstanceOfNativeShadowRoot = (node: any) => node instanceof NativeShadowRoot;

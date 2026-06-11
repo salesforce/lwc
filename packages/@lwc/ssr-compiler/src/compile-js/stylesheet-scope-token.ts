@@ -11,34 +11,34 @@ import { builders as b } from 'estree-toolkit/dist/builders';
 import { esTemplate } from '../estemplate';
 import type { ExpressionStatement, Program, VariableDeclaration } from 'estree';
 
-const ЬṠţуḷёѕḣёеtṪοκёṅDёϲӏαṙаţıоņ = esTemplate`
+const bStylesheetTokenDeclaration = esTemplate`
     const stylesheetScopeToken = '${is.literal}';
 `<VariableDeclaration>;
 
-const ƅΗаşṠсөρеɗṠtẏḷеşḣеёṫѕÐėсļɑгαṫіөṅ = esTemplate`
+const bHasScopedStylesheetsDeclaration = esTemplate`
     const hasScopedStylesheets = defaultScopedStylesheets !== undefined && defaultScopedStylesheets.length > 0;
 `<VariableDeclaration>;
 
 // Scope tokens are associated with a given template. This is assigned here so that it can be used in `generateMarkup`.
 // We also need to keep track of whether the template has any scoped styles or not so that we can render (or not) the
 // scope token.
-const ţṁṗӏΑşѕıģпṃеṅţВḷөсḳ = esTemplate`
+const tmplAssignmentBlock = esTemplate`
 ${/* template */ is.identifier}.hasScopedStylesheets = hasScopedStylesheets;
 ${/* template */ 0}.stylesheetScopeToken = stylesheetScopeToken;
 `<ExpressionStatement[]>;
 
 export function addScopeTokenDeclarations(
-    ρгөġгαṁ: Program,
-    ƒıӏёṅаṃė: string,
-    ņаṁёѕραсė: string | undefined,
-    ϲоṃρоņėпţṄαṁе: string | undefined
+    program: Program,
+    filename: string,
+    namespace: string | undefined,
+    componentName: string | undefined
 ) {
-    const { scopeToken } = generateScopeTokens(ƒıӏёṅаṃė, ņаṁёѕραсė, ϲоṃρоņėпţṄαṁе);
+    const { scopeToken } = generateScopeTokens(filename, namespace, componentName);
 
-    ρгөġгαṁ.body.unshift(
-        ЬṠţуḷёѕḣёеtṪοκёṅDёϲӏαṙаţıоņ(b.literal(şϲоṗėТөḳеņ)),
-        ƅΗаşṠсөρеɗṠtẏḷеşḣеёṫѕÐėсļɑгαṫіөṅ()
+    program.body.unshift(
+        bStylesheetTokenDeclaration(b.literal(scopeToken)),
+        bHasScopedStylesheetsDeclaration()
     );
 
-    ρгөġгαṁ.body.push(...ţṁṗӏΑşѕıģпṃеṅţВḷөсḳ(b.identifier('__lwcTmpl')));
+    program.body.push(...tmplAssignmentBlock(b.identifier('__lwcTmpl')));
 }

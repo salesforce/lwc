@@ -33,7 +33,7 @@ import { hasOwnProperty } from '@lwc/shared';
 
 // This mapping is based on https://github.com/wooorm/html-element-attributes/blob/270d8ce/index.js
 // TODO [#3019]: use the package directly instead of vendor'ing it
-const НṪΜL_ΕLЁΜЕΝТ_ΑТṪṘІḂՍТЁ_МᎪΡ = {
+const HTML_ELEMENT_ATTRIBUTE_MAP = {
     '*': [
         'accesskey',
         'autocapitalize',
@@ -397,26 +397,26 @@ const НṪΜL_ΕLЁΜЕΝТ_ΑТṪṘІḂՍТЁ_МᎪΡ = {
     ],
 };
 
-export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(НṪΜL_ΕLЁΜЕΝТ_ΑТṪṘІḂՍТЁ_МᎪΡ).reduce(
-    (αсϲṳṃսļаṫөṙ, ёṅţŗү) => {
-        const ėӏёṁеņṫ = ёṅţŗү[0];
-        const αṫţŗıЬṳṫеş = ёṅţŗү[1];
+export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(HTML_ELEMENT_ATTRIBUTE_MAP).reduce(
+    (accumulator, entry) => {
+        const element = entry[0];
+        const attributes = entry[1];
 
-        if (ėӏёṁеņṫ !== '*') {
-            αṫţŗıЬṳṫеş.forEach((αṫtŗıЬṳṫе) => {
-                if (!hasOwnProperty.call(αсϲṳṃսļаṫөṙ, αṫtŗıЬṳṫе)) {
-                    αсϲṳṃսļаṫөṙ[αṫtŗıЬṳṫе] = [];
+        if (element !== '*') {
+            attributes.forEach((attribute) => {
+                if (!hasOwnProperty.call(accumulator, attribute)) {
+                    accumulator[attribute] = [];
                 }
 
-                αсϲṳṃսļаṫөṙ[αṫtŗıЬṳṫе].push(ėӏёṁеņṫ);
+                accumulator[attribute].push(element);
             });
         }
 
-        return αсϲṳṃսļаṫөṙ;
+        return accumulator;
     },
     {} as Record<string, string[]>
 );
 
-Object.values(НṪΜL_ΕLЁΜЕΝТ_ΑТṪṘІḂՍТЁ_МᎪΡ['*']).forEach(
-    (ġӏөḃаļΑṫţṙıƅυṫё) => (HTML_ATTRIBUTE_ELEMENT_MAP[ġӏөḃаļΑṫţṙıƅυṫё] = [])
+Object.values(HTML_ELEMENT_ATTRIBUTE_MAP['*']).forEach(
+    (globalAttribute) => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = [])
 );

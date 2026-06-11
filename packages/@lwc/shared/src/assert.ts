@@ -10,9 +10,9 @@
  * @param value
  * @param msg
  */
-export function invariant(value: any, ṁşɡ: string): asserts value {
+export function invariant(value: any, msg: string): asserts value {
     if (!value) {
-        throw new Error(`Invariant Violation: ${ṁşɡ}`);
+        throw new Error(`Invariant Violation: ${msg}`);
     }
 }
 
@@ -21,9 +21,9 @@ export function invariant(value: any, ṁşɡ: string): asserts value {
  * @param value
  * @param msg
  */
-export function isTrue(value: any, ṁşɡ: string): asserts value {
+export function isTrue(value: any, msg: string): asserts value {
     if (!value) {
-        throw new Error(`Assert Violation: ${ṁşɡ}`);
+        throw new Error(`Assert Violation: ${msg}`);
     }
 }
 
@@ -32,9 +32,9 @@ export function isTrue(value: any, ṁşɡ: string): asserts value {
  * @param value
  * @param msg
  */
-export function isFalse(value: any, ṁşɡ: string): void {
+export function isFalse(value: any, msg: string): void {
     if (value) {
-        throw new Error(`Assert Violation: ${ṁşɡ}`);
+        throw new Error(`Assert Violation: ${msg}`);
     }
 }
 
@@ -42,6 +42,6 @@ export function isFalse(value: any, ṁşɡ: string): void {
  *
  * @param msg
  */
-export function fail(ṁşɡ: string): never {
-    throw new Error(ṁşɡ);
+export function fail(msg: string): never {
+    throw new Error(msg);
 }

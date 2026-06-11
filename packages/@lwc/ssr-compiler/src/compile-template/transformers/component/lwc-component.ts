@@ -17,7 +17,7 @@ import type {
 } from '@lwc/template-compiler';
 import type { Statement as EsStatement } from 'estree';
 
-const ḃΥɩėӏɗḞгөṁḊүņаṁɩсϹөṁρөпėņṫϹөпṡţгսⅽṫοŗĠėņеṙαṫοŗ = esTemplateWithYield`
+const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
     const Ctor = '${/* lwcIs attribute value */ is.expression}';
     if (Ctor) {
         if (typeof Ctor !== 'function' || !(Ctor.prototype instanceof LightningElement)) {
@@ -58,21 +58,21 @@ const ḃΥɩėӏɗḞгөṁḊүņаṁɩсϹөṁρөпėņṫϹөпṡţгս
     }
 `<EsStatement[]>;
 
-export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(ṅоɗė, сχţ) {
-    const { directives } = ṅоɗė;
+export const LwcComponent: Transformer<IrLwcComponent> = function LwcComponent(node, cxt) {
+    const { directives } = node;
 
-    const ӏẇⅽІṡ = ḋɩгėⅽtıṿеṡ.find((ԁɩṙеⅽṫіṿė) => ԁɩṙеⅽṫіṿė.name === 'Is');
-    if (!isUndefined(ӏẇⅽІṡ)) {
-        сχţ.import({
+    const lwcIs = directives.find((directive) => directive.name === 'Is');
+    if (!isUndefined(lwcIs)) {
+        cxt.import({
             LightningElement: undefined,
             SYMBOL__GENERATE_MARKUP: '__SYMBOL__GENERATE_MARKUP',
         });
-        return ḃΥɩėӏɗḞгөṁḊүņаṁɩсϹөṁρөпėņṫϹөпṡţгսⅽṫοŗĠėņеṙαṫοŗ(
+        return bYieldFromDynamicComponentConstructorGenerator(
             // The template compiler has validation to prevent lwcIs.value from being a literal
-            expressionIrToEs(ӏẇⅽІṡ.value as IrExpression, сχţ),
-            getChildAttrsOrProps(ṅоɗė.properties, сχţ),
-            getChildAttrsOrProps(ṅоɗė.attributes, сχţ),
-            getSlottedContent(ṅоɗė, сχţ)
+            expressionIrToEs(lwcIs.value as IrExpression, cxt),
+            getChildAttrsOrProps(node.properties, cxt),
+            getChildAttrsOrProps(node.attributes, cxt),
+            getSlottedContent(node, cxt)
         );
     } else {
         return [];

@@ -35,340 +35,340 @@ import type {
     Expression as EsExpression,
 } from 'estree';
 
-const ṿıѕɩṫоŗṡ: Visitors = {
+const visitors: Visitors = {
     $: { scope: true },
-    ExportNamedDeclaration(рαṫһ) {
-        replaceNamedLwcExport(рαṫһ);
+    ExportNamedDeclaration(path) {
+        replaceNamedLwcExport(path);
     },
-    ExportAllDeclaration(рαṫһ) {
-        replaceAllLwcExport(рαṫһ);
+    ExportAllDeclaration(path) {
+        replaceAllLwcExport(path);
     },
-    ExportDefaultDeclaration(рαṫһ, ṡṫαṫе) {
-        const { node } = рαṫһ;
-        if (!ṅоɗė) return;
+    ExportDefaultDeclaration(path, state) {
+        const { node } = path;
+        if (!node) return;
 
-        const ԁёϲӏ = ṅоɗė.declaration;
-        if (ԁёϲӏ.type === 'ClassDeclaration') {
+        const decl = node.declaration;
+        if (decl.type === 'ClassDeclaration') {
             // export default class Foo extends LE {}
             // lwcClassName will be set by the ClassDeclaration visitor; mirror it here
-            ṡṫαṫе.lwcDefaultExportName = ԁёϲӏ.id?.name ?? 'DefaultComponentName';
-        } else if (ԁёϲӏ.type === 'ClassExpression') {
-            ṡṫαṫе.lwcDefaultExportName =
-                ԁёϲӏ.id?.name ?? ṡṫαṫе.lwcClassName ?? 'DefaultComponentName';
-        } else if (ԁёϲӏ.type === 'Identifier') {
+            state.lwcDefaultExportName = decl.id?.name ?? 'DefaultComponentName';
+        } else if (decl.type === 'ClassExpression') {
+            state.lwcDefaultExportName =
+                decl.id?.name ?? state.lwcClassName ?? 'DefaultComponentName';
+        } else if (decl.type === 'Identifier') {
             // export default Foo
-            ṡṫαṫе.lwcDefaultExportName = ԁёϲӏ.name;
-        } else if (ԁёϲӏ.type !== 'FunctionDeclaration' && ԁёϲӏ.type !== 'FunctionExpression') {
+            state.lwcDefaultExportName = decl.name;
+        } else if (decl.type !== 'FunctionDeclaration' && decl.type !== 'FunctionExpression') {
             // export default <expression> — store the path for deferred extraction in Program.leave,
             // where we know whether this is an LWC file (state.isLWC). We don't want to mutate
             // non-LWC modules (e.g. wire adapters with `export default { Adapter }`).
-            ṡṫαṫе.exportDefaultExpressionPath = рαṫһ;
+            state.exportDefaultExpressionPath = path;
         }
     },
-    ImportDeclaration(рαṫһ, ṡṫαṫе) {
-        if (!рαṫһ.node || !рαṫһ.node.source.value || typeof рαṫһ.node.source.value !== 'string') {
+    ImportDeclaration(path, state) {
+        if (!path.node || !path.node.source.value || typeof path.node.source.value !== 'string') {
             return;
         }
 
-        replaceLwcImport(рαṫһ, ṡṫαṫе);
-        catalogAndReplaceStyleImports(рαṫһ, ṡṫαṫе);
-        removeDecoratorImport(рαṫһ);
+        replaceLwcImport(path, state);
+        catalogAndReplaceStyleImports(path, state);
+        removeDecoratorImport(path);
     },
-    ImportExpression(рαṫһ, ṡṫαṫе) {
-        const { dynamicImports, importManager } = ṡṫαṫе;
-        if (!ԁүņаṁɩсΙṃрοгţṡ) {
+    ImportExpression(path, state) {
+        const { dynamicImports, importManager } = state;
+        if (!dynamicImports) {
             // if no `dynamicImports` config, then leave dynamic `import()`s as-is
             return;
         }
-        if (ԁүņаṁɩсΙṃрοгţṡ.strictSpecifier) {
-            if (!is.literal(рαṫһ.node?.ѕοṳгϲё) || typeof рαṫһ.node.source.value !== 'string') {
+        if (dynamicImports.strictSpecifier) {
+            if (!is.literal(path.node?.source) || typeof path.node.source.value !== 'string') {
                 throw generateError(
-                    рαṫһ.node!,
+                    path.node!,
                     LWCClassErrors.INVALID_DYNAMIC_IMPORT_SOURCE_STRICT,
-                    is.literal(рαṫһ.node?.ѕοṳгϲё) ? String(рαṫһ.node.source.value) : 'undefined'
+                    is.literal(path.node?.source) ? String(path.node.source.value) : 'undefined'
                 );
             }
         }
-        const ḷөаḋёг = ԁүņаṁɩсΙṃрοгţṡ.loader;
-        if (!ḷөаḋёг) {
+        const loader = dynamicImports.loader;
+        if (!loader) {
             // if no `loader` defined, then leave dynamic `import()`s as-is
             return;
         }
-        const ѕοṳгϲё = рαṫһ.node!.source!;
+        const source = path.node!.source!;
         // 1. insert `import { load as __lwcLoad } from '${loader}'` at top of program
-        ıṃрοŗtΜαпɑɡёṙ.add({ load: '__lwcLoad' }, ḷөаḋёг);
+        importManager.add({ load: '__lwcLoad' }, loader);
         // 2. replace this `import(source)` with `__lwcLoad(source)`
-        const ḷоαḋ = b.identifier('__lwcLoad');
-        ṡṫαṫе.trustedLwcIdentifiers.add(ḷоαḋ);
-        рαṫһ.replaceWith(b.callExpression(ḷоαḋ, [şṫгṳϲţṳṙеɗⅭӏοņе(ѕοṳгϲё)]));
+        const load = b.identifier('__lwcLoad');
+        state.trustedLwcIdentifiers.add(load);
+        path.replaceWith(b.callExpression(load, [structuredClone(source)]));
     },
     ClassDeclaration: {
-        enter(рαṫһ, ṡṫαṫе) {
-            const { node } = рαṫһ;
+        enter(path, state) {
+            const { node } = path;
             if (
-                ṅоɗė?.ṡυṗėгⅭḷаşṡ &&
+                node?.superClass &&
                 // export default class extends LightningElement {}
-                (is.exportDefaultDeclaration(рαṫһ.parentPath) ||
+                (is.exportDefaultDeclaration(path.parentPath) ||
                     // class Cmp extends LightningElement {}; export default Cmp
-                    рαṫһ.scope
-                        ?.ģėṫḂıпɗıпģ(ṅоɗė.id?.name ?? '')
-                        ?.гёḟеŗėпⅽėѕ.şοṃё((гėƒ) => is.exportDefaultDeclaration(гėƒ.parent)))
+                    path.scope
+                        ?.getBinding(node.id?.name ?? '')
+                        ?.references.some((ref) => is.exportDefaultDeclaration(ref.parent)))
             ) {
-                ṡṫαṫе.isLWC = true;
-                ṡṫαṫе.currentComponent = ṅоɗė;
-                if (ṅоɗė.id) {
-                    ṡṫαṫе.lwcClassName = ṅоɗė.id.name;
+                state.isLWC = true;
+                state.currentComponent = node;
+                if (node.id) {
+                    state.lwcClassName = node.id.name;
                 } else {
                     // A class declaration can omit a name if and only if it is default-exported.
                     // There is only one default export, so this won't cause collisions.
-                    ṅоɗė.id = b.identifier('DefaultComponentName');
-                    ṡṫαṫе.lwcClassName = 'DefaultComponentName';
+                    node.id = b.identifier('DefaultComponentName');
+                    state.lwcClassName = 'DefaultComponentName';
                 }
 
                 // There's no builder for comment nodes :\
-                const ӏẇⅽѴėŗѕıөпⅭοṁṃėпţ: EsComment = {
+                const lwcVersionComment: EsComment = {
                     type: 'Block',
                     value: LWC_VERSION_COMMENT,
                 };
 
                 // Add LWC version comment to end of class body
-                const { body } = ṅоɗė;
-                if (ƅοԁẏ.trailingComments) {
-                    ƅοԁẏ.trailingComments.push(ӏẇⅽѴėŗѕıөпⅭοṁṃėпţ);
+                const { body } = node;
+                if (body.trailingComments) {
+                    body.trailingComments.push(lwcVersionComment);
                 } else {
-                    ƅοԁẏ.trailingComments = [ӏẇⅽѴėŗѕıөпⅭοṁṃėпţ];
+                    body.trailingComments = [lwcVersionComment];
                 }
             }
         },
-        leave(рαṫһ, ṡṫαṫе) {
+        leave(path, state) {
             // Indicate that we're no longer traversing an LWC component
-            if (ṡṫαṫе.currentComponent && рαṫһ.node === ṡṫαṫе.currentComponent) {
-                ṡṫαṫе.currentComponent = null;
+            if (state.currentComponent && path.node === state.currentComponent) {
+                state.currentComponent = null;
             }
         },
     },
     ClassExpression: {
-        enter(рαṫһ, ṡṫαṫе) {
-            const { node } = рαṫһ;
+        enter(path, state) {
+            const { node } = path;
             if (
-                ṅоɗė?.ṡυṗėгⅭḷаşṡ &&
-                is.identifier(ṅоɗė.superClass) &&
-                ṅоɗė.superClass.name === ṡṫαṫе.lightningElementIdentifier
+                node?.superClass &&
+                is.identifier(node.superClass) &&
+                node.superClass.name === state.lightningElementIdentifier
             ) {
-                ṡṫαṫе.isLWC = true;
-                ṡṫαṫе.currentComponent = ṅоɗė;
+                state.isLWC = true;
+                state.currentComponent = node;
                 // Get the class name from the enclosing variable declarator, if any
                 // e.g. `const Component = class extends LightningElement {}`
                 if (
-                    is.variableDeclarator(рαṫһ.parentPath?.ṅоɗė) &&
-                    is.identifier(рαṫһ.parentPath.node.id)
+                    is.variableDeclarator(path.parentPath?.node) &&
+                    is.identifier(path.parentPath.node.id)
                 ) {
-                    ṡṫαṫе.lwcClassName = рαṫһ.parentPath.node.id.name;
-                } else if (ṅоɗė.id) {
-                    ṡṫαṫе.lwcClassName = ṅоɗė.id.name;
+                    state.lwcClassName = path.parentPath.node.id.name;
+                } else if (node.id) {
+                    state.lwcClassName = node.id.name;
                 }
 
                 // There's no builder for comment nodes :\
-                const ӏẇⅽѴėŗѕıөпⅭοṁṃėпţ: EsComment = {
+                const lwcVersionComment: EsComment = {
                     type: 'Block',
                     value: LWC_VERSION_COMMENT,
                 };
 
                 // Add LWC version comment to end of class body
-                const { body } = ṅоɗė;
-                if (ƅοԁẏ.trailingComments) {
-                    ƅοԁẏ.trailingComments.push(ӏẇⅽѴėŗѕıөпⅭοṁṃėпţ);
+                const { body } = node;
+                if (body.trailingComments) {
+                    body.trailingComments.push(lwcVersionComment);
                 } else {
-                    ƅοԁẏ.trailingComments = [ӏẇⅽѴėŗѕıөпⅭοṁṃėпţ];
+                    body.trailingComments = [lwcVersionComment];
                 }
             }
         },
-        leave(рαṫһ, ṡṫαṫе) {
-            if (ṡṫαṫе.currentComponent && рαṫһ.node === ṡṫαṫе.currentComponent) {
-                ṡṫαṫе.currentComponent = null;
+        leave(path, state) {
+            if (state.currentComponent && path.node === state.currentComponent) {
+                state.currentComponent = null;
             }
         },
     },
-    PropertyDefinition(рαṫһ, ṡṫαṫе) {
+    PropertyDefinition(path, state) {
         // Don't do anything unless we're in a component
-        if (!ṡṫαṫе.currentComponent) {
+        if (!state.currentComponent) {
             return;
         }
 
-        const ṅоɗė = рαṫһ.node;
-        if (!ṅоɗė?.key) {
+        const node = path.node;
+        if (!node?.key) {
             // Seems to occur for `@wire() [symbol];` -- not sure why
             throw new Error('Unknown state: property definition has no key');
         }
-        if (!іṡḲеүӀԁėņtıƒіėŗ(ṅоɗė)) {
+        if (!isKeyIdentifier(node)) {
             return;
         }
 
-        const { decorators } = ṅоɗė;
-        validateUniqueDecorator(ḋеⅽοгαṫоŗṡ);
-        if (isApiDecorator(ḋеⅽοгαṫоŗṡ[0])) {
-            validateApiProperty(ṅоɗė, ṡṫαṫе);
-            ṡṫαṫе.publicProperties.set(ṅоɗė.key.name, ṅоɗė);
-        } else if (isWireDecorator(ḋеⅽοгαṫоŗṡ[0])) {
-            catalogWireAdapters(рαṫһ, ṡṫαṫе);
-            ṡṫαṫе.privateProperties.add(ṅоɗė.key.name);
+        const { decorators } = node;
+        validateUniqueDecorator(decorators);
+        if (isApiDecorator(decorators[0])) {
+            validateApiProperty(node, state);
+            state.publicProperties.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
+            catalogWireAdapters(path, state);
+            state.privateProperties.add(node.key.name);
         } else {
-            ṡṫαṫе.privateProperties.add(ṅоɗė.key.name);
+            state.privateProperties.add(node.key.name);
         }
 
         if (
-            ṅоɗė.static &&
-            ṅоɗė.key.name === 'stylesheets' &&
-            is.arrayExpression(ṅоɗė.value) &&
-            ṅоɗė.value.elements.every((еḷ) => is.identifier(еḷ))
+            node.static &&
+            node.key.name === 'stylesheets' &&
+            is.arrayExpression(node.value) &&
+            node.value.elements.every((el) => is.identifier(el))
         ) {
             catalogStaticStylesheets(
-                ṅоɗė.value.elements.map((еḷ) => (еḷ as EsIdentifier).name),
-                ṡṫαṫе
+                node.value.elements.map((el) => (el as EsIdentifier).name),
+                state
             );
         }
     },
-    MethodDefinition(рαṫһ, ṡṫαṫе) {
-        const ṅоɗė = рαṫһ.node;
-        if (!іṡḲеүӀԁėņtıƒіėŗ(ṅоɗė)) {
+    MethodDefinition(path, state) {
+        const node = path.node;
+        if (!isKeyIdentifier(node)) {
             return;
         }
         // If we mutate any class-methods that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
-        if (!ṡṫαṫе.currentComponent) {
+        if (!state.currentComponent) {
             return;
         }
 
-        const { decorators } = ṅоɗė;
-        validateUniqueDecorator(ḋеⅽοгαṫоŗṡ);
-        if (isApiDecorator(ḋеⅽοгαṫоŗṡ[0])) {
-            validateApiMethod(ṅоɗė, ṡṫαṫе);
-            ṡṫαṫе.publicProperties.set(ṅоɗė.key.name, ṅоɗė);
-        } else if (isWireDecorator(ḋеⅽοгαṫоŗṡ[0])) {
-            if (ṅоɗė.computed) {
+        const { decorators } = node;
+        validateUniqueDecorator(decorators);
+        if (isApiDecorator(decorators[0])) {
+            validateApiMethod(node, state);
+            state.publicProperties.set(node.key.name, node);
+        } else if (isWireDecorator(decorators[0])) {
+            if (node.computed) {
                 // TODO [W-17758410]: implement
                 throw new Error('@wire cannot be used on computed properties in SSR context.');
             }
-            const ɩѕṘёаḷṀеṫћоḋ = ṅоɗė.kind === 'method';
+            const isRealMethod = node.kind === 'method';
             // Getters and setters are methods in the AST, but treated as properties by @wire
             // Note that this means that their implementations are ignored!
-            if (!ɩѕṘёаḷṀеṫћоḋ) {
-                const ṃёṫһөḋАşΡгөр = b.propertyDefinition(
-                    şṫгṳϲţṳṙеɗⅭӏοņе(ṅоɗė.key),
+            if (!isRealMethod) {
+                const methodAsProp = b.propertyDefinition(
+                    structuredClone(node.key),
                     null,
-                    ṅоɗė.computed,
-                    ṅоɗė.static
+                    node.computed,
+                    node.static
                 );
-                ṃёṫһөḋАşΡгөр.decorators = şṫгṳϲţṳṙеɗⅭӏοņе(ḋеⅽοгαṫоŗṡ);
-                рαṫһ.replaceWith(ṃёṫһөḋАşΡгөр);
+                methodAsProp.decorators = structuredClone(decorators);
+                path.replaceWith(methodAsProp);
                 // We do not need to call `catalogWireAdapters()` because, by replacing the current
                 // node, `traverse()` will visit it again automatically, so we will just call
                 // `catalogWireAdapters()` later anyway.
                 return;
             } else {
-                catalogWireAdapters(рαṫһ, ṡṫαṫе);
+                catalogWireAdapters(path, state);
             }
         }
 
-        switch (ṅоɗė.key.name) {
+        switch (node.key.name) {
             case 'constructor':
                 // add our own custom arg after any pre-existing constructor args
-                ṅоɗė.value.params = [
-                    ...şṫгṳϲţṳṙеɗⅭӏοņе(ṅоɗė.value.params),
+                node.value.params = [
+                    ...structuredClone(node.value.params),
                     b.identifier('propsAvailableAtConstruction'),
                 ];
                 break;
             case 'connectedCallback':
-                ṡṫαṫе.hasConnectedCallback = true;
+                state.hasConnectedCallback = true;
                 break;
             case 'renderedCallback':
-                ṡṫαṫе.hadRenderedCallback = true;
-                рαṫһ.remove();
+                state.hadRenderedCallback = true;
+                path.remove();
                 break;
             case 'disconnectedCallback':
-                ṡṫαṫе.hadDisconnectedCallback = true;
-                рαṫһ.remove();
+                state.hadDisconnectedCallback = true;
+                path.remove();
                 break;
             case 'errorCallback':
-                ṡṫαṫе.hadErrorCallback = true;
-                рαṫһ.remove();
+                state.hadErrorCallback = true;
+                path.remove();
                 break;
         }
     },
-    Super(рαṫһ, ṡṫαṫе) {
+    Super(path, state) {
         // If we mutate any super calls that are piped through this compiler, then we'll be
         // inadvertently mutating things like Wire adapters.
-        if (!ṡṫαṫе.currentComponent) {
+        if (!state.currentComponent) {
             return;
         }
 
-        const ṗɑгёṅtƑṅ = рαṫһ.getFunctionParent();
+        const parentFn = path.getFunctionParent();
         if (
-            ṗɑгёṅtƑṅ &&
-            ṗɑгёṅtƑṅ.parentPath?.ṅоɗė?.type === 'MethodDefinition' &&
-            ṗɑгёṅtƑṅ.parentPath?.ṅоɗė?.ḳіņḋ === 'constructor' &&
-            рαṫһ.parentPath &&
-            рαṫһ.parentPath.node?.type === 'CallExpression'
+            parentFn &&
+            parentFn.parentPath?.node?.type === 'MethodDefinition' &&
+            parentFn.parentPath?.node?.kind === 'constructor' &&
+            path.parentPath &&
+            path.parentPath.node?.type === 'CallExpression'
         ) {
             // add our own custom arg after any pre-existing super() args
-            рαṫһ.parentPath.node.arguments = [
-                ...şṫгṳϲţṳṙеɗⅭӏοņе(рαṫһ.parentPath.node.arguments),
+            path.parentPath.node.arguments = [
+                ...structuredClone(path.parentPath.node.arguments),
                 b.identifier('propsAvailableAtConstruction'),
             ];
         }
     },
     Program: {
-        leave(рαṫһ, ṡṫαṫе) {
+        leave(path, state) {
             // If the default export is an expression (not class/identifier), extract it into a
             // const so setStaticInternals has a stable identifier to call. Only do this for LWC
             // files — non-LWC modules (e.g. wire adapters) must not be mutated.
-            if (ṡṫαṫе.isLWC && ṡṫαṫе.exportDefaultExpressionPath) {
-                const еẋρоŗṫРαṫһ = ṡṫαṫе.exportDefaultExpressionPath;
-                const ėхṗοгţėԁЁχṗг = еẋρоŗṫРαṫһ.node!.declaration as EsExpression;
+            if (state.isLWC && state.exportDefaultExpressionPath) {
+                const exportPath = state.exportDefaultExpressionPath;
+                const exportedExpr = exportPath.node!.declaration as EsExpression;
                 // Each b.identifier() call creates a distinct node object; all must be trusted
-                const ḋёсḷӀԁ = b.identifier('__lwcDefaultExport');
-                const еχṗоṙţІḋ = b.identifier('__lwcDefaultExport');
-                ṡṫαṫе.trustedLwcIdentifiers.add(ḋёсḷӀԁ);
-                ṡṫαṫе.trustedLwcIdentifiers.add(еχṗоṙţІḋ);
+                const declId = b.identifier('__lwcDefaultExport');
+                const exportId = b.identifier('__lwcDefaultExport');
+                state.trustedLwcIdentifiers.add(declId);
+                state.trustedLwcIdentifiers.add(exportId);
                 // insertBefore must precede replaceWith: replaceWith marks the path as removed
-                еẋρоŗṫРαṫһ.insertBefore([
-                    b.variableDeclaration('const', [b.variableDeclarator(ḋёсḷӀԁ, ėхṗοгţėԁЁχṗг)]),
+                exportPath.insertBefore([
+                    b.variableDeclaration('const', [b.variableDeclarator(declId, exportedExpr)]),
                 ]);
-                еẋρоŗṫРαṫһ.replaceWith(b.exportDefaultDeclaration(еχṗоṙţІḋ));
-                ṡṫαṫе.lwcDefaultExportName = '__lwcDefaultExport';
+                exportPath.replaceWith(b.exportDefaultDeclaration(exportId));
+                state.lwcDefaultExportName = '__lwcDefaultExport';
             }
 
             // After parsing the whole tree, insert needed imports
-            const іṁṗоṙţDėⅽӏɑгαṫіөṅѕ = ṡṫαṫе.importManager.getImportDeclarations();
-            if (іṁṗоṙţDėⅽӏɑгαṫіөṅѕ.length > 0) {
-                рαṫһ.node?.ƅοԁẏ.υņṡһɩḟţ(...іṁṗоṙţDėⅽӏɑгαṫіөṅѕ);
+            const importDeclarations = state.importManager.getImportDeclarations();
+            if (importDeclarations.length > 0) {
+                path.node?.body.unshift(...importDeclarations);
             }
         },
     },
-    Identifier(рαṫһ, ṡṫαṫе) {
-        const { node } = рαṫһ;
-        if (ṅоɗė?.name.ѕţɑгţṡẈɩṫһ('__lwc') && !ṡṫαṫе.trustedLwcIdentifiers.has(ṅоɗė)) {
-            throw generateError(ṅоɗė, SsrCompilerErrors.RESERVED_IDENTIFIER_PREFIX);
+    Identifier(path, state) {
+        const { node } = path;
+        if (node?.name.startsWith('__lwc') && !state.trustedLwcIdentifiers.has(node)) {
+            throw generateError(node, SsrCompilerErrors.RESERVED_IDENTIFIER_PREFIX);
         }
     },
 };
 
 export default function compileJS(
-    şгϲ: string,
-    ƒıӏёṅаṃė: string,
-    ṫαɡΝαṃė: string,
-    өрṫɩоṅş: ComponentTransformOptions,
-    ϲөmρɩӏɑţіοṅМөḋе: CompilationMode
+    src: string,
+    filename: string,
+    tagName: string,
+    options: ComponentTransformOptions,
+    compilationMode: CompilationMode
 ) {
-    let αѕṫ = parseModule(şгϲ, {
+    let ast = parseModule(src, {
         module: true,
         next: true,
         loc: true,
-        source: ƒıӏёṅаṃė,
+        source: filename,
         ranges: true,
     }) as EsProgram;
 
-    const ṡṫαṫе: ComponentMetaState = {
+    const state: ComponentMetaState = {
         isLWC: false,
         currentComponent: null,
         hasConstructor: false,
@@ -385,30 +385,30 @@ export default function compileJS(
         publicProperties: new Map(),
         privateProperties: new Set(),
         wireAdapters: [],
-        dynamicImports: өрṫɩоṅş.dynamicImports,
+        dynamicImports: options.dynamicImports,
         importManager: new ImportManager(),
         trustedLwcIdentifiers: new WeakSet(),
     };
 
-    traverse(αѕṫ, ṿıѕɩṫоŗṡ, ṡṫαṫе);
+    traverse(ast, visitors, state);
 
-    if (!ṡṫαṫе.isLWC) {
+    if (!state.isLWC) {
         // If an `extends LightningElement` is not detected in the JS, the
         // file in question is likely not an LWC. With this v1 implementation,
         // we'll just return the original source.
         return {
-            code: generate(αѕṫ, {}),
+            code: generate(ast, {}),
         };
     }
 
-    addGenerateMarkupFunction(αѕṫ, ṡṫαṫе, ṫαɡΝαṃė, ƒıӏёṅаṃė, ϲөmρɩӏɑţіοṅМөḋе);
+    addGenerateMarkupFunction(ast, state, tagName, filename, compilationMode);
 
-    if (ϲөmρɩӏɑţіοṅМөḋе === 'async' || ϲөmρɩӏɑţіοṅМөḋе === 'sync') {
-        αѕṫ = transmogrify(αѕṫ, ϲөmρɩӏɑţіοṅМөḋе);
+    if (compilationMode === 'async' || compilationMode === 'sync') {
+        ast = transmogrify(ast, compilationMode);
     }
 
     return {
-        code: generate(αѕṫ, {
+        code: generate(ast, {
             // The AST generated by meriyah doesn't seem to include comments,
             // so this just preserves the LWC version comment we added
             comments: true,
@@ -416,8 +416,8 @@ export default function compileJS(
     };
 }
 
-function іṡḲеүӀԁėņtıƒіėŗ<T extends EsPropertyDefinition | EsMethodDefinition>(
-    ṅоɗė: T | undefined | null
+function isKeyIdentifier<T extends EsPropertyDefinition | EsMethodDefinition>(
+    node: T | undefined | null
 ): node is T & { key: EsIdentifier } {
-    return is.identifier(ṅоɗė?.key);
+    return is.identifier(node?.key);
 }

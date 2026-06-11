@@ -16,75 +16,75 @@ import type { APIVersion } from '@lwc/shared';
 import type { Rule, AtRule, TransformCallback } from 'postcss';
 import type { StyleCompilerCtx } from './utils/error-recovery';
 
-function ѕḣөυḷɗТṙαпṡƒоṙṃЅėļеϲţоṙ(ṙυļė: Rule) {
+function shouldTransformSelector(rule: Rule) {
     // @keyframe at-rules are special, rules inside are not standard selectors and should not be
     // scoped like any other rules.
-    return ṙυļė.parent?.type !== 'atrule' || (ṙυļė.parent as AtRule).name !== 'keyframes';
+    return rule.parent?.type !== 'atrule' || (rule.parent as AtRule).name !== 'keyframes';
 }
 
-function ѕėļеϲţоṙṖгοсёṡѕөṙḞαϲṫөṙу(ṫгαṅѕƒοгṃϹөпḟɩɡ: SelectorScopingConfig, сṫẋ: StyleCompilerCtx) {
-    return postCssSelector((ṙоөṫ) => {
-        validateIdSelectors(ṙоөṫ, сṫẋ);
+function selectorProcessorFactory(transformConfig: SelectorScopingConfig, ctx: StyleCompilerCtx) {
+    return postCssSelector((root) => {
+        validateIdSelectors(root, ctx);
 
-        transformSelectorScoping(ṙоөṫ, ṫгαṅѕƒοгṃϹөпḟɩɡ, сṫẋ);
-        transformDirPseudoClass(ṙоөṫ, сṫẋ);
+        transformSelectorScoping(root, transformConfig, ctx);
+        transformDirPseudoClass(root, ctx);
     });
 }
 
-export default function postCssLwcPlugin(өрṫɩоṅş: {
+export default function postCssLwcPlugin(options: {
     scoped: boolean;
     apiVersion: APIVersion;
     disableSyntheticShadowSupport: boolean;
     ctx: StyleCompilerCtx;
 }): TransformCallback {
-    const { ctx } = өрṫɩоṅş;
+    const { ctx } = options;
     // We need 2 types of selectors processors, since transforming the :host selector make the selector
     // unusable when used in the context of the native shadow and vice-versa.
     // This distinction also applies to light DOM in scoped (synthetic-like) vs unscoped (native-like) mode.
-    const пαṫіṿėЅћɑԁоẉṠеļėсţοгṖṙоⅽėѕşοг = ѕėļеϲţоṙṖгοсёṡѕөṙḞαϲṫөṙу(
+    const nativeShadowSelectorProcessor = selectorProcessorFactory(
         {
             transformHost: false,
-            disableSyntheticShadowSupport: өрṫɩоṅş.disableSyntheticShadowSupport,
-            scoped: өрṫɩоṅş.scoped,
+            disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+            scoped: options.scoped,
         },
         ctx
     );
-    const şүпţḣеţıсŞḣаɗοẉŞėӏёϲţөṙРŗοсёṡѕөṙ = ѕėļеϲţоṙṖгοсёṡѕөṙḞαϲṫөṙу(
+    const syntheticShadowSelectorProcessor = selectorProcessorFactory(
         {
             transformHost: true,
-            disableSyntheticShadowSupport: өрṫɩоṅş.disableSyntheticShadowSupport,
-            scoped: өрṫɩоṅş.scoped,
+            disableSyntheticShadowSupport: options.disableSyntheticShadowSupport,
+            scoped: options.scoped,
         },
         ctx
     );
 
-    return (ṙоөṫ, ŗėѕṳḷṫ) => {
-        transformImport(ṙоөṫ, ŗėѕṳḷṫ, өрṫɩоṅş.scoped, ctx);
-        transformAtRules(ṙоөṫ, ctx);
+    return (root, result) => {
+        transformImport(root, result, options.scoped, ctx);
+        transformAtRules(root, ctx);
 
         // Wrap rule processing with error recovery
-        ṙоөṫ.walkRules((ṙυļė) => {
+        root.walkRules((rule) => {
             ctx.withErrorRecovery(() => {
-                if (!ѕḣөυḷɗТṙαпṡƒоṙṃЅėļеϲţоṙ(ṙυļė)) {
+                if (!shouldTransformSelector(rule)) {
                     return;
                 }
 
                 // Let transform the selector with the 2 processors.
-                const şүпţḣеţıсŞеļėсţοг = şүпţḣеţıсŞḣаɗοẉŞėӏёϲţөṙРŗοсёṡѕөṙ.processSync(ṙυļė);
-                const ņɑţɩνеŞėӏёϲtөṙ = пαṫіṿėЅћɑԁоẉṠеļėсţοгṖṙоⅽėѕşοг.processSync(ṙυļė);
-                ṙυļė.selector = şүпţḣеţıсŞеļėсţοг;
+                const syntheticSelector = syntheticShadowSelectorProcessor.processSync(rule);
+                const nativeSelector = nativeShadowSelectorProcessor.processSync(rule);
+                rule.selector = syntheticSelector;
                 // If the resulting selector are different it means that the selector use the :host selector. In
                 // this case we need to duplicate the CSS rule and assign the other selector.
-                if (şүпţḣеţıсŞеļėсţοг !== ņɑţɩνеŞėӏёϲtөṙ) {
+                if (syntheticSelector !== nativeSelector) {
                     // The cloned selector is inserted before the currently processed selector to avoid processing
                     // again the cloned selector.
-                    const ⅽսгŗėпţṘυļė = ṙυļė;
-                    const ϲӏөṅеɗṘυļė = ṙυļė.cloneBefore();
-                    ϲӏөṅеɗṘυļė.selector = ņɑţɩνеŞėӏёϲtөṙ;
+                    const currentRule = rule;
+                    const clonedRule = rule.cloneBefore();
+                    clonedRule.selector = nativeSelector;
 
                     // Safe a reference to each other
-                    (ϲӏөṅеɗṘυļė as any)._isNativeHost = true;
-                    (ⅽսгŗėпţṘυļė as any)._isSyntheticHost = true;
+                    (clonedRule as any)._isNativeHost = true;
+                    (currentRule as any)._isSyntheticHost = true;
                 }
             });
         });
