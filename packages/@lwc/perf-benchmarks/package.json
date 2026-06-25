@@ -23,9 +23,9 @@
         "@lwc/synthetic-shadow": "9.3.4"
     },
     "devDependencies": {
-        "@best/cli": "^16.1.0",
-        "@best/runner-headless": "^16.1.0",
-        "@best/runner-remote": "^16.1.0",
+        "@best/cli": "^17.0.0",
+        "@best/runner-headless": "^17.0.0",
+        "@best/runner-remote": "^17.0.0",
         "folder-hash": "4.1.3",
         "markdown-table": "^3.0.4",
         "tachometer": "^0.7.2"
