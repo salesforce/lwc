@@ -51,11 +51,11 @@
         }
     },
     "dependencies": {
-        "@babel/core": "7.29.7",
-        "@babel/plugin-transform-async-generator-functions": "7.29.7",
-        "@babel/plugin-transform-async-to-generator": "7.29.7",
-        "@babel/plugin-transform-class-properties": "7.29.7",
-        "@babel/plugin-transform-object-rest-spread": "7.29.7",
+        "@babel/core": "8.0.1",
+        "@babel/plugin-transform-async-generator-functions": "8.0.1",
+        "@babel/plugin-transform-async-to-generator": "8.0.1",
+        "@babel/plugin-transform-class-properties": "8.0.1",
+        "@babel/plugin-transform-object-rest-spread": "8.0.1",
         "@locker/babel-plugin-transform-unforgeables": "0.22.0",
         "@lwc/babel-plugin-component": "9.3.4",
         "@lwc/errors": "9.3.4",

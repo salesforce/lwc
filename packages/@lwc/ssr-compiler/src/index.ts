@@ -12,7 +12,7 @@ import type { ComponentTransformOptions, TemplateTransformOptions } from './shar
 
 export interface CompilationResult {
     code: string;
-    map: undefined;
+    map: null;
 }
 
 export function compileComponentForSSR(
@@ -23,7 +23,7 @@ export function compileComponentForSSR(
 ): CompilationResult {
     const tagName = generateCustomElementTagName(options.namespace, options.name);
     const { code } = compileJS(src, filename, tagName, options, mode);
-    return { code, map: undefined };
+    return { code, map: null };
 }
 
 export function compileTemplateForSSR(
@@ -33,5 +33,5 @@ export function compileTemplateForSSR(
     mode: CompilationMode = DEFAULT_SSR_MODE
 ): CompilationResult {
     const { code } = compileTemplate(src, filename, options, mode);
-    return { code, map: undefined };
+    return { code, map: null };
 }

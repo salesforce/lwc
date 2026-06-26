@@ -7,13 +7,13 @@
 
 // Add ?scoped=true to any imports ending with .scoped.css. This signals that the stylesheet
 // should be treated as "scoped".
-import type { Node, NodePath } from '@babel/core';
+import type { types, NodePath } from '@babel/core';
 import type { BabelAPI } from './types';
 
 export default function ({ types: t }: BabelAPI, path: NodePath): void {
     const programPath = path.isProgram() ? path : path.findParent((node) => node.isProgram());
 
-    (programPath!.get('body') as NodePath<Node>[]).forEach((node) => {
+    (programPath!.get('body') as NodePath<types.Node>[]).forEach((node) => {
         if (node.isImportDeclaration()) {
             const source = node.get('source');
             if (source.type === 'StringLiteral' && source.node.value.endsWith('.scoped.css')) {

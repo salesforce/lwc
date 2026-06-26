@@ -13,7 +13,7 @@ import api from './api';
 import wire from './wire';
 import track from './track';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from '../types';
-import type { Node, types, Visitor, NodePath } from '@babel/core';
+import type { types, VisitorBase, NodePath } from '@babel/core';
 import type { ClassBodyItem, ImportSpecifier, LwcDecoratorName } from './types';
 
 const DECORATOR_TRANSFORMS = [api, wire, track];
@@ -162,7 +162,7 @@ function validate(decorators: DecoratorMeta[], state: LwcBabelPluginPass) {
  * @param engineImportSpecifiers
  */
 function removeImportedDecoratorSpecifiers(
-    engineImportSpecifiers: { name: any; path: NodePath<Node> }[]
+    engineImportSpecifiers: { name: any; path: NodePath<types.Node> }[]
 ) {
     engineImportSpecifiers
         .filter(({ name }) => isLwcDecoratorName(name))
@@ -268,7 +268,7 @@ function getMetadataObjectPropertyList(
     return list;
 }
 
-function decorators({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
+function decorators({ types: t }: BabelAPI): VisitorBase<LwcBabelPluginPass> {
     function createRegisterDecoratorsCallExpression(
         path: NodePath<types.Class>,
         classExpression: types.Identifier | types.ClassExpression,

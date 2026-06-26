@@ -159,7 +159,7 @@ function validateWireConfig(config: NodePath, path: NodePath, state: LwcBabelPlu
 }
 
 function validateWireParameters(path: NodePath, state: LwcBabelPluginPass) {
-    const expressionArguments = path.get('expression.arguments');
+    const expressionArguments = path.get('expression.arguments') as NodePath | NodePath[];
     if (Array.isArray(expressionArguments)) {
         // Multiple arguments: should be [id, config?]
         const [id, config] = expressionArguments;

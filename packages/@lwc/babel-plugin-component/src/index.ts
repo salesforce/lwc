@@ -16,7 +16,7 @@ import scopeCssImports from './scope-css-imports';
 import compilerVersionNumber from './compiler-version-number';
 import { getEngineImportSpecifiers } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
-import type { PluginObj } from '@babel/core';
+import type { PluginObject } from '@babel/core';
 
 // This is useful for consumers of this package to define their options
 export type { LwcBabelPluginOptions } from './types';
@@ -30,18 +30,15 @@ export { default as LwcReversePrivateMethodTransform } from './reverse-private-m
  * - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  * @param api
  */
-export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPluginPass> {
+export default function LwcClassTransform(api: BabelAPI): PluginObject<LwcBabelPluginPass> {
     const { ExportDefaultDeclaration: transformCreateRegisterComponent } = component(api);
     const { Class: transformDecorators } = decorators(api);
-    const { Import: transformDynamicImports } = dynamicImports();
+    const { ImportExpression: transformDynamicImports } = dynamicImports(api);
     const { ClassBody: addCompilerVersionNumber } = compilerVersionNumber(api);
 
     return {
         manipulateOptions(opts, parserOpts) {
-            parserOpts.plugins.push('classProperties', [
-                'decorators',
-                { decoratorsBeforeExport: true },
-            ]);
+            parserOpts.plugins.push('decorators');
         },
 
         visitor: {
@@ -63,7 +60,7 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
                 },
             },
 
-            Import: transformDynamicImports,
+            ImportExpression: transformDynamicImports,
 
             Class: transformDecorators,
 

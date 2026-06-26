@@ -13,7 +13,7 @@ import {
 } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler';
 
-import type { BabelFileResult } from '@babel/core';
+import type { FileResult } from '@babel/core';
 import type { NormalizedTransformOptions } from '../options';
 import type { TransformResult } from './shared';
 
@@ -93,7 +93,7 @@ export default function templateTransform(
     // the template doesn't make sense, the transform returns an empty mappings.
     return {
         code: result.code,
-        map: { mappings: '' } as BabelFileResult['map'],
+        map: { mappings: '' } as FileResult['map'],
         warnings,
         cssScopeTokens: result.cssScopeTokens,
     };

@@ -18,7 +18,7 @@ import {
     SYNTHETIC_ELEMENT_INTERNALS_KEY,
     COMPONENT_FEATURE_FLAG_KEY,
 } from './constants';
-import type { types, NodePath, Visitor } from '@babel/core';
+import type { types, NodePath, VisitorBase } from '@babel/core';
 import type { BabelAPI, BabelTypes, LwcBabelPluginPass } from './types';
 
 function getBaseName(classPath: string) {
@@ -53,7 +53,7 @@ function getComponentRegisteredName(t: BabelTypes, state: LwcBabelPluginPass) {
     return t.stringLiteral(componentName);
 }
 
-export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
+export default function ({ types: t }: BabelAPI): VisitorBase<LwcBabelPluginPass> {
     function createRegisterComponent(declarationPath: DeclarationPath, state: LwcBabelPluginPass) {
         const registerComponentId = addNamed(
             declarationPath,
@@ -62,7 +62,7 @@ export default function ({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
         );
         const templateIdentifier = importDefaultTemplate(declarationPath, state);
         // Optionally import feature flag module if provided via compiler options
-        let componentFeatureFlagIdentifier: types.Identifier | undefined;
+        let componentFeatureFlagIdentifier: types.Expression | undefined;
         if (state.opts.componentFeatureFlagModulePath) {
             componentFeatureFlagIdentifier = addDefault(
                 declarationPath,
