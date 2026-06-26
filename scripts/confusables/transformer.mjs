@@ -11,9 +11,6 @@ const traverse = traverseModule.default || traverseModule;
 const TYPE_SPACE_DECLARATIONS = new Set([
     'TSTypeAliasDeclaration',
     'TSInterfaceDeclaration',
-    // Enums are a dual value+type binding; renaming them safely would require rewriting both
-    // their value and type references in lockstep, so they are preserved entirely.
-    'TSEnumDeclaration',
     'TSModuleDeclaration',
     'TSImportEqualsDeclaration',
     // Constructor parameter properties (`constructor(private foo)`) create class members
@@ -250,6 +247,102 @@ function isTypeDeclId(parent, node) {
 }
 
 /**
+ * Whether an enum name appears in a value position the emit phase leaves ASCII. An enum has no
+ * module-boundary alias, and the value path renames only member-access objects (`Enum.MEMBER`)
+ * and bare value references; object shorthand (`{ Enum }`, handled by the ObjectProperty visitor)
+ * and import/export specifiers (a preserved position with no enum alias) stay ASCII. Such an
+ * occurrence would desync from the renamed declaration, so the prescan drops the enum entirely.
+ */
+function isUncoveredEnumValueReference(path) {
+    const { node, parent } = path;
+    // The declaration id and member-key ids are not references; they are handled (or preserved)
+    // by the dedicated enum visitor.
+    if (parent?.type === 'TSEnumDeclaration' && parent.id === node) return false;
+    if (parent?.type === 'TSEnumMember') return false;
+    // Object shorthand `{ Enum }` (and its shorthand-default form) is not renamed for enums.
+    if (parent?.type === 'ObjectProperty' && parent.shorthand) return true;
+    if (
+        parent?.type === 'AssignmentPattern' &&
+        parent.left === node &&
+        path.parentPath?.parent?.type === 'ObjectProperty' &&
+        path.parentPath.parent.shorthand
+    ) {
+        return true;
+    }
+    // `export { Enum }` carries no enum alias, so the export visitor leaves the specifier ASCII.
+    // (Import specifiers are listed defensively to mirror the emit-side preserved positions; a
+    // module-local enum is never imported, and an imported same-named identifier has a scope
+    // binding that the caller's `getBinding` guard excludes before reaching here.)
+    return (
+        parent?.type === 'ImportSpecifier' ||
+        parent?.type === 'ImportDefaultSpecifier' ||
+        parent?.type === 'ImportNamespaceSpecifier' ||
+        parent?.type === 'ExportSpecifier'
+    );
+}
+
+/**
+ * Whether an enum-name identifier is the object of a computed access that exposes a member name as
+ * a string — `E['Member']` in value space (a `MemberExpression`/`OptionalMemberExpression` with
+ * `computed: true`) or `E['Member']` in type space (a `TSTypeReference` used as the `objectType`
+ * of a `TSIndexedAccessType`). Such access reads a member by string literal, so renaming the
+ * member key would desync; the prescan disqualifies the enum's members from renaming.
+ */
+function exposesEnumMemberAsString(path) {
+    const { node, parent } = path;
+    if (
+        (parent?.type === 'MemberExpression' || parent?.type === 'OptionalMemberExpression') &&
+        parent.object === node &&
+        parent.computed
+    ) {
+        return true;
+    }
+    if (parent?.type === 'TSTypeReference') {
+        const gp = path.parentPath?.parent;
+        return gp?.type === 'TSIndexedAccessType' && gp.objectType === parent;
+    }
+    // `keyof typeof E` is the union of the member-key string literals, so renaming the keys would
+    // desync any string constrained to that type. `E` here is the `exprName` of a `TSTypeQuery`
+    // (`typeof E`) whose parent is a `keyof` `TSTypeOperator`.
+    if (parent?.type === 'TSTypeQuery' && parent.exprName === node) {
+        const gp = path.parentPath?.parent;
+        return gp?.type === 'TSTypeOperator' && gp.operator === 'keyof';
+    }
+    return false;
+}
+
+/**
+ * Collects bare identifier-reference names within a node into `out`. Used to detect, in a const-enum
+ * declaration, whether a member initializer references a sibling member name as a bare identifier
+ * (`B = A << 1`), which would desync if the member keys were renamed. Member-access property
+ * positions (`E.A`, where `A` is the non-computed property) are skipped: those already rename in
+ * lockstep via the dedicated member-access visitors, so they are not a desync source.
+ */
+function collectIdentifierNames(node, out) {
+    if (!node || typeof node.type !== 'string') return;
+    if (node.type === 'Identifier') {
+        out.add(node.name);
+        return;
+    }
+    for (const key of Object.keys(node)) {
+        if (
+            (node.type === 'MemberExpression' || node.type === 'OptionalMemberExpression') &&
+            key === 'property' &&
+            !node.computed
+        ) {
+            continue;
+        }
+        if (node.type === 'TSQualifiedName' && key === 'right') continue;
+        const value = node[key];
+        if (Array.isArray(value)) {
+            for (const child of value) collectIdentifierNames(child, out);
+        } else {
+            collectIdentifierNames(value, out);
+        }
+    }
+}
+
+/**
  * Transforms identifiers in the source code. Module-scope imports and exports are renamed with
  * the cross-module string contract preserved via aliasing at the boundary; references (value and
  * type) are rewritten to the renamed local.
@@ -311,12 +404,54 @@ export function transformSource(ast, source, analysis) {
         renameableTypeNames.add(name);
     }
 
+    // Non-exported enum names. An enum is a dual value+type binding, but Babel registers no scope
+    // binding for it, so it cannot ride the binding-keyed value path; it is renamed by this
+    // name-keyed set instead. The enum NAME always moves; members move only for the const-enum
+    // subset below. Exported enums stay ASCII entirely — there is no module-boundary alias for an
+    // enum, and the analyzer protects exported members as a cross-module contract.
+    const renameableEnumNames = new Set();
+
+    // Const enums whose MEMBER names are also renameable. A `const enum` has no runtime object —
+    // TypeScript inlines every `E.Member` at compile time — so the member names are compile-time
+    // only and safe to rename, provided every member is an Identifier key and every reference is a
+    // covered `E.Member` access (value member expression or type qualified name). Any computed
+    // access (`E['Member']`) would desync; the Pass A3 prescan drops such an enum from this set.
+    const memberRenameableEnumNames = new Set();
+
+    function isExportedDecl(path) {
+        return (
+            path.parent?.type === 'ExportNamedDeclaration' ||
+            path.parent?.type === 'ExportDefaultDeclaration'
+        );
+    }
+
     traverse(ast, {
         TSTypeAliasDeclaration(path) {
             considerTypeName(path.node.id?.name);
         },
         TSInterfaceDeclaration(path) {
             considerTypeName(path.node.id?.name);
+        },
+        TSEnumDeclaration(path) {
+            if (isExportedDecl(path)) return;
+            const name = path.node.id?.name;
+            if (!name) return;
+            if (GLOBAL_IDENTIFIERS.has(name)) return;
+            if (publicIdentifiers.has(name)) return;
+            renameableEnumNames.add(name);
+            const members = path.node.members || [];
+            if (path.node.const && members.every((m) => m.id?.type === 'Identifier')) {
+                // A member initializer that references a sibling member by name (`B = A << 1`)
+                // would desync: the key declaration renames but the bare reference does not. Only
+                // claim member renaming when no initializer references a member key name.
+                const memberKeyNames = new Set(members.map((m) => m.id.name));
+                const initializerNames = new Set();
+                for (const m of members) collectIdentifierNames(m.initializer, initializerNames);
+                const referencesSibling = [...initializerNames].some((n) => memberKeyNames.has(n));
+                if (!referencesSibling) {
+                    memberRenameableEnumNames.add(name);
+                }
+            }
         },
         ImportDeclaration(path) {
             const declTypeOnly = path.node.importKind === 'type';
@@ -391,11 +526,30 @@ export function transformSource(ast, source, analysis) {
     const unsafeValueIds = new Set();
     const unsafeTypeNames = new Set();
     const unsafeTypeParamNames = new Set();
+    const unsafeEnumNames = new Set();
+    const unsafeEnumMemberNames = new Set();
 
     traverse(ast, {
         Identifier(path) {
             const { node, parent } = path;
             const name = node.name;
+            // A const enum whose member is read by string (`E['Member']`, value or type) cannot
+            // have its member keys renamed without desyncing that string. Disqualify member
+            // renaming (the enum NAME still renames via the checks below / its own path).
+            if (memberRenameableEnumNames.has(name) && exposesEnumMemberAsString(path)) {
+                unsafeEnumMemberNames.add(name);
+            }
+            // Value-position enum references the emit phase leaves ASCII (object shorthand,
+            // import/export specifiers) would desync from the renamed declaration. Inspect these
+            // before the type-context guard, since they live in value space.
+            if (
+                renameableEnumNames.has(name) &&
+                !path.scope.getBinding(name) &&
+                isUncoveredEnumValueReference(path)
+            ) {
+                unsafeEnumNames.add(name);
+                return;
+            }
             if (!isInTypeContext(path)) return;
             if (isCoveredTypeName(path)) return;
             if (GLOBAL_IDENTIFIERS.has(name)) return;
@@ -437,17 +591,26 @@ export function transformSource(ast, source, analysis) {
             if (typeParamNames.has(name)) {
                 unsafeTypeParamNames.add(name);
             }
+            if (renameableEnumNames.has(name)) {
+                unsafeEnumNames.add(name);
+            }
         },
     });
 
     for (const id of unsafeValueIds) renameableIds.delete(id);
     for (const n of unsafeTypeNames) renameableTypeNames.delete(n);
     for (const n of unsafeTypeParamNames) typeParamNames.delete(n);
+    for (const n of unsafeEnumNames) renameableEnumNames.delete(n);
+    // An enum dropped from name renaming (uncovered value reference) also loses member renaming:
+    // if the name desyncs we leave the whole declaration ASCII.
+    for (const n of unsafeEnumNames) memberRenameableEnumNames.delete(n);
+    for (const n of unsafeEnumMemberNames) memberRenameableEnumNames.delete(n);
 
     function resolvesToRenameableType(path, name) {
         if (GLOBAL_IDENTIFIERS.has(name)) return false;
         if (resolvesToRenameableValue(path, name)) return true;
         if (renameableTypeNames.has(name)) return true;
+        if (renameableEnumNames.has(name)) return true;
         return typeParamNames.has(name);
     }
 
@@ -631,6 +794,15 @@ export function transformSource(ast, source, analysis) {
                 return;
             }
 
+            // Enum declaration ids and member ids are handled by the dedicated TSEnumDeclaration
+            // visitor / left ASCII; never rename them through the value path.
+            if (parent?.type === 'TSEnumDeclaration' && parent.id === node) {
+                return;
+            }
+            if (parent?.type === 'TSEnumMember') {
+                return;
+            }
+
             // Shorthand object properties are fully handled by the ObjectProperty visitor.
             if (parent?.type === 'ObjectProperty' && parent.shorthand) {
                 return;
@@ -651,11 +823,32 @@ export function transformSource(ast, source, analysis) {
                 return;
             }
 
+            // A const-enum member access (`E.Member`): the member key renames with the enum, so the
+            // `.Member` property — normally a preserved member position — must rename in lockstep.
+            if (
+                (parent?.type === 'MemberExpression' ||
+                    parent?.type === 'OptionalMemberExpression') &&
+                parent.property === node &&
+                !parent.computed &&
+                parent.object?.type === 'Identifier' &&
+                memberRenameableEnumNames.has(parent.object.name) &&
+                !path.scope.getBinding(parent.object.name)
+            ) {
+                pushRename(node);
+                return;
+            }
+
             if (isPreservedPosition(path)) {
                 return;
             }
 
             if (!resolvesToRenameableValue(path, name)) {
+                // An enum value reference (`Enum.MEMBER`) resolves to no scope binding, so it
+                // falls through here. Rename it iff the name is a renameable enum AND no binding
+                // shadows it — a same-named local binding would own this occurrence instead.
+                if (renameableEnumNames.has(name) && !path.scope.getBinding(name)) {
+                    pushRename(node);
+                }
                 return;
             }
 
@@ -678,12 +871,41 @@ export function transformSource(ast, source, analysis) {
             if (id?.type === 'Identifier' && renameableTypeNames.has(id.name)) pushRename(id);
         },
 
+        // Rename a non-exported enum's declaration name. For a const enum that survived the member
+        // prescan, also rename each member-key declaration; its `E.Member` references rename in
+        // lockstep via the value Identifier and TSQualifiedName visitors. A plain enum keeps its
+        // members ASCII (runtime object with reverse mapping). The name's type and value references
+        // rename through resolvesToRenameableType and the value Identifier visitor respectively.
+        TSEnumDeclaration(path) {
+            const id = path.node.id;
+            if (id?.type !== 'Identifier' || !renameableEnumNames.has(id.name)) return;
+            pushRename(id);
+            if (!memberRenameableEnumNames.has(id.name)) return;
+            for (const member of path.node.members || []) {
+                if (member.id?.type === 'Identifier') pushRename(member.id);
+            }
+        },
+
         // Type references: classes/enums (via value binding) and type-space names.
         TSTypeReference(path) {
             const idNode = leftmostEntityIdentifier(path.node.typeName);
             if (!idNode) return;
             if (!resolvesToRenameableType(path, idNode.name)) return;
             pushRename(idNode);
+        },
+
+        // A const-enum member used as a type (`E.Member`): the `right` of the qualified name is the
+        // member key, which renames in lockstep with the member-key declaration. The `left` (the
+        // enum name) renames via the TSTypeReference visitor above.
+        TSQualifiedName(path) {
+            const { left, right } = path.node;
+            if (
+                left?.type === 'Identifier' &&
+                right?.type === 'Identifier' &&
+                memberRenameableEnumNames.has(left.name)
+            ) {
+                pushRename(right);
+            }
         },
 
         // Heritage clauses (`implements X`, interface `extends X` — both are

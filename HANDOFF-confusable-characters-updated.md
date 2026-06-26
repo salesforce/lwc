@@ -88,12 +88,12 @@ from all of them and emits exactly one aliased specifier for the implementation.
   adds export names to a public-preserve set, because export _locals_ now rename.
 - `globals.mjs` — JS/DOM globals and LWC lifecycle hooks that must never be renamed. The former
   "common property names" block (`length, name, value, type, id, key, data, error, message,
-  stack`) has been removed: those were only ever suppressing renames of local bindings and
+stack`) has been removed: those were only ever suppressing renames of local bindings and
   parameters (e.g. `catch (error)`), since member access (`obj.error`) and object keys are
   already protected positionally by `isPreservedPosition` / `analyzer.mjs`.
 - `confusables-map.mjs` — ASCII → confusable character mappings.
 - `hash.mjs` — deterministic per-name character selection.
-- `transformer.test.mjs` — 49 unit tests (`node --test`), one per import/export/type-space form
+- `transformer.test.mjs` — 59 unit tests (`node --test`), one per import/export/type-space form
   plus the bug classes below.
 
 ### Type space (the fragile part)
@@ -159,6 +159,34 @@ observe this at runtime and were updated to match (not source bugs — expected 
    slicing the modifier keyword (the wire.ts `const Value`/`const Class` case).
 9. Common-property-name locals (`error`, `value`, `message`, …) rename as ordinary bindings;
    member access (`obj.error`) and object keys stay ASCII via positional preservation.
+10. Non-exported enum names rename. Babel registers no scope binding for an enum, so it cannot
+    ride the binding-keyed value path; it is renamed by a name-keyed set `renameableEnumNames`
+    (collected in Pass A2, exported enums excluded). Only the enum _name_ moves: members are
+    declared as enum-member keys and always read as `Enum.MEMBER` (a preserved member position),
+    so they stay ASCII. The name's type references rename via `resolvesToRenameableType`, its
+    value references via the value `Identifier` visitor's enum fallthrough (`Enum.MEMBER` object
+    position + bare value refs, guarded by `!scope.getBinding(name)` so a same-named local owns
+    its own occurrences). The Pass A3 prescan also inspects VALUE positions for enum names: an
+    enum used in object shorthand (`{ Enum }`) or a separate export specifier (`export { Enum }`)
+    is left ASCII by the emit phase (no enum alias at the boundary), so the prescan drops it from
+    the rename set, keeping declaration and references in lockstep. Exported enums stay ASCII
+    entirely — the analyzer protects exported members as a cross-module contract.
+
+    **Const-enum members rename too.** A `const enum` has no runtime object — TS inlines every
+    `E.Member` at compile time, with no reverse mapping — so its member names are compile-time-only
+    and safe to rename in lockstep. The collector adds the enum to `memberRenameableEnumNames` only
+    when `node.const` is true and every member key is a plain `Identifier`. The emit phase then
+    renames member-key declarations (`TSEnumDeclaration` visitor), value access `E.Member` (value
+    `Identifier` visitor, guarded by `!scope.getBinding(enumName)`), and type access `E.Member`
+    (`TSQualifiedName` right side) — all three read the one `memberRenameableEnumNames` set, so any
+    prescan deletion reverts them together. A PLAIN (non-const) enum emits a runtime object whose
+    member names are observable strings, so its members always stay ASCII (only the name moves).
+    Three shapes disqualify const-enum member renaming (members stay ASCII, name still renames):
+    a member read by computed string access (`E[k]`) or indexed-access type (`E['M']`), the enum
+    exposed via `keyof typeof E` (the member-key string-literal union), and a member initializer
+    that references a sibling member by bare name (`B = A << 1`) — `exposesEnumMemberAsString`
+    handles the first two (value + type) via the prescan; the sibling-reference check runs in the
+    collector gate (`E.A` member-access references are excluded — those rename in lockstep).
 
 ## Reproducing from scratch
 

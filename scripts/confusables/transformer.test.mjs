@@ -587,6 +587,188 @@ describe('confusables transformer', () => {
         assert.match(out, new RegExp(`return ${rx(renamed)};`));
     });
 
+    // A non-exported enum is a file-local dual value+type binding for which Babel registers no
+    // scope binding, so it is renamed by a name-keyed path (like a type name). Its members are
+    // always reached as `Enum.MEMBER` (a preserved member position), so only the enum name moves.
+    it('renames a non-exported enum name across declaration, type, and value positions', () => {
+        const out = run(
+            `enum TokenType { text = 'text', expr = 'expr' }\n` +
+                `interface Tok { type: TokenType; }\n` +
+                `function f(t: Tok) {\n` +
+                `  if (t.type === TokenType.text) return TokenType.expr;\n` +
+                `  return TokenType.text;\n` +
+                `}`
+        );
+        assertParses(out);
+        // The enum name renames everywhere to the same confusable.
+        assert.doesNotMatch(out, /\bTokenType\b/);
+        const renamed = out.match(/enum (\S+) \{/)[1];
+        assert.notEqual(renamed, 'TokenType');
+        assert.match(out, new RegExp(`type: ${rx(renamed)};`));
+        assert.match(out, new RegExp(`=== ${rx(renamed)}\\.text`));
+        assert.match(out, new RegExp(`return ${rx(renamed)}\\.expr`));
+        // Members stay ASCII: declared as enum-member keys and read via member access.
+        assert.match(out, /text = 'text'/);
+        assert.match(out, new RegExp(`${rx(renamed)}\\.text`));
+        assert.match(out, new RegExp(`${rx(renamed)}\\.expr`));
+    });
+
+    // A const enum has no runtime object (TS inlines every `E.Member`), so its member NAMES are
+    // compile-time only and rename in lockstep with the key declarations — name and members alike.
+    it('renames a non-exported const enum name AND its members in lockstep', () => {
+        const out = run(
+            `const enum Phase { Start, Stop }\n` +
+                `function f(phase: Phase) {\n` +
+                `  return phase === Phase.Start ? Phase.Stop : Phase.Start;\n` +
+                `}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bPhase\b/);
+        assert.doesNotMatch(out, /\bStart\b/);
+        assert.doesNotMatch(out, /\bStop\b/);
+        const renamed = out.match(/const enum (\S+) \{/)[1];
+        assert.notEqual(renamed, 'Phase');
+        // Capture the renamed member keys from the declaration, then assert each `E.Member` access
+        // uses the same confusable (lockstep).
+        const [, start, stop] = out.match(/const enum \S+ \{ (\S+), (\S+) \}/);
+        assert.notEqual(start, 'Start');
+        assert.notEqual(stop, 'Stop');
+        assert.match(out, new RegExp(`${rx(renamed)}\\.${rx(start)}`));
+        assert.match(out, new RegExp(`${rx(renamed)}\\.${rx(stop)}`));
+        assert.match(out, new RegExp(`\\S+: ${rx(renamed)}\\)`));
+    });
+
+    // A plain (non-const) enum emits a runtime object with reverse mapping (`E[0] === 'A'`), so its
+    // member names are observable strings and must stay ASCII; only the enum name moves.
+    it('leaves a plain (non-const) enum members ASCII, renaming only the name', () => {
+        const out = run(
+            `enum TokenType { text = 'text', expr = 'expr' }\n` +
+                `function f(): TokenType { return TokenType.text; }`
+        );
+        assertParses(out);
+        const renamed = out.match(/enum (\S+) \{/)[1];
+        assert.notEqual(renamed, 'TokenType');
+        // Members stay ASCII in both declaration and access.
+        assert.match(out, /text = 'text'/);
+        assert.match(out, /expr = 'expr'/);
+        assert.match(out, new RegExp(`${rx(renamed)}\\.text`));
+    });
+
+    // A const-enum member read by computed string access (`E['Member']`) would desync if the member
+    // key renamed, so member renaming is disqualified — members stay ASCII (the name still renames).
+    it('keeps const-enum members ASCII when a member is read by computed string access', () => {
+        const out = run(
+            `const enum Phase { Start, Stop }\n` +
+                `const k = 'Start';\n` +
+                `const v = Phase[k as 'Start'];\n` +
+                `function f(): Phase { return Phase.Start; }`
+        );
+        assertParses(out);
+        const renamed = out.match(/const enum (\S+) \{/)[1];
+        assert.notEqual(renamed, 'Phase');
+        // Members stay ASCII because of the computed access.
+        assert.match(out, /\{ Start, Stop \}/);
+        assert.match(out, new RegExp(`${rx(renamed)}\\.Start`));
+    });
+
+    // A const-enum member initializer that references a sibling member by bare name (`B = A << 1`)
+    // would desync if the keys renamed: the `A` key declaration moves but the bare `A` reference in
+    // `B`'s initializer does not. Member renaming is disqualified; the members stay ASCII (the name
+    // still renames).
+    it('keeps const-enum members ASCII when a member initializer references a sibling member', () => {
+        const out = run(
+            `const enum Flags { A = 1, B = A << 1 }\n` + `function f(): Flags { return Flags.B; }`
+        );
+        assertParses(out);
+        const renamed = out.match(/const enum (\S+) \{/)[1];
+        assert.notEqual(renamed, 'Flags');
+        // Members and the sibling reference stay ASCII in lockstep.
+        assert.match(out, /A = 1, B = A << 1/);
+        assert.match(out, new RegExp(`${rx(renamed)}\\.B`));
+    });
+
+    // `keyof typeof E` is the union of the member-key string literals, so renaming the keys would
+    // desync any string constrained to that type. Member renaming is disqualified.
+    it('keeps const-enum members ASCII when exposed via `keyof typeof`', () => {
+        const out = run(
+            `const enum Phase { Start, Stop }\n` +
+                `const k: keyof typeof Phase = 'Start';\n` +
+                `function f(): Phase { return Phase.Start; }`
+        );
+        assertParses(out);
+        const renamed = out.match(/const enum (\S+) \{/)[1];
+        assert.notEqual(renamed, 'Phase');
+        assert.match(out, /\{ Start, Stop \}/);
+        assert.match(out, /'Start'/);
+        assert.match(out, new RegExp(`${rx(renamed)}\\.Start`));
+    });
+
+    // A const-enum member used as a type (`E.Member`) renames the qualified-name member in lockstep
+    // with the key declaration.
+    it('renames a const-enum member used in type position', () => {
+        const out = run(
+            `const enum Phase { Start, Stop }\n` +
+                `type OnlyStart = Phase.Start;\n` +
+                `function f(p: OnlyStart): Phase { return Phase.Start; }`
+        );
+        assertParses(out);
+        const renamed = out.match(/const enum (\S+) \{/)[1];
+        const start = out.match(/const enum \S+ \{ (\S+),/)[1];
+        assert.notEqual(start, 'Start');
+        // The type reference `Phase.Start` renames both halves in lockstep.
+        assert.match(out, new RegExp(`${rx(renamed)}\\.${rx(start)}`));
+        assert.doesNotMatch(out, /\bStart\b/);
+    });
+
+    // An exported enum is part of the cross-module contract: the analyzer protects its members,
+    // and the enum name itself must stay ASCII because it is not collected for renaming (the enum
+    // path is name-keyed and only collects non-exported enums).
+    it('leaves an exported enum and its members ASCII', () => {
+        const out = run(
+            `export const enum APIVersion { V1 = 1, V2 = 2 }\n` +
+                `function f(v: APIVersion) {\n` +
+                `  return v === APIVersion.V1 ? APIVersion.V2 : APIVersion.V1;\n` +
+                `}`
+        );
+        assertParses(out);
+        assert.match(out, /export const enum APIVersion \{/);
+        assert.match(out, /APIVersion\.V1/);
+        assert.match(out, /: APIVersion/);
+    });
+
+    // The emit phase renames only `Enum.MEMBER` member access and bare value references; an enum
+    // in object shorthand `{ Enum }` is not renamed (the ObjectProperty visitor declines enums),
+    // so renaming the declaration would desync. The coverage prescan must drop such an enum and
+    // leave it entirely ASCII.
+    it('leaves a non-exported enum ASCII when used in object shorthand', () => {
+        const out = run(
+            `enum TokenType { text = 'text' }\n` +
+                `const registry = { TokenType };\n` +
+                `function f(): TokenType { return TokenType.text; }`
+        );
+        assertParses(out);
+        assert.match(out, /enum TokenType \{/);
+        assert.match(out, /\{ TokenType \}/);
+        assert.match(out, /: TokenType/);
+        assert.match(out, /TokenType\.text/);
+    });
+
+    // An enum re-exported via a separate specifier (`export { Enum }`) has no enum alias at the
+    // boundary, so the specifier stays ASCII; renaming the declaration would desync. The prescan
+    // must drop it and leave it ASCII.
+    it('leaves a non-exported enum ASCII when exported via a separate specifier', () => {
+        const out = run(
+            `enum TokenType { text = 'text' }\n` +
+                `function f(): TokenType { return TokenType.text; }\n` +
+                `export { TokenType };`
+        );
+        assertParses(out);
+        assert.match(out, /enum TokenType \{/);
+        assert.match(out, /export \{ TokenType \}/);
+        assert.match(out, /: TokenType/);
+        assert.match(out, /TokenType\.text/);
+    });
+
     it('is idempotent / deterministic', () => {
         const src = `function f() { const aValue = 1; return aValue; }`;
         assert.equal(run(src), run(src));
