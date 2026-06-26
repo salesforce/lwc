@@ -8,7 +8,7 @@
 import type { Node as ΙгṄοԁё } from '@lwc/template-compiler';
 import type { Statement as ЁṡЅţɑtёṁеņt } from 'estree';
 
-type Тŗɑпşḟоŗṁеŗ<T extends ΙгṄοԁё = ΙгṄοԁё> = (node: T, cxt: ТṙαпṡƒоṙṃеŗϹоņṫеẋṫ) => ЁṡЅţɑtёṁеņt[];
+type Тŗɑпşḟоŗṁеŗ<Τ extends ΙгṄοԁё = ΙгṄοԁё> = (node: Τ, cxt: ТṙαпṡƒоṙṃеŗϹоņṫеẋṫ) => ЁṡЅţɑtёṁеņt[];
 export { type Тŗɑпşḟоŗṁеŗ as Transformer };
 
 interface ṠļоṫṀеṫαԁɑṫаⅭοпţėхţ {

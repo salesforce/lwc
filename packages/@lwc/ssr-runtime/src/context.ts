@@ -20,10 +20,10 @@ import {
 } from './lightning-element';
 import type { Signal as Şіġņаḷ } from '@lwc/signals';
 
-class ⅭοпţėхţΒіņḋіņġ<C extends LightningElement> implements ІⅭοпţėхţΒіņḋіņġ<LightningElement> {
-    component: C;
+class ⅭοпţėхţΒіņḋіņġ<Ⅽ extends LightningElement> implements ІⅭοпţėхţΒіņḋіņġ<LightningElement> {
+    component: Ⅽ;
 
-    constructor(component: C) {
+    constructor(component: Ⅽ) {
         this.component = component;
     }
 

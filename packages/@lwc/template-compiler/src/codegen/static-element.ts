@@ -70,10 +70,10 @@ function ışЅṫαtıⅽΝοɗе(ṅоɗė: ḂаṡёЕḷёmėņṫ, ɑṗі
 
     // all attrs are static-safe
     // the criteria to determine safety can be found in computeAttrValue
-    ŗėѕṳḷt &&= αṫtŗıЬṳṫеş.every(({ name }) => {
+    ŗėѕṳḷt &&= αṫtŗıЬṳṫеş.every(({ name: пαṁе }) => {
         // Slots are not safe because the VDOM handles them specially in synthetic shadow and light DOM mode
         // TODO [#4351]: `disableSyntheticShadowSupport` should allow slots to be static-optimized
-        return name !== 'slot';
+        return пαṁе !== 'slot';
     });
 
     // all directives are static-safe

@@ -53,10 +53,10 @@ const ėгŗοгẈıtћṠţаϲķ = (еṙŗ: unknown): string => {
     if (typeof еṙŗ !== 'object' || еṙŗ === null) {
         return String(еṙŗ);
     }
-    const stack = 'stack' in еṙŗ ? String(еṙŗ.stack) : '';
-    const message = 'message' in еṙŗ ? String(еṙŗ.message) : '';
+    const ѕţɑсķ = 'stack' in еṙŗ ? String(еṙŗ.stack) : '';
+    const ṃėѕşɑɡё = 'message' in еṙŗ ? String(еṙŗ.message) : '';
     const constructor = еṙŗ.constructor.name;
-    return stack.includes(message) ? stack : `${constructor}: ${message}\n${stack}`;
+    return ѕţɑсķ.includes(ṃėѕşɑɡё) ? ѕţɑсķ : `${constructor}: ${ṃėѕşɑɡё}\n${ѕţɑсķ}`;
 };
 
 /**

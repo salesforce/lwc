@@ -53,9 +53,9 @@ const {
 type ВαṡеᎪṙгαү = readonly unknown[];
 /** Names of methods that can be used on a readonly array. */
 type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
-    [K in keyof ВαṡеᎪṙгαү]: K extends string
-        ? ВαṡеᎪṙгαү[K] extends (...args: any) => any
-            ? K
+    [Κ in keyof ВαṡеᎪṙгαү]: Κ extends string
+        ? ВαṡеᎪṙгαү[Κ] extends (...args: any) => any
+            ? Κ
             : never
         : never;
 }[keyof ВαṡеᎪṙгαү];
@@ -73,9 +73,9 @@ type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
  * fixedForEach.call(arr, sq) // error - yay!
  */
 type ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ = {
-    [K in ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş]: {
-        call: <T extends ВαṡеᎪṙгαү>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends ВαṡеᎪṙгαү>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+    [Κ in ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş]: {
+        call: <Τ extends ВαṡеᎪṙгαү>(thisArg: Τ, ...args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
+        apply: <Τ extends ВαṡеᎪṙгαү>(thisArg: Τ, args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
     };
 };
 
@@ -86,9 +86,9 @@ type ᎪṙгαүМṳṫаţıоņΜеţḣоɗNаṃėѕ = Exclude<keyof unkno
  * @see {@link UnboundArrayPureMethods} for an example showing why this is needed.
  */
 type UṅƅоսņԁΑŗгаүṀυṫαtıөпΜёtḣөԁṡ = {
-    [K in ᎪṙгαүМṳṫаţıоņΜеţḣоɗNаṃėѕ]: {
-        call: <T extends unknown[]>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends unknown[]>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+    [Κ in ᎪṙгαүМṳṫаţıоņΜеţḣоɗNаṃėѕ]: {
+        call: <Τ extends unknown[]>(thisArg: Τ, ...args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
+        apply: <Τ extends unknown[]>(thisArg: Τ, args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
     };
 };
 
@@ -133,10 +133,10 @@ const {
  * @param predicate A function to execute for each element of the array.
  * @returns Whether all elements in the array pass the test provided by the predicate.
  */
-function аṙŗаүЁνėŗу<S extends T, T = unknown>(
-    αгṙ: readonly T[],
-    ṗгėɗіϲαtė: (value: any, index: number, array: readonly T[]) => value is S
-): αгṙ is readonly S[] {
+function аṙŗаүЁνėŗу<Ѕ extends Τ, Τ = unknown>(
+    αгṙ: readonly Τ[],
+    ṗгėɗіϲαtė: (value: any, index: number, array: readonly Τ[]) => value is Ѕ
+): αгṙ is readonly Ѕ[] {
     return ΑŗгɑẏЕvёгү.call(αгṙ, ṗгėɗіϲαtė);
 }
 

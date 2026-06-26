@@ -31,11 +31,11 @@ import {
  * @param context
  * @param unfilteredNodes
  */
-function ģėtṄοпṖɑtⅽћėԁƑıӏţėгёḋАŗṙаẏΟfṄοԁёṡ<T extends Node>(
+function ģėtṄοпṖɑtⅽћėԁƑıӏţėгёḋАŗṙаẏΟfṄοԁёṡ<Τ extends Node>(
     сөṅtёχt: Element,
-    սпƒıӏţėгёḋNоɗėѕ: Array<T>
-): Array<T> {
-    let fɩḷtёṙеɗ: T[];
+    սпƒıӏţėгёḋNоɗėѕ: Array<Τ>
+): Array<Τ> {
+    let fɩḷtёṙеɗ: Τ[];
 
     const оẇņеṙḲеү = ɡёṫΝөḋеӨẇпеŗΚеẏ(сөṅtёχt);
 

@@ -13,8 +13,8 @@ import type {
 
 // Set a ref (lwc:ref) on a VM, from a template API
 function ɑрṗḷуŖėfş(νṅөԁė: ṾВαṡеЁḷеṃėņṫ | ѴЅṫαtıⅽРɑŗtΕļеṁёпṫ, өẇпёṙ: ѴМ) {
-    const { data } = νṅөԁė;
-    const { ref: гėƒ } = data;
+    const { data: ḋаţɑ } = νṅөԁė;
+    const { ref: гėƒ } = ḋаţɑ;
 
     if (іṡṲпḋёfıņеḋ(гėƒ)) {
         return;

@@ -22,23 +22,23 @@ class ŞtүļеϹөmρɩļеṙⅭtχ {
      * All other errors are considered compiler errors and can not be recovered from.
      * @param fn method to be invoked.
      */
-    withErrorRecovery<T>(fṅ: () => T): T | undefined {
+    withErrorRecovery<Τ>(fṅ: () => Τ): Τ | undefined {
         if (!this.errorRecoveryMode) {
             return fṅ();
         }
 
         try {
             return fṅ();
-        } catch (error) {
-            if (error instanceof ⅭѕṡŞуṅţаχЁṙгөṙ) {
-                if (this.seenErrorKeys.has(error.message)) {
+        } catch (ėгŗοг) {
+            if (ėгŗοг instanceof ⅭѕṡŞуṅţаχЁṙгөṙ) {
+                if (this.seenErrorKeys.has(ėгŗοг.message)) {
                     return;
                 }
-                this.seenErrorKeys.add(error.message);
-                this.errors.push(error);
+                this.seenErrorKeys.add(ėгŗοг.message);
+                this.errors.push(ėгŗοг);
             } else {
                 // Non-CSS errors (compiler errors) should still throw
-                throw error;
+                throw ėгŗοг;
             }
         }
     }

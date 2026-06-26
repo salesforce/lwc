@@ -16,7 +16,6 @@ const TYPE_SPACE_DECLARATIONS = new Set([
     'TSEnumDeclaration',
     'TSModuleDeclaration',
     'TSImportEqualsDeclaration',
-    'TSTypeParameter',
     // Constructor parameter properties (`constructor(private foo)`) create class members
     // accessed via `this.foo`, which scope analysis cannot rename consistently.
     'TSParameterProperty',
@@ -214,28 +213,6 @@ function typeParamName(param) {
 }
 
 /**
- * Determines whether `name` resolves to an enclosing type parameter (`<Name>`) rather than a
- * module-level renameable type. Type parameters are preserved, so references that resolve to
- * them must stay ASCII. This single guard subsumes the old class-only restriction and fixes the
- * value/type-parameter name-collision bug.
- */
-function isShadowedByTypeParam(path, name) {
-    let current = path.parentPath;
-    while (current) {
-        const node = current.node;
-        const tp = node.typeParameters;
-        if (tp && tp.type === 'TSTypeParameterDeclaration') {
-            if (tp.params.some((p) => typeParamName(p) === name)) return true;
-        }
-        if (node.type === 'TSMappedType' && typeParamName(node.typeParameter) === name) {
-            return true;
-        }
-        current = current.parentPath;
-    }
-    return false;
-}
-
-/**
  * Determines whether a type-position identifier is the leftmost name of a construct the type
  * visitors rewrite (a `TSTypeReference`, `typeof` query, or heritage clause). Such occurrences
  * are "covered"; type occurrences that are NOT covered would desync from a renamed declaration
@@ -353,6 +330,34 @@ export function transformSource(ast, source, analysis) {
         },
     });
 
+    // --- Pass A2c: collect type-parameter names ---------------------------------------------
+    // Generic type parameters (`<T>`), mapped-type keys (`[K in ...]`), and `infer` vars are all
+    // TSTypeParameter nodes. The deterministic mapping means a name maps to one confusable
+    // everywhere, so a file-global name set suffices to rename declarations and references in
+    // lockstep; precise scope resolution is unnecessary.
+    const typeParamNames = new Set();
+    // Names whose declaration carries a modifier (`in`/`out` variance or `const`). A modifier
+    // shifts node.start off the name onto the keyword, so the name slice would corrupt it. Since
+    // the rename set is name-keyed and file-global, a single modifier-bearing occurrence forces
+    // the whole name ASCII (declaration AND references) to keep them in lockstep.
+    const blockedTypeParamNames = new Set();
+
+    traverse(ast, {
+        TSTypeParameter(path) {
+            const node = path.node;
+            const name = typeParamName(node);
+            if (!name) return;
+            if (node.in || node.out || node.const) {
+                blockedTypeParamNames.add(name);
+                return;
+            }
+            if (GLOBAL_IDENTIFIERS.has(name)) return;
+            if (publicIdentifiers.has(name)) return;
+            typeParamNames.add(name);
+        },
+    });
+    for (const n of blockedTypeParamNames) typeParamNames.delete(n);
+
     function resolvesToRenameableValue(path, name) {
         const binding = path.scope.getBinding(name);
         return binding && renameableIds.has(binding.identifier) ? binding : null;
@@ -385,6 +390,7 @@ export function transformSource(ast, source, analysis) {
     // desync from the renamed declaration, so mark that target unsafe and leave it ASCII.
     const unsafeValueIds = new Set();
     const unsafeTypeNames = new Set();
+    const unsafeTypeParamNames = new Set();
 
     traverse(ast, {
         Identifier(path) {
@@ -415,27 +421,34 @@ export function transformSource(ast, source, analysis) {
             if (parent?.type === 'TSTypePredicate' && parent.parameterName === node) {
                 return;
             }
-            if (isShadowedByTypeParam(path, name)) return;
 
             const binding = path.scope.getBinding(name);
             if (binding && renameableIds.has(binding.identifier)) {
+                // Value-unsafe early return is sufficient: this occurrence resolves to the value
+                // binding (now forced ASCII), and value vs. type-param are independent namespaces,
+                // so falling through to the type-param check below would be wrong, not merely
+                // redundant — the uncovered occurrence belongs to the value, not the type param.
                 unsafeValueIds.add(binding.identifier);
                 return;
             }
             if (renameableTypeNames.has(name)) {
                 unsafeTypeNames.add(name);
             }
+            if (typeParamNames.has(name)) {
+                unsafeTypeParamNames.add(name);
+            }
         },
     });
 
     for (const id of unsafeValueIds) renameableIds.delete(id);
     for (const n of unsafeTypeNames) renameableTypeNames.delete(n);
+    for (const n of unsafeTypeParamNames) typeParamNames.delete(n);
 
     function resolvesToRenameableType(path, name) {
         if (GLOBAL_IDENTIFIERS.has(name)) return false;
-        if (isShadowedByTypeParam(path, name)) return false;
         if (resolvesToRenameableValue(path, name)) return true;
-        return renameableTypeNames.has(name);
+        if (renameableTypeNames.has(name)) return true;
+        return typeParamNames.has(name);
     }
 
     function pushRename(idNode) {
@@ -444,6 +457,22 @@ export function transformSource(ast, source, analysis) {
         replacements.push({
             start: idNode.start,
             end: idNode.start + idNode.name.length,
+            text: target,
+        });
+    }
+
+    // Renames a type-parameter declaration. The name is a plain string on the node, so the slice
+    // is `[start, start + name.length)`; the `extends`/`default` clause that follows (covered by
+    // node.end) is left untouched.
+    function pushRenameTypeParam(tpNode) {
+        const name = typeParamName(tpNode);
+        if (!name) return;
+        if (!typeParamNames.has(name)) return; // dropped by the coverage prescan, or guarded out
+        const target = transformIdentifier(name);
+        if (target === name) return;
+        replacements.push({
+            start: tpNode.start,
+            end: tpNode.start + name.length,
             text: target,
         });
     }
@@ -566,7 +595,15 @@ export function transformSource(ast, source, analysis) {
             }
             if (!idNode) return;
 
-            if (!resolvesToRenameableValue(path, idNode.name)) return;
+            // The reference path renames via `resolvesToRenameableValue` (a scope `getBinding`
+            // lookup). For a catch-clause shorthand binding (`catch ({ message })`) Babel registers
+            // the binding in `scope.bindings` — so it is in `renameableIds` — but `getBinding`
+            // returns null from the declaration path itself, so the lookup alone would skip the
+            // declaration and desync from the renamed reference. Fall back to direct membership.
+            // This relies on `idNode` being the very node Babel stored as `binding.identifier` (a
+            // shorthand property's value Identifier is that node), so the `renameableIds` Set —
+            // keyed by node identity — matches it.
+            if (!resolvesToRenameableValue(path, idNode.name) && !renameableIds.has(idNode)) return;
 
             const target = transformIdentifier(idNode.name);
             if (target === idNode.name) return;
@@ -623,6 +660,12 @@ export function transformSource(ast, source, analysis) {
             }
 
             pushRename(node);
+        },
+
+        // Rename type-parameter declarations (`<T>`, mapped-type keys, `infer` vars). References
+        // ride the TSTypeReference path via resolvesToRenameableType.
+        TSTypeParameter(path) {
+            pushRenameTypeParam(path.node);
         },
 
         // Rename type-alias / interface declaration names.

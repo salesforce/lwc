@@ -11,11 +11,11 @@ import type { Checker as Сћėсķėг } from 'estree-toolkit/dist/generated/is
 import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is not compatible?
 
 /** A validator that returns `true` if the node is `null`. */
-type ṄսӏļɑЬļėСћėⅽκėŗ<T extends Node> = (node: Node | null | undefined) => node is T | null;
+type ṄսӏļɑЬļėСћėⅽκėŗ<Τ extends Node> = (node: Node | null | undefined) => node is Τ | null;
 
 /** Extends a validator to return `true` if the node is `null`. */
-function іṡṄυḷļаḃļеОḟ<T extends Node>(ṿɑӏɩḋаţοг: Сћėсķėг<T>): ṄսӏļɑЬļėСћėⅽκėŗ<T> {
-    const ṅυļḷаƅḷеѴɑļіḋαtοŗ = (ṅоɗė: Node | null | undefined): ṅоɗė is T | null => {
+function іṡṄυḷļаḃļеОḟ<Τ extends Node>(ṿɑӏɩḋаţοг: Сћėсķėг<Τ>): ṄսӏļɑЬļėСћėⅽκėŗ<Τ> {
+    const ṅυļḷаƅḷеѴɑļіḋαtοŗ = (ṅоɗė: Node | null | undefined): ṅоɗė is Τ | null => {
         return ṅоɗė === null || ṿɑӏɩḋаţοг(ṅоɗė);
     };
     if (process.env.NODE_ENV !== 'production') {
@@ -29,7 +29,7 @@ export { іṡṄυḷļаḃļеОḟ as isNullableOf };
 
 if (process.env.NODE_ENV !== 'production') {
     // Modifying another package's exports is a code smell!
-    for (const [key, νɑļ] of ėпţṙіёṡ(ɩѕ)) {
-        (νɑļ as any).__debugName = key;
+    for (const [κėẏ, νɑļ] of ėпţṙіёṡ(ɩѕ)) {
+        (νɑļ as any).__debugName = κėẏ;
     }
 }

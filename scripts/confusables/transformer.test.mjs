@@ -228,23 +228,32 @@ describe('confusables transformer', () => {
         assert.equal(count, 3); // declaration + param type + return type
     });
 
-    // The mapped-type constraint (`K in Keys`) and template-literal interpolation are both
-    // TSTypeReference positions, so a referenced type renames in lockstep there too.
+    // The mapped-type constraint (`K in Keys`) is a TSTypeReference position, so the referenced
+    // type renames in lockstep; the mapped key `K` is itself a type parameter and also renames.
     it('renames a type referenced from a mapped-type constraint in lockstep', () => {
         const out = run(`type Keys = 'a' | 'b';\ntype M = { [K in Keys]: number };`);
         assertParses(out);
         assert.doesNotMatch(out, /\bKeys\b/);
+        assert.doesNotMatch(out, /\bK\b/);
         const renamed = out.match(/type (\S+) = 'a'/)[1];
-        assert.match(out, new RegExp(`\\[K in ${rx(renamed)}\\]`));
+        const k = out.match(/\[([^ ]+) in /)[1];
+        assert.match(out, new RegExp(`\\[${rx(k)} in ${rx(renamed)}\\]`));
     });
 
-    // A type parameter shadows a same-named outer type, so references inside the generic resolve
-    // to the (preserved) param and must stay ASCII — the shadowing guard.
-    it('does not rename a type reference shadowed by an enclosing type parameter', () => {
+    // A type parameter and a same-named outer type both rename. The deterministic mapping sends
+    // every `T` to the same confusable, so the declaration and all references stay in lockstep.
+    it('renames a type parameter and a same-named outer type to the same confusable', () => {
         const out = run(`type T = number;\nfunction f<T>(x: T): T { return x; }`);
         assertParses(out);
-        // The outer `type T` renames; the generic's `T` refs resolve to the param and stay ASCII.
-        assert.match(out, /function (\S+)<T>\((\S+): T\): T/);
+        assert.doesNotMatch(out, /\bT\b/);
+        // <param>, x: <param>, : <param> all share one token; the outer `type T` shares it too.
+        const param = out.match(/function \S+<([^>]+)>/)[1];
+        assert.notEqual(param, 'T');
+        assert.match(
+            out,
+            new RegExp(`function \\S+<${rx(param)}>\\(\\S+: ${rx(param)}\\): ${rx(param)}`)
+        );
+        assert.match(out, new RegExp(`type ${rx(param)} = number;`));
     });
 
     // Bug class: object-expression shorthand against a contextual type (utils.ts { scope }).
@@ -361,23 +370,26 @@ describe('confusables transformer', () => {
         assert.equal(count, 4);
     });
 
-    // Bug class: a value parameter shares a name with a type parameter (estemplate.ts
-    // `...Validators: Validators`). getBinding only tracks the value binding, so type references
-    // to the type parameter must NOT be renamed (the type-param declaration stays ASCII).
-    it('does not rename a type reference that collides with a renameable value name', () => {
+    // A value parameter shares a name with a type parameter (estemplate.ts
+    // `...Validators: Validators`). The value binding and the type parameter are independent
+    // namespaces but map to the same confusable deterministically, so every occurrence renames
+    // to one identical token — value param, type-param declaration, and all type references.
+    it('renames a type parameter that collides with a renameable value name in lockstep', () => {
         const out = run(
             `function g<Validators extends unknown[]>(\n` +
                 `  ...Validators: Validators\n` +
                 `): Wrap<Validators> {\n  return Validators as any;\n}`
         );
         assertParses(out);
-        // The type-parameter declaration and both type references stay ASCII and in sync.
-        const typeRefs = (out.match(/Validators/g) || []).length;
-        // <Validators ...>, : Validators (annotation), Wrap<Validators> = at least the 3 type
-        // positions remain ASCII. The value param + value reference are renamed.
-        assert.ok(typeRefs >= 3, `expected >=3 ASCII Validators, got ${typeRefs}`);
-        assert.match(out, /Wrap<Validators>/);
-        assert.match(out, /<Validators extends/);
+        assert.doesNotMatch(out, /\bValidators\b/);
+        const renamed = out.match(/<([^ ]+) extends unknown\[\]>/)[1];
+        assert.notEqual(renamed, 'Validators');
+        // Type-param declaration, parameter annotation, and the Wrap<...> reference all match.
+        assert.match(out, new RegExp(`<${rx(renamed)} extends unknown\\[\\]>`));
+        assert.match(out, new RegExp(`: ${rx(renamed)}\\n`));
+        assert.match(out, new RegExp(`Wrap<${rx(renamed)}>`));
+        // `Wrap` is unresolved (no binding), so it stays ASCII.
+        assert.match(out, /\bWrap\b/);
     });
 
     // Bug class: computed type-member key references a renamed value binding (node-ownership.ts).
@@ -410,6 +422,169 @@ describe('confusables transformer', () => {
         const out = run(`function f(target) { return target.someProp; }`);
         assertParses(out);
         assert.match(out, /\.someProp\b/);
+    });
+
+    // --- Type-parameter renaming (GAP B) ----------------------------------------------------
+
+    it('renames a simple type parameter and its references in lockstep', () => {
+        const out = run(`function track<T>(target: T): T {\n  return target;\n}`);
+        assertParses(out);
+        assert.doesNotMatch(out, /\bT\b/);
+        const param = out.match(/function \S+<([^>]+)>/)[1];
+        assert.notEqual(param, 'T');
+        // declaration + param annotation + return annotation = 3 occurrences, all identical.
+        const count = (out.match(new RegExp(rx(param), 'g')) || []).length;
+        assert.equal(count, 3);
+    });
+
+    it('renames a constrained type parameter, preserving the constraint type', () => {
+        const out = run(
+            `function safeHasProp<K extends PropertyKey>(prop: K): prop is Record<K, unknown> {\n  return true;\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bK\b/);
+        const param = out.match(/<([^ ]+) extends PropertyKey>/)[1];
+        assert.match(out, new RegExp(`<${rx(param)} extends PropertyKey>`));
+        assert.match(out, new RegExp(`Record<${rx(param)}, unknown>`));
+        // The `extends` keyword and the constraint type are preserved.
+        assert.match(out, /\bextends PropertyKey\b/);
+    });
+
+    it('renames defaulted type parameters, preserving the default types', () => {
+        const out = run(`interface VM<N = HostNode, E = HostElement> {\n  n: N;\n  e: E;\n}`);
+        assertParses(out);
+        // `E` always maps to a non-ASCII confusable; assert it renames in lockstep.
+        const e = out.match(/, ([^ ]+) = HostElement>/)[1];
+        assert.notEqual(e, 'E');
+        assert.match(out, new RegExp(`${rx(e)} = HostElement>`));
+        assert.match(out, new RegExp(`e: ${rx(e)};`));
+        // Default types (undeclared, no binding) stay ASCII.
+        assert.match(out, /= HostNode/);
+        assert.match(out, /= HostElement/);
+    });
+
+    it('renames a mapped-type key parameter and the iterated type in lockstep', () => {
+        const out = run(`type Req<T> = { [P in keyof T]-?: Wrap<T[P]> };`);
+        assertParses(out);
+        assert.doesNotMatch(out, /\bP\b/);
+        assert.doesNotMatch(out, /\bT\b/);
+        const p = out.match(/\[([^ ]+) in keyof/)[1];
+        const t = out.match(/keyof ([^\]]+)\]/)[1];
+        // `P` appears in the key and the indexed access; `T` in keyof and the indexed access.
+        assert.match(
+            out,
+            new RegExp(`\\[${rx(p)} in keyof ${rx(t)}\\]-\\?: Wrap<${rx(t)}\\[${rx(p)}\\]>`)
+        );
+    });
+
+    it('renames an infer type variable and its reference in lockstep', () => {
+        const out = run(`type Unbox<T> = T extends Box<infer Inner> ? Inner : never;`);
+        assertParses(out);
+        assert.doesNotMatch(out, /\bInner\b/);
+        const inf = out.match(/infer ([^>]+)>/)[1];
+        assert.notEqual(inf, 'Inner');
+        assert.match(out, new RegExp(`infer ${rx(inf)}> \\? ${rx(inf)} :`));
+        // The conditional structure and the unresolved `Box` are preserved.
+        assert.match(out, /\bextends Box</);
+    });
+
+    it('renames a template-literal infer variable in lockstep', () => {
+        const out = run(
+            'type Aria<Prop> = Prop extends `aria${infer S}` ? `aria-${Lowercase<S>}` : Prop;'
+        );
+        assertParses(out);
+        const s = out.match(/infer ([^}]+)}/)[1];
+        assert.notEqual(s, 'S');
+        assert.match(out, new RegExp(`Lowercase<${rx(s)}>`));
+        // `Lowercase` is a global utility type and stays ASCII.
+        assert.match(out, /\bLowercase</);
+    });
+
+    it('renames type parameters in a mapped type over a discriminant with nested infer', () => {
+        const src =
+            `type Pick2<T extends { type: string }> = {\n` +
+            `  [K in T['type']]: T extends { type: K } ? T : never;\n` +
+            `};`;
+        const out = run(src);
+        assertParses(out);
+        // Deterministic: a second run over the same source is byte-identical.
+        assert.equal(run(src), out);
+        const k = out.match(/\[([^ ]+) in /)[1];
+        assert.match(out, new RegExp(`\\[${rx(k)} in `));
+        // `K` recurs inside the conditional's `{ type: K }` and renames in lockstep.
+        assert.match(out, new RegExp(`type: ${rx(k)} }`));
+    });
+
+    it('is idempotent over a generic declaration', () => {
+        const src = `function id<T>(x: T): T { return x; }`;
+        assert.equal(run(src), run(src));
+    });
+
+    // A `const` (or `in`/`out`) modifier shifts the type-param node's start onto the keyword, so
+    // the name slice would corrupt it — such params are left ASCII (declaration and references).
+    it('leaves a const-modifier type parameter ASCII to avoid corrupting the keyword', () => {
+        const out = run(
+            `function f<const T extends readonly unknown[]>(x: T): T {\n  return x;\n}`
+        );
+        assertParses(out);
+        assert.match(out, /<const T extends readonly unknown\[\]>/);
+        // References stay ASCII in lockstep with the preserved declaration.
+        assert.match(out, /\(\S+: T\): T/);
+    });
+
+    // Regression for wire.ts/errors.ts: a name used as a const-modifier param AND as an ordinary
+    // (non-const) type parameter elsewhere in the file. The ordinary occurrence would otherwise
+    // pull the name into the rename set, and emitting on the const-modified declaration slices at
+    // the modifier keyword — corrupting `const` into a doubled token. The whole name must stay
+    // ASCII (every declaration and reference) when any declaration carries a modifier.
+    it('leaves a modifier-shared type-param name ASCII across all its occurrences', () => {
+        const out = run(
+            `interface Box<Value> {\n  v: Value;\n}\n` +
+                `function make<const Value = unknown>(x: Value): Box<Value> {\n  return { v: x };\n}`
+        );
+        assertParses(out);
+        // const-modified declaration: keyword intact, name untouched.
+        assert.match(out, /<const Value = unknown>/);
+        // The ordinary declaration's parameter and every `Value` reference also stay ASCII — no
+        // desync. (`Box`/`make`/`x` rename freely; only `Value` is forced ASCII by the modifier.)
+        assert.match(out, /interface \S+<Value>/);
+        assert.match(out, /\(\S+: Value\): \S+<Value>/);
+        assert.match(out, /v: Value;/);
+        assert.doesNotMatch(out, /Value\s+Value/);
+    });
+
+    // --- Common-property-name local renaming (GAP A) ----------------------------------------
+
+    // `error` (and the other former "common property" names) are no longer globally preserved, so
+    // a local binding named `error` renames while `.error` member access stays ASCII.
+    it('renames a local named `error`, preserving `.error` / `.message` member access', () => {
+        const out = run(
+            `function f(obj) {\n  try {\n    return obj.error;\n  } catch (error) {\n    return error.message;\n  }\n}`
+        );
+        assertParses(out);
+        // Member-access names are preserved regardless of the renamed locals.
+        assert.match(out, /\.error\b/);
+        assert.match(out, /\.message\b/);
+        // The catch binding is renamed, and its use is renamed in lockstep.
+        assert.doesNotMatch(out, /catch \(error\)/);
+        const renamed = out.match(/catch \((\S+)\)/)[1];
+        assert.notEqual(renamed, 'error');
+        assert.match(out, new RegExp(`${rx(renamed)}\\.message`));
+    });
+
+    // A catch-clause shorthand destructuring binding (`catch ({ message })`) is registered in the
+    // scope but not resolvable via `getBinding` from the declaration path. The reference renames,
+    // so the binding must expand to a non-shorthand key in lockstep — never leave the key ASCII
+    // while the reference renames (that produced a TS2304 build failure).
+    it('expands a catch-clause shorthand destructuring binding in lockstep with its reference', () => {
+        const out = run(
+            `const x = (() => {\n  try {\n    foo();\n  } catch ({ message }) {\n    return message;\n  }\n  return '';\n})();`
+        );
+        assertParses(out);
+        const renamed = out.match(/catch \(\{ message: (\S+) \}\)/)[1];
+        assert.notEqual(renamed, 'message');
+        // The reference renames to the same token — no dangling ASCII `message` reference.
+        assert.match(out, new RegExp(`return ${rx(renamed)};`));
     });
 
     it('is idempotent / deterministic', () => {

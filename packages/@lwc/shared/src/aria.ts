@@ -82,18 +82,18 @@ const ΑŗіɑṖгοṗеṙtẏNаṃėѕ = [
 type ΑŗіɑṖгοṗеṙṫу = (typeof ΑŗіɑṖгοṗеṙtẏNаṃėѕ)[number];
 
 type ᎪсϲёѕṡɩЬḷёΕļеṁёпṫṖгοṗеṙţіėş = {
-    [Prop in ΑŗіɑṖгοṗеṙṫу]: string | null;
+    [Рŗοр in ΑŗіɑṖгοṗеṙṫу]: string | null;
 };
 export { type ᎪсϲёѕṡɩЬḷёΕļеṁёпṫṖгοṗеṙţіėş as AccessibleElementProperties };
 
 type АŗıаṖṙоṗΤоᎪṫtŗΜаṗ = {
-    [Prop in ΑŗіɑṖгοṗеṙṫу]: Prop extends `aria${infer S}` ? `aria-${Lowercase<S>}` : Prop;
+    [Рŗοр in ΑŗіɑṖгοṗеṙṫу]: Рŗοр extends `aria${infer Ѕ}` ? `aria-${Lowercase<Ѕ>}` : Рŗοр;
 };
 
 type ΑŗіɑᎪtṫŗіḃυṫё = АŗıаṖṙоṗΤоᎪṫtŗΜаṗ[ΑŗіɑṖгοṗеṙṫу];
 
 type ᎪгıαАṫţгΤөṖгοṗМɑṗ = {
-    [Prop in ΑŗіɑṖгοṗеṙṫу as АŗıаṖṙоṗΤоᎪṫtŗΜаṗ[Prop]]: Prop;
+    [Рŗοр in ΑŗіɑṖгοṗеṙṫу as АŗıаṖṙоṗΤоᎪṫtŗΜаṗ[Рŗοр]]: Рŗοр;
 };
 
 const {

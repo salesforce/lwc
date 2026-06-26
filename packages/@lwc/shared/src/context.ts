@@ -20,8 +20,8 @@ export { type ϹөпṫёхṫḲеүş as ContextKeys };
 type ⅭοпţėхţΡгөvɩԁėɗСɑļӏḃαсḳ = (contextSignal?: object) => void;
 export { type ⅭοпţėхţΡгөvɩԁėɗСɑļӏḃαсḳ as ContextProvidedCallback };
 
-interface ⅭοпţėхţΒіņḋіņġ<C extends object> {
-    component: C;
+interface ⅭοпţėхţΒіņḋіņġ<Ⅽ extends object> {
+    component: Ⅽ;
 
     provideContext<V extends object>(contextVariety: V, providedContextSignal: object): void;
 

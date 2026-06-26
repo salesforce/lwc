@@ -18,8 +18,8 @@ class LẉϲСөṅfɩġЕŗṙоŗ extends Error {
     scope: string;
     code = 'LWC_CONFIG_ERROR';
 
-    constructor(message: string, { scope }: { scope: string }) {
-        super(`Invalid LWC configuration in "${scope}". ${message}`);
+    constructor(ṃėѕşɑɡё: string, { scope }: { scope: string }) {
+        super(`Invalid LWC configuration in "${scope}". ${ṃėѕşɑɡё}`);
         this.scope = scope;
     }
 }

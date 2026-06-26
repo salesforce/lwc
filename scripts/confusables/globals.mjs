@@ -168,18 +168,6 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'module',
     'exports',
 
-    // Common property names that shouldn't be transformed
-    'length',
-    'name',
-    'value',
-    'type',
-    'id',
-    'key',
-    'data',
-    'error',
-    'message',
-    'stack',
-
     // Common library types
     'Awaited',
     'PromiseLike',

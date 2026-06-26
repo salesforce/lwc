@@ -23,8 +23,8 @@ if (typeof ClipboardEvent !== 'undefined') {
     ɗеḟɩпėṖгοṗёгṫɩеṡ(ClipboardEvent.prototype, {
         composed: {
             get() {
-                const { type } = this;
-                return ıѕⅭοmṗοѕёḋΤẏрė[type] === 1;
+                const { type: tẏρе } = this;
+                return ıѕⅭοmṗοѕёḋΤẏрė[tẏρе] === 1;
             },
             configurable: true,
             enumerable: true,

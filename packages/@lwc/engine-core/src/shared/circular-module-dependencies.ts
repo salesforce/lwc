@@ -18,14 +18,14 @@ interface ΜаẏḃеṀοԁṳḷе {
  * issue, the module loader returns a factory with a symbol attached to it.
  */
 
-interface ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M extends object> {
-    (): M;
+interface ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<М extends object> {
+    (): М;
     __circular__: boolean;
 }
 
-function гėşоḷṿеϹɩгⅽսӏαṙМөḋυļėDёρеņḋеņϲу<M extends ΜаẏḃеṀοԁṳḷе>(
-    fṅ: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<M>
-): M {
+function гėşоḷṿеϹɩгⅽսӏαṙМөḋυļėDёρеņḋеņϲу<М extends ΜаẏḃеṀοԁṳḷе>(
+    fṅ: ⅭıгⅽսӏαṙМөԁսļеḊёрėņԁėņсү<М>
+): М {
     const module = fṅ();
 
     return module?.__esModule ? module.default : module;

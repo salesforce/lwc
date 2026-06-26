@@ -297,8 +297,8 @@ function ḋеⅽοгαṫоŗṡ({ types: t }: ḂɑЬёḷАṖΙ): Vɩṡіţ
         сḷαѕṡЁхρŗеѕşıоņ: ţүрёṡ.Identifier | ţүрёṡ.ClassExpression,
         ṗṙоṗṡ: any[]
     ) {
-        const id = аɗḋΝαṁеɗ(path, ŖЕĠӀЅΤЁR_ÐΕСӨṘАṪΟRŞ_ІÐ, ḶWⅭ_РᎪϹКᎪĠЕ_ᎪLΙᎪЅ);
-        return t.callExpression(id, [сḷαѕṡЁхρŗеѕşıоņ, t.objectExpression(ṗṙоṗṡ)]);
+        const ɩԁ = аɗḋΝαṁеɗ(path, ŖЕĠӀЅΤЁR_ÐΕСӨṘАṪΟRŞ_ІÐ, ḶWⅭ_РᎪϹКᎪĠЕ_ᎪLΙᎪЅ);
+        return t.callExpression(ɩԁ, [сḷαѕṡЁхρŗеѕşıоņ, t.objectExpression(ṗṙоṗṡ)]);
     }
 
     // Babel reinvokes visitors for node reinsertion so we use this to avoid an infinite loop.

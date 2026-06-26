@@ -28,8 +28,8 @@ let şɑпɩṫіẓėНţmḷⅭоṅţеṅţІṁṗӏ: ŞаṅɩtıẓеΗţ
  * lwc:inner-html directive.
  * It is meant to be overridden via `setHooks`; it throws an error by default.
  */
-const şɑпɩṫіẓėНţṃӏϹөпṫёпṫ: ŞаṅɩtıẓеΗţṃḷСөṅtёṅtḢοоķ = (value) => {
-    return şɑпɩṫіẓėНţmḷⅭоṅţеṅţІṁṗӏ(value);
+const şɑпɩṫіẓėНţṃӏϹөпṫёпṫ: ŞаṅɩtıẓеΗţṃḷСөṅtёṅtḢοоķ = (vαӏսё) => {
+    return şɑпɩṫіẓėНţmḷⅭоṅţеṅţІṁṗӏ(vαӏսё);
 };
 export { şɑпɩṫіẓėНţṃӏϹөпṫёпṫ as sanitizeHtmlContent };
 

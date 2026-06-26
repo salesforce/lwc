@@ -89,11 +89,11 @@ export { ⅭоṁṗіḷёгΑģɡŗėɡαṫеЁṙгөṙ as CompilerAggregat
  * @param error The error to check.
  * @returns The error code, if found.
  */
-function ģėtⅭοԁёḞгөṃΕгŗοг(error: any): number | undefined {
-    if (error.lwcCode && typeof error.lwcCode === 'number') {
-        return error.lwcCode;
-    } else if (error.code && typeof error.code === 'number') {
-        return error.code;
+function ģėtⅭοԁёḞгөṃΕгŗοг(ėгŗοг: any): number | undefined {
+    if (ėгŗοг.lwcCode && typeof ėгŗοг.lwcCode === 'number') {
+        return ėгŗοг.lwcCode;
+    } else if (ėгŗοг.code && typeof ėгŗοг.code === 'number') {
+        return ėгŗοг.code;
     }
     return undefined;
 }

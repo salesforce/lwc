@@ -49,19 +49,19 @@ byte-identical.
 Let `L` = local name and `C = transformIdentifier(L)`. The external string (the imported or
 exported name) is always preserved; only the local binding is renamed.
 
-| Form | Result |
-|---|---|
-| `import Foo from 'x'` | `import C from 'x'` (default; contract is literal `default`, no alias) |
-| `import { foo } from 'x'` | `import { foo as C } from 'x'` |
-| `import { foo as bar } from 'x'` | `import { foo as Cbar } from 'x'` (replace local only) |
-| `import * as NS from 'x'` | `import * as C from 'x'` (namespace local) |
-| `import type { X } from 'x'` | `import type { X as C } from 'x'` |
-| `export { local }` | `export { C as local }` |
-| `export { local as Pub }` | `export { C as Pub }` |
-| inline `export function/class/const` | strip `export`, rename decl + refs, append `export { C as name };` |
-| `export type/interface X` | rename decl + refs, append `export { type C as X };` |
-| `export default function foo` | rename `id` freely (export name is `default`, no alias) |
-| re-exports (`export … from`, `export * from`) | untouched (no local binding) |
+| Form                                          | Result                                                                 |
+| --------------------------------------------- | ---------------------------------------------------------------------- |
+| `import Foo from 'x'`                         | `import C from 'x'` (default; contract is literal `default`, no alias) |
+| `import { foo } from 'x'`                     | `import { foo as C } from 'x'`                                         |
+| `import { foo as bar } from 'x'`              | `import { foo as Cbar } from 'x'` (replace local only)                 |
+| `import * as NS from 'x'`                     | `import * as C from 'x'` (namespace local)                             |
+| `import type { X } from 'x'`                  | `import type { X as C } from 'x'`                                      |
+| `export { local }`                            | `export { C as local }`                                                |
+| `export { local as Pub }`                     | `export { C as Pub }`                                                  |
+| inline `export function/class/const`          | strip `export`, rename decl + refs, append `export { C as name };`     |
+| `export type/interface X`                     | rename decl + refs, append `export { type C as X };`                   |
+| `export default function foo`                 | rename `id` freely (export name is `default`, no alias)                |
+| re-exports (`export … from`, `export * from`) | untouched (no local binding)                                           |
 
 For a declaration that is both a value and a type (`export const X` + `export type X`, or a
 `const`/`type` merge), a single non-`type` export specifier carries both meanings — emitting a
@@ -85,19 +85,39 @@ from all of them and emits exactly one aliased specifier for the implementation.
   for declarations, references, import/export specifiers, and inline-export restructuring.
 - `analyzer.mjs` — protects the member surface of exported classes and `LightningElement`
   components (template-bound by string) via a separate `exportedClassLocals` set; it no longer
-  adds export names to a public-preserve set, because export *locals* now rename.
-- `globals.mjs` — JS/DOM globals and LWC lifecycle hooks that must never be renamed.
+  adds export names to a public-preserve set, because export _locals_ now rename.
+- `globals.mjs` — JS/DOM globals and LWC lifecycle hooks that must never be renamed. The former
+  "common property names" block (`length, name, value, type, id, key, data, error, message,
+  stack`) has been removed: those were only ever suppressing renames of local bindings and
+  parameters (e.g. `catch (error)`), since member access (`obj.error`) and object keys are
+  already protected positionally by `isPreservedPosition` / `analyzer.mjs`.
 - `confusables-map.mjs` — ASCII → confusable character mappings.
 - `hash.mjs` — deterministic per-name character selection.
-- `transformer.test.mjs` — 37 unit tests (`node --test`), one per import/export/type-space form
+- `transformer.test.mjs` — 49 unit tests (`node --test`), one per import/export/type-space form
   plus the bug classes below.
 
 ### Type space (the fragile part)
 
 Type-position visitors (`TSTypeReference`, heritage `TSExpressionWithTypeArguments`,
 `TSIndexedAccessType`, `TSTypeQuery` for `typeof`, computed type-member keys, type predicates)
-rename the leftmost identifier iff it resolves to a renameable type name or value binding AND is
-not shadowed by an enclosing `TSTypeParameter` of the same name.
+rename the leftmost identifier iff it resolves to a renameable type name, value binding, or
+type-parameter name.
+
+**Type parameters rename.** Generic type parameters (`<T>`), constrained/defaulted params
+(`<K extends PropertyKey>`, `<N = HostNode>`), mapped-type keys (`[K in ...]`), and `infer` vars
+are all `TSTypeParameter` nodes. Pass A2c collects their names into a file-global set; the
+declaration is renamed by a `TSTypeParameter` visitor (the name is a plain string on the node,
+so the slice is `[start, start + name.length)`), and references ride the existing
+`TSTypeReference` path via `resolvesToRenameableType`. Because `transformIdentifier` is
+deterministic, a file-global name set (not per-scope resolution) suffices — every `T` maps to
+the same confusable.
+
+**Modifier-annotated params stay ASCII.** When a `TSTypeParameter` carries a modifier
+(`in`/`out` variance or `const`), `node.start` points at the modifier keyword, not the name, so
+slicing would corrupt the keyword. Such names are added to a blocked set and removed from the
+rename set entirely — every declaration and reference of that name stays ASCII in lockstep, so
+no desync reaches tsc. (The block is name-keyed and file-global: a single modifier-bearing
+occurrence forces the whole name ASCII even where it appears without a modifier.)
 
 **Conservative fallback:** Pass A3 prescans each type-space name; if any occurrence sits in a
 form no visitor covers, the name is dropped from the renameable set and left ASCII (decl + refs
@@ -120,16 +140,25 @@ observe this at runtime and were updated to match (not source bugs — expected 
 ## Bug classes handled (each has a regression test)
 
 1. Local binding consistency — declaration + all references rename together.
-2–8. Import/export specifier forms (default, named, aliased, namespace, type-only, inline-decl
+   2–8. Import/export specifier forms (default, named, aliased, namespace, type-only, inline-decl
    restructure, re-export-untouched) per the table above.
-9. Value+type declaration merge — single specifier, no duplicate `type` re-export.
-10. Overload signatures (`TSDeclareFunction`) — `export` stripped in lockstep with the impl.
-11. `typeof X` on a type-only import resolves and renames.
-12. Computed type-member key referencing a renamed binding renames in lockstep.
-13. Object-expression / object-pattern shorthand expansion (key stays the contract name).
-14. Assertion signatures (`asserts x`) and type predicates (`x is T`) rename with the parameter.
-15. Type parameter shadowing — a type reference shadowed by an enclosing `TSTypeParameter` of
-    the same name stays ASCII (the `Validators` collision).
+2. Value+type declaration merge — single specifier, no duplicate `type` re-export.
+3. Overload signatures (`TSDeclareFunction`) — `export` stripped in lockstep with the impl.
+4. `typeof X` on a type-only import resolves and renames.
+5. Computed type-member key referencing a renamed binding renames in lockstep.
+6. Object-expression / object-pattern shorthand expansion (key stays the contract name).
+   Includes catch-clause destructuring (`catch ({ message })`): Babel registers the binding in
+   `scope.bindings` but `getBinding` returns null from the declaration path, so the shorthand
+   visitor falls back to a direct `renameableIds` membership check to expand it in lockstep with
+   its reference.
+7. Assertion signatures (`asserts x`) and type predicates (`x is T`) rename with the parameter.
+8. Type parameters rename in lockstep — declaration and every reference of a `<T>` / mapped-type
+   key / `infer` var become the same confusable. A name shared with a same-named outer type or
+   value (the `Validators` collision) renames everywhere to one confusable. A name appearing in
+   any modifier-annotated declaration (`in`/`out`/`const`) stays ASCII everywhere to avoid
+   slicing the modifier keyword (the wire.ts `const Value`/`const Class` case).
+9. Common-property-name locals (`error`, `value`, `message`, …) rename as ordinary bindings;
+   member access (`obj.error`) and object keys stay ASCII via positional preservation.
 
 ## Reproducing from scratch
 
