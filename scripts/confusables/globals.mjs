@@ -53,6 +53,18 @@ export const GLOBAL_IDENTIFIERS = new Set([
     'window',
     'self',
     'global',
+    'isFinite',
+    'isNaN',
+    'parseInt',
+    'parseFloat',
+    'encodeURIComponent',
+    'decodeURIComponent',
+    'encodeURI',
+    'decodeURI',
+    'structuredClone',
+    'queueMicrotask',
+    'btoa',
+    'atob',
 
     // DOM globals
     'Element',
@@ -181,4 +193,12 @@ export const GLOBAL_IDENTIFIERS = new Set([
 
     // LWC globals declared via 'declare global'
     'lwcRuntimeFlags',
+
+    // LWC component lifecycle hooks — called by the engine by name, must not be renamed.
+    'connectedCallback',
+    'disconnectedCallback',
+    'renderedCallback',
+    'errorCallback',
+    'render',
+    'constructor',
 ]);

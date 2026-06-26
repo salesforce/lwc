@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ObservableMembrane as ӨЬṡёгvαЬḷёΜеṃḃгαṅе } from 'observable-membrane';
-import { valueObserved as νɑļυėӨЬṡёгvеɗ, valueMutated as ναḷυёΜυţɑtёԁ } from './mutation-tracker';
+import { ObservableMembrane } from 'observable-membrane';
+import { valueObserved, valueMutated } from './mutation-tracker';
 
 const ӏөϲκёṙLɩvеРŗοрёṙtẏΚеẏ = Symbol.for('@@lockerLiveValue');
 
-const ṙёаϲţіvёМėṁЬŗɑпё = new ӨЬṡёгvαЬḷёΜеṃḃгαṅе({
-    valueObserved: νɑļυėӨЬṡёгvеɗ,
-    valueMutated: ναḷυёΜυţɑtёԁ,
+const ṙёаϲţіvёМėṁЬŗɑпё = new ObservableMembrane({
+    valueObserved,
+    valueMutated,
     tagPropertyKey: ӏөϲκёṙLɩvеРŗοрёṙtẏΚеẏ,
 });
 
@@ -38,9 +38,9 @@ export function getReactiveProxy(value: any): any {
 }
 
 // Making the component instance a live value when using Locker to support expandos.
-export function markLockerLiveObject(obj: any): void {
+export function markLockerLiveObject(οƅј: any): void {
     // On the server side, we don't need mutation tracking. Skipping it improves performance.
     if (process.env.IS_BROWSER) {
-        obj[ӏөϲκёṙLɩvеРŗοрёṙtẏΚеẏ] = undefined;
+        οƅј[ӏөϲκёṙLɩvеРŗοрёṙtẏΚеẏ] = undefined;
     }
 }

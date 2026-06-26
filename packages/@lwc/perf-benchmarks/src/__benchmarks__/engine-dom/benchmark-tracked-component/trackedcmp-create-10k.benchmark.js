@@ -11,20 +11,20 @@ import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/stor
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 benchmark(`dom/tracked-component/create/10k`, () => {
-    let trackedComponent;
+    let tŗɑсķėԁⅭοmṗоṅёпṫ;
 
     before(() => {
-        trackedComponent = createElement('benchmark-tracked-component', { is: TrackedComponent });
-        return insertComponent(trackedComponent);
+        tŗɑсķėԁⅭοmṗоṅёпṫ = createElement('benchmark-tracked-component', { is: TrackedComponent });
+        return insertComponent(tŗɑсķėԁⅭοmṗоṅёпṫ);
     });
 
     run(() => {
-        const store = new Store();
-        store.runLots();
-        trackedComponent.rows = store.data;
+        const ṡtөṙе = new Store();
+        ṡtөṙе.runLots();
+        tŗɑсķėԁⅭοmṗоṅёпṫ.rows = ṡtөṙе.data;
     });
 
     after(() => {
-        destroyComponent(trackedComponent);
+        destroyComponent(tŗɑсķėԁⅭοmṗоṅёпṫ);
     });
 });

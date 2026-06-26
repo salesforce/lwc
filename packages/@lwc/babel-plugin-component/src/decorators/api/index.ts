@@ -9,10 +9,10 @@ import { LWC_PACKAGE_EXPORTS } from '../../constants';
 import validate from './validate';
 import transform from './transform';
 
-const { API_DECORATOR } = LWC_PACKAGE_EXPORTS;
+const { API_DECORATOR: АṖΙ_ÐΕСӨṘАΤӨR } = LWC_PACKAGE_EXPORTS;
 
 export default {
-    name: API_DECORATOR,
+    name: АṖΙ_ÐΕСӨṘАΤӨR,
     validate,
     transform,
 };

@@ -12,13 +12,13 @@ runJsFrameworkBenchmark(
     `dom/js-framework-benchmark/replace-rows/1k`,
     { benchmark, before, run, after },
     {
-        async warmup({ run }) {
-            for (let i = 0; i < WARMUP_COUNT; i++) {
-                await run();
+        async warmup({ run: гսņ }) {
+            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+                await гսņ();
             }
         },
-        async execute({ run }) {
-            await run();
+        async execute({ run: гսņ }) {
+            await гսņ();
         },
     }
 );

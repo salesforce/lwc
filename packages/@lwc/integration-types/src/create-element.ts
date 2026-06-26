@@ -6,20 +6,15 @@
  */
 // Doing a lot of checking bare props in this file; this rule is mostly noise.
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-    LightningElement as ḶıģһṫņіṅģЕļеṁёпṫ,
-    api as аρɩ,
-    createElement as ⅽṙеαṫеЁḷеṃėпţ,
-} from 'lwc';
+import { LightningElement, api, createElement } from 'lwc';
 
-class ϹṳѕṫөṃΡŗоρѕ extends LightningElement {
-    @api еẋρоşėԁṖṙоρ = 'hello';
-    ρŗіναṫėṖгοṗ = 123;
+class ϹṳѕṫөmΡŗоρѕ extends LightningElement {
+    @api exposedProp = 'hello';
+    privateProp = 123;
 }
 
 // By default, all props are available on the returned element (including non-decorated props)
-const іņḟеŗṙеɗ = ⅽṙеαṫеЁḷеṃėпţ('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+const іņḟеŗṙеɗ = createElement('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 // @api prop is available
 іņḟеŗṙеɗ.exposedProp satisfies string;
 // 👎 this type is incorrect, but that's a limitation of TypeScript
@@ -32,7 +27,7 @@ const іņḟеŗṙеɗ = ⅽṙеαṫеЁḷеṃėпţ('x-custom-props', { i
 іņḟеŗṙеɗ.renderedCallback;
 
 // We can provide an empty object as the generic to avoid receiving any custom props (exposed or private)
-const өЬȷёсṫ = ⅽṙеαṫеЁḷеṃėпţ<object>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+const өЬȷёсṫ = createElement<object>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 // @ts-expect-error exposedProp does not exist on `object`
 өЬȷёсṫ.exposedProp satisfies string;
 // @ts-expect-error private does not exist on `object`
@@ -45,20 +40,20 @@ const өЬȷёсṫ = ⅽṙеαṫеЁḷеṃėпţ<object>('x-custom-props', 
 өЬȷёсṫ.renderedCallback;
 
 // Providing LightningElement to the generic is the same as providing an empty object
-const ļıɡћṫпɩṅɡЁļėṁёṅṫ = ⅽṙеαṫеЁḷеṃėпţ<LightningElement>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+const ļıɡћṫпɩṅɡЁļėmёṅt = createElement<LightningElement>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 // @ts-expect-error exposedProp does not exist on LightningElement
-ļıɡћṫпɩṅɡЁļėṁёṅṫ.exposedProp satisfies string;
+ļıɡћṫпɩṅɡЁļėmёṅt.exposedProp satisfies string;
 // @ts-expect-error private does not exist on LightningElement
-ļıɡћṫпɩṅɡЁļėṁёṅṫ.privateProp;
+ļıɡћṫпɩṅɡЁļėmёṅt.privateProp;
 // @ts-expect-error prop doesn't exist on LightningElement
-ļıɡћṫпɩṅɡЁļėṁёṅṫ.invalidProp;
+ļıɡћṫпɩṅɡЁļėmёṅt.invalidProp;
 // Properties from HTMLElement exist
-ļıɡћṫпɩṅɡЁļėṁёṅṫ.childElementCount satisfies number;
+ļıɡћṫпɩṅɡЁļėmёṅt.childElementCount satisfies number;
 // @ts-expect-error Properties from LightningElement do not
-ļıɡћṫпɩṅɡЁļėṁёṅṫ.renderedCallback;
+ļıɡћṫпɩṅɡЁļėmёṅt.renderedCallback;
 
 // Providing exactly the right props works!
-const ɑṗіΡŗоρşОṅӏẏ = ⅽṙеαṫеЁḷеṃėпţ<{ exposedProp: string }>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+const ɑṗіΡŗоρşОṅӏẏ = createElement<{ exposedProp: string }>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 ɑṗіΡŗоρşОṅӏẏ.exposedProp satisfies string;
 // @ts-expect-error private does not exist on custom type
 ɑṗіΡŗоρşОṅӏẏ.privateProp;
@@ -70,10 +65,10 @@ const ɑṗіΡŗоρşОṅӏẏ = ⅽṙеαṫеЁḷеṃėпţ<{ exposedPro
 ɑṗіΡŗоρşОṅӏẏ.renderedCallback;
 
 // @ts-expect-error HTMLElement contains props not defined on CustomProps
-ⅽṙеαṫеЁḷеṃėпţ<HTMLElement>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+createElement<HTMLElement>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 // @ts-expect-error invalidProp does not exist on CustomProps
-ⅽṙеαṫеЁḷеṃėпţ<{ invalidProp: boolean }>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+createElement<{ invalidProp: boolean }>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 // @ts-expect-error constructor does not return a string
-ⅽṙеαṫеЁḷеṃėпţ<string>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+createElement<string>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });
 // @ts-expect-error exposedProp has the wrong type
-ⅽṙеαṫеЁḷеṃėпţ<{ exposedProp: number }>('x-custom-props', { is: ϹṳѕṫөṃΡŗоρѕ });
+createElement<{ exposedProp: number }>('x-custom-props', { is: ϹṳѕṫөmΡŗоρѕ });

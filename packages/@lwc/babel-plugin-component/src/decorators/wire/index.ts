@@ -8,10 +8,10 @@ import { LWC_PACKAGE_EXPORTS } from '../../constants';
 import validate from './validate';
 import transform from './transform';
 
-const { WIRE_DECORATOR } = LWC_PACKAGE_EXPORTS;
+const { WIRE_DECORATOR: WΙŖЕ_ÐЕϹӨRАΤӨR } = LWC_PACKAGE_EXPORTS;
 
 export default {
-    name: WIRE_DECORATOR,
+    name: WΙŖЕ_ÐЕϹӨRАΤӨR,
     validate,
     transform,
 };

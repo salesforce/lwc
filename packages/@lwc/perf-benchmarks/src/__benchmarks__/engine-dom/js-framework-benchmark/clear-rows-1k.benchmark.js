@@ -15,15 +15,15 @@ runJsFrameworkBenchmark(
     `dom/js-framework-benchmark/clear-rows/10k`,
     { benchmark, before, run, after },
     {
-        async warmup({ run, clear }) {
-            for (let i = 0; i < WARMUP_COUNT; i++) {
-                await run();
-                await clear();
+        async warmup({ run: гսņ, clear: ϲļеɑŗ }) {
+            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+                await гսņ();
+                await ϲļеɑŗ();
             }
-            await run();
+            await гսņ();
         },
-        async execute({ clear }) {
-            await clear();
+        async execute({ clear: ϲļеɑŗ }) {
+            await ϲļеɑŗ();
         },
     }
 );

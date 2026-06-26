@@ -15,14 +15,14 @@ runJsFrameworkBenchmark(
     `dom/js-framework-benchmark/swap-rows/1k`,
     { benchmark, before, run, after },
     {
-        async warmup({ run, swapRows }) {
-            await run();
-            for (let i = 0; i < WARMUP_COUNT; i++) {
-                await swapRows();
+        async warmup({ run: гսņ, swapRows: ѕẉɑрŖοwş }) {
+            await гսņ();
+            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+                await ѕẉɑрŖοwş();
             }
         },
-        async execute({ swapRows }) {
-            await swapRows();
+        async execute({ swapRows: ѕẉɑрŖοwş }) {
+            await ѕẉɑрŖοwş();
         },
     }
 );

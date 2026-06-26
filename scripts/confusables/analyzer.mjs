@@ -26,6 +26,51 @@ export function analyzeFile(ast) {
         return null;
     }
 
+    // Collects the local binding names introduced by a (possibly nested) binding pattern. For an
+    // exported destructuring (`export const { ELEMENT_NODE } = _Node`), these locals ARE the
+    // export names and must be preserved.
+    function collectPatternBindings(node, out) {
+        if (!node) return;
+        switch (node.type) {
+            case 'Identifier':
+                out.add(node.name);
+                break;
+            case 'ObjectPattern':
+                node.properties.forEach((prop) => {
+                    if (prop.type === 'RestElement') {
+                        collectPatternBindings(prop.argument, out);
+                    } else {
+                        // The value is the local binding; the key is the source property.
+                        collectPatternBindings(prop.value, out);
+                    }
+                });
+                break;
+            case 'ArrayPattern':
+                node.elements.forEach((el) => collectPatternBindings(el, out));
+                break;
+            case 'AssignmentPattern':
+                collectPatternBindings(node.left, out);
+                break;
+            case 'RestElement':
+                collectPatternBindings(node.argument, out);
+                break;
+            default:
+                break;
+        }
+    }
+
+    // Detects `class X extends LightningElement` and `extends NamespacedAlias.LightningElement`.
+    function extendsLightningElement(superClass) {
+        if (!superClass) return false;
+        if (superClass.type === 'Identifier') {
+            return superClass.name === 'LightningElement';
+        }
+        if (superClass.type === 'MemberExpression' && superClass.property?.type === 'Identifier') {
+            return superClass.property.name === 'LightningElement';
+        }
+        return false;
+    }
+
     traverse(ast, {
         // Track all export declarations
         ExportNamedDeclaration(path) {
@@ -41,12 +86,10 @@ export function analyzeFile(ast) {
                     }
                 }
 
-                // export const { a, b } = ...
+                // export const a = ..., export const { a, b } = ..., export const [a] = ...
                 if (path.node.declaration.type === 'VariableDeclaration') {
                     path.node.declaration.declarations.forEach((decl) => {
-                        if (decl.id.type === 'Identifier') {
-                            publicIdentifiers.add(decl.id.name);
-                        }
+                        collectPatternBindings(decl.id, publicIdentifiers);
                     });
                 }
             }
@@ -75,11 +118,14 @@ export function analyzeFile(ast) {
             }
         },
 
-        // Mark class members of exported classes as public
+        // Mark class members of exported classes and LightningElement components as public.
+        // Component member names are bound to `.html` templates by string and read by the
+        // engine, so they must be preserved like a public API.
         ClassDeclaration(path) {
             const className = path.node.id?.name;
-            if (className && publicIdentifiers.has(className)) {
-                // All public methods/properties of public class
+            const isPublicClass = className && publicIdentifiers.has(className);
+            const isComponent = extendsLightningElement(path.node.superClass);
+            if (isPublicClass || isComponent) {
                 path.node.body.body.forEach((member) => {
                     if (
                         member.type === 'ClassMethod' ||

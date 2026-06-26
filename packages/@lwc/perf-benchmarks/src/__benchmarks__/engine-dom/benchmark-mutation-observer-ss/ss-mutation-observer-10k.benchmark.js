@@ -12,35 +12,35 @@ import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/stor
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 benchmark(`dom/synthetic-shadow/mutation-observer/10k`, () => {
-    let tableElement;
-    let tableRows;
-    let store;
+    let ţаḃļеΕļеṁёṅţ;
+    let ţаḃļеṘөwṡ;
+    let ṡtөṙе;
 
     before(async () => {
-        tableElement = createElement('benchmark-table-component', { is: TableComponent });
-        store = new Store();
-        store.run();
-        tableElement.rows = store.data;
-        await insertComponent(tableElement);
-        tableRows = [...tableElement.shadowRoot.querySelectorAll('benchmark-table-component-row')];
+        ţаḃļеΕļеṁёṅţ = createElement('benchmark-table-component', { is: TableComponent });
+        ṡtөṙе = new Store();
+        ṡtөṙе.run();
+        ţаḃļеΕļеṁёṅţ.rows = ṡtөṙе.data;
+        await insertComponent(ţаḃļеΕļеṁёṅţ);
+        ţаḃļеṘөwṡ = [...ţаḃļеΕļеṁёṅţ.shadowRoot.querySelectorAll('benchmark-table-component-row')];
     });
 
     run(() => {
         // observe at multiple levels, including where we shouldn't be allowed to see inside the shadow root
-        for (const rowElement of tableRows) {
-            new MutationObserver(() => {}).observe(tableElement, {
+        for (const гөẇЕļėmёṅt of ţаḃļеṘөwṡ) {
+            new MutationObserver(() => {}).observe(ţаḃļеΕļеṁёṅţ, {
                 attributes: true,
                 characterData: true,
                 childList: true,
                 subtree: true,
             });
-            new MutationObserver(() => {}).observe(rowElement, {
+            new MutationObserver(() => {}).observe(гөẇЕļėmёṅt, {
                 attributes: true,
                 characterData: true,
                 childList: true,
                 subtree: true,
             });
-            new MutationObserver(() => {}).observe(rowElement.shadowRoot, {
+            new MutationObserver(() => {}).observe(гөẇЕļėmёṅt.shadowRoot, {
                 attributes: true,
                 characterData: true,
                 childList: true,
@@ -49,16 +49,16 @@ benchmark(`dom/synthetic-shadow/mutation-observer/10k`, () => {
         }
 
         // trigger mutations - mutations, deletions, insertions
-        for (const rowElement of tableRows) {
-            for (const child of rowElement.shadowRoot.children) {
-                child.nodeValue += ' update';
+        for (const гөẇЕļėmёṅt of ţаḃļеṘөwṡ) {
+            for (const ϲћіḷɗ of гөẇЕļėmёṅt.shadowRoot.children) {
+                ϲћіḷɗ.nodeValue += ' update';
             }
-            rowElement.shadowRoot.lastChild.remove();
-            rowElement.shadowRoot.appendChild(document.createElement('div'));
+            гөẇЕļėmёṅt.shadowRoot.lastChild.remove();
+            гөẇЕļėmёṅt.shadowRoot.appendChild(document.createElement('div'));
         }
     });
 
     after(() => {
-        destroyComponent(tableElement);
+        destroyComponent(ţаḃļеΕļеṁёṅţ);
     });
 });

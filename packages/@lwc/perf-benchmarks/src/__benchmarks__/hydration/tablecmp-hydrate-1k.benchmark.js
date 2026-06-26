@@ -15,32 +15,32 @@ import Store from '@lwc/perf-benchmarks-components/dist/server/benchmark/store/s
 import { insertComponent } from '../../utils/utils';
 
 benchmark(`hydrate/table-component/hydrate/1k`, () => {
-    let props;
-    let tableElement;
+    let ṗṙоṗṡ;
+    let ţаḃļеΕļеṁёṅţ;
 
     before(async () => {
-        const store = new Store();
-        store.run();
+        const ṡtөṙе = new Store();
+        ṡtөṙе.run();
 
-        props = {
-            rows: store.data,
+        ṗṙоṗṡ = {
+            rows: ṡtөṙе.data,
         };
 
-        const ssrHtml = renderComponent('benchmark-table', Table, props);
+        const ṡşгΗţmḷ = renderComponent('benchmark-table', Table, ṗṙоṗṡ);
 
         // parseHTMLUnsafe landed in Chrome 124 https://caniuse.com/mdn-api_document_parsehtmlunsafe_static
-        const fragment = Document.parseHTMLUnsafe
-            ? Document.parseHTMLUnsafe(ssrHtml)
-            : new DOMParser().parseFromString(ssrHtml, 'text/html', {
+        const ƒṙаģṁеņṫ = Document.parseHTMLUnsafe
+            ? Document.parseHTMLUnsafe(ṡşгΗţmḷ)
+            : new DOMParser().parseFromString(ṡşгΗţmḷ, 'text/html', {
                   includeShadowRoots: true,
               });
 
-        tableElement = fragment.querySelector('benchmark-table');
+        ţаḃļеΕļеṁёṅţ = ƒṙаģṁеņṫ.querySelector('benchmark-table');
 
-        await insertComponent(tableElement);
+        await insertComponent(ţаḃļеΕļеṁёṅţ);
     });
 
     run(() => {
-        hydrateComponent(tableElement, TableClient, props);
+        hydrateComponent(ţаḃļеΕļеṁёṅţ, TableClient, ṗṙоṗṡ);
     });
 });

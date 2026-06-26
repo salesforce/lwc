@@ -6,6 +6,30 @@ import { GLOBAL_IDENTIFIERS } from './globals.mjs';
 // ESM/CommonJS compatibility
 const traverse = traverseModule.default || traverseModule;
 
+// Binding kinds / declaration node types that live in TypeScript type space or otherwise
+// must never be renamed (renaming them would desync declarations from references that
+// Babel's scope analysis does not track).
+const TYPE_SPACE_DECLARATIONS = new Set([
+    'TSTypeAliasDeclaration',
+    'TSInterfaceDeclaration',
+    'TSEnumDeclaration',
+    'TSModuleDeclaration',
+    'TSImportEqualsDeclaration',
+    'TSTypeParameter',
+    // Constructor parameter properties (`constructor(private foo)`) create class members
+    // accessed via `this.foo`, which scope analysis cannot rename consistently.
+    'TSParameterProperty',
+]);
+
+// Import bindings are part of a cross-module contract. `binding.kind` is 'module' for value
+// imports but 'unknown' for `import type` bindings, so match on the declaration node type
+// instead to cover both.
+const IMPORT_DECLARATIONS = new Set([
+    'ImportSpecifier',
+    'ImportDefaultSpecifier',
+    'ImportNamespaceSpecifier',
+]);
+
 /**
  * Selects a confusable character deterministically based on the full identifier.
  */
@@ -15,7 +39,8 @@ function selectConfusable(char, fullIdentifier, position) {
         return char;
     }
 
-    // Hash combines full identifier + position for consistency
+    // Hash combines identifier name + character index so a given name always maps to the
+    // same confusable everywhere it appears (pure function of the name).
     const hashInput = `${fullIdentifier}:${position}`;
     const hash = simpleHash(hashInput);
     const index = Math.abs(hash) % options.length;
@@ -30,352 +55,344 @@ function transformIdentifier(identifier) {
     let result = '';
     for (let i = 0; i < identifier.length; i++) {
         const char = identifier[i];
-        const transformed = selectConfusable(char, identifier, i);
-        result += transformed;
+        result += selectConfusable(char, identifier, i);
     }
     return result;
 }
 
 /**
- * Transforms identifiers in the source code based on AST analysis.
+ * Returns the leftmost Identifier of a TS entity name (`X` or `X.Y.Z`), or null.
+ */
+function leftmostEntityIdentifier(node) {
+    let current = node;
+    while (current && current.type === 'TSQualifiedName') {
+        current = current.left;
+    }
+    return current && current.type === 'Identifier' ? current : null;
+}
+
+/**
+ * Determines whether an identifier path sits in a position where the textual name must be
+ * preserved even though a same-named binding exists in scope (property keys, member access,
+ * import/export specifiers). Shorthand object properties are handled separately and are NOT
+ * skipped here.
+ */
+function isPreservedPosition(path) {
+    const { parent, node } = path;
+    const type = parent?.type;
+
+    // obj.foo / obj?.foo — `foo` is a property name, not a reference to a binding.
+    if (
+        (type === 'MemberExpression' || type === 'OptionalMemberExpression') &&
+        parent.property === node &&
+        !parent.computed
+    ) {
+        return true;
+    }
+
+    // Non-shorthand object literal/pattern property key: { foo: ... }
+    if (type === 'ObjectProperty' && parent.key === node && !parent.computed && !parent.shorthand) {
+        return true;
+    }
+
+    // Method / class member keys.
+    if (
+        (type === 'ObjectMethod' ||
+            type === 'ClassMethod' ||
+            type === 'ClassPrivateMethod' ||
+            type === 'ClassProperty' ||
+            type === 'ClassPrivateProperty' ||
+            type === 'ClassAccessorProperty') &&
+        parent.key === node &&
+        !parent.computed
+    ) {
+        return true;
+    }
+
+    // Import/export specifier names.
+    if (
+        type === 'ImportSpecifier' ||
+        type === 'ImportDefaultSpecifier' ||
+        type === 'ImportNamespaceSpecifier' ||
+        type === 'ExportSpecifier'
+    ) {
+        return true;
+    }
+
+    // JSX names (defensive; LWC source has no JSX).
+    if (
+        (type === 'JSXAttribute' || type === 'JSXOpeningElement' || type === 'JSXClosingElement') &&
+        parent.name === node
+    ) {
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Determines whether an identifier path is inside a TypeScript type position. Value references
+ * that legitimately appear in type space (`typeof X`, type predicates) are handled by dedicated
+ * visitors; everything else in type space is preserved.
+ */
+function isInTypeContext(path) {
+    let current = path;
+    while (current) {
+        const t = current.parent?.type;
+        if (t && t.startsWith('TS') && t.endsWith('Type')) {
+            return true;
+        }
+        if (
+            t === 'TSTypeReference' ||
+            t === 'TSQualifiedName' ||
+            t === 'TSTypeAnnotation' ||
+            t === 'TSTypeParameter' ||
+            t === 'TSTypeParameterDeclaration' ||
+            t === 'TSTypeParameterInstantiation' ||
+            t === 'TSInterfaceBody' ||
+            t === 'TSPropertySignature' ||
+            t === 'TSMethodSignature' ||
+            t === 'TSIndexSignature' ||
+            t === 'TSTypeQuery' ||
+            t === 'TSTypePredicate' ||
+            t === 'TSExpressionWithTypeArguments' ||
+            t === 'TSInterfaceHeritage'
+        ) {
+            return true;
+        }
+        current = current.parentPath;
+    }
+    return false;
+}
+
+/**
+ * Transforms identifiers in the source code based on AST analysis and scope/binding information.
+ *
+ * The transform is binding-driven: each binding is classified once as renameable or preserved,
+ * then every occurrence (declaration + references) is rewritten consistently or not at all. This
+ * structurally prevents declaration/reference divergence.
  */
 export function transformSource(ast, source, analysis) {
-    const replacements = [];
     const { publicIdentifiers } = analysis;
+    const replacements = [];
 
-    // First pass: collect all identifiers that create bindings or have syntax constraints
-    const importedIdentifiers = new Set();
-    const parameterNames = new Set();
-    const destructuredIdentifiers = new Set();
-    const shorthandPropertyIdentifiers = new Set();
+    // --- Pass A: classify bindings ---------------------------------------------------------
+    const renameableIds = new Set(); // binding.identifier nodes that may be renamed
 
+    function isRenameable(binding, name) {
+        if (!binding || !binding.identifier) return false;
+        if (GLOBAL_IDENTIFIERS.has(name)) return false;
+        if (publicIdentifiers.has(name)) return false;
+        // Imported names are part of cross-module contracts; this tool transforms each file
+        // independently, so imports/exports must be preserved.
+        if (binding.kind === 'module') return false;
+        if (IMPORT_DECLARATIONS.has(binding.path?.node?.type)) return false;
+        if (TYPE_SPACE_DECLARATIONS.has(binding.path?.node?.type)) return false;
+        return true;
+    }
+
+    const scopes = new Set();
     traverse(ast, {
-        // Collect all imported identifiers
-        ImportDeclaration(path) {
-            path.node.specifiers.forEach((spec) => {
-                if (spec.local && spec.local.type === 'Identifier') {
-                    importedIdentifiers.add(spec.local.name);
-                }
-            });
-        },
-
-        // Collect all identifiers used in shorthand properties { x } which means { x: x }
-        ObjectProperty(path) {
-            if (path.node.shorthand && path.node.value.type === 'Identifier') {
-                shorthandPropertyIdentifiers.add(path.node.value.name);
-            }
-        },
-
-        // Collect all function parameter names
-        'FunctionDeclaration|FunctionExpression|ArrowFunctionExpression|ObjectMethod|ClassMethod'(
-            path
-        ) {
-            path.node.params.forEach((param) => {
-                if (param.type === 'Identifier') {
-                    parameterNames.add(param.name);
-                } else if (param.type === 'AssignmentPattern' && param.left.type === 'Identifier') {
-                    parameterNames.add(param.left.name);
-                } else if (param.type === 'RestElement' && param.argument.type === 'Identifier') {
-                    parameterNames.add(param.argument.name);
-                }
-                // Also handle destructuring parameters
-                if (param.type === 'ObjectPattern') {
-                    param.properties.forEach((prop) => {
-                        if (prop.type === 'ObjectProperty' && prop.value.type === 'Identifier') {
-                            parameterNames.add(prop.value.name);
-                        }
-                    });
-                }
-                if (param.type === 'ArrayPattern') {
-                    param.elements.forEach((el) => {
-                        if (el && el.type === 'Identifier') {
-                            parameterNames.add(el.name);
-                        }
-                    });
-                }
-            });
-        },
-
-        // Collect all identifiers created by destructuring (const { x } = ..., const [y] = ...)
-        VariableDeclarator(path) {
-            function collectFromPattern(pattern) {
-                if (pattern.type === 'ObjectPattern') {
-                    pattern.properties.forEach((prop) => {
-                        if (prop.type === 'ObjectProperty') {
-                            if (prop.value.type === 'Identifier') {
-                                destructuredIdentifiers.add(prop.value.name);
-                            } else if (
-                                prop.value.type === 'ObjectPattern' ||
-                                prop.value.type === 'ArrayPattern'
-                            ) {
-                                collectFromPattern(prop.value);
-                            }
-                        } else if (
-                            prop.type === 'RestElement' &&
-                            prop.argument.type === 'Identifier'
-                        ) {
-                            destructuredIdentifiers.add(prop.argument.name);
-                        }
-                    });
-                } else if (pattern.type === 'ArrayPattern') {
-                    pattern.elements.forEach((el) => {
-                        if (el && el.type === 'Identifier') {
-                            destructuredIdentifiers.add(el.name);
-                        } else if (
-                            el &&
-                            (el.type === 'ObjectPattern' || el.type === 'ArrayPattern')
-                        ) {
-                            collectFromPattern(el);
-                        } else if (
-                            el &&
-                            el.type === 'RestElement' &&
-                            el.argument.type === 'Identifier'
-                        ) {
-                            destructuredIdentifiers.add(el.argument.name);
-                        }
-                    });
-                }
-            }
-
-            if (
-                path.node.id &&
-                (path.node.id.type === 'ObjectPattern' || path.node.id.type === 'ArrayPattern')
-            ) {
-                collectFromPattern(path.node.id);
-            }
+        enter(path) {
+            scopes.add(path.scope);
         },
     });
-
-    // Helper to check if we're inside a TypeScript type context
-    function isInTypeContext(path) {
-        let current = path;
-        while (current) {
-            const parent = current.parent;
-            const type = parent?.type;
-
-            // Check if we're in any TypeScript type-related node
-            if (
-                type === 'TSTypeAnnotation' ||
-                type === 'TSTypeReference' ||
-                type === 'TSTypeParameter' ||
-                type === 'TSTypeParameterDeclaration' ||
-                type === 'TSTypeParameterInstantiation' ||
-                type === 'TSQualifiedName' ||
-                type === 'TSInterfaceBody' ||
-                type === 'TSTypeLiteral' ||
-                type === 'TSArrayType' ||
-                type === 'TSUnionType' ||
-                type === 'TSIntersectionType' ||
-                type === 'TSTupleType' ||
-                type === 'TSFunctionType' ||
-                type === 'TSConstructorType' ||
-                type === 'TSIndexedAccessType' ||
-                type === 'TSMappedType' ||
-                type === 'TSConditionalType' ||
-                type === 'TSInferType' ||
-                type === 'TSParenthesizedType'
-            ) {
-                return true;
+    for (const scope of scopes) {
+        for (const name of Object.keys(scope.bindings)) {
+            const binding = scope.bindings[name];
+            if (isRenameable(binding, name)) {
+                renameableIds.add(binding.identifier);
             }
-
-            // Check if we're the type annotation of an 'as' expression
-            if (type === 'TSAsExpression' && parent.typeAnnotation === current.node) {
-                return true;
-            }
-
-            // Check if we're in a type assertion (<Type>value)
-            if (type === 'TSTypeAssertion' && parent.typeAnnotation === current.node) {
-                return true;
-            }
-
-            // Check if we're the type in a satisfies expression
-            if (type === 'TSSatisfiesExpression' && parent.typeAnnotation === current.node) {
-                return true;
-            }
-
-            current = current.parentPath;
         }
-        return false;
     }
 
-    // Helper to check if an identifier should be skipped
-    function shouldSkip(path, name) {
-        // Skip imported identifiers (from any import statement)
-        if (importedIdentifiers.has(name)) {
-            return true;
-        }
-
-        // Don't skip destructured identifiers - we'll handle them with aliases
-        // e.g., const { dir } = obj; becomes const { dir: ḋɩṙ } = obj;
-
-        // Skip global identifiers (Object, Array, Map, etc.)
-        if (GLOBAL_IDENTIFIERS.has(name)) {
-            return true;
-        }
-
-        // Skip if in TypeScript type context
-        if (isInTypeContext(path)) {
-            return true;
-        }
-
-        // Skip public identifiers (exported names only, not their internal implementation)
-        if (publicIdentifiers.has(name)) {
-            return true;
-        }
-
-        // Skip if part of import/export
-        if (
-            path.parent?.type === 'ImportSpecifier' ||
-            path.parent?.type === 'ImportDefaultSpecifier' ||
-            path.parent?.type === 'ImportNamespaceSpecifier' ||
-            path.parent?.type === 'ExportSpecifier'
-        ) {
-            return true;
-        }
-
-        // Skip if it's a property key in object literal (might be public API)
-        // But allow shorthand properties to be transformed
-        if (
-            path.parent?.type === 'ObjectProperty' &&
-            path.parent.key === path.node &&
-            !path.parent.shorthand &&
-            !path.parent.computed
-        ) {
-            return true;
-        }
-
-        // Handle object destructuring patterns specially
-        // e.g., const { dir } = obj; becomes const { dir: ḋɩṙ } = obj;
-        if (
-            path.parent?.type === 'ObjectProperty' &&
-            path.parentPath?.parent?.type === 'ObjectPattern'
-        ) {
-            // Always skip the key (must match source property)
-            if (path.parent.key === path.node) {
-                return true;
-            }
-            // For shorthand properties, we need to expand to non-shorthand
-            // This is handled below by transforming the value
-            // Don't skip the value - let it be transformed
-        }
-
-        // Skip if it's a method key in object/class
-        if (
-            (path.parent?.type === 'ObjectMethod' || path.parent?.type === 'ClassMethod') &&
-            path.parent.key === path.node &&
-            !path.parent.computed
-        ) {
-            return true;
-        }
-
-        // Skip if it's a property access (e.g., obj.foo)
-        if (
-            path.parent?.type === 'MemberExpression' &&
-            path.parent.property === path.node &&
-            !path.parent.computed
-        ) {
-            return true;
-        }
-
-        // Skip if it's a JSX attribute name
-        if (path.parent?.type === 'JSXAttribute' && path.parent.name === path.node) {
-            return true;
-        }
-
-        // Skip if it's a decorator
-        if (path.parent?.type === 'Decorator') {
-            return true;
-        }
-
-        // Skip if it's a label
-        if (path.parent?.type === 'LabeledStatement' && path.parent.label === path.node) {
-            return true;
-        }
-
-        // Skip if it's a break/continue label
-        if (
-            (path.parent?.type === 'BreakStatement' || path.parent?.type === 'ContinueStatement') &&
-            path.parent.label === path.node
-        ) {
-            return true;
-        }
-
-        return false;
+    function resolvesToRenameable(path, name) {
+        const binding = path.scope.getBinding(name);
+        return binding && renameableIds.has(binding.identifier) ? binding : null;
     }
 
-    // Track shorthand destructuring that needs to be expanded
-    const shorthandExpansions = [];
-
+    // --- Pass B: emit replacements ----------------------------------------------------------
     traverse(ast, {
-        // Expand shorthand object destructuring to aliased form
+        // Expand shorthand object properties so the key (which must match either the source
+        // object property in a pattern, or the contextual type in an expression) stays ASCII
+        // while the value binding is renamed: `{ scope }` -> `{ scope: <target> }`.
         ObjectProperty(path) {
-            if (
-                path.node.shorthand &&
-                path.parent?.type === 'ObjectPattern' &&
-                path.node.value.type === 'Identifier'
-            ) {
-                const name = path.node.value.name;
-                const transformed = transformIdentifier(name);
+            if (!path.node.shorthand) return;
 
-                if (transformed !== name && path.node.start != null) {
-                    // Expand { dir } to { dir: ḋɩṙ }
-                    // We need to add ": transformed" after the key
-                    const keyEnd = path.node.key.start + name.length;
-                    shorthandExpansions.push({
-                        start: keyEnd,
-                        end: keyEnd,
-                        text: `: ${transformed}`,
-                    });
-                }
+            const valueNode = path.node.value;
+            let idNode = null;
+            if (valueNode.type === 'Identifier') {
+                idNode = valueNode;
+            } else if (
+                valueNode.type === 'AssignmentPattern' &&
+                valueNode.left.type === 'Identifier'
+            ) {
+                // Destructuring default: `{ scope = x }` -> `{ scope: <target> = x }`
+                idNode = valueNode.left;
             }
+            if (!idNode) return;
+
+            if (!resolvesToRenameable(path, idNode.name)) return;
+
+            const target = transformIdentifier(idNode.name);
+            if (target === idNode.name) return;
+
+            const keyNode = path.node.key;
+            const insertAt = keyNode.start + idNode.name.length;
+            replacements.push({ start: insertAt, end: insertAt, text: `: ${target}` });
         },
 
         Identifier(path) {
-            const name = path.node.name;
+            const { node, parent } = path;
+            const name = node.name;
 
-            if (shouldSkip(path, name)) {
+            // `this` parameter (TS `function (this: T)`) is a contextual keyword, not a binding.
+            if (name === 'this') {
                 return;
             }
 
-            // Skip if this is the value in a shorthand destructuring that we're expanding
+            // Private name (`this.#foo`, `#foo` declaration): the inner identifier is a class
+            // member name in its own namespace, not a variable reference. It must never be
+            // renamed via scope bindings (a same-named local would otherwise hijack it and
+            // desync the `#field` declaration from its uses).
+            if (parent?.type === 'PrivateName') {
+                return;
+            }
+
+            // Shorthand object properties are fully handled by the ObjectProperty visitor.
+            if (parent?.type === 'ObjectProperty' && parent.shorthand) {
+                return;
+            }
+
+            // Default value of a shorthand pattern (`{ key = default }`): the binding is
+            // `AssignmentPattern.left`, but the ObjectProperty visitor already expands and renames
+            // it. Renaming it again here would corrupt the preserved ASCII key.
             if (
-                path.parent?.type === 'ObjectProperty' &&
-                path.parent.shorthand &&
-                path.parent.value === path.node &&
-                path.parentPath?.parent?.type === 'ObjectPattern'
+                parent?.type === 'AssignmentPattern' &&
+                parent.left === node &&
+                path.parentPath?.parent?.type === 'ObjectProperty' &&
+                path.parentPath.parent.shorthand
             ) {
-                // This will be handled by shorthandExpansions
                 return;
             }
 
-            // Transform the identifier
-            const transformed = transformIdentifier(name);
-
-            if (transformed !== name && path.node.start != null) {
-                // For identifiers with type annotations, we need to only replace the name part
-                // not the entire node which might include `: Type`
-                // Calculate the end position as start + name length
-                const identifierEnd = path.node.start + name.length;
-                replacements.push({
-                    start: path.node.start,
-                    end: identifierEnd,
-                    text: transformed,
-                });
+            // Value references inside type space (`typeof X`, `x is T`) are handled by the
+            // dedicated visitors below; everything else in type space is preserved.
+            if (isInTypeContext(path)) {
+                return;
             }
+
+            if (isPreservedPosition(path)) {
+                return;
+            }
+
+            if (!resolvesToRenameable(path, name)) {
+                return;
+            }
+
+            const target = transformIdentifier(name);
+            if (target === name) return;
+
+            replacements.push({
+                start: node.start,
+                end: node.start + name.length,
+                text: target,
+            });
+        },
+
+        // A type reference (`x: SignalTracker`) may point at a class declaration, which lives in
+        // both value and type space under a single binding. When that class is renamed, its
+        // type-position references must rename in lockstep. Restrict to classes: they are the only
+        // renameable bindings that can legitimately appear as a direct type reference (aliases,
+        // interfaces, enums and imports are preserved). This also avoids a value/type-parameter
+        // name collision — `getBinding` only tracks value bindings, so a type reference to a type
+        // parameter that shares a name with a renameable value binding would otherwise be renamed
+        // out of sync with the preserved type-parameter declaration.
+        TSTypeReference(path) {
+            const idNode = leftmostEntityIdentifier(path.node.typeName);
+            if (!idNode) return;
+            const binding = resolvesToRenameable(path, idNode.name);
+            if (!binding) return;
+            const declType = binding.path?.node?.type;
+            if (declType !== 'ClassDeclaration' && declType !== 'ClassExpression') return;
+
+            const target = transformIdentifier(idNode.name);
+            if (target === idNode.name) return;
+
+            replacements.push({
+                start: idNode.start,
+                end: idNode.start + idNode.name.length,
+                text: target,
+            });
+        },
+
+        // `typeof X` references a value binding from type space.
+        TSTypeQuery(path) {
+            const idNode = leftmostEntityIdentifier(path.node.exprName);
+            if (!idNode) return;
+            if (!resolvesToRenameable(path, idNode.name)) return;
+
+            const target = transformIdentifier(idNode.name);
+            if (target === idNode.name) return;
+
+            replacements.push({
+                start: idNode.start,
+                end: idNode.start + idNode.name.length,
+                text: target,
+            });
+        },
+
+        // Computed type-member key (`interface I { [HostElementKey]: T }`) references a value
+        // binding from type space. The signature lives in type context, so the generic visitor
+        // skips it; rename the key reference in lockstep with its value binding.
+        'TSPropertySignature|TSMethodSignature'(path) {
+            if (!path.node.computed) return;
+            const keyNode = path.node.key;
+            if (!keyNode || keyNode.type !== 'Identifier') return;
+            if (!resolvesToRenameable(path, keyNode.name)) return;
+
+            const target = transformIdentifier(keyNode.name);
+            if (target === keyNode.name) return;
+
+            replacements.push({
+                start: keyNode.start,
+                end: keyNode.start + keyNode.name.length,
+                text: target,
+            });
+        },
+
+        // `value is Foo` / `asserts value` references the parameter binding from type space.
+        TSTypePredicate(path) {
+            const pn = path.node.parameterName;
+            if (!pn || pn.type !== 'Identifier') return;
+            if (!resolvesToRenameable(path, pn.name)) return;
+
+            const target = transformIdentifier(pn.name);
+            if (target === pn.name) return;
+
+            replacements.push({
+                start: pn.start,
+                end: pn.start + pn.name.length,
+                text: target,
+            });
         },
     });
 
-    // Merge shorthand expansions into replacements
-    replacements.push(...shorthandExpansions);
-
-    // Apply replacements from end to start (to maintain offsets)
-    replacements.sort((a, b) => b.start - a.start);
-    let result = source;
-
-    for (const replacement of replacements) {
-        result =
-            result.slice(0, replacement.start) + replacement.text + result.slice(replacement.end);
+    // Apply replacements from end to start to keep earlier offsets valid. Dedupe by start
+    // position so a token is never rewritten twice.
+    const seen = new Set();
+    const deduped = [];
+    for (const r of replacements) {
+        const key = `${r.start}:${r.end}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        deduped.push(r);
     }
+    deduped.sort((a, b) => b.start - a.start);
 
+    let result = source;
+    for (const r of deduped) {
+        result = result.slice(0, r.start) + r.text + result.slice(r.end);
+    }
     return result;
 }

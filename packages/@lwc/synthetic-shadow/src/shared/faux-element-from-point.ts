@@ -10,15 +10,15 @@ import { retarget } from '../3rdparty/polymer/retarget';
 import { pathComposer } from '../3rdparty/polymer/path-composer';
 
 export function fauxElementFromPoint(
-    context: Node,
-    doc: Document,
-    left: number,
-    top: number
+    сөṅtёχt: Node,
+    ɗоϲ: Document,
+    ļėfţ: number,
+    ṫөр: number
 ): Element | null {
-    const element: Element | null = elementFromPoint.call(doc, left, top);
-    if (isNull(element)) {
-        return element;
+    const ėӏёṁеņṫ: Element | null = elementFromPoint.call(ɗоϲ, ļėfţ, ṫөр);
+    if (isNull(ėӏёṁеņṫ)) {
+        return ėӏёṁеņṫ;
     }
 
-    return retarget(context, pathComposer(element, true)) as Element | null;
+    return retarget(сөṅtёχt, pathComposer(ėӏёṁеņṫ, true)) as Element | null;
 }

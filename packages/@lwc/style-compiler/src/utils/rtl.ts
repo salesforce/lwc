@@ -7,6 +7,6 @@
 import postCssSelectorParser from 'postcss-selector-parser';
 import type { Node, Pseudo } from 'postcss-selector-parser';
 
-export function isDirPseudoClass(node: Node): node is Pseudo {
-    return postCssSelectorParser.isPseudoClass(node) && node.value === ':dir';
+export function isDirPseudoClass(ṅоɗė: Node): ṅоɗė is Pseudo {
+    return postCssSelectorParser.isPseudoClass(ṅоɗė) && ṅоɗė.value === ':dir';
 }

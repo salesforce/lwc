@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { globSync } from 'glob';
 import { parse } from '@babel/parser';
@@ -14,7 +13,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../..');
 
-// Colors for terminal output
 const colors = {
     reset: '\x1b[0m',
     green: '\x1b[32m',
@@ -28,85 +26,111 @@ function log(msg, color = 'reset') {
     console.log(`${colors[color]}${msg}${colors.reset}`);
 }
 
-function checkGitStatus() {
-    try {
-        const status = execFileSync('git', ['status', '--porcelain'], {
-            cwd: ROOT,
-            encoding: 'utf-8',
-        });
-        return status.trim().length === 0;
-    } catch (err) {
-        log(`Error checking git status: ${err.message}`, 'red');
-        return false;
+// --- CLI flags ----------------------------------------------------------------------------
+// --extensions=ts,js,mjs,cjs   which source extensions to transform (default: all)
+// --verify                     run yarn build/test/test:wtr after transforming
+// --skip-wtr                   when verifying, skip yarn test:wtr (sandbox port issues)
+// --checkpoint=<ref>           git ref to `git reset --hard` to if verification fails
+const args = process.argv.slice(2);
+function flag(name) {
+    return args.includes(`--${name}`);
+}
+function option(name, fallback) {
+    const hit = args.find((a) => a.startsWith(`--${name}=`));
+    return hit ? hit.slice(name.length + 3) : fallback;
+}
+
+const EXTENSIONS = option('extensions', 'ts,js,mjs,cjs')
+    .split(',')
+    .map((e) => e.trim())
+    .filter(Boolean);
+const VERIFY = flag('verify');
+const SKIP_WTR = flag('skip-wtr');
+const CHECKPOINT = option('checkpoint', null);
+
+// Babel parser plugins. The `typescript` plugin is only valid for .ts sources; applying it to
+// plain JS would reject otherwise-legal syntax.
+function parserConfig(ext) {
+    const plugins = [
+        'decorators-legacy',
+        'classProperties',
+        'classPrivateProperties',
+        'classPrivateMethods',
+    ];
+    if (ext === 'ts') {
+        plugins.unshift('typescript');
     }
+    return {
+        // .cjs files may be scripts rather than modules; let Babel decide.
+        sourceType: ext === 'cjs' ? 'unambiguous' : 'module',
+        plugins,
+    };
 }
 
 function discoverFiles() {
-    log('\n📁 Discovering TypeScript files...', 'cyan');
+    log('\n📁 Discovering source files...', 'cyan');
 
-    const pattern = 'packages/@lwc/*/src/**/*.ts';
+    const brace = EXTENSIONS.length === 1 ? EXTENSIONS[0] : `{${EXTENSIONS.join(',')}}`;
+    const pattern = `packages/@lwc/*/src/**/*.${brace}`;
     const files = globSync(pattern, {
         cwd: ROOT,
         ignore: [
             '**/__tests__/**',
-            '**/*.test.ts',
-            '**/*.spec.ts',
+            '**/__mocks__/**',
+            '**/fixtures/**',
             '**/dist/**',
             '**/node_modules/**',
+            '**/*.snap',
+            '**/*.spec.*',
+            '**/*.test.*',
+            '**/*.d.ts',
         ],
         absolute: true,
     });
 
-    log(`   Found ${files.length} files`, 'blue');
-    return files;
+    // Exclude any JS/TS with a colocated .html template — its identifiers are bound to the
+    // template by string name and cannot be renamed independently.
+    const filtered = files.filter((file) => {
+        const html = file.replace(/\.(ts|js|mjs|cjs)$/, '.html');
+        return !existsSync(html);
+    });
+
+    log(`   Found ${filtered.length} files (extensions: ${EXTENSIONS.join(', ')})`, 'blue');
+    return filtered;
+}
+
+function extOf(filePath) {
+    const m = filePath.match(/\.([^.]+)$/);
+    return m ? m[1] : '';
 }
 
 function processFile(filePath) {
+    const source = readFileSync(filePath, 'utf-8');
+    let ast;
     try {
-        // Read source
-        const source = readFileSync(filePath, 'utf-8');
-
-        // Parse with Babel
-        const ast = parse(source, {
-            sourceType: 'module',
-            plugins: [
-                'typescript',
-                'decorators-legacy',
-                'classProperties',
-                'classPrivateProperties',
-                'classPrivateMethods',
-            ],
-        });
-
-        // Analyze to identify public/private identifiers
-        const analysis = analyzeFile(ast);
-
-        // Transform identifiers
-        const transformed = transformSource(ast, source, analysis);
-
-        // Write back if changed
-        if (transformed !== source) {
-            writeFileSync(filePath, transformed, 'utf-8');
-            return true;
-        }
-
-        return false;
+        ast = parse(source, parserConfig(extOf(filePath)));
     } catch (err) {
-        log(`   ❌ Error processing ${filePath}: ${err.message}`, 'red');
-        if (err.stack) {
-            console.error(err.stack);
-        }
+        log(
+            `   ⚠ Skipping (parse error) ${filePath.replace(ROOT + '/', '')}: ${err.message}`,
+            'yellow'
+        );
         return false;
     }
+
+    const analysis = analyzeFile(ast);
+    const transformed = transformSource(ast, source, analysis);
+
+    if (transformed !== source) {
+        writeFileSync(filePath, transformed, 'utf-8');
+        return true;
+    }
+    return false;
 }
 
-function runCommand(cmd, args) {
+function runCommand(cmd, cmdArgs) {
     try {
-        log(`\n▶ Running: ${cmd} ${args.join(' ')}`, 'cyan');
-        execFileSync(cmd, args, {
-            cwd: ROOT,
-            stdio: 'inherit',
-        });
+        log(`\n▶ Running: ${cmd} ${cmdArgs.join(' ')}`, 'cyan');
+        execFileSync(cmd, cmdArgs, { cwd: ROOT, stdio: 'inherit' });
         return true;
     } catch (err) {
         log(`   ❌ Command failed with exit code ${err.status}`, 'red');
@@ -114,77 +138,71 @@ function runCommand(cmd, args) {
     }
 }
 
+function rollback() {
+    if (!CHECKPOINT) {
+        log(
+            '   ⚠ No --checkpoint ref given; leaving working tree as-is for manual fixing.',
+            'yellow'
+        );
+        return;
+    }
+    log(`   ↩ Rolling back to ${CHECKPOINT}...`, 'yellow');
+    runCommand('git', ['reset', '--hard', CHECKPOINT]);
+}
+
 async function main() {
     log('🔄 Starting confusable character transformation...', 'cyan');
 
-    // Check git status
-    log('\n📋 Checking git status...', 'cyan');
-    const isClean = checkGitStatus();
-    if (!isClean) {
-        log('   ❌ Working tree is not clean. Commit changes first.', 'red');
-        process.exit(1);
-    }
-    log('   ✓ Working tree is clean', 'green');
-
-    // Create checkpoint
-    log('\n💾 Creating git checkpoint...', 'cyan');
-    if (!runCommand('git', ['add', '-A'])) {
-        process.exit(1);
-    }
-    if (!runCommand('git', ['commit', '-m', 'Pre-confusable-transformation checkpoint'])) {
-        log('   ⚠ No changes to commit (already at checkpoint?)', 'yellow');
-    }
-
-    // Discover files
     const files = discoverFiles();
 
-    // Process each file
     log('\n🔨 Transforming files...', 'cyan');
     let transformed = 0;
     for (const file of files) {
-        const changed = processFile(file);
-        if (changed) {
+        if (processFile(file)) {
             transformed++;
             log(`   ✓ ${file.replace(ROOT + '/', '')}`, 'green');
         }
     }
-
     log(`\n✓ Transformed ${transformed} of ${files.length} files`, 'green');
 
-    // Format
     log('\n📝 Running yarn format...', 'cyan');
     if (!runCommand('yarn', ['format'])) {
-        log('   ❌ Format failed, rolling back...', 'red');
-        runCommand('git', ['reset', '--hard', 'HEAD']);
+        log('   ❌ Format failed', 'red');
+        rollback();
         process.exit(1);
     }
 
-    // Verify: build
-    log('\n🔧 Verifying: yarn build...', 'cyan');
-    if (!runCommand('yarn', ['build'])) {
-        log('   ❌ Build failed - NOT rolling back, proceeding to fix errors', 'yellow');
-        // Keep the transformed files so we can fix the errors
-        // runCommand('git', ['reset', '--hard', 'HEAD']);
-        // process.exit(1);
+    if (!VERIFY) {
+        log(
+            '\n✓ Transform complete (verification skipped; pass --verify to gate on build/test).',
+            'green'
+        );
+        return;
     }
 
-    // Verify: tests (skip for now, just need build to work)
-    log('\n⚠️  Skipping tests until build passes', 'yellow');
-    // if (!runCommand('yarn', ['test'])) {
-    //     log('   ❌ Tests failed, rolling back...', 'red');
-    //     runCommand('git', ['reset', '--hard', 'HEAD']);
-    //     process.exit(1);
-    // }
+    log('\n🔧 Verifying: yarn build...', 'cyan');
+    if (!runCommand('yarn', ['build'])) {
+        rollback();
+        process.exit(1);
+    }
 
-    // Skip test:wtr due to permission issues in this environment
-    log('\n⚠️  Skipping yarn test:wtr (permission issues with port binding)', 'yellow');
-    log('   Run manually after transformation if needed', 'yellow');
+    log('\n🧪 Verifying: yarn test...', 'cyan');
+    if (!runCommand('yarn', ['test', '--run'])) {
+        rollback();
+        process.exit(1);
+    }
 
-    log('\n🎉 Transformation completed successfully!', 'green');
-    log('\nNext steps:', 'cyan');
-    log('  - Review changes with: git diff HEAD~1', 'blue');
-    log('  - Commit changes if satisfied', 'blue');
-    log('  - Or rollback with: git reset --hard HEAD~1', 'blue');
+    if (SKIP_WTR) {
+        log('\n⚠️  Skipping yarn test:wtr (--skip-wtr).', 'yellow');
+    } else {
+        log('\n🌐 Verifying: yarn test:wtr...', 'cyan');
+        if (!runCommand('yarn', ['test:wtr'])) {
+            rollback();
+            process.exit(1);
+        }
+    }
+
+    log('\n🎉 Transformation completed and verified!', 'green');
 }
 
 main().catch((err) => {

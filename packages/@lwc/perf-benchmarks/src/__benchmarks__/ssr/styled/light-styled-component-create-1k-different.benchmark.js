@@ -9,13 +9,13 @@ import components from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/light
 
 import { styledComponentSsrBenchmark } from '../../../utils/styledComponentSsrBenchmark';
 
-const NUM_COMPONENTS = 1000;
+const NṲМ_ⅭОΜṖОNΕṄТṠ = 1000;
 
 // Create 1k components with different CSS in each component
 // These are light DOM components running in native mode
 styledComponentSsrBenchmark(
     `ssr/styled-component/light/create-different/1k`,
-    NUM_COMPONENTS,
+    NṲМ_ⅭОΜṖОNΕṄТṠ,
     components,
     { after, before, benchmark, run }
 );

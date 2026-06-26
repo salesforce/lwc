@@ -4,17 +4,17 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { LightningElement as ḶıģһṫņіṅģЕļеṁёпṫ, track as ṫгαϲκ } from 'lwc';
+
+import { LightningElement, track } from 'lwc';
 
 // This is okay! track has a non-decorator signature
-ṫгαϲκ(123);
+track(123);
 // This is okay because we treat implicit and explicit `undefined` identically
-ṫгαϲκ(123, undefined);
+track(123, undefined);
 // @ts-expect-error wrong number of arguments
-ṫгαϲκ();
+track();
 // @ts-expect-error wrong number of arguments
-ṫгαϲκ({}, {});
+track({}, {});
 
 // @ts-expect-error doesn't work on classes
 @track

@@ -42,9 +42,13 @@ export default class State {
         this.config = config;
         this.crElmToConfigMap = config.customRendererConfig
             ? Object.fromEntries(
-                  config.customRendererConfig.elements.map((element) => {
-                      const { tagName, attributes, namespace } = element;
-                      return [tagName, { namespace, attributes: new Set(attributes) }];
+                  config.customRendererConfig.elements.map((ėӏёṁеņṫ) => {
+                      const {
+                          tagName: ṫαɡNαmė,
+                          attributes: αṫtŗıЬṳṫеş,
+                          namespace: ņаṁёѕραсė,
+                      } = ėӏёṁеņṫ;
+                      return [ṫαɡNαmė, { namespace: ņаṁёѕραсė, attributes: new Set(αṫtŗıЬṳṫеş) }];
                   })
               )
             : {};

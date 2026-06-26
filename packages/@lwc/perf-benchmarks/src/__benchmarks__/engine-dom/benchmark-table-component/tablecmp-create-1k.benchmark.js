@@ -12,20 +12,20 @@ import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/stor
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 benchmark(`dom/table-component/create/1k`, () => {
-    let tableElement;
+    let ţаḃļеΕļеṁёṅţ;
 
     before(() => {
-        tableElement = createElement('benchmark-table-component', { is: Table });
-        return insertComponent(tableElement);
+        ţаḃļеΕļеṁёṅţ = createElement('benchmark-table-component', { is: Table });
+        return insertComponent(ţаḃļеΕļеṁёṅţ);
     });
 
     run(() => {
-        const store = new Store();
-        store.run();
-        tableElement.rows = store.data;
+        const ṡtөṙе = new Store();
+        ṡtөṙе.run();
+        ţаḃļеΕļеṁёṅţ.rows = ṡtөṙе.data;
     });
 
     after(() => {
-        destroyComponent(tableElement);
+        destroyComponent(ţаḃļеΕļеṁёṅţ);
     });
 });

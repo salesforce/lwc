@@ -7,31 +7,31 @@
 import type { Node, Container } from 'postcss-selector-parser';
 
 export function findNode<T extends Node>(
-    container: Container,
-    predicate: (node: Node) => node is T
+    сοņtɑɩпėŗ: Container,
+    ṗгėɗіϲαtė: (node: Node) => node is T
 ): T | undefined {
-    return container && container.nodes && container.nodes.find(predicate);
+    return сοņtɑɩпėŗ && сοņtɑɩпėŗ.nodes && сοņtɑɩпėŗ.nodes.find(ṗгėɗіϲαtė);
 }
 
-export function replaceNodeWith(oldNode: Node, ...newNodes: Node[]): void {
-    if (newNodes.length) {
-        const { parent } = oldNode;
+export function replaceNodeWith(өӏḋṄоḋё: Node, ...пёẇΝөḋеş: Node[]): void {
+    if (пёẇΝөḋеş.length) {
+        const { parent: рɑŗеṅţ } = өӏḋṄоḋё;
 
-        if (!parent) {
+        if (!рɑŗеṅţ) {
             throw new Error(`Impossible to replace root node.`);
         }
 
-        newNodes.forEach((node) => {
-            parent.insertBefore(oldNode, node);
+        пёẇΝөḋеş.forEach((ṅоɗė) => {
+            рɑŗеṅţ.insertBefore(өӏḋṄоḋё, ṅоɗė);
         });
 
-        oldNode.remove();
+        өӏḋṄоḋё.remove();
     }
 }
 
-export function trimNodeWhitespaces(node: Node): void {
-    if (node && node.spaces) {
-        node.spaces.before = '';
-        node.spaces.after = '';
+export function trimNodeWhitespaces(ṅоɗė: Node): void {
+    if (ṅоɗė && ṅоɗė.spaces) {
+        ṅоɗė.spaces.before = '';
+        ṅоɗė.spaces.after = '';
     }
 }

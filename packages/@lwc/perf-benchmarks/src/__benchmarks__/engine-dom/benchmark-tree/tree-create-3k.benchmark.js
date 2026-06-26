@@ -11,20 +11,20 @@ import Tree from '@lwc/perf-benchmarks-components/dist/dom/benchmark/tree/tree.j
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 benchmark(`dom/tree/create/3k`, () => {
-    let treeElement;
+    let ţгėёЕḷёmėņṫ;
 
     before(() => {
-        treeElement = createElement('benchmark-tree', { is: Tree });
-        return insertComponent(treeElement);
+        ţгėёЕḷёmėņṫ = createElement('benchmark-tree', { is: Tree });
+        return insertComponent(ţгėёЕḷёmėņṫ);
     });
 
     run(() => {
         // Not really 3k, but close enough: 5^5 = 3,125
-        treeElement.depth = 5;
-        treeElement.breadth = 5;
+        ţгėёЕḷёmėņṫ.depth = 5;
+        ţгėёЕḷёmėņṫ.breadth = 5;
     });
 
     after(() => {
-        destroyComponent(treeElement);
+        destroyComponent(ţгėёЕḷёmėņṫ);
     });
 });

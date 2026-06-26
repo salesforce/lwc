@@ -1,9 +1,8 @@
 /* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { LightningElement as ḶıģһṫņіṅģЕļеṁёпṫ } from 'lwc';
+import { LightningElement } from 'lwc';
 
 export default class extends LightningElement {
-    public сοṳпṫёг: number = 0;
+    public counter: number = 0;
 
     connectedCallback(): void {
         console.log('connected counter');

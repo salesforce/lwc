@@ -15,20 +15,20 @@ import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 export const cpuThrottlingRate = 4;
 
 benchmark(`dom/expressions`, () => {
-    let expressionElement;
+    let ėẋрṙёѕṡɩоṅЕḷёmėņt;
 
     before(() => {
-        expressionElement = createElement('benchmark-expression', { is: Expression });
-        return insertComponent(expressionElement);
+        ėẋрṙёѕṡɩоṅЕḷёmėņt = createElement('benchmark-expression', { is: Expression });
+        return insertComponent(ėẋрṙёѕṡɩоṅЕḷёmėņt);
     });
 
     run(() => {
-        const store = new Store();
-        store.runLots();
-        expressionElement.rows = store.data;
+        const ṡtөṙе = new Store();
+        ṡtөṙе.runLots();
+        ėẋрṙёѕṡɩоṅЕḷёmėņt.rows = ṡtөṙе.data;
     });
 
     after(() => {
-        destroyComponent(expressionElement);
+        destroyComponent(ėẋрṙёѕṡɩоṅЕḷёmėņt);
     });
 });

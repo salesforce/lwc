@@ -9,12 +9,12 @@ import components from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/shado
 
 import { styledComponentSsrBenchmark } from '../../../utils/styledComponentSsrBenchmark';
 
-const NUM_COMPONENTS = 1000;
+const NṲМ_ⅭОΜṖОNΕṄТṠ = 1000;
 
 // Create 1k components with different CSS in each component
 styledComponentSsrBenchmark(
     `ssr/styled-component/shadow/create-different/1k`,
-    NUM_COMPONENTS,
+    NṲМ_ⅭОΜṖОNΕṄТṠ,
     components,
     { after, before, benchmark, run }
 );

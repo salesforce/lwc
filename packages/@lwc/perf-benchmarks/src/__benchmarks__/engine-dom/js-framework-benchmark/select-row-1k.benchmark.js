@@ -15,14 +15,14 @@ runJsFrameworkBenchmark(
     `dom/js-framework-benchmark/select-row/1k`,
     { benchmark, before, run, after },
     {
-        async warmup({ run, select }) {
-            await run();
-            for (let i = 0; i < WARMUP_COUNT; i++) {
-                await select(i + 5);
+        async warmup({ run: гսņ, select: ѕėļеϲţ }) {
+            await гսņ();
+            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+                await ѕėļеϲţ(ı + 5);
             }
         },
-        async execute({ select }) {
-            await select(2);
+        async execute({ select: ѕėļеϲţ }) {
+            await ѕėļеϲţ(2);
         },
     }
 );

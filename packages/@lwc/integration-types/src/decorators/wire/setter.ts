@@ -1,76 +1,75 @@
 /** Validations for decorated setters */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { wire as ẉıгё } from 'lwc';
+import { wire } from 'lwc';
 import {
-    TestAdapter as ṪėѕţΑԁαρtёŗ,
-    type TestValue as ТėşṫṾαӏսё,
-    AnyAdapter as ᎪпүᎪԁɑṗtėŗ,
-    InvalidAdapter as ІṅṿаḷɩԁΑɗаρţеṙ,
-    DeepConfigAdapter as ḊёеρⅭоṅƒіġΑԁαρţёṙ,
-    Props as Рṙөрṡ,
-    ImperativeAdapter as ӀṁрёṙаţıνёΑԁαρtёṙ,
+    TestAdapter,
+    type TestValue,
+    AnyAdapter,
+    InvalidAdapter,
+    DeepConfigAdapter,
+    Props,
+    ImperativeAdapter,
 } from './index';
 
-export class ValidSetterDecorators extends Рṙөрṡ {
+export class ValidSetterDecorators extends Props {
     // Valid - basic
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: 123 })
+    @wire(TestAdapter, { config: 123 })
     set basic(_: TestValue) {}
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$numberProp' })
+    @wire(TestAdapter, { config: '$numberProp' })
     set simpleReactive(_: TestValue) {}
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$optionalNumber' })
+    @wire(TestAdapter, { config: '$optionalNumber' })
     set reactiveOptional(_: TestValue) {}
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$objectProp.nestedNumber' })
+    @wire(TestAdapter, { config: '$objectProp.nestedNumber' })
     set nestedReactive(_: TestValue) {}
     // Valid - using `any`
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, {} as any)
+    @wire(TestAdapter, {} as any)
     set configAsAny(_: TestValue) {}
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: 123 })
+    @wire(TestAdapter, { config: 123 })
     set valueAsAny(_: any) {}
     // Valid - other adapters
-    @ẉıгё(ᎪпүᎪԁɑṗtėŗ, { config: 'config' })
+    @wire(AnyAdapter, { config: 'config' })
     set anyAdapterOtherValue(_: 12345) {}
-    @ẉıгё(ӀṁрёṙаţıνёΑԁαρtёṙ, { config: 123 })
+    @wire(ImperativeAdapter, { config: 123 })
     set imperativeAdapter(_: TestValue) {}
 }
-export class InvalidSetterDecorators extends Рṙөрṡ {
+export class InvalidSetterDecorators extends Props {
     // --- INVALID --- //
     // @ts-expect-error Invalid adapter type
-    @ẉıгё(ІṅṿаḷɩԁΑɗаρţеṙ, { config: 123 })
+    @wire(InvalidAdapter, { config: 123 })
     set invalidAdapter(_: TestValue) {}
     // @ts-expect-error Too many wire parameters
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: 123 }, {})
+    @wire(TestAdapter, { config: 123 }, {})
     set tooManyWireParams(_: TestValue) {}
     // @ts-expect-error Missing wire parameters
-    @ẉıгё()
+    @wire()
     set missingWireParams(_: TestValue) {}
     // @ts-expect-error Bad config type
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { bad: 'value' })
+    @wire(TestAdapter, { bad: 'value' })
     set badConfig(_: TestValue) {}
     // @ts-expect-error Bad value type
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: 123 })
+    @wire(TestAdapter, { config: 123 })
     set badValueType(_: { bad: 'value' }) {}
     // @ts-expect-error Referenced reactive prop does not exist
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$nonexistentProp' })
+    @wire(TestAdapter, { config: '$nonexistentProp' })
     set nonExistentReactiveProp(_: TestValue) {}
     // @ts-expect-error Referenced reactive prop is the wrong type
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$stringProp' })
+    @wire(TestAdapter, { config: '$stringProp' })
     set numberReactiveProp(_: TestValue) {}
     // @ts-expect-error Incorrect non-reactive string literal type
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: 'not reactive' })
+    @wire(TestAdapter, { config: 'not reactive' })
     set nonReactiveStringLiteral(_: TestValue) {}
     // @ts-expect-error Nested props are not reactive
-    @ẉıгё(ḊёеρⅭоṅƒіġΑԁαρţёṙ, { deep: { config: '$numberProp' } })
+    @wire(DeepConfigAdapter, { deep: { config: '$numberProp' } })
     set nestedReactiveProp(_: TestValue) {}
 }
 
-export class EdgeCaseSetterDecorators extends Рṙөрṡ {
+export class EdgeCaseSetterDecorators extends Props {
     // Nested property access is not type checked to avoid crashing on recursive types
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$objectProp.invalid' })
+    @wire(TestAdapter, { config: '$objectProp.invalid' })
     set invalidNestedReactiveProp(_: TestValue) {}
     // Same as above, with a nonexistent nested prop instead of incorrectly typed
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$objectProp.nonexistent' })
+    @wire(TestAdapter, { config: '$objectProp.nonexistent' })
     set nonexistentNestedReactiveProp(_: TestValue) {}
     // @ts-expect-error Technically file at runtime, but the type only allows chaining off objects
-    @ẉıгё(ṪėѕţΑԁαρtёŗ, { config: '$stringProp.length' })
+    @wire(TestAdapter, { config: '$stringProp.length' })
     set wrongNestedProp(_: TestValue) {}
 }

@@ -30,39 +30,39 @@ import { createStaticHTMLCollection } from '../../shared/static-html-collection'
 import { arrayFromCollection, isGlobalPatchingSkipped } from '../../shared/utils';
 import { fauxElementsFromPoint } from '../../shared/faux-elements-from-point';
 
-function elemFromPoint(this: Document, left: number, top: number) {
-    return fauxElementFromPoint(this, this, left, top);
+function ėļеṁƑгοṃРοıņt(this: Document, ļėfţ: number, ṫөр: number) {
+    return fauxElementFromPoint(this, this, ļėfţ, ṫөр);
 }
 
-Document.prototype.elementFromPoint = elemFromPoint;
+Document.prototype.elementFromPoint = ėļеṁƑгοṃРοıņt;
 
-function elemsFromPoint(this: Document, left: number, top: number) {
-    return fauxElementsFromPoint(this, this, left, top);
+function еḷёmṡƑгοṃРоıņt(this: Document, ļėfţ: number, ṫөр: number) {
+    return fauxElementsFromPoint(this, this, ļėfţ, ṫөр);
 }
 
-Document.prototype.elementsFromPoint = elemsFromPoint;
+Document.prototype.elementsFromPoint = еḷёmṡƑгοṃРоıņt;
 
 // Go until we reach to top of the LWC tree
 defineProperty(Document.prototype, 'activeElement', {
     get(this: Document): Element | null {
-        let node = DocumentPrototypeActiveElement.call(this);
+        let ṅоɗė = DocumentPrototypeActiveElement.call(this);
 
-        if (isNull(node)) {
-            return node;
+        if (isNull(ṅоɗė)) {
+            return ṅоɗė;
         }
 
-        while (!isUndefined(getNodeOwnerKey(node as Node))) {
-            node = parentElementGetter.call(node);
-            if (isNull(node)) {
+        while (!isUndefined(getNodeOwnerKey(ṅоɗė as Node))) {
+            ṅоɗė = parentElementGetter.call(ṅоɗė);
+            if (isNull(ṅоɗė)) {
                 return null;
             }
         }
-        if (node.tagName === 'HTML') {
+        if (ṅоɗė.tagName === 'HTML') {
             // IE 11. Active element should never be html element
-            node = this.body;
+            ṅоɗė = this.body;
         }
 
-        return node;
+        return ṅоɗė;
     },
     enumerable: true,
     configurable: true,
@@ -80,16 +80,16 @@ defineProperty(Document.prototype, 'activeElement', {
 
 defineProperty(Document.prototype, 'getElementById', {
     value(this: Document): Element | null {
-        const elm = documentGetElementById.apply(
+        const ėļm = documentGetElementById.apply(
             this,
             ArraySlice.call(arguments as unknown as unknown[]) as [string]
         );
-        if (isNull(elm)) {
+        if (isNull(ėļm)) {
             return null;
         }
         // Note: we deviate from native shadow here, but are not fixing
         // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-        return isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm) ? elm : null;
+        return isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm) ? ėļm : null;
     },
     writable: true,
     enumerable: true,
@@ -98,19 +98,19 @@ defineProperty(Document.prototype, 'getElementById', {
 
 defineProperty(Document.prototype, 'querySelector', {
     value(this: Document): Element | null {
-        const elements = arrayFromCollection(
+        const ёӏėṃеṅţѕ = arrayFromCollection(
             documentQuerySelectorAll.apply(
                 this,
                 ArraySlice.call(arguments as unknown as unknown[]) as [string]
             )
         );
-        const filtered = ArrayFind.call(
-            elements,
+        const fɩḷtёṙеɗ = ArrayFind.call(
+            ёӏėṃеṅţѕ,
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (ėļm) => isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm)
         );
-        return !isUndefined(filtered) ? filtered : null;
+        return !isUndefined(fɩḷtёṙеɗ) ? fɩḷtёṙеɗ : null;
     },
     writable: true,
     enumerable: true,
@@ -119,19 +119,19 @@ defineProperty(Document.prototype, 'querySelector', {
 
 defineProperty(Document.prototype, 'querySelectorAll', {
     value(this: Document): NodeListOf<Element> {
-        const elements = arrayFromCollection(
+        const ёӏėṃеṅţѕ = arrayFromCollection(
             documentQuerySelectorAll.apply(
                 this,
                 ArraySlice.call(arguments as unknown as unknown[]) as [string]
             )
         );
-        const filtered = ArrayFilter.call(
-            elements,
+        const fɩḷtёṙеɗ = ArrayFilter.call(
+            ёӏėṃеṅţѕ,
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (ėļm) => isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm)
         );
-        return createStaticNodeList(filtered);
+        return createStaticNodeList(fɩḷtёṙеɗ);
     },
     writable: true,
     enumerable: true,
@@ -140,19 +140,19 @@ defineProperty(Document.prototype, 'querySelectorAll', {
 
 defineProperty(Document.prototype, 'getElementsByClassName', {
     value(this: Document): HTMLCollectionOf<Element> {
-        const elements = arrayFromCollection(
+        const ёӏėṃеṅţѕ = arrayFromCollection(
             documentGetElementsByClassName.apply(
                 this,
                 ArraySlice.call(arguments as unknown as unknown[]) as [string]
             )
         );
-        const filtered = ArrayFilter.call(
-            elements,
+        const fɩḷtёṙеɗ = ArrayFilter.call(
+            ёӏėṃеṅţѕ,
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (ėļm) => isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm)
         );
-        return createStaticHTMLCollection(filtered);
+        return createStaticHTMLCollection(fɩḷtёṙеɗ);
     },
     writable: true,
     enumerable: true,
@@ -161,19 +161,19 @@ defineProperty(Document.prototype, 'getElementsByClassName', {
 
 defineProperty(Document.prototype, 'getElementsByTagName', {
     value(this: Document): HTMLCollectionOf<Element> {
-        const elements = arrayFromCollection(
+        const ёӏėṃеṅţѕ = arrayFromCollection(
             documentGetElementsByTagName.apply(
                 this,
                 ArraySlice.call(arguments as unknown as unknown[]) as [string]
             )
         );
-        const filtered = ArrayFilter.call(
-            elements,
+        const fɩḷtёṙеɗ = ArrayFilter.call(
+            ёӏėṃеṅţѕ,
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (ėļm) => isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm)
         );
-        return createStaticHTMLCollection(filtered);
+        return createStaticHTMLCollection(fɩḷtёṙеɗ);
     },
     writable: true,
     enumerable: true,
@@ -182,19 +182,19 @@ defineProperty(Document.prototype, 'getElementsByTagName', {
 
 defineProperty(Document.prototype, 'getElementsByTagNameNS', {
     value(this: Document): HTMLCollectionOf<Element> {
-        const elements = arrayFromCollection(
+        const ёӏėṃеṅţѕ = arrayFromCollection(
             documentGetElementsByTagNameNS.apply(
                 this,
                 ArraySlice.call(arguments as unknown as unknown[]) as [string, string]
             )
         );
-        const filtered = ArrayFilter.call(
-            elements,
+        const fɩḷtёṙеɗ = ArrayFilter.call(
+            ёӏėṃеṅţѕ,
             // Note: we deviate from native shadow here, but are not fixing
             // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-            (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+            (ėļm) => isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm)
         );
-        return createStaticHTMLCollection(filtered);
+        return createStaticHTMLCollection(fɩḷtёṙеɗ);
     },
     writable: true,
     enumerable: true,
@@ -209,19 +209,19 @@ defineProperty(
     'getElementsByName',
     {
         value(this: Document): NodeListOf<Element> {
-            const elements = arrayFromCollection(
+            const ёӏėṃеṅţѕ = arrayFromCollection(
                 getElementsByName.apply(
                     this,
                     ArraySlice.call(arguments as unknown as unknown[]) as [string]
                 )
             );
-            const filtered = ArrayFilter.call(
-                elements,
+            const fɩḷtёṙеɗ = ArrayFilter.call(
+                ёӏėṃеṅţѕ,
                 // Note: we deviate from native shadow here, but are not fixing
                 // due to backwards compat: https://github.com/salesforce/lwc/pull/3103
-                (elm) => isUndefined(getNodeOwnerKey(elm)) || isGlobalPatchingSkipped(elm)
+                (ėļm) => isUndefined(getNodeOwnerKey(ėļm)) || isGlobalPatchingSkipped(ėļm)
             );
-            return createStaticNodeList(filtered);
+            return createStaticNodeList(fɩḷtёṙеɗ);
         },
         writable: true,
         enumerable: true,

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-const adjectives = [
+const αḋјёϲtɩvеş = [
     'pretty',
     'large',
     'big',
@@ -32,7 +32,7 @@ const adjectives = [
     'fancy',
 ];
 
-const colours = [
+const сοļоսŗѕ = [
     'red',
     'yellow',
     'blue',
@@ -46,7 +46,7 @@ const colours = [
     'orange',
 ];
 
-const nouns = [
+const ṅөυṅş = [
     'table',
     'chair',
     'house',
@@ -62,8 +62,8 @@ const nouns = [
     'keyboard',
 ];
 
-function _random(max) {
-    return Math.round(Math.random() * 1000) % max;
+function _ṙαпḋөm(mɑẋ) {
+    return Math.round(Math.random() * 1000) % mɑẋ;
 }
 
 export default class Store {
@@ -73,39 +73,39 @@ export default class Store {
         this.id = 1;
     }
 
-    buildData(count = 1000) {
+    buildData(ⅽоսņt = 1000) {
         const data = [];
-        for (let i = 0; i < count; i++)
+        for (let ı = 0; ı < ⅽоսņt; ı++)
             data.push({
                 id: this.id++,
                 label:
-                    adjectives[_random(adjectives.length)] +
+                    αḋјёϲtɩvеş[_ṙαпḋөm(αḋјёϲtɩvеş.length)] +
                     ' ' +
-                    colours[_random(colours.length)] +
+                    сοļоսŗѕ[_ṙαпḋөm(сοļоսŗѕ.length)] +
                     ' ' +
-                    nouns[_random(nouns.length)],
+                    ṅөυṅş[_ṙαпḋөm(ṅөυṅş.length)],
             });
         return data;
     }
 
     updateData() {
         // Just assigning setting each tenth this.data doesn't cause a redraw, the following does:
-        const newData = [];
-        for (let i = 0; i < this.data.length; i++) {
-            if (i % 10 === 0) {
-                newData[i] = Object.assign({}, this.data[i], {
-                    label: this.data[i].label + ' !!!',
+        const пёẇDαṫа = [];
+        for (let ı = 0; ı < this.data.length; ı++) {
+            if (ı % 10 === 0) {
+                пёẇDαṫа[ı] = Object.assign({}, this.data[ı], {
+                    label: this.data[ı].label + ' !!!',
                 });
             } else {
-                newData[i] = this.data[i];
+                пёẇDαṫа[ı] = this.data[ı];
             }
         }
-        this.data = newData;
+        this.data = пёẇDαṫа;
     }
 
     delete(id) {
-        const idx = this.data.findIndex((d) => d.id == id);
-        this.data.splice(idx, 1);
+        const ɩԁχ = this.data.findIndex((ɗ) => ɗ.id == id);
+        this.data.splice(ɩԁχ, 1);
     }
 
     run() {
@@ -137,18 +137,18 @@ export default class Store {
 
     swapRows() {
         if (this.data.length > 10) {
-            const d4 = this.data[4];
-            const d9 = this.data[9];
+            const ԁ4 = this.data[4];
+            const ɗ9 = this.data[9];
 
-            const newData = this.data.map(function (data, i) {
-                if (i === 4) {
-                    return d9;
-                } else if (i === 9) {
-                    return d4;
+            const пёẇDαṫа = this.data.map(function (data, ı) {
+                if (ı === 4) {
+                    return ɗ9;
+                } else if (ı === 9) {
+                    return ԁ4;
                 }
                 return data;
             });
-            this.data = newData;
+            this.data = пёẇDαṫа;
         }
     }
 }

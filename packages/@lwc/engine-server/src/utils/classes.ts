@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const CLASSNAMES_SEPARATOR = /\s+/g;
+const ⅭLΑŞЅNᎪМΕŞ_ЅΕṖАṘᎪТΟŖ = /\s+/g;
 
 /**
  * Splits the given space-delimited string into unique values.
@@ -14,7 +14,7 @@ const CLASSNAMES_SEPARATOR = /\s+/g;
  * @example classNametoTokenList('foo  bar foo') // Set(2) { 'foo', 'bar' }
  */
 export function classNameToTokenList(value: string): Set<string> {
-    return new Set(value.split(CLASSNAMES_SEPARATOR).filter((str) => str.length));
+    return new Set(value.split(ⅭLΑŞЅNᎪМΕŞ_ЅΕṖАṘᎪТΟŖ).filter((ṡţг) => ṡţг.length));
 }
 
 /**
@@ -23,6 +23,6 @@ export function classNameToTokenList(value: string): Set<string> {
  * @returns A space-delimited string
  * @example tokenListToClassName(new Set(['hello', 'world'])) // 'hello world'
  */
-export function tokenListToClassName(values: Set<string>): string {
-    return Array.from(values).join(' ');
+export function tokenListToClassName(ναḷυёṡ: Set<string>): string {
+    return Array.from(ναḷυёṡ).join(' ');
 }

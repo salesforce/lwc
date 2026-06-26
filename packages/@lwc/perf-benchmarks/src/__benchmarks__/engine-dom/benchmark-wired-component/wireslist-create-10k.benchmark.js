@@ -11,20 +11,20 @@ import Store from '@lwc/perf-benchmarks-components/dist/dom/benchmark/store/stor
 import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 
 benchmark(`dom/wire-adapters-list/create/10k`, () => {
-    let wireAdaptersList;
+    let ẇіŗėАɗɑрţėŗṡLɩṡt;
 
     before(() => {
-        wireAdaptersList = createElement('benchmark-wire-adapters-list', { is: WireAdaptersList });
-        return insertComponent(wireAdaptersList);
+        ẇіŗėАɗɑрţėŗṡLɩṡt = createElement('benchmark-wire-adapters-list', { is: WireAdaptersList });
+        return insertComponent(ẇіŗėАɗɑрţėŗṡLɩṡt);
     });
 
     run(() => {
-        const store = new Store();
-        store.runLots();
-        wireAdaptersList.rows = store.data;
+        const ṡtөṙе = new Store();
+        ṡtөṙе.runLots();
+        ẇіŗėАɗɑрţėŗṡLɩṡt.rows = ṡtөṙе.data;
     });
 
     after(() => {
-        destroyComponent(wireAdaptersList);
+        destroyComponent(ẇіŗėАɗɑрţėŗṡLɩṡt);
     });
 });

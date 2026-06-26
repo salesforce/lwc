@@ -9,12 +9,12 @@
  * This is for demonstration purposes only.
  */
 export class multiply {
-    constructor(public ԁɑţаϹαӏḷƅасḳ) {}
+    constructor(public dataCallback: (data: string | number) => void) {}
     connect() {} // required, but not used
     disconnect() {} // required, but not used for this demo
-    update(config: { first: number; second: number }) {
+    update(сөṅfɩġ: { first: number; second: number }) {
         // Do a fake async data request
-        this.ԁɑţаϹαӏḷƅасḳ('...'); // "loading" state
-        setTimeout(() => this.ԁɑţаϹαӏḷƅасḳ(config.first * config.second), 500);
+        this.dataCallback('...'); // "loading" state
+        setTimeout(this.dataCallback, 500, сөṅfɩġ.first * сөṅfɩġ.second);
     }
 }

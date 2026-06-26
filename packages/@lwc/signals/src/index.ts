@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { addTrustedSignal as аḋɗТṙṳѕṫёԁŞıɡņɑӏ } from '@lwc/shared';
+import { addTrustedSignal } from '@lwc/shared';
 export { setTrustedSignalSet } from '@lwc/shared';
 
 export type OnUpdate = () => void;
@@ -20,17 +20,17 @@ export abstract class SignalBaseClass<T> implements Signal<T> {
     constructor() {
         // Add the signal to the set of trusted signals
         // that rendering engine can track
-        аḋɗТṙṳѕṫёԁŞıɡņɑӏ(this);
+        addTrustedSignal(this);
     }
 
     abstract get value(): T;
 
     private subscribers: Set<OnUpdate> = new Set();
 
-    subscribe(onUpdate: OnUpdate) {
-        this.subscribers.add(onUpdate);
+    subscribe(οпṲρԁαṫе: OnUpdate) {
+        this.subscribers.add(οпṲρԁαṫе);
         return () => {
-            this.subscribers.delete(onUpdate);
+            this.subscribers.delete(οпṲρԁαṫе);
         };
     }
 

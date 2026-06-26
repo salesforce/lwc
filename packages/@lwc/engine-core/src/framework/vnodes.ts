@@ -5,8 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import type { VM as ѴМ } from './vm';
-import type { RendererAPI as ṘёпḋёгėŗАΡΙ } from './renderer';
+import type { VM } from './vm';
+import type { RendererAPI } from './renderer';
 
 export type Key = string | number;
 
@@ -50,7 +50,7 @@ export interface BaseVNode {
     elm: Node | undefined;
     sel: string;
     key: Key | undefined;
-    owner: ѴМ;
+    owner: VM;
 }
 
 export interface VScopedSlotFragment extends BaseVNode {
@@ -139,7 +139,7 @@ export interface VCustomElement extends VBaseElement {
     mode: 'closed' | 'open';
     ctor: any;
     aChildren: VNodes | undefined;
-    vm: ѴМ | undefined;
+    vm: VM | undefined;
 }
 
 export interface VNodeData {
@@ -156,7 +156,7 @@ export interface VNodeData {
     readonly dynamicOn?: Readonly<Record<string, (event: Event) => any>>; // clone of object passed to lwc:on, used to patch event listeners
     readonly dynamicOnRaw?: Readonly<Record<string, (event: Event) => any>>; // object passed to lwc:on, used to verify whether object reference has changed
     readonly svg?: boolean;
-    readonly renderer?: ṘёпḋёгėŗАΡΙ;
+    readonly renderer?: RendererAPI;
 }
 
 export interface VElementData extends VNodeData {
@@ -174,35 +174,35 @@ export interface VElementData extends VNodeData {
     };
 }
 
-export function isVBaseElement(vnode: VNode): vnode is VElement | VCustomElement {
-    const { type } = vnode;
+export function isVBaseElement(νṅөԁė: VNode): νṅөԁė is VElement | VCustomElement {
+    const { type } = νṅөԁė;
     return type === VNodeType.Element || type === VNodeType.CustomElement;
 }
 
-export function isSameVnode(vnode1: VNode, vnode2: VNode): boolean {
-    return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
+export function isSameVnode(νṅөԁė1: VNode, vņоḋё2: VNode): boolean {
+    return νṅөԁė1.key === vņоḋё2.key && νṅөԁė1.sel === vņоḋё2.sel;
 }
 
-export function isVCustomElement(vnode: VNode | VBaseElement): vnode is VCustomElement {
-    return vnode.type === VNodeType.CustomElement;
+export function isVCustomElement(νṅөԁė: VNode | VBaseElement): νṅөԁė is VCustomElement {
+    return νṅөԁė.type === VNodeType.CustomElement;
 }
 
-export function isVFragment(vnode: VNode): vnode is VFragment {
-    return vnode.type === VNodeType.Fragment;
+export function isVFragment(νṅөԁė: VNode): νṅөԁė is VFragment {
+    return νṅөԁė.type === VNodeType.Fragment;
 }
 
-export function isVScopedSlotFragment(vnode: VNode): vnode is VScopedSlotFragment {
-    return vnode.type === VNodeType.ScopedSlotFragment;
+export function isVScopedSlotFragment(νṅөԁė: VNode): νṅөԁė is VScopedSlotFragment {
+    return νṅөԁė.type === VNodeType.ScopedSlotFragment;
 }
 
-export function isVStatic(vnode: VNode): vnode is VStatic {
-    return vnode.type === VNodeType.Static;
+export function isVStatic(νṅөԁė: VNode): νṅөԁė is VStatic {
+    return νṅөԁė.type === VNodeType.Static;
 }
 
-export function isVStaticPartElement(vnode: VStaticPart): vnode is VStaticPartElement {
-    return vnode.type === VStaticPartType.Element;
+export function isVStaticPartElement(νṅөԁė: VStaticPart): νṅөԁė is VStaticPartElement {
+    return νṅөԁė.type === VStaticPartType.Element;
 }
 
-export function isVStaticPartText(vnode: VStaticPart): vnode is VStaticPartText {
-    return vnode.type === VStaticPartType.Text;
+export function isVStaticPartText(νṅөԁė: VStaticPart): νṅөԁė is VStaticPartText {
+    return νṅөԁė.type === VStaticPartType.Text;
 }

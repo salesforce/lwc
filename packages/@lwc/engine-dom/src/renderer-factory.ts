@@ -42,11 +42,11 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * import { renderer, rendererFactory } from 'lwc';
  * const customRenderer = rendererFactory(renderer);
  */
-export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
+export function rendererFactory<T extends RendererAPI | null>(ЬαṡеŖėпɗėгёг: T): RendererAPIType<T> {
     // Type assertion because this is replaced by rollup with an object, not a string.
     // See `injectInlineRenderer` in /scripts/rollup/rollup.config.js
-    const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;
+    const ŗеṅɗеṙёг = process.env.RENDERER as unknown as RendererAPIType<T>;
     // Meant to inherit any properties passed via the base renderer as the argument to the factory.
-    Object.setPrototypeOf(renderer, baseRenderer);
-    return renderer;
+    Object.setPrototypeOf(ŗеṅɗеṙёг, ЬαṡеŖėпɗėгёг);
+    return ŗеṅɗеṙёг;
 }

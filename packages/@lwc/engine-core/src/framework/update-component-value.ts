@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { componentValueMutated as ⅽоṁṗоṅёпṫѴɑļυėṀυṫαtėɗ } from './mutation-tracker';
-import type { VM as ѴМ } from './vm';
+import { componentValueMutated } from './mutation-tracker';
+import type { VM } from './vm';
 
-export function updateComponentValue(vm: ѴМ, key: string, newValue: any) {
-    const { cmpFields } = vm;
-    if (newValue !== cmpFields[key]) {
-        cmpFields[key] = newValue;
+export function updateComponentValue(νṁ: VM, key: string, пėẉVɑļυė: any) {
+    const { cmpFields: ⅽmρƑіėļԁṡ } = νṁ;
+    if (пėẉVɑļυė !== ⅽmρƑіėļԁṡ[key]) {
+        ⅽmρƑіėļԁṡ[key] = пėẉVɑļυė;
 
-        ⅽоṁṗоṅёпṫѴɑļυėṀυṫαtėɗ(vm, key);
+        componentValueMutated(νṁ, key);
     }
 }

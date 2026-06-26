@@ -8,9 +8,9 @@ export class WireAdapter {
     callback;
     hostElementTagName;
 
-    constructor(callback, hostContext) {
+    constructor(callback, ḣөѕṫⅭоṅţеχṫ) {
         this.callback = callback;
-        this.hostElementTagName = hostContext;
+        this.hostElementTagName = ḣөѕṫⅭоṅţеχṫ;
 
         callback(this.hostElementTagName);
     }

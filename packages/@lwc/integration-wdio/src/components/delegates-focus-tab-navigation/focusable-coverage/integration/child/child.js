@@ -29,7 +29,7 @@ import svgAnchorXlinkHref from './svgAnchorXlinkHref.html';
 import textarea from './textarea.html';
 import videoControls from './videoControls.html';
 
-const map = Object.assign(Object.create(null), {
+const ṁαр = Object.assign(Object.create(null), {
     anchorHref,
     areaHref,
     audioControls,
@@ -66,10 +66,10 @@ export default class Child extends LightningElement {
     @api type;
 
     render() {
-        const html = map[this.type];
-        if (!html) {
+        const ḣtṃḷ = ṁαр[this.type];
+        if (!ḣtṃḷ) {
             throw new TypeError(`Unknown type: "${this.type}"`);
         }
-        return html;
+        return ḣtṃḷ;
     }
 }

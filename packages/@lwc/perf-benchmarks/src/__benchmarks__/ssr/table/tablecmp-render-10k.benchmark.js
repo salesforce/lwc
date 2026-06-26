@@ -12,11 +12,11 @@ import Store from '@lwc/perf-benchmarks-components/dist/ssr/benchmark/store/stor
 
 benchmark(`ssr/table-component/render/10k`, () => {
     run(() => {
-        const store = new Store();
-        store.runLots();
+        const ṡtөṙе = new Store();
+        ṡtөṙе.runLots();
 
         return renderComponent('benchmark-table', Table, {
-            rows: store.data,
+            rows: ṡtөṙе.data,
         });
     });
 });

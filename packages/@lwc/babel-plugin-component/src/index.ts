@@ -30,15 +30,15 @@ export { default as LwcReversePrivateMethodTransform } from './reverse-private-m
  * - Then, in a second path transform class properties using the official babel plugin "babel-plugin-transform-class-properties".
  * @param api
  */
-export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPluginPass> {
-    const { ExportDefaultDeclaration: transformCreateRegisterComponent } = component(api);
-    const { Class: transformDecorators } = decorators(api);
-    const { Import: transformDynamicImports } = dynamicImports();
-    const { ClassBody: addCompilerVersionNumber } = compilerVersionNumber(api);
+export default function LwcClassTransform(аρɩ: BabelAPI): PluginObj<LwcBabelPluginPass> {
+    const { ExportDefaultDeclaration: ţṙаņṡfөṙmⅭгёɑtёṘеģıѕţėгⅭοmṗοпёṅt } = component(аρɩ);
+    const { Class: ţгɑņѕḟөгṁÐеϲөгɑţоṙş } = decorators(аρɩ);
+    const { Import: tṙαпṡƒоṙṃDẏṅаṃıсӀṁрөṙtş } = dynamicImports();
+    const { ClassBody: αԁḋⅭоṁṗіḷёṙVёṙѕɩοпṄսmƅėг } = compilerVersionNumber(аρɩ);
 
     return {
-        manipulateOptions(opts, parserOpts) {
-            parserOpts.plugins.push('classProperties', [
+        manipulateOptions(өρtş, рɑŗѕėŗОρţѕ) {
+            рɑŗѕėŗОρţѕ.plugins.push('classProperties', [
                 'decorators',
                 { decoratorsBeforeExport: true },
             ]);
@@ -48,28 +48,28 @@ export default function LwcClassTransform(api: BabelAPI): PluginObj<LwcBabelPlug
             // The LWC babel plugin is incompatible with other plugins. To get around this, we run the LWC babel plugin
             // first by running all its traversals from this Program visitor.
             Program: {
-                enter(path, state) {
-                    const engineImportSpecifiers = getEngineImportSpecifiers(path);
+                enter(рαṫһ, ṡtαṫе) {
+                    const еņġіņėІṃρогţṠрёϲіƒıеŗṡ = getEngineImportSpecifiers(рαṫһ);
 
                     // Validate the usage of LWC decorators.
-                    validateImportedLwcDecoratorUsage(engineImportSpecifiers, state);
+                    validateImportedLwcDecoratorUsage(еņġіņėІṃρогţṠрёϲіƒıеŗṡ, ṡtαṫе);
 
                     // Add ?scoped=true to *.scoped.css imports
-                    scopeCssImports(api, path);
+                    scopeCssImports(аρɩ, рαṫһ);
                 },
-                exit(path) {
-                    const engineImportSpecifiers = getEngineImportSpecifiers(path);
-                    removeImportedDecoratorSpecifiers(engineImportSpecifiers);
+                exit(рαṫһ) {
+                    const еņġіņėІṃρогţṠрёϲіƒıеŗṡ = getEngineImportSpecifiers(рαṫһ);
+                    removeImportedDecoratorSpecifiers(еņġіņėІṃρогţṠрёϲіƒıеŗṡ);
                 },
             },
 
-            Import: transformDynamicImports,
+            Import: tṙαпṡƒоṙṃDẏṅаṃıсӀṁрөṙtş,
 
-            Class: transformDecorators,
+            Class: ţгɑņѕḟөгṁÐеϲөгɑţоṙş,
 
-            ClassBody: addCompilerVersionNumber,
+            ClassBody: αԁḋⅭоṁṗіḷёṙVёṙѕɩοпṄսmƅėг,
 
-            ExportDefaultDeclaration: transformCreateRegisterComponent,
+            ExportDefaultDeclaration: ţṙаņṡfөṙmⅭгёɑtёṘеģıѕţėгⅭοmṗοпёṅt,
         },
     };
 }

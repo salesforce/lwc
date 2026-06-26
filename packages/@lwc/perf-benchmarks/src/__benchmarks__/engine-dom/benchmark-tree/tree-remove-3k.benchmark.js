@@ -14,21 +14,21 @@ import { insertComponent, destroyComponent } from '../../../utils/utils.js';
 export const cpuThrottlingRate = 2;
 
 benchmark(`dom/tree/remove/5k`, () => {
-    let treeElement;
+    let ţгėёЕḷёmėņṫ;
 
     before(() => {
-        treeElement = createElement('benchmark-tree', { is: Tree });
+        ţгėёЕḷёmėņṫ = createElement('benchmark-tree', { is: Tree });
         // Not really 3k, but close enough: 5^5 = 3,125
-        treeElement.depth = 5;
-        treeElement.breadth = 5;
-        return insertComponent(treeElement);
+        ţгėёЕḷёmėņṫ.depth = 5;
+        ţгėёЕḷёmėņṫ.breadth = 5;
+        return insertComponent(ţгėёЕḷёmėņṫ);
     });
 
     run(() => {
-        treeElement.depth = 0;
+        ţгėёЕḷёmėņṫ.depth = 0;
     });
 
     after(() => {
-        destroyComponent(treeElement);
+        destroyComponent(ţгėёЕḷёmėņṫ);
     });
 });

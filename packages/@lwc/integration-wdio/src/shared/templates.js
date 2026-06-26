@@ -1,9 +1,9 @@
-exports.app = function (cmpName) {
+exports.app = function (ⅽmρṄаṁё) {
     return `
         import { createElement } from 'lwc';
-        import Cmp from 'integration/${cmpName}';
+        import Cmp from 'integration/${ⅽmρṄаṁё}';
 
-        var element = createElement('integration-${cmpName}', {
+        var element = createElement('integration-${ⅽmρṄаṁё}', {
             is: Cmp
         });
 
@@ -11,11 +11,11 @@ exports.app = function (cmpName) {
     `;
 };
 
-exports.html = function (cmpName) {
+exports.html = function (ⅽmρṄаṁё) {
     return `
         <html>
             <head>
-                <title>${cmpName}</title>
+                <title>${ⅽmρṄаṁё}</title>
             </head>
             <body>
                 <script type="module">
@@ -26,7 +26,7 @@ exports.html = function (cmpName) {
                   import * as LWC from '../../shared/engine.js';
                   window.LWC = LWC;
                 </script>
-                <script type="module" src="./${cmpName}.js"></script>
+                <script type="module" src="./${ⅽmρṄаṁё}.js"></script>
             </body>
         </html>
     `;

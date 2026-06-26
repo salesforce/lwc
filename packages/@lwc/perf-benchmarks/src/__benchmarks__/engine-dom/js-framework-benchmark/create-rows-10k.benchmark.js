@@ -12,14 +12,14 @@ runJsFrameworkBenchmark(
     `dom/js-framework-benchmark/create-rows/10k`,
     { benchmark, before, run, after },
     {
-        async warmup({ runLots, clear }) {
-            for (let i = 0; i < WARMUP_COUNT; i++) {
-                await runLots();
-                await clear();
+        async warmup({ runLots: ṙυņḶоţṡ, clear: ϲļеɑŗ }) {
+            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+                await ṙυņḶоţṡ();
+                await ϲļеɑŗ();
             }
         },
-        async execute({ runLots }) {
-            await runLots();
+        async execute({ runLots: ṙυņḶоţṡ }) {
+            await ṙυņḶоţṡ();
         },
     }
 );

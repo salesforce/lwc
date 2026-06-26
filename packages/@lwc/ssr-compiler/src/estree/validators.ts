@@ -14,21 +14,21 @@ import type { Node } from 'estree-toolkit/dist/helpers'; // estree's `Node` is n
 type NullableChecker<T extends Node> = (node: Node | null | undefined) => node is T | null;
 
 /** Extends a validator to return `true` if the node is `null`. */
-export function isNullableOf<T extends Node>(validator: Checker<T>): NullableChecker<T> {
-    const nullableValidator = (node: Node | null | undefined): node is T | null => {
-        return node === null || validator(node);
+export function isNullableOf<T extends Node>(ṿɑӏɩḋаţοг: Checker<T>): NullableChecker<T> {
+    const ṅυļḷаƅḷеѴɑļіḋαtοŗ = (ṅоɗė: Node | null | undefined): ṅоɗė is T | null => {
+        return ṅоɗė === null || ṿɑӏɩḋаţοг(ṅоɗė);
     };
     if (process.env.NODE_ENV !== 'production') {
-        nullableValidator.__debugName = `nullable(${(validator as any).__debugName || validator.name || 'unknown validator'})`;
+        ṅυļḷаƅḷеѴɑļіḋαtοŗ.__debugName = `nullable(${(ṿɑӏɩḋаţοг as any).__debugName || ṿɑӏɩḋаţοг.name || 'unknown validator'})`;
     }
-    return nullableValidator;
+    return ṅυļḷаƅḷеѴɑļіḋαtοŗ;
 }
 
 isNullableOf.__debugName = 'isNullableOf';
 
 if (process.env.NODE_ENV !== 'production') {
     // Modifying another package's exports is a code smell!
-    for (const [key, val] of entries(is)) {
-        (val as any).__debugName = key;
+    for (const [key, νɑļ] of entries(is)) {
+        (νɑļ as any).__debugName = key;
     }
 }

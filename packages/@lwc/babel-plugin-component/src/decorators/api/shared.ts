@@ -7,10 +7,10 @@
 import { LWC_PACKAGE_EXPORTS } from '../../constants';
 import type { DecoratorMeta } from '../index';
 
-const { API_DECORATOR } = LWC_PACKAGE_EXPORTS;
+const { API_DECORATOR: АṖΙ_ÐΕСӨṘАΤӨR } = LWC_PACKAGE_EXPORTS;
 
-function isApiDecorator(decorator: DecoratorMeta) {
-    return decorator.name === API_DECORATOR;
+function isApiDecorator(ԁėⅽоṙαtοŗ: DecoratorMeta) {
+    return ԁėⅽоṙαtοŗ.name === АṖΙ_ÐΕСӨṘАΤӨR;
 }
 
 export { isApiDecorator };

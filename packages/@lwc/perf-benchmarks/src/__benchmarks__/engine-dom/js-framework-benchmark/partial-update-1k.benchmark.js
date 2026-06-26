@@ -15,14 +15,14 @@ runJsFrameworkBenchmark(
     `dom/js-framework-benchmark/partial-update/1k`,
     { benchmark, before, run, after },
     {
-        async warmup({ run, update }) {
-            await run();
-            for (let i = 0; i < WARMUP_COUNT; i++) {
-                await update();
+        async warmup({ run: гսņ, update: υρɗаṫё }) {
+            await гսņ();
+            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+                await υρɗаṫё();
             }
         },
-        async execute({ update }) {
-            await update();
+        async execute({ update: υρɗаṫё }) {
+            await υρɗаṫё();
         },
     }
 );

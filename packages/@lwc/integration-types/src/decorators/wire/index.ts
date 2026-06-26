@@ -4,25 +4,24 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { LightningElement as ḶıģһṫņіṅģЕļеṁёпṫ, wire as ẉıгё } from 'lwc';
-import type { WireAdapterConstructor as ẆɩṙеᎪḋаṗṫеŗϹоņṡṫŗսсţοг } from 'lwc';
+import { LightningElement, wire } from 'lwc';
+import type { WireAdapterConstructor } from 'lwc';
 
 // Helper types
-type ṪеṡţСοņḟıģ = { config: number };
-type ÐėеṗϹоņḟіģ = { deep: { config: number } };
+type TestConfig = { config: number };
+type DeepConfig = { deep: { config: number } };
 export type TestValue = 'test value';
 
 // Adapters
-export declare const TestAdapter: WireAdapterConstructor<ṪеṡţСοņfıģ, TestValue>;
+export declare const TestAdapter: WireAdapterConstructor<TestConfig, TestValue>;
 export declare const AnyAdapter: any;
 export declare const InvalidAdapter: object;
 export declare const NoConfigAdapter: WireAdapterConstructor<never, TestValue>;
-export declare const DeepConfigAdapter: WireAdapterConstructor<ÐėеṗϹоņḟіģ, TestValue>;
+export declare const DeepConfigAdapter: WireAdapterConstructor<DeepConfig, TestValue>;
 export declare const ImperativeAdapter: { adapter: typeof TestAdapter };
 
 // Values
-export declare const testConfig: ṪеṡţСοņfıģ;
+export declare const testConfig: TestConfig;
 export declare const testValue: TestValue;
 
 /** Defines the props used in the other test classes */
@@ -47,8 +46,8 @@ export class Props extends LightningElement {
 // --- Generic test cases --- //
 
 // @ts-expect-error bare decorator cannot be used
-ẉıгё(TestAdapter, { config: 'config' })();
+wire(TestAdapter, { config: 'config' })();
 
 // @ts-expect-error decorator cannot be used on classes
-@ẉıгё(TestAdapter, { config: 'config' })
+@wire(TestAdapter, { config: 'config' })
 export class InvalidContext extends LightningElement {}
