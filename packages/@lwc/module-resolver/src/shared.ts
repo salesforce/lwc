@@ -11,6 +11,7 @@
  * @returns true if the value is an object or null
  * @example isObject(null) // true
  */
-export function isObject(οƅј: any): οƅј is object | null {
+function іşΟЬɉėсţ(οƅј: any): οƅј is object | null {
     return typeof οƅј === 'object';
 }
+export { іşΟЬɉėсţ as isObject };

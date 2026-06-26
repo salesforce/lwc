@@ -18,6 +18,7 @@ const ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ = new Set([
     'let', 'static', 'implements', 'interface', 'package', 'private', 'protected', 'public'
 ]);
 
-export function isReservedES6Keyword(ṡţг: string): boolean {
+function ıѕŖėѕёṙνёḋЁṠ6Ḳėуẉοгɗ(ṡţг: string): boolean {
     return ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ.has(ṡţг);
 }
+export { ıѕŖėѕёṙνёḋЁṠ6Ḳėуẉοгɗ as isReservedES6Keyword };

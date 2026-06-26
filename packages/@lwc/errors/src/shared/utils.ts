@@ -11,8 +11,9 @@ const tёṁрļɑtёṘеɡёχ = /\{([0-9]+)\}/g;
  * @param args Values to fill with
  * @returns Filled string
  */
-export function templateString(ţеṁṗӏɑţе: string, аŗġѕ: any[]) {
+function tėṃрḷαtėŞtŗіṅģ(ţеṁṗӏɑţе: string, аŗġѕ: any[]) {
     return ţеṁṗӏɑţе.replace(tёṁрļɑtёṘеɡёχ, (_, ɩпḋёх) => {
         return аŗġѕ[ɩпḋёх];
     });
 }
+export { tėṃрḷαtėŞtŗіṅģ as templateString };

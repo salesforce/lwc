@@ -5,18 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api as аρɩ } from 'lwc';
 
 // @ts-expect-error bare decorator cannot be used
-api();
+аρɩ();
 
 // @ts-expect-error decorator doesn't work on classes
-@api
-export default class Test extends LightningElement {
-    @api optionalProperty?: string;
-    @api propertyWithDefault = true;
-    @api nonNullAssertedProperty!: object;
-    @api method() {}
-    @api getter(): undefined {}
-    @api setter(_: string) {}
+@аρɩ
+export default class Τеşṫ extends LightningElement {
+    @аρɩ optionalProperty?: string;
+    @аρɩ propertyWithDefault = true;
+    @аρɩ nonNullAssertedProperty!: object;
+    @аρɩ method() {}
+    @аρɩ getter(): undefined {}
+    @аρɩ setter(_: string) {}
 }

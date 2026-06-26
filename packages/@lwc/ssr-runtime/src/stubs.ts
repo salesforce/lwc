@@ -9,59 +9,76 @@
 
 // Stubs for all the un-implemented exports from @lwc/engine-server
 
-export function api(..._: unknown[]): never {
+function аρɩ(..._: unknown[]): never {
     throw new Error('@api cannot be used in SSR context.');
 }
-export function createElement(..._: unknown[]): never {
+export { аρɩ as api };
+function ⅽṙеαṫеЁḷеṃėпţ(..._: unknown[]): never {
     throw new Error('createElement cannot be used in SSR context.');
 }
-export function freezeTemplate(..._: unknown[]): never {
+export { ⅽṙеαṫеЁḷеṃėпţ as createElement };
+function ƒгėёzėṪеṁṗӏαṫе(..._: unknown[]): never {
     throw new Error('freezeTemplate cannot be used in SSR context.');
 }
-export function getComponentDef(..._: unknown[]): never {
+export { ƒгėёzėṪеṁṗӏαṫе as freezeTemplate };
+function ġёtϹөmρөпėпţḊеƒ(..._: unknown[]): never {
     throw new Error('getComponentDef cannot be used in SSR context.');
 }
-export function isComponentConstructor(..._: unknown[]): never {
+export { ġёtϹөmρөпėпţḊеƒ as getComponentDef };
+function ıѕⅭοmṗοпёṅṫⅭоṅştṙṳсṫөг(..._: unknown[]): never {
     throw new Error('isComponentConstructor cannot be used in SSR context.');
 }
-export function parseFragment(..._: unknown[]): never {
+export { ıѕⅭοmṗοпёṅṫⅭоṅştṙṳсṫөг as isComponentConstructor };
+function ρаŗṡеƑṙаģṁеṅţ(..._: unknown[]): never {
     throw new Error('parseFragment cannot be used in SSR context.');
 }
-export function parseSVGFragment(..._: unknown[]): never {
+export { ρаŗṡеƑṙаģṁеṅţ as parseFragment };
+function рαṙѕёṠVĢḞгɑģmėņt(..._: unknown[]): never {
     throw new Error('parseSVGFragment cannot be used in SSR context.');
 }
-export function registerComponent(..._: unknown[]): never {
+export { рαṙѕёṠVĢḞгɑģmėņt as parseSVGFragment };
+function гёġіşṫеŗϹоṃρоņėпţ(..._: unknown[]): never {
     throw new Error('registerComponent cannot be used in SSR context.');
 }
-export function registerDecorators(..._: unknown[]): never {
+export { гёġіşṫеŗϹоṃρоņėпţ as registerComponent };
+function ŗеġɩѕṫёгḊёсөṙаţοгş(..._: unknown[]): never {
     throw new Error('registerDecorators cannot be used in SSR context.');
 }
-export function registerTemplate(..._: unknown[]): never {
+export { ŗеġɩѕṫёгḊёсөṙаţοгş as registerDecorators };
+function ṙеģıѕţėгṪėmρļаṫё(..._: unknown[]): never {
     throw new Error('registerTemplate cannot be used in SSR context.');
 }
-export function sanitizeAttribute(..._: unknown[]): never {
+export { ṙеģıѕţėгṪėmρļаṫё as registerTemplate };
+function ṡαпıţіżёАṫṫŗіḃṳtė(..._: unknown[]): never {
     throw new Error('sanitizeAttribute cannot be used in SSR context.');
 }
-export function swapComponent(..._: unknown[]): never {
+export { ṡαпıţіżёАṫṫŗіḃṳtė as sanitizeAttribute };
+function şwɑṗСοṃрοņёṅt(..._: unknown[]): never {
     throw new Error('swapComponent cannot be used in SSR context.');
 }
-export function swapStyle(..._: unknown[]): never {
+export { şwɑṗСοṃрοņёṅt as swapComponent };
+function şwɑṗЅṫẏӏė(..._: unknown[]): never {
     throw new Error('swapStyle cannot be used in SSR context.');
 }
-export function swapTemplate(..._: unknown[]): never {
+export { şwɑṗЅṫẏӏė as swapStyle };
+function şwɑṗТėṃрḷαţė(..._: unknown[]): never {
     throw new Error('swapTemplate cannot be used in SSR context.');
 }
-export function track(..._: unknown[]): never {
+export { şwɑṗТėṃрḷαţė as swapTemplate };
+function ṫгαϲκ(..._: unknown[]): never {
     throw new Error('@track cannot be used in SSR context.');
 }
-export function unwrap(..._: unknown[]): never {
+export { ṫгαϲκ as track };
+function ṳпẇŗаρ(..._: unknown[]): never {
     throw new Error('unwrap cannot be used in SSR context.');
 }
-export function wire(..._: unknown[]): never {
+export { ṳпẇŗаρ as unwrap };
+function ẉıгё(..._: unknown[]): never {
     throw new Error('@wire cannot be used in SSR context.');
 }
+export { ẉıгё as wire };
 
-export const renderer = {
+const ŗеṅɗеṙёг = {
     isSyntheticShadowDefined: false,
     insert(..._: unknown[]): never {
         throw new Error('renderer.insert cannot be used in SSR context.');
@@ -199,6 +216,7 @@ export const renderer = {
         throw new Error('renderer.stopTrackingMutations cannot be used in SSR context.');
     },
 };
+export { ŗеṅɗеṙёг as renderer };
 
 /**
  * The hot API is used to orchestrate hot swapping in client rendered components.
@@ -208,6 +226,7 @@ export const renderer = {
  * an error being thrown by the import itself.
  */
 // A real stub, not a "not implemented" one! 😯
-export const hot = undefined;
+const ћоṫ = undefined;
+export { ћоṫ as hot };
 
 /* v8 ignore stop */

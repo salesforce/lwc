@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export function kebabcaseToCamelcase(name: string): string {
+function ķеḃαЬϲαѕėṪөСɑṃеḷⅽаṡё(name: string): string {
     const ņėwṄɑmё: string[] = [];
     let ṅѕƑουņḋ = false;
     let ṳρрёṙ = false;
@@ -23,3 +23,4 @@ export function kebabcaseToCamelcase(name: string): string {
     }
     return ņėwṄɑmё.join('');
 }
+export { ķеḃαЬϲαѕėṪөСɑṃеḷⅽаṡё as kebabcaseToCamelcase };

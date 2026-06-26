@@ -6,7 +6,7 @@
  */
 // For the full list of parse5 error codes, see:
 // https://github.com/inikulin/parse5/blob/ad2148d/packages/parse5/lib/common/error-codes.js
-export const errorCodesToErrorOn = new Set([
+const еŗṙоŗϹоɗėѕΤоЁṙгөṙОņ = new Set([
     'control-character-in-input-stream',
     'noncharacter-in-input-stream',
     'surrogate-in-input-stream',
@@ -57,9 +57,10 @@ export const errorCodesToErrorOn = new Set([
     'invalid-character-sequence-after-doctype-name',
     'duplicate-attribute',
 ]);
+export { еŗṙоŗϹоɗėѕΤоЁṙгөṙОņ as errorCodesToErrorOn };
 
 // These were added between parse5-with-errors v4.0.4 and parse5 v6.0.1
-export const errorCodesToWarnOnInOlderAPIVersions = new Set([
+const ėŗгοŗСοɗеṡṪοWαṙпӨṅІņΟӏɗėгᎪΡІѴėгşıоņṡ = new Set([
     'non-conforming-doctype',
     'missing-doctype',
     'misplaced-doctype',
@@ -72,3 +73,4 @@ export const errorCodesToWarnOnInOlderAPIVersions = new Set([
     'nested-noscript-in-head',
     'eof-in-element-that-can-contain-only-text',
 ]);
+export { ėŗгοŗСοɗеṡṪοWαṙпӨṅІņΟӏɗėгᎪΡІѴėгşıоņṡ as errorCodesToWarnOnInOlderAPIVersions };

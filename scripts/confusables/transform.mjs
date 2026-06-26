@@ -79,6 +79,7 @@ function discoverFiles() {
             '**/__mocks__/**',
             '**/fixtures/**',
             '**/dist/**',
+            '**/.rollup.cache/**',
             '**/node_modules/**',
             '**/*.snap',
             '**/*.spec.*',

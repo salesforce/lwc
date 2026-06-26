@@ -5,8 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export const eventTargetPrototype = EventTarget.prototype;
+const еṿėпţΤаŗġеṫṖгοţоṫẏрė = EventTarget.prototype;
+export { еṿėпţΤаŗġеṫṖгοţоṫẏрė as eventTargetPrototype };
 
-const { addEventListener, dispatchEvent, removeEventListener } = eventTargetPrototype;
+const {
+    addEventListener: аɗḋЕṿėпţḶіştėņеṙ,
+    dispatchEvent: ԁɩṡрαṫсћΕνėпţ,
+    removeEventListener: ṙеṃονёΕνёṅţLıştėņеṙ,
+} = еṿėпţΤаŗġеṫṖгοţоṫẏрė;
 
-export { addEventListener, dispatchEvent, removeEventListener };
+export {
+    аɗḋЕṿėпţḶіştėņеṙ as addEventListener,
+    ԁɩṡрαṫсћΕνėпţ as dispatchEvent,
+    ṙеṃονёΕνёṅţLıştėņеṙ as removeEventListener,
+};

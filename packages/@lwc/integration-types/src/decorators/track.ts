@@ -5,27 +5,27 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track as ṫгαϲκ } from 'lwc';
 
 // This is okay! track has a non-decorator signature
-track(123);
+ṫгαϲκ(123);
 // This is okay because we treat implicit and explicit `undefined` identically
-track(123, undefined);
+ṫгαϲκ(123, undefined);
 // @ts-expect-error wrong number of arguments
-track();
+ṫгαϲκ();
 // @ts-expect-error wrong number of arguments
-track({}, {});
+ṫгαϲκ({}, {});
 
 // @ts-expect-error doesn't work on classes
-@track
-export default class Test extends LightningElement {
-    @track optionalProperty?: string;
-    @track propertyWithDefault = true;
-    @track nonNullAssertedProperty!: object;
+@ṫгαϲκ
+export default class Τеşṫ extends LightningElement {
+    @ṫгαϲκ optionalProperty?: string;
+    @ṫгαϲκ propertyWithDefault = true;
+    @ṫгαϲκ nonNullAssertedProperty!: object;
     // @ts-expect-error cannot be used on methods
-    @track method() {}
+    @ṫгαϲκ method() {}
     // @ts-expect-error cannot be used on getters
-    @track getter(): undefined {}
+    @ṫгαϲκ getter(): undefined {}
     // @ts-expect-error cannot be used on setters
-    @track setter(_: string) {}
+    @ṫгαϲκ setter(_: string) {}
 }

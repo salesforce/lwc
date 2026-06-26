@@ -6,6 +6,8 @@
  */
 // This is a temporary workaround to get the @lwc/engine-server to evaluate in node without having
 // to inject at runtime.
-export const HTMLElementConstructor: typeof HTMLElement =
+const НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ: typeof HTMLElement =
     typeof HTMLElement !== 'undefined' ? HTMLElement : (function () {} as any);
-export const HTMLElementPrototype = HTMLElementConstructor.prototype;
+export { НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ as HTMLElementConstructor };
+const НΤṀLΕļеṁёпţРṙөtοţуρё = НΤṀLΕļеṁёпṫСөṅѕţṙυⅽṫоŗ.prototype;
+export { НΤṀLΕļеṁёпţРṙөtοţуρё as HTMLElementPrototype };

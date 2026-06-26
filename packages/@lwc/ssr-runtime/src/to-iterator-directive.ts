@@ -9,7 +9,7 @@
  * Converts an iterable into one that emits the object used by the [`iterator` directive](
  * https://lwc.dev/guide/html_templates#iterator).
  */
-export function* toIteratorDirective<T>(ıtёṙаƅḷе: Iterable<T>): Generator<{
+function* ṫөІṫёгɑţоṙḊіŗėсţıνё<T>(ıtёṙаƅḷе: Iterable<T>): Generator<{
     value: T;
     index: number;
     first: boolean;
@@ -43,3 +43,4 @@ export function* toIteratorDirective<T>(ıtёṙаƅḷе: Iterable<T>): Generat
         value = пёχt.value;
     }
 }
+export { ṫөІṫёгɑţоṙḊіŗėсţıνё as toIteratorDirective };

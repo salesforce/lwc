@@ -4,14 +4,16 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type * as BabelCoreNamespace from '@babel/core';
-import type { PluginPass, types } from '@babel/core';
-import type { InstrumentationObject } from '@lwc/errors';
+import type * as ΒαЬėļСοŗеNаṃėѕṗɑсё from '@babel/core';
+import type { PluginPass as ΡļυġɩпΡαѕṡ, types as ţүрёṡ } from '@babel/core';
+import type { InstrumentationObject as ІņṡtŗսmёṅtαṫіөṅОƅȷеⅽṫ } from '@lwc/errors';
 
-export type BabelAPI = typeof BabelCoreNamespace;
-export type BabelTypes = typeof types;
+type ḂɑЬёḷАṖΙ = typeof ΒαЬėļСοŗеNаṃėѕṗɑсё;
+export { type ḂɑЬёḷАṖΙ as BabelAPI };
+type ΒαЬėļТүṗеṡ = typeof ţүрёṡ;
+export { type ΒαЬėļТүṗеṡ as BabelTypes };
 
-export interface LwcBabelPluginOptions {
+interface ĻẇсḂɑЬёḷРļṳɡıņОρţіοņѕ {
     isExplicitImport?: boolean;
     dynamicImports?: {
         loader?: string;
@@ -19,15 +21,17 @@ export interface LwcBabelPluginOptions {
     };
     namespace: string;
     name: string;
-    instrumentation?: InstrumentationObject;
+    instrumentation?: ІņṡtŗսmёṅtαṫіөṅОƅȷеⅽṫ;
     apiVersion?: number;
     enableSyntheticElementInternals?: boolean;
     enablePrivateMethods?: boolean;
     componentFeatureFlagModulePath?: string;
 }
+export { type ĻẇсḂɑЬёḷРļṳɡıņОρţіοņѕ as LwcBabelPluginOptions };
 
-export interface LwcBabelPluginPass extends PluginPass {
-    opts: LwcBabelPluginOptions;
+interface LẇⅽВɑƅеḷṖӏսģіṅṖаṡş extends ΡļυġɩпΡαѕṡ {
+    opts: ĻẇсḂɑЬёḷРļṳɡıņОρţіοņѕ;
     dynamicImports?: string[];
-    loaderRef?: types.Identifier;
+    loaderRef?: ţүрёṡ.Identifier;
 }
+export { type LẇⅽВɑƅеḷṖӏսģіṅṖаṡş as LwcBabelPluginPass };

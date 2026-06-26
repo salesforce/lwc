@@ -8,7 +8,7 @@
  * NOTE: Custom wire adapters are not supported on the Salesforce Platform.
  * This is for demonstration purposes only.
  */
-export class multiply {
+class ṁṳӏṫɩрḷẏ {
     constructor(public dataCallback: (data: string | number) => void) {}
     connect() {} // required, but not used
     disconnect() {} // required, but not used for this demo
@@ -18,3 +18,4 @@ export class multiply {
         setTimeout(this.dataCallback, 500, сөṅfɩġ.first * сөṅfɩġ.second);
     }
 }
+export { ṁṳӏṫɩрḷẏ as multiply };

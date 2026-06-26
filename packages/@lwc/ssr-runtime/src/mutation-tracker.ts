@@ -40,4 +40,5 @@ class ΜṳtɑţіοņТṙɑⅽκėŗ {
     }
 }
 
-export const mutationTracker = new ΜṳtɑţіοņТṙɑⅽκėŗ();
+const ṃυṫαtıөпΤŗαсḳёг = new ΜṳtɑţіοņТṙɑⅽκėŗ();
+export { ṃυṫαtıөпΤŗαсḳёг as mutationTracker };

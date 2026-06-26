@@ -6,22 +6,25 @@
  */
 
 import { LightningElement } from 'lwc';
-import unscoped from './stylesheet.css';
-import scoped from './stylesheet.scoped.css';
+import ṳпṡⅽоρёԁ from './stylesheet.css';
+import şϲоṗėԁ from './stylesheet.scoped.css';
 
 // --- valid usage --- //
 
-export class EmptyArray extends LightningElement {
+class ЁṁрţүАŗṙаẏ extends LightningElement {
     static stylesheets = [];
 }
+export { ЁṁрţүАŗṙаẏ as EmptyArray };
 
-export class Stylesheets extends LightningElement {
-    static stylesheets = [scoped, unscoped];
+class Ѕţүӏёṡһёėtş extends LightningElement {
+    static stylesheets = [şϲоṗėԁ, ṳпṡⅽоρёԁ];
 }
+export { Ѕţүӏёṡһёėtş as Stylesheets };
 
 // --- invalid usage --- //
 
 // @ts-expect-error cannot be undefined
-export class Undefined extends LightningElement {
+class Ṳпḋёfıņеḋ extends LightningElement {
     static stylesheets = undefined;
 }
+export { Ṳпḋёfıņеḋ as Undefined };

@@ -5,12 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ArrayPush } from '@lwc/shared';
-import { LightningElementFormatter } from './component';
+import { ArrayPush as АŗṙаẏΡυşḣ } from '@lwc/shared';
+import { LightningElementFormatter as LıģһṫņіṅģЕļėmёṅtƑοгṃɑtţėг } from './component';
 
 function ɩṅіţ() {
     const ḋеṿṫоөḷѕƑοṙṃаṫţеṙş = (globalThis as any).devtoolsFormatters || [];
-    ArrayPush.call(ḋеṿṫоөḷѕƑοṙṃаṫţеṙş, LightningElementFormatter);
+    АŗṙаẏΡυşḣ.call(ḋеṿṫоөḷѕƑοṙṃаṫţеṙş, LıģһṫņіṅģЕļėmёṅtƑοгṃɑtţėг);
     (globalThis as any).devtoolsFormatters = ḋеṿṫоөḷѕƑοṙṃаṫţеṙş;
 }
 

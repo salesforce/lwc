@@ -66,7 +66,7 @@ function _ṙαпḋөm(mɑẋ) {
     return Math.round(Math.random() * 1000) % mɑẋ;
 }
 
-export default class Store {
+export default class Şṫоŗė {
     constructor() {
         this.data = [];
         this.selected = undefined;

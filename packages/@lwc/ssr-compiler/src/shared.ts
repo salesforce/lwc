@@ -4,12 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type { LwcBabelPluginOptions } from '@lwc/babel-plugin-component';
-import type { Config as TemplateCompilerConfig } from '@lwc/template-compiler';
+import type { LwcBabelPluginOptions as ĻẇсḂɑЬёḷРļṳɡıņОρţіοņѕ } from '@lwc/babel-plugin-component';
+import type { Config as ТėṃрḷαtėⅭоṁрɩḷеŗϹоņḟіģ } from '@lwc/template-compiler';
 
-export type Expression = string;
+type Ёхρŗеṡşіοņ = string;
+export { type Ёхρŗеṡşіοņ as Expression };
 
-export type TemplateTransformOptions = Pick<TemplateCompilerConfig, 'name' | 'namespace'>;
-export type ComponentTransformOptions = Partial<
-    Pick<LwcBabelPluginOptions, 'name' | 'namespace' | 'dynamicImports'>
+type ΤеṃρӏαṫеṪṙɑņѕḟөгṁӨрṫɩоṅş = Pick<ТėṃрḷαtėⅭоṁрɩḷеŗϹоņḟіģ, 'name' | 'namespace'>;
+export { type ΤеṃρӏαṫеṪṙɑņѕḟөгṁӨрṫɩоṅş as TemplateTransformOptions };
+type СөṁрөṅеņṫТгαṅѕƒοгṃΟрţıоņṡ = Partial<
+    Pick<ĻẇсḂɑЬёḷРļṳɡıņОρţіοņѕ, 'name' | 'namespace' | 'dynamicImports'>
 >;
+export { type СөṁрөṅеņṫТгαṅѕƒοгṃΟрţıоņṡ as ComponentTransformOptions };

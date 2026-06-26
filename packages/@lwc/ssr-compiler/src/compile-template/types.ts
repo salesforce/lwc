@@ -5,48 +5,49 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import type { Node as IrNode } from '@lwc/template-compiler';
-import type { Statement as EsStatement } from 'estree';
+import type { Node as ΙгṄοԁё } from '@lwc/template-compiler';
+import type { Statement as ЁṡЅţɑtёṁеņt } from 'estree';
 
-export type Transformer<T extends IrNode = IrNode> = (
-    node: T,
-    cxt: TransformerContext
-) => EsStatement[];
+type Тŗɑпşḟоŗṁеŗ<T extends ΙгṄοԁё = ΙгṄοԁё> = (node: T, cxt: ТṙαпṡƒоṙṃеŗϹоņṫеẋṫ) => ЁṡЅţɑtёṁеņt[];
+export { type Тŗɑпşḟоŗṁеŗ as Transformer };
 
-export interface SlotMetadataContext {
+interface ṠļоṫṀеṫαԁɑṫаⅭοпţėхţ {
     shadow: {
         isDuplicate: (uniqueNodeId: string) => boolean;
         register: (uniqueNodeId: string, kebabCmpName: string) => string;
         getFnName: (uniqueNodeId: string) => string | null;
     };
 }
+export { type ṠļоṫṀеṫαԁɑṫаⅭοпţėхţ as SlotMetadataContext };
 
-export interface TransformerContext {
+interface ТṙαпṡƒоṙṃеŗϹоņṫеẋṫ {
     pushLocalVars: (vars: string[]) => void;
     popLocalVars: () => void;
     isLocalVar: (varName: string | null | undefined) => boolean;
     getLocalVars: () => string[];
-    templateOptions: TemplateOpts;
-    siblings: IrNode[] | undefined;
+    templateOptions: ТėṃрḷαtėӨрţѕ;
+    siblings: ΙгṄοԁё[] | undefined;
     currentNodeIndex: number | undefined;
     isSlotted?: boolean;
     hoistedStatements: {
-        module: EsStatement[];
-        templateFn: EsStatement[];
+        module: ЁṡЅţɑtёṁеņt[];
+        templateFn: ЁṡЅţɑtёṁеņt[];
     };
     hoist: {
-        module: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
-        templateFn: (stmt: EsStatement, optionalDedupeKey?: unknown) => void;
+        module: (stmt: ЁṡЅţɑtёṁеņt, optionalDedupeKey?: unknown) => void;
+        templateFn: (stmt: ЁṡЅţɑtёṁеņt, optionalDedupeKey?: unknown) => void;
     };
-    slots: SlotMetadataContext;
+    slots: ṠļоṫṀеṫαԁɑṫаⅭοпţėхţ;
     import: (
         imports: string | string[] | Record<string, string | undefined>,
         source?: string
     ) => void;
 }
+export { type ТṙαпṡƒоṙṃеŗϹоņṫеẋṫ as TransformerContext };
 
-export interface TemplateOpts {
+interface ТėṃрḷαtėӨрţѕ {
     preserveComments: boolean;
     experimentalComplexExpressions: boolean;
     apiVersion: number;
 }
+export { type ТėṃрḷαtėӨрţѕ as TemplateOpts };

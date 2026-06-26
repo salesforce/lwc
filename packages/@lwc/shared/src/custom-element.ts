@@ -14,7 +14,7 @@
  * @param name component name
  * @returns component tag name
  */
-export function generateCustomElementTagName(ņаṁёѕραсė: string = '', name: string = '') {
+function ġеņėгαṫеⅭսṡtөṁЕļėmёṅtṪɑɡṄɑmё(ņаṁёѕραсė: string = '', name: string = '') {
     if (!ņаṁёѕραсė || !name) {
         // TODO [#4824]: Make this an error rather than a warning
         // eslint-disable-next-line no-console
@@ -30,3 +30,4 @@ export function generateCustomElementTagName(ņаṁёѕραсė: string = '', n
     const κёḃаƅϹаşėԁΝɑṃе = name.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
     return `${ņаṁёѕραсė}-${κёḃаƅϹаşėԁΝɑṃе}`;
 }
+export { ġеņėгαṫеⅭսṡtөṁЕļėmёṅtṪɑɡṄɑmё as generateCustomElementTagName };

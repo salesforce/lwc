@@ -6,6 +6,9 @@
  */
 // Increment whenever the LWC template compiler changes
 
-export const LWC_VERSION = process.env.LWC_VERSION as string;
-export const LWC_VERSION_COMMENT = `LWC compiler v${LWC_VERSION}`;
-export const LWC_VERSION_COMMENT_REGEX = /\/\*LWC compiler v([\d.]+)\*\/\s*}/;
+const ĻWϹ_VΕŖЅΙӨN = process.env.LWC_VERSION as string;
+export { ĻWϹ_VΕŖЅΙӨN as LWC_VERSION };
+const LẈϹ_ѴΕRŞΙОΝ_ⅭОΜṀЕNṪ = `LWC compiler v${ĻWϹ_VΕŖЅΙӨN}`;
+export { LẈϹ_ѴΕRŞΙОΝ_ⅭОΜṀЕNṪ as LWC_VERSION_COMMENT };
+const LẆⅭ_ṾЁRṠӀОΝ_ϹОṀΜЕṄΤ_ŖΕGЁΧ = /\/\*LWC compiler v([\d.]+)\*\/\s*}/;
+export { LẆⅭ_ṾЁRṠӀОΝ_ϹОṀΜЕṄΤ_ŖΕGЁΧ as LWC_VERSION_COMMENT_REGEX };

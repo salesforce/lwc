@@ -4,14 +4,13 @@
 
 **Branch:** `wjh-ai/confusable-characters` (base: `master`)
 
-**Verified state:** 313 source files transformed across 23 `@lwc` packages. All three
+**Verified state:** 377 source files transformed across 23 `@lwc` packages. All three
 acceptance gates pass with exit code 0:
 
-- `yarn build` — all 21 build projects succeed.
-- `yarn test` — vitest: 77 files, 2817 passed, 10 skipped, exit 0. (The "2 failed
-  snapshots / 2 expected fail" line is identical on clean `master` — pre-existing baseline
-  behavior, not introduced by the transform. Verified by running the suite in a fresh
-  `master` worktree.)
+- `yarn build` — all 21 build projects succeed (tsc type-check is the strict gate).
+- `yarn test` — vitest: 77 files, 2817 passed, 10 skipped, 2 expected-fail, exit 0. (The "2
+  expected fail" are `render-undefined` / `render-bad-value`, declared via `expectedFailures`;
+  they fail on clean `master` too — pre-existing baseline, not introduced here.)
 - `yarn test:wtr` — `@lwc/integration-wtr` across Chromium/Firefox/WebKit: 3496 passed per
   browser, 0 failed, exit 0.
 
@@ -20,8 +19,14 @@ characters while preserving every public API and keeping the build and test suit
 
 ## Scope
 
-Transformed: identifiers in `.ts` (257 files) and non-test `.js` (56 files) under
-`packages/@lwc/*/src`.
+This is the second phase. Phase 1 (commit `1eb6c6f69`) renamed local/value identifiers but
+**deliberately preserved the entire module-import/export surface and all of type space** as a
+cross-module string contract. This phase removes both of those safety nets: imports, exports,
+and type-space names are now renamed too. The external string contract is preserved by
+**aliasing at the module boundary** — the confusable is the local name, the ASCII name is the
+imported/exported specifier.
+
+Transformed: identifiers in `.ts` and non-test `.js`/`.mjs`/`.cjs` under `packages/@lwc/*/src`.
 
 Excluded: `dist`, `__tests__`, `__mocks__`, `fixtures`, `*.snap`, `*.spec.*`, `*.test.*`,
 `*.d.ts`, and any `.js`/`.ts` with a colocated `.html` (LWC component templates bind member
@@ -30,63 +35,101 @@ rewritten.
 
 ## How it works
 
-The transformer is **binding-driven**, not occurrence-driven. This is the core design choice
-that makes it correct: a single classification per binding guarantees a declaration and all
-its references either all rename or none do, eliminating the declaration/reference divergence
-that plagued the earlier occurrence-based approach.
+The transformer is **binding-driven** and emits **occurrence-based text-slice replacements**
+(`{start, end, text}` applied end-to-start), not via `@babel/generator`. A single
+classification per binding guarantees a declaration and all its references either all rename or
+none do.
+
+`transformIdentifier(name)` is a pure, deterministic function of the name (via `simpleHash`),
+so a name maps to one confusable everywhere and re-runs from a clean baseline are
+byte-identical.
+
+### Boundary aliasing — the import/export contract
+
+Let `L` = local name and `C = transformIdentifier(L)`. The external string (the imported or
+exported name) is always preserved; only the local binding is renamed.
+
+| Form | Result |
+|---|---|
+| `import Foo from 'x'` | `import C from 'x'` (default; contract is literal `default`, no alias) |
+| `import { foo } from 'x'` | `import { foo as C } from 'x'` |
+| `import { foo as bar } from 'x'` | `import { foo as Cbar } from 'x'` (replace local only) |
+| `import * as NS from 'x'` | `import * as C from 'x'` (namespace local) |
+| `import type { X } from 'x'` | `import type { X as C } from 'x'` |
+| `export { local }` | `export { C as local }` |
+| `export { local as Pub }` | `export { C as Pub }` |
+| inline `export function/class/const` | strip `export`, rename decl + refs, append `export { C as name };` |
+| `export type/interface X` | rename decl + refs, append `export { type C as X };` |
+| `export default function foo` | rename `id` freely (export name is `default`, no alias) |
+| re-exports (`export … from`, `export * from`) | untouched (no local binding) |
+
+For a declaration that is both a value and a type (`export const X` + `export type X`, or a
+`const`/`type` merge), a single non-`type` export specifier carries both meanings — emitting a
+separate `type` re-export would duplicate the identifier (TS2300), so the type half is
+strip-only.
+
+Overloaded functions: TS requires every overload signature (`TSDeclareFunction`) and the
+implementation (`FunctionDeclaration`) to agree on `export`. The restructure strips `export`
+from all of them and emits exactly one aliased specifier for the implementation.
 
 ### `scripts/confusables/`
 
 - `transform.mjs` — orchestrator. Globs `packages/@lwc/*/src/**/*.{ts,js,mjs,cjs}` with the
-  exclusions above, parses per-extension (TypeScript plugin only for `.ts`), transforms,
-  runs `yarn format`, and (with `--verify`) gates on build/test/test:wtr with optional
+  exclusions above, parses per-extension (TypeScript plugin only for `.ts`), transforms, runs
+  `yarn format`, and (with `--verify`) gates on build/test/test:wtr with optional
   `--checkpoint=<ref>` rollback. Flags: `--extensions=`, `--verify`, `--skip-wtr`,
   `--checkpoint=`.
-- `transformer.mjs` — core. Pass A classifies every scope binding as renameable or preserved.
-  Pass B emits replacements for the declaration and every reference, applied end-to-start.
-- `analyzer.mjs` — marks public identifiers: exports (including destructured exports), and the
-  member surface of exported classes and `LightningElement` components.
+- `transformer.mjs` — core. Pass A classifies value bindings; A2 collects renameable type
+  names; A2b collects value-exported names (for the value+type merge dedup); A3 is the
+  coverage prescan that drops any name with an uncovered occurrence. Pass B emits replacements
+  for declarations, references, import/export specifiers, and inline-export restructuring.
+- `analyzer.mjs` — protects the member surface of exported classes and `LightningElement`
+  components (template-bound by string) via a separate `exportedClassLocals` set; it no longer
+  adds export names to a public-preserve set, because export *locals* now rename.
 - `globals.mjs` — JS/DOM globals and LWC lifecycle hooks that must never be renamed.
 - `confusables-map.mjs` — ASCII → confusable character mappings.
-- `hash.mjs` — deterministic per-name character selection (pure function of the identifier,
-  so a name maps to one target everywhere and re-runs are idempotent).
-- `transformer.test.mjs` — 20 unit tests (run with `node --test`), one per bug class below
-  plus determinism and the basic preserve/rename cases.
+- `hash.mjs` — deterministic per-name character selection.
+- `transformer.test.mjs` — 37 unit tests (`node --test`), one per import/export/type-space form
+  plus the bug classes below.
 
-### Bindings that are preserved (never renamed)
+### Type space (the fragile part)
 
-- Globals (`globals.mjs`) and exported/public names (`analyzer.mjs`).
-- Imported names (`binding.kind === 'module'`, plus `import type` whose binding kind is
-  `'unknown'` — matched on the import declaration node type instead).
-- Type-space declarations: type aliases, interfaces, enums, namespaces, type parameters,
-  `import =`, and constructor parameter properties.
-- `this` parameters (`function (this: T)` — a contextual keyword, not a binding).
-- Private class field names (`#field`) — class members in their own namespace, never resolved
-  through a same-named local.
-- Object property keys, member-access property names, import/export specifier names.
+Type-position visitors (`TSTypeReference`, heritage `TSExpressionWithTypeArguments`,
+`TSIndexedAccessType`, `TSTypeQuery` for `typeof`, computed type-member keys, type predicates)
+rename the leftmost identifier iff it resolves to a renameable type name or value binding AND is
+not shadowed by an enclosing `TSTypeParameter` of the same name.
 
-### Bug classes handled (each has a regression test)
+**Conservative fallback:** Pass A3 prescans each type-space name; if any occurrence sits in a
+form no visitor covers, the name is dropped from the renameable set and left ASCII (decl + refs
+both ASCII → tsc still passes). In practice this rarely fires, because mapped-type constraints
+(`[K in Keys]`) and template-literal types resolve through `TSTypeReference` positions and are
+therefore covered.
+
+### `.name`-reflection consequences (intended)
+
+Because inline-exported declarations are renamed, `Function.prototype.name` / `Class.name` now
+returns the confusable even though the export specifier preserves the ASCII name. Three places
+observe this at runtime and were updated to match (not source bugs — expected output changes):
+
+- `ssr-compiler` `barrel-lwc-exports` fixtures (×3) read `i.name` and normalize the SSR-runtime
+  `renderComponent` alias; the normalization and the `expected.html` snapshots were regenerated
+  to the confusable names.
+- `integration-wtr` `polyfills/shadow-root` spec asserts `String(window.ShadowRoot)`; the regex
+  was widened to accept the confusable `SyntheticShadowRoot` name.
+
+## Bug classes handled (each has a regression test)
 
 1. Local binding consistency — declaration + all references rename together.
-2. `import type` bindings (kind `'unknown'`) preserved like value imports.
-3. Type aliases/interfaces left untouched (declaration and reference stay in sync).
-4. Object-expression shorthand (`{ scope }` → `{ scope: <renamed> }`, key stays ASCII).
-5. Object-pattern shorthand (`const { dir } = obj` → `const { dir: <renamed> }`).
-6. Shorthand pattern with default (`{ namespace = '' }` → `{ namespace: <renamed> = '' }`).
-7. Assertion signatures (`asserts x`) rename in lockstep with the parameter.
-8. Type predicates (`x is T`) rename in lockstep with the parameter.
-9. `typeof X` value references in type space.
-10. Exported destructuring locals (`export const { ELEMENT_NODE } = _Node`) preserved.
-11. `this` parameter never renamed.
-12. Private class field never renamed even when a same-named local exists.
-13. A class referenced from type position (`new SignalTracker()` + `WeakMap<_, SignalTracker>`)
-    renames in lockstep — classes are the only renameable binding that can appear as a direct
-    type reference.
-14. A type reference that collides with a renameable value name (e.g. `...Validators: Validators`
-    where `Validators` is also a type parameter) is NOT renamed — `getBinding` only tracks the
-    value binding, so the type-parameter reference must stay ASCII.
-15. Computed type-member key (`interface I { [HostElementKey]: T }`) referencing a renamed value
-    binding renames in lockstep.
+2–8. Import/export specifier forms (default, named, aliased, namespace, type-only, inline-decl
+   restructure, re-export-untouched) per the table above.
+9. Value+type declaration merge — single specifier, no duplicate `type` re-export.
+10. Overload signatures (`TSDeclareFunction`) — `export` stripped in lockstep with the impl.
+11. `typeof X` on a type-only import resolves and renames.
+12. Computed type-member key referencing a renamed binding renames in lockstep.
+13. Object-expression / object-pattern shorthand expansion (key stays the contract name).
+14. Assertion signatures (`asserts x`) and type predicates (`x is T`) rename with the parameter.
+15. Type parameter shadowing — a type reference shadowed by an enclosing `TSTypeParameter` of
+    the same name stays ASCII (the `Validators` collision).
 
 ## Reproducing from scratch
 
@@ -97,10 +140,12 @@ yarn build && yarn test && yarn test:wtr                          # all exit 0
 ```
 
 The transform is deterministic: re-running from a clean baseline produces byte-identical output.
+The three `.name`-reflection edits above live under `__tests__/` (excluded from the transform),
+so they survive a re-run and do not need to be re-applied.
 
 ## Caveats
 
 - This is an educational/research artifact. Do not ship it: it defeats code review, search,
   refactoring, and stack-trace readability, and introduces homograph-attack surface.
-- ESLint's "unused variable" heuristics may flag renamed identifiers; commits to this branch
-  may need `--no-verify` if a pre-commit lint hook is configured.
+- ESLint's "unused variable" heuristics flag renamed identifiers; commits to this branch need
+  `--no-verify` because the pre-commit lint hook would otherwise reject them.

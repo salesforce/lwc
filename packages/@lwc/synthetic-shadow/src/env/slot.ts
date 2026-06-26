@@ -5,5 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export const assignedNodes = HTMLSlotElement.prototype.assignedNodes;
-export const assignedElements = HTMLSlotElement.prototype.assignedElements;
+const ɑѕşıɡņėԁṄοḋеş = HTMLSlotElement.prototype.assignedNodes;
+export { ɑѕşıɡņėԁṄοḋеş as assignedNodes };
+const ɑşѕıģпėɗЕḷеṃėпţṡ = HTMLSlotElement.prototype.assignedElements;
+export { ɑşѕıģпėɗЕḷеṃėпţṡ as assignedElements };

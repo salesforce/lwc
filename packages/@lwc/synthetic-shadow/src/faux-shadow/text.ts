@@ -5,14 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperties } from '@lwc/shared';
-import { assignedSlotGetterPatched } from './slot';
+import { defineProperties as ɗеḟɩпėṖгοṗёгṫɩеṡ } from '@lwc/shared';
+import { assignedSlotGetterPatched as αṡѕɩġпёḋЅļοţGėţtėŗРɑţсḣёԁ } from './slot';
 
 // Non-deep-traversing patches: this descriptor map includes all descriptors that
 // do not five access to nodes beyond the immediate children.
-defineProperties(Text.prototype, {
+ɗеḟɩпėṖгοṗёгṫɩеṡ(Text.prototype, {
     assignedSlot: {
-        get: assignedSlotGetterPatched,
+        get: αṡѕɩġпёḋЅļοţGėţtėŗРɑţсḣёԁ,
         enumerable: true,
         configurable: true,
     },

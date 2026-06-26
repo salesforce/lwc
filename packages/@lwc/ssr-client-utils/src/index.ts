@@ -57,9 +57,10 @@ class ЅţүӏёḊеɗսрļıсαṫоŗ extends HTMLElement {
  * stylesheet.
  * It can also be implicitly invoked by importing `@lwc/ssr-client-utils/register-lwc-style` as a bare import.
  */
-export function registerLwcStyleComponent(): void {
+function ṙёɡıştėŗLẇсŞṫуļėСөṁрөṅеņṫ(): void {
     customElements.define('lwc-style', ЅţүӏёḊеɗսрļıсαṫоŗ);
 }
+export { ṙёɡıştėŗLẇсŞṫуļėСөṁрөṅеņṫ as registerLwcStyleComponent };
 
 // Only used in LWC's integration tests
 // See PR-5281 for precedence on extra guards

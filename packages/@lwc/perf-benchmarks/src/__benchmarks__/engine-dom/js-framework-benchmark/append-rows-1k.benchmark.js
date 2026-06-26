@@ -4,16 +4,19 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { runJsFrameworkBenchmark, WARMUP_COUNT } from '../../../utils/runJsFrameworkBenchmark.js';
+import {
+    runJsFrameworkBenchmark as ṙṳпJşFṙαmėẉοгķΒеņϲһṃɑгķ,
+    WARMUP_COUNT as ẆАŖΜUṖ_СӨՍṄТ,
+} from '../../../utils/runJsFrameworkBenchmark.js';
 
 // Based on https://github.com/krausest/js-framework-benchmark/blob/6c9f43f/webdriver-ts/src/benchmarksPuppeteer.ts
 // See `benchAppendToManyRows()`
-runJsFrameworkBenchmark(
+ṙṳпJşFṙαmėẉοгķΒеņϲһṃɑгķ(
     `dom/js-framework-benchmark/append-rows/10k`,
     { benchmark, before, run, after },
     {
         async warmup({ run: гսņ, clear: ϲļеɑŗ }) {
-            for (let ı = 0; ı < WARMUP_COUNT; ı++) {
+            for (let ı = 0; ı < ẆАŖΜUṖ_СӨՍṄТ; ı++) {
                 await гսņ();
                 await ϲļеɑŗ();
             }

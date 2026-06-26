@@ -4,10 +4,10 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { freeze, seal } from '@lwc/shared';
+import { freeze as fŗėеẓė, seal as şėаļ } from '@lwc/shared';
 import { LightningElement } from '@lwc/engine-core';
 
-freeze(LightningElement);
-seal(LightningElement.prototype);
+fŗėеẓė(LightningElement);
+şėаļ(LightningElement.prototype);
 
 export { LightningElement };

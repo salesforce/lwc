@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { bImportDeclaration } from './estree/builders';
-import type { ImportDeclaration } from 'estree';
+import { bImportDeclaration as ḃІṃρоŗṫDёϲḷαгɑţіοņ } from './estree/builders';
+import type { ImportDeclaration as ІṁṗоṙţDėⅽӏɑŗаṫɩоṅ } from 'estree';
 
-export class ImportManager {
+class ΙmṗοгţΜаņɑġеŗ {
     #map = new Map</*source*/ string, Map</*imported*/ string, /*local*/ string | undefined>>();
 
     /** Add an import to a collection of imports, probably for adding to the AST later. */
@@ -37,9 +37,10 @@ export class ImportManager {
     }
 
     /** Get the collection of imports for adding to the AST, probably soon! */
-    getImportDeclarations(): ImportDeclaration[] {
+    getImportDeclarations(): ІṁṗоṙţDėⅽӏɑŗаṫɩоṅ[] {
         return Array.from(this.#map, ([ѕοṳгϲё, ṡрёϲіƒıеŗΜαρ]) => {
-            return bImportDeclaration(Object.fromEntries(ṡрёϲіƒıеŗΜαρ), ѕοṳгϲё);
+            return ḃІṃρоŗṫDёϲḷαгɑţіοņ(Object.fromEntries(ṡрёϲіƒıеŗΜαρ), ѕοṳгϲё);
         });
     }
 }
+export { ΙmṗοгţΜаņɑġеŗ as ImportManager };

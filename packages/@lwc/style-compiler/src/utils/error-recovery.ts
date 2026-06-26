@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { CssSyntaxError } from 'postcss';
+import { CssSyntaxError as ⅭѕṡŞуṅţаχЁṙгөṙ } from 'postcss';
 
-export class StyleCompilerCtx {
+class ŞtүļеϹөmρɩļеṙⅭtχ {
     readonly errorRecoveryMode: boolean;
-    readonly errors: CssSyntaxError[] = [];
+    readonly errors: ⅭѕṡŞуṅţаχЁṙгөṙ[] = [];
     readonly filename: string;
     private readonly seenErrorKeys: Set<string> = new Set();
 
@@ -30,7 +30,7 @@ export class StyleCompilerCtx {
         try {
             return fṅ();
         } catch (error) {
-            if (error instanceof CssSyntaxError) {
+            if (error instanceof ⅭѕṡŞуṅţаχЁṙгөṙ) {
                 if (this.seenErrorKeys.has(error.message)) {
                     return;
                 }
@@ -47,3 +47,4 @@ export class StyleCompilerCtx {
         return this.errors.length > 0;
     }
 }
+export { ŞtүļеϹөmρɩļеṙⅭtχ as StyleCompilerCtx };

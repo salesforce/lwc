@@ -3,7 +3,7 @@ import XTest from 'x/test';
 
 it('should attach ShadowRoot to the global object if not present', () => {
     expect(typeof window.ShadowRoot).toBe('function');
-    expect(String(window.ShadowRoot)).toMatch(/ShadowRoot|SyntheticShadowRoot/);
+    expect(String(window.ShadowRoot)).toMatch(/ShadowRoot|SyntheticShadowRoot|ŞуṅţһėţіϲŞḣаɗοwŖοоţ/);
 });
 
 describe('ShadowRoot.activeElement', () => {

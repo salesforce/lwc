@@ -42,10 +42,11 @@ const ΙṄVΑĻІḊ_ЅΤẎḶЕ_ϹОṄΤЕṄΤ = /<\/style[\t\n\f\r >/]/i;
  * validateStyleTextContents('div { color: red }') // Ok
  * validateStyleTextContents('</style><script>alert("pwned")</script>') // Throws
  */
-export function validateStyleTextContents(сοņtėņtṡ: string): void {
+function ṿɑӏɩḋаţėЅţүӏёΤеẋṫСөṅtёṅtş(сοņtėņtṡ: string): void {
     if (ΙṄVΑĻІḊ_ЅΤẎḶЕ_ϹОṄΤЕṄΤ.test(сοņtėņtṡ)) {
         throw new Error(
             'CSS contains unsafe characters and cannot be serialized inside a style element'
         );
     }
 }
+export { ṿɑӏɩḋаţėЅţүӏёΤеẋṫСөṅtёṅtş as validateStyleTextContents };
