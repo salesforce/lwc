@@ -8,7 +8,7 @@ import { DecoratorErrors } from '@lwc/errors';
 import { PRIVATE_METHOD_PREFIX, PRIVATE_METHOD_METADATA_KEY } from './constants';
 import { copyMethodMetadata } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
-import type { types, NodePath, PluginObj } from '@babel/core';
+import type { types, NodePath, PluginObject } from '@babel/core';
 
 /**
  * Standalone Babel plugin that reverses the private method transformation by converting
@@ -26,7 +26,7 @@ import type { types, NodePath, PluginObj } from '@babel/core';
  */
 export default function reversePrivateMethodTransform({
     types: t,
-}: BabelAPI): PluginObj<LwcBabelPluginPass> {
+}: BabelAPI): PluginObject<LwcBabelPluginPass> {
     // Scoped to this plugin instance's closure. Safe as long as each Babel run creates a
     // fresh plugin via LwcReversePrivateMethodTransform(); would accumulate across files if
     // the same instance were ever reused.

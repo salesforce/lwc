@@ -14,7 +14,7 @@ import type { LwcBabelPluginPass } from './types';
 
 function isClassMethod(
     classMethod: NodePath<types.Node>,
-    properties: { kind?: string; name?: string; static?: boolean } = {}
+    properties: { kind?: types.ClassMethod['kind']; name?: string; static?: boolean } = {}
 ): classMethod is NodePath<types.ClassMethod> {
     const { kind = 'method', name } = properties;
     return (

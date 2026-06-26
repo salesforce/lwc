@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type { BabelFileResult } from '@babel/core';
+import type { FileResult } from '@babel/core';
 import type { CompilerDiagnostic } from '@lwc/errors';
 
 /** The object returned after transforming code. */
@@ -12,7 +12,7 @@ export interface TransformResult {
     /** The compiled source code. */
     code: string;
     /** The generated source map. */
-    map: BabelFileResult['map'];
+    map: FileResult['map'];
     /** Any diagnostic warnings that may have occurred. */
     warnings?: CompilerDiagnostic[];
     /**

@@ -8,7 +8,7 @@ import { DecoratorErrors } from '@lwc/errors';
 import { PRIVATE_METHOD_PREFIX, PRIVATE_METHOD_METADATA_KEY } from './constants';
 import { copyMethodMetadata, handleError } from './utils';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
-import type { NodePath, PluginObj } from '@babel/core';
+import type { NodePath, PluginObject } from '@babel/core';
 import type { types } from '@babel/core';
 
 // We only transform kind: 'method'. Other kinds ('get', 'set', 'constructor') are left alone.
@@ -27,7 +27,7 @@ const METHOD_KIND = 'method';
  */
 export default function privateMethodTransform({
     types: t,
-}: BabelAPI): PluginObj<LwcBabelPluginPass> {
+}: BabelAPI): PluginObject<LwcBabelPluginPass> {
     return {
         visitor: {},
         pre() {

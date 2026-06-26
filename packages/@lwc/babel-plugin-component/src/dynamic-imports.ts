@@ -7,11 +7,11 @@
 import { addNamed } from '@babel/helper-module-imports';
 import { CompilerMetrics, LWCClassErrors } from '@lwc/errors';
 import { handleError, incrementMetricCounter } from './utils';
-import type { types, Visitor, NodePath } from '@babel/core';
-import type { LwcBabelPluginPass } from './types';
+import type { types, VisitorBase, NodePath } from '@babel/core';
+import type { BabelAPI, LwcBabelPluginPass } from './types';
 
-function getImportSource(path: NodePath<types.Import>): NodePath<types.Node> {
-    return path.parentPath.get('arguments.0') as NodePath<types.Node>;
+function getImportSource(path: NodePath<types.ImportExpression>): NodePath<types.Expression> {
+    return path.get('source');
 }
 
 function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginPass) {
@@ -31,9 +31,9 @@ function validateImport(sourcePath: NodePath<types.Node>, state: LwcBabelPluginP
  * Expected API for this plugin:
  * { dynamicImports: { loader: string, strictSpecifier: boolean } }
  */
-export default function (): Visitor<LwcBabelPluginPass> {
+export default function ({ types: t }: BabelAPI): VisitorBase<LwcBabelPluginPass> {
     function getLoaderRef(
-        path: NodePath<types.Import>,
+        path: NodePath<types.ImportExpression>,
         loaderName: string,
         state: LwcBabelPluginPass
     ): types.Identifier {
@@ -55,7 +55,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
     }
 
     return {
-        Import(path, state) {
+        ImportExpression(path, state) {
             const { dynamicImports } = state.opts;
             if (!dynamicImports) {
                 return;
@@ -70,7 +70,7 @@ export default function (): Visitor<LwcBabelPluginPass> {
 
             if (loader) {
                 const loaderId = getLoaderRef(path, loader, state);
-                path.replaceWith(loaderId);
+                path.replaceWith(t.callExpression(loaderId, [sourcePath.node]));
                 incrementMetricCounter(CompilerMetrics.DynamicImportTransform, state);
             }
 

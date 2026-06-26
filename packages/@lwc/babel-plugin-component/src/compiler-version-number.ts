@@ -5,10 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import { LWC_VERSION_COMMENT } from '@lwc/shared';
-import type { types, Visitor } from '@babel/core';
+import type { types, VisitorBase } from '@babel/core';
 import type { BabelAPI, LwcBabelPluginPass } from './types';
 
-export default function compilerVersionNumber({ types: t }: BabelAPI): Visitor<LwcBabelPluginPass> {
+export default function compilerVersionNumber({
+    types: t,
+}: BabelAPI): VisitorBase<LwcBabelPluginPass> {
     return {
         ClassBody(path) {
             if ((path.parent as types.ClassDeclaration).superClass === null) {

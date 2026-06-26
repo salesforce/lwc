@@ -2239,9 +2239,11 @@
 
 "@lwc/eslint-plugin-lwc-internal@link:./scripts/eslint-plugin":
   version "0.0.0"
+  uid ""
 
 "@lwc/test-utils-lwc-internals@link:./scripts/test-utils":
   version "0.0.0"
+  uid ""
 
 "@napi-rs/wasm-runtime@0.2.4":
   version "0.2.4"
@@ -3208,7 +3210,7 @@
   resolved "https://registry.yarnpkg.com/@types/babel__code-frame/-/babel__code-frame-7.0.6.tgz#20a899c0d29fba1ddf5c2156a10a2bda75ee6f29"
   integrity sha512-Anitqkl3+KrzcW2k77lRlg/GfLZLWXBuNgbEcIOU6M92yw42vsd3xV/Z/yAHEj8m+KUjL6bWOVOFqX8PFPJ4LA==
 
-"@types/babel__core@*", "@types/babel__core@^7.20.5":
+"@types/babel__core@^7.20.5":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"
   integrity sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==
@@ -3225,14 +3227,6 @@
   integrity sha512-ufFd2Xi92OAVPYsy+P4n7/U7e68fex0+Ee8gSG9KX7eo084CWiQ4sdxktvdl0bOPupXtVJPY19zk6EwWqUQ8lg==
   dependencies:
     "@babel/types" "^7.0.0"
-
-"@types/babel__helper-module-imports@~7.18.3":
-  version "7.18.3"
-  resolved "https://registry.yarnpkg.com/@types/babel__helper-module-imports/-/babel__helper-module-imports-7.18.3.tgz#8b1688947af0c1a6c65cf890d6723705d5ce364d"
-  integrity sha512-2pyr9Vlriessj2KI85SEF7qma8vA3vzquQMw3wn6kL5lsfjH/YxJ1Noytk4/FJElpYybUbyaC37CVfEgfyme9A==
-  dependencies:
-    "@types/babel__core" "*"
-    "@types/babel__traverse" "*"
 
 "@types/babel__template@*":
   version "7.4.4"

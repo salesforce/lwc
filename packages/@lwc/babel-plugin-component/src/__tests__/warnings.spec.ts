@@ -33,6 +33,7 @@ test.each([
     const { code } = transformSync(source, {
         babelrc: false,
         configFile: false,
+        browserslistConfigFile: false,
         filename: `foo.js`,
         plugins: [[plugin, { namespace, name }]],
     })!;

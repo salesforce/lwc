@@ -71,7 +71,7 @@ export default function scriptTransform(
 
     const plugins: babel.PluginItem[] = [
         ...(enablePrivateMethods ? [LwcPrivateMethodTransform as babel.PluginItem] : []),
-        [lwcClassTransformPlugin, lwcBabelPluginOptions],
+        [lwcClassTransformPlugin, lwcBabelPluginOptions] as babel.PluginItem,
         [babelClassPropertiesPlugin, { loose: true }],
         ...(enablePrivateMethods ? [LwcReversePrivateMethodTransform as babel.PluginItem] : []),
     ];
@@ -82,7 +82,7 @@ export default function scriptTransform(
 
     if (enableLightningWebSecurityTransforms) {
         plugins.push(
-            lockerBabelPluginTransformUnforgeables,
+            lockerBabelPluginTransformUnforgeables as babel.PluginItem,
             babelAsyncToGenPlugin,
             babelAsyncGeneratorFunctionsPlugin
         );
@@ -97,6 +97,11 @@ export default function scriptTransform(
             // Prevent Babel from loading local configuration.
             babelrc: false,
             configFile: false,
+
+            // The transform relies on explicit plugins rather than browser targets, so there is no
+            // need to resolve a browserslist config (which also triggers a caniuse-lite staleness
+            // warning on every compilation).
+            browserslistConfigFile: false,
 
             // Force Babel to generate new line and white spaces. This prevent Babel from generating
             // an error when the generated code is over 500KB.
