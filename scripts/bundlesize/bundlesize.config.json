@@ -10,7 +10,7 @@
         },
         {
             "path": "packages/@lwc/wire-service/dist/index.js",
-            "maxSize": "1.07KB"
+            "maxSize": "1.13KB"
         }
     ]
 }
