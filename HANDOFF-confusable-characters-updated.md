@@ -93,7 +93,7 @@ stack`) has been removed: those were only ever suppressing renames of local bind
   already protected positionally by `isPreservedPosition` / `analyzer.mjs`.
 - `confusables-map.mjs` — ASCII → confusable character mappings.
 - `hash.mjs` — deterministic per-name character selection.
-- `transformer.test.mjs` — 59 unit tests (`node --test`), one per import/export/type-space form
+- `transformer.test.mjs` — 76 unit tests (`node --test`), one per import/export/type-space form
   plus the bug classes below.
 
 ### Type space (the fragile part)
@@ -112,12 +112,14 @@ so the slice is `[start, start + name.length)`), and references ride the existin
 deterministic, a file-global name set (not per-scope resolution) suffices — every `T` maps to
 the same confusable.
 
-**Modifier-annotated params stay ASCII.** When a `TSTypeParameter` carries a modifier
-(`in`/`out` variance or `const`), `node.start` points at the modifier keyword, not the name, so
-slicing would corrupt the keyword. Such names are added to a blocked set and removed from the
-rename set entirely — every declaration and reference of that name stays ASCII in lockstep, so
-no desync reaches tsc. (The block is name-keyed and file-global: a single modifier-bearing
-occurrence forces the whole name ASCII even where it appears without a modifier.)
+**Modifier-annotated params rename too.** When a `TSTypeParameter` carries a modifier
+(`in`/`out` variance or `const`), `node.start` points at the modifier keyword, not the name, so a
+naive `[start, start + len)` slice would corrupt the keyword. `typeParamNameStart(tpNode, source)`
+consumes a leading run of whole `const`/`in`/`out` keywords (each `\b`-anchored with trailing
+whitespace) from the node's source slice and returns the offset where the NAME begins; the slice is
+taken from there. So the modifier keyword survives intact and the name renames in lockstep with its
+references (which ride the ordinary `typeParamNames` path). Anchoring on whole keywords avoids
+mis-locating a single-char name (`<const n>`) inside the `const`/`in`/`out` text.
 
 **Conservative fallback:** Pass A3 prescans each type-space name; if any occurrence sits in a
 form no visitor covers, the name is dropped from the renameable set and left ASCII (decl + refs
@@ -154,9 +156,10 @@ observe this at runtime and were updated to match (not source bugs — expected 
 7. Assertion signatures (`asserts x`) and type predicates (`x is T`) rename with the parameter.
 8. Type parameters rename in lockstep — declaration and every reference of a `<T>` / mapped-type
    key / `infer` var become the same confusable. A name shared with a same-named outer type or
-   value (the `Validators` collision) renames everywhere to one confusable. A name appearing in
-   any modifier-annotated declaration (`in`/`out`/`const`) stays ASCII everywhere to avoid
-   slicing the modifier keyword (the wire.ts `const Value`/`const Class` case).
+   value (the `Validators` collision) renames everywhere to one confusable. A modifier-annotated
+   declaration (`in`/`out`/`const`) also renames: `typeParamNameStart` slices past the modifier
+   keyword so it survives while the name moves (the wire.ts `const Config`/`const Value`/`const
+Class` and errors.ts `<const T>` cases).
 9. Common-property-name locals (`error`, `value`, `message`, …) rename as ordinary bindings;
    member access (`obj.error`) and object keys stay ASCII via positional preservation.
 10. Non-exported enum names rename. Babel registers no scope binding for an enum, so it cannot
@@ -187,6 +190,66 @@ observe this at runtime and were updated to match (not source bugs — expected 
     that references a sibling member by bare name (`B = A << 1`) — `exposesEnumMemberAsString`
     handles the first two (value + type) via the prescan; the sibling-reference check runs in the
     collector gate (`E.A` member-access references are excluded — those rename in lockstep).
+
+11. ECMAScript private `#` fields and methods rename in lockstep, preserving the leading `#`.
+    Private names (`#renderer`, `#elm`, `#props`, `#map`, …) live in a per-class lexical namespace:
+    they are never a runtime string property, never emitted to `.d.ts`, and never observable
+    outside the class body, so renaming the declaration and every `this.#x` reference together is
+    safe. A `PrivateName` collector in Pass A2c gathers each private name into a file-global set,
+    and a dedicated `PrivateName` visitor in Pass B emits the slice. Babel positions the inner
+    `Identifier` (`PrivateName.id`) _after_ the `#`, so slicing `[id.start, id.end)` renames only
+    the name and leaves `#` intact. The value `Identifier` visitor early-returns for any identifier
+    under a `PrivateName` parent, so the two visitors never double-handle a node. Because
+    `transformIdentifier` is deterministic, the file-global name set (not per-class resolution)
+    keeps declaration and access in lockstep even when two classes in one file share a `#name`.
+    Found in `engine-core/src/framework/modules/context.ts`, `ssr-runtime/src/lightning-element.ts`,
+    `ssr-runtime/src/mutation-tracker.ts`, and `ssr-compiler/src/imports.ts`.
+
+12. TS `private` members of NON-EXPORTED classes rename in lockstep, scoped to the class node. A
+    `private` member is reachable only as `this.X` lexically inside its own class body (TS rejects
+    an outside `obj.X`); a class that is neither exported (inline, default, or via specifier — the
+    `exportedClassLocals` set) nor a `LightningElement` component appears in no `.d.ts` and binds to
+    no template, so renaming its declaration key plus every in-class `this.X` / `const {X}=this`
+    access is invisible externally. Unlike a `#`-field, `this.X` is syntactically identical to a
+    public access on another object, so the rename is keyed by the specific CLASS NODE
+    (`scopedPrivateMembersByClass: Map<ClassNode, Set<string>>`), never name-keyed alone. Pass A2d
+    collects each internal class's non-computed `private` `ClassMethod`/`ClassProperty`/
+    `ClassAccessorProperty` keys (skipping `GLOBAL_IDENTIFIERS` / `publicIdentifiers`, so a name
+    colliding with an exported member stays ASCII). A Pass A3b prescan drops a `(classNode, name)`
+    on any occurrence inside the class that is NOT one of the three covered forms — a same-name
+    access on a non-`this` object (`obj.X`), a computed `this['X']`, or a string/template literal
+    equal to the name — leaving it ASCII lockstep-safe (a bare reference resolving to its own
+    renameable scope binding, e.g. the local from `const {X}=this`, is not a member access and does
+    not trigger a drop). Emit: a `ClassMethod|ClassProperty|ClassAccessorProperty` visitor renames
+    the declaration key; the value `Identifier` visitor renames `this.X` and the `const {X}=this`
+    shorthand key (one token, so key + binding + later refs share the confusable) before the
+    member-position / shorthand early-returns; the `ObjectProperty` visitor bails on that shorthand
+    so it is not expanded. A `this.X` lexically inside a non-arrow `function`/object-method nested in
+    the class is NOT a member access — `this` rebinds at call time — so `enclosingScopedClass` stops
+    its parent walk at such a function boundary (arrow functions, class methods, and field
+    initializers keep the instance `this` and do not stop it). The prescan additionally DROPS the
+    whole member when an ambiguous `this.X` sits inside a rebinding function (its runtime `this` might
+    be the instance), leaving it ASCII everywhere rather than renaming the declaration while that
+    access cannot follow. `protected` is excluded — a `protected` member can be read via `this.X`
+    in a subclass body (a different class node), desyncing under node-scoped renaming. Renamed in
+    `engine-core/src/libs/signal-tracker/index.ts` (`signalToUnsubscribeMap`) and
+    `wire-service/src/index.ts` (`callback`, `wiredElementHost`, … — NOT the `protected eventTarget`,
+    read in a subclass). (`template-compiler/src/parser/attribute.ts`'s `ParsedAttribute` turned out
+    to be exported via specifier, so its members are correctly preserved.)
+
+## Future work
+
+**TS `private`/`protected` members of EXPORTED classes, and all `protected` members, stay ASCII.**
+A member of an exported class may be part of a cross-module contract; a `protected` member is
+reachable from a subclass body (a different class node), which node-scoped renaming would desync.
+Renaming either safely needs a cross-class / subclass-aware prescan or a TS type-checker pass to
+resolve each `this.X` access to its declaration (disqualifying any exported-class member, any
+`protected` member readable from a subclass, and any computed/string access). That is materially
+larger than the within-file, non-exported-class, private-only gap closed here and is deferred.
+
+**Object property keys, `this.X` on exported/component classes, and exported method names stay
+ASCII.** These are string-observable — runtime property reads, template binding, reflection, or
+cross-module contract — and cannot be proven internal without a type-aware resolver.
 
 ## Reproducing from scratch
 

@@ -210,6 +210,20 @@ function typeParamName(param) {
 }
 
 /**
+ * Returns the source offset where a type parameter's NAME begins. `TSTypeParameter` exposes its
+ * name as a plain string with no inner node, so when the param carries a modifier (`in`/`out`
+ * variance or `const`) `node.start` points at the modifier keyword, not the name. Consume a
+ * leading run of whole `const`/`in`/`out` keywords (each `\b`-anchored with trailing whitespace)
+ * from the source slice so the name slice clears the keyword; with no modifier this is `node.start`.
+ */
+function typeParamNameStart(tpNode, source) {
+    if (!(tpNode.in || tpNode.out || tpNode.const)) return tpNode.start;
+    const slice = source.slice(tpNode.start, tpNode.end);
+    const match = slice.match(/^(?:(?:const|in|out)\b\s+)+/);
+    return tpNode.start + (match ? match[0].length : 0);
+}
+
+/**
  * Determines whether a type-position identifier is the leftmost name of a construct the type
  * visitors rewrite (a `TSTypeReference`, `typeof` query, or heritage clause). Such occurrences
  * are "covered"; type occurrences that are NOT covered would desync from a renamed declaration
@@ -348,7 +362,7 @@ function collectIdentifierNames(node, out) {
  * type) are rewritten to the renamed local.
  */
 export function transformSource(ast, source, analysis) {
-    const { publicIdentifiers } = analysis;
+    const { publicIdentifiers, exportedClassLocals } = analysis;
     const replacements = [];
 
     // --- Pass A: classify value bindings ---------------------------------------------------
@@ -471,27 +485,160 @@ export function transformSource(ast, source, analysis) {
     // everywhere, so a file-global name set suffices to rename declarations and references in
     // lockstep; precise scope resolution is unnecessary.
     const typeParamNames = new Set();
-    // Names whose declaration carries a modifier (`in`/`out` variance or `const`). A modifier
-    // shifts node.start off the name onto the keyword, so the name slice would corrupt it. Since
-    // the rename set is name-keyed and file-global, a single modifier-bearing occurrence forces
-    // the whole name ASCII (declaration AND references) to keep them in lockstep.
-    const blockedTypeParamNames = new Set();
+
+    // ECMAScript private `#` member names (`#foo` fields/methods, `this.#foo` access). A private
+    // name lives in a per-class lexical namespace — never a runtime string property, never emitted
+    // to `.d.ts`, never observable externally — so renaming it is safe. Every occurrence is a
+    // `PrivateName` node, so a name-keyed file-global set keeps declaration and access in lockstep.
+    const privateNameNames = new Set();
 
     traverse(ast, {
         TSTypeParameter(path) {
             const node = path.node;
             const name = typeParamName(node);
             if (!name) return;
-            if (node.in || node.out || node.const) {
-                blockedTypeParamNames.add(name);
-                return;
-            }
             if (GLOBAL_IDENTIFIERS.has(name)) return;
             if (publicIdentifiers.has(name)) return;
             typeParamNames.add(name);
         },
+        PrivateName(path) {
+            const name = path.node.id?.name;
+            if (!name) return;
+            if (GLOBAL_IDENTIFIERS.has(name)) return;
+            privateNameNames.add(name);
+        },
     });
-    for (const n of blockedTypeParamNames) typeParamNames.delete(n);
+
+    // --- Pass A2d: TS `private` members of non-exported classes -----------------------------
+    // A `private` member of a class that is neither exported nor a LightningElement component is
+    // confined to its own file: TS forbids access from outside the class body, the class appears
+    // in no published `.d.ts`, and it is bound to no template. So renaming its declaration key plus
+    // every in-class `this.X` / `const {X}=this` access is invisible externally. Unlike a `#`-field
+    // (whose `this.#x` is syntactically distinct), `this.X` is identical to a public access on
+    // another object, so the rename is scoped to the specific class NODE — never name-keyed alone.
+    const scopedPrivateMembersByClass = new Map(); // ClassNode -> Set<string>
+    const scopedPrivateClasses = new Set(); // ClassNode
+
+    function extendsLightningElement(superClass) {
+        if (!superClass) return false;
+        if (superClass.type === 'Identifier') return superClass.name === 'LightningElement';
+        if (superClass.type === 'MemberExpression' && superClass.property?.type === 'Identifier') {
+            return superClass.property.name === 'LightningElement';
+        }
+        return false;
+    }
+
+    function isInternalClass(path) {
+        if (isExportedDecl(path)) return false;
+        const id = path.node.id;
+        if (id?.type === 'Identifier' && exportedClassLocals.has(id.name)) return false;
+        if (extendsLightningElement(path.node.superClass)) return false;
+        return true;
+    }
+
+    traverse(ast, {
+        'ClassDeclaration|ClassExpression'(path) {
+            if (!isInternalClass(path)) return;
+            const names = new Set();
+            for (const member of path.node.body.body) {
+                if (
+                    member.type !== 'ClassMethod' &&
+                    member.type !== 'ClassProperty' &&
+                    member.type !== 'ClassAccessorProperty'
+                ) {
+                    continue;
+                }
+                if (member.computed || member.accessibility !== 'private') continue;
+                if (member.key?.type !== 'Identifier') continue;
+                const name = member.key.name;
+                if (GLOBAL_IDENTIFIERS.has(name) || publicIdentifiers.has(name)) continue;
+                names.add(name);
+            }
+            if (names.size > 0) {
+                scopedPrivateMembersByClass.set(path.node, names);
+                scopedPrivateClasses.add(path.node);
+            }
+        },
+    });
+
+    // Resolves the nearest enclosing class node that is in `scopedPrivateClasses`, or null. The
+    // walk stops at a `this`-rebinding boundary — a non-arrow `function` expression/declaration or
+    // an object method — reached before the class: inside such a function `this` is whatever the
+    // function is called on, NOT the class instance, so a `this.X` there is not a member access and
+    // must not be treated as one. Arrow functions, class methods, and field initializers keep the
+    // lexical/instance `this`, so they do not stop the walk.
+    function enclosingScopedClass(path) {
+        const boundary = path.findParent(
+            (p) =>
+                p.isClassDeclaration() ||
+                p.isClassExpression() ||
+                p.isFunctionDeclaration() ||
+                p.isFunctionExpression() ||
+                p.isObjectMethod()
+        );
+        if (!boundary) return null;
+        if (!boundary.isClassDeclaration() && !boundary.isClassExpression()) return null;
+        return scopedPrivateClasses.has(boundary.node) ? boundary.node : null;
+    }
+
+    // The nearest enclosing scoped class IGNORING `this`-rebinding function boundaries. Used only by
+    // the prescan: a `this.X` that `enclosingScopedClass` rejects (because a non-arrow function
+    // rebinds `this`) but that lexically sits inside a scoped class declaring `X` is ambiguous — the
+    // function's runtime `this` MIGHT be the instance — so the member must be dropped, not renamed.
+    function rawEnclosingScopedClass(path) {
+        const classPath = path.findParent((p) => p.isClassDeclaration() || p.isClassExpression());
+        if (classPath && scopedPrivateClasses.has(classPath.node)) return classPath.node;
+        return null;
+    }
+
+    // Whether a path is a `this.X` non-computed member access whose `X` is a scoped private member.
+    function scopedThisMemberName(path) {
+        const { node, parent } = path;
+        if (
+            (parent?.type !== 'MemberExpression' && parent?.type !== 'OptionalMemberExpression') ||
+            parent.property !== node ||
+            parent.computed ||
+            parent.object?.type !== 'ThisExpression'
+        ) {
+            return null;
+        }
+        const classNode = enclosingScopedClass(path);
+        if (!classNode) return null;
+        return scopedPrivateMembersByClass.get(classNode).has(node.name) ? classNode : null;
+    }
+
+    // Whether a path is the key of an object-pattern shorthand destructuring `this` (`const {X}=this`)
+    // whose `X` is a scoped private member of the enclosing class.
+    function scopedThisPatternName(path) {
+        const { node, parent } = path;
+        if (parent?.type !== 'ObjectProperty' || !parent.shorthand || parent.key !== node) {
+            return null;
+        }
+        const objPattern = path.parentPath?.parent;
+        if (objPattern?.type !== 'ObjectPattern') return null;
+        const declarator = path.parentPath?.parentPath?.parent;
+        if (
+            declarator?.type !== 'VariableDeclarator' ||
+            declarator.init?.type !== 'ThisExpression'
+        ) {
+            return null;
+        }
+        const classNode = enclosingScopedClass(path);
+        if (!classNode) return null;
+        return scopedPrivateMembersByClass.get(classNode).has(node.name) ? classNode : null;
+    }
+
+    // In a shorthand `const {X}=this`, Babel stores distinct key and value Identifier nodes at the
+    // same source span. `scopedThisPatternName` matches only the KEY (so emit renames the single
+    // token once); the prescan must also recognize the VALUE node — the introduced binding — as
+    // covered, else it would treat it as an uncovered occurrence and drop the member.
+    function isScopedThisPatternValue(path) {
+        const { node, parent } = path;
+        if (parent?.type !== 'ObjectProperty' || !parent.shorthand || parent.value !== node) {
+            return false;
+        }
+        return !!scopedThisPatternName(path.parentPath.get('key'));
+    }
 
     function resolvesToRenameableValue(path, name) {
         const binding = path.scope.getBinding(name);
@@ -606,6 +753,83 @@ export function transformSource(ast, source, analysis) {
     for (const n of unsafeEnumNames) memberRenameableEnumNames.delete(n);
     for (const n of unsafeEnumMemberNames) memberRenameableEnumNames.delete(n);
 
+    // --- Pass A3b: scoped-private-member coverage prescan -----------------------------------
+    // Only three occurrence forms of a scoped private member rename in lockstep: the member-key
+    // declaration, a non-computed `this.X`, and a `const {X}=this` shorthand key. Any OTHER
+    // occurrence of that name lexically inside its class — a same-name access on a different object
+    // (`obj.X`), a computed `this['X']`, or a string/template literal equal to the name — could
+    // desync from the renamed declaration, so drop that `(classNode, name)` and leave it ASCII.
+    function dropScopedMember(classNode, name) {
+        const set = scopedPrivateMembersByClass.get(classNode);
+        if (set) set.delete(name);
+    }
+    // Whether a path is the property of a non-computed `this.X` member access (`X === node`),
+    // regardless of any `this`-rebinding function boundary between it and a class.
+    function isSyntacticThisMember(path) {
+        const { node, parent } = path;
+        return (
+            (parent?.type === 'MemberExpression' || parent?.type === 'OptionalMemberExpression') &&
+            parent.property === node &&
+            !parent.computed &&
+            parent.object?.type === 'ThisExpression'
+        );
+    }
+    traverse(ast, {
+        Identifier(path) {
+            const { node, parent } = path;
+            const name = node.name;
+            const classNode = enclosingScopedClass(path);
+            if (!classNode) {
+                // A `this.X` sitting inside a `this`-rebinding function (so `enclosingScopedClass`
+                // bailed) but lexically within a scoped class declaring `X` is ambiguous: that
+                // function's runtime `this` might be the instance. Drop the member to stay ASCII
+                // everywhere rather than rename the declaration while this access cannot follow.
+                if (isSyntacticThisMember(path)) {
+                    const rawClass = rawEnclosingScopedClass(path);
+                    if (rawClass && scopedPrivateMembersByClass.get(rawClass).has(name)) {
+                        dropScopedMember(rawClass, name);
+                    }
+                }
+                return;
+            }
+            if (!scopedPrivateMembersByClass.get(classNode).has(name)) return;
+            // The member-key declaration is covered.
+            if (
+                (parent?.type === 'ClassMethod' ||
+                    parent?.type === 'ClassProperty' ||
+                    parent?.type === 'ClassAccessorProperty') &&
+                parent.key === node &&
+                !parent.computed
+            ) {
+                return;
+            }
+            if (scopedThisMemberName(path)) return; // non-computed `this.X` is covered
+            if (scopedThisPatternName(path)) return; // `const {X}=this` shorthand key is covered
+            if (isScopedThisPatternValue(path)) return; // its shorthand value node is covered too
+            // A bare reference that resolves to its own renameable scope binding (e.g. the local
+            // introduced by `const {X}=this`, or any same-named local/param) is NOT a member
+            // access — the value path renames it independently, to the same confusable by
+            // determinism — so it never desyncs the member and must not trigger a drop.
+            if (resolvesToRenameableValue(path, name)) return;
+            dropScopedMember(classNode, name);
+        },
+        'StringLiteral|TemplateElement'(path) {
+            const value =
+                path.node.type === 'StringLiteral' ? path.node.value : path.node.value?.cooked;
+            if (value == null) return;
+            const classNode = enclosingScopedClass(path);
+            if (!classNode) return;
+            if (scopedPrivateMembersByClass.get(classNode).has(value)) {
+                dropScopedMember(classNode, value);
+            }
+        },
+    });
+    for (const classNode of scopedPrivateClasses) {
+        if (scopedPrivateMembersByClass.get(classNode).size === 0) {
+            scopedPrivateClasses.delete(classNode);
+        }
+    }
+
     function resolvesToRenameableType(path, name) {
         if (GLOBAL_IDENTIFIERS.has(name)) return false;
         if (resolvesToRenameableValue(path, name)) return true;
@@ -625,7 +849,8 @@ export function transformSource(ast, source, analysis) {
     }
 
     // Renames a type-parameter declaration. The name is a plain string on the node, so the slice
-    // is `[start, start + name.length)`; the `extends`/`default` clause that follows (covered by
+    // is `[nameStart, nameStart + name.length)` where `nameStart` clears any leading modifier
+    // keyword (`const`/`in`/`out`); the `extends`/`default` clause that follows (covered by
     // node.end) is left untouched.
     function pushRenameTypeParam(tpNode) {
         const name = typeParamName(tpNode);
@@ -633,9 +858,10 @@ export function transformSource(ast, source, analysis) {
         if (!typeParamNames.has(name)) return; // dropped by the coverage prescan, or guarded out
         const target = transformIdentifier(name);
         if (target === name) return;
+        const nameStart = typeParamNameStart(tpNode, source);
         replacements.push({
-            start: tpNode.start,
-            end: tpNode.start + name.length,
+            start: nameStart,
+            end: nameStart + name.length,
             text: target,
         });
     }
@@ -746,6 +972,13 @@ export function transformSource(ast, source, analysis) {
         ObjectProperty(path) {
             if (!path.node.shorthand) return;
 
+            // A `const {X}=this` shorthand whose key is a scoped private member is renamed as a
+            // single token by the Identifier visitor (key and binding share one source position),
+            // so the generic key-preserving expansion must NOT run here — it would strand the key.
+            if (path.node.key?.type === 'Identifier' && scopedThisPatternName(path.get('key'))) {
+                return;
+            }
+
             const valueNode = path.node.value;
             let idNode = null;
             if (valueNode.type === 'Identifier') {
@@ -786,6 +1019,17 @@ export function transformSource(ast, source, analysis) {
 
             // Private name (`this.#foo`, `#foo` declaration): a class member in its own namespace.
             if (parent?.type === 'PrivateName') {
+                return;
+            }
+
+            // A scoped private member accessed as `this.X` (a preserved member position) or as a
+            // `const {X}=this` shorthand key (otherwise routed to the ObjectProperty visitor) must
+            // rename in lockstep with its declaration. Handle both here — before the member-position
+            // and shorthand early-returns below — scoped to the specific class node. For the
+            // shorthand, key === value is one source token, so a single slice renames the property
+            // name and the introduced binding together (determinism keeps later binding refs aligned).
+            if (scopedThisMemberName(path) || scopedThisPatternName(path)) {
+                pushRename(node);
                 return;
             }
 
@@ -859,6 +1103,32 @@ export function transformSource(ast, source, analysis) {
         // ride the TSTypeReference path via resolvesToRenameableType.
         TSTypeParameter(path) {
             pushRenameTypeParam(path.node);
+        },
+
+        // Rename a scoped private member's declaration key (`private X` / `private X()`). The key
+        // is a preserved member position for the Identifier visitor, so it is renamed here instead.
+        // `this.X` accesses rename via the Identifier visitor's scoped-private branch in lockstep.
+        'ClassMethod|ClassProperty|ClassAccessorProperty'(path) {
+            const { node } = path;
+            if (node.computed || node.key?.type !== 'Identifier') return;
+            const classPath = path.findParent(
+                (p) => p.isClassDeclaration() || p.isClassExpression()
+            );
+            if (!classPath || !scopedPrivateClasses.has(classPath.node)) return;
+            if (scopedPrivateMembersByClass.get(classPath.node).has(node.key.name)) {
+                pushRename(node.key);
+            }
+        },
+
+        // Rename private `#` member declarations and `this.#foo` access in lockstep. The inner
+        // Identifier starts after the `#` (the leading `#` is part of the PrivateName, not the
+        // Identifier), so slicing `[id.start, id.end)` renames the name and leaves `#` intact.
+        PrivateName(path) {
+            const id = path.node.id;
+            if (id?.type !== 'Identifier' || !privateNameNames.has(id.name)) return;
+            const target = transformIdentifier(id.name);
+            if (target === id.name) return;
+            replacements.push({ start: id.start, end: id.end, text: target });
         },
 
         // Rename type-alias / interface declaration names.

@@ -338,20 +338,54 @@ describe('confusables transformer', () => {
         );
     });
 
-    // Bug class: a private field reference (`this.#x`) shares a name with a renameable local
-    // (constructor param), and getBinding wrongly resolves the private name to it (context.ts).
-    it('never renames a private class field even when a same-named local exists', () => {
+    // GAP C: a private `#` field renames in lockstep across declaration and every `this.#x`
+    // access, with the leading `#` preserved. The inner identifier shares a name with a renameable
+    // local (constructor param); both rename to the same confusable (transformIdentifier is a pure
+    // function of the bare name), and no ASCII occurrence survives.
+    it('renames a private class field declaration and access in lockstep, preserving `#`', () => {
         const out = run(
             `class C {\n  #providedContextVarieties;\n` +
                 `  constructor(providedContextVarieties) {\n` +
                 `    this.#providedContextVarieties = providedContextVarieties;\n  }\n}`
         );
         assertParses(out);
-        // The `#field` declaration and `this.#field` use must remain identical.
-        const decls = (out.match(/#providedContextVarieties\b/g) || []).length;
-        assert.equal(decls, 2); // declaration + this.#field use
-        // The constructor param (a real local) is still renamed.
-        assert.doesNotMatch(out, /constructor\(providedContextVarieties\)/);
+        // No ASCII occurrence of the name survives anywhere (field, access, or param).
+        assert.doesNotMatch(out, /providedContextVarieties/);
+        // The private declaration and `this.#x` access rename to the same confusable, with `#`.
+        const priv = out.match(/#(\S+);/)[1];
+        const privCount = (out.match(new RegExp(`#${rx(priv)}`, 'g')) || []).length;
+        assert.equal(privCount, 2); // `#field` declaration + `this.#field` access
+        // The constructor param renames to the same confusable (pure function of the bare name).
+        assert.match(out, new RegExp(`constructor\\(${rx(priv)}\\)`));
+    });
+
+    // GAP C: a private `#` method renames at its declaration and every `this.#m()` call site.
+    it('renames a private method and its call sites in lockstep', () => {
+        const out = run(
+            `class C {\n  #computeLayout() { return 1; }\n` +
+                `  run() { return this.#computeLayout() + this.#computeLayout(); }\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /computeLayout/);
+        const m = out.match(/#(\S+)\(\)/)[1];
+        const count = (out.match(new RegExp(`#${rx(m)}`, 'g')) || []).length;
+        assert.equal(count, 3); // declaration + two call sites
+    });
+
+    // GAP C: a private `#x` and a same-named public `obj.x` are independent. The private name
+    // renames; the public member access stays ASCII (a preserved member position).
+    it('renames a private field without touching a same-named public member access', () => {
+        const out = run(
+            `class C {\n  #status = 1;\n` + `  sync(obj) { obj.status = this.#status; }\n}`
+        );
+        assertParses(out);
+        // Public member access stays ASCII.
+        assert.match(out, /\.status\b/);
+        // Private name renamed, `#` preserved, declaration + access in lockstep.
+        const priv = out.match(/#(\S+) =/)[1];
+        assert.notEqual(priv, 'status');
+        const privCount = (out.match(new RegExp(`#${rx(priv)}`, 'g')) || []).length;
+        assert.equal(privCount, 2);
     });
 
     // Bug class: a class is a value binding referenced from type space (signal-tracker). The
@@ -520,37 +554,69 @@ describe('confusables transformer', () => {
         assert.equal(run(src), run(src));
     });
 
-    // A `const` (or `in`/`out`) modifier shifts the type-param node's start onto the keyword, so
-    // the name slice would corrupt it — such params are left ASCII (declaration and references).
-    it('leaves a const-modifier type parameter ASCII to avoid corrupting the keyword', () => {
+    // A `const`/`in`/`out` modifier shifts the type-param node's start onto the keyword. The name
+    // slice clears the keyword, so the modifier survives intact while the NAME renames in lockstep
+    // with its references.
+    it('renames a const-modifier type parameter while preserving the keyword', () => {
         const out = run(
             `function f<const T extends readonly unknown[]>(x: T): T {\n  return x;\n}`
         );
         assertParses(out);
-        assert.match(out, /<const T extends readonly unknown\[\]>/);
-        // References stay ASCII in lockstep with the preserved declaration.
-        assert.match(out, /\(\S+: T\): T/);
+        assert.doesNotMatch(out, /\bconst T\b/);
+        const renamed = out.match(/<const (\S+) extends/)[1];
+        assert.notEqual(renamed, 'T');
+        // The `const ` keyword is intact and the name + both references became the same confusable.
+        assert.match(out, new RegExp(`<const ${rx(renamed)} extends readonly unknown\\[\\]>`));
+        assert.match(out, new RegExp(`\\(\\S+: ${rx(renamed)}\\): ${rx(renamed)}`));
     });
 
-    // Regression for wire.ts/errors.ts: a name used as a const-modifier param AND as an ordinary
-    // (non-const) type parameter elsewhere in the file. The ordinary occurrence would otherwise
-    // pull the name into the rename set, and emitting on the const-modified declaration slices at
-    // the modifier keyword — corrupting `const` into a doubled token. The whole name must stay
-    // ASCII (every declaration and reference) when any declaration carries a modifier.
-    it('leaves a modifier-shared type-param name ASCII across all its occurrences', () => {
+    it('renames an `in` / `out` variance-modified type parameter, keyword intact', () => {
+        const inOut = run(`interface Box<in T> {\n  set(v: T): void;\n}`);
+        assertParses(inOut);
+        assert.doesNotMatch(inOut, /\bin T\b/);
+        const inName = inOut.match(/<in (\S+)>/)[1];
+        assert.notEqual(inName, 'T');
+        assert.match(inOut, new RegExp(`<in ${rx(inName)}>`));
+        assert.match(inOut, new RegExp(`set\\(\\S+: ${rx(inName)}\\)`));
+
+        const outOut = run(`interface Box<out T> {\n  get(): T;\n}`);
+        assertParses(outOut);
+        assert.doesNotMatch(outOut, /\bout T\b/);
+        const outName = outOut.match(/<out (\S+)>/)[1];
+        assert.notEqual(outName, 'T');
+        assert.match(outOut, new RegExp(`<out ${rx(outName)}>`));
+        assert.match(outOut, new RegExp(`get\\(\\): ${rx(outName)}`));
+    });
+
+    // A single-character name (`n`) inside a `const`-modified param: the keyword-clearing slice
+    // must anchor on the whole `const` keyword (\\b + trailing space), never on the `n` inside it.
+    it('renames a single-char const-modifier type param without touching the keyword', () => {
+        const out = run(`function f<const n>(x: n): n {\n  return x;\n}`);
+        assertParses(out);
+        const renamed = out.match(/<const (\S+)>/)[1];
+        assert.notEqual(renamed, 'n');
+        // `const` keyword preserved verbatim; only the param name renamed.
+        assert.match(out, new RegExp(`<const ${rx(renamed)}>`));
+        assert.match(out, new RegExp(`\\(\\S+: ${rx(renamed)}\\): ${rx(renamed)}`));
+    });
+
+    // A name used as a const-modifier param AND as an ordinary (non-const) type parameter elsewhere
+    // in the file renames everywhere to the one confusable; the modifier keyword survives.
+    it('renames a modifier-shared type-param name across all its occurrences', () => {
         const out = run(
             `interface Box<Value> {\n  v: Value;\n}\n` +
                 `function make<const Value = unknown>(x: Value): Box<Value> {\n  return { v: x };\n}`
         );
         assertParses(out);
-        // const-modified declaration: keyword intact, name untouched.
-        assert.match(out, /<const Value = unknown>/);
-        // The ordinary declaration's parameter and every `Value` reference also stay ASCII — no
-        // desync. (`Box`/`make`/`x` rename freely; only `Value` is forced ASCII by the modifier.)
-        assert.match(out, /interface \S+<Value>/);
-        assert.match(out, /\(\S+: Value\): \S+<Value>/);
-        assert.match(out, /v: Value;/);
-        assert.doesNotMatch(out, /Value\s+Value/);
+        assert.doesNotMatch(out, /\bValue\b/);
+        const renamed = out.match(/<const (\S+) = unknown>/)[1];
+        assert.notEqual(renamed, 'Value');
+        // const-modified declaration: keyword intact, name renamed.
+        assert.match(out, new RegExp(`<const ${rx(renamed)} = unknown>`));
+        // The ordinary declaration's parameter and every reference rename to the same confusable.
+        assert.match(out, new RegExp(`<${rx(renamed)}>`));
+        assert.match(out, new RegExp(`\\(\\S+: ${rx(renamed)}\\): \\S+<${rx(renamed)}>`));
+        assert.match(out, new RegExp(`v: ${rx(renamed)};`));
     });
 
     // --- Common-property-name local renaming (GAP A) ----------------------------------------
@@ -772,5 +838,171 @@ describe('confusables transformer', () => {
     it('is idempotent / deterministic', () => {
         const src = `function f() { const aValue = 1; return aValue; }`;
         assert.equal(run(src), run(src));
+    });
+
+    // --- TS `private` members of non-exported classes (GAP D) -------------------------------
+
+    // A `private` method of a non-exported class is unreachable outside the class body and lives in
+    // no `.d.ts`; the declaration key and every `this.X` access rename in lockstep, `private` intact.
+    it('renames a private method of a non-exported class and its this.X access', () => {
+        const out = run(
+            `class Internal {\n  private callback() { return 1; }\n  run() { return this.callback(); }\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bcallback\b/);
+        const renamed = out.match(/private (\S+)\(\)/)[1];
+        assert.notEqual(renamed, 'callback');
+        assert.match(out, new RegExp(`private ${rx(renamed)}\\(\\)`));
+        assert.match(out, new RegExp(`this\\.${rx(renamed)}\\(\\)`));
+        const refs = (out.match(new RegExp(rx(renamed), 'g')) || []).length;
+        assert.equal(refs, 2); // declaration + one access
+    });
+
+    it('renames a private field of a non-exported class and its this.X read', () => {
+        const out = run(
+            `class Internal {\n  private count = 0;\n  read() { return this.count; }\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bcount\b/);
+        const renamed = out.match(/private (\S+) =/)[1];
+        assert.match(out, new RegExp(`this\\.${rx(renamed)}\\b`));
+    });
+
+    // `const { X } = this` shorthand: key and the introduced binding are one source token, so a
+    // single rename covers the destructured key, the binding, and its later reference.
+    it('renames a private member destructured via `const {X}=this` shorthand in lockstep', () => {
+        const out = run(
+            `class Internal {\n  private callback = () => 1;\n  run() {\n    const { callback } = this;\n    return callback();\n  }\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bcallback\b/);
+        const renamed = out.match(/private (\S+) =/)[1];
+        // The destructuring stays shorthand (one token) — no `callback: X` expansion stranding it.
+        assert.match(out, new RegExp(`const \\{ ${rx(renamed)} \\} = this`));
+        assert.match(out, new RegExp(`return ${rx(renamed)}\\(\\)`));
+    });
+
+    // A public member of an exported class stays ASCII (cross-module contract) while a distinct
+    // private member of an internal class renames — the two are independent.
+    it('leaves an exported class member ASCII while renaming an internal private member', () => {
+        const out = run(
+            `export class Public {\n  publicFn() { return this.publicFn; }\n}\n` +
+                `class Internal {\n  private secret() { return 1; }\n  run() { return this.secret(); }\n}`
+        );
+        assertParses(out);
+        // Exported class member preserved (template/cross-module contract).
+        assert.match(out, /\bpublicFn\(\) \{ return this\.publicFn; \}/);
+        // Internal private member renamed in lockstep.
+        assert.doesNotMatch(out, /\bsecret\b/);
+        const renamed = out.match(/private (\S+)\(\)/)[1];
+        assert.match(out, new RegExp(`this\\.${rx(renamed)}\\(\\)`));
+    });
+
+    // A name shared with an exported class member is excluded from the internal scoped set
+    // (`publicIdentifiers` is name-keyed and file-global), so it stays ASCII everywhere — the
+    // conservative choice when a private name collides with a public contract name.
+    it('leaves an internal private member ASCII when its name collides with an exported member', () => {
+        const out = run(
+            `export class Public {\n  callback() { return this.callback; }\n}\n` +
+                `class Internal {\n  private callback() { return 1; }\n  run() { return this.callback(); }\n}`
+        );
+        assertParses(out);
+        assert.match(out, /\bcallback\(\) \{ return this\.callback; \}/);
+        assert.match(out, /private callback\(\)/);
+        assert.match(out, /return this\.callback\(\)/);
+    });
+
+    // A same-named access on a different object (`other.callback`) inside the class is NOT a
+    // `this.X` access, so it cannot be proven to be the private member — the prescan drops the
+    // member, leaving it ASCII everywhere to stay lockstep-safe.
+    it('drops a private member when a same-name access occurs on a non-this object', () => {
+        const out = run(
+            `class Internal {\n  private callback() { return 1; }\n  run(other: any) { return other.callback; }\n}`
+        );
+        assertParses(out);
+        // The member is dropped, so its name stays ASCII at the decl and at the `.callback` access.
+        assert.match(out, /private callback\(\)/);
+        assert.match(out, /\.callback\b/);
+    });
+
+    // A computed `this['callback']` exposes the member name as a string literal, so the prescan's
+    // string-literal drop fires and the member stays ASCII everywhere (decl + `this.callback`).
+    it('drops a private member read by computed this[...] string access', () => {
+        const out = run(
+            `class Internal {\n  private callback() { return 1; }\n  run() { return this['callback'] === this.callback; }\n}`
+        );
+        assertParses(out);
+        assert.match(out, /private callback\(\)/);
+        assert.match(out, /this\['callback'\]/);
+        assert.match(out, /this\.callback/);
+    });
+
+    it('drops a private member exposed as a string literal inside the class', () => {
+        const out = run(
+            `class Internal {\n  private callback() { return 1; }\n  run() { return 'callback' in this; }\n}`
+        );
+        assertParses(out);
+        assert.match(out, /private callback\(\)/);
+        assert.match(out, /'callback' in this/);
+    });
+
+    // Two non-exported classes each declaring `private callback`: node-scoped, so each renames
+    // independently — and because the mapping is deterministic, both land on the same confusable.
+    it('renames same-named private members of two internal classes independently', () => {
+        const out = run(
+            `class A {\n  private callback() { return 1; }\n  run() { return this.callback(); }\n}\n` +
+                `class B {\n  private callback() { return 2; }\n  go() { return this.callback(); }\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bcallback\b/);
+        const renamed = out.match(/private (\S+)\(\)/)[1];
+        const decls = (out.match(/private (\S+)\(\)/g) || []).length;
+        assert.equal(decls, 2);
+        assert.match(out, new RegExp(`this\\.${rx(renamed)}\\(\\)`));
+    });
+
+    // A class exported via a separate specifier (`export { Klass }`) is in `exportedClassLocals`,
+    // so its private members are treated as a potential contract and left ASCII.
+    it('leaves private members of a specifier-exported class ASCII', () => {
+        const out = run(
+            `class Klass {\n  private callback() { return 1; }\n  run() { return this.callback(); }\n}\n` +
+                `export { Klass };`
+        );
+        assertParses(out);
+        assert.match(out, /private callback\(\)/);
+        assert.match(out, /this\.callback\(\)/);
+    });
+
+    it('is idempotent on a non-exported class private member', () => {
+        const src = `class Internal {\n  private callback() { return 1; }\n  run() { return this.callback(); }\n}`;
+        assert.equal(run(src), run(src));
+    });
+
+    // A non-arrow `function () {}` rebinds `this` at call time, so a `this.X` inside it does NOT
+    // reference the class instance. The member must NOT rename through that access; the prescan
+    // sees an uncovered occurrence and drops the member, leaving it ASCII everywhere (lockstep-safe).
+    it('drops a private member accessed via this inside a nested non-arrow function', () => {
+        const out = run(
+            `class Internal {\n  private callback() { return 1; }\n  run() {\n    const fn = function () { return this.callback(); };\n    return fn.call(this) + this.callback();\n  }\n}`
+        );
+        assertParses(out);
+        // The ambiguous rebinding-`this` access forces the whole member ASCII (decl + both accesses)
+        // — renaming the declaration while that access cannot follow would desync at runtime.
+        assert.match(out, /private callback\(\)/);
+        const accesses = (out.match(/this\.callback\(\)/g) || []).length;
+        assert.equal(accesses, 2);
+    });
+
+    // An arrow function preserves the lexical (instance) `this`, so `this.X` inside it IS a member
+    // access and renames in lockstep with the declaration.
+    it('renames a private member accessed via this inside a nested arrow function', () => {
+        const out = run(
+            `class Internal {\n  private callback() { return 1; }\n  run() {\n    const fn = () => this.callback();\n    return fn() + this.callback();\n  }\n}`
+        );
+        assertParses(out);
+        assert.doesNotMatch(out, /\bcallback\b/);
+        const renamed = out.match(/private (\S+)\(\)/)[1];
+        const accesses = (out.match(new RegExp(`this\\.${rx(renamed)}\\(\\)`, 'g')) || []).length;
+        assert.equal(accesses, 2);
     });
 });
