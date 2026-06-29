@@ -5,15 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 const {
-    addEventListener: windowAddEventListener,
-    removeEventListener: windowRemoveEventListener,
-    getComputedStyle: windowGetComputedStyle,
-    getSelection: windowGetSelection,
+    addEventListener: ẇіņḋоẉΑԁɗΕvеņṫLɩṡtёṅеŗ,
+    removeEventListener: ẉıпɗοwŖėmөvеЁvеņṫLɩṡtёṅеŗ,
+    getComputedStyle: wıņԁοẉGėţСоṃρυţėԁŞṫуļė,
+    getSelection: ẇɩпḋөwĠёtṠеļėсţıоņ,
 } = window;
 
 export {
-    windowAddEventListener,
-    windowGetComputedStyle,
-    windowGetSelection,
-    windowRemoveEventListener,
+    ẇіņḋоẉΑԁɗΕvеņṫLɩṡtёṅеŗ as windowAddEventListener,
+    wıņԁοẉGėţСоṃρυţėԁŞṫуļė as windowGetComputedStyle,
+    ẇɩпḋөwĠёtṠеļėсţıоņ as windowGetSelection,
+    ẉıпɗοwŖėmөvеЁvеņṫLɩṡtёṅеŗ as windowRemoveEventListener,
 };

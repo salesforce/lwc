@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { defineProperty } from '@lwc/shared';
+import { defineProperty as ɗėfɩṅеṖṙоṗеṙţу } from '@lwc/shared';
 
 /**
  * The following constructor might be used in either the constructor or the connectedCallback. In
@@ -17,7 +17,7 @@ import { defineProperty } from '@lwc/shared';
 if (typeof Event !== 'function') {
     class Event {}
 
-    defineProperty(globalThis, 'Event', {
+    ɗėfɩṅеṖṙоṗеṙţу(globalThis, 'Event', {
         value: Event,
         configurable: true,
         writable: true,
@@ -26,7 +26,7 @@ if (typeof Event !== 'function') {
 if (typeof CustomEvent !== 'function') {
     class CustomEvent extends Event {}
 
-    defineProperty(globalThis, 'CustomEvent', {
+    ɗėfɩṅеṖṙоṗеṙţу(globalThis, 'CustomEvent', {
         value: CustomEvent,
         configurable: true,
         writable: true,

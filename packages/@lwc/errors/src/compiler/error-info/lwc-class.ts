@@ -4,77 +4,81 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { DiagnosticLevel, type LWCErrorInfo } from '../../shared/types';
+import {
+    DiagnosticLevel as ÐıаģṅоşṫіⅽḶёνėļ,
+    type LWCErrorInfo as ḶẈСΕŗгοŗІṅfο,
+} from '../../shared/types';
 
 /*
  * For the next available error code, reference (and update!) the value in ./index.ts
  */
 
-export const LWCClassErrors = {
+const ĻWϹⅭӏɑşѕΕŗгөṙѕ = {
     INVALID_DYNAMIC_IMPORT_SOURCE_STRICT: {
         code: 1121,
         message:
             'Invalid import. The argument "{0}" must be a stringLiteral for dynamic imports when strict mode is enabled.',
         url: 'https://lwc.dev/guide/error_codes#lwc1121',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
     },
-} as const satisfies Record<string, LWCErrorInfo>;
+} as const satisfies Record<string, ḶẈСΕŗгοŗІṅfο>;
+export { ĻWϹⅭӏɑşѕΕŗгөṙѕ as LWCClassErrors };
 
-export const DecoratorErrors = {
+const ÐėсөṙаţοгЁṙгөṙѕ = {
     ADAPTER_SHOULD_BE_FIRST_PARAMETER: {
         code: 1092,
         message:
             '@wire expects an adapter as first parameter. @wire(adapter: WireAdapter, config?: any).',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1092',
     },
 
     API_AND_TRACK_DECORATOR_CONFLICT: {
         code: 1093,
         message: '@api method or property cannot be used with @track',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1093',
     },
 
     CONFIG_OBJECT_SHOULD_BE_SECOND_PARAMETER: {
         code: 1094,
         message: '@wire expects a configuration object expression as second parameter.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1094',
     },
 
     CONFLICT_WITH_ANOTHER_DECORATOR: {
         code: 1095,
         message: '@wire method or property cannot be used with @{0}',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1095',
     },
 
     DUPLICATE_API_PROPERTY: {
         code: 1096,
         message: 'Duplicate @api property "{0}".',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1096',
     },
 
     FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER: {
         code: 1097,
         message: '@wire expects a function identifier as first parameter.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1097',
     },
 
     IMPORTED_FUNCTION_IDENTIFIER_SHOULD_BE_FIRST_PARAMETER: {
         code: 1098,
         message: '@wire expects a function identifier to be imported as first parameter.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     INVALID_BOOLEAN_PUBLIC_PROPERTY: {
         code: 1099,
         message: 'Boolean public property must default to false.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1099',
     },
 
@@ -82,14 +86,14 @@ export const DecoratorErrors = {
         code: 1100,
         message:
             'Invalid decorator usage. Supported decorators ({0}) should be imported from "{1}"',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     INVALID_DECORATOR_TYPE: {
         code: 1101,
         message: 'Invalid property of field type',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
@@ -97,35 +101,35 @@ export const DecoratorErrors = {
         code: 1102,
         message:
             'Invalid \'{0}\' decorator usage. Supported decorators ({1}) should be imported from "{2}"',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     IS_NOT_CLASS_PROPERTY_OR_CLASS_METHOD: {
         code: 1103,
         message: '"@{0}" can only be applied on class properties',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     IS_NOT_DECORATOR: {
         code: 1104,
         message: '"{0}" can only be used as a class decorator',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     ONE_WIRE_DECORATOR_ALLOWED: {
         code: 1105,
         message: 'Method or property can only have 1 @wire decorator',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1105',
     },
 
     PROPERTY_CANNOT_BE_COMPUTED: {
         code: 1106,
         message: '@api cannot be applied to a computed property, getter, setter or method.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1106',
     },
 
@@ -133,7 +137,7 @@ export const DecoratorErrors = {
         code: 1107,
         message:
             'Invalid property name "{0}". Properties starting with "data" are reserved attributes.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1107',
     },
 
@@ -141,7 +145,7 @@ export const DecoratorErrors = {
         code: 1108,
         message:
             'Invalid property name "{0}". Properties starting with "on" are reserved for event handlers.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1108',
     },
 
@@ -149,14 +153,14 @@ export const DecoratorErrors = {
         code: 1109,
         message:
             'Ambiguous attribute name "{0}". "{0}" will never be called from template because its corresponding property is camel cased. Consider renaming to "{1}".',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1109',
     },
 
     PROPERTY_NAME_IS_RESERVED: {
         code: 1110,
         message: 'Invalid property name "{0}". "{0}" is a reserved attribute.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1110',
     },
 
@@ -164,7 +168,7 @@ export const DecoratorErrors = {
         code: 1111,
         message:
             'Invalid property name "{0}". "part" is a future reserved attribute for web components.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1111',
     },
 
@@ -172,35 +176,35 @@ export const DecoratorErrors = {
         code: 1112,
         message:
             '@api get {0} and @api set {0} detected in class declaration. Only one of the two needs to be decorated with @api.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1112',
     },
 
     TRACK_ONLY_ALLOWED_ON_CLASS_PROPERTIES: {
         code: 1113,
         message: '@track decorator can only be applied to class properties.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     WIRE_ADAPTER_SHOULD_BE_IMPORTED: {
         code: 1119,
         message: 'Failed to resolve @wire adapter "{0}". Ensure it is imported.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: '',
     },
 
     FUNCTION_IDENTIFIER_CANNOT_HAVE_COMPUTED_PROPS: {
         code: 1131,
         message: '@wire identifier cannot contain computed properties',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1131',
     },
 
     FUNCTION_IDENTIFIER_CANNOT_HAVE_NESTED_MEMBER_EXRESSIONS: {
         code: 1132,
         message: '@wire identifier cannot contain nested member expressions',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1132',
     },
 
@@ -208,14 +212,14 @@ export const DecoratorErrors = {
         code: 1199,
         message:
             'Cannot use a template literal as a computed property key. Instead, use a string or extract the value to a constant.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1199',
     },
 
     COMPUTED_PROPERTY_MUST_BE_CONSTANT_OR_LITERAL: {
         code: 1200,
         message: 'Computed property in @wire config must be a constant or primitive literal.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1200',
     },
 
@@ -223,14 +227,15 @@ export const DecoratorErrors = {
         code: 1212,
         message:
             'Decorators cannot be applied to private methods. Private methods are not part of the component API.',
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1212',
     },
 
     PRIVATE_METHOD_NAME_COLLISION: {
         code: 1213,
         message: "Method '{0}' cannot start with reserved prefix `__lwc_`.",
-        level: DiagnosticLevel.Error,
+        level: ÐıаģṅоşṫіⅽḶёνėļ.Error,
         url: 'https://lwc.dev/guide/error_codes#lwc1213',
     },
-} as const satisfies Record<string, LWCErrorInfo>;
+} as const satisfies Record<string, ḶẈСΕŗгοŗІṅfο>;
+export { ÐėсөṙаţοгЁṙгөṙѕ as DecoratorErrors };

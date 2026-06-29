@@ -4,38 +4,42 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { type LWCErrorInfo, generateCompilerError } from '@lwc/errors';
-import type { BaseNodeWithoutComments } from 'estree';
+import {
+    type LWCErrorInfo as ḶẈСΕŗгοŗІṅfο,
+    generateCompilerError as ġеņėгαṫеⅭοṁрɩḷеŗΕгŗοг,
+} from '@lwc/errors';
+import type { BaseNodeWithoutComments as ΒаşėΝөḋеẈıtḣөυṫⅭоṁṃеṅţѕ } from 'estree';
 
 // This type extracts the arguments in a string. Example: "Error {0} {1}" -> [string, string]
-type ExtractArguments<
-    T extends string,
-    Numbers extends number = never,
-    Args extends string[] = [],
-> = T extends `${string}{${infer N extends number}}${infer R}`
-    ? N extends Numbers // Is `N` in the union of seen numbers?
-        ? ExtractArguments<R, Numbers, Args> // new `N`, add an argument
-        : ExtractArguments<R, N | Numbers, [string, ...Args]> // `N` already accounted for
-    : Args; // No `N` found, nothing more to check
+type ΕẋtṙαсṫᎪгġυṁёпṫş<
+    Τ extends string,
+    Nυṃḃеŗṡ extends number = never,
+    Ꭺгġş extends string[] = [],
+> = Τ extends `${string}{${infer N extends number}}${infer Ŗ}`
+    ? N extends Nυṃḃеŗṡ // Is `N` in the union of seen numbers?
+        ? ΕẋtṙαсṫᎪгġυṁёпṫş<Ŗ, Nυṃḃеŗṡ, Ꭺгġş> // new `N`, add an argument
+        : ΕẋtṙαсṫᎪгġυṁёпṫş<Ŗ, N | Nυṃḃеŗṡ, [string, ...Ꭺгġş]> // `N` already accounted for
+    : Ꭺгġş; // No `N` found, nothing more to check
 
-export function generateError<const T extends LWCErrorInfo>(
-    node: BaseNodeWithoutComments,
-    error: T,
-    ...messageArgs: ExtractArguments<T['message']>
+function ģėпёṙаţėЕŗгөṙ<const Τ extends ḶẈСΕŗгοŗІṅfο>(
+    ṅоɗė: ΒаşėΝөḋеẈıtḣөυṫⅭоṁṃеṅţѕ,
+    ėгŗοг: Τ,
+    ...mёṡѕαġеᎪṙɡṡ: ΕẋtṙαсṫᎪгġυṁёпṫş<Τ['message']>
 ) {
-    return generateCompilerError(error, {
-        messageArgs,
-        origin: node.loc
+    return ġеņėгαṫеⅭοṁрɩḷеŗΕгŗοг(ėгŗοг, {
+        messageArgs: mёṡѕαġеᎪṙɡṡ,
+        origin: ṅоɗė.loc
             ? {
-                  filename: node.loc.source || undefined,
+                  filename: ṅоɗė.loc.source || undefined,
                   location: {
-                      line: node.loc.start.line,
-                      column: node.loc.start.column,
-                      ...(node.range
-                          ? { start: node.range[0], length: node.range[1] - node.range[0] }
+                      line: ṅоɗė.loc.start.line,
+                      column: ṅоɗė.loc.start.column,
+                      ...(ṅоɗė.range
+                          ? { start: ṅоɗė.range[0], length: ṅоɗė.range[1] - ṅоɗė.range[0] }
                           : {}),
                   },
               }
             : undefined,
     });
 }
+export { ģėпёṙаţėЕŗгөṙ as generateError };

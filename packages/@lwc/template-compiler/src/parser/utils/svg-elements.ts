@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export const SVG_ELEMENTS = [
+const ṠVĢ_ЕĻΕМЁNТŞ = [
     'circle',
     'ellipse',
     'feBlend',
@@ -37,3 +37,4 @@ export const SVG_ELEMENTS = [
     'path',
     'rect',
 ];
+export { ṠVĢ_ЕĻΕМЁNТŞ as SVG_ELEMENTS };

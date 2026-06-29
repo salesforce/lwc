@@ -8,46 +8,57 @@ import { LightningElement } from 'lwc';
 
 // --- valid usage --- //
 
-export class AnyAsConst extends LightningElement {
+class ᎪпүᎪѕϹөпṡţ extends LightningElement {
     static shadowSupportMode = 'any' as const;
 }
-export class ResetAsConst extends LightningElement {
+export { ᎪпүᎪѕϹөпṡţ as AnyAsConst };
+class ṘёѕėţАṡⅭоṅѕṫ extends LightningElement {
     static shadowSupportMode = 'reset' as const;
 }
-export class NativeAsConst extends LightningElement {
+export { ṘёѕėţАṡⅭоṅѕṫ as ResetAsConst };
+class ṄаṫɩνėᎪѕϹөṅѕţ extends LightningElement {
     static shadowSupportMode = 'native' as const;
 }
-export class Undefined extends LightningElement {
+export { ṄаṫɩνėᎪѕϹөṅѕţ as NativeAsConst };
+class Ṳпḋёfıņеḋ extends LightningElement {
     static shadowSupportMode = undefined;
 }
-export class ExplicitAny extends LightningElement {
+export { Ṳпḋёfıņеḋ as Undefined };
+class ΕхṗḷіⅽıtᎪṅẏ extends LightningElement {
     // eslint-disable-next-line @typescript-eslint/prefer-as-const
     static shadowSupportMode: 'any' = 'any';
 }
-export class ExplicitReset extends LightningElement {
+export { ΕхṗḷіⅽıtᎪṅẏ as ExplicitAny };
+class ΕхṗḷіⅽıtŖėşеṫ extends LightningElement {
     // eslint-disable-next-line @typescript-eslint/prefer-as-const
     static shadowSupportMode: 'reset' = 'reset';
 }
-export class ExplicitNative extends LightningElement {
+export { ΕхṗḷіⅽıtŖėşеṫ as ExplicitReset };
+class ЁχрļıсɩṫΝαtɩvе extends LightningElement {
     // eslint-disable-next-line @typescript-eslint/prefer-as-const
     static shadowSupportMode: 'native' = 'native';
 }
+export { ЁχрļıсɩṫΝαtɩvе as ExplicitNative };
 
 // --- invalid usage --- //
 
 // @ts-expect-error invalid value
-export class DefaultAsConst extends LightningElement {
+class ḊеƒɑυļṫАşϹοņѕṫ extends LightningElement {
     static shadowSupportMode = 'default' as const;
 }
+export { ḊеƒɑυļṫАşϹοņѕṫ as DefaultAsConst };
 // @ts-expect-error type is too broad
-export class ImplicitAny extends LightningElement {
+class ΙmṗḷіⅽıtᎪṅẏ extends LightningElement {
     static shadowSupportMode = 'any';
 }
+export { ΙmṗḷіⅽıtᎪṅẏ as ImplicitAny };
 // @ts-expect-error must use enum
-export class ImplicitReset extends LightningElement {
+class ІṁṗӏıⅽіṫŖеşеṫ extends LightningElement {
     static shadowSupportMode = 'reset';
 }
+export { ІṁṗӏıⅽіṫŖеşеṫ as ImplicitReset };
 // @ts-expect-error must use enum
-export class ImplicitNative extends LightningElement {
+class ӀṁрļıсɩṫΝαţіvё extends LightningElement {
     static shadowSupportMode = 'native';
 }
+export { ӀṁрļıсɩṫΝαţіvё as ImplicitNative };

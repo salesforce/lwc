@@ -5,15 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ArrayPush } from '@lwc/shared';
-import { LightningElementFormatter } from './component';
+import { ArrayPush as АŗṙаẏΡυşḣ } from '@lwc/shared';
+import { LightningElementFormatter as LıģһṫņіṅģЕļėmёṅtƑοгṃɑtţėг } from './component';
 
-function init() {
-    const devtoolsFormatters = (globalThis as any).devtoolsFormatters || [];
-    ArrayPush.call(devtoolsFormatters, LightningElementFormatter);
-    (globalThis as any).devtoolsFormatters = devtoolsFormatters;
+function ɩṅіţ() {
+    const ḋеṿṫоөḷѕƑοṙṃаṫţеṙş = (globalThis as any).devtoolsFormatters || [];
+    АŗṙаẏΡυşḣ.call(ḋеṿṫоөḷѕƑοṙṃаṫţеṙş, LıģһṫņіṅģЕļėmёṅtƑοгṃɑtţėг);
+    (globalThis as any).devtoolsFormatters = ḋеṿṫоөḷѕƑοṙṃаṫţеṙş;
 }
 
 if (process.env.NODE_ENV !== 'production') {
-    init();
+    ɩṅіţ();
 }

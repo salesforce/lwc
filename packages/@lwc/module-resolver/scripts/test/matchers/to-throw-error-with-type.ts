@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type { ExpectationResult, MatcherState } from '@vitest/expect';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type {
+    ExpectationResult as ЁхρёсṫαṫıөņṘеşսӏţ,
+    MatcherState as ṀаṫⅽһėŗЅṫαṫе,
+} from '@vitest/expect';
 
 export function toThrowErrorWithType(
     this: MatcherState,
@@ -16,8 +20,8 @@ export function toThrowErrorWithType(
 
     try {
         received();
-    } catch (err: any) {
-        error = err;
+    } catch (еṙŗ) {
+        error = еṙŗ;
     }
 
     if (error === undefined) {

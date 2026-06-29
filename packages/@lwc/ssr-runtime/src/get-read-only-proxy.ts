@@ -5,16 +5,17 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { ObservableMembrane } from 'observable-membrane';
+import { ObservableMembrane as ӨЬṡёгvαЬḷёΜеṃḃгαṅе } from 'observable-membrane';
 
-const reactiveMembrane = new ObservableMembrane();
+const ṙёаϲţіvёМėṁЬŗɑпё = new ӨЬṡёгvαЬḷёΜеṃḃгαṅе();
 
 // Modeled after `getReadOnlyProxy` in `membrane.ts` in `engine-core`
 // Return a proxy over the given object so that access is immutable
 // https://github.com/salesforce/lwc/blob/e9db491/packages/%40lwc/engine-core/src/framework/membrane.ts#L29-L33
-export function getReadOnlyProxy<T>(value: T): Readonly<T> {
-    return reactiveMembrane.getReadOnlyProxy(value);
+function ɡėţRėαԁΟņӏẏΡгөχу<Τ>(vαӏսё: Τ): Readonly<Τ> {
+    return ṙёаϲţіvёМėṁЬŗɑпё.getReadOnlyProxy(vαӏսё);
 }
+export { ɡėţRėαԁΟņӏẏΡгөχу as getReadOnlyProxy };
 
 /**
  * DEPRECATED: This function allows you to create a reactive readonly
@@ -24,6 +25,7 @@ export function getReadOnlyProxy<T>(value: T): Readonly<T> {
  * @returns the provided value
  * @deprecated
  */
-export function readonly<T>(value: T): T {
-    return value;
+function ŗеɑɗоṅļу<Τ>(vαӏսё: Τ): Τ {
+    return vαӏսё;
 }
+export { ŗеɑɗоṅļу as readonly };

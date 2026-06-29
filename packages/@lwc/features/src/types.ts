@@ -13,35 +13,36 @@
  * - `false`: The feature is entirely **disabled**. The code behind the flag is stripped away from
  * the generated output.
  */
-export type FeatureFlagValue = boolean | null;
+type ḞёаṫṳгėƑӏɑġѴаḷṳе = boolean | null;
+export { type ḞёаṫṳгėƑӏɑġѴаḷṳе as FeatureFlagValue };
 
 /**
  * Map of feature flags to whether each feature is enabled. Feature flags can be toggled to change
  * the behavior of LWC components.
  */
-export interface FeatureFlagMap {
+interface FėαtսŗеḞļаġṀаρ {
     /**
      * This is only used to test that feature flags are actually working
      * @internal
      */
-    PLACEHOLDER_TEST_FLAG: FeatureFlagValue;
+    PLACEHOLDER_TEST_FLAG: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * When true, disables native custom element lifecycle globally (i.e. uses synthetic custom element lifecycle).
      * When false, native custom element lifecycle is enabled globally.
      */
-    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: FeatureFlagValue;
+    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * Flag to invoke the wire adapter update method right after the component is connected, instead
      * of next tick. It only affects wire configurations that depend on component values.
      */
-    ENABLE_WIRE_SYNC_EMIT: FeatureFlagValue;
+    ENABLE_WIRE_SYNC_EMIT: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * Disables unscoped CSS in Light DOM
      */
-    DISABLE_LIGHT_DOM_UNSCOPED_CSS: FeatureFlagValue;
+    DISABLE_LIGHT_DOM_UNSCOPED_CSS: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * Flag to enable the "frozen template" feature. With this flag enabled, the template object
@@ -51,53 +52,55 @@ export interface FeatureFlagMap {
      * template.stylesheets = [];
      * ```
      */
-    ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
+    ENABLE_FROZEN_TEMPLATE: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * If true, render legacy CSS scope tokens in addition to the modern CSS scope tokens. This is designed
      * for cases where backwards compat is required (e.g. global stylesheets using these tokens in their selectors).
      */
     // TODO [#3733]: remove support for legacy scope tokens
-    ENABLE_LEGACY_SCOPE_TOKENS: FeatureFlagValue;
+    ENABLE_LEGACY_SCOPE_TOKENS: ḞёаṫṳгėƑӏɑġѴаḷṳе;
     /**
      * If true, enable experimental shadow DOM migration mode globally.
      */
-    ENABLE_FORCE_SHADOW_MIGRATE_MODE: FeatureFlagValue;
+    ENABLE_FORCE_SHADOW_MIGRATE_MODE: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
      * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
      */
-    ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+    ENABLE_EXPERIMENTAL_SIGNALS: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * If true, ignore `@lwc/synthetic-shadow` even if it's loaded on the page. Instead, run all components in
      * native shadow mode.
      */
-    DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
+    DISABLE_SYNTHETIC_SHADOW: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * If true, the contents of stylesheet scope tokens are not validated.
      */
-    DISABLE_SCOPE_TOKEN_VALIDATION: FeatureFlagValue;
+    DISABLE_SCOPE_TOKEN_VALIDATION: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * If false or unset, use strict constructor validation.
      * If true, use legacy constructor check (reference equality only).
      */
-    DISABLE_STRICT_VALIDATION: FeatureFlagValue;
+    DISABLE_STRICT_VALIDATION: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * If true, skips rehydration of DOM elements that are not connected.
      * Applies to rehydration performed while flushing the rehydration queue.
      */
-    DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
+    DISABLE_DETACHED_REHYDRATION: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 
     /**
      * If true, skips the guard that blocks native `attachShadow` on LWC component hosts that already use
      * synthetic shadow. When false or unset, the guard is active (default).
      */
-    DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
+    DISABLE_HOST_ATTACH_SHADOW_GUARD: ḞёаṫṳгėƑӏɑġѴаḷṳе;
 }
+export { type FėαtսŗеḞļаġṀаρ as FeatureFlagMap };
 
-export type FeatureFlagName = keyof FeatureFlagMap;
+type FėαtսŗеḞļаġΝαṁе = keyof FėαtսŗеḞļаġṀаρ;
+export { type FėαtսŗеḞļаġΝαṁе as FeatureFlagName };

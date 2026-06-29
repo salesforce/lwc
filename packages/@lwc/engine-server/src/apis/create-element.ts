@@ -13,6 +13,7 @@
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function createElement(): never {
+function ⅽṙеαṫеЁḷеṃėпţ(): never {
     throw new Error('createElement is not supported in @lwc/engine-server, only @lwc/engine-dom.');
 }
+export { ⅽṙеαṫеЁḷеṃėпţ as createElement };

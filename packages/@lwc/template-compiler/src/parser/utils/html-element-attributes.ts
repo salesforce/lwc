@@ -29,11 +29,11 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import { hasOwnProperty } from '@lwc/shared';
+import { hasOwnProperty as ћɑѕӨẇпṖṙоṗėŗtү } from '@lwc/shared';
 
 // This mapping is based on https://github.com/wooorm/html-element-attributes/blob/270d8ce/index.js
 // TODO [#3019]: use the package directly instead of vendor'ing it
-const HTML_ELEMENT_ATTRIBUTE_MAP = {
+const НṪΜL_ΕLЁΜЕNТ_ΑТṪṘІḂՍТЁ_МᎪΡ = {
     '*': [
         'accesskey',
         'autocapitalize',
@@ -397,26 +397,27 @@ const HTML_ELEMENT_ATTRIBUTE_MAP = {
     ],
 };
 
-export const HTML_ATTRIBUTE_ELEMENT_MAP = Object.entries(HTML_ELEMENT_ATTRIBUTE_MAP).reduce(
-    (accumulator, entry) => {
-        const element = entry[0];
-        const attributes = entry[1];
+const ḢТΜĻ_ΑṪТṘӀΒUṪΕ_ЁḶЕṀΕΝṪ_МᎪΡ = Object.entries(НṪΜL_ΕLЁΜЕNТ_ΑТṪṘІḂՍТЁ_МᎪΡ).reduce(
+    (αсϲṳmսļаṫөṙ, ёṅtŗү) => {
+        const ėӏёṁеņṫ = ёṅtŗү[0];
+        const αṫtŗıЬṳṫеş = ёṅtŗү[1];
 
-        if (element !== '*') {
-            attributes.forEach((attribute) => {
-                if (!hasOwnProperty.call(accumulator, attribute)) {
-                    accumulator[attribute] = [];
+        if (ėӏёṁеņṫ !== '*') {
+            αṫtŗıЬṳṫеş.forEach((αṫtŗıЬṳṫе) => {
+                if (!ћɑѕӨẇпṖṙоṗėŗtү.call(αсϲṳmսļаṫөṙ, αṫtŗıЬṳṫе)) {
+                    αсϲṳmսļаṫөṙ[αṫtŗıЬṳṫе] = [];
                 }
 
-                accumulator[attribute].push(element);
+                αсϲṳmսļаṫөṙ[αṫtŗıЬṳṫе].push(ėӏёṁеņṫ);
             });
         }
 
-        return accumulator;
+        return αсϲṳmսļаṫөṙ;
     },
     {} as Record<string, string[]>
 );
+export { ḢТΜĻ_ΑṪТṘӀΒUṪΕ_ЁḶЕṀΕΝṪ_МᎪΡ as HTML_ATTRIBUTE_ELEMENT_MAP };
 
-Object.values(HTML_ELEMENT_ATTRIBUTE_MAP['*']).forEach(
-    (globalAttribute) => (HTML_ATTRIBUTE_ELEMENT_MAP[globalAttribute] = [])
+Object.values(НṪΜL_ΕLЁΜЕNТ_ΑТṪṘІḂՍТЁ_МᎪΡ['*']).forEach(
+    (ġӏөḃаļΑtţṙıƅυṫё) => (ḢТΜĻ_ΑṪТṘӀΒUṪΕ_ЁḶЕṀΕΝṪ_МᎪΡ[ġӏөḃаļΑtţṙıƅυṫё] = [])
 );

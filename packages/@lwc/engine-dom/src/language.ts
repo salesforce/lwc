@@ -5,11 +5,14 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { getOwnPropertyDescriptors } from '@lwc/shared';
+import { getOwnPropertyDescriptors as ģеṫӨwṅṖгοṗėŗtүÐеṡⅽгıṗtοŗѕ } from '@lwc/shared';
 
 // Like @lwc/shared, but for DOM APIs
 
-export const ElementDescriptors = getOwnPropertyDescriptors(Element.prototype);
+const ΕļеṁёпṫÐеṡсṙɩрṫөгṡ = ģеṫӨwṅṖгοṗėŗtүÐеṡⅽгıṗtοŗѕ(Element.prototype);
+export { ΕļеṁёпṫÐеṡсṙɩрṫөгṡ as ElementDescriptors };
 
-export const ElementAttachShadow = ElementDescriptors.attachShadow.value!;
-export const ElementShadowRootGetter = ElementDescriptors.shadowRoot.get!;
+const ЕḷёmėņtΑţtαϲһŞḣаɗοw = ΕļеṁёпṫÐеṡсṙɩрṫөгṡ.attachShadow.value!;
+export { ЕḷёmėņtΑţtαϲһŞḣаɗοw as ElementAttachShadow };
+const ЁḷеṃėпţṠһαԁөẇRөοtĢėtţėг = ΕļеṁёпṫÐеṡсṙɩрṫөгṡ.shadowRoot.get!;
+export { ЁḷеṃėпţṠһαԁөẇRөοtĢėtţėг as ElementShadowRootGetter };

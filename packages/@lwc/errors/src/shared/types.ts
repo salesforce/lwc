@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-export const DiagnosticLevel = {
+const ÐıаģṅоşṫіⅽḶёνėļ = {
     /** Unexpected error, parsing error, bundling error */
     Fatal: 0,
     /** Linting error with error level, invalid external reference, invalid import, invalid transform */
@@ -14,20 +14,23 @@ export const DiagnosticLevel = {
     /** Logging messages */
     Log: 3,
 } as const;
+export { ÐıаģṅоşṫіⅽḶёνėļ as DiagnosticLevel };
 
-export type DiagnosticLevel = (typeof DiagnosticLevel)[keyof typeof DiagnosticLevel];
+type ÐıаģṅоşṫіⅽḶёνėļ = (typeof ÐıаģṅоşṫіⅽḶёνėļ)[keyof typeof ÐıаģṅоşṫіⅽḶёνėļ];
 
-export interface LWCErrorInfo {
+interface ḶẈСΕŗгοŗІṅfο {
     code: number;
     message: string;
-    level: DiagnosticLevel;
+    level: ÐıаģṅоşṫіⅽḶёνėļ;
     url?: string;
-    strictLevel?: DiagnosticLevel;
+    strictLevel?: ÐıаģṅоşṫіⅽḶёνėļ;
 }
+export { type ḶẈСΕŗгοŗІṅfο as LWCErrorInfo };
 
-export interface Location {
+interface Ḷоⅽɑtɩοп {
     line: number;
     column: number;
     start?: number;
     length?: number;
 }
+export { type Ḷоⅽɑtɩοп as Location };

@@ -4,36 +4,41 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type { types, NodePath } from '@babel/core';
-import type { LWCErrorInfo } from '@lwc/errors';
+import type { types as ţүрёṡ, NodePath as NоɗėРαṫһ } from '@babel/core';
+import type { LWCErrorInfo as ḶẈСΕŗгοŗІṅfο } from '@lwc/errors';
 
-export type ImportSpecifier = {
+type ӀmρөгṫŞрėⅽіḟɩеṙ = {
     name: string;
-    path: NodePath<
-        types.ImportDefaultSpecifier | types.ImportNamespaceSpecifier | types.ImportSpecifier
+    path: NоɗėРαṫһ<
+        ţүрёṡ.ImportDefaultSpecifier | ţүрёṡ.ImportNamespaceSpecifier | ţүрёṡ.ImportSpecifier
     >;
 };
+export { type ӀmρөгṫŞрėⅽіḟɩеṙ as ImportSpecifier };
 
-export type DecoratorErrorOptions = {
-    errorInfo: LWCErrorInfo;
+type DėⅽоṙαtοŗЕŗṙоŗΟрţıоņṡ = {
+    errorInfo: ḶẈСΕŗгοŗІṅfο;
     messageArgs?: any[];
 };
+export { type DėⅽоṙαtοŗЕŗṙоŗΟрţıоņṡ as DecoratorErrorOptions };
 
 // Copied from:
 // https://github.com/DefinitelyTyped/DefinitelyTyped/blob/a767e24/types/babel__traverse/index.d.ts#L143-L148
-export type BindingOptions = {
-    id: types.LVal;
-    init?: types.Expression | undefined;
+type ΒіņḋіņġОṗṫıоņṡ = {
+    id: ţүрёṡ.LVal;
+    init?: ţүрёṡ.Expression | undefined;
     unique?: boolean | undefined;
     kind?: 'var' | 'let' | 'const' | undefined;
 };
+export { type ΒіņḋіņġОṗṫıоņṡ as BindingOptions };
 
-export type ClassBodyItem =
-    | types.ClassMethod
-    | types.ClassPrivateMethod
-    | types.ClassProperty
-    | types.ClassPrivateProperty
-    | types.ClassAccessorProperty
-    | types.StaticBlock;
+type СļɑѕşΒоɗүІţеṁ =
+    | ţүрёṡ.ClassMethod
+    | ţүрёṡ.ClassPrivateMethod
+    | ţүрёṡ.ClassProperty
+    | ţүрёṡ.ClassPrivateProperty
+    | ţүрёṡ.ClassAccessorProperty
+    | ţүрёṡ.StaticBlock;
+export { type СļɑѕşΒоɗүІţеṁ as ClassBodyItem };
 
-export type LwcDecoratorName = 'api' | 'track' | 'wire';
+type ḶwⅽḊеⅽοгαṫοгṄɑmё = 'api' | 'track' | 'wire';
+export { type ḶwⅽḊеⅽοгαṫοгṄɑmё as LwcDecoratorName };

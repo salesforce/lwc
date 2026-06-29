@@ -4,30 +4,42 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type { ElementDirectiveName } from './types';
+import type { ElementDirectiveName as ЁӏėṃеṅţDıŗеⅽṫіṿėΝαṁе } from './types';
 
-export const SECURE_REGISTER_TEMPLATE_METHOD_NAME = 'registerTemplate';
-export const PARSE_FRAGMENT_METHOD_NAME = 'parseFragment';
-export const PARSE_SVG_FRAGMENT_METHOD_NAME = 'parseSVGFragment';
-export const RENDERER = 'renderer';
-export const LWC_MODULE_NAME = 'lwc';
-export const TEMPLATE_MODULES_PARAMETER: string = 'modules';
-export const FREEZE_TEMPLATE = 'freezeTemplate';
-export const IMPLICIT_STYLESHEETS = '_implicitStylesheets';
-export const IMPLICIT_SCOPED_STYLESHEETS = '_implicitScopedStylesheets';
+const ṠЕⅭՍRЁ_RЁĠІŞΤЕŖ_ТЁΜРĻΑТЁ_МЁΤНӨḊ_ṄΑМЁ = 'registerTemplate';
+export { ṠЕⅭՍRЁ_RЁĠІŞΤЕŖ_ТЁΜРĻΑТЁ_МЁΤНӨḊ_ṄΑМЁ as SECURE_REGISTER_TEMPLATE_METHOD_NAME };
+const РΑŖЅΕ_FṘᎪGṀЕNṪ_ΜЁТΗӨD_ṄАΜЁ = 'parseFragment';
+export { РΑŖЅΕ_FṘᎪGṀЕNṪ_ΜЁТΗӨD_ṄАΜЁ as PARSE_FRAGMENT_METHOD_NAME };
+const РᎪṘЅЁ_ЅѴĠ_FŖΑGṀΕΝṪ_МЁΤНӨḊ_ṄΑМЁ = 'parseSVGFragment';
+export { РᎪṘЅЁ_ЅѴĠ_FŖΑGṀΕΝṪ_МЁΤНӨḊ_ṄΑМЁ as PARSE_SVG_FRAGMENT_METHOD_NAME };
+const ŖЕNÐЕṘЁR = 'renderer';
+export { ŖЕNÐЕṘЁR as RENDERER };
+const ḶWⅭ_МӨḊUĻΕ_ṄΑМЁ = 'lwc';
+export { ḶWⅭ_МӨḊUĻΕ_ṄΑМЁ as LWC_MODULE_NAME };
+const ΤЕṀΡLᎪΤЕ_ΜΟÐUḶЁЅ_ṖАṘᎪМΕṪЕṘ: string = 'modules';
+export { ΤЕṀΡLᎪΤЕ_ΜΟÐUḶЁЅ_ṖАṘᎪМΕṪЕṘ as TEMPLATE_MODULES_PARAMETER };
+const ḞŖЕΕẒЕ_ṪЕΜṖLΑṪЕ = 'freezeTemplate';
+export { ḞŖЕΕẒЕ_ṪЕΜṖLΑṪЕ as FREEZE_TEMPLATE };
+const ІṀΡLӀϹІṪ_ЅΤẎLΕŞНΕЁТṠ = '_implicitStylesheets';
+export { ІṀΡLӀϹІṪ_ЅΤẎLΕŞНΕЁТṠ as IMPLICIT_STYLESHEETS };
+const ІṀΡLӀϹІṪ_ЅⅭΟРЁḊ_ŞΤΥĻΕЅḢΕЕṪṠ = '_implicitScopedStylesheets';
+export { ІṀΡLӀϹІṪ_ЅⅭΟРЁḊ_ŞΤΥĻΕЅḢΕЕṪṠ as IMPLICIT_SCOPED_STYLESHEETS };
 
-export const IMPLICIT_STYLESHEET_IMPORTS = [IMPLICIT_STYLESHEETS, IMPLICIT_SCOPED_STYLESHEETS];
+const ӀМΡĻІϹӀТ_ŞТẎḶЕŞΗЕЁΤ_ӀΜРӨṘТŞ = [ІṀΡLӀϹІṪ_ЅΤẎLΕŞНΕЁТṠ, ІṀΡLӀϹІṪ_ЅⅭΟРЁḊ_ŞΤΥĻΕЅḢΕЕṪṠ];
+export { ӀМΡĻІϹӀТ_ŞТẎḶЕŞΗЕЁΤ_ӀΜРӨṘТŞ as IMPLICIT_STYLESHEET_IMPORTS };
 
-export const TEMPLATE_FUNCTION_NAME: string = 'tmpl';
+const ТΕṀРḶᎪТΕ_FṲΝϹṪІΟṄ_NᎪМΕ: string = 'tmpl';
+export { ТΕṀРḶᎪТΕ_FṲΝϹṪІΟṄ_NᎪМΕ as TEMPLATE_FUNCTION_NAME };
 
-export const TEMPLATE_PARAMS: { [label: string]: string } = {
+const ṪΕМṖḶАṪΕ_ṖᎪRΑṀЅ: { [label: string]: string } = {
     INSTANCE: '$cmp',
     API: '$api',
     SLOT_SET: '$slotset',
     CONTEXT: '$ctx',
 };
+export { ṪΕМṖḶАṪΕ_ṖᎪRΑṀЅ as TEMPLATE_PARAMS };
 
-export const DASHED_TAGNAME_ELEMENT_SET = new Set([
+const ḊАŞΗЕÐ_ТᎪĠΝᎪΜЕ_ΕLЁΜЕṄΤ_ŞΕТ = new Set([
     'annotation-xml',
     'color-profile',
     'font-face',
@@ -37,9 +49,8 @@ export const DASHED_TAGNAME_ELEMENT_SET = new Set([
     'font-face-name',
     'missing-glyph',
 ]);
+export { ḊАŞΗЕÐ_ТᎪĠΝᎪΜЕ_ΕLЁΜЕṄΤ_ŞΕТ as DASHED_TAGNAME_ELEMENT_SET };
 
 // Subset of LWC template directives that can safely be statically optimized
-export const STATIC_SAFE_DIRECTIVES: Set<keyof typeof ElementDirectiveName> = new Set([
-    'Ref',
-    'Key',
-]);
+const ŞТΑṪІϹ_ЅΑƑΕ_ÐΙRЁϹТӀṾЕŞ: Set<keyof typeof ЁӏėṃеṅţDıŗеⅽṫіṿėΝαṁе> = new Set(['Ref', 'Key']);
+export { ŞТΑṪІϹ_ЅΑƑΕ_ÐΙRЁϹТӀṾЕŞ as STATIC_SAFE_DIRECTIVES };

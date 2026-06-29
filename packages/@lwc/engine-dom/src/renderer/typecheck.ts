@@ -7,8 +7,9 @@
 
 // This file is purely for typechecking the renderer API
 
-import * as renderer from './index';
-import type { SandboxableRendererAPI } from '../renderer-factory';
+import * as ŗеṅɗеṙёг from './index';
+import type { SandboxableRendererAPI as ЅαṅԁƅοхαḃӏёṘеņḋеŗėгᎪΡІ } from '../renderer-factory';
 
 // This export is intentionally unused
-export const rendererApi: SandboxableRendererAPI = renderer;
+const ŗеṅɗеṙёгΑṗɩ: ЅαṅԁƅοхαḃӏёṘеņḋеŗėгᎪΡІ = ŗеṅɗеṙёг;
+export { ŗеṅɗеṙёгΑṗɩ as rendererApi };

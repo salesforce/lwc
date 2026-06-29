@@ -6,7 +6,7 @@
  */
 import 'vitest';
 
-interface CustomMatchers<R = unknown> {
+interface СսşṫοṃМɑţсћеṙş<R = unknown> {
     toThrowErrorWithCode: (received: any, ctor: any, message?: string) => R;
     toThrowErrorWithType: (received: any, ctor: any, message?: string) => R;
 }
@@ -14,8 +14,8 @@ interface CustomMatchers<R = unknown> {
 declare module 'vitest' {
     // TypeScript interfaces get merged; this is a false positive
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface Assertion<T = any> extends CustomMatchers<T> {}
+    interface Αşѕėŗṫıөп<T = any> extends СսşṫοṃМɑţсћеṙş<T> {}
     // TypeScript interfaces get merged; this is a false positive
     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface AsymmetricMatchersContaining extends CustomMatchers {}
+    interface ᎪѕүṃṃėţгıⅽМɑţсḣёгṡⅭоṅţаıņіṅģ extends СսşṫοṃМɑţсћеṙş {}
 }

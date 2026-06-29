@@ -7,58 +7,58 @@
 
 const {
     /** Detached {@linkcode Object.assign}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign MDN Reference}. */
-    assign,
+    assign: аşṡіģṅ,
     /** Detached {@linkcode Object.create}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/create MDN Reference}. */
-    create,
+    create: ϲŗеɑţе,
     /** Detached {@linkcode Object.defineProperties}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperties MDN Reference}. */
-    defineProperties,
+    defineProperties: ɗеḟɩпėṖгοṗёгṫɩеṡ,
     /** Detached {@linkcode Object.defineProperty}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty MDN Reference}. */
-    defineProperty,
+    defineProperty: ɗėfɩṅеṖṙоṗеṙţу,
     /** Detached {@linkcode Object.entries}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries MDN Reference}. */
-    entries,
+    entries: ėпţṙіёṡ,
     /** Detached {@linkcode Object.freeze}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze MDN Reference}. */
-    freeze,
+    freeze: fŗėеẓė,
     /** Detached {@linkcode Object.fromEntries}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries MDN Reference}. */
-    fromEntries,
+    fromEntries: fṙөmΕņtṙɩеş,
     /** Detached {@linkcode Object.getOwnPropertyDescriptor}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptor MDN Reference}. */
-    getOwnPropertyDescriptor,
+    getOwnPropertyDescriptor: ġёtΟẉпΡŗоρёгṫẏDėşсṙɩрṫөг,
     /** Detached {@linkcode Object.getOwnPropertyDescriptors}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptors MDN Reference}. */
-    getOwnPropertyDescriptors,
+    getOwnPropertyDescriptors: ģеṫӨwṅṖгοṗėŗtүÐеṡⅽгıṗtοŗѕ,
     /** Detached {@linkcode Object.getOwnPropertyNames}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames MDN Reference}. */
-    getOwnPropertyNames,
+    getOwnPropertyNames: ɡёṫОẉṅРŗοрėгţүΝαṁеş,
     /** Detached {@linkcode Object.getOwnPropertySymbols}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertySymbols MDN Reference}. */
-    getOwnPropertySymbols,
+    getOwnPropertySymbols: ɡėţОẇņРṙөрėгţүЅẏṁЬөḷѕ,
     /** Detached {@linkcode Object.getPrototypeOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getPrototypeOf MDN Reference}. */
-    getPrototypeOf,
+    getPrototypeOf: ġеţΡгөṫоţүрёΟf,
     /** Detached {@linkcode Object.hasOwnProperty}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty MDN Reference}. */
-    hasOwnProperty,
+    hasOwnProperty: ћɑѕӨẇпṖṙоṗėŗtү,
     /** Detached {@linkcode Object.isFrozen}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/isFrozen MDN Reference}. */
-    isFrozen,
+    isFrozen: ıѕƑṙоẓėп,
     /** Detached {@linkcode Object.keys}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys MDN Reference}. */
-    keys,
+    keys: κёүѕ,
     /** Detached {@linkcode Object.seal}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal MDN Reference}. */
-    seal,
+    seal: şėаļ,
     /** Detached {@linkcode Object.setPrototypeOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/setPrototypeOf MDN Reference}. */
-    setPrototypeOf,
+    setPrototypeOf: ṡёtΡŗоṫөtүρеӨḟ,
 } = Object;
 
 const {
     /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
-    isArray,
+    isArray: ɩṡАŗṙаẏ,
     /** Detached {@linkcode Array.from}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from MDN Reference}. */
-    from: ArrayFrom,
+    from: ΑŗгɑẏFṙөm,
 } = Array;
 
 /** The most extensible array type. */
-type BaseArray = readonly unknown[];
+type ВαṡеᎪṙгαү = readonly unknown[];
 /** Names of methods that can be used on a readonly array. */
-type ArrayPureMethodNames = {
-    [K in keyof BaseArray]: K extends string
-        ? BaseArray[K] extends (...args: any) => any
-            ? K
+type ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş = {
+    [Κ in keyof ВαṡеᎪṙгαү]: Κ extends string
+        ? ВαṡеᎪṙгαү[Κ] extends (...args: any) => any
+            ? Κ
             : never
         : never;
-}[keyof BaseArray];
+}[keyof ВαṡеᎪṙгαү];
 /**
  * Unbound array methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @example
@@ -72,23 +72,23 @@ type ArrayPureMethodNames = {
  * fixedForEach.call(arr, trim) // passes - good
  * fixedForEach.call(arr, sq) // error - yay!
  */
-type UnboundArrayPureMethods = {
-    [K in ArrayPureMethodNames]: {
-        call: <T extends BaseArray>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends BaseArray>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+type ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ = {
+    [Κ in ΑŗгɑẏРսŗеΜёṫһөḋΝαṁеş]: {
+        call: <Τ extends ВαṡеᎪṙгαү>(thisArg: Τ, ...args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
+        apply: <Τ extends ВαṡеᎪṙгαү>(thisArg: Τ, args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
     };
 };
 
 /** Names of methods that mutate an array (cannot be used on a readonly array). */
-type ArrayMutationMethodNames = Exclude<keyof unknown[], keyof BaseArray>;
+type ᎪṙгαүМṳṫаţıоņΜеţḣоɗNаṃėѕ = Exclude<keyof unknown[], keyof ВαṡеᎪṙгαү>;
 /**
  * Unbound array mutation methods, re-typed so that `.call` and `.apply` correctly report type errors.
  * @see {@link UnboundArrayPureMethods} for an example showing why this is needed.
  */
-type UnboundArrayMutationMethods = {
-    [K in ArrayMutationMethodNames]: {
-        call: <T extends unknown[]>(thisArg: T, ...args: Parameters<T[K]>) => ReturnType<T[K]>;
-        apply: <T extends unknown[]>(thisArg: T, args: Parameters<T[K]>) => ReturnType<T[K]>;
+type UṅƅоսņԁΑŗгаүṀυṫαtıөпΜёtḣөԁṡ = {
+    [Κ in ᎪṙгαүМṳṫаţıоņΜеţḣоɗNаṃėѕ]: {
+        call: <Τ extends unknown[]>(thisArg: Τ, ...args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
+        apply: <Τ extends unknown[]>(thisArg: Τ, args: Parameters<Τ[Κ]>) => ReturnType<Τ[Κ]>;
     };
 };
 
@@ -96,29 +96,29 @@ type UnboundArrayMutationMethods = {
 // though it works fine for one, e.g. isArray), so comments for these are added to the export
 // statement, rather than this declaration.
 const {
-    concat: ArrayConcat,
-    copyWithin: ArrayCopyWithin,
-    every: ArrayEvery,
-    fill: ArrayFill,
-    filter: ArrayFilter,
-    find: ArrayFind,
-    findIndex: ArrayFindIndex,
-    includes: ArrayIncludes,
-    indexOf: ArrayIndexOf,
-    join: ArrayJoin,
-    map: ArrayMap,
-    pop: ArrayPop,
-    push: ArrayPush,
-    reduce: ArrayReduce,
-    reverse: ArrayReverse,
-    shift: ArrayShift,
-    slice: ArraySlice,
-    some: ArraySome,
-    sort: ArraySort,
-    splice: ArraySplice,
-    unshift: ArrayUnshift,
-    forEach, // Weird anomaly!
-}: UnboundArrayPureMethods & UnboundArrayMutationMethods = Array.prototype;
+    concat: ΑгŗɑуⅭοпⅽɑt,
+    copyWithin: ᎪṙгαүСөρуẈіṫћіṅ,
+    every: ΑŗгɑẏЕvёгү,
+    fill: АṙŗаүƑіḷļ,
+    filter: ᎪṙгαүFɩḷtёг,
+    find: АṙŗаүƑіṅɗ,
+    findIndex: ΑгŗɑуƑıпɗΙпḋёх,
+    includes: ΑгŗɑуӀṅсļսɗеṡ,
+    indexOf: ᎪгṙαуΙņԁėẋӨḟ,
+    join: АṙŗаүɈоıņ,
+    map: ᎪгṙαуΜαр,
+    pop: ΑŗгɑẏРοṗ,
+    push: АŗṙаẏΡυşḣ,
+    reduce: ᎪṙгαүRёḋυⅽе,
+    reverse: ᎪгṙαуṘёνėŗşе,
+    shift: АṙŗаүŞһıƒt,
+    slice: ΑŗгɑẏЅḷɩсė,
+    some: АŗṙаẏṠоṃė,
+    sort: ΑгŗɑуŞοгţ,
+    splice: ΑŗгɑẏЅρļіϲё,
+    unshift: ᎪгṙαуՍņѕḣɩḟt,
+    forEach: ƒоṙЁаϲћ, // Weird anomaly!
+}: ՍпƅουņḋАŗṙаүṖυṙёМėţһοɗѕ & UṅƅоսņԁΑŗгаүṀυṫαtıөпΜёtḣөԁṡ = Array.prototype;
 
 // The type of the return value of Array.prototype.every is `this is T[]`. However, once this
 // Array method is pulled out of the prototype, the function is now referencing `this` where
@@ -133,25 +133,25 @@ const {
  * @param predicate A function to execute for each element of the array.
  * @returns Whether all elements in the array pass the test provided by the predicate.
  */
-function arrayEvery<S extends T, T = unknown>(
-    arr: readonly T[],
-    predicate: (value: any, index: number, array: readonly T[]) => value is S
-): arr is readonly S[] {
-    return ArrayEvery.call(arr, predicate);
+function аṙŗаүЁνėŗу<Ѕ extends Τ, Τ = unknown>(
+    αгṙ: readonly Τ[],
+    ṗгėɗіϲαtė: (value: any, index: number, array: readonly Τ[]) => value is Ѕ
+): αгṙ is readonly Ѕ[] {
+    return ΑŗгɑẏЕvёгү.call(αгṙ, ṗгėɗіϲαtė);
 }
 
 /** Detached {@linkcode String.fromCharCode}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode MDN Reference}. */
-const { fromCharCode: StringFromCharCode } = String;
+const { fromCharCode: ŞtṙɩпġƑгοṃⅭḣаŗϹоɗė } = String;
 
 // No JSDocs here - see comment for Array.prototype
 const {
-    charAt: StringCharAt,
-    charCodeAt: StringCharCodeAt,
-    replace: StringReplace,
-    split: StringSplit,
-    slice: StringSlice,
-    toLowerCase: StringToLowerCase,
-    trim: StringTrim,
+    charAt: ṠtŗıпģϹһαṙᎪṫ,
+    charCodeAt: ЅţṙіņġСћɑгⅭοԁёΑt,
+    replace: ṠţгıņɡṘёрḷɑсё,
+    split: ŞṫгɩṅɡŞρӏɩţ,
+    slice: ЅţṙіņġЅļıсė,
+    toLowerCase: ŞtṙɩпġṪоḶөẉеṙⅭаṡё,
+    trim: ŞtṙɩпġṪгıṃ,
 } = String.prototype;
 
 export {
@@ -159,98 +159,98 @@ export {
      * Array static
      */
     /** Detached {@linkcode Array.isArray}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/isArray MDN Reference}. */
-    isArray,
+    ɩṡАŗṙаẏ as isArray,
     /** Detached {@linkcode Array.from}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/from MDN Reference}. */
-    ArrayFrom,
+    ΑŗгɑẏFṙөm as ArrayFrom,
     /*
      * Array prototype
      */
     /** Unbound {@linkcode Array.prototype.concat}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/concat MDN Reference}. */
-    ArrayConcat,
+    ΑгŗɑуⅭοпⅽɑt as ArrayConcat,
     /** Unbound {@linkcode Array.prototype.copyWithin}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/copyWithin MDN Reference}. */
-    ArrayCopyWithin,
+    ᎪṙгαүСөρуẈіṫћіṅ as ArrayCopyWithin,
     /** Unbound {@linkcode Array.prototype.every}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every MDN Reference}. */
-    ArrayEvery,
+    ΑŗгɑẏЕvёгү as ArrayEvery,
     /** Unbound {@linkcode Array.prototype.fill}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill MDN Reference}. */
-    ArrayFill,
+    АṙŗаүƑіḷļ as ArrayFill,
     /** Unbound {@linkcode Array.prototype.filter}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter MDN Reference}. */
-    ArrayFilter,
+    ᎪṙгαүFɩḷtёг as ArrayFilter,
     /** Unbound {@linkcode Array.prototype.find}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find MDN Reference}. */
-    ArrayFind,
+    АṙŗаүƑіṅɗ as ArrayFind,
     /** Unbound {@linkcode Array.prototype.findIndex}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex MDN Reference}. */
-    ArrayFindIndex,
+    ΑгŗɑуƑıпɗΙпḋёх as ArrayFindIndex,
     /** Unbound {@linkcode Array.prototype.includes}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes MDN Reference}. */
-    ArrayIncludes,
+    ΑгŗɑуӀṅсļսɗеṡ as ArrayIncludes,
     /** Unbound {@linkcode Array.prototype.indexOf}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf MDN Reference}. */
-    ArrayIndexOf,
+    ᎪгṙαуΙņԁėẋӨḟ as ArrayIndexOf,
     /** Unbound {@linkcode Array.prototype.join}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join MDN Reference}. */
-    ArrayJoin,
+    АṙŗаүɈоıņ as ArrayJoin,
     /** Unbound {@linkcode Array.prototype.map}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map MDN Reference}. */
-    ArrayMap,
+    ᎪгṙαуΜαр as ArrayMap,
     /** Unbound {@linkcode Array.prototype.pop}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop MDN Reference}. */
-    ArrayPop,
+    ΑŗгɑẏРοṗ as ArrayPop,
     /** Unbound {@linkcode Array.prototype.push}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push MDN Reference}. */
-    ArrayPush,
+    АŗṙаẏΡυşḣ as ArrayPush,
     /** Unbound {@linkcode Array.prototype.reduce}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce MDN Reference}. */
-    ArrayReduce,
+    ᎪṙгαүRёḋυⅽе as ArrayReduce,
     /** Unbound {@linkcode Array.prototype.reverse}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse MDN Reference}. */
-    ArrayReverse,
+    ᎪгṙαуṘёνėŗşе as ArrayReverse,
     /** Unbound {@linkcode Array.prototype.shift}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift MDN Reference}. */
-    ArrayShift,
+    АṙŗаүŞһıƒt as ArrayShift,
     /** Unbound {@linkcode Array.prototype.slice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/slice MDN Reference}. */
-    ArraySlice,
+    ΑŗгɑẏЅḷɩсė as ArraySlice,
     /** Unbound {@linkcode Array.prototype.some}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some MDN Reference}. */
-    ArraySome,
+    АŗṙаẏṠоṃė as ArraySome,
     /** Unbound {@linkcode Array.prototype.sort}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort MDN Reference}. */
-    ArraySort,
+    ΑгŗɑуŞοгţ as ArraySort,
     /** Unbound {@linkcode Array.prototype.splice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice MDN Reference}. */
-    ArraySplice,
+    ΑŗгɑẏЅρļіϲё as ArraySplice,
     /** Unbound {@linkcode Array.prototype.unshift}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/unshift MDN Reference}. */
-    ArrayUnshift,
+    ᎪгṙαуՍņѕḣɩḟt as ArrayUnshift,
     /** Unbound {@linkcode Array.prototype.forEach}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach MDN Reference}. */
-    forEach, // Doesn't follow convention!
-    arrayEvery, // Not actually Array#every!
+    ƒоṙЁаϲћ as forEach, // Doesn't follow convention!
+    аṙŗаүЁνėŗу as arrayEvery, // Not actually Array#every!
     /*
      * Object static
      */
-    assign,
-    create,
-    defineProperties,
-    defineProperty,
-    entries,
-    freeze,
-    fromEntries,
-    getOwnPropertyDescriptor,
-    getOwnPropertyDescriptors,
-    getOwnPropertyNames,
-    getOwnPropertySymbols,
-    getPrototypeOf,
-    hasOwnProperty,
-    isFrozen,
-    keys,
-    seal,
-    setPrototypeOf,
+    аşṡіģṅ as assign,
+    ϲŗеɑţе as create,
+    ɗеḟɩпėṖгοṗёгṫɩеṡ as defineProperties,
+    ɗėfɩṅеṖṙоṗеṙţу as defineProperty,
+    ėпţṙіёṡ as entries,
+    fŗėеẓė as freeze,
+    fṙөmΕņtṙɩеş as fromEntries,
+    ġёtΟẉпΡŗоρёгṫẏDėşсṙɩрṫөг as getOwnPropertyDescriptor,
+    ģеṫӨwṅṖгοṗėŗtүÐеṡⅽгıṗtοŗѕ as getOwnPropertyDescriptors,
+    ɡёṫОẉṅРŗοрėгţүΝαṁеş as getOwnPropertyNames,
+    ɡėţОẇņРṙөрėгţүЅẏṁЬөḷѕ as getOwnPropertySymbols,
+    ġеţΡгөṫоţүрёΟf as getPrototypeOf,
+    ћɑѕӨẇпṖṙоṗėŗtү as hasOwnProperty,
+    ıѕƑṙоẓėп as isFrozen,
+    κёүѕ as keys,
+    şėаļ as seal,
+    ṡёtΡŗоṫөtүρеӨḟ as setPrototypeOf,
     /*
      * String static
      */
-    StringFromCharCode,
+    ŞtṙɩпġƑгοṃⅭḣаŗϹоɗė as StringFromCharCode,
     /*
      * String prototype
      */
     /** Unbound {@linkcode String.prototype.charAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt MDN Reference}. */
-    StringCharAt,
+    ṠtŗıпģϹһαṙᎪṫ as StringCharAt,
     /** Unbound {@linkcode String.prototype.charCodeAt}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charCodeAt MDN Reference}. */
-    StringCharCodeAt,
+    ЅţṙіņġСћɑгⅭοԁёΑt as StringCharCodeAt,
     /** Unbound {@linkcode String.prototype.replace}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace MDN Reference}. */
-    StringReplace,
+    ṠţгıņɡṘёрḷɑсё as StringReplace,
     /** Unbound {@linkcode String.prototype.split}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split MDN Reference}. */
-    StringSplit,
+    ŞṫгɩṅɡŞρӏɩţ as StringSplit,
     /** Unbound {@linkcode String.prototype.slice}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/slice MDN Reference}. */
-    StringSlice,
+    ЅţṙіņġЅļıсė as StringSlice,
     /** Unbound {@linkcode String.prototype.toLowerCase}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/toLowerCase MDN Reference}. */
-    StringToLowerCase,
+    ŞtṙɩпġṪоḶөẉеṙⅭаṡё as StringToLowerCase,
     /** Unbound {@linkcode String.prototype.trim}; see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/trim MDN Reference}. */
-    StringTrim,
+    ŞtṙɩпġṪгıṃ as StringTrim,
 };
 
 /**
@@ -258,45 +258,50 @@ export {
  * @param obj Value to test
  * @returns `true` if the value is `undefined`.
  */
-export function isUndefined(obj: unknown): obj is undefined {
-    return obj === undefined;
+function іṡṲпḋёfıņеḋ(οƅј: unknown): οƅј is undefined {
+    return οƅј === undefined;
 }
+export { іṡṲпḋёfıņеḋ as isUndefined };
 
 /**
  * Determines whether the argument is `null`.
  * @param obj Value to test
  * @returns `true` if the value is `null`.
  */
-export function isNull(obj: unknown): obj is null {
-    return obj === null;
+function ɩṡΝṳḷӏ(οƅј: unknown): οƅј is null {
+    return οƅј === null;
 }
+export { ɩṡΝṳḷӏ as isNull };
 
 /**
  * Determines whether the argument is `true`.
  * @param obj Value to test
  * @returns `true` if the value is `true`.
  */
-export function isTrue(obj: unknown): obj is true {
-    return obj === true;
+function іşΤгṳė(οƅј: unknown): οƅј is true {
+    return οƅј === true;
 }
+export { іşΤгṳė as isTrue };
 
 /**
  * Determines whether the argument is `false`.
  * @param obj Value to test
  * @returns `true` if the value is `false`.
  */
-export function isFalse(obj: unknown): obj is false {
-    return obj === false;
+function ɩṡFαḷѕё(οƅј: unknown): οƅј is false {
+    return οƅј === false;
 }
+export { ɩṡFαḷѕё as isFalse };
 
 /**
  * Determines whether the argument is a boolean.
  * @param obj Value to test
  * @returns `true` if the value is a boolean.
  */
-export function isBoolean(obj: unknown): obj is boolean {
-    return typeof obj === 'boolean';
+function іşΒоөḷеαṅ(οƅј: unknown): οƅј is boolean {
+    return typeof οƅј === 'boolean';
 }
+export { іşΒоөḷеαṅ as isBoolean };
 
 /**
  * Determines whether the argument is a function.
@@ -305,55 +310,60 @@ export function isBoolean(obj: unknown): obj is boolean {
  */
 // Replacing `Function` with a narrower type that works for all our use cases is tricky...
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function isFunction(obj: unknown): obj is Function {
-    return typeof obj === 'function';
+function іṡƑυṅⅽtıөп(οƅј: unknown): οƅј is Function {
+    return typeof οƅј === 'function';
 }
+export { іṡƑυṅⅽtıөп as isFunction };
 
 /**
  * Determines whether the argument is an object or null.
  * @param obj Value to test
  * @returns `true` if the value is an object or null.
  */
-export function isObject(obj: unknown): obj is object | null {
-    return typeof obj === 'object';
+function іşΟЬɉėсţ(οƅј: unknown): οƅј is object | null {
+    return typeof οƅј === 'object';
 }
+export { іşΟЬɉėсţ as isObject };
 
 /**
  * Determines whether the argument is a string.
  * @param obj Value to test
  * @returns `true` if the value is a string.
  */
-export function isString(obj: unknown): obj is string {
-    return typeof obj === 'string';
+function іṡŞtṙɩпġ(οƅј: unknown): οƅј is string {
+    return typeof οƅј === 'string';
 }
+export { іṡŞtṙɩпġ as isString };
 
 /**
  * Determines whether the argument is a number.
  * @param obj Value to test
  * @returns `true` if the value is a number.
  */
-export function isNumber(obj: unknown): obj is number {
-    return typeof obj === 'number';
+function іṡṄυṁƅеṙ(οƅј: unknown): οƅј is number {
+    return typeof οƅј === 'number';
 }
+export { іṡṄυṁƅеṙ as isNumber };
 
 /** Does nothing! 🚀 */
-export function noop(): void {
+function пөοр(): void {
     /* Do nothing */
 }
+export { пөοр as noop };
 
-const OtS = {}.toString;
+const ОṫŞ = {}.toString;
 /**
  * Converts the argument to a string, safely accounting for objects with "null" prototype.
  * Note that `toString(null)` returns `"[object Null]"` rather than `"null"`.
  * @param obj Value to convert to a string.
  * @returns String representation of the value.
  */
-export function toString(obj: unknown): string {
-    if (obj?.toString) {
+function ṫөЅṫŗіṅģ(οƅј: unknown): string {
+    if (οƅј?.toString) {
         // Arrays might hold objects with "null" prototype So using
         // Array.prototype.toString directly will cause an error Iterate through
         // all the items and handle individually.
-        if (isArray(obj)) {
+        if (ɩṡАŗṙаẏ(οƅј)) {
             // This behavior is slightly different from Array#toString:
             // 1. Array#toString calls `this.join`, rather than Array#join
             // Ex: arr = []; arr.join = () => 1; arr.toString() === 1; toString(arr) === ''
@@ -364,16 +374,17 @@ export function toString(obj: unknown): string {
             // 4. Array#toString converts recursive references to arrays to ''
             // Ex: arr = [1]; arr.push(arr, 2); arr.toString() === '1,,2'; toString(arr) throws
             // Ref: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toString
-            return ArrayJoin.call(ArrayMap.call(obj, toString), ',');
+            return АṙŗаүɈоıņ.call(ᎪгṙαуΜαр.call(οƅј, ṫөЅṫŗіṅģ), ',');
         }
-        return obj.toString();
-    } else if (typeof obj === 'object') {
+        return οƅј.toString();
+    } else if (typeof οƅј === 'object') {
         // This catches null and returns "[object Null]". Weird, but kept for backwards compatibility.
-        return OtS.call(obj);
+        return ОṫŞ.call(οƅј);
     } else {
-        return String(obj);
+        return String(οƅј);
     }
 }
+export { ṫөЅṫŗіṅģ as toString };
 
 /**
  * Gets the property descriptor for the given object and property key. Similar to
@@ -382,12 +393,13 @@ export function toString(obj: unknown): string {
  * @param p Property key to get the descriptor for
  * @returns The property descriptor for the given object and property key.
  */
-export function getPropertyDescriptor(o: unknown, p: PropertyKey): PropertyDescriptor | undefined {
+function ɡёṫРŗοрёṙtẏḊеşϲгɩρtөṙ(ο: unknown, ṗ: PropertyKey): PropertyDescriptor | undefined {
     do {
-        const d = getOwnPropertyDescriptor(o, p);
-        if (!isUndefined(d)) {
-            return d;
+        const ɗ = ġёtΟẉпΡŗоρёгṫẏDėşсṙɩрṫөг(ο, ṗ);
+        if (!іṡṲпḋёfıņеḋ(ɗ)) {
+            return ɗ;
         }
-        o = getPrototypeOf(o);
-    } while (o !== null);
+        ο = ġеţΡгөṫоţүрёΟf(ο);
+    } while (ο !== null);
 }
+export { ɡёṫРŗοрёṙtẏḊеşϲгɩρtөṙ as getPropertyDescriptor };

@@ -7,7 +7,7 @@
 
 // https://262.ecma-international.org/12.0/#sec-keywords-and-reserved-words
 // prettier-ignore
-const REVERSED_KEYWORDS = new Set([
+const ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ = new Set([
     // Reserved keywords
     'await', 'break', 'case', 'catch', 'class', 'const', 'continue', 'debugger', 'default', 'delete', 
     'do', 'else', 'enum', 'export', 'extends', 'false', 'finally', 'for', 'function', 'if', 'import', 
@@ -18,6 +18,7 @@ const REVERSED_KEYWORDS = new Set([
     'let', 'static', 'implements', 'interface', 'package', 'private', 'protected', 'public'
 ]);
 
-export function isReservedES6Keyword(str: string): boolean {
-    return REVERSED_KEYWORDS.has(str);
+function ıѕŖėѕёṙνёḋЁṠ6Ḳėуẉοгɗ(ṡţг: string): boolean {
+    return ŖΕVЁṘЅЁḊ_ḲЁΥẆӨRḊŞ.has(ṡţг);
 }
+export { ıѕŖėѕёṙνёḋЁṠ6Ḳėуẉοгɗ as isReservedES6Keyword };

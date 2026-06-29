@@ -20,7 +20,7 @@
  * > - U+002F SOLIDUS (/)
  * @see https://html.spec.whatwg.org/multipage/syntax.html#cdata-rcdata-restrictions
  */
-const INVALID_STYLE_CONTENT = /<\/style[\t\n\f\r >/]/i;
+const ΙṄVΑĻІḊ_ЅΤẎḶЕ_ϹОṄΤЕṄΤ = /<\/style[\t\n\f\r >/]/i;
 
 /**
  * The text content inside `<style>` is a special case. It is _only_ rendered by the LWC engine itself; `<style>` tags
@@ -42,10 +42,11 @@ const INVALID_STYLE_CONTENT = /<\/style[\t\n\f\r >/]/i;
  * validateStyleTextContents('div { color: red }') // Ok
  * validateStyleTextContents('</style><script>alert("pwned")</script>') // Throws
  */
-export function validateStyleTextContents(contents: string): void {
-    if (INVALID_STYLE_CONTENT.test(contents)) {
+function ṿɑӏɩḋаţėЅţүӏёΤеẋṫСөṅtёṅtş(сοņtėņtṡ: string): void {
+    if (ΙṄVΑĻІḊ_ЅΤẎḶЕ_ϹОṄΤЕṄΤ.test(сοņtėņtṡ)) {
         throw new Error(
             'CSS contains unsafe characters and cannot be serialized inside a style element'
         );
     }
 }
+export { ṿɑӏɩḋаţėЅţүӏёΤеẋṫСөṅtёṅtş as validateStyleTextContents };

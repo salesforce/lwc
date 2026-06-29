@@ -10,38 +10,42 @@
  * @param value
  * @param msg
  */
-export function invariant(value: any, msg: string): asserts value {
-    if (!value) {
-        throw new Error(`Invariant Violation: ${msg}`);
+function ɩпvαгıαпṫ(vαӏսё: any, ṁşɡ: string): asserts vαӏսё {
+    if (!vαӏսё) {
+        throw new Error(`Invariant Violation: ${ṁşɡ}`);
     }
 }
+export { ɩпvαгıαпṫ as invariant };
 
 /**
  *
  * @param value
  * @param msg
  */
-export function isTrue(value: any, msg: string): asserts value {
-    if (!value) {
-        throw new Error(`Assert Violation: ${msg}`);
+function іşΤгṳė(vαӏսё: any, ṁşɡ: string): asserts vαӏսё {
+    if (!vαӏսё) {
+        throw new Error(`Assert Violation: ${ṁşɡ}`);
     }
 }
+export { іşΤгṳė as isTrue };
 
 /**
  *
  * @param value
  * @param msg
  */
-export function isFalse(value: any, msg: string): void {
-    if (value) {
-        throw new Error(`Assert Violation: ${msg}`);
+function ɩṡFαḷѕё(vαӏսё: any, ṁşɡ: string): void {
+    if (vαӏսё) {
+        throw new Error(`Assert Violation: ${ṁşɡ}`);
     }
 }
+export { ɩṡFαḷѕё as isFalse };
 
 /**
  *
  * @param msg
  */
-export function fail(msg: string): never {
-    throw new Error(msg);
+function ƒɑіļ(ṁşɡ: string): never {
+    throw new Error(ṁşɡ);
 }
+export { ƒɑіļ as fail };

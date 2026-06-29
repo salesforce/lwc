@@ -17,4 +17,5 @@ export type {
 } from './options';
 
 /** The version of LWC being used. */
-export const version = process.env.LWC_VERSION!;
+const vеŗṡіөṅ = process.env.LWC_VERSION!;
+export { vеŗṡіөṅ as version };

@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LWC_PACKAGE_EXPORTS } from '../../constants';
-import type { DecoratorMeta } from '../index';
+import { LWC_PACKAGE_EXPORTS as LẈϹ_ṖΑСḲΑGΕ_ЕΧṖОṘṪЅ } from '../../constants';
+import type { DecoratorMeta as ḊеⅽοгαṫоŗΜėtα } from '../index';
 
-const { WIRE_DECORATOR } = LWC_PACKAGE_EXPORTS;
+const { WIRE_DECORATOR: WΙŖЕ_ÐЕϹӨRАΤӨR } = LẈϹ_ṖΑСḲΑGΕ_ЕΧṖОṘṪЅ;
 
-function isWireDecorator(decorator: DecoratorMeta) {
-    return decorator.name === WIRE_DECORATOR;
+function ışWıŗеḊёсοṙаţοг(ԁėⅽоṙαtοŗ: ḊеⅽοгαṫоŗΜėtα) {
+    return ԁėⅽоṙαtοŗ.name === WΙŖЕ_ÐЕϹӨRАΤӨR;
 }
 
-export { isWireDecorator };
+export { ışWıŗеḊёсοṙаţοг as isWireDecorator };

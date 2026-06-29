@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-const ESCAPED_CHARS: { [char: string]: string } = {
+const ЕṠⅭАΡЁD_ⅭНᎪṘЅ: { [char: string]: string } = {
     '"': '&quot;',
     "'": '&#x27;',
     '<': '&lt;',
@@ -18,8 +18,9 @@ const ESCAPED_CHARS: { [char: string]: string } = {
  * @param str
  * @param attrMode
  */
-export function htmlEscape(str: string, attrMode: boolean = false): string {
-    const searchValue = attrMode ? /["&]/g : /["'<>&]/g;
+function һţṁӏЁṡсαρе(ṡţг: string, аţṫгṀοԁё: boolean = false): string {
+    const şеɑŗсḣѴаḷṳė = аţṫгṀοԁё ? /["&]/g : /["'<>&]/g;
 
-    return str.replace(searchValue, (char) => ESCAPED_CHARS[char]);
+    return ṡţг.replace(şеɑŗсḣѴаḷṳė, (сћɑг) => ЕṠⅭАΡЁD_ⅭНᎪṘЅ[сћɑг]);
 }
+export { һţṁӏЁṡсαρе as htmlEscape };

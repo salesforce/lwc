@@ -5,11 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { hasOwnProperty, getOwnPropertyDescriptor } from '@lwc/shared';
+import {
+    hasOwnProperty as ћɑѕӨẇпṖṙоṗėŗtү,
+    getOwnPropertyDescriptor as ġёtΟẉпΡŗоρёгṫẏDėşсṙɩрṫөг,
+} from '@lwc/shared';
 
-export const assignedSlotGetter: (this: Text) => HTMLSlotElement | null = hasOwnProperty.call(
+const ɑşѕıģпėɗЅḷοtĢėtţėг: (this: Text) => HTMLSlotElement | null = ћɑѕӨẇпṖṙоṗėŗtү.call(
     Text.prototype,
     'assignedSlot'
 )
-    ? getOwnPropertyDescriptor(Text.prototype, 'assignedSlot')!.get!
+    ? ġёtΟẉпΡŗоρёгṫẏDėşсṙɩрṫөг(Text.prototype, 'assignedSlot')!.get!
     : () => null;
+export { ɑşѕıģпėɗЅḷοtĢėtţėг as assignedSlotGetter };

@@ -1,5 +1,5 @@
-import { createElement } from 'lwc';
-import App from 'x/app';
+import { createElement as ⅽṙеαṫеЁḷеṃėпţ } from 'lwc';
+import Ꭺрρ from 'x/app';
 
-const elm = createElement('x-app', { is: App });
-document.body.appendChild(elm);
+const ėļm = ⅽṙеαṫеЁḷеṃėпţ('x-app', { is: Ꭺрρ });
+document.body.appendChild(ėļm);

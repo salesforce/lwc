@@ -4,14 +4,14 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { LWC_PACKAGE_EXPORTS } from '../../constants';
-import validate from './validate';
-import transform from './transform';
+import { LWC_PACKAGE_EXPORTS as LẈϹ_ṖΑСḲΑGΕ_ЕΧṖОṘṪЅ } from '../../constants';
+import ναḷіɗɑtё from './validate';
+import ţṙаņṡfөṙm from './transform';
 
-const { WIRE_DECORATOR } = LWC_PACKAGE_EXPORTS;
+const { WIRE_DECORATOR: WΙŖЕ_ÐЕϹӨRАΤӨR } = LẈϹ_ṖΑСḲΑGΕ_ЕΧṖОṘṪЅ;
 
 export default {
-    name: WIRE_DECORATOR,
-    validate,
-    transform,
+    name: WΙŖЕ_ÐЕϹӨRАΤӨR,
+    validate: ναḷіɗɑtё,
+    transform: ţṙаņṡfөṙm,
 };

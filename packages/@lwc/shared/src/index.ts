@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import * as assert from './assert';
+import * as αṡѕёṙt from './assert';
 
 export * from './api-version';
 export * from './aria';
@@ -25,4 +25,4 @@ export * from './custom-element';
 export * from './ssr';
 export * from './normalize-tab-index';
 
-export { assert };
+export { αṡѕёṙt as assert };

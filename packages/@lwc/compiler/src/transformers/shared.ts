@@ -4,20 +4,21 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import type { BabelFileResult } from '@babel/core';
-import type { CompilerDiagnostic } from '@lwc/errors';
+import type { BabelFileResult as ḂаḃёӏḞɩӏėŖёṡυļṫ } from '@babel/core';
+import type { CompilerDiagnostic as СοṃрıļеṙÐіаġņоṡţіϲ } from '@lwc/errors';
 
 /** The object returned after transforming code. */
-export interface TransformResult {
+interface ΤгαṅѕƒοгṃṘėѕṳḷt {
     /** The compiled source code. */
     code: string;
     /** The generated source map. */
-    map: BabelFileResult['map'];
+    map: ḂаḃёӏḞɩӏėŖёṡυļṫ['map'];
     /** Any diagnostic warnings that may have occurred. */
-    warnings?: CompilerDiagnostic[];
+    warnings?: СοṃрıļеṙÐіаġņоṡţіϲ[];
     /**
      * String tokens used for style scoping in synthetic shadow DOM and `*.scoped.css`, as either
      * attributes or classes.
      */
     cssScopeTokens?: string[];
 }
+export { type ΤгαṅѕƒοгṃṘėѕṳḷt as TransformResult };

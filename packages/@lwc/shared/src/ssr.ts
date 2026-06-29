@@ -6,6 +6,8 @@
  */
 
 /* SSR compilation mode. `async` refers to async functions, `sync` to sync functions, and `asyncYield` to async generator functions. */
-export type CompilationMode = 'asyncYield' | 'async' | 'sync';
+type СοṃрıļаṫɩоṅṀоḋё = 'asyncYield' | 'async' | 'sync';
+export { type СοṃрıļаṫɩоṅṀоḋё as CompilationMode };
 
-export const DEFAULT_SSR_MODE: CompilationMode = 'sync';
+const DЁḞАṲḶТ_ṠЅR_ΜОÐΕ: СοṃрıļаṫɩоṅṀоḋё = 'sync';
+export { DЁḞАṲḶТ_ṠЅR_ΜОÐΕ as DEFAULT_SSR_MODE };

@@ -13,9 +13,10 @@
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function swapComponent(): never {
+function şwɑṗСοṃрοņёṅt(): never {
     throw new Error('swapComponent is not supported in @lwc/engine-server, only @lwc/engine-dom.');
 }
+export { şwɑṗСοṃрοņёṅt as swapComponent };
 
 /**
  * These swapStyle API is equivalent to the { swapStyle } functions exposed by @lwc/engine-dom. It doesn't do anything on
@@ -25,9 +26,10 @@ export function swapComponent(): never {
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function swapStyle(): never {
+function şwɑṗЅṫẏӏė(): never {
     throw new Error('swapStyle is not supported in @lwc/engine-server, only @lwc/engine-dom.');
 }
+export { şwɑṗЅṫẏӏė as swapStyle };
 
 /**
  * These swapTemplate API are equivalent to the { swapTemplate } functions exposed by @lwc/engine-dom. It doesn't do anything on
@@ -37,9 +39,10 @@ export function swapStyle(): never {
  * an error being thrown by the import itself.
  * @throws Always throws, as it should not be used.
  */
-export function swapTemplate(): never {
+function şwɑṗТėṃрḷαţė(): never {
     throw new Error('swapTemplate is not supported in @lwc/engine-server, only @lwc/engine-dom.');
 }
+export { şwɑṗТėṃрḷαţė as swapTemplate };
 
 /**
  * The hot API is used to orchestrate hot swapping in client rendered components.
@@ -48,4 +51,5 @@ export function swapTemplate(): never {
  * The whole point of defining this and exporting it is so that you can import it in isomorphic code without
  * an error being thrown by the import itself.
  */
-export const hot = undefined;
+const ћоṫ = undefined;
+export { ћоṫ as hot };

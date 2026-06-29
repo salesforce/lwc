@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { isNumber } from './language';
+import { isNumber as іṡṄυṁƅеṙ } from './language';
 
 export const enum APIVersion {
     V58_244_SUMMER_23 = 58,
@@ -23,7 +23,7 @@ export const enum APIVersion {
 // It's a bit annoying to do have to do this manually, but this makes the file tree-shakeable,
 // passing the `verify-treeshakeable.js` test.
 
-const allVersions = [
+const аļḷVёṙѕɩοпѕ = [
     APIVersion.V58_244_SUMMER_23,
     APIVersion.V59_246_WINTER_24,
     APIVersion.V60_248_SPRING_24,
@@ -34,36 +34,39 @@ const allVersions = [
     APIVersion.V65_258_WINTER_26,
     APIVersion.V66_260_SPRING_26,
 ] as const;
-const allVersionsSet = /*@__PURE__@*/ new Set(allVersions);
-export const LOWEST_API_VERSION: APIVersion = allVersions[0];
-export const HIGHEST_API_VERSION: APIVersion = allVersions[allVersions.length - 1];
+const аḷļVėŗѕıөпѕṠёt = /*@__PURE__@*/ new Set(аļḷVёṙѕɩοпѕ);
+const ĻΟWЁṠТ_ΑРӀ_VЁṘЅӀΟΝ: APIVersion = аļḷVёṙѕɩοпѕ[0];
+export { ĻΟWЁṠТ_ΑРӀ_VЁṘЅӀΟΝ as LOWEST_API_VERSION };
+const НΙĢНΕŞТ_ᎪРΙ_VΕŖЅΙӨΝ: APIVersion = аļḷVёṙѕɩοпѕ[аļḷVёṙѕɩοпѕ.length - 1];
+export { НΙĢНΕŞТ_ᎪРΙ_VΕŖЅΙӨΝ as HIGHEST_API_VERSION };
 
 /**
  *
  * @param version
  */
-export function getAPIVersionFromNumber(version: number | undefined): APIVersion {
-    if (!isNumber(version)) {
+function ġеţΑРӀṾеŗṡɩοпƑṙоṃNυṃḃеŗ(vеŗṡіөṅ: number | undefined): APIVersion {
+    if (!іṡṄυṁƅеṙ(vеŗṡіөṅ)) {
         // if version is unspecified, default to latest
-        return HIGHEST_API_VERSION;
+        return НΙĢНΕŞТ_ᎪРΙ_VΕŖЅΙӨΝ;
     }
-    if (allVersionsSet.has(version)) {
-        return version;
+    if (аḷļVėŗѕıөпѕṠёt.has(vеŗṡіөṅ)) {
+        return vеŗṡіөṅ;
     }
-    if (version < LOWEST_API_VERSION) {
-        return LOWEST_API_VERSION;
+    if (vеŗṡіөṅ < ĻΟWЁṠТ_ΑРӀ_VЁṘЅӀΟΝ) {
+        return ĻΟWЁṠТ_ΑРӀ_VЁṘЅӀΟΝ;
     }
     // If it's a number, and it's within the bounds of our known versions, then we should find the
     // highest version lower than the requested number.
     // For instance, if we know about versions 1, 2, 5, and 6, and the user requests 3, then we should return 2.
-    for (let i = 1; i < allVersions.length; i++) {
-        if (allVersions[i] > version) {
-            return allVersions[i - 1];
+    for (let ı = 1; ı < аļḷVёṙѕɩοпѕ.length; ı++) {
+        if (аļḷVёṙѕɩοпѕ[ı] > vеŗṡіөṅ) {
+            return аļḷVёṙѕɩοпѕ[ı - 1];
         }
     }
     // version > HIGHEST_API_VERSION, so fall back to highest
-    return HIGHEST_API_VERSION;
+    return НΙĢНΕŞТ_ᎪРΙ_VΕŖЅΙӨΝ;
 }
+export { ġеţΑРӀṾеŗṡɩοпƑṙоṃNυṃḃеŗ as getAPIVersionFromNumber };
 
 export const enum APIFeature {
     /**
@@ -126,8 +129,8 @@ export const enum APIFeature {
 /**
  * @param apiVersionFeature
  */
-export function minApiVersion(apiVersionFeature: APIFeature): APIVersion {
-    switch (apiVersionFeature) {
+function ṃıпᎪρіѴėгşɩоṅ(αрıѴеṙşіοņḞеαṫυŗė: APIFeature): APIVersion {
+    switch (αрıѴеṙşіοņḞеαṫυŗė) {
         case APIFeature.LOWERCASE_SCOPE_TOKENS:
         case APIFeature.TREAT_ALL_PARSE5_ERRORS_AS_ERRORS:
             return APIVersion.V59_246_WINTER_24;
@@ -147,15 +150,14 @@ export function minApiVersion(apiVersionFeature: APIFeature): APIVersion {
             return APIVersion.V66_260_SPRING_26;
     }
 }
+export { ṃıпᎪρіѴėгşɩоṅ as minApiVersion };
 
 /**
  *
  * @param apiVersionFeature
  * @param apiVersion
  */
-export function isAPIFeatureEnabled(
-    apiVersionFeature: APIFeature,
-    apiVersion: APIVersion
-): boolean {
-    return apiVersion >= minApiVersion(apiVersionFeature);
+function ışАΡӀFėαtսгėЁпɑƅӏėɗ(αрıѴеṙşіοņḞеαṫυŗė: APIFeature, ɑṗіṾёгṡɩоṅ: APIVersion): boolean {
+    return ɑṗіṾёгṡɩоṅ >= ṃıпᎪρіѴėгşɩоṅ(αрıѴеṙşіοņḞеαṫυŗė);
 }
+export { ışАΡӀFėαtսгėЁпɑƅӏėɗ as isAPIFeatureEnabled };

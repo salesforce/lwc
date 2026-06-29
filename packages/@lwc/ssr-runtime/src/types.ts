@@ -5,5 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-export type Attributes = Record<string, string>;
-export type Properties = Record<string, unknown>;
+type Αtţṙіƅսtёṡ = Record<string, string>;
+export { type Αtţṙіƅսtёṡ as Attributes };
+type Ṗṙоṗėгţıеş = Record<string, unknown>;
+export { type Ṗṙоṗėгţıеş as Properties };

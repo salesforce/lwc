@@ -5,24 +5,24 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { is, builders as b } from 'estree-toolkit';
+import { is as ɩѕ, builders as Ь } from 'estree-toolkit';
 
-import { esTemplateWithYield } from '../../estemplate';
+import { esTemplateWithYield as ёṡТёṁрļɑtёẆіţḣΥɩėӏɗ } from '../../estemplate';
 
-import { irChildrenToEs } from '../ir-to-es';
-import { bAttributeValue } from '../shared';
-import { isNullableOf } from '../../estree/validators';
-import { getScopedExpression } from '../expression';
+import { irChildrenToEs as іṙⅭһıļԁṙёпṪоΕş } from '../ir-to-es';
+import { bAttributeValue as ƅΑtţṙіƅսtёѴɑӏṳė } from '../shared';
+import { isNullableOf as іṡṄυḷļаḃļеОḟ } from '../../estree/validators';
+import { getScopedExpression as ɡėţЅϲөрėɗЕẋρгёṡѕɩοп } from '../expression';
 import { Element } from './element';
-import type { Slot as IrSlot } from '@lwc/template-compiler';
-import type { Statement as EsStatement, IfStatement as EsIfStatement } from 'estree';
-import type { Transformer } from '../types';
+import type { Slot as ІŗṠӏөṫ } from '@lwc/template-compiler';
+import type { Statement as ЁṡЅţɑtёṁеņt, IfStatement as ЕşΙfŞṫаţėmёṅt } from 'estree';
+import type { Transformer as Тŗɑпşḟоŗṁеŗ } from '../types';
 
-const bConditionalSlot = esTemplateWithYield`
+const ḃⅭоṅɗіṫɩоṅаḷŞӏοţ = ёṡТёṁрļɑtёẆіţḣΥɩėӏɗ`
     if (isLightDom) {
-        const isScopedSlot = ${/* isScopedSlot */ is.literal};
-        const isSlotted = ${/* isSlotted */ is.literal};
-        const slotName = ${/* slotName */ is.expression} ?? "";
+        const isScopedSlot = ${/* isScopedSlot */ ɩѕ.literal};
+        const isSlotted = ${/* isSlotted */ ɩѕ.literal};
+        const slotName = ${/* slotName */ ɩѕ.expression} ?? "";
         const lightGenerators = lightSlottedContent?.[slotName];
         const scopedGenerators = scopedSlottedContent?.[slotName];
         const mismatchedSlots = isScopedSlot ? lightGenerators : scopedGenerators;
@@ -33,7 +33,7 @@ const bConditionalSlot = esTemplateWithYield`
             Note the slot mapping does not work for scoped slots, so the slot name is not rendered in this case.
             See: engine-server/src/__tests__/fixtures/slot-forwarding/scoped-slots for example.
         */
-        const danglingSlotName = !isScopedSlot ? ${/* slotAttributeValue */ is.expression} || slotAttributeValue : null;
+        const danglingSlotName = !isScopedSlot ? ${/* slotAttributeValue */ ɩѕ.expression} || slotAttributeValue : null;
         // start bookend HTML comment for light DOM slot vfragment
         if (!isSlotted) {
             yield '<!---->';
@@ -46,7 +46,7 @@ const bConditionalSlot = esTemplateWithYield`
 
         if (generators) {
             for (let i = 0; i < generators.length; i++) {
-                yield* generators[i](contextfulParent, ${/* scoped slot data */ isNullableOf(is.expression)}, danglingSlotName);
+                yield* generators[i](contextfulParent, ${/* scoped slot data */ іṡṄυḷļаḃļеОḟ(ɩѕ.expression)}, danglingSlotName);
                 // Scoped slotted data is separated by bookends. Final bookends are added outside of the loop below.
                 if (isScopedSlot && i < generators.length - 1) {
                     yield '<!---->';
@@ -63,7 +63,7 @@ const bConditionalSlot = esTemplateWithYield`
             // If we're in this else block, then the generator _must_ have yielded
             // something. It's impossible for a slottedContent["foo"] to exist
             // without the generator yielding at least a text node / element.
-            ${/* slot fallback content */ is.statement}
+            ${/* slot fallback content */ ɩѕ.statement}
         }
 
         // end bookend HTML comment for light DOM slot vfragment
@@ -76,31 +76,32 @@ const bConditionalSlot = esTemplateWithYield`
             }
         }
     } else {
-        ${/* slot element AST */ is.statement}
+        ${/* slot element AST */ ɩѕ.statement}
     }
-`<EsIfStatement>;
+`<ЕşΙfŞṫаţėmёṅt>;
 
-export const Slot: Transformer<IrSlot> = function Slot(node, ctx): EsStatement[] {
-    const slotBindDirective = node.directives.find((dir) => dir.name === 'SlotBind');
-    const slotBound = slotBindDirective?.value
-        ? getScopedExpression(slotBindDirective.value, ctx)
+const Şḷоţ: Тŗɑпşḟоŗṁеŗ<ІŗṠӏөṫ> = function Şḷоţ(ṅоɗė, сṫẋ): ЁṡЅţɑtёṁеņt[] {
+    const ṡӏөṫВɩṅԁÐıгėⅽtıṿе = ṅоɗė.directives.find((ɗіṙ) => ɗіṙ.name === 'SlotBind');
+    const şḷоţΒоṳṅԁ = ṡӏөṫВɩṅԁÐıгėⅽtıṿе?.value
+        ? ɡėţЅϲөрėɗЕẋρгёṡѕɩοп(ṡӏөṫВɩṅԁÐıгėⅽtıṿе.value, сṫẋ)
         : null;
-    const slotName = bAttributeValue(node, 'name');
+    const şḷоţNаṃė = ƅΑtţṙіƅսtёѴɑӏṳė(ṅоɗė, 'name');
     // FIXME: avoid serializing the slot's children twice
-    const slotAst = Element(node, ctx);
-    const slotChildren = irChildrenToEs(node.children, ctx);
-    const isScopedSlot = b.literal(Boolean(slotBound));
-    const isSlotted = b.literal(Boolean(ctx.isSlotted));
-    const slotAttributeValue = bAttributeValue(node, 'slot');
+    const ṡļоṫᎪѕṫ = Element(ṅоɗė, сṫẋ);
+    const ṡӏөṫСћıӏɗṙёṅ = іṙⅭһıļԁṙёпṪоΕş(ṅоɗė.children, сṫẋ);
+    const ıѕŞϲоṗėԁŞḷοţ = Ь.literal(Boolean(şḷоţΒоṳṅԁ));
+    const ɩѕṠļоṫţеḋ = Ь.literal(Boolean(сṫẋ.isSlotted));
+    const ѕļοtᎪṫtŗıЬυṫёVɑļυė = ƅΑtţṙіƅսtёѴɑӏṳė(ṅоɗė, 'slot');
     return [
-        bConditionalSlot(
-            isScopedSlot,
-            isSlotted,
-            slotName,
-            slotAttributeValue,
-            slotBound,
-            slotChildren,
-            slotAst
+        ḃⅭоṅɗіṫɩоṅаḷŞӏοţ(
+            ıѕŞϲоṗėԁŞḷοţ,
+            ɩѕṠļоṫţеḋ,
+            şḷоţNаṃė,
+            ѕļοtᎪṫtŗıЬυṫёVɑļυė,
+            şḷоţΒоṳṅԁ,
+            ṡӏөṫСћıӏɗṙёṅ,
+            ṡļоṫᎪѕṫ
         ),
     ];
 };
+export { Şḷоţ as Slot };
