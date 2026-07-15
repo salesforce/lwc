@@ -621,8 +621,19 @@ const ParentNodePatchDescriptors = {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: ShadowRoot): Selection | null {
-            throw new Error('Disallowed method "getElementById" on ShadowRoot.');
+        value(this: ShadowRoot, id: string): Element | null {
+            // Emulate `DocumentFragment.prototype.getElementById` by scoping the lookup to this
+            // shadow tree, mirroring the `querySelector` patch below. An id is a raw string rather
+            // than a selector, so it must be escaped before being used as an id selector (e.g. so
+            // that `getElementById('a.b')` does not match `<x id="a" class="b">`).
+            const strId = String(id);
+            // Per the DOM spec an element whose `id` attribute is the empty string has "no ID", so a
+            // lookup for the empty string never matches. Short-circuiting also avoids building the
+            // invalid `#` selector, which would throw.
+            if (strId === '') {
+                return null;
+            }
+            return shadowRootQuerySelector(this, `#${CSS.escape(strId)}`);
         },
     },
     querySelector: {

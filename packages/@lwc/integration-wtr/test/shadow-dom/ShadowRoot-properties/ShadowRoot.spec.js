@@ -84,10 +84,4 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
             `Disallowed method "cloneNode" on ShadowRoot.`
         );
     });
-
-    it(`should throw when invoking ShadowRoot.getElementById`, () => {
-        expect(() => elm.shadowRoot.getElementById()).toThrowError(
-            `Disallowed method "getElementById" on ShadowRoot.`
-        );
-    });
 });
