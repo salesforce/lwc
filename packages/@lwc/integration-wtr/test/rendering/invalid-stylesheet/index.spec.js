@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import HelloWorld from 'x/component';
 import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 
@@ -7,10 +7,6 @@ describe('stylesheet validation', () => {
 
     catchUnhandledRejectionsAndErrors((error) => {
         caughtError = error;
-    });
-
-    beforeEach(() => {
-        setFeatureFlagForTest('DISABLE_SCOPE_TOKEN_VALIDATION', false);
     });
 
     afterEach(() => {

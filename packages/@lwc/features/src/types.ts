@@ -77,11 +77,6 @@ export interface FeatureFlagMap {
     DISABLE_SYNTHETIC_SHADOW: FeatureFlagValue;
 
     /**
-     * If true, the contents of stylesheet scope tokens are not validated.
-     */
-    DISABLE_SCOPE_TOKEN_VALIDATION: FeatureFlagValue;
-
-    /**
      * If false or unset, use strict constructor validation.
      * If true, use legacy constructor check (reference equality only).
      */
