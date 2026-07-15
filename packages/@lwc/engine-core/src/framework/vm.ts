@@ -144,8 +144,6 @@ export interface VM<N = HostNode, E = HostElement> {
     /** Rendering operations associated with the VM */
     renderMode: RenderMode;
     shadowMode: ShadowMode;
-    /** True if shadow migrate mode is in effect, i.e. this is native with synthetic-like modifications */
-    shadowMigrateMode: boolean;
     /** The component creation index. */
     idx: number;
     /** Component state, analogous to Element.isConnected */
@@ -376,7 +374,6 @@ export function createVM<HostNode, HostElement>(
         // Properties set right after VM creation.
         tro: null!,
         shadowMode: null!,
-        shadowMigrateMode: false,
         stylesheets: null!,
 
         // Properties set by the LightningElement constructor.
@@ -397,13 +394,7 @@ export function createVM<HostNode, HostElement>(
     }
 
     vm.stylesheets = computeStylesheets(vm, def.ctor);
-    const computedShadowMode = computeShadowMode(def, vm.owner, renderer, hydrated);
-    if (lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
-        vm.shadowMode = ShadowMode.Native;
-        vm.shadowMigrateMode = computedShadowMode === ShadowMode.Synthetic;
-    } else {
-        vm.shadowMode = computedShadowMode;
-    }
+    vm.shadowMode = computeShadowMode(def, vm.owner, renderer, hydrated);
     vm.tro = getTemplateReactiveObserver(vm);
 
     // We don't need to report the shadow mode if we're rendering in light DOM
@@ -530,7 +521,7 @@ function computeShadowMode(
     const { isSyntheticShadowDefined } = renderer;
 
     let shadowMode;
-    if (isSyntheticShadowDefined || lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE) {
+    if (isSyntheticShadowDefined) {
         if (def.renderMode === RenderMode.Light) {
             // ShadowMode.Native implies "not synthetic shadow" which is consistent with how
             // everything defaults to native when the synthetic shadow polyfill is unavailable.

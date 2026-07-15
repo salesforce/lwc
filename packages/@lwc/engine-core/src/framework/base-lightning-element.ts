@@ -54,7 +54,6 @@ import { getVMBeingRendered, isUpdatingTemplate } from './template';
 import { updateComponentValue } from './update-component-value';
 import { markLockerLiveObject } from './membrane';
 import { instrumentInstance } from './runtime-instrumentation';
-import { applyShadowMigrateMode } from './shadow-migration-mode';
 import type { HTMLElementConstructor } from './base-bridge-element';
 import type { Template } from './template';
 import type { RefVNodes, ShadowSupportMode, VM } from './vm';
@@ -306,14 +305,6 @@ function doAttachShadow(vm: VM): LightningElementShadowRoot {
 
     if (process.env.NODE_ENV !== 'production') {
         patchShadowRootWithRestrictions(shadowRoot);
-    }
-
-    if (
-        process.env.IS_BROWSER &&
-        lwcRuntimeFlags.ENABLE_FORCE_SHADOW_MIGRATE_MODE &&
-        vm.shadowMigrateMode
-    ) {
-        applyShadowMigrateMode(shadowRoot);
     }
 
     return shadowRoot;
