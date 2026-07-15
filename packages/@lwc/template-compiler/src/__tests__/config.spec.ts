@@ -51,7 +51,6 @@ describe('customRendererConfig normalization', () => {
             "disableSyntheticShadowSupport": false,
             "enableDynamicComponents": false,
             "enableLwcOn": false,
-            "enableLwcSpread": true,
             "enableStaticContentOptimization": true,
             "experimentalComplexExpressions": false,
             "experimentalComputedMemberExpression": false,

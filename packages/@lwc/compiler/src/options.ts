@@ -16,11 +16,6 @@ import type { InstrumentationObject } from '@lwc/errors';
 import type { CustomRendererConfig } from '@lwc/template-compiler';
 
 /**
- * Flag indicating that a warning about still using the deprecated `enableLwcSpread`
- * compiler option has already been logged to the `console`.
- */
-let alreadyWarnedAboutLwcSpread = false;
-/**
  * Flag indicating that a warning about still using the deprecated `stylesheetConfig`
  * compiler option has already been logged to the `console`.
  */
@@ -126,8 +121,6 @@ export interface TransformOptions {
     enableStaticContentOptimization?: boolean;
     /** Custom renderer config to pass to `@lwc/template-compiler`. See that package's README for details. */
     customRendererConfig?: CustomRendererConfig;
-    /** @deprecated Ignored by compiler. `lwc:spread` is always enabled. */
-    enableLwcSpread?: boolean;
     /** Flag to enable usage of dynamic event listeners (lwc:on) directive in HTML template */
     enableLwcOn?: boolean;
     /** Set to true if synthetic shadow DOM support is not needed, which can result in smaller/faster output. */
@@ -158,7 +151,6 @@ type OptionalTransformKeys =
     | 'namespace'
     | 'scopedStyles'
     | 'customRendererConfig'
-    | 'enableLwcSpread'
     | 'enableLwcOn'
     | 'enableLightningWebSecurityTransforms'
     | 'enableDynamicComponents'
@@ -192,15 +184,6 @@ export function validateTransformOptions(options: TransformOptions): NormalizedT
 
 function validateOptions(options: TransformOptions) {
     invariant(!isUndefined(options), CompilerValidationErrors.MISSING_OPTIONS_OBJECT, [options]);
-
-    if (!isUndefined(options.enableLwcSpread) && !alreadyWarnedAboutLwcSpread) {
-        alreadyWarnedAboutLwcSpread = true;
-
-        // eslint-disable-next-line no-console
-        console.warn(
-            `"enableLwcSpread" property is deprecated. The value doesn't impact the compilation and can safely be removed.`
-        );
-    }
 
     if (!isUndefined(options.stylesheetConfig) && !alreadyWarnedOnStylesheetConfig) {
         alreadyWarnedOnStylesheetConfig = true;
