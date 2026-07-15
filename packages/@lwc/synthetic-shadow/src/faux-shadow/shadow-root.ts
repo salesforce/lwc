@@ -617,13 +617,19 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
+    // `getElementById` is intentionally not emulated on the synthetic ShadowRoot: a
+    // document-wide id lookup has no correct shadow-scoped semantics. Rather than expose a
+    // throwing stub (which is still a callable function, so callers that feature-detect
+    // `typeof root.getElementById === 'function'` invoke it and blow up), we leave it
+    // `undefined` so feature detection reveals its absence and callers fall back to the
+    // supported, shadow-scoped `querySelector('#' + id)`. An explicit own property is required
+    // to shadow the native `DocumentFragment.prototype.getElementById`, which would otherwise
+    // run against the (empty) underlying fragment and silently return null.
     getElementById: {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(this: ShadowRoot): Selection | null {
-            throw new Error('Disallowed method "getElementById" on ShadowRoot.');
-        },
+        value: undefined,
     },
     querySelector: {
         writable: true,

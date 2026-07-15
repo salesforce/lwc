@@ -85,9 +85,19 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
         );
     });
 
-    it(`should throw when invoking ShadowRoot.getElementById`, () => {
-        expect(() => elm.shadowRoot.getElementById()).toThrowError(
-            `Disallowed method "getElementById" on ShadowRoot.`
-        );
+    // `getElementById` is not emulated on the synthetic ShadowRoot. Instead of a throwing stub
+    // (which is a callable function and therefore passes `typeof root.getElementById === 'function'`
+    // feature detection, only to throw when invoked), it is left `undefined` so callers can
+    // feature-detect its absence and fall back to the supported, shadow-scoped `querySelector`.
+    it(`should not expose ShadowRoot.getElementById as a callable method`, () => {
+        expect(elm.shadowRoot.getElementById).toBe(undefined);
+        expect(typeof elm.shadowRoot.getElementById).not.toBe('function');
+        expect('getElementById' in elm.shadowRoot).toBe(true);
+    });
+
+    it(`querySelector remains the supported shadow-scoped lookup`, () => {
+        // querySelector stays emulated and callable (the recommended fallback for id lookups
+        // via querySelector('#' + id)), unlike the absent getElementById.
+        expect(typeof elm.shadowRoot.querySelector).toBe('function');
     });
 });
