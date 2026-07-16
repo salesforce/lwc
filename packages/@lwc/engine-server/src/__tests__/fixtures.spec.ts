@@ -147,24 +147,37 @@ function testFixtures(options?: RollupLwcOptions) {
             let result;
             let err;
             try {
-                config?.features?.forEach((flag) => {
-                    setFeatureFlagForProductionTest(flag, true);
-                });
-
+                // Import the compiled module inside this `try` so that fixtures which throw at
+                // import time (e.g. `wire/errors/*`, whose `registerDecorators` runs at module
+                // eval) still have their error captured into `error.txt`.
                 const module: LightningElementConstructor = (await import(compiledFixturePath))
                     .default;
 
-                result = formatHTML(renderComponent('fixture-test', module, config?.props ?? {}));
+                // These fixtures run concurrently (`describe.concurrent`) and feature flags are
+                // global, so this set → render → reset sequence must stay fully synchronous. An
+                // `await` between setting and resetting would yield to a sibling fixture that could
+                // clobber the shared flag, causing flaky failures (e.g. `scope-token-extended` in
+                // production mode). The `finally` guarantees the flag is reset even if rendering
+                // throws, so a leaked `true` can't poison other concurrent fixtures.
+                try {
+                    config?.features?.forEach((flag) => {
+                        setFeatureFlagForProductionTest(flag, true);
+                    });
+
+                    result = formatHTML(
+                        renderComponent('fixture-test', module, config?.props ?? {})
+                    );
+                } finally {
+                    config?.features?.forEach((flag) => {
+                        setFeatureFlagForProductionTest(flag, false);
+                    });
+                }
             } catch (_err: any) {
                 if (_err?.name === 'AssertionError') {
                     throw _err;
                 }
                 err = _err?.message || 'An empty error occurred?!';
             }
-
-            config?.features?.forEach((flag) => {
-                setFeatureFlagForProductionTest(flag, false);
-            });
 
             return {
                 'expected.html': result,
