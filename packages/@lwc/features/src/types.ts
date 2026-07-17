@@ -59,10 +59,6 @@ export interface FeatureFlagMap {
      */
     // TODO [#3733]: remove support for legacy scope tokens
     ENABLE_LEGACY_SCOPE_TOKENS: FeatureFlagValue;
-    /**
-     * If true, enable experimental shadow DOM migration mode globally.
-     */
-    ENABLE_FORCE_SHADOW_MIGRATE_MODE: FeatureFlagValue;
 
     /**
      * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
