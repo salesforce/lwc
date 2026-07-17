@@ -391,5 +391,5 @@ export function isValidScopeToken(token: unknown) {
     }
 
     // See W-16614556
-    return lwcRuntimeFlags.DISABLE_SCOPE_TOKEN_VALIDATION || VALID_SCOPE_TOKEN_REGEX.test(token);
+    return VALID_SCOPE_TOKEN_REGEX.test(token);
 }
