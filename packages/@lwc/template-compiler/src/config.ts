@@ -73,11 +73,6 @@ export interface Config {
     enableStaticContentOptimization?: boolean;
 
     /**
-     * @deprecated Spread operator is now always enabled.
-     */
-    enableLwcSpread?: boolean;
-
-    /**
      * When true, enables `lwc:on` directive.
      */
     enableLwcOn?: boolean;
@@ -103,7 +98,6 @@ export type NormalizedConfig = RequiredConfigOptions & OptionalConfigOptions;
 const AVAILABLE_OPTION_NAMES = new Set([
     'apiVersion',
     'customRendererConfig',
-    'enableLwcSpread',
     'enableLwcOn',
     'enableStaticContentOptimization',
     // TODO [#3370]: remove experimental template expression flag
@@ -181,7 +175,6 @@ export function normalizeConfig(config: Config): NormalizedConfig {
         experimentalDynamicDirective: false,
         enableDynamicComponents: false,
         enableStaticContentOptimization: true,
-        enableLwcSpread: true,
         enableLwcOn: false,
         disableSyntheticShadowSupport: false,
         ...config,

@@ -28,16 +28,6 @@ describe('validateTransformOptions', () => {
 
         const baseOptions: TransformOptions = { name: 'foo', namespace: 'x' };
 
-        test('warns once when enableLwcSpread is passed', () => {
-            validateTransformOptions({ ...baseOptions, enableLwcSpread: true });
-            validateTransformOptions({ ...baseOptions, enableLwcSpread: true });
-
-            expect(warnSpy).toHaveBeenCalledTimes(1);
-            expect(warnSpy).toHaveBeenCalledWith(
-                expect.stringContaining('"enableLwcSpread" property is deprecated')
-            );
-        });
-
         test('warns once when stylesheetConfig is passed', () => {
             validateTransformOptions({ ...baseOptions, stylesheetConfig: {} });
             validateTransformOptions({ ...baseOptions, stylesheetConfig: {} });

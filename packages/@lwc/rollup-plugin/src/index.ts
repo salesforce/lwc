@@ -57,8 +57,6 @@ export interface RollupLwcOptions {
     // TODO [#3370]: remove experimental template expression flag
     /** The configuration to pass to `@lwc/template-compiler`. */
     experimentalComplexExpressions?: boolean;
-    /** @deprecated Spread operator is now always enabled. */
-    enableLwcSpread?: boolean;
     /** The configuration to pass to the `@lwc/template-compiler`. */
     enableLwcOn?: boolean;
     /** The configuration to pass to `@lwc/compiler` to disable synthetic shadow support */
