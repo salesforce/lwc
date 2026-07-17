@@ -54,7 +54,7 @@
         "@lwc/compiler": "9.3.5",
         "@lwc/module-resolver": "9.3.5",
         "@lwc/shared": "9.3.5",
-        "@rollup/pluginutils": "~5.3.0"
+        "@rollup/pluginutils": "~5.4.0"
     },
     "devDependencies": {
         "@lwc/errors": "9.3.5"
