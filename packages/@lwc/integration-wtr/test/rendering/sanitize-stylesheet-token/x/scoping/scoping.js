@@ -27,12 +27,11 @@ export default class Component extends LightningElement {
 }
 
 // Reset template object for clean state between tests
-const { stylesheetToken, stylesheetTokens, legacyStylesheetToken } = template;
+const { stylesheetToken, stylesheetTokens } = template;
 
 Component.resetTemplate = () => {
     Object.assign(template, {
         stylesheetToken,
         stylesheetTokens,
-        legacyStylesheetToken,
     });
 };

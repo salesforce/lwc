@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Component from 'x/component';
 import Scoping from 'x/scoping';
 import Indirect from 'x/indirect';
@@ -26,7 +26,7 @@ afterAll(() => {
     logger.mockRestore();
 });
 
-const props = ['stylesheetToken', 'stylesheetTokens', 'legacyStylesheetToken'];
+const props = ['stylesheetToken', 'stylesheetTokens'];
 
 const components = [
     {
@@ -50,17 +50,8 @@ props.forEach((prop) => {
     describe(prop, () => {
         components.forEach(({ tagName, Ctor, name }) => {
             describe(name, () => {
-                beforeEach(() => {
-                    setFeatureFlagForTest(
-                        'ENABLE_LEGACY_SCOPE_TOKENS',
-                        prop === 'legacyStylesheetToken'
-                    );
-                });
-
                 afterEach(() => {
-                    setFeatureFlagForTest('ENABLE_LEGACY_SCOPE_TOKENS', false);
-                    // We keep a cache of parsed static fragments; these need to be reset
-                    // since they can vary based on whether we use the legacy scope token or not.
+                    // We keep a cache of parsed static fragments; these need to be reset between tests.
                     resetFragmentCache();
                     // Reset template object for clean state between tests
                     Ctor.resetTemplate();
@@ -79,36 +70,24 @@ props.forEach((prop) => {
 
                     await Promise.resolve();
 
-                    if (
-                        process.env.NATIVE_SHADOW &&
-                        process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION &&
-                        Ctor === Component &&
-                        prop === 'legacyStylesheetToken'
-                    ) {
-                        // When using legacy stylesheet tokens with unscoped CSS in native shadow with static content
-                        // optimization disabled, there's no problem with invalid stylesheet tokens because they are
-                        // only rendered as class attribute values using either `classList` or `setAttribute`
-                        expect(elm.shadowRoot.children.length).toBe(1);
-                    } else {
-                        expect(elm.shadowRoot.children.length).toBe(0); // does not render
+                    expect(elm.shadowRoot.children.length).toBe(0); // does not render
 
-                        expect(caughtError).not.toBeUndefined();
-                        expect(caughtError.message).toMatch(
-                            new RegExp(
-                                [
-                                    // Different browsers have different error messages
-                                    'stylesheet token must be a valid string',
-                                    "Failed to execute 'setAttribute'",
-                                    'Invalid qualified name',
-                                    'Invalid attribute name',
-                                    'String contains an invalid character',
-                                    'The string contains invalid characters',
-                                ]
-                                    .map(RegExp.escape)
-                                    .join('|')
-                            )
-                        );
-                    }
+                    expect(caughtError).not.toBeUndefined();
+                    expect(caughtError.message).toMatch(
+                        new RegExp(
+                            [
+                                // Different browsers have different error messages
+                                'stylesheet token must be a valid string',
+                                "Failed to execute 'setAttribute'",
+                                'Invalid qualified name',
+                                'Invalid attribute name',
+                                'String contains an invalid character',
+                                'The string contains invalid characters',
+                            ]
+                                .map(RegExp.escape)
+                                .join('|')
+                        )
+                    );
                 });
             });
         });

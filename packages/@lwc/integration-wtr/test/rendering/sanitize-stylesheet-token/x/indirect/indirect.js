@@ -21,12 +21,11 @@ export default class Indirect extends LightningElement {
     }
 }
 
-const { stylesheetToken, stylesheetTokens, legacyStylesheetToken } = template;
+const { stylesheetToken, stylesheetTokens } = template;
 
 Indirect.resetTemplate = () => {
     Object.assign(template, {
         stylesheetToken,
         stylesheetTokens,
-        legacyStylesheetToken,
     });
 };

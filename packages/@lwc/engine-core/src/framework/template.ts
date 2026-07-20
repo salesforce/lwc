@@ -244,14 +244,12 @@ function buildParseFragmentFn(
     return function parseFragment(strings: string[], ...keys: (string | number)[]) {
         return function applyFragmentParts(parts?: VStaticPart[]): Element {
             const {
-                context: { hasScopedStyles, stylesheetToken, legacyStylesheetToken },
+                context: { hasScopedStyles, stylesheetToken },
                 shadowMode,
                 renderer,
             } = getVMBeingRendered()!;
             const hasStyleToken = !isUndefined(stylesheetToken);
             const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
-            const hasLegacyToken =
-                lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS && !isUndefined(legacyStylesheetToken);
 
             let cacheKey = 0;
             if (hasStyleToken && hasScopedStyles) {
@@ -272,16 +270,11 @@ function buildParseFragmentFn(
 
             // See W-16614556
             // TODO [#2826]: freeze the template object
-            if (
-                (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
-                (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))
-            ) {
+            if (hasStyleToken && !isValidScopeToken(stylesheetToken)) {
                 throw new Error('stylesheet token must be a valid string');
             }
 
-            // If legacy stylesheet tokens are required, then add them to the rendered string
-            const stylesheetTokenToRender =
-                stylesheetToken + (hasLegacyToken ? ` ${legacyStylesheetToken}` : '');
+            const stylesheetTokenToRender = stylesheetToken;
 
             const classToken =
                 hasScopedStyles && hasStyleToken ? ' ' + stylesheetTokenToRender : '';
@@ -404,9 +397,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                     // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html, /* legacy */ false);
-                    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
-                        updateStylesheetToken(vm, html, /* legacy */ true);
-                    }
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
