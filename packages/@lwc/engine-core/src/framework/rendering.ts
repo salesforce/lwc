@@ -616,31 +616,11 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
         getClassList(elm).add(scopeToken);
     }
 
-    // TODO [#3733]: remove support for legacy scope tokens
-    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
-        const legacyScopeToken = getScopeTokenClass(owner, /* legacy */ true);
-        if (!isNull(legacyScopeToken)) {
-            if (!isValidScopeToken(legacyScopeToken)) {
-                // See W-16614556
-                throw new Error('stylesheet token must be a valid string');
-            }
-            // TODO [#2762]: this dot notation with add is probably problematic
-            // probably we should have a renderer api for just the add operation
-            getClassList(elm).add(legacyScopeToken);
-        }
-    }
-
     // Set property element for synthetic shadow DOM style scoping.
     const { stylesheetToken: syntheticToken } = owner.context;
     if (owner.shadowMode === ShadowMode.Synthetic) {
         if (!isUndefined(syntheticToken)) {
             (elm as any).$shadowToken$ = syntheticToken;
-        }
-        if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
-            const legacyToken = owner.context.legacyStylesheetToken;
-            if (!isUndefined(legacyToken)) {
-                (elm as any).$legacyShadowToken$ = legacyToken;
-            }
         }
     }
 }

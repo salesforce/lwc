@@ -9,7 +9,6 @@ import { childNodesGetter, compareDocumentPosition, Node } from '../env/node';
 import { MutationObserver, MutationObserverObserve } from '../env/mutation-observer';
 import { getShadowRootResolver, isSyntheticShadowHost, setShadowRootResolver } from './shadow-root';
 import { setShadowToken, getShadowToken } from './shadow-token';
-import { setLegacyShadowToken, getLegacyShadowToken } from './legacy-shadow-token';
 import type { ShadowRootResolver } from './shadow-root';
 
 const DomManualPrivateKey = '$$DomManualKey$$';
@@ -27,13 +26,7 @@ const portalObserverConfig: MutationObserverInit = {
     childList: true,
 };
 
-// TODO [#3733]: remove support for legacy scope tokens
-function adoptChildNode(
-    node: Node,
-    fn: ShadowRootResolver,
-    shadowToken: string | undefined,
-    legacyShadowToken: string | undefined
-) {
+function adoptChildNode(node: Node, fn: ShadowRootResolver, shadowToken: string | undefined) {
     const previousNodeShadowResolver = getShadowRootResolver(node);
     if (previousNodeShadowResolver === fn) {
         return; // nothing to do here, it is already correctly patched
@@ -41,9 +34,6 @@ function adoptChildNode(
     setShadowRootResolver(node, fn);
     if (node instanceof Element) {
         setShadowToken(node, shadowToken);
-        if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
-            setLegacyShadowToken(node, legacyShadowToken);
-        }
 
         if (isSyntheticShadowHost(node)) {
             // Root LWC elements can't get content slotted into them, therefore we don't observe their children.
@@ -57,7 +47,7 @@ function adoptChildNode(
         // recursively patching all children as well
         const childNodes = childNodesGetter.call(node);
         for (let i = 0, len = childNodes.length; i < len; i += 1) {
-            adoptChildNode(childNodes[i], fn, shadowToken, legacyShadowToken);
+            adoptChildNode(childNodes[i], fn, shadowToken);
         }
     }
 }
@@ -79,9 +69,6 @@ function initPortalObserver() {
             // the target of the mutation should always have a ShadowRootResolver attached to it
             const fn = getShadowRootResolver(elm)!;
             const shadowToken = getShadowToken(elm);
-            const legacyShadowToken = lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS
-                ? getLegacyShadowToken(elm)
-                : undefined;
 
             // Process removals first to handle the case where an element is removed and reinserted
             for (let i = 0, len = removedNodes.length; i < len; i += 1) {
@@ -89,14 +76,14 @@ function initPortalObserver() {
                 if (
                     !(compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY)
                 ) {
-                    adoptChildNode(node, DocumentResolverFn, undefined, undefined);
+                    adoptChildNode(node, DocumentResolverFn, undefined);
                 }
             }
 
             for (let i = 0, len = addedNodes.length; i < len; i += 1) {
                 const node: Node = addedNodes[i];
                 if (compareDocumentPosition.call(elm, node) & Node.DOCUMENT_POSITION_CONTAINED_BY) {
-                    adoptChildNode(node, fn, shadowToken, legacyShadowToken);
+                    adoptChildNode(node, fn, shadowToken);
                 }
             }
         });

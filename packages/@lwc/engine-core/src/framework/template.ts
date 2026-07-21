@@ -53,7 +53,8 @@ export interface Template {
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
     /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
-    // TODO [#3733]: remove support for legacy scope tokens
+    // TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
+    // runtime flag has been removed, so this token is no longer read at render time).
     legacyStylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
@@ -244,14 +245,12 @@ function buildParseFragmentFn(
     return function parseFragment(strings: string[], ...keys: (string | number)[]) {
         return function applyFragmentParts(parts?: VStaticPart[]): Element {
             const {
-                context: { hasScopedStyles, stylesheetToken, legacyStylesheetToken },
+                context: { hasScopedStyles, stylesheetToken },
                 shadowMode,
                 renderer,
             } = getVMBeingRendered()!;
             const hasStyleToken = !isUndefined(stylesheetToken);
             const isSyntheticShadow = shadowMode === ShadowMode.Synthetic;
-            const hasLegacyToken =
-                lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS && !isUndefined(legacyStylesheetToken);
 
             let cacheKey = 0;
             if (hasStyleToken && hasScopedStyles) {
@@ -272,23 +271,14 @@ function buildParseFragmentFn(
 
             // See W-16614556
             // TODO [#2826]: freeze the template object
-            if (
-                (hasStyleToken && !isValidScopeToken(stylesheetToken)) ||
-                (hasLegacyToken && !isValidScopeToken(legacyStylesheetToken))
-            ) {
+            if (hasStyleToken && !isValidScopeToken(stylesheetToken)) {
                 throw new Error('stylesheet token must be a valid string');
             }
 
-            // If legacy stylesheet tokens are required, then add them to the rendered string
-            const stylesheetTokenToRender =
-                stylesheetToken + (hasLegacyToken ? ` ${legacyStylesheetToken}` : '');
-
-            const classToken =
-                hasScopedStyles && hasStyleToken ? ' ' + stylesheetTokenToRender : '';
+            const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
             const classAttrToken =
-                hasScopedStyles && hasStyleToken ? ` class="${stylesheetTokenToRender}"` : '';
-            const attrToken =
-                hasStyleToken && isSyntheticShadow ? ' ' + stylesheetTokenToRender : '';
+                hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
+            const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
             // In the browser, we provide the entire class attribute as a perf optimization to avoid applying it on mount.
             // The remaining class expression will be applied when the static parts are mounted.
             // In SSR, the entire class attribute (expression included) is assembled along with the fragment.
@@ -404,9 +394,6 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
 
                     // Update the scoping token on the host element.
                     updateStylesheetToken(vm, html, /* legacy */ false);
-                    if (lwcRuntimeFlags.ENABLE_LEGACY_SCOPE_TOKENS) {
-                        updateStylesheetToken(vm, html, /* legacy */ true);
-                    }
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.

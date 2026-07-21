@@ -25,8 +25,7 @@ export default class Component extends LightningElement {
                 shadowAttribute: token,
             };
         } else {
-            // stylesheetToken or legacyStylesheetToken
-            // this format uses a string
+            // stylesheetToken: this format uses a string
             template[propToUse] = token;
         }
 
@@ -35,12 +34,11 @@ export default class Component extends LightningElement {
 }
 
 // Reset template object for clean state between tests
-const { stylesheetToken, stylesheetTokens, legacyStylesheetToken } = template;
+const { stylesheetToken, stylesheetTokens } = template;
 
 Component.resetTemplate = () => {
     Object.assign(template, {
         stylesheetToken,
         stylesheetTokens,
-        legacyStylesheetToken,
     });
 };

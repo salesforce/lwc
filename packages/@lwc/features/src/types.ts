@@ -54,13 +54,6 @@ export interface FeatureFlagMap {
     ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
 
     /**
-     * If true, render legacy CSS scope tokens in addition to the modern CSS scope tokens. This is designed
-     * for cases where backwards compat is required (e.g. global stylesheets using these tokens in their selectors).
-     */
-    // TODO [#3733]: remove support for legacy scope tokens
-    ENABLE_LEGACY_SCOPE_TOKENS: FeatureFlagValue;
-
-    /**
      * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
      * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
      */
