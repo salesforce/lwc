@@ -211,7 +211,7 @@ export function transformStaticChildren(elm: StaticElement, preserveComments: bo
     return result;
 }
 
-// Given a static child, determines wether the child is a contiguous text node.
+// Given a static child, determines whether the child is a contiguous text node.
 // Note this is intended to be used with children generated from transformStaticChildren
 export const isContiguousText = (staticChild: StaticChildNode | Text[]): staticChild is Text[] =>
     isArray(staticChild) && ArrayEvery.call(staticChild, isText);
