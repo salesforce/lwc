@@ -26,13 +26,7 @@ export const enum VStaticPartType {
 }
 
 export type VNode =
-    | VText
-    | VComment
-    | VElement
-    | VCustomElement
-    | VStatic
-    | VFragment
-    | VScopedSlotFragment;
+    VText | VComment | VElement | VCustomElement | VStatic | VFragment | VScopedSlotFragment;
 
 export type VNodes = ReadonlyArray<VNode | null>;
 /**

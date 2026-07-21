@@ -307,14 +307,7 @@ export interface ScopedSlotFragment extends DirectiveParentNode<'ScopedSlotFragm
 export type ForBlock = ForEach | ForOf;
 
 export type ParentNode =
-    | Root
-    | ForBlock
-    | If
-    | IfBlock
-    | ElseifBlock
-    | ElseBlock
-    | BaseElement
-    | ScopedSlotFragment;
+    Root | ForBlock | If | IfBlock | ElseifBlock | ElseBlock | BaseElement | ScopedSlotFragment;
 
 export type ChildNode =
     | ForBlock

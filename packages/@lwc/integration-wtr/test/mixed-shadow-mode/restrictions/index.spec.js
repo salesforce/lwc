@@ -83,12 +83,10 @@ describe('restrictions', () => {
                     elm.shadowRoot.querySelector('div').outerHTML = '';
                 });
 
-                if (
-                    !(
-                        process.env.NATIVE_SHADOW &&
-                        throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot()
-                    )
-                ) {
+                if (!(
+                    process.env.NATIVE_SHADOW &&
+                    throwsWhenSettingOuterHtmlOnChildOfNativeShadowRoot()
+                )) {
                     // Expect this to throw in native shadow when the browser throws an error for this case
                     expected = expected.not;
                 }

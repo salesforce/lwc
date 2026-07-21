@@ -26,9 +26,7 @@ export const enum OperationId {
 }
 
 type GlobalOperationId =
-    | OperationId.GlobalRender
-    | OperationId.GlobalRerender
-    | OperationId.GlobalSsrHydrate;
+    OperationId.GlobalRender | OperationId.GlobalRerender | OperationId.GlobalSsrHydrate;
 
 const enum Phase {
     Start = 0,
