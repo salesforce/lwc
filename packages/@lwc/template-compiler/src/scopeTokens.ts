@@ -68,7 +68,8 @@ export function generateScopeTokens(
     const hashCode = generateHashCode(uniqueToken);
     const scopeToken = `lwc-${hashCode.toString(32)}`;
 
-    // TODO [#3733]: remove support for legacy scope tokens
+    // TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
+    // runtime flag has been removed, so the engine no longer renders this token).
     // This scope token is based on the namespace and name, and contains a mix of uppercase/lowercase chars
     const legacyScopeToken = escapeScopeToken(uniqueToken);
 

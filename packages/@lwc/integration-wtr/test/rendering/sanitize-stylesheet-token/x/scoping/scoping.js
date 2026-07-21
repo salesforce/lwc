@@ -17,8 +17,7 @@ export default class Component extends LightningElement {
                 shadowAttribute: token,
             };
         } else {
-            // stylesheetToken or legacyStylesheetToken
-            // this format uses a string
+            // stylesheetToken: this format uses a string
             template[propToUse] = token;
         }
 

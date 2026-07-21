@@ -101,7 +101,8 @@ export interface Context {
     /** True if a stylesheetToken was added to the host attributes */
     hasTokenInAttribute: boolean | undefined;
     /** The legacy string used for synthetic shadow DOM and light DOM style scoping. */
-    // TODO [#3733]: remove support for legacy scope tokens
+    // TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
+    // runtime flag has been removed, so this token is no longer read at render time).
     legacyStylesheetToken: string | undefined;
     /** True if a legacyStylesheetToken was added to the host class */
     hasLegacyTokenInClass: boolean | undefined;

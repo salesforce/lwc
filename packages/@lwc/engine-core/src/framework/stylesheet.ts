@@ -93,7 +93,8 @@ function createInlineStyleVNode(content: string): VNode {
     );
 }
 
-// TODO [#3733]: remove support for legacy scope tokens
+// TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
+// runtime flag has been removed, so the `legacy` argument is now always false).
 export function updateStylesheetToken(vm: VM, template: Template, legacy: boolean) {
     const {
         elm,
@@ -314,7 +315,8 @@ function getNearestShadowComponent(vm: VM): VM | null {
  * @param owner
  * @param legacy
  */
-// TODO [#3733]: remove support for legacy scope tokens
+// TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
+// runtime flag has been removed, so the `legacy` argument is now always false).
 export function getScopeTokenClass(owner: VM, legacy: boolean): string | null {
     const { cmpTemplate, context } = owner;
     return (
