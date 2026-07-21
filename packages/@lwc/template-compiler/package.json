@@ -53,7 +53,7 @@
     "dependencies": {
         "@lwc/errors": "9.3.6",
         "@lwc/shared": "9.3.6",
-        "acorn": "~8.16.0",
+        "acorn": "~8.17.0",
         "astring": "~1.9.0",
         "he": "~1.2.0"
     },
