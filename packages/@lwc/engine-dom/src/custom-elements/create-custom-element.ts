@@ -93,7 +93,7 @@ const createUpgradableConstructor = (isFormAssociated: boolean) => {
     }
     // Using a BaseUpgradableConstructor superclass here is a perf optimization to avoid
     // re-defining the same logic (connectedCallback, disconnectedCallback, etc.) over and over.
-    class UpgradableConstructor extends (BaseUpgradableConstructor!) {}
+    class UpgradableConstructor extends BaseUpgradableConstructor! {}
 
     if (isFormAssociated) {
         // Perf optimization - the vast majority of components have formAssociated=false,

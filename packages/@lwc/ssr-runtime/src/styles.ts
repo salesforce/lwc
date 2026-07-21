@@ -11,11 +11,7 @@ import type { Stylesheets, Stylesheet } from '@lwc/shared';
 import type { RenderContext } from './render';
 
 type ForgivingStylesheets =
-    | Stylesheets
-    | Stylesheet
-    | undefined
-    | null
-    | Array<Stylesheets | undefined | null>;
+    Stylesheets | Stylesheet | undefined | null | Array<Stylesheets | undefined | null>;
 
 // Traverse in the same order as `flattenStylesheets` but without creating unnecessary additional arrays
 function traverseStylesheets(

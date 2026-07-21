@@ -39,8 +39,7 @@ interface ComponentStaticInternals {
 
 interface WireAdapterInfo<Config extends object = object, Value = unknown> {
     adapter:
-        | WireAdapterConstructor<Config, Value>
-        | { adapter: WireAdapterConstructor<Config, Value> };
+        WireAdapterConstructor<Config, Value> | { adapter: WireAdapterConstructor<Config, Value> };
     dataCallback: (cmp: LightningElement) => (newValue: Value) => void;
     config: (cmp: LightningElement) => Config;
 }

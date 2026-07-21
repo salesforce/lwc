@@ -29,14 +29,7 @@ import { LightningElement } from 'lwc';
 export default class extends LightningElement {}`;
 
 const { code } = babel.transformSync(source, {
-    plugins: [
-        [
-            lwcPlugin,
-            {
-                /* options */
-            },
-        ],
-    ],
+    plugins: [[lwcPlugin, {/* options */}]],
 });
 ```
 
