@@ -50,6 +50,7 @@ import {
 import {
     DISALLOWED_HTML_TAGS,
     DISALLOWED_MATHML_TAGS,
+    DOCUMENT_STRUCTURE_TAGS_RE,
     EVENT_HANDLER_NAME_RE,
     EVENT_HANDLER_RE,
     EXPRESSION_RE,
@@ -568,8 +569,24 @@ function parseTextNode(ctx: ParserCtx, parse5Text: parse5Tools.TextNode): Text[]
         );
     }
 
-    // Extract the raw source to avoid HTML entity decoding done by parse5
-    const rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
+    // parse5 collapses <html>/<head>/<body>/doctype into a text node when parsing
+    // a fragment. We re-read raw source here, so their literal markup leaks through
+    // as rendered text without this check. Strip and warn instead.
+    // https://github.com/salesforce/lwc/issues/3681
+    let rawText = cleanTextNode(ctx.getSource(location.startOffset, location.endOffset));
+
+    const documentStructureMatches = rawText.match(DOCUMENT_STRUCTURE_TAGS_RE);
+    if (documentStructureMatches) {
+        for (const match of documentStructureMatches) {
+            const tagName = match.replace(/[<>/]/g, '').split(/\s/)[0];
+            ctx.warnAtLocation(
+                ParserDiagnostics.DOCUMENT_STRUCTURE_TAG_NOT_ALLOWED_IN_TEMPLATE,
+                ast.sourceLocation(location),
+                [tagName]
+            );
+        }
+        rawText = rawText.replace(DOCUMENT_STRUCTURE_TAGS_RE, '');
+    }
 
     if (!rawText.trim().length) {
         return [];
