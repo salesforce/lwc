@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Test from 'x/test';
 
@@ -66,6 +66,11 @@ describe('Properties overrides', () => {
     });
 });
 
+// `getElementById`, `getSelection`, and `cloneNode` have no correct shadow-scoped semantics and are
+// not emulated on the synthetic ShadowRoot. How their absence is *exposed* is gated by the
+// ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag (see @lwc/synthetic-shadow shadow-root.ts).
+const DISALLOWED_METHODS = ['getSelection', 'cloneNode', 'getElementById'];
+
 describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () => {
     let elm;
 
@@ -73,31 +78,52 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
         elm = createElement('x-test', { is: Test });
     });
 
-    it(`should throw when invoking ShadowRoot.getSelection`, () => {
-        expect(() => elm.shadowRoot.getSelection()).toThrowError(
-            `Disallowed method "getSelection" on ShadowRoot.`
-        );
+    // Default behavior (flag off): the methods are throwing stubs. This preserves the long-standing
+    // behavior shipped to every synthetic-shadow consumer.
+    describe('by default (ENABLE_SHADOW_ROOT_UNDEFINED_METHODS off)', () => {
+        DISALLOWED_METHODS.forEach((method) => {
+            it(`should throw when invoking ShadowRoot.${method}`, () => {
+                expect(() => elm.shadowRoot[method]()).toThrowError(
+                    `Disallowed method "${method}" on ShadowRoot.`
+                );
+            });
+
+            it(`exposes ShadowRoot.${method} as a callable function`, () => {
+                // The crux of the problem the flag addresses: a throwing stub still passes
+                // `typeof === 'function'` feature detection, so callers commit to invoking it.
+                expect(typeof elm.shadowRoot[method]).toBe('function');
+            });
+        });
     });
 
-    it(`should throw when invoking ShadowRoot.cloneNode`, () => {
-        expect(() => elm.shadowRoot.cloneNode()).toThrowError(
-            `Disallowed method "cloneNode" on ShadowRoot.`
-        );
-    });
+    // Opt-in behavior (flag on): the methods are `undefined`, so feature detection reveals their
+    // absence and callers fall back to the supported, shadow-scoped `querySelector('#' + id)`.
+    describe('with ENABLE_SHADOW_ROOT_UNDEFINED_METHODS enabled', () => {
+        beforeAll(() => {
+            setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', true);
+        });
 
-    // `getElementById` is not emulated on the synthetic ShadowRoot. Instead of a throwing stub
-    // (which is a callable function and therefore passes `typeof root.getElementById === 'function'`
-    // feature detection, only to throw when invoked), it is left `undefined` so callers can
-    // feature-detect its absence and fall back to the supported, shadow-scoped `querySelector`.
-    it(`should not expose ShadowRoot.getElementById as a callable method`, () => {
-        expect(elm.shadowRoot.getElementById).toBe(undefined);
-        expect(typeof elm.shadowRoot.getElementById).not.toBe('function');
-        expect('getElementById' in elm.shadowRoot).toBe(true);
-    });
+        afterAll(() => {
+            setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', false);
+        });
 
-    it(`querySelector remains the supported shadow-scoped lookup`, () => {
-        // querySelector stays emulated and callable (the recommended fallback for id lookups
-        // via querySelector('#' + id)), unlike the absent getElementById.
-        expect(typeof elm.shadowRoot.querySelector).toBe('function');
+        DISALLOWED_METHODS.forEach((method) => {
+            it(`exposes ShadowRoot.${method} as undefined`, () => {
+                expect(elm.shadowRoot[method]).toBe(undefined);
+                expect(typeof elm.shadowRoot[method]).not.toBe('function');
+            });
+
+            it(`keeps '${method}' as an own property so it shadows DocumentFragment.prototype`, () => {
+                // The property must still exist (as undefined) — deleting it would expose the
+                // native DocumentFragment method, which runs against the empty fragment.
+                expect(method in elm.shadowRoot).toBe(true);
+            });
+        });
+
+        it('querySelector remains the supported shadow-scoped lookup', () => {
+            // querySelector stays emulated and callable — the recommended fallback for id lookups
+            // via querySelector('#' + id), unlike the now-absent getElementById.
+            expect(typeof elm.shadowRoot.querySelector).toBe('function');
+        });
     });
 });

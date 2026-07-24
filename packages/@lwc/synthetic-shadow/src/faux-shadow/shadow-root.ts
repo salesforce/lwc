@@ -199,6 +199,46 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
     );
 }
 
+/**
+ * Some `ShadowRoot` methods have no correct shadow-scoped semantics, so synthetic shadow has
+ * historically exposed them as stubs that throw when invoked: `getElementById`, `getSelection`,
+ * and `cloneNode`. The problem is that a throwing stub is still a *callable function*, so
+ * third-party code that feature-detects the method (`typeof root.getElementById === 'function'`,
+ * or `'getElementById' in root`) sees it as present, commits to calling it, and only then hits the
+ * throw. Native shadow inherits a working method from `DocumentFragment`, so the exact same code
+ * succeeds in native but throws in synthetic.
+ *
+ * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` runtime flag lets an app opt into friendlier behavior:
+ * when enabled, these methods are exposed as `undefined` instead of a throwing stub, so feature
+ * detection reveals their absence and callers can fall back to the supported, shadow-scoped
+ * `querySelector('#' + id)`.
+ *
+ * This is a visible, behavioral change to an API that has shipped unchanged for years to every
+ * synthetic-shadow consumer, so it is DEFAULT OFF: with the flag unset/false the throwing stub is
+ * returned, exactly preserving the legacy behavior. Only when an org explicitly enables the flag do
+ * the methods become `undefined`.
+ *
+ * The flag is read dynamically through a getter (rather than captured when the prototype is built),
+ * because runtime feature flags are set during app initialization — after this polyfill module is
+ * imported. An explicit own accessor is still required to shadow the corresponding native
+ * `DocumentFragment.prototype` method, which would otherwise run against the underlying (empty)
+ * fragment and silently return `null`.
+ */
+function createDisallowedMethodDescriptor(methodName: string): PropertyDescriptor {
+    function disallowedMethod(this: ShadowRoot): never {
+        throw new Error(`Disallowed method "${methodName}" on ShadowRoot.`);
+    }
+    return {
+        enumerable: true,
+        configurable: true,
+        get(this: ShadowRoot): (() => never) | undefined {
+            return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_METHODS
+                ? undefined
+                : disallowedMethod;
+        },
+    };
+}
+
 const SyntheticShadowRootDescriptors = {
     constructor: {
         writable: true,
@@ -284,14 +324,9 @@ const ShadowRootDescriptors = {
             return fauxElementsFromPoint(this, doc, left, top);
         },
     },
-    getSelection: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value(this: ShadowRoot): Selection | null {
-            throw new Error('Disallowed method "getSelection" on ShadowRoot.');
-        },
-    },
+    // See createDisallowedMethodDescriptor: throws by default, `undefined` when the
+    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled.
+    getSelection: createDisallowedMethodDescriptor('getSelection'),
     host: {
         enumerable: true,
         configurable: true,
@@ -404,14 +439,9 @@ const NodePatchDescriptors = {
             return createStaticNodeList(shadowRootChildNodes(this));
         },
     },
-    cloneNode: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value(this: ShadowRoot): Selection | null {
-            throw new Error('Disallowed method "cloneNode" on ShadowRoot.');
-        },
-    },
+    // See createDisallowedMethodDescriptor: throws by default, `undefined` when the
+    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled.
+    cloneNode: createDisallowedMethodDescriptor('cloneNode'),
     compareDocumentPosition: {
         writable: true,
         enumerable: true,
@@ -617,20 +647,10 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
-    // `getElementById` is intentionally not emulated on the synthetic ShadowRoot: a
-    // document-wide id lookup has no correct shadow-scoped semantics. Rather than expose a
-    // throwing stub (which is still a callable function, so callers that feature-detect
-    // `typeof root.getElementById === 'function'` invoke it and blow up), we leave it
-    // `undefined` so feature detection reveals its absence and callers fall back to the
-    // supported, shadow-scoped `querySelector('#' + id)`. An explicit own property is required
-    // to shadow the native `DocumentFragment.prototype.getElementById`, which would otherwise
-    // run against the (empty) underlying fragment and silently return null.
-    getElementById: {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value: undefined,
-    },
+    // See createDisallowedMethodDescriptor: throws by default, `undefined` when the
+    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled. This is the flag's original
+    // motivating case: RUM/analytics libraries feature-detect `getElementById` on the shadow root.
+    getElementById: createDisallowedMethodDescriptor('getElementById'),
     querySelector: {
         writable: true,
         enumerable: true,

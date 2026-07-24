@@ -98,6 +98,23 @@ export interface FeatureFlagMap {
      * synthetic shadow. When false or unset, the guard is active (default).
      */
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
+
+    /**
+     * Controls how synthetic shadow exposes `ShadowRoot` methods that have no correct shadow-scoped
+     * semantics and are therefore not emulated: `getElementById`, `getSelection`, and `cloneNode`.
+     *
+     * When false or unset (default), these are exposed as stubs that throw when invoked — preserving
+     * the long-standing behavior. Because a throwing stub is still a callable function, feature
+     * detection (`typeof root.getElementById === 'function'`) reports it as present, so callers
+     * invoke it and hit the throw.
+     *
+     * When true, the methods are exposed as `undefined` instead, so feature detection reveals their
+     * absence and callers can fall back to the supported, shadow-scoped `querySelector('#' + id)`
+     * (matching how native shadow behaves for well-behaved feature-detecting code). This is a
+     * visible change to a long-stable API used by every synthetic-shadow consumer, hence gated and
+     * off by default.
+     */
+    ENABLE_SHADOW_ROOT_UNDEFINED_METHODS: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
