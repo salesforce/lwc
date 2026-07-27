@@ -203,26 +203,44 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
  * Some `ShadowRoot` methods have no correct shadow-scoped semantics, so synthetic shadow has
  * historically exposed them as stubs that throw when invoked: `getElementById`, `getSelection`,
  * and `cloneNode`. The problem is that a throwing stub is still a *callable function*, so
- * third-party code that feature-detects the method (`typeof root.getElementById === 'function'`,
- * or `'getElementById' in root`) sees it as present, commits to calling it, and only then hits the
- * throw. Native shadow inherits a working method from `DocumentFragment`, so the exact same code
- * succeeds in native but throws in synthetic.
+ * third-party code that feature-detects the method with a *value-based* check
+ * (`typeof root.getElementById === 'function'`, `if (root.getElementById)`, or
+ * `root.getElementById?.(id)`) sees it as present, commits to calling it, and only then hits the
+ * throw.
+ *
+ * The motivating case is `getElementById`: native `ShadowRoot` inherits a *working* one from
+ * `DocumentFragment`, so the exact same feature-detecting code succeeds in native but throws in
+ * synthetic — a genuine native-vs-synthetic divergence. `getSelection` and `cloneNode` are swept in
+ * so the three unsupported methods present a uniform surface, NOT because `undefined` matches
+ * native for them: native `cloneNode` is present but *throws* `NotSupportedError` (cloning a shadow
+ * root is forbidden by the DOM clone algorithm), and `getSelection` is non-standard (present in
+ * Blink/WebKit, absent in Firefox, since the Selection API defines it only on `Document`/`Window`).
+ * For those two, flag-on `undefined` is a deliberate, uniform choice rather than native parity.
  *
  * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` runtime flag lets an app opt into friendlier behavior:
- * when enabled, these methods are exposed as `undefined` instead of a throwing stub, so feature
- * detection reveals their absence and callers can fall back to the supported, shadow-scoped
- * `querySelector('#' + id)`.
+ * when enabled, these methods are exposed as `undefined` instead of a throwing stub, so value-based
+ * feature detection reveals their absence and callers can fall back to the supported, shadow-scoped
+ * `querySelector('#' + id)` (only `getElementById` has such a fallback).
+ *
+ * `'methodName' in root` stays `true` even with the flag on — by design, not a gap. The own
+ * accessor below is exactly what shadows the corresponding native `DocumentFragment.prototype`
+ * method; deleting the property to make `in` report `false` would expose that native method, which
+ * runs against the underlying (empty) fragment and silently returns `null` — a worse, silent-wrong
+ * failure. The trade-off is that an `in`-guarded caller (`if ('x' in root) root.x()`) still enters
+ * the branch and, flag-on, throws `TypeError: … is not a function` instead of the descriptive
+ * `Disallowed method` error. Well-behaved detection uses value-based checks, which the flag fixes.
  *
  * This is a visible, behavioral change to an API that has shipped unchanged for years to every
  * synthetic-shadow consumer, so it is DEFAULT OFF: with the flag unset/false the throwing stub is
- * returned, exactly preserving the legacy behavior. Only when an org explicitly enables the flag do
- * the methods become `undefined`.
+ * returned, preserving the legacy *call* behavior. (One subtle observable difference regardless of
+ * flag state: the descriptor is now a getter-only accessor rather than a `writable` data property,
+ * so `getOwnPropertyDescriptor` reports an accessor and *reassigning* the method throws in strict
+ * mode where it previously succeeded — an edge case that affects only code trying to replace the
+ * method, never normal invocation.)
  *
  * The flag is read dynamically through a getter (rather than captured when the prototype is built),
  * because runtime feature flags are set during app initialization — after this polyfill module is
- * imported. An explicit own accessor is still required to shadow the corresponding native
- * `DocumentFragment.prototype` method, which would otherwise run against the underlying (empty)
- * fragment and silently return `null`.
+ * imported.
  */
 function createDisallowedMethodDescriptor(methodName: string): PropertyDescriptor {
     function disallowedMethod(this: ShadowRoot): never {

@@ -42,6 +42,12 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
             expect(typeof shadowRoot.getElementById).toBe('function');
         });
 
+        it('reports getElementById as present via the `in` operator', () => {
+            // `in` is true here and stays true flag-on (the own property shadows the native
+            // DocumentFragment method), so it never distinguishes the two states.
+            expect('getElementById' in shadowRoot).toBe(true);
+        });
+
         it('makes a feature-detecting caller throw (the reported failure mode)', () => {
             // The guard passes (it IS a function), the caller invokes it, and it throws.
             expect(() => resolveById(shadowRoot, 'injected-marker')).toThrowError(
@@ -63,6 +69,36 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
         it('exposes getElementById as absent so feature detection reveals it', () => {
             expect(typeof shadowRoot.getElementById === 'function').toBe(false);
             expect(shadowRoot.getElementById).toBe(undefined);
+        });
+
+        it('still reports getElementById as present via the `in` operator (by design)', () => {
+            // The own property remains (as undefined) to shadow the native DocumentFragment
+            // method, so `in` cannot be used to detect absence — value-based checks must be used.
+            expect('getElementById' in shadowRoot).toBe(true);
+        });
+
+        it('throws a plain TypeError when an `in`-guarded caller invokes the undefined value', () => {
+            // A caller that guards with `in` rather than a value check still enters the branch and
+            // calls `undefined()`, which throws a native TypeError (not the descriptive stub error).
+            const callViaInGuard = () => {
+                if ('getElementById' in shadowRoot) {
+                    return shadowRoot.getElementById('injected-marker');
+                }
+                return null;
+            };
+            expect(callViaInGuard).toThrowError(TypeError);
+        });
+
+        it('silently no-ops for truthy-guard and optional-chaining callers', () => {
+            // `if (root.getElementById)` skips the branch, and `root.getElementById?.(id)`
+            // short-circuits — both yield undefined with no throw, rather than a resolved element.
+            expect(shadowRoot.getElementById?.('injected-marker')).toBe(undefined);
+
+            let result = 'unset';
+            if (shadowRoot.getElementById) {
+                result = shadowRoot.getElementById('injected-marker');
+            }
+            expect(result).toBe('unset');
         });
 
         it('lets a feature-detecting caller resolve an element without throwing', () => {

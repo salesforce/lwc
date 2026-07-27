@@ -104,15 +104,23 @@ export interface FeatureFlagMap {
      * semantics and are therefore not emulated: `getElementById`, `getSelection`, and `cloneNode`.
      *
      * When false or unset (default), these are exposed as stubs that throw when invoked — preserving
-     * the long-standing behavior. Because a throwing stub is still a callable function, feature
-     * detection (`typeof root.getElementById === 'function'`) reports it as present, so callers
-     * invoke it and hit the throw.
+     * the long-standing behavior. Because a throwing stub is still a callable function, *value-based*
+     * feature detection (`typeof root.getElementById === 'function'`, `if (root.getElementById)`,
+     * `root.getElementById?.(id)`) reports it as present, so callers invoke it and hit the throw.
      *
-     * When true, the methods are exposed as `undefined` instead, so feature detection reveals their
-     * absence and callers can fall back to the supported, shadow-scoped `querySelector('#' + id)`
-     * (matching how native shadow behaves for well-behaved feature-detecting code). This is a
+     * When true, the methods are exposed as `undefined` instead, so value-based feature detection
+     * reveals their absence and callers can fall back to the supported, shadow-scoped
+     * `querySelector('#' + id)`. This closes a real native-vs-synthetic divergence for
+     * `getElementById` (native `ShadowRoot` inherits a working one from `DocumentFragment`);
+     * `getSelection`/`cloneNode` are swept in for a uniform surface, not native parity. This is a
      * visible change to a long-stable API used by every synthetic-shadow consumer, hence gated and
      * off by default.
+     *
+     * Note: `'methodName' in root` stays `true` in both states by design — the own property is what
+     * shadows the native `DocumentFragment.prototype` method (see @lwc/synthetic-shadow
+     * shadow-root.ts). A caller that guards with `in` rather than a value check therefore still
+     * enters the branch and, flag-on, throws a plain `TypeError` on the `undefined` value instead of
+     * the descriptive `Disallowed method` error.
      */
     ENABLE_SHADOW_ROOT_UNDEFINED_METHODS: FeatureFlagValue;
 }
