@@ -67,9 +67,14 @@ describe('Properties overrides', () => {
 });
 
 // `getElementById`, `getSelection`, and `cloneNode` have no correct shadow-scoped semantics and are
-// not emulated on the synthetic ShadowRoot. How their absence is *exposed* is gated by the
-// ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag (see @lwc/synthetic-shadow shadow-root.ts).
+// not emulated on the synthetic ShadowRoot — invoking any of them throws. Only `getElementById` has
+// a genuine native-vs-synthetic feature-detection divergence (native `ShadowRoot` inherits a working
+// one from `DocumentFragment`) with a `querySelector` fallback, so only *its* exposure is gated by
+// the ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag (see @lwc/synthetic-shadow shadow-root.ts).
+// `getSelection`/`cloneNode` are plain throwing stubs the flag does not affect.
 const DISALLOWED_METHODS = ['getSelection', 'cloneNode', 'getElementById'];
+const FLAG_GATED_METHOD = 'getElementById';
+const UNGATED_METHODS = DISALLOWED_METHODS.filter((m) => m !== FLAG_GATED_METHOD);
 
 describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () => {
     let elm;
@@ -78,8 +83,8 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
         elm = createElement('x-test', { is: Test });
     });
 
-    // Default behavior (flag off): the methods are throwing stubs. This preserves the long-standing
-    // behavior shipped to every synthetic-shadow consumer.
+    // Default behavior (flag off): all three methods are throwing stubs. This preserves the
+    // long-standing behavior shipped to every synthetic-shadow consumer.
     describe('by default (ENABLE_SHADOW_ROOT_UNDEFINED_METHODS off)', () => {
         DISALLOWED_METHODS.forEach((method) => {
             it(`should throw when invoking ShadowRoot.${method}`, () => {
@@ -96,10 +101,12 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
         });
 
         // Write semantics must match the pre-flag `writable: true` data property: some consumers
-        // monkey-patch these unsupported methods with a working implementation. The flag is exposed
-        // via an accessor (so the flag read stays dynamic), and a getter-only accessor would break
-        // that — throwing in strict mode, silently dropping the write in sloppy mode. The paired
-        // setter restores the original behavior by installing an own writable data property.
+        // monkey-patch these unsupported methods with a working implementation. `getSelection` and
+        // `cloneNode` remain plain writable data properties, so this always held for them. The
+        // flag-gated `getElementById` is exposed via an accessor (so the flag read stays dynamic),
+        // and a getter-only accessor would break reassignment — throwing in strict mode, silently
+        // dropping the write in sloppy mode; its paired setter restores the writable-data-property
+        // behavior. This block asserts all three behave identically on reassignment.
         describe('preserves reassignment (writable) semantics', () => {
             DISALLOWED_METHODS.forEach((method) => {
                 it(`allows replacing ShadowRoot.${method} on an instance (strict mode)`, () => {
@@ -138,8 +145,9 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
         });
     });
 
-    // Opt-in behavior (flag on): the methods are `undefined`, so feature detection reveals their
-    // absence and callers fall back to the supported, shadow-scoped `querySelector('#' + id)`.
+    // Opt-in behavior (flag on): only `getElementById` becomes `undefined`, so feature detection
+    // reveals its absence and callers fall back to the supported, shadow-scoped
+    // `querySelector('#' + id)`. `getSelection`/`cloneNode` are unaffected by the flag.
     describe('with ENABLE_SHADOW_ROOT_UNDEFINED_METHODS enabled', () => {
         beforeAll(() => {
             setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', true);
@@ -149,16 +157,24 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
             setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', false);
         });
 
-        DISALLOWED_METHODS.forEach((method) => {
-            it(`exposes ShadowRoot.${method} as undefined`, () => {
-                expect(elm.shadowRoot[method]).toBe(undefined);
-                expect(typeof elm.shadowRoot[method]).not.toBe('function');
-            });
+        it(`exposes ShadowRoot.${FLAG_GATED_METHOD} as undefined`, () => {
+            expect(elm.shadowRoot[FLAG_GATED_METHOD]).toBe(undefined);
+            expect(typeof elm.shadowRoot[FLAG_GATED_METHOD]).not.toBe('function');
+        });
 
-            it(`keeps '${method}' as an own property so it shadows DocumentFragment.prototype`, () => {
-                // The property must still exist (as undefined) — deleting it would expose the
-                // native DocumentFragment method, which runs against the empty fragment.
-                expect(method in elm.shadowRoot).toBe(true);
+        it(`keeps '${FLAG_GATED_METHOD}' as an own property so it shadows DocumentFragment.prototype`, () => {
+            // The property must still exist (as undefined) — deleting it would expose the
+            // native DocumentFragment method, which runs against the empty fragment.
+            expect(FLAG_GATED_METHOD in elm.shadowRoot).toBe(true);
+        });
+
+        // The flag is scoped to getElementById; the other unsupported methods must be untouched.
+        UNGATED_METHODS.forEach((method) => {
+            it(`leaves ShadowRoot.${method} as a throwing stub regardless of the flag`, () => {
+                expect(typeof elm.shadowRoot[method]).toBe('function');
+                expect(() => elm.shadowRoot[method]()).toThrowError(
+                    `Disallowed method "${method}" on ShadowRoot.`
+                );
             });
         });
 

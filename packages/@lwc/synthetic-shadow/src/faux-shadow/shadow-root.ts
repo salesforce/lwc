@@ -200,54 +200,66 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
 }
 
 /**
- * Some `ShadowRoot` methods have no correct shadow-scoped semantics, so synthetic shadow has
- * historically exposed them as stubs that throw when invoked: `getElementById`, `getSelection`,
- * and `cloneNode`. The problem is that a throwing stub is still a *callable function*, so
- * third-party code that feature-detects the method with a *value-based* check
- * (`typeof root.getElementById === 'function'`, `if (root.getElementById)`, or
- * `root.getElementById?.(id)`) sees it as present, commits to calling it, and only then hits the
- * throw.
- *
- * The motivating case is `getElementById`: native `ShadowRoot` inherits a *working* one from
- * `DocumentFragment`, so the exact same feature-detecting code succeeds in native but throws in
- * synthetic — a genuine native-vs-synthetic divergence. `getSelection` and `cloneNode` are swept in
- * so the three unsupported methods present a uniform surface, NOT because `undefined` matches
- * native for them: native `cloneNode` is present but *throws* `NotSupportedError` (cloning a shadow
- * root is forbidden by the DOM clone algorithm), and `getSelection` is non-standard (present in
- * Blink/WebKit, absent in Firefox, since the Selection API defines it only on `Document`/`Window`).
- * For those two, flag-on `undefined` is a deliberate, uniform choice rather than native parity.
+ * Several `ShadowRoot` methods have no correct shadow-scoped semantics and are therefore not
+ * emulated. `getSelection` and `cloneNode` are exposed as stubs that throw when invoked. There is
+ * no meaningful native behavior to fall back to for either: native `ShadowRoot.cloneNode()` throws
+ * `NotSupportedError` (cloning a shadow root is forbidden by the DOM clone algorithm), and
+ * `getSelection` is non-standard on `ShadowRoot` (present in Blink/WebKit, absent in Firefox, since
+ * the Selection API defines it only on `Document`/`Window`). This is the long-standing behavior,
+ * exposed as a `writable: true` data property exactly as it always has been.
+ */
+function createDisallowedMethodDescriptor(methodName: string): PropertyDescriptor {
+    return {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: ShadowRoot): never {
+            throw new Error(`Disallowed method "${methodName}" on ShadowRoot.`);
+        },
+    };
+}
+
+/**
+ * `getElementById` is a special case among the unsupported `ShadowRoot` methods. Like the others it
+ * has historically been a stub that throws when invoked — but unlike them, native `ShadowRoot`
+ * inherits a *working* `getElementById` from `DocumentFragment`. So third-party code that
+ * feature-detects the method with a *value-based* check (`typeof root.getElementById === 'function'`,
+ * `if (root.getElementById)`, or `root.getElementById?.(id)`) succeeds in native shadow but, because
+ * a throwing stub is still a *callable function*, commits to calling it in synthetic shadow and then
+ * hits the throw — a genuine native-vs-synthetic divergence (reported by RUM/analytics libraries
+ * that resolve an id off `node.getRootNode()`).
  *
  * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` runtime flag lets an app opt into friendlier behavior:
- * when enabled, these methods are exposed as `undefined` instead of a throwing stub, so value-based
- * feature detection reveals their absence and callers can fall back to the supported, shadow-scoped
- * `querySelector('#' + id)` (only `getElementById` has such a fallback).
+ * when enabled, `getElementById` is exposed as `undefined` instead of a throwing stub, so value-based
+ * feature detection reveals its absence and callers fall back to the supported, shadow-scoped
+ * `querySelector('#' + id)`.
  *
- * `'methodName' in root` stays `true` even with the flag on — by design, not a gap. The own
- * accessor below is exactly what shadows the corresponding native `DocumentFragment.prototype`
- * method; deleting the property to make `in` report `false` would expose that native method, which
- * runs against the underlying (empty) fragment and silently returns `null` — a worse, silent-wrong
+ * `'getElementById' in root` stays `true` even with the flag on — by design, not a gap. The own
+ * accessor below is exactly what shadows the native `DocumentFragment.prototype.getElementById`;
+ * deleting the property to make `in` report `false` would expose that native method, which runs
+ * against the underlying (empty) fragment and silently returns `null` — a worse, silent-wrong
  * failure. The trade-off is that an `in`-guarded caller (`if ('x' in root) root.x()`) still enters
  * the branch and, flag-on, throws `TypeError: … is not a function` instead of the descriptive
  * `Disallowed method` error. Well-behaved detection uses value-based checks, which the flag fixes.
  *
- * This is a visible, behavioral change to an API that has shipped unchanged for years to every
- * synthetic-shadow consumer, so it is DEFAULT OFF: with the flag unset/false the throwing stub is
- * returned, preserving the legacy behavior — including write semantics (see the accessor's setter
- * below, which keeps `root.getElementById = fn` working exactly as the old `writable` data property
- * did). The one residual observable difference, regardless of flag state, is descriptor *kind*:
- * `getOwnPropertyDescriptor(prototype, methodName)` now reports an accessor (`get`/`set`) rather
+ * This is a visible, behavioral change to an API that has shipped unchanged for years, so it is
+ * DEFAULT OFF: with the flag unset/false the throwing stub is returned, preserving the legacy
+ * behavior — including write semantics (the setter below keeps `root.getElementById = fn` working
+ * exactly as the old `writable` data property did, in both strict and sloppy mode). The one residual
+ * observable difference, regardless of flag state, is descriptor *kind*:
+ * `getOwnPropertyDescriptor(prototype, 'getElementById')` reports an accessor (`get`/`set`) rather
  * than a data property (`value`/`writable`). That is intrinsic to reading the flag dynamically — a
  * data property would have to capture its `value` when the prototype is built, before the flag is
- * set — and it affects only tooling that introspects these three prototype descriptors to
- * distinguish data-vs-accessor, never normal invocation, reassignment, or feature detection.
+ * set — and it affects only tooling that introspects this prototype descriptor to distinguish
+ * data-vs-accessor, never normal invocation, reassignment, or feature detection.
  *
  * The flag is read dynamically through a getter (rather than captured when the prototype is built),
  * because runtime feature flags are set during app initialization — after this polyfill module is
  * imported.
  */
-function createDisallowedMethodDescriptor(methodName: string): PropertyDescriptor {
-    function disallowedMethod(this: ShadowRoot): never {
-        throw new Error(`Disallowed method "${methodName}" on ShadowRoot.`);
+function createGetElementByIdDescriptor(): PropertyDescriptor {
+    function disallowedGetElementById(this: ShadowRoot): never {
+        throw new Error(`Disallowed method "getElementById" on ShadowRoot.`);
     }
     return {
         enumerable: true,
@@ -255,17 +267,10 @@ function createDisallowedMethodDescriptor(methodName: string): PropertyDescripto
         get(this: ShadowRoot): (() => never) | undefined {
             return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_METHODS
                 ? undefined
-                : disallowedMethod;
+                : disallowedGetElementById;
         },
-        // The pre-flag descriptor was a `writable: true` data property, so assigning the method
-        // (`root.getElementById = fn`) created an own data property on the receiver. A getter-only
-        // accessor would instead throw in strict mode (and silently drop the write in sloppy mode),
-        // which is an observable change even with the flag off. This setter preserves the original
-        // write semantics: it installs an own, writable data property on the receiver — matching
-        // the byte-for-byte descriptor the inherited `writable` data property used to produce —
-        // while the getter above keeps the flag read dynamic until such a reassignment occurs.
         set(this: ShadowRoot, value: unknown): void {
-            defineProperty(this, methodName, {
+            defineProperty(this, 'getElementById', {
                 writable: true,
                 enumerable: true,
                 configurable: true,
@@ -360,8 +365,7 @@ const ShadowRootDescriptors = {
             return fauxElementsFromPoint(this, doc, left, top);
         },
     },
-    // See createDisallowedMethodDescriptor: throws by default, `undefined` when the
-    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled.
+    // See createDisallowedMethodDescriptor: a throwing stub with no shadow-scoped semantics.
     getSelection: createDisallowedMethodDescriptor('getSelection'),
     host: {
         enumerable: true,
@@ -475,8 +479,7 @@ const NodePatchDescriptors = {
             return createStaticNodeList(shadowRootChildNodes(this));
         },
     },
-    // See createDisallowedMethodDescriptor: throws by default, `undefined` when the
-    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled.
+    // See createDisallowedMethodDescriptor: a throwing stub with no shadow-scoped semantics.
     cloneNode: createDisallowedMethodDescriptor('cloneNode'),
     compareDocumentPosition: {
         writable: true,
@@ -683,10 +686,10 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
-    // See createDisallowedMethodDescriptor: throws by default, `undefined` when the
-    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled. This is the flag's original
+    // See createGetElementByIdDescriptor: throws by default, `undefined` when the
+    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled. This is the flag's sole
     // motivating case: RUM/analytics libraries feature-detect `getElementById` on the shadow root.
-    getElementById: createDisallowedMethodDescriptor('getElementById'),
+    getElementById: createGetElementByIdDescriptor(),
     querySelector: {
         writable: true,
         enumerable: true,
