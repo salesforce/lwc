@@ -168,6 +168,21 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
             expect(FLAG_GATED_METHOD in elm.shadowRoot).toBe(true);
         });
 
+        it(`still allows replacing ShadowRoot.${FLAG_GATED_METHOD} with the flag on`, () => {
+            // The setter that preserves writable-data-property write semantics is
+            // flag-independent: reassignment must keep working even when the getter would
+            // otherwise return undefined. Guards against re-coupling the setter to the flag.
+            const fresh = createElement('x-test', { is: Test });
+            const replacement = () => 'replaced';
+            expect(() => {
+                fresh.shadowRoot[FLAG_GATED_METHOD] = replacement;
+            }).not.toThrow();
+            expect(fresh.shadowRoot[FLAG_GATED_METHOD]).toBe(replacement);
+            const desc = Object.getOwnPropertyDescriptor(fresh.shadowRoot, FLAG_GATED_METHOD);
+            expect(desc.writable).toBe(true);
+            expect(typeof desc.value).toBe('function');
+        });
+
         // The flag is scoped to getElementById; the other unsupported methods must be untouched.
         UNGATED_METHODS.forEach((method) => {
             it(`leaves ShadowRoot.${method} as a throwing stub regardless of the flag`, () => {
