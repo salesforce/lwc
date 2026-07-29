@@ -94,6 +94,48 @@ describe.skipIf(process.env.NATIVE_SHADOW)('synthetic-shadow restrictions', () =
                 expect(typeof elm.shadowRoot[method]).toBe('function');
             });
         });
+
+        // Write semantics must match the pre-flag `writable: true` data property: some consumers
+        // monkey-patch these unsupported methods with a working implementation. The flag is exposed
+        // via an accessor (so the flag read stays dynamic), and a getter-only accessor would break
+        // that — throwing in strict mode, silently dropping the write in sloppy mode. The paired
+        // setter restores the original behavior by installing an own writable data property.
+        describe('preserves reassignment (writable) semantics', () => {
+            DISALLOWED_METHODS.forEach((method) => {
+                it(`allows replacing ShadowRoot.${method} on an instance (strict mode)`, () => {
+                    // This spec module is an ES module, so this assignment runs in strict mode —
+                    // the case that would throw against a getter-only accessor.
+                    const fresh = createElement('x-test', { is: Test });
+                    const replacement = () => 'replaced';
+                    expect(() => {
+                        fresh.shadowRoot[method] = replacement;
+                    }).not.toThrow();
+                    expect(fresh.shadowRoot[method]).toBe(replacement);
+                    expect(fresh.shadowRoot[method]()).toBe('replaced');
+                });
+
+                it(`records the replacement as an own writable data property for ShadowRoot.${method}`, () => {
+                    const fresh = createElement('x-test', { is: Test });
+                    fresh.shadowRoot[method] = () => 'replaced';
+                    const desc = Object.getOwnPropertyDescriptor(fresh.shadowRoot, method);
+                    expect(desc).toBeDefined();
+                    expect(desc.writable).toBe(true);
+                    expect(desc.enumerable).toBe(true);
+                    expect(desc.configurable).toBe(true);
+                    expect(typeof desc.value).toBe('function');
+                });
+
+                it(`isolates the replacement of ShadowRoot.${method} to the reassigned instance`, () => {
+                    const a = createElement('x-test', { is: Test });
+                    const b = createElement('x-test', { is: Test });
+                    a.shadowRoot[method] = () => 'replaced';
+                    // A sibling instance still sees the original throwing stub.
+                    expect(() => b.shadowRoot[method]()).toThrowError(
+                        `Disallowed method "${method}" on ShadowRoot.`
+                    );
+                });
+            });
+        });
     });
 
     // Opt-in behavior (flag on): the methods are `undefined`, so feature detection reveals their

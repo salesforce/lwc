@@ -232,11 +232,14 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
  *
  * This is a visible, behavioral change to an API that has shipped unchanged for years to every
  * synthetic-shadow consumer, so it is DEFAULT OFF: with the flag unset/false the throwing stub is
- * returned, preserving the legacy *call* behavior. (One subtle observable difference regardless of
- * flag state: the descriptor is now a getter-only accessor rather than a `writable` data property,
- * so `getOwnPropertyDescriptor` reports an accessor and *reassigning* the method throws in strict
- * mode where it previously succeeded — an edge case that affects only code trying to replace the
- * method, never normal invocation.)
+ * returned, preserving the legacy behavior — including write semantics (see the accessor's setter
+ * below, which keeps `root.getElementById = fn` working exactly as the old `writable` data property
+ * did). The one residual observable difference, regardless of flag state, is descriptor *kind*:
+ * `getOwnPropertyDescriptor(prototype, methodName)` now reports an accessor (`get`/`set`) rather
+ * than a data property (`value`/`writable`). That is intrinsic to reading the flag dynamically — a
+ * data property would have to capture its `value` when the prototype is built, before the flag is
+ * set — and it affects only tooling that introspects these three prototype descriptors to
+ * distinguish data-vs-accessor, never normal invocation, reassignment, or feature detection.
  *
  * The flag is read dynamically through a getter (rather than captured when the prototype is built),
  * because runtime feature flags are set during app initialization — after this polyfill module is
@@ -253,6 +256,21 @@ function createDisallowedMethodDescriptor(methodName: string): PropertyDescripto
             return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_METHODS
                 ? undefined
                 : disallowedMethod;
+        },
+        // The pre-flag descriptor was a `writable: true` data property, so assigning the method
+        // (`root.getElementById = fn`) created an own data property on the receiver. A getter-only
+        // accessor would instead throw in strict mode (and silently drop the write in sloppy mode),
+        // which is an observable change even with the flag off. This setter preserves the original
+        // write semantics: it installs an own, writable data property on the receiver — matching
+        // the byte-for-byte descriptor the inherited `writable` data property used to produce —
+        // while the getter above keeps the flag read dynamic until such a reassignment occurs.
+        set(this: ShadowRoot, value: unknown): void {
+            defineProperty(this, methodName, {
+                writable: true,
+                enumerable: true,
+                configurable: true,
+                value,
+            });
         },
     };
 }
