@@ -9061,6 +9061,13 @@ magic-string@^0.30.12, magic-string@^0.30.21, magic-string@^0.30.3:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.5.5"
 
+magic-string@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-1.0.0.tgz#e0f1c16d20b1a993d6481007f49fe1f5ca9b38ff"
+  integrity sha512-CGvjzMN08iv6w1mm4/x3Gh1hLb4VnyRUA15FFpl6CsCIGGoe36k7kY5KNz9QDbSBN5I/fWHM6ZlIkUTa5xdUEA==
+  dependencies:
+    "@jridgewell/sourcemap-codec" "^1.5.5"
+
 magicast@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/magicast/-/magicast-0.5.2.tgz#70cea9df729c164485049ea5df85a390281dfb9d"
