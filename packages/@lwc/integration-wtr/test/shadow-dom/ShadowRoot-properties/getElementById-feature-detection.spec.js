@@ -77,9 +77,11 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
             expect('getElementById' in shadowRoot).toBe(true);
         });
 
-        it('throws a plain TypeError when an `in`-guarded caller invokes the undefined value', () => {
+        it('throws a plain TypeError — not the descriptive error — when an `in`-guarded caller invokes the undefined value', () => {
             // A caller that guards with `in` rather than a value check still enters the branch and
-            // calls `undefined()`, which throws a native TypeError (not the descriptive stub error).
+            // calls `undefined()`, which throws a native TypeError. This is deliberately distinct
+            // from the flag-off throwing stub, whose descriptive `Disallowed method` Error is a
+            // plain Error (not a TypeError) — so the two assertions below pin the exact error kind.
             const callViaInGuard = () => {
                 if ('getElementById' in shadowRoot) {
                     return shadowRoot.getElementById('injected-marker');
@@ -87,9 +89,17 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
                 return null;
             };
             expect(callViaInGuard).toThrowError(TypeError);
+            expect(callViaInGuard).not.toThrowError(
+                'Disallowed method "getElementById" on ShadowRoot.'
+            );
         });
 
         it('silently no-ops for truthy-guard and optional-chaining callers', () => {
+            // Pin the precondition inline so this test is self-contained: with the flag on, the
+            // value is genuinely `undefined` (not a stub function), which is what makes the guards
+            // below short-circuit rather than invoke-and-return-undefined.
+            expect(shadowRoot.getElementById).toBe(undefined);
+
             // `if (root.getElementById)` skips the branch, and `root.getElementById?.(id)`
             // short-circuits — both yield undefined with no throw, rather than a resolved element.
             expect(shadowRoot.getElementById?.('injected-marker')).toBe(undefined);
@@ -98,6 +108,8 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
             if (shadowRoot.getElementById) {
                 result = shadowRoot.getElementById('injected-marker');
             }
+            // The sentinel survives only if the truthy branch was skipped; had it been entered and
+            // returned undefined, `result` would be undefined (≠ 'unset') and this would fail.
             expect(result).toBe('unset');
         });
 
