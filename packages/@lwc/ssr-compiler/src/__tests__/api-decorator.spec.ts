@@ -7,6 +7,102 @@ const compile =
         return compileComponentForSSR(src, filename, {});
     };
 
+describe('@api props on in-file base classes (W-23508928)', () => {
+    // The fix is a runtime one: every non-exported LightningElement subclass with @api props is
+    // given its own __lwcPublicProperties__ via an injected `registerPublicProperties(this, ...)`
+    // static block, and the existing runtime prototype-chain union composes them into the
+    // exported component. So we assert on the emitted registration calls rather than trying to
+    // statically resolve the chain in the compiler.
+    function registeredProps(code: string): Array<string[]> {
+        // matches `__registerPublicProperties(this, ["a", "b"])`
+        const re = /__registerPublicProperties\(\s*this,\s*\[([^\]]*)\]\s*\)/g;
+        const out: Array<string[]> = [];
+        let m: RegExpExecArray | null;
+        while ((m = re.exec(code))) {
+            out.push(
+                m[1]
+                    .split(',')
+                    .map((s) => s.trim().replace(/^"|"$/g, ''))
+                    .filter(Boolean)
+            );
+        }
+        return out;
+    }
+
+    test('registers @api props of a non-exported in-file base class', () => {
+        const src = /* js */ `
+            import { api, LightningElement } from "lwc";
+            class Base extends LightningElement {
+                @api value;
+            }
+            export default class Cmp extends Base {}
+        `;
+        const { code } = compileComponentForSSR(src, 'test.js', { name: 'test', namespace: 'x' });
+        expect(registeredProps(code)).toContainEqual(['value']);
+    });
+
+    test('registers props for every in-file ancestor in a multi-level chain', () => {
+        const src = /* js */ `
+            import { api, LightningElement } from "lwc";
+            class Base extends LightningElement {
+                @api baseProp;
+            }
+            class Mid extends Base {
+                @api midProp;
+            }
+            export default class Cmp extends Mid {
+                @api leafProp;
+            }
+        `;
+        const { code } = compileComponentForSSR(src, 'test.js', { name: 'test', namespace: 'x' });
+        const registered = registeredProps(code);
+        expect(registered).toContainEqual(['baseProp']);
+        expect(registered).toContainEqual(['midProp']);
+    });
+
+    test('does not register the exported component (it goes through setStaticInternals)', () => {
+        const src = /* js */ `
+            import { api, LightningElement } from "lwc";
+            export default class Cmp extends LightningElement {
+                @api ownProp;
+            }
+        `;
+        const { code } = compileComponentForSSR(src, 'test.js', { name: 'test', namespace: 'x' });
+        // No base class → nothing to register; the exported component is handled elsewhere.
+        expect(registeredProps(code)).toEqual([]);
+    });
+
+    test('does not register a class that has no @api props', () => {
+        const src = /* js */ `
+            import { api, LightningElement } from "lwc";
+            class Base extends LightningElement {}
+            export default class Cmp extends Base {
+                @api leafProp;
+            }
+        `;
+        const { code } = compileComponentForSSR(src, 'test.js', { name: 'test', namespace: 'x' });
+        expect(registeredProps(code)).toEqual([]);
+    });
+
+    test('registers a base class whose superclass is chosen dynamically (unresolvable statically)', () => {
+        // The exported component extends a superclass picked at runtime; the compiler can't know
+        // which branch runs, but each candidate base still gets its own registration and the
+        // runtime resolves the real prototype.
+        const src = /* js */ `
+            import { api, LightningElement } from "lwc";
+            const Options = {
+                first: class First extends LightningElement { @api alpha; },
+                second: class Second extends LightningElement { @api beta; },
+            };
+            export default class Cmp extends (globalThis.FLAG ? Options.first : Options.second) {}
+        `;
+        const { code } = compileComponentForSSR(src, 'test.js', { name: 'test', namespace: 'x' });
+        const registered = registeredProps(code);
+        expect(registered).toContainEqual(['alpha']);
+        expect(registered).toContainEqual(['beta']);
+    });
+});
+
 describe('thows error', () => {
     test('combined with @track', () => {
         const src = /* js */ `

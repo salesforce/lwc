@@ -13,9 +13,11 @@ import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
 import { LWCClassErrors, SsrCompilerErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
+import { bImportDeclaration } from '../estree/builders';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
+import { registerBaseClassProps, REGISTER_PUBLIC_PROPERTIES } from './register-base-class-props';
 import { catalogWireAdapters, isWireDecorator } from './decorators/wire';
 import { validateApiProperty, validateApiMethod } from './decorators/api/validate';
 import { isApiDecorator } from './decorators/api';
@@ -390,6 +392,10 @@ export default function compileJS(
         trustedLwcIdentifiers: new WeakSet(),
     };
 
+    // Register @api props on in-file base classes for the runtime union (W-23508928).
+    // Must run before `traverse`, which strips the `@api` decorators we read here.
+    const registeredBaseClassProps = registerBaseClassProps(ast);
+
     traverse(ast, visitors, state);
 
     if (!state.isLWC) {
@@ -399,6 +405,12 @@ export default function compileJS(
         return {
             code: generate(ast, {}),
         };
+    }
+
+    if (registeredBaseClassProps) {
+        ast.body.unshift(
+            bImportDeclaration({ registerPublicProperties: REGISTER_PUBLIC_PROPERTIES })
+        );
     }
 
     addGenerateMarkupFunction(ast, state, tagName, filename, compilationMode);
