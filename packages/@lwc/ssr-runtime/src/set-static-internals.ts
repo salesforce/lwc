@@ -14,7 +14,7 @@ import { mutationTracker } from './mutation-tracker';
 import { hasScopedStaticStylesheets } from './styles';
 import { connectContext, establishContextfulRelationship } from './wire';
 import { fallbackTmplNoYield } from './render';
-import { resolvePublicProperties } from './register-public-properties';
+import { registerPublicProperties, type PUBLIC_PROPERTIES_KEY } from './register-public-properties';
 import {
     type GenerateMarkupSync,
     fallbackTmpl,
@@ -34,7 +34,7 @@ interface Template {
 }
 
 interface ComponentStaticInternals {
-    __lwcPublicProperties__?: Set<string>;
+    [PUBLIC_PROPERTIES_KEY]?: Set<string>;
     [SYMBOL__DEFAULT_TEMPLATE]: Template;
 }
 
@@ -218,14 +218,7 @@ export function setStaticInternals(
     compilationMode: CompilationMode,
     defaultTemplate?: Template
 ): void {
-    const publicProps = resolvePublicProperties(Component, cmpPublicProps);
-
-    Object.defineProperty(Component, '__lwcPublicProperties__', {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: publicProps,
-    });
+    const publicProps = registerPublicProperties(Component, cmpPublicProps);
 
     Object.defineProperty(Component, SYMBOL__GENERATE_MARKUP, {
         configurable: false,

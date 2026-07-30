@@ -6,8 +6,11 @@
  */
 import type { LightningElementConstructor } from './lightning-element';
 
+/** The class property that holds a component's resolved `@api` allowlist. */
+export const PUBLIC_PROPERTIES_KEY = '__lwcPublicProperties__';
+
 interface PublicPropertiesHolder {
-    __lwcPublicProperties__?: Set<string>;
+    [PUBLIC_PROPERTIES_KEY]?: Set<string>;
 }
 
 /**
@@ -20,24 +23,27 @@ export function resolvePublicProperties(
     ownPublicProps: string[]
 ): Set<string> {
     const SuperClass: PublicPropertiesHolder = Object.getPrototypeOf(Component);
-    const superPublicProps = SuperClass.__lwcPublicProperties__ ?? [];
+    const superPublicProps = SuperClass[PUBLIC_PROPERTIES_KEY] ?? [];
     return new Set([...ownPublicProps, ...superPublicProps]);
 }
 
 /**
- * Attach the resolved allowlist to a class, without the rest of `setStaticInternals`
- * (generate-markup, default template, wire adapters). The compiler emits a full
- * `setStaticInternals` only for the exported component; this gives non-exported in-file base
- * classes their own `__lwcPublicProperties__` so the runtime union folds them in (W-23508928).
+ * Attach the resolved allowlist to a class and return it. This is the single place that writes
+ * `__lwcPublicProperties__`; `setStaticInternals` delegates the write here and layers on the rest
+ * of its machinery (generate-markup, default template, wire adapters). The compiler emits a full
+ * `setStaticInternals` only for the exported component, so it calls this directly for non-exported
+ * in-file base classes, giving them their own allowlist for the runtime union (W-23508928).
  */
 export function registerPublicProperties(
     Component: LightningElementConstructor,
     ownPublicProps: string[]
-): void {
-    Object.defineProperty(Component, '__lwcPublicProperties__', {
+): Set<string> {
+    const publicProps = resolvePublicProperties(Component, ownPublicProps);
+    Object.defineProperty(Component, PUBLIC_PROPERTIES_KEY, {
         configurable: false,
         enumerable: false,
         writable: false,
-        value: resolvePublicProperties(Component, ownPublicProps),
+        value: publicProps,
     });
+    return publicProps;
 }
