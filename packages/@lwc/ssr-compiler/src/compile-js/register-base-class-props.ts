@@ -57,13 +57,13 @@ export function registerBaseClassProps(ast: EsProgram): boolean {
         const node = path.node;
         if (!node || exportedClasses.has(node)) return;
         const apiProps = ownApiProps(node);
-        if (apiProps.length === 0) return;
+        if (apiProps.size === 0) return;
         node.body.body.push(
             b.staticBlock([
                 b.expressionStatement(
                     b.callExpression(b.identifier(REGISTER_PUBLIC_PROPERTIES), [
                         b.thisExpression(),
-                        b.arrayExpression(apiProps.map((name) => b.literal(name))),
+                        b.arrayExpression([...apiProps].map((name) => b.literal(name))),
                     ])
                 ),
             ])
@@ -85,20 +85,17 @@ export function registerBaseClassProps(ast: EsProgram): boolean {
 
 export { REGISTER_PUBLIC_PROPERTIES };
 
-/** Collect the class's own `@api` property/method names, in source order, de-duplicated. */
-function ownApiProps(node: ClassNode): string[] {
-    const props: string[] = [];
+/** Collect the class's own `@api` property/method names, in source order. A Set dedupes the
+ * getter/setter pair that produces two members with the same name. */
+function ownApiProps(node: ClassNode): Set<string> {
+    const props = new Set<string>();
     for (const member of node.body.body) {
         if (
             (member.type === 'PropertyDefinition' || member.type === 'MethodDefinition') &&
             is.identifier(member.key) &&
             member.decorators?.some(isApiDecorator)
         ) {
-            const name = member.key.name;
-            // A getter/setter pair produces two members with the same name; only list it once.
-            if (!props.includes(name)) {
-                props.push(name);
-            }
+            props.add(member.key.name);
         }
     }
     return props;
