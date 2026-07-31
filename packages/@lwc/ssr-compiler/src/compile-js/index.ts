@@ -393,7 +393,8 @@ export default function compileJS(
     };
 
     // Register @api props on in-file base classes for the runtime union (W-23508928).
-    // Must run before `traverse`, which strips the `@api` decorators we read here.
+    // Runs up front, on the pristine AST: it reads `@api` decorators (which survive until
+    // astring drops them at `generate()`) before the main traversal rewrites exports/imports.
     const registeredBaseClassProps = registerBaseClassProps(ast);
 
     traverse(ast, visitors, state);
