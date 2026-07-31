@@ -85,8 +85,7 @@ export function registerBaseClassProps(ast: EsProgram): boolean {
 
 export { REGISTER_PUBLIC_PROPERTIES };
 
-/** Collect the class's own `@api` property/method names, in source order. A Set dedupes the
- * getter/setter pair that produces two members with the same name. */
+/** Collect the class's own `@api` property/method names, in source order. */
 function ownApiProps(node: ClassNode): Set<string> {
     const props = new Set<string>();
     for (const member of node.body.body) {
