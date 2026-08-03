@@ -57,6 +57,10 @@ export interface ComponentMetaState {
     staticStylesheetIds: Set<string> | null;
     /** the public (`@api`-annotated) properties of the component class */
     publicProperties: Map<string, (MethodDefinition | PropertyDefinition) & { key: Identifier }>;
+    /** every class node encountered in the module, gathered during the main traversal */
+    moduleClassNodes: Set<ClassDeclaration | ClassExpression>;
+    /** the default-exported class node(s), which are handled by `setStaticInternals` */
+    exportedClasses: Set<ClassDeclaration | ClassExpression>;
     /** the private properties of the component class */
     privateProperties: Set<string>;
     /** indicates whether the LightningElement has any wired props */

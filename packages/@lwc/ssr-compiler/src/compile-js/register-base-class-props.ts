@@ -5,10 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { traverse, builders as b, is } from 'estree-toolkit';
+import { builders as b, is } from 'estree-toolkit';
 import { isApiDecorator } from './decorators/api';
-import type { NodePath } from 'estree-toolkit';
-import type { ClassDeclaration, ClassExpression, Program as EsProgram } from 'estree';
+import type { ClassDeclaration, ClassExpression } from 'estree';
 
 type ClassNode = ClassDeclaration | ClassExpression;
 
@@ -25,39 +24,21 @@ const REGISTER_PUBLIC_PROPERTIES = '__registerPublicProperties';
  * the runtime union do it. `this` inside a static block needs no class name, so this also covers
  * nested/anonymous class expressions.
  *
- * Returns true if any registration was injected (so the caller can add the runtime import).
+ * Operates on class nodes gathered by the main traversal, so it adds no extra tree walk. `@api`
+ * decorators survive on member nodes until `astring` drops them at `generate()`, so they are still
+ * readable here (after the main traversal). Returns true if any registration was injected (so the
+ * caller can add the runtime import).
  */
-export function registerBaseClassProps(ast: EsProgram): boolean {
-    // Identify the default-export class node(s) so we can skip them — they are handled by the
-    // regular `setStaticInternals` emission.
-    const exportedClasses = new Set<ClassNode>();
-    traverse(ast, {
-        ExportDefaultDeclaration(path) {
-            const decl = path.node?.declaration;
-            if (!decl) return;
-            if (decl.type === 'ClassDeclaration' || decl.type === 'ClassExpression') {
-                exportedClasses.add(decl as ClassNode);
-            } else if (decl.type === 'Identifier') {
-                const binding = path.scope?.getBinding(decl.name);
-                const bound = binding?.path.node;
-                if (bound?.type === 'ClassDeclaration') {
-                    exportedClasses.add(bound as ClassNode);
-                } else if (
-                    bound?.type === 'VariableDeclarator' &&
-                    bound.init?.type === 'ClassExpression'
-                ) {
-                    exportedClasses.add(bound.init as ClassNode);
-                }
-            }
-        },
-    });
-
+export function registerBaseClassProps(
+    classNodes: Iterable<ClassNode>,
+    exportedClasses: ReadonlySet<ClassNode>
+): boolean {
     let injected = false;
-    const visitClass = (path: NodePath<ClassDeclaration> | NodePath<ClassExpression>) => {
-        const node = path.node;
-        if (!node || exportedClasses.has(node)) return;
+    for (const node of classNodes) {
+        // The default export is handled by the regular `setStaticInternals` emission.
+        if (exportedClasses.has(node)) continue;
         const apiProps = ownApiProps(node);
-        if (apiProps.size === 0) return;
+        if (apiProps.size === 0) continue;
         node.body.body.push(
             b.staticBlock([
                 b.expressionStatement(
@@ -69,17 +50,7 @@ export function registerBaseClassProps(ast: EsProgram): boolean {
             ])
         );
         injected = true;
-    };
-
-    traverse(ast, {
-        ClassDeclaration(path) {
-            visitClass(path);
-        },
-        ClassExpression(path) {
-            visitClass(path);
-        },
-    });
-
+    }
     return injected;
 }
 

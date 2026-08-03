@@ -29,6 +29,7 @@ import { validateUniqueDecorator } from './decorators';
 import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
 import type {
+    ClassDeclaration,
     Identifier as EsIdentifier,
     Program as EsProgram,
     PropertyDefinition as EsPropertyDefinition,
@@ -54,12 +55,28 @@ const visitors: Visitors = {
             // export default class Foo extends LE {}
             // lwcClassName will be set by the ClassDeclaration visitor; mirror it here
             state.lwcDefaultExportName = decl.id?.name ?? 'DefaultComponentName';
+            // The default export is handled by `setStaticInternals`; base-class registration skips
+            // it. A default-exported class declaration may be anonymous (`id: null`), but we only
+            // use these nodes for identity comparison, so the cast is safe.
+            state.exportedClasses.add(decl as ClassDeclaration);
         } else if (decl.type === 'ClassExpression') {
             state.lwcDefaultExportName =
                 decl.id?.name ?? state.lwcClassName ?? 'DefaultComponentName';
+            state.exportedClasses.add(decl);
         } else if (decl.type === 'Identifier') {
             // export default Foo
             state.lwcDefaultExportName = decl.name;
+            // Resolve the binding so base-class registration can skip the exported class. Scope is
+            // built up-front, so this works whether `Foo` is declared before or after the export.
+            const bound = path.scope?.getBinding(decl.name)?.path.node;
+            if (bound?.type === 'ClassDeclaration') {
+                state.exportedClasses.add(bound);
+            } else if (
+                bound?.type === 'VariableDeclarator' &&
+                bound.init?.type === 'ClassExpression'
+            ) {
+                state.exportedClasses.add(bound.init);
+            }
         } else if (decl.type !== 'FunctionDeclaration' && decl.type !== 'FunctionExpression') {
             // export default <expression> — store the path for deferred extraction in Program.leave,
             // where we know whether this is an LWC file (state.isLWC). We don't want to mutate
@@ -107,8 +124,11 @@ const visitors: Visitors = {
     ClassDeclaration: {
         enter(path, state) {
             const { node } = path;
+            if (!node) return;
+            // Gather every class node for post-traversal base-class @api registration (W-23508928).
+            state.moduleClassNodes.add(node);
             if (
-                node?.superClass &&
+                node.superClass &&
                 // export default class extends LightningElement {}
                 (is.exportDefaultDeclaration(path.parentPath) ||
                     // class Cmp extends LightningElement {}; export default Cmp
@@ -152,8 +172,11 @@ const visitors: Visitors = {
     ClassExpression: {
         enter(path, state) {
             const { node } = path;
+            if (!node) return;
+            // Gather every class node for post-traversal base-class @api registration (W-23508928).
+            state.moduleClassNodes.add(node);
             if (
-                node?.superClass &&
+                node.superClass &&
                 is.identifier(node.superClass) &&
                 node.superClass.name === state.lightningElementIdentifier
             ) {
@@ -385,17 +408,14 @@ export default function compileJS(
         cssExplicitImports: null,
         staticStylesheetIds: null,
         publicProperties: new Map(),
+        moduleClassNodes: new Set(),
+        exportedClasses: new Set(),
         privateProperties: new Set(),
         wireAdapters: [],
         dynamicImports: options.dynamicImports,
         importManager: new ImportManager(),
         trustedLwcIdentifiers: new WeakSet(),
     };
-
-    // Register @api props on in-file base classes for the runtime union (W-23508928).
-    // Runs up front, on the pristine AST: it reads `@api` decorators (which survive until
-    // astring drops them at `generate()`) before the main traversal rewrites exports/imports.
-    const registeredBaseClassProps = registerBaseClassProps(ast);
 
     traverse(ast, visitors, state);
 
@@ -407,6 +427,14 @@ export default function compileJS(
             code: generate(ast, {}),
         };
     }
+
+    // Register @api props on in-file base classes for the runtime union (W-23508928), reusing the
+    // class nodes gathered during the main traversal above — no extra tree walk. `@api` decorators
+    // survive on member nodes until `astring` drops them at `generate()`, so they remain readable.
+    const registeredBaseClassProps = registerBaseClassProps(
+        state.moduleClassNodes,
+        state.exportedClasses
+    );
 
     if (registeredBaseClassProps) {
         ast.body.unshift(
