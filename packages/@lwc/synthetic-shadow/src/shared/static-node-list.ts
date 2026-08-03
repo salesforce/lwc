@@ -22,7 +22,10 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(index: number) {
+        value(this: NodeList, index: number) {
+            if (!(this instanceof StaticNodeList)) {
+                throw new TypeError('Cannot call "item" on object that is not a NodeList.');
+            }
             return this[index];
         },
     },
