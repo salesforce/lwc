@@ -23,7 +23,10 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         writable: true,
         enumerable: true,
         configurable: true,
-        value(index: number) {
+        value(this: HTMLCollection, index: number) {
+            if (!(this instanceof StaticHTMLCollection)) {
+                throw new TypeError('Cannot call "item" on object that is not an HTMLCollection.');
+            }
             return this[index];
         },
     },
