@@ -31,12 +31,12 @@ const REGISTER_PUBLIC_PROPERTIES = '__registerPublicProperties';
  */
 export function registerBaseClassProps(
     classNodes: Iterable<ClassNode>,
-    exportedClasses: ReadonlySet<ClassNode>
+    exportedComponent: ClassNode | null
 ): boolean {
     let injected = false;
     for (const node of classNodes) {
-        // The default export is handled by the regular `setStaticInternals` emission.
-        if (exportedClasses.has(node)) continue;
+        // The exported leaf is handled by the regular `setStaticInternals` emission.
+        if (node === exportedComponent) continue;
         const apiProps = ownApiProps(node);
         if (apiProps.size === 0) continue;
         node.body.body.push(

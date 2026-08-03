@@ -29,7 +29,6 @@ import { validateUniqueDecorator } from './decorators';
 import { generateError } from './errors';
 import type { ComponentTransformOptions } from '../shared';
 import type {
-    ClassDeclaration,
     Identifier as EsIdentifier,
     Program as EsProgram,
     PropertyDefinition as EsPropertyDefinition,
@@ -55,28 +54,12 @@ const visitors: Visitors = {
             // export default class Foo extends LE {}
             // lwcClassName will be set by the ClassDeclaration visitor; mirror it here
             state.lwcDefaultExportName = decl.id?.name ?? 'DefaultComponentName';
-            // The default export is handled by `setStaticInternals`; base-class registration skips
-            // it. A default-exported class declaration may be anonymous (`id: null`), but we only
-            // use these nodes for identity comparison, so the cast is safe.
-            state.exportedClasses.add(decl as ClassDeclaration);
         } else if (decl.type === 'ClassExpression') {
             state.lwcDefaultExportName =
                 decl.id?.name ?? state.lwcClassName ?? 'DefaultComponentName';
-            state.exportedClasses.add(decl);
         } else if (decl.type === 'Identifier') {
             // export default Foo
             state.lwcDefaultExportName = decl.name;
-            // Resolve the binding so base-class registration can skip the exported class. Scope is
-            // built up-front, so this works whether `Foo` is declared before or after the export.
-            const bound = path.scope?.getBinding(decl.name)?.path.node;
-            if (bound?.type === 'ClassDeclaration') {
-                state.exportedClasses.add(bound);
-            } else if (
-                bound?.type === 'VariableDeclarator' &&
-                bound.init?.type === 'ClassExpression'
-            ) {
-                state.exportedClasses.add(bound.init);
-            }
         } else if (decl.type !== 'FunctionDeclaration' && decl.type !== 'FunctionExpression') {
             // export default <expression> — store the path for deferred extraction in Program.leave,
             // where we know whether this is an LWC file (state.isLWC). We don't want to mutate
@@ -138,6 +121,9 @@ const visitors: Visitors = {
             ) {
                 state.isLWC = true;
                 state.currentComponent = node;
+                // Remember the exported leaf so base-class @api registration can skip it — its
+                // `@api` props are already emitted via `setStaticInternals` (W-23508928).
+                state.lwcComponentNode = node;
                 if (node.id) {
                     state.lwcClassName = node.id.name;
                 } else {
@@ -182,6 +168,9 @@ const visitors: Visitors = {
             ) {
                 state.isLWC = true;
                 state.currentComponent = node;
+                // Remember the exported leaf so base-class @api registration can skip it — its
+                // `@api` props are already emitted via `setStaticInternals` (W-23508928).
+                state.lwcComponentNode = node;
                 // Get the class name from the enclosing variable declarator, if any
                 // e.g. `const Component = class extends LightningElement {}`
                 if (
@@ -409,7 +398,7 @@ export default function compileJS(
         staticStylesheetIds: null,
         publicProperties: new Map(),
         moduleClassNodes: new Set(),
-        exportedClasses: new Set(),
+        lwcComponentNode: null,
         privateProperties: new Set(),
         wireAdapters: [],
         dynamicImports: options.dynamicImports,
@@ -433,7 +422,7 @@ export default function compileJS(
     // survive on member nodes until `astring` drops them at `generate()`, so they remain readable.
     const registeredBaseClassProps = registerBaseClassProps(
         state.moduleClassNodes,
-        state.exportedClasses
+        state.lwcComponentNode
     );
 
     if (registeredBaseClassProps) {
