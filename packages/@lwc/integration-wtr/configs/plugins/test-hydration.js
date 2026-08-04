@@ -75,7 +75,9 @@ import { resetDOM, resetAlreadyLoggedMessages } from '../../helpers/reset';
 setHooks({ sanitizeHtmlContent: (content) => content });
 
 function parseStringToDom(html) {
-    return Document.parseHTMLUnsafe(html).body.firstChild;
+    // Chromium 151's Document.parseHTMLUnsafe drops empty comment nodes by default.
+    // Pass {comments: true} to preserve them.
+    return Document.parseHTMLUnsafe(html, { comments: true }).body.firstChild;
 }
 
 /**

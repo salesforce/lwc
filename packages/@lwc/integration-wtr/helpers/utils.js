@@ -181,6 +181,14 @@ export function expectEquivalentDOM(element, html) {
         return result;
     }
 
+    // Chromium 151's Document.parseHTMLUnsafe drops empty comment nodes (<!---->), but the engine's
+    // live DOM retains them. Filter them out from the actual DOM so we compare apples-to-apples.
+    function removeEmptyCommentNodes(nodes) {
+        return Array.from(nodes).filter(
+            (node) => node.nodeType !== Node.COMMENT_NODE || node.nodeValue !== ''
+        );
+    }
+
     function expectEquivalent(a, b) {
         if (!a || !b) {
             // null/undefined
@@ -203,8 +211,13 @@ export function expectEquivalentDOM(element, html) {
         }
 
         // child nodes (recursive)
-        const aChildNodes = concatenateAdjacentTextNodes(a.childNodes);
-        const bChildNodes = concatenateAdjacentTextNodes(b.childNodes);
+        let aChildNodes = Array.from(a.childNodes);
+        let bChildNodes = Array.from(b.childNodes);
+        // Normalize both sides to account for parseHTMLUnsafe dropping empty comments
+        aChildNodes = removeEmptyCommentNodes(aChildNodes);
+        bChildNodes = removeEmptyCommentNodes(bChildNodes);
+        aChildNodes = concatenateAdjacentTextNodes(aChildNodes);
+        bChildNodes = concatenateAdjacentTextNodes(bChildNodes);
         expect(aChildNodes.length).toBe(bChildNodes.length);
         for (let i = 0; i < aChildNodes.length; i++) {
             expectEquivalent(aChildNodes[i], bChildNodes[i]);
