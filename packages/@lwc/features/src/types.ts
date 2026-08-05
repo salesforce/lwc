@@ -116,9 +116,8 @@ export interface FeatureFlagMap {
      * change to a long-stable API used by every synthetic-shadow consumer, hence gated and off by
      * default.
      *
-     * The flag is scoped to `getElementById` alone — the only unsupported `ShadowRoot` method with a
-     * genuine native-vs-synthetic feature-detection divergence and a working `querySelector` fallback.
-     * The other unsupported methods (`getSelection`, `cloneNode`) remain plain throwing stubs.
+     * The flag affects `getElementById` only; the other unsupported `ShadowRoot` methods
+     * (`getSelection`, `cloneNode`) are unrelated to it and remain plain throwing stubs.
      *
      * Note: `'getElementById' in root` stays `true` in both states by design — the own property is
      * what shadows the native `DocumentFragment.prototype.getElementById` (see @lwc/synthetic-shadow

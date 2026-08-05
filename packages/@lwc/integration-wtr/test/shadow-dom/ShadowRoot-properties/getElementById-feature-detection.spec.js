@@ -124,4 +124,64 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
             expect(el.textContent).toBe('Injected Marker');
         });
     });
+
+    // Some consumers monkey-patch the unsupported method with a working implementation. Before this
+    // flag, `getElementById` was a plain `writable: true` data property, so `root.getElementById = fn`
+    // just worked. Exposing it via an accessor (so the flag read stays dynamic) would break that — a
+    // getter-only accessor throws on assignment in strict mode and silently drops it in sloppy mode —
+    // so the descriptor pairs the getter with a setter that restores the writable-data-property
+    // behavior. These tests pin that reassignment contract in both flag states.
+    describe('preserves reassignment (writable) semantics', () => {
+        // This spec module is an ES module, so these assignments run in strict mode — the case that
+        // would throw against a getter-only accessor.
+        it('allows replacing getElementById on an instance (flag off)', () => {
+            const elm = createElement('x-lookup', { is: Lookup });
+            const replacement = () => 'replaced';
+            expect(() => {
+                elm.shadowRoot.getElementById = replacement;
+            }).not.toThrow();
+            expect(elm.shadowRoot.getElementById).toBe(replacement);
+            expect(elm.shadowRoot.getElementById()).toBe('replaced');
+        });
+
+        it('records the replacement as an own writable data property', () => {
+            const elm = createElement('x-lookup', { is: Lookup });
+            elm.shadowRoot.getElementById = () => 'replaced';
+            const desc = Object.getOwnPropertyDescriptor(elm.shadowRoot, 'getElementById');
+            expect(desc).toBeDefined();
+            expect(desc.writable).toBe(true);
+            expect(desc.enumerable).toBe(true);
+            expect(desc.configurable).toBe(true);
+            expect(typeof desc.value).toBe('function');
+        });
+
+        it('isolates the replacement to the reassigned instance', () => {
+            const a = createElement('x-lookup', { is: Lookup });
+            const b = createElement('x-lookup', { is: Lookup });
+            a.shadowRoot.getElementById = () => 'replaced';
+            // A sibling instance still sees the original throwing stub.
+            expect(() => b.shadowRoot.getElementById()).toThrowError(
+                `Disallowed method "getElementById" on ShadowRoot.`
+            );
+        });
+
+        it('still allows replacing getElementById with the flag on', () => {
+            // The setter is flag-independent: reassignment must keep working even when the getter
+            // would otherwise return undefined. Guards against re-coupling the setter to the flag.
+            setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', true);
+            try {
+                const elm = createElement('x-lookup', { is: Lookup });
+                const replacement = () => 'replaced';
+                expect(() => {
+                    elm.shadowRoot.getElementById = replacement;
+                }).not.toThrow();
+                expect(elm.shadowRoot.getElementById).toBe(replacement);
+                const desc = Object.getOwnPropertyDescriptor(elm.shadowRoot, 'getElementById');
+                expect(desc.writable).toBe(true);
+                expect(typeof desc.value).toBe('function');
+            } finally {
+                setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', false);
+            }
+        });
+    });
 });

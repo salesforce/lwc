@@ -200,28 +200,8 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
 }
 
 /**
- * Several `ShadowRoot` methods have no correct shadow-scoped semantics and are therefore not
- * emulated. `getSelection` and `cloneNode` are exposed as stubs that throw when invoked. There is
- * no meaningful native behavior to fall back to for either: native `ShadowRoot.cloneNode()` throws
- * `NotSupportedError` (cloning a shadow root is forbidden by the DOM clone algorithm), and
- * `getSelection` is non-standard on `ShadowRoot` (present in Blink/WebKit, absent in Firefox, since
- * the Selection API defines it only on `Document`/`Window`). This is the long-standing behavior,
- * exposed as a `writable: true` data property exactly as it always has been.
- */
-function createDisallowedMethodDescriptor(methodName: string): PropertyDescriptor {
-    return {
-        writable: true,
-        enumerable: true,
-        configurable: true,
-        value(this: ShadowRoot): never {
-            throw new Error(`Disallowed method "${methodName}" on ShadowRoot.`);
-        },
-    };
-}
-
-/**
- * `getElementById` is a special case among the unsupported `ShadowRoot` methods. Like the others it
- * has historically been a stub that throws when invoked — but unlike them, native `ShadowRoot`
+ * `getElementById` has historically been a stub that throws when invoked, like the other unsupported
+ * `ShadowRoot` methods (`getSelection`, `cloneNode`). Unlike them, though, native `ShadowRoot`
  * inherits a *working* `getElementById` from `DocumentFragment`. So third-party code that
  * feature-detects the method with a *value-based* check (`typeof root.getElementById === 'function'`,
  * `if (root.getElementById)`, or `root.getElementById?.(id)`) succeeds in native shadow but, because
@@ -232,7 +212,8 @@ function createDisallowedMethodDescriptor(methodName: string): PropertyDescripto
  * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` runtime flag lets an app opt into friendlier behavior:
  * when enabled, `getElementById` is exposed as `undefined` instead of a throwing stub, so value-based
  * feature detection reveals its absence and callers fall back to the supported, shadow-scoped
- * `querySelector('#' + id)`.
+ * `querySelector('#' + id)`. The flag is scoped to `getElementById` alone; the other unsupported
+ * methods (`getSelection`, `cloneNode`) are left untouched as plain throwing stubs.
  *
  * `'getElementById' in root` stays `true` even with the flag on — by design, not a gap. The own
  * accessor below is exactly what shadows the native `DocumentFragment.prototype.getElementById`;
@@ -365,8 +346,14 @@ const ShadowRootDescriptors = {
             return fauxElementsFromPoint(this, doc, left, top);
         },
     },
-    // See createDisallowedMethodDescriptor: a throwing stub with no shadow-scoped semantics.
-    getSelection: createDisallowedMethodDescriptor('getSelection'),
+    getSelection: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: ShadowRoot): Selection | null {
+            throw new Error('Disallowed method "getSelection" on ShadowRoot.');
+        },
+    },
     host: {
         enumerable: true,
         configurable: true,
@@ -479,8 +466,14 @@ const NodePatchDescriptors = {
             return createStaticNodeList(shadowRootChildNodes(this));
         },
     },
-    // See createDisallowedMethodDescriptor: a throwing stub with no shadow-scoped semantics.
-    cloneNode: createDisallowedMethodDescriptor('cloneNode'),
+    cloneNode: {
+        writable: true,
+        enumerable: true,
+        configurable: true,
+        value(this: ShadowRoot): Selection | null {
+            throw new Error('Disallowed method "cloneNode" on ShadowRoot.');
+        },
+    },
     compareDocumentPosition: {
         writable: true,
         enumerable: true,
