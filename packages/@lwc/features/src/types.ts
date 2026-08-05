@@ -100,30 +100,18 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
-     * Controls how synthetic shadow exposes `ShadowRoot.getElementById`, which has no correct
-     * shadow-scoped semantics and is therefore not emulated.
+     * Controls how synthetic shadow exposes `ShadowRoot.getElementById`, which is not emulated.
      *
-     * When false or unset (default), it is exposed as a stub that throws when invoked — preserving
-     * the long-standing behavior. Because a throwing stub is still a callable function, *value-based*
-     * feature detection (`typeof root.getElementById === 'function'`, `if (root.getElementById)`,
-     * `root.getElementById?.(id)`) reports it as present, so callers invoke it and hit the throw.
+     * When false or unset (default), it is a stub that throws when invoked — the long-standing
+     * behavior. When true, it is exposed as `undefined` instead, so value-based feature detection
+     * (`typeof`, `if`, `?.`) reveals its absence and callers fall back to `querySelector('#' + id)`.
+     * This closes a native-vs-synthetic divergence: native `ShadowRoot` inherits a working
+     * `getElementById` from `DocumentFragment`, so feature-detecting RUM/analytics libraries succeed
+     * in native shadow but throw in synthetic. Off by default since it changes long-stable behavior.
      *
-     * When true, `getElementById` is exposed as `undefined` instead, so value-based feature detection
-     * reveals its absence and callers can fall back to the supported, shadow-scoped
-     * `querySelector('#' + id)`. This closes a real native-vs-synthetic divergence: native
-     * `ShadowRoot` inherits a working `getElementById` from `DocumentFragment`, so feature-detecting
-     * RUM/analytics libraries succeed in native shadow but throw in synthetic. This is a visible
-     * change to a long-stable API used by every synthetic-shadow consumer, hence gated and off by
-     * default.
-     *
-     * The flag affects `getElementById` only; the other unsupported `ShadowRoot` methods
-     * (`getSelection`, `cloneNode`) are unrelated to it and remain plain throwing stubs.
-     *
-     * Note: `'getElementById' in root` stays `true` in both states by design — the own property is
-     * what shadows the native `DocumentFragment.prototype.getElementById` (see @lwc/synthetic-shadow
-     * shadow-root.ts). A caller that guards with `in` rather than a value check therefore still
-     * enters the branch and, flag-on, throws a plain `TypeError` on the `undefined` value instead of
-     * the descriptive `Disallowed method` error.
+     * Affects `getElementById` only; `getSelection` / `cloneNode` remain plain throwing stubs. See
+     * @lwc/synthetic-shadow shadow-root.ts for why `'getElementById' in root` stays `true` in both
+     * states (and the `in`-guard `TypeError` caveat).
      */
     ENABLE_SHADOW_ROOT_UNDEFINED_METHODS: FeatureFlagValue;
 }

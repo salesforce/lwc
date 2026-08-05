@@ -1,11 +1,9 @@
 import { LightningElement } from 'lwc';
 
-// A component that injects a plain element carrying an *unscoped* native id into its own shadow
-// tree — mirroring how a third-party script (e.g. an analytics/RUM agent) inserts its own marker
-// node and later looks it up by that id relative to the node's root (`node.getRootNode()`).
-// The id is set imperatively via `lwc:dom="manual"`, so LWC's synthetic-shadow id scoping (which
-// rewrites *template-static* ids to `id-<idx>`) does not apply — the id in the DOM is exactly the
-// one we search for.
+// Injects a marker node with an unscoped native id into its own shadow tree, mirroring how an
+// analytics/RUM agent inserts and later looks up its own node. The id is set imperatively (not in
+// the template), so synthetic-shadow id scoping doesn't rewrite it — the DOM id is exactly what we
+// search for.
 export default class Lookup extends LightningElement {
     renderedCallback() {
         const host = this.template.querySelector('div');

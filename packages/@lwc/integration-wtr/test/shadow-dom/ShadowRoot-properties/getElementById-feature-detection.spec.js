@@ -2,23 +2,10 @@ import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Lookup from 'x/lookup';
 
-// Some third-party libraries (e.g. RUM / analytics agents) resolve an element by id relative to a
-// node's root, obtained via `node.getRootNode()`. A well-behaved library feature-detects the method
-// before using it and falls back to `querySelector('#' + id)` when it is unavailable:
-//
-//     function resolveById(root, id) {
-//         if (typeof root.getElementById === 'function') {
-//             return root.getElementById(id);
-//         }
-//         return root.querySelector('#' + id);
-//     }
-//
-// On the synthetic ShadowRoot `getElementById` is intentionally not emulated. By default it is a
-// throwing stub — which is worse than useless for these callers, because a stub is still a callable
-// function (`typeof root.getElementById === 'function'` is `true`), so the guard passes, the caller
-// invokes it, and it throws. The ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag makes the method
-// `undefined` instead, so the guard fails and the caller pivots to the supported, shadow-scoped
-// `querySelector`. These tests exercise both states through the exact feature-detecting caller.
+// Feature-detecting caller, as used by RUM/analytics libraries that resolve an id off
+// `node.getRootNode()`: use `getElementById` if present, else fall back to `querySelector`. On the
+// synthetic ShadowRoot the default throwing stub passes the guard and then throws; the
+// ENABLE_SHADOW_ROOT_UNDEFINED_METHODS flag makes it `undefined` so the caller falls back instead.
 function resolveById(root, id) {
     if (typeof root.getElementById === 'function') {
         return root.getElementById(id);
@@ -43,13 +30,12 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
         });
 
         it('reports getElementById as present via the `in` operator', () => {
-            // `in` is true here and stays true flag-on (the own property shadows the native
-            // DocumentFragment method), so it never distinguishes the two states.
+            // Stays true flag-on too (the own property shadows the native method), so `in` never
+            // distinguishes the two states.
             expect('getElementById' in shadowRoot).toBe(true);
         });
 
         it('makes a feature-detecting caller throw (the reported failure mode)', () => {
-            // The guard passes (it IS a function), the caller invokes it, and it throws.
             expect(() => resolveById(shadowRoot, 'injected-marker')).toThrowError(
                 `Disallowed method "getElementById" on ShadowRoot.`
             );
@@ -72,16 +58,15 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
         });
 
         it('still reports getElementById as present via the `in` operator (by design)', () => {
-            // The own property remains (as undefined) to shadow the native DocumentFragment
-            // method, so `in` cannot be used to detect absence — value-based checks must be used.
+            // The own property remains (as undefined) to shadow the native method, so `in` can't
+            // detect absence — value-based checks must be used.
             expect('getElementById' in shadowRoot).toBe(true);
         });
 
         it('throws a plain TypeError — not the descriptive error — when an `in`-guarded caller invokes the undefined value', () => {
-            // A caller that guards with `in` rather than a value check still enters the branch and
-            // calls `undefined()`, which throws a native TypeError. This is deliberately distinct
-            // from the flag-off throwing stub, whose descriptive `Disallowed method` Error is a
-            // plain Error (not a TypeError) — so the two assertions below pin the exact error kind.
+            // An `in`-guarded caller enters the branch and calls `undefined()` → native TypeError,
+            // distinct from the flag-off stub's descriptive (plain-Error) throw. Both assertions
+            // below pin the exact error kind.
             const callViaInGuard = () => {
                 if ('getElementById' in shadowRoot) {
                     return shadowRoot.getElementById('injected-marker');
@@ -95,26 +80,22 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
         });
 
         it('silently no-ops for truthy-guard and optional-chaining callers', () => {
-            // Pin the precondition inline so this test is self-contained: with the flag on, the
-            // value is genuinely `undefined` (not a stub function), which is what makes the guards
-            // below short-circuit rather than invoke-and-return-undefined.
+            // Precondition: genuinely `undefined` (not a stub), which is what makes the guards below
+            // short-circuit rather than invoke-and-return-undefined.
             expect(shadowRoot.getElementById).toBe(undefined);
 
-            // `if (root.getElementById)` skips the branch, and `root.getElementById?.(id)`
-            // short-circuits — both yield undefined with no throw, rather than a resolved element.
             expect(shadowRoot.getElementById?.('injected-marker')).toBe(undefined);
 
             let result = 'unset';
             if (shadowRoot.getElementById) {
                 result = shadowRoot.getElementById('injected-marker');
             }
-            // The sentinel survives only if the truthy branch was skipped; had it been entered and
-            // returned undefined, `result` would be undefined (≠ 'unset') and this would fail.
+            // The sentinel survives only if the branch was skipped — entering it would set `result`
+            // to undefined and fail here.
             expect(result).toBe('unset');
         });
 
         it('lets a feature-detecting caller resolve an element without throwing', () => {
-            // The guard now fails and the caller falls back to querySelector — no throw.
             expect(() => resolveById(shadowRoot, 'injected-marker')).not.toThrow();
         });
 
@@ -125,15 +106,11 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
         });
     });
 
-    // Some consumers monkey-patch the unsupported method with a working implementation. Before this
-    // flag, `getElementById` was a plain `writable: true` data property, so `root.getElementById = fn`
-    // just worked. Exposing it via an accessor (so the flag read stays dynamic) would break that — a
-    // getter-only accessor throws on assignment in strict mode and silently drops it in sloppy mode —
-    // so the descriptor pairs the getter with a setter that restores the writable-data-property
-    // behavior. These tests pin that reassignment contract in both flag states.
+    // Some consumers monkey-patch the method with a working implementation. It was a plain
+    // `writable` data property before this flag; the accessor's paired setter must preserve that
+    // `root.getElementById = fn` behavior (a getter-only accessor would throw on assignment in
+    // strict mode). Assignments below run in strict mode (ES module). Pinned in both flag states.
     describe('preserves reassignment (writable) semantics', () => {
-        // This spec module is an ES module, so these assignments run in strict mode — the case that
-        // would throw against a getter-only accessor.
         it('allows replacing getElementById on an instance (flag off)', () => {
             const elm = createElement('x-lookup', { is: Lookup });
             const replacement = () => 'replaced';
@@ -166,8 +143,8 @@ describe.skipIf(process.env.NATIVE_SHADOW)('ShadowRoot.getElementById feature de
         });
 
         it('still allows replacing getElementById with the flag on', () => {
-            // The setter is flag-independent: reassignment must keep working even when the getter
-            // would otherwise return undefined. Guards against re-coupling the setter to the flag.
+            // Guards against re-coupling the setter to the flag: reassignment must work even when
+            // the getter would otherwise return undefined.
             setFeatureFlagForTest('ENABLE_SHADOW_ROOT_UNDEFINED_METHODS', true);
             try {
                 const elm = createElement('x-lookup', { is: Lookup });

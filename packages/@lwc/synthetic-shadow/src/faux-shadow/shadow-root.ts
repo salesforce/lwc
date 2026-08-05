@@ -200,43 +200,22 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
 }
 
 /**
- * `getElementById` has historically been a stub that throws when invoked, like the other unsupported
- * `ShadowRoot` methods (`getSelection`, `cloneNode`). Unlike them, though, native `ShadowRoot`
- * inherits a *working* `getElementById` from `DocumentFragment`. So third-party code that
- * feature-detects the method with a *value-based* check (`typeof root.getElementById === 'function'`,
- * `if (root.getElementById)`, or `root.getElementById?.(id)`) succeeds in native shadow but, because
- * a throwing stub is still a *callable function*, commits to calling it in synthetic shadow and then
- * hits the throw — a genuine native-vs-synthetic divergence (reported by RUM/analytics libraries
- * that resolve an id off `node.getRootNode()`).
+ * `getElementById` is not emulated on the synthetic `ShadowRoot`. Unlike the other unsupported
+ * methods, native `ShadowRoot` inherits a *working* one from `DocumentFragment`, so third-party code
+ * that value-detects it (`typeof`, `if`, `?.`) works in native shadow but hits the throwing stub in
+ * synthetic — a real divergence (RUM/analytics libraries resolving an id off `getRootNode()`).
  *
- * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` runtime flag lets an app opt into friendlier behavior:
- * when enabled, `getElementById` is exposed as `undefined` instead of a throwing stub, so value-based
- * feature detection reveals its absence and callers fall back to the supported, shadow-scoped
- * `querySelector('#' + id)`. The flag is scoped to `getElementById` alone; the other unsupported
- * methods (`getSelection`, `cloneNode`) are left untouched as plain throwing stubs.
+ * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` flag exposes it as `undefined` instead, so value-based
+ * detection reveals its absence and callers fall back to `querySelector('#' + id)`. Default OFF to
+ * preserve the long-standing throwing-stub behavior. The flag is read through a getter because
+ * runtime flags are set during app init, after this module is imported.
  *
- * `'getElementById' in root` stays `true` even with the flag on — by design, not a gap. The own
- * accessor below is exactly what shadows the native `DocumentFragment.prototype.getElementById`;
- * deleting the property to make `in` report `false` would expose that native method, which runs
- * against the underlying (empty) fragment and silently returns `null` — a worse, silent-wrong
- * failure. The trade-off is that an `in`-guarded caller (`if ('x' in root) root.x()`) still enters
- * the branch and, flag-on, throws `TypeError: … is not a function` instead of the descriptive
- * `Disallowed method` error. Well-behaved detection uses value-based checks, which the flag fixes.
- *
- * This is a visible, behavioral change to an API that has shipped unchanged for years, so it is
- * DEFAULT OFF: with the flag unset/false the throwing stub is returned, preserving the legacy
- * behavior — including write semantics (the setter below keeps `root.getElementById = fn` working
- * exactly as the old `writable` data property did, in both strict and sloppy mode). The one residual
- * observable difference, regardless of flag state, is descriptor *kind*:
- * `getOwnPropertyDescriptor(prototype, 'getElementById')` reports an accessor (`get`/`set`) rather
- * than a data property (`value`/`writable`). That is intrinsic to reading the flag dynamically — a
- * data property would have to capture its `value` when the prototype is built, before the flag is
- * set — and it affects only tooling that introspects this prototype descriptor to distinguish
- * data-vs-accessor, never normal invocation, reassignment, or feature detection.
- *
- * The flag is read dynamically through a getter (rather than captured when the prototype is built),
- * because runtime feature flags are set during app initialization — after this polyfill module is
- * imported.
+ * Notes:
+ * - The setter keeps `root.getElementById = fn` working as the old `writable` data property did
+ *   (a getter-only accessor would throw on assignment in strict mode).
+ * - `'getElementById' in root` stays `true` in both states: the own accessor is what shadows the
+ *   native `DocumentFragment.prototype.getElementById`. An `in`-guarded caller therefore still
+ *   enters the branch and, flag-on, throws a plain `TypeError` on the `undefined` value.
  */
 function createGetElementByIdDescriptor(): PropertyDescriptor {
     function disallowedGetElementById(this: ShadowRoot): never {
@@ -679,9 +658,7 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
-    // See createGetElementByIdDescriptor: throws by default, `undefined` when the
-    // ENABLE_SHADOW_ROOT_UNDEFINED_METHODS runtime flag is enabled. This is the flag's sole
-    // motivating case: RUM/analytics libraries feature-detect `getElementById` on the shadow root.
+    // Throws by default; `undefined` when ENABLE_SHADOW_ROOT_UNDEFINED_METHODS is on. See below.
     getElementById: createGetElementByIdDescriptor(),
     querySelector: {
         writable: true,
