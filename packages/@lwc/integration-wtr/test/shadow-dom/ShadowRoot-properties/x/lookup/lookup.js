@@ -1,17 +1,15 @@
 import { LightningElement } from 'lwc';
 
-// Injects a marker node with an unscoped native id into its own shadow tree, mirroring how an
-// analytics/RUM agent inserts and later looks up its own node. The id is set imperatively (not in
-// the template), so synthetic-shadow id scoping doesn't rewrite it — the DOM id is exactly what we
-// search for.
+// Injects a marker with an unscoped native id into its own shadow tree, like an analytics/RUM agent
+// inserting and later looking up its own node. Injected imperatively (not in the template) so
+// synthetic-shadow id scoping leaves the id alone. renderedCallback, not connectedCallback: the
+// template isn't rendered yet at connect time, so `this.template.querySelector('div')` is null there.
 export default class Lookup extends LightningElement {
     renderedCallback() {
         const host = this.template.querySelector('div');
-        if (host && !host.querySelector('#injected-marker')) {
-            const marker = document.createElement('span');
-            marker.id = 'injected-marker';
-            marker.textContent = 'Injected Marker';
-            host.appendChild(marker);
-        }
+        const marker = document.createElement('span');
+        marker.id = 'injected-marker';
+        marker.textContent = 'Injected Marker';
+        host.appendChild(marker);
     }
 }
