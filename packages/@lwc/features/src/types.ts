@@ -84,11 +84,11 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
-     * If true, synthetic shadow exposes the unemulated `ShadowRoot.getElementById` as `undefined`
-     * so value-based feature detection falls back to `querySelector`. If false or unset (default),
-     * it stays a stub that throws when invoked.
+     * If true, synthetic shadow implements `ShadowRoot.getElementById` by searching the shadow
+     * tree, mirroring native shadow. If false or unset (default), it stays a stub that throws when
+     * invoked.
      */
-    ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: FeatureFlagValue;
+    ENABLE_SHADOW_ROOT_GET_ELEMENT_BY_ID: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
