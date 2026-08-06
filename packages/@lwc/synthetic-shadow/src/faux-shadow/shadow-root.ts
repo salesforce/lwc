@@ -199,45 +199,8 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
     );
 }
 
-/**
- * `getElementById` is not emulated on the synthetic `ShadowRoot`. Unlike the other unsupported
- * methods, native `ShadowRoot` inherits a *working* one from `DocumentFragment`, so third-party code
- * that value-detects it (`typeof`, `if`, `?.`) works in native shadow but hits the throwing stub in
- * synthetic — a real divergence (RUM/analytics libraries resolving an id off `getRootNode()`).
- *
- * The `ENABLE_SHADOW_ROOT_UNDEFINED_METHODS` flag exposes it as `undefined` instead, so value-based
- * detection reveals its absence and callers fall back to `querySelector('#' + id)`. Default OFF to
- * preserve the long-standing throwing-stub behavior. The flag is read through a getter because
- * runtime flags are set during app init, after this module is imported.
- *
- * Notes:
- * - The setter keeps `root.getElementById = fn` working as the old `writable` data property did
- *   (a getter-only accessor would throw on assignment in strict mode).
- * - `'getElementById' in root` stays `true` in both states: the own accessor is what shadows the
- *   native `DocumentFragment.prototype.getElementById`. An `in`-guarded caller therefore still
- *   enters the branch and, flag-on, throws a plain `TypeError` on the `undefined` value.
- */
-function createGetElementByIdDescriptor(): PropertyDescriptor {
-    function disallowedGetElementById(this: ShadowRoot): never {
-        throw new Error(`Disallowed method "getElementById" on ShadowRoot.`);
-    }
-    return {
-        enumerable: true,
-        configurable: true,
-        get(this: ShadowRoot): (() => never) | undefined {
-            return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_METHODS
-                ? undefined
-                : disallowedGetElementById;
-        },
-        set(this: ShadowRoot, value: unknown): void {
-            defineProperty(this, 'getElementById', {
-                writable: true,
-                enumerable: true,
-                configurable: true,
-                value,
-            });
-        },
-    };
+function disallowedGetElementById(this: ShadowRoot): never {
+    throw new Error(`Disallowed method "getElementById" on ShadowRoot.`);
 }
 
 const SyntheticShadowRootDescriptors = {
@@ -658,8 +621,26 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
-    // Throws by default; `undefined` when ENABLE_SHADOW_ROOT_UNDEFINED_METHODS is on. See below.
-    getElementById: createGetElementByIdDescriptor(),
+    // An accessor, unlike the other stubs, so the flag is read at call time (not at import) and the
+    // setter preserves `root.getElementById = fn`. The flag exposes it as `undefined` so callers
+    // that value-detect it fall back to `querySelector`; default OFF keeps the throwing stub.
+    getElementById: {
+        enumerable: true,
+        configurable: true,
+        get(this: ShadowRoot): (() => never) | undefined {
+            return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID
+                ? undefined
+                : disallowedGetElementById;
+        },
+        set(this: ShadowRoot, value: unknown): void {
+            defineProperty(this, 'getElementById', {
+                writable: true,
+                enumerable: true,
+                configurable: true,
+                value,
+            });
+        },
+    },
     querySelector: {
         writable: true,
         enumerable: true,

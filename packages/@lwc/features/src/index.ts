@@ -24,7 +24,7 @@ const features: FeatureFlagMap = {
     DISABLE_SCOPE_TOKEN_VALIDATION: null,
     DISABLE_STRICT_VALIDATION: null,
     DISABLE_DETACHED_REHYDRATION: null,
-    ENABLE_SHADOW_ROOT_UNDEFINED_METHODS: null,
+    ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

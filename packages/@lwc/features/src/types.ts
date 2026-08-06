@@ -100,20 +100,11 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
-     * Controls how synthetic shadow exposes `ShadowRoot.getElementById`, which is not emulated.
-     *
-     * When false or unset (default), it is a stub that throws when invoked — the long-standing
-     * behavior. When true, it is exposed as `undefined` instead, so value-based feature detection
-     * (`typeof`, `if`, `?.`) reveals its absence and callers fall back to `querySelector('#' + id)`.
-     * This closes a native-vs-synthetic divergence: native `ShadowRoot` inherits a working
-     * `getElementById` from `DocumentFragment`, so feature-detecting RUM/analytics libraries succeed
-     * in native shadow but throw in synthetic. Off by default since it changes long-stable behavior.
-     *
-     * Affects `getElementById` only; `getSelection` / `cloneNode` remain plain throwing stubs. See
-     * @lwc/synthetic-shadow shadow-root.ts for why `'getElementById' in root` stays `true` in both
-     * states (and the `in`-guard `TypeError` caveat).
+     * If true, synthetic shadow exposes the unemulated `ShadowRoot.getElementById` as `undefined`
+     * so value-based feature detection falls back to `querySelector`. If false or unset (default),
+     * it stays a stub that throws when invoked.
      */
-    ENABLE_SHADOW_ROOT_UNDEFINED_METHODS: FeatureFlagValue;
+    ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
