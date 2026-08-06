@@ -199,6 +199,10 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
     );
 }
 
+function disallowedGetElementById(this: ShadowRoot): never {
+    throw new Error(`Disallowed method "getElementById" on ShadowRoot.`);
+}
+
 const SyntheticShadowRootDescriptors = {
     constructor: {
         writable: true,
@@ -617,12 +621,24 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
+    // An accessor, unlike the other stubs, so the flag is read at call time (not at import) and the
+    // setter preserves `root.getElementById = fn`. The flag exposes it as `undefined` so callers
+    // that value-detect it fall back to `querySelector`; default OFF keeps the throwing stub.
     getElementById: {
-        writable: true,
         enumerable: true,
         configurable: true,
-        value(this: ShadowRoot): Selection | null {
-            throw new Error('Disallowed method "getElementById" on ShadowRoot.');
+        get(this: ShadowRoot): (() => never) | undefined {
+            return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID
+                ? undefined
+                : disallowedGetElementById;
+        },
+        set(this: ShadowRoot, value: unknown): void {
+            defineProperty(this, 'getElementById', {
+                writable: true,
+                enumerable: true,
+                configurable: true,
+                value,
+            });
         },
     },
     querySelector: {
