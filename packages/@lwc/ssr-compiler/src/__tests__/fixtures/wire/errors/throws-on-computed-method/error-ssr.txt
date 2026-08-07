@@ -1,1 +1,1 @@
-[7:12-7:13]: Unexpected token: '{'
+@wire cannot be used on computed properties in SSR context.

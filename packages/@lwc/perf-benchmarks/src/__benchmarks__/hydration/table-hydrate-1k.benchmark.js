@@ -31,7 +31,7 @@ benchmark(`hydrate/table/hydrate/1k`, () => {
 
         // parseHTMLUnsafe landed in Chrome 124 https://caniuse.com/mdn-api_document_parsehtmlunsafe_static
         const fragment = Document.parseHTMLUnsafe
-            ? Document.parseHTMLUnsafe(ssrHtml)
+            ? Document.parseHTMLUnsafe(ssrHtml, { comments: true })
             : new DOMParser().parseFromString(ssrHtml, 'text/html', {
                   includeShadowRoots: true,
               });

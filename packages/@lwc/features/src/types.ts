@@ -88,6 +88,12 @@ export interface FeatureFlagMap {
      * check and returns `this[index]` for any receiver, as it did prior to 266.
      */
     ENABLE_LEGACY_ITEM_POLYFILL: FeatureFlagValue;
+    /**
+     * If true, synthetic shadow exposes the unemulated `ShadowRoot.getElementById` as `undefined`
+     * so value-based feature detection falls back to `querySelector`. If false or unset (default),
+     * it stays a stub that throws when invoked.
+     */
+    ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

@@ -162,7 +162,7 @@ export function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
 // Succeeds if the given DOM element is equivalent to the given HTML in terms of nodes and elements. This is
 // basically the same as `expect(element.outerHTML).toBe(html)` except that it works despite bugs in synthetic shadow.
 export function expectEquivalentDOM(element, html) {
-    const fragment = Document.parseHTMLUnsafe(html);
+    const fragment = Document.parseHTMLUnsafe(html, { comments: true });
 
     // When the fragment is parsed, the string "abc" is considered one text node. Whereas the engine
     // may have produced it as three adjacent text nodes: "a", "b", "c". We want to consider these equivalent
