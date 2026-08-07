@@ -99,8 +99,11 @@ export interface FeatureFlagMap {
      * out-of-bounds `items[length]` slot instead of the current index, reproducing the broken
      * lookup behavior it had prior to 266. If false or unset (default), it iterates items correctly.
      */
-    // Remove in 270
     ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: FeatureFlagValue;
+    /**
+     * If true, the `attributeChangedCallback` guard behaves as it did prior to 266.
+     */
+    ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
