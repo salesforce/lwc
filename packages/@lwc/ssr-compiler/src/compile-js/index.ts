@@ -13,9 +13,11 @@ import { LWC_VERSION_COMMENT, type CompilationMode } from '@lwc/shared';
 import { LWCClassErrors, SsrCompilerErrors } from '@lwc/errors';
 import { transmogrify } from '../transmogrify';
 import { ImportManager } from '../imports';
+import { bImportDeclaration } from '../estree/builders';
 import { replaceLwcImport, replaceNamedLwcExport, replaceAllLwcExport } from './lwc-import';
 import { catalogStaticStylesheets, catalogAndReplaceStyleImports } from './stylesheets';
 import { addGenerateMarkupFunction } from './generate-markup';
+import { registerBaseClassProps, REGISTER_PUBLIC_PROPERTIES } from './register-base-class-props';
 import { catalogWireAdapters, isWireDecorator } from './decorators/wire';
 import { validateApiProperty, validateApiMethod } from './decorators/api/validate';
 import { isApiDecorator } from './decorators/api';
@@ -105,8 +107,11 @@ const visitors: Visitors = {
     ClassDeclaration: {
         enter(path, state) {
             const { node } = path;
+            if (!node) return;
+            // Gather every class node for post-traversal base-class @api registration (W-23508928).
+            state.moduleClassNodes.add(node);
             if (
-                node?.superClass &&
+                node.superClass &&
                 // export default class extends LightningElement {}
                 (is.exportDefaultDeclaration(path.parentPath) ||
                     // class Cmp extends LightningElement {}; export default Cmp
@@ -116,6 +121,9 @@ const visitors: Visitors = {
             ) {
                 state.isLWC = true;
                 state.currentComponent = node;
+                // Remember the exported leaf so base-class @api registration can skip it — its
+                // `@api` props are already emitted via `setStaticInternals` (W-23508928).
+                state.lwcComponentNode = node;
                 if (node.id) {
                     state.lwcClassName = node.id.name;
                 } else {
@@ -150,13 +158,19 @@ const visitors: Visitors = {
     ClassExpression: {
         enter(path, state) {
             const { node } = path;
+            if (!node) return;
+            // Gather every class node for post-traversal base-class @api registration (W-23508928).
+            state.moduleClassNodes.add(node);
             if (
-                node?.superClass &&
+                node.superClass &&
                 is.identifier(node.superClass) &&
                 node.superClass.name === state.lightningElementIdentifier
             ) {
                 state.isLWC = true;
                 state.currentComponent = node;
+                // Remember the exported leaf so base-class @api registration can skip it — its
+                // `@api` props are already emitted via `setStaticInternals` (W-23508928).
+                state.lwcComponentNode = node;
                 // Get the class name from the enclosing variable declarator, if any
                 // e.g. `const Component = class extends LightningElement {}`
                 if (
@@ -383,6 +397,8 @@ export default function compileJS(
         cssExplicitImports: null,
         staticStylesheetIds: null,
         publicProperties: new Map(),
+        moduleClassNodes: new Set(),
+        lwcComponentNode: null,
         privateProperties: new Set(),
         wireAdapters: [],
         dynamicImports: options.dynamicImports,
@@ -399,6 +415,20 @@ export default function compileJS(
         return {
             code: generate(ast, {}),
         };
+    }
+
+    // Register @api props on in-file base classes for the runtime union (W-23508928), reusing the
+    // class nodes gathered during the main traversal above — no extra tree walk. `@api` decorators
+    // survive on member nodes until `astring` drops them at `generate()`, so they remain readable.
+    const registeredBaseClassProps = registerBaseClassProps(
+        state.moduleClassNodes,
+        state.lwcComponentNode
+    );
+
+    if (registeredBaseClassProps) {
+        ast.body.unshift(
+            bImportDeclaration({ registerPublicProperties: REGISTER_PUBLIC_PROPERTIES })
+        );
     }
 
     addGenerateMarkupFunction(ast, state, tagName, filename, compilationMode);
