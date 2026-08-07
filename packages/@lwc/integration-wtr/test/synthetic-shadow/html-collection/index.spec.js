@@ -1,8 +1,11 @@
 import { setFeatureFlagForTest } from 'lwc';
+import { resetDOM } from '../../../helpers/reset';
 
 describe.skipIf(process.env.NATIVE_SHADOW)('HTMLCollection polyfill', () => {
     afterEach(() => {
         setFeatureFlagForTest('ENABLE_LEGACY_ITEM_POLYFILL', false);
+        setFeatureFlagForTest('ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM', false);
+        resetDOM();
     });
 
     // W-23486660 identified a gap in the polyfill
@@ -26,13 +29,21 @@ describe.skipIf(process.env.NATIVE_SHADOW)('HTMLCollection polyfill', () => {
     });
     it('.namedItem returns the element matching the given id', () => {
         const div = document.createElement('div');
-        div.id = 'w-23486660-named-item';
+        div.id = 'named-item';
         document.body.appendChild(div);
-        try {
-            const collection = document.getElementsByTagName('div');
-            expect(collection.namedItem('w-23486660-named-item')).toBe(div);
-        } finally {
-            document.body.removeChild(div);
-        }
+        const collection = document.getElementsByTagName('div');
+        expect(collection.namedItem('named-item')).toBe(div);
+    });
+    it('.namedItem returns null when no element matches', () => {
+        const collection = document.getElementsByTagName('div');
+        expect(collection.namedItem('w-broken-named-item-missing')).toBeNull();
+    });
+    it('.namedItem reproduces the broken lookup when ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM is true', () => {
+        setFeatureFlagForTest('ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM', true);
+        const div = document.createElement('div');
+        div.id = 'broken-named-item';
+        document.body.appendChild(div);
+        const collection = document.getElementsByTagName('div');
+        expect(() => collection.namedItem('broken-named-item-flagged')).toThrow(TypeError);
     });
 });

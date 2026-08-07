@@ -24,6 +24,8 @@ const features: FeatureFlagMap = {
     // Remove in 270
     ENABLE_LEGACY_ITEM_POLYFILL: null,
     ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: null,
+    // Remove in 270
+    ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

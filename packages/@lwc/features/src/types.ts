@@ -94,6 +94,13 @@ export interface FeatureFlagMap {
      * it stays a stub that throws when invoked.
      */
     ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: FeatureFlagValue;
+    /**
+     * If true, the synthetic-shadow `HTMLCollection.namedItem` method always inspects the
+     * out-of-bounds `items[length]` slot instead of the current index, reproducing the broken
+     * lookup behavior it had prior to 266. If false or unset (default), it iterates items correctly.
+     */
+    // Remove in 270
+    ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

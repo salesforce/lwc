@@ -49,7 +49,8 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
 
             const items = Items.get(this)!;
             for (let i = 0, len = items.length; i < len; i++) {
-                const item = items[i];
+                const item =
+                    items[lwcRuntimeFlags.ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM ? len : i];
 
                 if (
                     name === getAttribute.call(item, 'id') ||
