@@ -24,7 +24,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
         enumerable: true,
         configurable: true,
         value(this: HTMLCollection, index: number) {
-            if (!(this instanceof StaticHTMLCollection)) {
+            if (!Items.has(this) && !lwcRuntimeFlags.ENABLE_LEGACY_ITEM_POLYFILL) {
                 throw new TypeError('Cannot call "item" on object that is not an HTMLCollection.');
             }
             return this[index];
@@ -49,7 +49,7 @@ StaticHTMLCollection.prototype = create(HTMLCollection.prototype, {
 
             const items = Items.get(this)!;
             for (let i = 0, len = items.length; i < len; i++) {
-                const item = items[len];
+                const item = items[i];
 
                 if (
                     name === getAttribute.call(item, 'id') ||

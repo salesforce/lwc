@@ -82,6 +82,12 @@ export interface FeatureFlagMap {
      * synthetic shadow. When false or unset, the guard is active (default).
      */
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
+
+    /**
+     * If true, the synthetic-shadow `NodeList`/`HTMLCollection` `item` method skips the receiver
+     * check and returns `this[index]` for any receiver, as it did prior to 266.
+     */
+    ENABLE_LEGACY_ITEM_POLYFILL: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

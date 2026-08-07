@@ -23,7 +23,7 @@ StaticNodeList.prototype = create(NodeList.prototype, {
         enumerable: true,
         configurable: true,
         value(this: NodeList, index: number) {
-            if (!(this instanceof StaticNodeList)) {
+            if (!Items.has(this) && !lwcRuntimeFlags.ENABLE_LEGACY_ITEM_POLYFILL) {
                 throw new TypeError('Cannot call "item" on object that is not a NodeList.');
             }
             return this[index];
