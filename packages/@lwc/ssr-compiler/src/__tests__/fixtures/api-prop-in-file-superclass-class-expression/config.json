@@ -1,0 +1,6 @@
+{
+    "entry": "x/api-prop-in-file-superclass-class-expression",
+    "props": {
+        "value": "Hello from the base class expression"
+    }
+}
