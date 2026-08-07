@@ -21,7 +21,11 @@ const features: FeatureFlagMap = {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: null,
     DISABLE_STRICT_VALIDATION: null,
     DISABLE_DETACHED_REHYDRATION: null,
+    // Remove in 270
+    ENABLE_LEGACY_ITEM_POLYFILL: null,
     ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: null,
+    // Remove in 270
+    ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
