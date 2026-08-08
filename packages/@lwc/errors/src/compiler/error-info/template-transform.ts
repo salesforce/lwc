@@ -445,6 +445,16 @@ export const ParserDiagnostics = {
         url: '',
     },
 
+    DOCUMENT_STRUCTURE_TAG_NOT_ALLOWED_IN_TEMPLATE: {
+        code: 1214,
+        message:
+            "The '<0>' tag is not allowed inside an LWC template and will not be rendered. " +
+            "'<html>', '<head>', '<body>', and doctype declarations are document-level constructs " +
+            'and have no meaning inside a component template.',
+        level: DiagnosticLevel.Warning,
+        url: '',
+    },
+
     UNKNOWN_HTML_TAG_IN_TEMPLATE: {
         code: 1123,
         message:
