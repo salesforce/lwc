@@ -29,6 +29,7 @@ const features: FeatureFlagMap = {
     ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: null,
     // Remove in 270
     DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
+    DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
