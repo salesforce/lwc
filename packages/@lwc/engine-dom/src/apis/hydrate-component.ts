@@ -72,6 +72,7 @@ export function hydrateComponent(
     }
 
     if (
+        // All custom elements must have a `-` in their tag name
         !ElementDescriptors.tagName.get!.call(element).includes('-') &&
         !lwcRuntimeFlags.DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK
     ) {
