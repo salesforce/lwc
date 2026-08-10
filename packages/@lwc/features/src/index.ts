@@ -21,6 +21,8 @@ const features: FeatureFlagMap = {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: null,
     DISABLE_STRICT_VALIDATION: null,
     DISABLE_DETACHED_REHYDRATION: null,
+    // Remove in 270
+    DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

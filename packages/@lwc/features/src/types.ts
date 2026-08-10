@@ -82,6 +82,12 @@ export interface FeatureFlagMap {
      * synthetic shadow. When false or unset, the guard is active (default).
      */
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
+
+    /**
+     * If true, disables the check in `hydrateComponent(element)` that `element` is a custom element.
+     */
+    // Remove in 270
+    DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
