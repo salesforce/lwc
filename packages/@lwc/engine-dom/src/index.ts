@@ -63,7 +63,9 @@ export { createElement } from './apis/create-element';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
 export { LightningElement } from './apis/lightning-element';
 export { renderer } from './renderer';
-export { rendererFactory } from './renderer-factory';
+// The publicly-exported `rendererFactory` is guarded against direct invocation. The engine's base
+// renderer imports the unguarded factory from './renderer-factory' directly.
+export { rendererFactory } from './renderer-factory-guard';
 export { createContextProvider } from './renderer/context';
 
 // Engine-dom public types -------------------------------------------------------------------------

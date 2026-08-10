@@ -84,6 +84,16 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
+     * If true, skips the guard that blocks direct invocation of the publicly-exported `rendererFactory`.
+     * When false or unset (default), the guard is active and calling `rendererFactory(...)` throws. The
+     * factory is only meant to be `toString`-ed and recreated inside a sandbox by libraries such as
+     * Lightning Web Security; invoking the privileged export directly builds a renderer whose raw DOM
+     * access runs in the host realm, which is not a supported use. Toggling this on restores the pre-fix
+     * behavior for legacy integrations that relied on invoking the export.
+     */
+    DISABLE_RENDERER_FACTORY_INVOCATION_GUARD: FeatureFlagValue;
+
+    /**
      * If true, the synthetic-shadow `NodeList`/`HTMLCollection` `item` method skips the receiver
      * check and returns `this[index]` for any receiver, as it did prior to 266.
      */
