@@ -14,6 +14,7 @@ import {
 } from '@lwc/engine-core';
 import { StringToLowerCase, isFunction, isNull, isObject } from '@lwc/shared';
 import { renderer } from '../renderer';
+import { ElementDescriptors } from '../language';
 import type { LightningElement } from '@lwc/engine-core';
 
 function resetShadowRootAndLightDom(element: Element, Ctor: typeof LightningElement) {
@@ -67,6 +68,16 @@ export function hydrateComponent(
     if (!(element instanceof Element)) {
         throw new TypeError(
             `"hydrateComponent" expects a valid DOM element as the first parameter but instead received ${element}.`
+        );
+    }
+
+    if (
+        // All custom elements must have a `-` in their tag name
+        !ElementDescriptors.tagName.get!.call(element).includes('-') &&
+        !lwcRuntimeFlags.DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK
+    ) {
+        throw new TypeError(
+            `"hydrateComponent" expects a custom element as the first parameter but instead received ${element.tagName}.`
         );
     }
 
