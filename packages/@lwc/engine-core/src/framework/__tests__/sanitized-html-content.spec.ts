@@ -95,21 +95,28 @@ describe('sanitized-html-content', () => {
         });
     });
 
-    describe('kill-switch enabled (legacy structural brand)', () => {
-        it('restores the legacy symbol brand so the legit path still works', () => {
-            setFeatureFlagForTest(FLAG, true);
-            const wrapper = createSanitizedHtmlContent('<b>ok</b>');
-            expect(unwrapIfNecessary(wrapper)).toBe('<b>ok</b>');
-        });
+    // `setFeatureFlagForTest` is a no-op in production (flags can't be toggled there), so these
+    // kill-switch assertions are only meaningful in non-production. Same guard idiom as
+    // `engine-dom/.../formatters/__tests__/component.spec.ts`.
+    describe.skipIf(process.env.NODE_ENV === 'production')(
+        'kill-switch enabled (legacy structural brand)',
+        () => {
+            it('restores the legacy symbol brand so the legit path still works', () => {
+                setFeatureFlagForTest(FLAG, true);
+                const wrapper = createSanitizedHtmlContent('<b>ok</b>');
+                expect(unwrapIfNecessary(wrapper)).toBe('<b>ok</b>');
+            });
 
-        it('reverts to the legacy structural behavior — proving the flag is a real kill-switch', () => {
-            setFeatureFlagForTest(FLAG, true);
-            const obj = makeBrandForgingObject();
-            // With the legacy structural check, a brand-forging object is (undesirably) trusted.
-            // This asserts the flag genuinely toggles behavior; the default (flag off) is safe.
-            expect(unwrapIfNecessary(obj)).toBe(UNTRUSTED_MARKUP);
-        });
-    });
+            it('reverts to the legacy structural behavior — proving the flag is a real kill-switch', () => {
+                setFeatureFlagForTest(FLAG, true);
+                const obj = makeBrandForgingObject();
+                // With the legacy structural check, a brand-forging object is (undesirably)
+                // trusted. This asserts the flag genuinely toggles behavior; the default (flag
+                // off) is safe.
+                expect(unwrapIfNecessary(obj)).toBe(UNTRUSTED_MARKUP);
+            });
+        }
+    );
 
     describe('non-object inputs are passed through unchanged (both modes)', () => {
         it.each([null, undefined, 'a string', 42, true])('%s', (value) => {
