@@ -3,6 +3,7 @@ import StaticFragment from 'x/staticFragment';
 import StaticSvgFragment from 'x/staticSvgFragment';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 import { resetDOM, resetFragmentCache } from '../../../helpers/reset.js';
+import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
 
 // W-23814957: the static-content optimization builds its fragment by assigning the
 // component-authored markup to a host-realm `<template>.innerHTML` (see `createFragment` in
@@ -18,6 +19,15 @@ import { resetDOM, resetFragmentCache } from '../../../helpers/reset.js';
 
 const FLAG = 'ENABLE_PARSE_FRAGMENT_SANITIZATION';
 const MARKER = 'data-untrusted';
+
+// The hook only runs when the component actually compiles to a `parseFragment` / `parseSVGFragment`
+// call. That optimization is off when `DISABLE_STATIC_CONTENT_OPTIMIZATION=1` (both fragment
+// variants fall back to the vdom path), and SVG specifically is excluded from the optimization
+// before API version 59 (see `isStaticNode` in @lwc/template-compiler). In those configs there is
+// no static fragment to sanitize, so the "flag enabled" assertions do not apply.
+const STATIC_CONTENT_OPTIMIZATION_ENABLED = !process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION;
+const SVG_STATIC_CONTENT_OPTIMIZATION_ENABLED =
+    STATIC_CONTENT_OPTIMIZATION_ENABLED && LOWERCASE_SCOPE_TOKENS;
 
 let originalSanitizeHtmlContent;
 
@@ -65,49 +75,55 @@ it('does not route static-content markup through the hook when the flag is unset
     expect(span.hasAttribute(MARKER)).toBe(true);
 });
 
-it('routes static-content markup through the hook when the flag is enabled', () => {
-    setFeatureFlagForTest(FLAG, true);
-    // A sanitizer that renames the benign marker attribute on whatever markup it is handed.
-    let seenMarkup;
-    setHooks({
-        sanitizeHtmlContent: (content) => {
-            seenMarkup = String(content);
-            return seenMarkup.replaceAll(MARKER, 'data-sanitized');
-        },
-    });
+it.skipIf(!STATIC_CONTENT_OPTIMIZATION_ENABLED)(
+    'routes static-content markup through the hook when the flag is enabled',
+    () => {
+        setFeatureFlagForTest(FLAG, true);
+        // A sanitizer that renames the benign marker attribute on whatever markup it is handed.
+        let seenMarkup;
+        setHooks({
+            sanitizeHtmlContent: (content) => {
+                seenMarkup = String(content);
+                return seenMarkup.replaceAll(MARKER, 'data-sanitized');
+            },
+        });
 
-    const elm = render();
-    const span = elm.shadowRoot.querySelector('[data-id="region"] span');
+        const elm = render();
+        const span = elm.shadowRoot.querySelector('[data-id="region"] span');
 
-    // The hook saw the assembled static-fragment markup before it became DOM...
-    expect(seenMarkup).toContain(MARKER);
-    // ...and its sanitized result is what reached the live DOM: the marker is gone.
-    expect(span.hasAttribute(MARKER)).toBe(false);
-    expect(span.hasAttribute('data-sanitized')).toBe(true);
-});
+        // The hook saw the assembled static-fragment markup before it became DOM...
+        expect(seenMarkup).toContain(MARKER);
+        // ...and its sanitized result is what reached the live DOM: the marker is gone.
+        expect(span.hasAttribute(MARKER)).toBe(false);
+        expect(span.hasAttribute('data-sanitized')).toBe(true);
+    }
+);
 
-it('sanitizes the SVG-variant markup with its <svg> wrapper in place when the flag is enabled', () => {
-    setFeatureFlagForTest(FLAG, true);
-    // Same sanitizer, but record every markup string the hook is handed so we can assert the SVG
-    // variant is sanitized in the same parsing context (namespace) the sink will use.
-    const seen = [];
-    setHooks({
-        sanitizeHtmlContent: (content) => {
-            const markup = String(content);
-            seen.push(markup);
-            return markup.replaceAll(MARKER, 'data-sanitized');
-        },
-    });
+it.skipIf(!SVG_STATIC_CONTENT_OPTIMIZATION_ENABLED)(
+    'sanitizes the SVG-variant markup with its <svg> wrapper in place when the flag is enabled',
+    () => {
+        setFeatureFlagForTest(FLAG, true);
+        // Same sanitizer, but record every markup string the hook is handed so we can assert the SVG
+        // variant is sanitized in the same parsing context (namespace) the sink will use.
+        const seen = [];
+        setHooks({
+            sanitizeHtmlContent: (content) => {
+                const markup = String(content);
+                seen.push(markup);
+                return markup.replaceAll(MARKER, 'data-sanitized');
+            },
+        });
 
-    const elm = renderSvg();
-    const rect = elm.shadowRoot.querySelector('[data-id="region"] rect');
+        const elm = renderSvg();
+        const rect = elm.shadowRoot.querySelector('[data-id="region"] rect');
 
-    // The SVG child's markup was handed to the hook already wrapped in <svg>...</svg> — i.e. in the
-    // namespace the host-realm innerHTML sink will parse it in, not the raw pre-wrap markup.
-    const svgMarkup = seen.find((m) => m.includes(MARKER));
-    expect(svgMarkup).toBeDefined();
-    expect(svgMarkup).toContain('<svg>');
-    // ...and the sanitized result is what reached the live DOM.
-    expect(rect.hasAttribute(MARKER)).toBe(false);
-    expect(rect.hasAttribute('data-sanitized')).toBe(true);
-});
+        // The SVG child's markup was handed to the hook already wrapped in <svg>...</svg> — i.e. in
+        // the namespace the host-realm innerHTML sink will parse it in, not the raw pre-wrap markup.
+        const svgMarkup = seen.find((m) => m.includes(MARKER));
+        expect(svgMarkup).toBeDefined();
+        expect(svgMarkup).toContain('<svg>');
+        // ...and the sanitized result is what reached the live DOM.
+        expect(rect.hasAttribute(MARKER)).toBe(false);
+        expect(rect.hasAttribute('data-sanitized')).toBe(true);
+    }
+);
