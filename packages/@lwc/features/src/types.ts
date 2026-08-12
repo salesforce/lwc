@@ -117,6 +117,15 @@ export interface FeatureFlagMap {
      */
     // Remove in 270
     DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: FeatureFlagValue;
+
+    /**
+     * Kill-switch for the W-23680734 hardening. If true, reverts the sanitized-HTML brand check
+     * used by `lwc:inner-html` to the legacy structural `sanitizedHtmlContentSymbol in value` /
+     * `value[symbol]` behavior. If false or unset (default), the brand is verified by WeakMap
+     * identity, which does not depend on the object's own property semantics. Only enable this to
+     * unblock a regression; the default is the more secure behavior.
+     */
+    DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

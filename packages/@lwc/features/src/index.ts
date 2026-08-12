@@ -31,6 +31,7 @@ const features: FeatureFlagMap = {
     ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: null,
     // Remove in 270
     DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
+    DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
