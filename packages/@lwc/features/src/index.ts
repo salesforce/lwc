@@ -23,11 +23,14 @@ const features: FeatureFlagMap = {
     DISABLE_DETACHED_REHYDRATION: null,
     // Remove in 270
     ENABLE_LEGACY_ITEM_POLYFILL: null,
+    // Remove in 270
     ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: null,
     // Remove in 270
     ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: null,
     // Remove in 270
     ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: null,
+    // Remove in 270
+    DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

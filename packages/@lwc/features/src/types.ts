@@ -87,23 +87,36 @@ export interface FeatureFlagMap {
      * If true, the synthetic-shadow `NodeList`/`HTMLCollection` `item` method skips the receiver
      * check and returns `this[index]` for any receiver, as it did prior to 266.
      */
+    // Remove in 270
     ENABLE_LEGACY_ITEM_POLYFILL: FeatureFlagValue;
+
     /**
      * If true, synthetic shadow exposes the unemulated `ShadowRoot.getElementById` as `undefined`
      * so value-based feature detection falls back to `querySelector`. If false or unset (default),
      * it stays a stub that throws when invoked.
      */
+    // Remove in 270
     ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID: FeatureFlagValue;
+
     /**
      * If true, the synthetic-shadow `HTMLCollection.namedItem` method always inspects the
      * out-of-bounds `items[length]` slot instead of the current index, reproducing the broken
      * lookup behavior it had prior to 266. If false or unset (default), it iterates items correctly.
      */
+    // Remove in 270
     ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: FeatureFlagValue;
+
     /**
      * If true, the `attributeChangedCallback` guard behaves as it did prior to 266.
      */
+    // Remove in 270
     ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: FeatureFlagValue;
+
+    /**
+     * If true, disables the check in `hydrateComponent(element)` that `element` is a custom element.
+     */
+    // Remove in 270
+    DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
