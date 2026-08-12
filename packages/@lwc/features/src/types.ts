@@ -107,6 +107,12 @@ export interface FeatureFlagMap {
     ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: FeatureFlagValue;
 
     /**
+     * If true, the `attributeChangedCallback` guard behaves as it did prior to 266.
+     */
+    // Remove in 270
+    ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: FeatureFlagValue;
+
+    /**
      * If true, disables the check in `hydrateComponent(element)` that `element` is a custom element.
      */
     // Remove in 270

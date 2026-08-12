@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 import Single from 'x/single';
 import Parent from 'x/parent';
 import ParentIf from 'x/parentIf';
@@ -11,6 +11,7 @@ import TimingParentLight from 'timing/parentLight';
 import ReorderingList from 'reordering/list';
 import ReorderingListLight from 'reordering/listLight';
 import Details from 'x/details';
+import MoreDetails from 'x/moreDetails';
 import MutationsParent from 'mutations/parent';
 import MutationsParentLight from 'mutations/parentLight';
 
@@ -427,7 +428,9 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
 });
 
 describe('attributeChangedCallback', () => {
-    it('W-17420330 - only fires for registered component', async () => {
+    afterEach(() => setFeatureFlagForTest('ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK', false));
+
+    it('W-17420330 - only fires for registered component from element', async () => {
         const root = createElement('x-details', { is: Details });
         document.body.appendChild(root);
         await Promise.resolve();
@@ -436,6 +439,21 @@ describe('attributeChangedCallback', () => {
         const cb = Details.CustomElementConstructor.prototype.attributeChangedCallback;
         cb.call(details, 'open', '', 'open');
         expect(details.getAttribute('open')).toBeNull();
+    });
+
+    it('W-23590585 - only fires for registered component from within component', async () => {
+        const details = createElement('x-more-details', { is: MoreDetails });
+        document.body.appendChild(details);
+        await Promise.resolve();
+        expect(details.details.hasAttribute('open')).toBeFalse();
+    });
+
+    it('W-23590585 - preserves legacy behavior with flag', async () => {
+        setFeatureFlagForTest('ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK', true);
+        const details = createElement('x-more-details', { is: MoreDetails });
+        document.body.appendChild(details);
+        await Promise.resolve();
+        expect(details.details.hasAttribute('open')).toBeTrue();
     });
 });
 

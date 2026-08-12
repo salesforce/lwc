@@ -89,22 +89,28 @@ function createAttributeChangedCallback(
         oldValue: string,
         newValue: string
     ) {
-        if (oldValue === newValue) {
-            // Ignore same values.
-            return;
-        }
-        const propName = attributeToPropMap[attrName];
-        if (isUndefined(propName)) {
-            if (!isUndefined(superAttributeChangedCallback)) {
-                // delegate unknown attributes to the super.
-                // Typescript does not like it when you treat the `arguments` object as an array
-                // @ts-expect-error type-mismatch
-                superAttributeChangedCallback.apply(this, arguments);
+        // W-17420330 & W-23590585
+        if (
+            this instanceof BaseBridgeElement ||
+            lwcRuntimeFlags.ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK
+        ) {
+            if (oldValue === newValue) {
+                // Ignore same values.
+                return;
             }
-            return;
+            const propName = attributeToPropMap[attrName];
+            if (isUndefined(propName)) {
+                if (!isUndefined(superAttributeChangedCallback)) {
+                    // delegate unknown attributes to the super.
+                    // Typescript does not like it when you treat the `arguments` object as an array
+                    // @ts-expect-error type-mismatch
+                    superAttributeChangedCallback.apply(this, arguments);
+                }
+                return;
+            }
+            // Reflect attribute change to the corresponding property when changed from outside.
+            (this as any)[propName] = newValue;
         }
-        // Reflect attribute change to the corresponding property when changed from outside.
-        (this as any)[propName] = newValue;
     };
 }
 

@@ -28,6 +28,8 @@ const features: FeatureFlagMap = {
     // Remove in 270
     ENABLE_BROKEN_HTML_COLLECTION_NAMED_ITEM: null,
     // Remove in 270
+    ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: null,
+    // Remove in 270
     DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
 };
 
