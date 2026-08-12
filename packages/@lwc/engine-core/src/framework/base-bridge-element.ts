@@ -17,6 +17,7 @@ import {
     freeze,
     getOwnPropertyNames,
     getOwnPropertyDescriptors,
+    hasOwnProperty,
     isUndefined,
     seal,
     keys,
@@ -30,6 +31,7 @@ import { getReadOnlyProxy } from './membrane';
 import { HTMLElementConstructor, HTMLElementPrototype } from './html-element';
 import { HTMLElementOriginalDescriptors } from './html-properties';
 import type { LightningElement } from './base-lightning-element';
+import type { VM } from './vm';
 
 // A bridge descriptor is a descriptor whose job is just to get the component instance
 // from the element instance, and get the value or set a new value on the component.
@@ -38,11 +40,31 @@ import type { LightningElement } from './base-lightning-element';
 const cachedGetterByKey: Record<string, (this: HTMLElement) => any> = create(null);
 const cachedSetterByKey: Record<string, (this: HTMLElement, newValue: any) => any> = create(null);
 
+// Because bridge descriptors are cached by member name and shared across every component's bridge
+// element, a descriptor captured from one component can be re-invoked against an unrelated component
+// (e.g. `donorDescriptor.get.call(otherHost)`). The cached accessor recovers the component VM from
+// the invocation receiver (`this`), so without this guard it would forward the call to whatever
+// like-named member exists on the other component — including a *private* one that the other
+// component never exposed publicly. `vm.def.props`/`vm.def.methods` are the authoritative sets of
+// members the bridge is allowed to expose for that component, so we verify the member is present
+// there before forwarding. See W-23641816.
+function assertPublicBridgeMember(vm: VM, memberMap: PropertyDescriptorMap, memberName: string) {
+    if (lwcRuntimeFlags.DISABLE_BRIDGE_ELEMENT_PROPERTY_GUARD) {
+        return;
+    }
+    if (!hasOwnProperty.call(memberMap, memberName)) {
+        throw new TypeError(
+            `Invalid attempt to access "${memberName}" on <${vm.def.name}>. This member is not a public property or method of the component.`
+        );
+    }
+}
+
 function createGetter(key: string) {
     let fn = cachedGetterByKey[key];
     if (isUndefined(fn)) {
         fn = cachedGetterByKey[key] = function (this: HTMLElement): any {
             const vm = getAssociatedVM(this);
+            assertPublicBridgeMember(vm, vm.def.props, key);
             const { getHook } = vm;
             return getHook(vm.component, key);
         };
@@ -55,6 +77,7 @@ function createSetter(key: string) {
     if (isUndefined(fn)) {
         fn = cachedSetterByKey[key] = function (this: HTMLElement, newValue: any): any {
             const vm = getAssociatedVM(this);
+            assertPublicBridgeMember(vm, vm.def.props, key);
             const { setHook } = vm;
             newValue = getReadOnlyProxy(newValue);
             setHook(vm.component, key, newValue);
@@ -66,6 +89,7 @@ function createSetter(key: string) {
 function createMethodCaller(methodName: string): (...args: any[]) => any {
     return function (this: HTMLElement): any {
         const vm = getAssociatedVM(this);
+        assertPublicBridgeMember(vm, vm.def.methods, methodName);
         const { callHook, component } = vm;
         const fn = (component as any)[methodName];
         return callHook(vm.component, fn, ArraySlice.call(arguments as unknown as unknown[]));

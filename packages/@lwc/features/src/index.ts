@@ -21,6 +21,7 @@ const features: FeatureFlagMap = {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: null,
     DISABLE_STRICT_VALIDATION: null,
     DISABLE_DETACHED_REHYDRATION: null,
+    DISABLE_BRIDGE_ELEMENT_PROPERTY_GUARD: null,
     // Remove in 270
     ENABLE_LEGACY_ITEM_POLYFILL: null,
     // Remove in 270
