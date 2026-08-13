@@ -33,6 +33,7 @@ const features: FeatureFlagMap = {
     // Remove in 270
     DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: null,
+    ENABLE_INTRINSIC_TEMPLATE_INVOCATION: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
