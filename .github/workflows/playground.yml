@@ -1,0 +1,73 @@
+name: Run playground tests
+
+on:
+    push:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+    pull_request:
+        branches:
+            - master
+            - release
+            - 'spring*'
+            - 'summer*'
+            - 'winter*'
+
+env:
+    NODE_VERSION: '24.11.1'
+
+jobs:
+    playground:
+        name: Playground (${{ matrix.node_env }})
+        runs-on: ubuntu-22.04
+
+        strategy:
+            fail-fast: false
+            matrix:
+                node_env: [production, development]
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: 'yarn'
+
+            - name: Install dependencies
+              run: yarn install --frozen-lockfile
+
+            # Build the LWC packages so the playground can resolve local `lwc` / `@lwc/*`
+            - name: Build LWC packages
+              run: yarn build
+
+            - name: Install Playwright browsers
+              run: yarn playwright install chromium --with-deps
+              working-directory: playground
+
+            - name: Run playground tests (production)
+              if: matrix.node_env == 'production'
+              run: yarn test
+              working-directory: playground
+              env:
+                  CI: 'true'
+
+            - name: Run playground tests (development)
+              if: matrix.node_env == 'development'
+              run: yarn test:dev
+              working-directory: playground
+              env:
+                  CI: 'true'
+
+            - name: Upload Playwright report
+              if: failure()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: playwright-report-${{ matrix.node_env }}
+                  path: playground/playwright-report/
+                  retention-days: 7

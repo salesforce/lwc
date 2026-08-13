@@ -390,6 +390,15 @@ export default tseslint.config(
             },
         },
     },
+    {
+        // Playwright config and test files run in Node, not the browser
+        files: ['playground/playwright.config*.js', 'playground/tests/**'],
+        languageOptions: {
+            globals: {
+                ...globals.node,
+            },
+        },
+    },
 
     // --------------------- //
     // Weird file extensions //
