@@ -15,6 +15,7 @@ import {
     isUndefined,
     KEY__SCOPED_CSS,
     keys,
+    sanitizeHtmlContent,
     StringCharAt,
     STATIC_PART_TOKEN_ID,
     toString,
@@ -325,15 +326,31 @@ function buildParseFragmentFn(
     };
 }
 
+// W-23814957: static-content markup is assembled here and assigned to `innerHTML` by
+// `createFragment` (see @lwc/engine-dom). The `lwc:inner-html` directive routes its markup through
+// the overridable `sanitizeHtmlContent` hook before it becomes DOM; the static-content path does
+// not. When the opt-in flag is enabled, route the exact string that will be assigned to `innerHTML`
+// through the same hook, so both paths are consistent. This is applied per fragment variant (rather
+// than once on the pre-assembled markup) so the SVG variant is processed with its `<svg>` wrapper in
+// place — i.e. in the same parsing context (namespace) `createFragment` will use. Off by default to
+// preserve existing behavior (and because enabling it requires a hook that preserves the
+// engine-generated scope tokens embedded in the markup).
+function sanitizeFragmentIfEnabled(html: string): string {
+    if (lwcRuntimeFlags.ENABLE_PARSE_FRAGMENT_SANITIZATION) {
+        return sanitizeHtmlContent(html);
+    }
+    return html;
+}
+
 // Note: at the moment this code executes, we don't have a renderer yet.
 export const parseFragment = buildParseFragmentFn((html, renderer) => {
     const { createFragment } = renderer;
-    return createFragment(html);
+    return createFragment(sanitizeFragmentIfEnabled(html));
 });
 
 export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
     const { createFragment, getFirstChild } = renderer;
-    const fragment = createFragment('<svg>' + html + '</svg>');
+    const fragment = createFragment(sanitizeFragmentIfEnabled('<svg>' + html + '</svg>'));
     return getFirstChild(fragment);
 });
 
