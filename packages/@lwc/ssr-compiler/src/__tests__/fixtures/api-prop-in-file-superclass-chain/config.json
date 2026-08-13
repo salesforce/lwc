@@ -1,0 +1,8 @@
+{
+    "entry": "x/api-prop-in-file-superclass-chain",
+    "props": {
+        "base": "from base",
+        "middle": "from middle",
+        "component": "from component"
+    }
+}

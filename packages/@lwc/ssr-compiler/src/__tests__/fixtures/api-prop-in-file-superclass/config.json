@@ -1,0 +1,7 @@
+{
+    "entry": "x/api-prop-in-file-superclass",
+    "props": {
+        "value": "Hello from the base class",
+        "level": "Heading text"
+    }
+}
