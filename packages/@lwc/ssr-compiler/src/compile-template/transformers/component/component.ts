@@ -42,10 +42,9 @@ const bYieldFromChildGenerator = esTemplateWithYield`
 
         if (generateMarkup) {
             yield* generateMarkup(
-                tagName, 
-                childProps, 
+                tagName,
+                childProps,
                 childAttrs,
-                instance,
                 scopeToken,
                 contextfulParent,
                 renderContext,

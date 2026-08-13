@@ -43,12 +43,11 @@ const bYieldFromDynamicComponentConstructorGenerator = esTemplateWithYield`
         }
 
         const scopeToken = hasScopedStylesheets ? stylesheetScopeToken : undefined;
-        
+
         yield* Ctor[__SYMBOL__GENERATE_MARKUP](
-            null, 
+            null,
             childProps,
             childAttrs,
-            instance,
             scopeToken,
             contextfulParent,
             renderContext,
