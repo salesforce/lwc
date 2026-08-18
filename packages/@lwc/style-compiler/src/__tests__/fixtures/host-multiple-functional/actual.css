@@ -1,0 +1,1 @@
+:host(.foo, .bar) + :host(.a, .b) { color: red; }
