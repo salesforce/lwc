@@ -9,8 +9,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-72nu6n6rm0a";
-tmpl.legacyStylesheetToken =
-  "x-invalid-closing-style-tag_invalid-closing-style-tag";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

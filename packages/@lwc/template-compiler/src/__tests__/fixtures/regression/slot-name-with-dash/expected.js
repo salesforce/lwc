@@ -24,7 +24,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["secret-slot"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-69tppsdg3l4";
-tmpl.legacyStylesheetToken = "x-slot-name-with-dash_slot-name-with-dash";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

@@ -52,9 +52,6 @@ export interface Template {
     stylesheets?: Stylesheets;
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
-    /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
-    // TODO [#3733]: remove this dead legacy-scope-token plumbing
-    legacyStylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
     /** True if this template contains template refs, undefined or false otherwise */
