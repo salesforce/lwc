@@ -53,8 +53,7 @@ export interface Template {
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
     /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
-    // TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
-    // runtime flag has been removed, so this token is no longer read at render time).
+    // TODO [#3733]: remove this dead legacy-scope-token plumbing
     legacyStylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
@@ -393,7 +392,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
-                    updateStylesheetToken(vm, html, /* legacy */ false);
+                    updateStylesheetToken(vm, html);
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
