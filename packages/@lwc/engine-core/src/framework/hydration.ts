@@ -655,9 +655,7 @@ function validateClassAttr(
     }
 
     // ---------- Step 2: handle the scope tokens
-
-    // we don't care about legacy for hydration. it's a new use case
-    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
+    const scopeToken = getScopeTokenClass(owner);
 
     // Classnames for scoped CSS are added directly to the DOM during rendering,
     // or to the VDOM on the server in the case of SSR. As such, these classnames

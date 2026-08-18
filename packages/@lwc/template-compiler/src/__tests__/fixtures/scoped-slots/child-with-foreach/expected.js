@@ -22,7 +22,6 @@ tmpl.slots = [""];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-2gr7k6l9fj";
-tmpl.legacyStylesheetToken = "x-child-with-foreach_child-with-foreach";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

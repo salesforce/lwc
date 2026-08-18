@@ -10,8 +10,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-5vl7nbrekm";
-tmpl.legacyStylesheetToken =
-  "x-unknown-html-tag-known-attribute_unknown-html-tag-known-attribute";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
