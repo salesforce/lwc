@@ -21,6 +21,9 @@ env:
     CHROMEDRIVER_BINARY: '../../../node_modules/chromedriver/lib/chromedriver/chromedriver' # pin wdio to local chromedriver
     NODE_VERSION: '24.11.1'
 
+permissions:
+  contents: read
+
 jobs:
     run-integration-tests:
         runs-on: ubuntu-22.04
