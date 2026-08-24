@@ -20,7 +20,7 @@
         "@vitest/expect": "^4.0.17",
         "@vitest/spy": "^4.1.10",
         "@web/dev-server-import-maps": "^0.3.0",
-        "@web/dev-server-rollup": "^0.6.4",
+        "@web/dev-server-rollup": "^1.0.0",
         "@web/test-runner": "^0.20.2",
         "@web/test-runner-playwright": "^1.0.0",
         "@web/test-runner-saucelabs": "^1.0.0",
