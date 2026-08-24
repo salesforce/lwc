@@ -8,7 +8,7 @@ updates:
           default-days: 2
       directory: '/' # Location of package manifests
       schedule:
-          interval: 'weekly'
+          interval: 'monthly'
       ignore:
           # As a library, we intentionally avoid updating TypeScript and @types/node so that we
           # don't accidentally use features from a version newer than our downstream users have installed
