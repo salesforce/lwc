@@ -18,7 +18,7 @@
         "@types/chai": "^5.2.3",
         "@types/jasmine": "^6.0.0",
         "@vitest/expect": "^4.0.17",
-        "@vitest/spy": "^4.1.10",
+        "@vitest/spy": "^4.1.11",
         "@web/dev-server-import-maps": "^0.3.0",
         "@web/dev-server-rollup": "^1.0.0",
         "@web/test-runner": "^0.20.2",
