@@ -1681,6 +1681,7 @@ function validateElement(
             ast.isBaseLwcElement(element) ||
             KNOWN_HTML_AND_SVG_ELEMENTS.has(tag) ||
             SUPPORTED_SVG_TAGS.has(tag) ||
+            namespace === MATHML_NAMESPACE ||
             DASHED_TAGNAME_ELEMENT_SET.has(tag);
 
         if (!isKnownTag) {
