@@ -341,7 +341,7 @@ export default class CodeGen {
     }
 
     /**
-     * Generates childs vnodes when slot content is static.
+     * Generates child vnodes when slot content is static.
      * @param slotName
      * @param data
      * @param children

@@ -488,7 +488,7 @@ function parseText(
     const tokenizedContent = rawText.split(EXPRESSION_RE);
 
     for (const token of tokenizedContent) {
-        // Don't create nodes for emtpy strings
+        // Don't create nodes for empty strings
         if (!token.length) {
             continue;
         }
@@ -519,7 +519,7 @@ function parseTextComplex(
 
     while (index < rawText.length) {
         if (rawText[index] === EXPRESSION_SYMBOL_START) {
-            // Parse any literal that preceeded the expression
+            // Parse any literal that preceded the expression
             if (start < index) {
                 const literalToken = rawText.slice(start, index);
                 parsedTextNodes.push(
