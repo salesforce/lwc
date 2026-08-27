@@ -60,8 +60,8 @@
         "acorn": "8.18.0",
         "astring": "^1.9.0",
         "estree-toolkit": "^1.7.14",
-        "immer": "^11.1.16",
-        "meriyah": "^7.3.1"
+        "immer": "^11.1.18",
+        "meriyah": "^7.3.2"
     },
     "devDependencies": {
         "@lwc/babel-plugin-component": "9.4.1",
