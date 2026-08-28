@@ -138,6 +138,16 @@ export interface FeatureFlagMap {
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: FeatureFlagValue;
 
     /**
+     * If true, the engine invokes a component's compiled template function through the intrinsic
+     * `Reflect.apply` instead of `template.call(...)`. The `template.call(...)` form performs a
+     * property lookup for `call` on the template function, which a component can shadow with an own
+     * property; invoking via `Reflect.apply` uses the function's internal call behavior and ignores
+     * any such own property. When false or unset (default), the prior `template.call(...)` invocation
+     * is used.
+     */
+    ENABLE_INTRINSIC_TEMPLATE_INVOCATION: FeatureFlagValue;
+
+    /**
      * Opt-in flag for W-23814957. When true, the static-content optimization
      * (`parseFragment` / `parseSVGFragment`) routes the exact markup it will assign to the
      * underlying `<template>.innerHTML` through the `sanitizeHtmlContent` hook — the same hook that
