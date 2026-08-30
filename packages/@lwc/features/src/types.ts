@@ -162,6 +162,13 @@ export interface FeatureFlagMap {
      * `<svg>` wrapper in place — must handle both HTML- and SVG-namespace fragments.
      */
     ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
+
+    /**
+     * If true, `rendererFactory` may only be invoked once per realm — during the engine's own bootstrap
+     * of the base `renderer`; any later invocation throws. When false or unset (default),
+     * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
+     */
+    ENABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
