@@ -82,6 +82,13 @@ export interface FeatureFlagMap {
      * synthetic shadow. When false or unset, the guard is active (default).
      */
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
+
+    /**
+     * If true, `rendererFactory` may only be invoked once per realm — during the engine's own bootstrap
+     * of the base `renderer`; any later invocation throws. When false or unset (default),
+     * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
+     */
+    ENABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
