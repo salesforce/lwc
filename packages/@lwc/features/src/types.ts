@@ -138,6 +138,32 @@ export interface FeatureFlagMap {
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: FeatureFlagValue;
 
     /**
+     * If true, the engine invokes a component's compiled template function through the intrinsic
+     * `Reflect.apply` instead of `template.call(...)`. The `template.call(...)` form performs a
+     * property lookup for `call` on the template function, which a component can shadow with an own
+     * property; invoking via `Reflect.apply` uses the function's internal call behavior and ignores
+     * any such own property. When false or unset (default), the prior `template.call(...)` invocation
+     * is used.
+     */
+    ENABLE_INTRINSIC_TEMPLATE_INVOCATION: FeatureFlagValue;
+
+    /**
+     * Opt-in flag for W-23814957. When true, the static-content optimization
+     * (`parseFragment` / `parseSVGFragment`) routes the exact markup it will assign to the
+     * underlying `<template>.innerHTML` through the `sanitizeHtmlContent` hook — the same hook that
+     * backs `lwc:inner-html` — before that markup becomes DOM, so both paths consult the hook
+     * consistently. If false or unset (default), the markup is not routed through the hook and the
+     * existing behavior is preserved.
+     *
+     * Only enable this in environments that install a `sanitizeHtmlContent` hook: when the flag is
+     * on and no hook is installed, the default hook throws, which fails rendering of every static
+     * fragment. The installed hook must also preserve the engine-generated scope tokens embedded in
+     * the markup (or scoped styles break), and — because the SVG variant is processed with its
+     * `<svg>` wrapper in place — must handle both HTML- and SVG-namespace fragments.
+     */
+    ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
+
+    /**
      * If true, `rendererFactory` may only be invoked once per realm — during the engine's own bootstrap
      * of the base `renderer`; any later invocation throws. When false or unset (default),
      * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)

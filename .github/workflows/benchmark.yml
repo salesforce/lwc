@@ -14,6 +14,9 @@ env:
     PUPPETEER_SKIP_DOWNLOAD: 'true' # only needed for @best/runner-local, unused here
     NODE_VERSION: '24.11.1'
 
+permissions:
+  contents: read
+
 jobs:
     run-best-performance-tests:
         # It is important to use this image so that we have a consistent IP address that can be allowlisted by Best infra

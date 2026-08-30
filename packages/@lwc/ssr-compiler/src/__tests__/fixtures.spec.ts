@@ -25,7 +25,7 @@ interface FixtureConfig {
     /** Props to provide to the top-level component. */
     props?: Record<string, string | string[]>;
 
-    /** Output files used by ssr-compiler, when the output needs to differ fron engine-server */
+    /** Output files used by ssr-compiler, when the output needs to differ from engine-server */
     ssrFiles?: {
         error?: string;
         expected?: string;
