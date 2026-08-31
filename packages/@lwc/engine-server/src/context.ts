@@ -41,6 +41,12 @@ export function registerContextProvider(
         throw new Error('Unable to register context provider on provided `elm`.');
     }
     contextProviders.set(adapterContextToken, onContextSubscription);
+    // Mirror the DOM renderer: let the caller remove the registration on disconnect.
+    return () => {
+        if (contextProviders.get(adapterContextToken) === onContextSubscription) {
+            contextProviders.delete(adapterContextToken);
+        }
+    };
 }
 
 export function registerContextConsumer(

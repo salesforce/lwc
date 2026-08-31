@@ -9,6 +9,7 @@ import {
     keys,
     getContextKeys,
     ArrayFilter,
+    ArrayPush,
     ContextEventName,
     isTrustedContext,
     type ContextProvidedCallback,
@@ -18,9 +19,13 @@ import { type VM } from '../vm';
 import { logWarnOnce } from '../../shared/logger';
 import type { Signal } from '@lwc/signals';
 import type { RendererAPI } from '../renderer';
-import type { ShouldContinueBubbling } from '../wiring/types';
+import type { ContextProviderUnregisterCallback, ShouldContinueBubbling } from '../wiring/types';
 
 type ContextVarieties = Map<unknown, Signal<unknown>>;
+
+// Provider-listener teardowns per VM, registered on connect and invoked on disconnect. Without this
+// the listener closures retain the detached component after every mount/unmount.
+const contextProviderUnregisters: WeakMap<VM, ContextProviderUnregisterCallback[]> = new WeakMap();
 
 class ContextBinding<C extends object> implements IContextBinding<C> {
     component: C;
@@ -35,7 +40,7 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
         this.#providedContextVarieties = providedContextVarieties;
 
         // Register the component as a context provider.
-        this.#renderer.registerContextProvider(
+        const unregister = this.#renderer.registerContextProvider(
             this.#elm,
             ContextEventName,
             (contextConsumer): ShouldContinueBubbling => {
@@ -44,6 +49,15 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
                 return contextConsumer.setNewContext(this.#providedContextVarieties);
             }
         );
+
+        if (!isUndefined(unregister)) {
+            let unregisters = contextProviderUnregisters.get(vm);
+            if (isUndefined(unregisters)) {
+                unregisters = [];
+                contextProviderUnregisters.set(vm, unregisters);
+            }
+            ArrayPush.call(unregisters, unregister);
+        }
     }
 
     provideContext<V extends object>(
@@ -91,6 +105,15 @@ export function disconnectContext(vm: VM) {
     disconnect(vm, keys(vm.cmpFields), vm.cmpFields);
     // Decorated objects like @api context
     disconnect(vm, keys(vm.cmpProps), vm.cmpProps);
+
+    // Remove the provider listeners registered on connect.
+    const unregisters = contextProviderUnregisters.get(vm);
+    if (!isUndefined(unregisters)) {
+        for (let i = 0; i < unregisters.length; i++) {
+            unregisters[i]();
+        }
+        contextProviderUnregisters.delete(vm);
+    }
 }
 
 function connect(vm: VM, enumerableKeys: string[], contextContainer: any) {

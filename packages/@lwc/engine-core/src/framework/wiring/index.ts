@@ -14,6 +14,7 @@ export type {
     ContextConsumer,
     ContextProvider,
     ContextProviderOptions,
+    ContextProviderUnregisterCallback,
     ContextValue,
     DataCallback,
     WireAdapter,

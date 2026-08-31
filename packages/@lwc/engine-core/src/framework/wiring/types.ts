@@ -84,11 +84,14 @@ export type ContextProvider = (
     options: ContextProviderOptions
 ) => void;
 
+/** Removes a context provider registration; call on disconnect or its closure leaks the detached element. */
+export type ContextProviderUnregisterCallback = () => void;
+
 export type RegisterContextProviderFn = (
     element: HostElement,
     adapterContextToken: string,
     onContextSubscription: WireContextSubscriptionCallback
-) => void;
+) => ContextProviderUnregisterCallback | undefined;
 
 /**
  * Gets the property keys that can be used in a reactive string. Excludes symbols and string props
