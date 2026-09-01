@@ -25,7 +25,7 @@ type ContextVarieties = Map<unknown, Signal<unknown>>;
 
 // Provider-listener teardowns per VM, registered on connect and invoked on disconnect. Without this
 // the listener closures retain the detached component after every mount/unmount.
-const contextProviderUnregisters: WeakMap<VM, ContextProviderUnregisterCallback[]> = new WeakMap();
+const contextProviderUnregisters = new WeakMap<VM, ContextProviderUnregisterCallback[]>();
 
 class ContextBinding<C extends object> implements IContextBinding<C> {
     component: C;
@@ -50,13 +50,14 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
             }
         );
 
-        if (!isUndefined(unregister)) {
-            let unregisters = contextProviderUnregisters.get(vm);
+        // Truthy guard, not `!isUndefined`: the deprecated engine-server renderer returns `void` here.
+        if (unregister) {
+            const unregisters = contextProviderUnregisters.get(vm);
             if (isUndefined(unregisters)) {
-                unregisters = [];
-                contextProviderUnregisters.set(vm, unregisters);
+                contextProviderUnregisters.set(vm, [unregister]);
+            } else {
+                ArrayPush.call(unregisters, unregister);
             }
-            ArrayPush.call(unregisters, unregister);
         }
     }
 

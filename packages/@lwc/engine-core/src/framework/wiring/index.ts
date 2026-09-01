@@ -17,6 +17,7 @@ export type {
     ContextProviderUnregisterCallback,
     ContextValue,
     DataCallback,
+    RegisterContextProviderFn,
     WireAdapter,
     WireAdapterConstructor,
     WireAdapterSchemaValue,

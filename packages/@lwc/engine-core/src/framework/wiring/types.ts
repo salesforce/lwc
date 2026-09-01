@@ -91,7 +91,8 @@ export type RegisterContextProviderFn = (
     element: HostElement,
     adapterContextToken: string,
     onContextSubscription: WireContextSubscriptionCallback
-) => ContextProviderUnregisterCallback | undefined;
+    // `void`, not `undefined`: the deprecated engine-server renderer returns nothing here.
+) => ContextProviderUnregisterCallback | void;
 
 /**
  * Gets the property keys that can be used in a reactive string. Excludes symbols and string props
