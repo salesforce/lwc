@@ -22,6 +22,7 @@ const features: FeatureFlagMap = {
     DISABLE_STRICT_VALIDATION: null,
     DISABLE_DETACHED_REHYDRATION: null,
     ENABLE_PARSE_FRAGMENT_SANITIZATION: null,
+    ENABLE_INTRINSIC_TEMPLATE_INVOCATION: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

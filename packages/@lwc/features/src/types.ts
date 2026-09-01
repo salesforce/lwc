@@ -98,6 +98,16 @@ export interface FeatureFlagMap {
      * `<svg>` wrapper in place — must handle both HTML- and SVG-namespace fragments.
      */
     ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
+
+    /**
+     * If true, the engine invokes a component's compiled template function through the intrinsic
+     * `Reflect.apply` instead of `template.call(...)`. The `template.call(...)` form performs a
+     * property lookup for `call` on the template function, which a component can shadow with an own
+     * property; invoking via `Reflect.apply` uses the function's internal call behavior and ignores
+     * any such own property. When false or unset (default), the prior `template.call(...)` invocation
+     * is used.
+     */
+    ENABLE_INTRINSIC_TEMPLATE_INVOCATION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
