@@ -84,6 +84,22 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
+     * Opt-in flag for W-23814957. When true, the static-content optimization
+     * (`parseFragment` / `parseSVGFragment`) routes the exact markup it will assign to the
+     * underlying `<template>.innerHTML` through the `sanitizeHtmlContent` hook — the same hook that
+     * backs `lwc:inner-html` — before that markup becomes DOM, so both paths consult the hook
+     * consistently. If false or unset (default), the markup is not routed through the hook and the
+     * existing behavior is preserved.
+     *
+     * Only enable this in environments that install a `sanitizeHtmlContent` hook: when the flag is
+     * on and no hook is installed, the default hook throws, which fails rendering of every static
+     * fragment. The installed hook must also preserve the engine-generated scope tokens embedded in
+     * the markup (or scoped styles break), and — because the SVG variant is processed with its
+     * `<svg>` wrapper in place — must handle both HTML- and SVG-namespace fragments.
+     */
+    ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
+
+    /**
      * If true, the engine invokes a component's compiled template function through the intrinsic
      * `Reflect.apply` instead of `template.call(...)`. The `template.call(...)` form performs a
      * property lookup for `call` on the template function, which a component can shadow with an own
