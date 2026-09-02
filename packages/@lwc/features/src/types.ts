@@ -84,6 +84,15 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
+     * If true, skips the guard that verifies a bridge element property accessor or method is public on
+     * the component receiving the call before forwarding to the component instance. Bridge descriptors
+     * are cached by member name and shared across every component bridge, so without the guard a
+     * descriptor captured from one component can be invoked (via `descriptor.get/set.call(otherHost)`)
+     * against a different component to reach a like-named non-public member. When false or unset, the
+     * guard is active (default).
+     */
+    DISABLE_BRIDGE_ELEMENT_PROPERTY_GUARD: FeatureFlagValue;
+    /**
      * If true, disables the check in `hydrateComponent(element)` that `element` is a custom element.
      */
     // Remove in 270
