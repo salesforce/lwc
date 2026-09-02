@@ -84,6 +84,13 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
+     * If true, `rendererFactory` may only be invoked once per realm — during the engine's own bootstrap
+     * of the base `renderer`; any later invocation throws. When false or unset (default),
+     * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
+     */
+    ENABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
+
+    /**
      * Opt-in flag for W-23814957. When true, the static-content optimization
      * (`parseFragment` / `parseSVGFragment`) routes the exact markup it will assign to the
      * underlying `<template>.innerHTML` through the `sanitizeHtmlContent` hook — the same hook that
