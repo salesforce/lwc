@@ -23,6 +23,9 @@ const features: FeatureFlagMap = {
     DISABLE_DETACHED_REHYDRATION: null,
     // Remove in 270
     DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: null,
+    ENABLE_RENDERER_FACTORY_GUARD: null,
+    ENABLE_PARSE_FRAGMENT_SANITIZATION: null,
+    ENABLE_INTRINSIC_TEMPLATE_INVOCATION: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
