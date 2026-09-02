@@ -50,7 +50,7 @@ class ContextBinding<C extends object> implements IContextBinding<C> {
             }
         );
 
-        // Truthy guard, not `!isUndefined`: the deprecated engine-server renderer returns `void` here.
+        // deprecated engine-server doesn't provide `unregister`
         if (unregister) {
             const unregisters = contextProviderUnregisters.get(vm);
             if (isUndefined(unregisters)) {
