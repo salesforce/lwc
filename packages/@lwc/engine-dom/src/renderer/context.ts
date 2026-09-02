@@ -6,8 +6,9 @@
  */
 
 import { createContextProviderWithRegister } from '@lwc/engine-core';
-import { addEventListener, dispatchEvent } from './index';
+import { addEventListener, dispatchEvent, removeEventListener } from './index';
 import type {
+    ContextProviderUnregisterCallback,
     WireAdapterConstructor,
     WireContextValue,
     WireContextSubscriptionPayload,
@@ -54,8 +55,8 @@ export function registerContextProvider(
     elm: Node,
     adapterContextToken: string,
     onContextSubscription: WireContextSubscriptionCallback
-) {
-    addEventListener(elm, adapterContextToken, ((evt: WireContextSubscriptionEvent) => {
+): ContextProviderUnregisterCallback {
+    const listener = ((evt: WireContextSubscriptionEvent) => {
         const { setNewContext, setDisconnectedCallback } = evt;
         // If context subscription is successful, stop event propagation
         if (
@@ -66,5 +67,8 @@ export function registerContextProvider(
         ) {
             evt.stopImmediatePropagation();
         }
-    }) as EventListener);
+    }) as EventListener;
+    addEventListener(elm, adapterContextToken, listener);
+    // Caller removes the listener on disconnect; otherwise its closure retains the detached element.
+    return () => removeEventListener(elm, adapterContextToken, listener);
 }
