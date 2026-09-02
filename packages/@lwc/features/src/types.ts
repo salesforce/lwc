@@ -84,6 +84,11 @@ export interface FeatureFlagMap {
     DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
+     * If true, disables the check in `hydrateComponent(element)` that `element` is a custom element.
+     */
+    // Remove in 270
+    DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: FeatureFlagValue;
+    /**
      * If true, `rendererFactory` may only be invoked once per realm — during the engine's own bootstrap
      * of the base `renderer`; any later invocation throws. When false or unset (default),
      * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
