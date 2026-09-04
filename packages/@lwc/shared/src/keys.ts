@@ -16,3 +16,5 @@ export const KEY__SCOPED_CSS = '$scoped$';
 export const KEY__NATIVE_ONLY_CSS = '$nativeOnly$';
 export const KEY__NATIVE_GET_ELEMENT_BY_ID = '$nativeGetElementById$';
 export const KEY__NATIVE_QUERY_SELECTOR_ALL = '$nativeQuerySelectorAll$';
+export const KEY__SANITIZE_HTML_CONTENT = '$sanitizeHtmlContent$';
+export const KEY__NATIVE_SHADOWROOT_SINKS_PATCHED = '$nativeShadowRootSinksPatched$';
