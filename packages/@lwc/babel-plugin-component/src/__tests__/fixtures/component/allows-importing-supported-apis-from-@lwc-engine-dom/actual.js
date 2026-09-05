@@ -1,1 +1,1 @@
-import { createElement, buildCustomElementConstructor } from "lwc";
+import { createElement, isNodeFromTemplate } from "lwc";

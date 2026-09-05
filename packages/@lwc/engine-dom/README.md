@@ -32,23 +32,4 @@ This experimental API provides access to the component constructor, given an `HT
 
 This experimental API enables the detection of whether a node was rendered from an LWC template.
 
-## Deprecated APIs
 
-### buildCustomElementConstructor() (deprecated as of v1.3.11)
-
-This function can build a Web Component class that can be registered as a new element via
-`customElements.define()`, given an LWC constructor.
-
-Deprecated in favor of using the `CustomElementConstructor` property of an LWC constructor.
-
-```js
-import { LightningElement } from 'lwc';
-
-class LightningHello extends LightningElement {}
-
-// Don't do this.
-customElements.define('lightning-hello', buildCustomElementConstructor(LightningHello));
-
-// Do this instead.
-customElements.define('lightning-hello', LightningHello.CustomElementConstructor);
-```
