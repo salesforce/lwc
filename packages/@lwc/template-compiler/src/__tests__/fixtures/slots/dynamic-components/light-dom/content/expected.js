@@ -47,7 +47,6 @@ tmpl.slots = ["body", "footer", "head"];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-1up7hhs5a13";
-tmpl.legacyStylesheetToken = "x-content_content";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

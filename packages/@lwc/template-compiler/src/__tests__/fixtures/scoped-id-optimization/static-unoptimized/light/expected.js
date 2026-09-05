@@ -77,7 +77,6 @@ export default registerTemplate(tmpl);
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-1kadf5igpar";
-tmpl.legacyStylesheetToken = "x-light_light";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

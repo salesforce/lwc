@@ -25,7 +25,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-332m459dd46";
-tmpl.legacyStylesheetToken = "x-preserve-comments_preserve-comments";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

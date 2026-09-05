@@ -23,8 +23,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-5n9s7p96h6j";
-tmpl.legacyStylesheetToken =
-  "x-definition-sibling-static_definition-sibling-static";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

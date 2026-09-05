@@ -22,7 +22,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-7vp41askmik";
-tmpl.legacyStylesheetToken = "x-slot-in-iterator_slot-in-iterator";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

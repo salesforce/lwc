@@ -35,7 +35,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-g41ii4u05q";
-tmpl.legacyStylesheetToken = "x-grandparent-slot_grandparent-slot";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
