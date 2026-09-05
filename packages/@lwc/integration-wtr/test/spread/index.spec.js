@@ -101,7 +101,22 @@ describe('lwc:spread', () => {
             this.spanProps = { className: undefined };
         });
         await Promise.resolve();
-        expect(elm.shadowRoot.querySelector('span').className).toEqual('undefined');
+        expect(elm.shadowRoot.querySelector('span').className).toEqual('');
+        expect(elm.shadowRoot.querySelector('span').getAttribute('class')).toBeNull();
+
+        elm.modify(function () {
+            this.spanProps = { title: 'test-title', lang: 'en' };
+        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('span').getAttribute('title')).toEqual('test-title');
+        expect(elm.shadowRoot.querySelector('span').getAttribute('lang')).toEqual('en');
+
+        elm.modify(function () {
+            this.spanProps = { title: null, lang: undefined };
+        });
+        await Promise.resolve();
+        expect(elm.shadowRoot.querySelector('span').getAttribute('title')).toBeNull();
+        expect(elm.shadowRoot.querySelector('span').getAttribute('lang')).toBeNull();
 
         elm.modify(function () {
             this.spanProps = { className: '' };
