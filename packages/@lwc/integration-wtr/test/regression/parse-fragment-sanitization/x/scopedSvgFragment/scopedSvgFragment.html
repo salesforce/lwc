@@ -1,0 +1,14 @@
+<template>
+    <svg data-id="region" viewBox="0 0 5 5">
+        <!--
+          A static SVG child under a non-static parent (the for:each) is what the compiler emits as
+          `parseSVGFragment` — a fully-static `<svg>` root compiles to plain `parseFragment`. The
+          `parseSVGFragment` path wraps this markup in `<svg>...</svg>` before it reaches
+          `createFragment`, exercising the SVG-namespace branch of the flag (W-23814957). The
+          camelCase `viewBox` on the root is author content that must survive the hook untouched.
+        -->
+        <template for:each={items} for:item="item">
+            <rect key={item.key} data-marker="marker" width="10" height="10"></rect>
+        </template>
+    </svg>
+</template>

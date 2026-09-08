@@ -36,6 +36,7 @@ import {
 import { logOperationEnd, logOperationStart, OperationId } from './profiler';
 import { getTemplateOrSwappedTemplate, setActiveVM } from './hot-swaps';
 import { getMapFromClassName } from './modules/computed-class-attr';
+import { applyScopeTokenToStaticFragment } from './modules/static-parts';
 import { FragmentCacheKey, getFromFragmentCache, setInFragmentCache } from './fragment-cache';
 import { isReportingEnabled, report, ReportingEventId } from './reporting';
 import type { RendererAPI } from './renderer';
@@ -276,10 +277,25 @@ function buildParseFragmentFn(
                 throw new Error('stylesheet token must be a valid string');
             }
 
-            const classToken = hasScopedStyles && hasStyleToken ? ' ' + stylesheetToken : '';
+            // Whether scoped-style (class) and synthetic-shadow (bare attr) tokens apply to this
+            // fragment. The compiler emits a scope-token slot on every static element regardless.
+            const stampClassToken = Boolean(hasScopedStyles && hasStyleToken);
+            const stampAttrToken = isSyntheticShadow && hasStyleToken;
+
+            // W-23814957: when static-content sanitization is enabled, we withhold the
+            // engine-generated scope token(s) from the markup handed to `sanitizeHtmlContent` and
+            // re-stamp them directly onto the parsed DOM below (see `applyScopeTokenToStaticFragment`).
+            // This keeps the string 100% author-controlled (so a lossy sanitizer can't strip the
+            // tokens and break scoped styles) without depending on the installed hook to preserve
+            // them. Browser-only: on the server there is no parsed DOM to stamp, and no lossy hook is
+            // installed, so tokens stay inlined in the string as before.
+            const withholdScopeToken =
+                process.env.IS_BROWSER && lwcRuntimeFlags.ENABLE_PARSE_FRAGMENT_SANITIZATION;
+
+            const classToken = !withholdScopeToken && stampClassToken ? ' ' + stylesheetToken : '';
             const classAttrToken =
-                hasScopedStyles && hasStyleToken ? ` class="${stylesheetToken}"` : '';
-            const attrToken = hasStyleToken && isSyntheticShadow ? ' ' + stylesheetToken : '';
+                !withholdScopeToken && stampClassToken ? ` class="${stylesheetToken}"` : '';
+            const attrToken = !withholdScopeToken && stampAttrToken ? ' ' + stylesheetToken : '';
             // In the browser, we provide the entire class attribute as a perf optimization to avoid applying it on mount.
             // The remaining class expression will be applied when the static parts are mounted.
             // In SSR, the entire class attribute (expression included) is assembled along with the fragment.
@@ -316,6 +332,19 @@ function buildParseFragmentFn(
 
             const element = createFragmentFn(htmlFragment, renderer);
 
+            // If the scope token was withheld from the sanitized string (see `withholdScopeToken`),
+            // re-apply it to the parsed DOM now — once per fragment-cache variant, so per-mount
+            // `cloneNode` carries the real class/attribute with no additional walk.
+            if (withholdScopeToken && (stampClassToken || stampAttrToken)) {
+                applyScopeTokenToStaticFragment(
+                    element,
+                    stylesheetToken!,
+                    stampClassToken,
+                    stampAttrToken,
+                    renderer
+                );
+            }
+
             // Cache is only here to prevent calling innerHTML multiple times which doesn't happen on the server.
             if (process.env.IS_BROWSER) {
                 setInFragmentCache(cacheKey, strings, element);
@@ -333,8 +362,9 @@ function buildParseFragmentFn(
 // through the same hook, so both paths are consistent. This is applied per fragment variant (rather
 // than once on the pre-assembled markup) so the SVG variant is processed with its `<svg>` wrapper in
 // place — i.e. in the same parsing context (namespace) `createFragment` will use. Off by default to
-// preserve existing behavior (and because enabling it requires a hook that preserves the
-// engine-generated scope tokens embedded in the markup).
+// preserve existing behavior. Note the engine-generated scope tokens are withheld from this string
+// in the browser (see `withholdScopeToken` in `applyFragmentParts`) and re-stamped onto the parsed
+// DOM afterward, so the hook only sees author-controlled markup and need not preserve the tokens.
 function sanitizeFragmentIfEnabled(html: string): string {
     if (lwcRuntimeFlags.ENABLE_PARSE_FRAGMENT_SANITIZATION) {
         return sanitizeHtmlContent(html);

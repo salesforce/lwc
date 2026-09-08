@@ -108,6 +108,70 @@ export function traverseAndSetElements(
     }
 }
 
+// Node.nodeType value for element nodes. https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+const ELEMENT_NODE = 1;
+
+/**
+ * Re-applies the engine-generated scope token(s) to every element of a freshly-parsed static
+ * fragment. Used by `buildParseFragmentFn` when `ENABLE_PARSE_FRAGMENT_SANITIZATION` is enabled: in
+ * that mode the scope token is withheld from the string handed to `sanitizeHtmlContent` (so a lossy
+ * sanitizer cannot strip it), then re-stamped here directly onto the parsed DOM. This runs once per
+ * fragment-cache variant (before `setInFragmentCache`), so per-mount `cloneNode` stays a zero-walk
+ * clone. The bare synthetic-shadow attribute is written as a REAL attribute via `setAttribute` (not
+ * the `$shadowToken$` expando) precisely so that `cloneNode(deep)` — which copies attributes but not
+ * JS expandos — carries it to every mounted instance.
+ * @param root the root element of the parsed fragment
+ * @param token the (already validated) stylesheet scope token
+ * @param hasScopedStyles whether `*.scoped.css` scoping applies (adds the token as a class)
+ * @param isSyntheticShadow whether synthetic-shadow scoping applies (adds the bare token attribute)
+ * @param renderer the renderer to use
+ */
+export function applyScopeTokenToStaticFragment(
+    root: Element,
+    token: string,
+    hasScopedStyles: boolean,
+    isSyntheticShadow: boolean,
+    renderer: RendererAPI
+): void {
+    const { getFirstChild, nextSibling, getParentNode, getProperty, getClassList, setAttribute } =
+        renderer;
+
+    // Stack-free depth-first walk (same firstChild/nextSibling/parentNode idiom as
+    // `traverseAndSetElements`), but it visits EVERY element rather than only compiler parts,
+    // because the compiler emits a scope-token slot on every static element (see
+    // static-element-serializer's `${2}`/`${3}`). The walk stays within `root`'s subtree, matching
+    // `cloneNode(root, deep)`.
+    let node: Element | Text | null = root;
+    while (!isNull(node)) {
+        // Gate element-ness through the renderer rather than reading `.nodeType` off the opaque
+        // host node, so this stays within the engine-core renderer abstraction.
+        if (getProperty(node, 'nodeType') === ELEMENT_NODE) {
+            if (hasScopedStyles) {
+                getClassList(node).add(token);
+            }
+            if (isSyntheticShadow) {
+                setAttribute(node, token, '');
+            }
+        }
+
+        const child = getFirstChild(node);
+        if (!isNull(child)) {
+            // walk down
+            node = child;
+        } else {
+            // walk right, ascending as needed — but never above `root`
+            let sibling: Element | Text | null = null;
+            while (node !== root && isNull((sibling = nextSibling(node)))) {
+                node = getParentNode(node);
+            }
+            if (node === root) {
+                break;
+            }
+            node = sibling;
+        }
+    }
+}
+
 /**
  * Given an array of static parts, do all the mounting required for these parts.
  * @param root the root element

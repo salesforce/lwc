@@ -1,0 +1,5 @@
+/* Scoped: rewritten to `rect.lwc-<hash>` / `rect[lwc-<hash>]`, so it only matches if the engine
+   scope token survived on the SVG element. */
+rect {
+    fill: rgb(4, 5, 6);
+}

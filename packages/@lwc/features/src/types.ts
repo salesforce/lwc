@@ -157,9 +157,12 @@ export interface FeatureFlagMap {
      *
      * Only enable this in environments that install a `sanitizeHtmlContent` hook: when the flag is
      * on and no hook is installed, the default hook throws, which fails rendering of every static
-     * fragment. The installed hook must also preserve the engine-generated scope tokens embedded in
-     * the markup (or scoped styles break), and — because the SVG variant is processed with its
-     * `<svg>` wrapper in place — must handle both HTML- and SVG-namespace fragments.
+     * fragment. The installed hook does NOT need to preserve the engine-generated scope tokens: in
+     * the browser the engine withholds those tokens from the string handed to the hook and re-applies
+     * them to the parsed DOM afterward (so a lossy, e.g. DOMPurify-style, sanitizer cannot strip them
+     * and break scoped styles). The hook only sees author-controlled markup. Because the SVG variant
+     * is processed with its `<svg>` wrapper in place, the hook must handle both HTML- and
+     * SVG-namespace fragments and must not corrupt legitimate author SVG attributes.
      */
     ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
 
