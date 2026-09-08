@@ -73,6 +73,8 @@ export interface RollupLwcOptions {
      */
     componentFeatureFlagModulePath?: string;
     enablePrivateMethods?: boolean;
+    /** Experimental: compile templates to VDOM-less vapor output (`@lwc/engine-vapor`). */
+    enableVaporCompilation?: boolean;
 }
 
 const PLUGIN_NAME = 'rollup-plugin-lwc-compiler';
@@ -198,6 +200,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
         defaultModules = DEFAULT_MODULES,
         componentFeatureFlagModulePath,
         enablePrivateMethods,
+        enableVaporCompilation,
     } = pluginOptions;
 
     return {
@@ -396,6 +399,7 @@ export default function lwc(pluginOptions: RollupLwcOptions = {}): Plugin {
                 ssrMode,
                 componentFeatureFlagModulePath,
                 enablePrivateMethods,
+                enableVaporCompilation,
             });
 
             if (warnings) {

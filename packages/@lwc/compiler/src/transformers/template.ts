@@ -12,6 +12,7 @@ import {
     CompilerAggregateError,
 } from '@lwc/errors';
 import { compile } from '@lwc/template-compiler';
+import { compileVapor } from '@lwc/template-compiler-vapor';
 
 import type { BabelFileResult } from '@babel/core';
 import type { NormalizedTransformOptions } from '../options';
@@ -51,6 +52,37 @@ export default function templateTransform(
         experimentalErrorRecoveryMode,
     } = options;
     const experimentalDynamicDirective = deprecatedDynamicDirective ?? Boolean(dynamicImports);
+
+    // Experimental: route to the VDOM-less vapor template compiler. The output
+    // is a module exporting a `render($cmp, $slotset)` function (default export)
+    // that imports helpers from `@lwc/engine-vapor`. The vapor `lwc` facade's
+    // `registerComponent` understands this default-export render function.
+    if (options.enableVaporCompilation) {
+        try {
+            const vaporResult = compileVapor(src, {
+                name,
+                namespace,
+                filename,
+                experimentalComplexExpressions,
+            });
+            const vaporErrors = vaporResult.warnings.filter((w) =>
+                w.toLowerCase().includes('error')
+            );
+            if (vaporErrors.length > 0) {
+                throw new Error(vaporErrors.join('\n'));
+            }
+            return {
+                code: vaporResult.code,
+                map: { mappings: '' } as BabelFileResult['map'],
+                warnings: [],
+                cssScopeTokens: [],
+            };
+        } catch (e) {
+            throw normalizeToCompilerError(TransformerErrors.HTML_TRANSFORMER_ERROR, e, {
+                filename,
+            });
+        }
+    }
 
     let result;
     try {

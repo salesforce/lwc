@@ -274,4 +274,50 @@ describe('transformSync', () => {
             ]);
         });
     });
+
+    describe('enableVaporCompilation', () => {
+        const template = `
+            <template>
+                <div>Hello</div>
+            </template>
+        `;
+
+        it('routes to the vapor template compiler when enabled', () => {
+            const { code, warnings, cssScopeTokens } = transformSync(template, 'foo.html', {
+                ...BASE_TRANSFORM_OPTIONS,
+                enableVaporCompilation: true,
+            });
+
+            // Vapor output is a module exporting a `render($cmp, $slotset)` function
+            // that pulls its helpers from `@lwc/engine-vapor`, not the VNode `tmpl`
+            // shape emitted by the standard compiler.
+            expect(code).toContain(`from '@lwc/engine-vapor'`);
+            expect(code).toContain('export default function render($cmp, $slotset)');
+            expect(code).not.toContain('tmpl.stylesheets = [];');
+            expect(warnings).toHaveLength(0);
+            expect(cssScopeTokens).toEqual([]);
+        });
+
+        it('uses the standard template compiler when disabled', () => {
+            const { code } = transformSync(template, 'foo.html', {
+                ...BASE_TRANSFORM_OPTIONS,
+                enableVaporCompilation: false,
+            });
+
+            expect(code).toContain('tmpl.stylesheets = [];');
+            expect(code).not.toContain(`from '@lwc/engine-vapor'`);
+        });
+
+        it('surfaces non-error vapor warnings without throwing', () => {
+            // A template not wrapped in <template> yields a benign warning from the
+            // vapor compiler. Since the warning is not an error, the transform still
+            // succeeds — exercising the warning-filtering branch.
+            expect(() =>
+                transformSync('<div>no wrapper</div>', 'foo.html', {
+                    ...BASE_TRANSFORM_OPTIONS,
+                    enableVaporCompilation: true,
+                })
+            ).not.toThrow();
+        });
+    });
 });

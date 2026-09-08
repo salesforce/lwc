@@ -10,6 +10,7 @@ export default defineConfig({
             'packages/@lwc/engine-core',
             'packages/@lwc/engine-dom',
             'packages/@lwc/engine-server',
+            'packages/@lwc/engine-vapor',
             'packages/@lwc/errors',
             'packages/@lwc/features',
             'packages/@lwc/module-resolver',
@@ -20,6 +21,7 @@ export default defineConfig({
             'packages/@lwc/ssr-runtime',
             'packages/@lwc/style-compiler',
             'packages/@lwc/template-compiler',
+            'packages/@lwc/template-compiler-vapor',
             'packages/@lwc/wire-service',
             'packages/lwc',
         ],
@@ -43,6 +45,12 @@ export default defineConfig({
                 '**/packages/@lwc/engine-dom/**',
                 '**/packages/@lwc/engine-core/**',
                 '**/packages/@lwc/synthetic-shadow/**',
+                // Vapor mode (MVP). The runtime is a browser module exercised end-to-end by
+                // the integration-wtr `test:vapor` suite, and the compiler by its snapshot
+                // specs; both are excluded from the unit-coverage threshold like engine-dom,
+                // pending fuller unit-test coverage.
+                '**/packages/@lwc/engine-vapor/**',
+                '**/packages/@lwc/template-compiler-vapor/**',
                 // TODO [#5272]: add tests
                 '**/packages/@lwc/ssr-client-utils/**',
                 // Ignore test packages

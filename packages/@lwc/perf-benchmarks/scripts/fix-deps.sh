@@ -14,7 +14,7 @@ set -e
 
 mkdir -p ./node_modules/@lwc
 
-for pkg in @lwc/engine-dom @lwc/engine-server @lwc/perf-benchmarks-components @lwc/ssr-runtime @lwc/synthetic-shadow; do
+for pkg in @lwc/engine-dom @lwc/engine-server @lwc/engine-vapor @lwc/perf-benchmarks-components @lwc/ssr-runtime @lwc/synthetic-shadow; do
   if [ ! -L "./node_modules/$pkg" ]; then
     ln -s "../../../../../packages/$pkg" "./node_modules/$pkg"
   fi
