@@ -21,6 +21,9 @@ on:
 env:
     NODE_VERSION: '24.11.1'
 
+permissions:
+    contents: read
+
 jobs:
     run-performance-tests:
         # It is important to use this image so that we have a consistent IP address
