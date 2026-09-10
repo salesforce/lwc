@@ -1,0 +1,14 @@
+<template>
+    <div data-id="region">
+        <!--
+          A `javascript:` URL is the canonical example of markup that is safe to *serialize* but
+          unsafe to *trust*. The template compiler bakes this string-literal attribute verbatim into
+          the static `parseFragment` string (cf. the `svg/foreign-object` compiler fixture) and it is
+          assigned to a host-realm `<template>.innerHTML` with no compile-time sanitization. The
+          scheme body is a no-op (`0`) and this test never navigates the link, so nothing executes —
+          the only point is that a real sanitizer strips the `javascript:` scheme, and W-23814957
+          gives that sanitizer the chance to.
+        -->
+        <a data-id="link" href="javascript:0">link</a>
+    </div>
+</template>

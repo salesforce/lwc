@@ -1,6 +1,7 @@
 import { createElement, setFeatureFlagForTest } from 'lwc';
 import StaticFragment from 'x/staticFragment';
 import StaticSvgFragment from 'x/staticSvgFragment';
+import UnsafeFragment from 'x/unsafeFragment';
 import { getHooks, setHooks } from '../../../helpers/hooks.js';
 import { resetDOM, resetFragmentCache } from '../../../helpers/reset.js';
 import { LOWERCASE_SCOPE_TOKENS } from '../../../helpers/constants.js';
@@ -52,6 +53,27 @@ function renderSvg() {
     const elm = createElement('x-static-svg-fragment', { is: StaticSvgFragment });
     document.body.appendChild(elm);
     return elm;
+}
+
+function renderUnsafe() {
+    const elm = createElement('x-unsafe-fragment', { is: UnsafeFragment });
+    document.body.appendChild(elm);
+    return elm;
+}
+
+// A DOMPurify-style hook that removes `javascript:` URL schemes — the single transformation that
+// matters for the security contract below. It leaves all other markup untouched, so it cannot pass
+// merely by mangling something incidental.
+function installSchemeStrippingHook() {
+    const seen = [];
+    setHooks({
+        sanitizeHtmlContent: (content) => {
+            const markup = String(content);
+            seen.push(markup);
+            return markup.replace(/javascript:/gi, '');
+        },
+    });
+    return seen;
 }
 
 it('does not route static-content markup through the hook when the flag is unset (default)', () => {
@@ -123,5 +145,45 @@ it.skipIf(!SVG_STATIC_CONTENT_OPTIMIZATION_ENABLED)(
         // ...and the sanitized result is what reached the live DOM.
         expect(rect.hasAttribute(MARKER)).toBe(false);
         expect(rect.hasAttribute('data-sanitized')).toBe(true);
+    }
+);
+
+// W-23814957, security contract. The static-content path assigns author markup to a host-realm
+// `<template>.innerHTML` with no compile-time sanitization, so a value the compiler bakes in
+// verbatim — here a `javascript:` URL — reaches the DOM exactly as authored. These two tests pin the
+// before/after of the fix: with the flag OFF the consumer's `sanitizeHtmlContent` hook is bypassed
+// on this path (the pre-fix gap), and with it ON the same hook gets to neutralize the value (the
+// fix). The `href` is inert (`javascript:0`) and is never navigated — the point is only that the
+// sanitizer is, or is not, given the chance to strip it.
+const UNSAFE_HREF = 'javascript:0';
+
+it('bypasses the sanitizer for static-content markup when the flag is unset (pre-fix gap)', () => {
+    // A scheme-stripping hook is installed, but by default the static-content path never consults it.
+    const seen = installSchemeStrippingHook();
+
+    const elm = renderUnsafe();
+    const link = elm.shadowRoot.querySelector('[data-id="link"]');
+
+    // The hook was not consulted, so the `javascript:` URL the compiler baked in reaches the DOM
+    // verbatim — the exact exposure the flag exists to close.
+    expect(seen).toHaveLength(0);
+    expect(link.getAttribute('href')).toBe(UNSAFE_HREF);
+});
+
+it.skipIf(!STATIC_CONTENT_OPTIMIZATION_ENABLED)(
+    'lets the sanitizer neutralize dangerous static-content markup when the flag is enabled (fix)',
+    () => {
+        setFeatureFlagForTest(FLAG, true);
+        const seen = installSchemeStrippingHook();
+
+        const elm = renderUnsafe();
+        const link = elm.shadowRoot.querySelector('[data-id="link"]');
+
+        // The hook saw the assembled markup with the dangerous scheme still present...
+        const markup = seen.find((m) => m.includes(UNSAFE_HREF));
+        expect(markup).toBeDefined();
+        // ...and its sanitized result is what reached the live DOM: the `javascript:` scheme is gone.
+        expect(link.getAttribute('href')).toBe('0');
+        expect(link.getAttribute('href')).not.toContain('javascript:');
     }
 );
