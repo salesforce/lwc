@@ -1,7 +1,7 @@
 {
     "name": "@lwc/integration-wtr",
     "private": true,
-    "version": "9.4.4",
+    "version": "9.4.5",
     "type": "module",
     "scripts": {
         "build": "playwright install || true",
@@ -12,12 +12,12 @@
         "test:vapor:curated": "BROWSERS=chromium web-test-runner --config configs/vapor.js"
     },
     "devDependencies": {
-        "@lwc/compiler": "9.4.4",
-        "@lwc/engine-dom": "9.4.4",
-        "@lwc/engine-server": "9.4.4",
-        "@lwc/engine-vapor": "9.4.4",
-        "@lwc/rollup-plugin": "9.4.4",
-        "@lwc/synthetic-shadow": "9.4.4",
+        "@lwc/compiler": "9.4.5",
+        "@lwc/engine-dom": "9.4.5",
+        "@lwc/engine-server": "9.4.5",
+        "@lwc/engine-vapor": "9.4.5",
+        "@lwc/rollup-plugin": "9.4.5",
+        "@lwc/synthetic-shadow": "9.4.5",
         "@types/chai": "^5.2.3",
         "@types/jasmine": "^6.0.0",
         "@vitest/expect": "^4.0.17",

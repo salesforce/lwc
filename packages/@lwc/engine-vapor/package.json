@@ -4,7 +4,7 @@
         "You can safely modify dependencies, devDependencies, keywords, etc., but other props will be overwritten."
     ],
     "name": "@lwc/engine-vapor",
-    "version": "9.4.4",
+    "version": "9.4.5",
     "description": "LWC Vapor Mode Runtime - VDOM-less rendering engine",
     "keywords": [
         "lwc",
@@ -52,10 +52,10 @@
         }
     },
     "dependencies": {
-        "@lwc/features": "9.4.4",
-        "@lwc/shared": "9.4.4"
+        "@lwc/features": "9.4.5",
+        "@lwc/shared": "9.4.5"
     },
     "devDependencies": {
-        "@lwc/errors": "9.4.4"
+        "@lwc/errors": "9.4.5"
     }
 }
