@@ -189,7 +189,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ['**/*.js', '**/*.mjs'],
+        files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
         ...tseslint.configs.disableTypeChecked,
     },
 
@@ -352,6 +352,34 @@ export default tseslint.config(
                 browser: true,
                 ...globals.node,
             },
+        },
+    },
+    {
+        // Vapor perf investigation scripts: standalone micro/benchmarks that log timings and
+        // use the Function constructor to defeat JIT inlining. They ship nothing and have no
+        // assertions by design, so relax the test/console rules for them (mirrors the
+        // perf-benchmarks treatment above).
+        files: [
+            'packages/@lwc/engine-vapor/src/__tests__/**/*.bench.ts',
+            'packages/@lwc/engine-vapor/src/__tests__/**/*microbench*.ts',
+            'packages/@lwc/engine-vapor/src/__tests__/peak-mem-attribution.ts',
+        ],
+        rules: {
+            'no-console': 'off',
+            'vitest/expect-expect': 'off',
+            '@typescript-eslint/no-implied-eval': 'off',
+        },
+    },
+    {
+        // These vapor test harnesses evaluate compiled LWC module output via the Function
+        // constructor (the runtime equivalent of loading a compiled bundle) — inherent to
+        // exercising the compiler end-to-end, so allow it here only.
+        files: [
+            'packages/@lwc/engine-vapor/src/__tests__/facade.spec.ts',
+            'packages/@lwc/engine-vapor/src/__tests__/integration.spec.ts',
+        ],
+        rules: {
+            '@typescript-eslint/no-implied-eval': 'off',
         },
     },
     {

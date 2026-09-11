@@ -37,6 +37,7 @@ const DEFAULT_OPTIONS = {
     ssrMode: DEFAULT_SSR_MODE,
     experimentalErrorRecoveryMode: false,
     componentFeatureFlagModulePath: '',
+    enableVaporCompilation: false,
 } as const;
 
 const DEFAULT_DYNAMIC_IMPORT_CONFIG: Required<DynamicImportConfig> = {
@@ -144,6 +145,12 @@ export interface TransformOptions {
     componentFeatureFlagModulePath?: string;
     /** Flag to enable the private method round-trip transform. When false or omitted, private methods pass through to standard Babel handling. */
     enablePrivateMethods?: boolean;
+    /**
+     * Experimental: compile templates to the VDOM-less "vapor" output via
+     * `@lwc/template-compiler-vapor` instead of the standard VNode template
+     * compiler. Components compiled this way render with `@lwc/engine-vapor`.
+     */
+    enableVaporCompilation?: boolean;
 }
 
 type OptionalTransformKeys =

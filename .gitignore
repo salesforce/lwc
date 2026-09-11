@@ -12,6 +12,7 @@ coverage/
 
 lib/
 __benchmarks_results__/
+__vapor_comparison__/
 packages/@lwc/integration-wdio/public/
 packages/@lwc/integration-wdio/errorShots/
 packages/@lwc/integration-wdio/results/

@@ -29,6 +29,7 @@ export default defineConfig({
                 'aria-reflection',
                 'babel-plugin-component',
                 'compiler',
+                'engine-vapor',
                 'errors',
                 'features',
                 'module-resolver',
@@ -41,6 +42,7 @@ export default defineConfig({
                 'style-compiler',
                 'synthetic-shadow',
                 'template-compiler',
+                'template-compiler-vapor',
                 'wire-service',
             ].map((dep) => [`@lwc/${dep}`, `@lwc/${dep}/src`])
         ),

@@ -50,7 +50,7 @@ export default (options) => {
 
     return {
         browsers,
-        browserLogs: false,
+        browserLogs: Boolean(process.env.VAPOR_BROWSER_LOGS),
         ...timeouts,
         // FIXME: Parallelism breaks tests that rely on focus/requestAnimationFrame, because they often
         // time out before they receive focus. But it also makes the full suite take 3x longer to run...

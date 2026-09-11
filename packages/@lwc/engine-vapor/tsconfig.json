@@ -1,0 +1,9 @@
+{
+    "extends": "../../../tsconfig.json",
+
+    "compilerOptions": {
+        "lib": ["dom", "dom.iterable", "es2021"]
+    },
+
+    "include": ["src/"]
+}

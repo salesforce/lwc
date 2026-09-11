@@ -1,6 +1,6 @@
 {
     "name": "@lwc/perf-benchmarks",
-    "version": "9.4.3",
+    "version": "9.4.5",
     "private": true,
     "type": "module",
     "scripts": {
@@ -9,18 +9,22 @@
         "test:run": "for file in $(find dist -name '*.tachometer.json' | egrep \"$GREP\"); do tach --config $file --json-file $(echo $file | sed 's/.json/.results.json/'); done",
         "test:format": "if [ -z $BENCHMARK_SMOKE_TEST ]; then node ./scripts/format-results.mjs $(find dist -name '*.results.json'); fi",
         "test:best": "best src",
-        "test:best:ci": "best src --runner remote"
+        "test:best:ci": "best src --runner remote",
+        "test:best:vapor": "PERF_ENGINE=vapor best src/__benchmarks__/engine-dom",
+        "test:best:classic": "PERF_ENGINE=dom best src/__benchmarks__/engine-dom",
+        "compare:vapor": "node ./scripts/compare-vapor.mjs"
     },
     "//": [
         "Note it's important for Tachometer that any deps it needs to swap out are dependencies, not devDependencies.",
         "Don't forget to add these to fix-deps.sh as well."
     ],
     "dependencies": {
-        "@lwc/engine-dom": "9.4.3",
-        "@lwc/engine-server": "9.4.3",
-        "@lwc/perf-benchmarks-components": "9.4.3",
-        "@lwc/ssr-runtime": "9.4.3",
-        "@lwc/synthetic-shadow": "9.4.3"
+        "@lwc/engine-dom": "9.4.5",
+        "@lwc/engine-server": "9.4.5",
+        "@lwc/engine-vapor": "9.4.5",
+        "@lwc/perf-benchmarks-components": "9.4.5",
+        "@lwc/ssr-runtime": "9.4.5",
+        "@lwc/synthetic-shadow": "9.4.5"
     },
     "devDependencies": {
         "@best/cli": "^17.0.0",
@@ -72,6 +76,21 @@
             },
             "test:best:ci": {
                 "//": "Building dist/ files is only needed for Tachometer, not Best",
+                "dependsOn": []
+            },
+            "test:best:vapor": {
+                "//": "Best compiles benchmark source directly; the caller must have built the vapor component dist (PERF_ENGINES=vapor). Not cached.",
+                "cache": false,
+                "dependsOn": []
+            },
+            "test:best:classic": {
+                "//": "Best compiles benchmark source directly; the caller must have built the dom component dist. Not cached.",
+                "cache": false,
+                "dependsOn": []
+            },
+            "compare:vapor": {
+                "//": "End-to-end vapor-vs-classic comparison; builds component dist for both engines and runs Best for each. Not cached.",
+                "cache": false,
                 "dependsOn": []
             }
         }
