@@ -8,6 +8,7 @@ import { htmlPropertyToAttribute, isNull, isUndefined } from '@lwc/shared';
 import { logWarn } from '../../shared/logger';
 import { EmptyObject } from '../utils';
 import { safelySetProperty } from '../sanitized-html-content';
+import { isVCustomElement } from '../vnodes';
 import type { RendererAPI } from '../renderer';
 import type { VBaseElement } from '../vnodes';
 
@@ -60,11 +61,18 @@ export function patchProps(
             // SSR has its own custom validation.
             if (process.env.IS_BROWSER && process.env.NODE_ENV !== 'production') {
                 if (!(key in elm!)) {
-                    logWarn(
-                        `Unknown public property "${key}" of element <${elm!.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
-                            key
-                        )}", or the attribute does not exist in this browser or DOM implementation.`
-                    );
+                    // Components that legitimately accept arbitrary props (e.g., generic
+                    // wrapper/shape-shifter components) can opt out of this warning by
+                    // declaring `static dynamicProps = true` on the class.
+                    const acceptsAnyProp =
+                        isVCustomElement(vnode) && vnode.ctor?.dynamicProps === true;
+                    if (!acceptsAnyProp) {
+                        logWarn(
+                            `Unknown public property "${key}" of element <${elm!.tagName.toLowerCase()}>. This is either a typo on the corresponding attribute "${htmlPropertyToAttribute(
+                                key
+                            )}", or the attribute does not exist in this browser or DOM implementation.`
+                        );
+                    }
                 }
             }
             safelySetProperty(setProperty, elm!, key, cur);
