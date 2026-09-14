@@ -100,7 +100,7 @@ export function createContextWatcher(
             },
             setDisconnectedCallback(disconnectCallback: () => void) {
                 // adds this callback into the disconnect bucket so it gets disconnected from parent
-                // the the element hosting the wire is disconnected
+                // the element hosting the wire is disconnected
                 ArrayPush.call(wiredDisconnecting, disconnectCallback);
             },
         });

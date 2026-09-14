@@ -17,7 +17,7 @@ import type { StyleCompilerCtx } from '../utils/error-recovery';
 type ChildNode = Exclude<Node, Selector>;
 
 export interface SelectorScopingConfig {
-    /** When set to true, the :host selector gets replace with the the scoping token. */
+    /** When set to true, the :host selector gets replaced with the scoping token. */
     transformHost: boolean;
     /** When set to true, the synthetic shadow support is disabled. */
     disableSyntheticShadowSupport: boolean;

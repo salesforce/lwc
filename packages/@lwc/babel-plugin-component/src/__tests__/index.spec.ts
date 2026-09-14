@@ -109,7 +109,7 @@ describe('fixtures', () => {
             }
 
             // Conditionally including lwcErrors.json otherwise, toMatchFileSnapshot
-            // will create an empty snapshot file regardless of the the option being present for all tests
+            // will create an empty snapshot file regardless of the option being present for all tests
             return {
                 'expected.js': code,
                 'error.json': error,

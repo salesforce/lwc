@@ -49,7 +49,7 @@ To set up your environment and start contributing, read our [contributing docume
 
 ## Questions
 
-If you have a general question, post it on the [Salesforce stackexchange][salesforce-stackexchange] and tag it with **`lightning-web-components`**.
+If you have a general question, post it on the [Salesforce Stack Exchange][salesforce-stackexchange] and tag it with **`lightning-web-components`**.
 
 ## License
 
