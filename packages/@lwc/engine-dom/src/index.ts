@@ -58,7 +58,6 @@ export type {
 
 // Engine-dom public APIs --------------------------------------------------------------------------
 export { hydrateComponent } from './apis/hydrate-component';
-export { deprecatedBuildCustomElementConstructor as buildCustomElementConstructor } from './apis/build-custom-element-constructor';
 export { createElement } from './apis/create-element';
 export { isNodeFromTemplate } from './apis/is-node-from-template';
 export { LightningElement } from './apis/lightning-element';
