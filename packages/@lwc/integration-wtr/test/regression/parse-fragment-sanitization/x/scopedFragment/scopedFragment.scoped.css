@@ -1,0 +1,6 @@
+/* Scoped: the compiler rewrites this selector to `span.lwc-<hash>` (light DOM) or
+   `span[lwc-<hash>]` (synthetic shadow). It therefore only matches if the engine scope token
+   survived on the element. An unusual color makes the assertion unambiguous. */
+span {
+    color: rgb(1, 2, 3);
+}
