@@ -13,8 +13,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-6nf737430vn";
-tmpl.legacyStylesheetToken =
-  "x-inline-both-custom-element_inline-both-custom-element";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

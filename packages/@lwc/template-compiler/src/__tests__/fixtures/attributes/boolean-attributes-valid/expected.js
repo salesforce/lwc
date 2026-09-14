@@ -50,8 +50,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-3s2d8ffesnq";
-tmpl.legacyStylesheetToken =
-  "x-boolean-attributes-valid_boolean-attributes-valid";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

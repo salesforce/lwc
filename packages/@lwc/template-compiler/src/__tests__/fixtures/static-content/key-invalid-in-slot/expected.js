@@ -29,7 +29,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["", "foo"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-1ajl4r27aqe";
-tmpl.legacyStylesheetToken = "x-key-invalid-in-slot_key-invalid-in-slot";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

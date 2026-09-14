@@ -22,7 +22,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-5kp75peq61d";
-tmpl.legacyStylesheetToken = "x-component-definition_component-definition";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

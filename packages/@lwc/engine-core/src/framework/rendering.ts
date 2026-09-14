@@ -605,7 +605,7 @@ function applyStyleScoping(elm: Element, owner: VM, renderer: RendererAPI) {
     const { getClassList } = renderer;
 
     // Set the class name for `*.scoped.css` style scoping.
-    const scopeToken = getScopeTokenClass(owner, /* legacy */ false);
+    const scopeToken = getScopeTokenClass(owner);
     if (!isNull(scopeToken)) {
         if (!isValidScopeToken(scopeToken)) {
             // See W-16614556

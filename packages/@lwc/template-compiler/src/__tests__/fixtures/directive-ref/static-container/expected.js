@@ -14,7 +14,6 @@ export default registerTemplate(tmpl);
 tmpl.hasRefs = true;
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-7160slcn7bl";
-tmpl.legacyStylesheetToken = "x-static-container_static-container";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

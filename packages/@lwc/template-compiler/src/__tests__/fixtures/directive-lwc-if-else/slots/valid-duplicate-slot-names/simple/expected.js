@@ -31,7 +31,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["conditional-slot"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-1lae0rspni6";
-tmpl.legacyStylesheetToken = "x-simple_simple";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

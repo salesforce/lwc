@@ -24,7 +24,6 @@ export default registerTemplate(tmpl);
 tmpl.hasRefs = true;
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-rok9vrf83v";
-tmpl.legacyStylesheetToken = "x-dynamic-ref_dynamic-ref";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

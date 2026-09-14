@@ -74,7 +74,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-4rpc6om82jo";
-tmpl.legacyStylesheetToken = "x-valid-hyphen-attribute_valid-hyphen-attribute";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

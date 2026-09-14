@@ -34,13 +34,6 @@ describe('scope tokens', () => {
         return [LOWERCASE_SCOPE_TOKENS ? modern : legacy].filter(Boolean).sort();
     }
 
-    function expectShadowAttrTokens(modern, legacy) {
-        if (process.env.NATIVE_SHADOW) {
-            return []; // no scope attributes added in native shadow
-        }
-        return expectTokens(modern, legacy);
-    }
-
     it('light dom', async () => {
         const elm = createElement('x-light', { is: Light });
         document.body.appendChild(elm);
@@ -108,22 +101,20 @@ describe('scope tokens', () => {
             );
 
             expect(getAttributes(elm)).toEqual(
-                expectShadowAttrTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
+                expectTokens('lwc-2idtulmc17f-host', 'x-shadow_shadow-host')
             );
             expect(getAttributes(staticDiv)).toEqual(
-                expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
             );
             expect(getAttributes(dynamicDiv)).toEqual(
-                expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
             );
             expect(getClasses(manualDiv)).toEqual(
-                expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
             );
-            expect(getAttributes(span)).toEqual(
-                expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
-            );
+            expect(getAttributes(span)).toEqual(expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow'));
             expect(getAttributes(expressionDiv)).toEqual(
-                expectShadowAttrTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
+                expectTokens('lwc-2idtulmc17f', 'x-shadow_shadow')
             );
         };
 

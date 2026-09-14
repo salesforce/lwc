@@ -27,8 +27,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-4q030adgbk8";
-tmpl.legacyStylesheetToken =
-  "x-disallowed-on-custom-element_disallowed-on-custom-element";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

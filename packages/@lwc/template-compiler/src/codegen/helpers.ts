@@ -130,8 +130,8 @@ export function generateTemplateMetadata(codeGen: CodeGen): t.Statement[] {
     );
     metadataExpressions.push(t.expressionStatement(stylesheetsMetadata));
 
-    const stylesheetTokens = generateStylesheetTokens(codeGen);
-    metadataExpressions.push(...stylesheetTokens);
+    const stylesheetToken = generateStylesheetToken(codeGen);
+    metadataExpressions.push(stylesheetToken);
 
     const implicitStylesheetImports = generateImplicitStylesheetImports();
     metadataExpressions.push(...implicitStylesheetImports);
@@ -174,7 +174,7 @@ function generateImplicitStylesheetImports(): t.IfStatement[] {
     return implicitStyleSheets;
 }
 
-function generateStylesheetTokens(codeGen: CodeGen): t.ExpressionStatement[] {
+function generateStylesheetToken(codeGen: CodeGen): t.ExpressionStatement {
     const {
         apiVersion,
         state: {
@@ -182,39 +182,18 @@ function generateStylesheetTokens(codeGen: CodeGen): t.ExpressionStatement[] {
         },
     } = codeGen;
 
-    const generateStyleTokenAssignmentExpr = (
-        styleToken: 'stylesheetToken' | 'legacyStylesheetToken',
-        styleTokenName: string
-    ) => {
-        // tmpl.stylesheetToken | tmpl.legacyStylesheetToken
-        const styleTokenExpr = t.memberExpression(
-            t.identifier(TEMPLATE_FUNCTION_NAME),
-            t.identifier(styleToken)
-        );
-        return t.expressionStatement(
-            t.assignmentExpression('=', styleTokenExpr, t.literal(styleTokenName))
-        );
-    };
+    const styleTokenExpr = t.memberExpression(
+        t.identifier(TEMPLATE_FUNCTION_NAME),
+        t.identifier('stylesheetToken')
+    );
 
-    const styleTokens: t.ExpressionStatement[] = [];
+    const renderedToken = isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)
+        ? scopeToken
+        : legacyScopeToken;
 
-    if (isAPIFeatureEnabled(APIFeature.LOWERCASE_SCOPE_TOKENS, apiVersion)) {
-        // Include both the new and legacy tokens, so that the runtime can decide based on a flag whether
-        // we need to render the legacy one. This is designed for cases where the legacy one is required
-        // for backwards compat (e.g. global stylesheets that rely on the legacy format for a CSS selector).
-        // tmpl.stylesheetToken = "{scopeToken}"
-        styleTokens.push(generateStyleTokenAssignmentExpr('stylesheetToken', scopeToken));
-        // tmpl.legacyStylesheetToken = "{legacyScopeToken}"
-        styleTokens.push(
-            generateStyleTokenAssignmentExpr('legacyStylesheetToken', legacyScopeToken)
-        );
-    } else {
-        // In old API versions, we can just keep doing what we always did
-        // tmpl.stylesheetToken = "{legacyScopeToken}"
-        styleTokens.push(generateStyleTokenAssignmentExpr('stylesheetToken', legacyScopeToken));
-    }
-
-    return styleTokens;
+    return t.expressionStatement(
+        t.assignmentExpression('=', styleTokenExpr, t.literal(renderedToken))
+    );
 }
 
 // Given a map of CSS property keys to values, return an array AST like:

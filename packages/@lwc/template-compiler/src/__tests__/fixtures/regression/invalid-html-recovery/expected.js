@@ -14,7 +14,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-428hon5nj1a";
-tmpl.legacyStylesheetToken = "x-invalid-html-recovery_invalid-html-recovery";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

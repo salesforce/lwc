@@ -62,8 +62,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["outside-slot"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-5hdhvq4c67h";
-tmpl.legacyStylesheetToken =
-  "x-not-in-same-condition-tree_not-in-same-condition-tree";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
