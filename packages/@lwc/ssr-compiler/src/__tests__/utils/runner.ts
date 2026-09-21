@@ -1,7 +1,6 @@
-import { VitestTestRunner } from 'vitest/runners';
-import type { RunnerTask } from 'vitest';
+import { TestRunner, type RunnerTask } from 'vitest';
 
-export default class SsrTestRunner extends VitestTestRunner {
+export default class SsrTestRunner extends TestRunner {
     override onAfterRunTask(task: RunnerTask): void {
         // In the test file `src/__tests__/fixtures.spec.ts` we are matching snapshots from engine-server
         // We want to avoid updating snapshots here, so we replace 'Snapshot' with 'SSR Fixture' in error messages
