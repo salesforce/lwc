@@ -53,3 +53,4 @@ export { createContextProvider, establishContextfulRelationship, connectContext 
 export { readonly } from './get-read-only-proxy';
 export { setStaticInternals } from './set-static-internals';
 export { registerPublicProperties } from './register-public-properties';
+export { registerTemplate } from './register-template';

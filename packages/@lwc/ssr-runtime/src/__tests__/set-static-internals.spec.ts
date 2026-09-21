@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach } from 'vitest';
 import { setStaticInternals } from '../set-static-internals';
+import { registerTemplate } from '../register-template';
 import {
     LightningElement,
     SYMBOL__GENERATE_MARKUP,
@@ -129,9 +130,12 @@ describe('setStaticInternals', () => {
     });
 
     test('component with render function uses custom template', () => {
+        // `registerTemplate()` to pretend this was `import tmpl from './custom.html'
+        const customTemplate = registerTemplate(() => 'custom-content');
+
         class TestComponent extends LightningElement {
             render() {
-                return () => 'custom-content';
+                return customTemplate;
             }
         }
 
@@ -141,6 +145,22 @@ describe('setStaticInternals', () => {
         const result = generateMarkup(null, {}, {}, undefined, null, {});
 
         expect(result).toContain('custom-content');
+    });
+
+    test('component with render function returning an unregistered value throws', () => {
+        class TestComponent extends LightningElement {
+            render() {
+                return () => 'custom-content';
+            }
+        }
+
+        setStaticInternals(TestComponent as any, 'x-test', [], [], 'sync', undefined);
+
+        const generateMarkup = (TestComponent as any)[SYMBOL__GENERATE_MARKUP];
+
+        expect(() => generateMarkup(null, {}, {}, undefined, null, {})).toThrow(
+            /Invalid template returned by the render\(\) method on x-test/
+        );
     });
 
     test('component uses default template when no render function', () => {
