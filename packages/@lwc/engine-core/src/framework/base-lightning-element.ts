@@ -228,6 +228,9 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
 export const LightningElement: LightningElementConstructor = function (
     this: LightningElement
 ): LightningElement {
+    if (!new.target) {
+        throw new Error('LightningElement must be constructed.');
+    }
     // This should be as performant as possible, while any initialization should be done lazily
     if (isNull(vmBeingConstructed)) {
         // Thrown when doing something like `new LightningElement()` or
