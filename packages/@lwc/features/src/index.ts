@@ -36,6 +36,7 @@ const features: FeatureFlagMap = {
     ENABLE_INTRINSIC_TEMPLATE_INVOCATION: null,
     ENABLE_PARSE_FRAGMENT_SANITIZATION: null,
     ENABLE_RENDERER_FACTORY_GUARD: null,
+    DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

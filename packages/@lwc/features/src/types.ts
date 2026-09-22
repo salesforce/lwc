@@ -169,6 +169,12 @@ export interface FeatureFlagMap {
      * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
      */
     ENABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
+
+    /**
+     * Kill-switch: when true, native `ShadowRoot` `innerHTML`/`setHTMLUnsafe` writes bypass the
+     * `sanitizeHtmlContent` hook they are otherwise routed through. Enable only to unblock a regression.
+     */
+    DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
