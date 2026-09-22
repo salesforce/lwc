@@ -202,6 +202,18 @@ export function reactive<T>(target: T): T {
 
             // Recursively wrap nested objects/arrays (lazy, on access).
             if (isObject(value)) {
+                // Proxy invariant guard: if `key` is a non-configurable, non-writable
+                // OWN data property on `obj` (e.g. a numeric index on a frozen/
+                // non-extensible LDS array), the get trap MUST return the exact same
+                // value the target holds — returning a fresh `reactive(value)` wrapper
+                // here violates that invariant and throws "'get' on proxy: property ...
+                // returned a different value" (surfaces as a @wire provisioning error
+                // when e.g. `Array.prototype.filter` reads a frozen array's indices).
+                // Return the raw value in that case instead of wrapping it.
+                const desc = Object.getOwnPropertyDescriptor(obj, key);
+                if (desc && desc.configurable === false && desc.writable === false) {
+                    return value;
+                }
                 return reactive(value);
             }
             return value;
@@ -389,6 +401,14 @@ export function getReadOnlyProxy<T>(target: T): T {
                 trackAccess(obj, ITERATE_KEY);
             }
             if (isObject(value)) {
+                // Same Proxy invariant guard as the reactive() get trap: a
+                // non-configurable, non-writable own data property (e.g. an index on a
+                // frozen LDS array reached through a read-only @api prop) must return
+                // its exact stored value, not a fresh wrapper.
+                const desc = Object.getOwnPropertyDescriptor(obj, key);
+                if (desc && desc.configurable === false && desc.writable === false) {
+                    return value;
+                }
                 return getReadOnlyProxy(value);
             }
             return value;

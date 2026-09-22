@@ -324,6 +324,33 @@ export function setProp(el: any, key: string, value: any): void {
         }
         return;
     }
+    // SVG geometry/presentation attributes (`width`, `height`, `x`, `y`, `r`, `cx`,
+    // `cy`, `rx`, `ry`, `x1`/`x2`/`y1`/`y2`) are exposed on SVG elements as READ-ONLY
+    // `SVGAnimatedLength` IDL properties — assigning to `el.width` throws
+    // "Cannot set property width of #<SVGElement> which has only a getter". They must
+    // be written as ATTRIBUTES. The generic `key in el` branch below would take the
+    // property path (the key DOES exist on the element) and throw, so route SVG
+    // geometry through setAttribute first (mirrors the `href` special-case above).
+    if (
+        typeof SVGElement !== 'undefined' &&
+        el instanceof SVGElement &&
+        (key === 'width' ||
+            key === 'height' ||
+            key === 'x' ||
+            key === 'y' ||
+            key === 'rx' ||
+            key === 'ry' ||
+            key === 'cx' ||
+            key === 'cy' ||
+            key === 'r' ||
+            key === 'x1' ||
+            key === 'x2' ||
+            key === 'y1' ||
+            key === 'y2')
+    ) {
+        setAttr(el, key, value);
+        return;
+    }
     // Element template bindings (`attr={expr}`) map to the DOM attribute when the
     // name isn't a real DOM property of the element. This matches LWC, where most
     // HTML attribute bindings on plain elements reflect to attributes (e.g.
