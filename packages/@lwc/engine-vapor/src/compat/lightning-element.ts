@@ -844,7 +844,12 @@ export class LightningElement {
     }
 
     constructor(hooks?: { callHook?: any; setHook?: any; getHook?: any }) {
-        initLightningElementInstance(this, hooks);
+        // bug-D FIX-2: RETURN the reactive `$cmp` proxy that init built. A base
+        // constructor returning an object makes the derived class's post-`super()`
+        // `this` become that object (JS `[[Construct]]`), so a subclass observes the
+        // SAME identity in its constructor body, connectedCallback, and every method
+        // — see createComponentProxy / initLightningElementInstance.
+        return initLightningElementInstance(this, hooks);
     }
 
     // `template` and `refs` are prototype accessors (non-enumerable), so they do
@@ -1187,7 +1192,7 @@ export class LightningElement {
 function initLightningElementInstance(
     self: LightningElement,
     hooks?: { callHook?: any; setHook?: any; getHook?: any }
-): void {
+): LightningElement {
     // Wire the instance to this raw component immediately, so DOM-accessing
     // members invoked inside a subclass constructor can detect that they are
     // being called during construction and emit the proper LWC error.
@@ -1212,6 +1217,20 @@ function initLightningElementInstance(
     if (hooks && (hooks.getHook || hooks.setHook || hooks.callHook)) {
         instance.lockerHooks = hooks;
     }
+    // bug-D FIX-2: build the reactive `$cmp` proxy NOW, during construction, and
+    // return it. Per JS `[[Construct]]` semantics, when a base constructor returns
+    // an object, a derived class's `this` after `super()` BECOMES that object — so
+    // the identity a subclass sees in its own constructor body (and in every
+    // lifecycle hook / method thereafter) is this one proxy. That closes the
+    // ctor-vs-lifecycle identity split that broke the lightning/utilsInternal
+    // `privateContext` WeakMap idiom ("Invalid `this`"). The raw instance stays on
+    // `instance.reactiveTarget`; field writes still route through the proxy's
+    // set-trap, so reactivity is unchanged. Built once — reused if init runs again.
+    if (!instance.component) {
+        instance.reactiveTarget = self;
+        createComponentProxy(instance, self);
+    }
+    return instance.component;
 }
 
 // Locker SecureBase mirror support: Locker (and Aura's `__circular__` interop)
@@ -1226,6 +1245,13 @@ function LightningElementConstructorShim(
     this: LightningElement,
     hooks?: { callHook?: any; setHook?: any; getHook?: any }
 ): LightningElement {
+    // bug-D FIX-2 note: init still builds the reactive `$cmp` proxy (and stashes it
+    // on `instance.component`), but this Locker/Aura SecureBase branding path is
+    // reached via `LightningElement.prototype.constructor.call(this)` — a plain
+    // function call, NOT `[[Construct]]`. A returned object would be ignored by the
+    // `.call()` site, and Locker brands the RAW `this` it passed in; so we
+    // DELIBERATELY return the raw `this` here, not the proxy. The subclass-ctor
+    // identity fix rides on `[[Construct]]`, which this path does not use.
     initLightningElementInstance(this, hooks);
     return this;
 }
@@ -3178,253 +3204,25 @@ function subscribeInstanceToSignal(instance: VaporInstance, signal: TrustedSigna
     (instance.signalCleanups ??= []).push(cleanup);
 }
 
-function createComponentInstanceImpl(
-    Ctor: any,
-    host: HTMLElement,
-    props?: Record<string, unknown>,
-    slotset?: Record<string, () => unknown>,
-    mode?: 'open' | 'closed',
-    tagNameOverride?: string
-): VaporInstance {
-    const def = registeredComponents.get(Ctor) ?? {};
-
-    // Enforce a compile-time component feature flag: a component compiled with
-    // `componentFeatureFlagModulePath` whose flag resolves to false is disabled and
-    // throws on instantiation (engine-core's createComponentDef). (component/feature-flag)
-    const featureFlag = (def as ComponentMetadata).componentFeatureFlag;
-    if (featureFlag && featureFlag.value === false) {
-        const name = (Ctor && Ctor.name) || (def as ComponentMetadata).sel || 'Unknown';
-        throw new Error(
-            `Component ${name} is disabled by the feature flag at ${featureFlag.path}.`
-        );
-    }
-
-    const decorators = collectDecorators(Ctor);
-    const fieldSets = getInstanceFieldSets(Ctor, decorators);
-
-    // Establish the render root (shadow by default; light DOM if declared).
-    const renderMode = (Ctor as { renderMode?: string }).renderMode;
-    // Validate the static renderMode value (must be 'light' or 'shadow' if set).
-    if (renderMode !== undefined && renderMode !== 'light' && renderMode !== 'shadow') {
-        logVaporError(
-            `Invalid value for static property renderMode: '${renderMode}'. renderMode must be either 'light' or 'shadow'.`
-        );
-    }
-    // Validate `static shadowSupportMode` ONCE per ctor (engine-core validates at
-    // def creation, for perf). Invalid value → dev error; deprecated 'any' → dev
-    // warning. When reporting is enabled, emit ShadowSupportModeUsage for 'any'
-    // and 'native' (matching engine-core's def.ts).
-    validateShadowSupportModeOnce(Ctor);
-    const isLight = renderMode === 'light';
-    let renderRoot: ShadowRoot | HTMLElement;
-    if (isLight) {
-        renderRoot = host;
-    } else {
-        // Honor the createElement `mode` option ('open' | 'closed'); default open.
-        // `static delegatesFocus = true` on the component opts the shadow root into
-        // focus delegation (matching engine-core, which reads it from the def).
-        const delegatesFocus = (Ctor as { delegatesFocus?: boolean }).delegatesFocus === true;
-        // A pre-existing custom element may already host a shadow root (e.g. the
-        // element existed in the DOM before its component was defined). Re-attaching
-        // throws NotSupportedError; instead warn (LWC's "call hydrateComponent
-        // instead") and reuse the existing root. (CustomElementConstructor-getter test.)
-        if (host.shadowRoot) {
-            if (process.env.NODE_ENV !== 'production') {
-                // The test asserts an exact STRING arg to console.warn (not an Error),
-                // and the component class name (the base class `Child`, found by
-                // walking to the first named ctor in the chain).
-                let nm = (Ctor as { name?: string }).name;
-                let c: any = Ctor;
-                let g = 0;
-                while ((!nm || nm === '') && c && g++ < 20) {
-                    c = Object.getPrototypeOf(c);
-                    nm = (c as { name?: string })?.name;
-                }
-                // eslint-disable-next-line no-console
-                console.warn(
-                    `Found an existing shadow root for the custom element "${nm ?? host.tagName.toLowerCase()}". Call \`hydrateComponent\` instead.`
-                );
-            }
-            renderRoot = host.shadowRoot;
-            // Clear any pre-existing content so the rendered template replaces it.
-            renderRoot.textContent = '';
-        } else {
-            renderRoot = host.attachShadow({
-                mode: mode === 'closed' ? 'closed' : 'open',
-                delegatesFocus,
-            });
-        }
-        // Dev restriction: setting innerHTML/textContent on a shadow root is invalid.
-        applyShadowRootRestrictions(renderRoot);
-        // FORCE_SHADOW_MIGRATE_MODE: when the flag is on, a component that does NOT
-        // opt into true native shadow (`static shadowSupportMode = 'native'`) is
-        // rendered in a "synthetic-migrate" shadow — it stays a real native shadow
-        // root but CLAIMS to be synthetic (`shadowRoot.synthetic = true`) and lets
-        // global document styles penetrate (the synthetic-shadow style model), so
-        // existing synthetic components keep working when migrated to native shadow.
-        if (
-            getFeatureFlagValue('ENABLE_FORCE_SHADOW_MIGRATE_MODE') &&
-            (Ctor as { shadowSupportMode?: unknown }).shadowSupportMode !== 'native'
-        ) {
-            applyShadowMigrateMode(renderRoot as ShadowRoot);
-        }
-    }
-    // Dev restriction: setting innerHTML/outerHTML/textContent on the host element
-    // (the custom element) from outside is invalid in LWC.
-    applyHostRestrictions(host);
-
-    const instance: VaporInstance = {
-        host,
-        renderRoot,
-        component: null as unknown as LightningElement,
-        def,
-        ctor: Ctor,
-        decorators,
-        block: null,
-        isMounted: false,
-        isLight,
-        reactiveTarget: {},
-        cleanups: [],
-        // engine-dom's createElement passes the lowercased `sel`; its
-        // build-custom-element-constructor passes the raw host `this.tagName`
-        // (UPPERCASE). `tagNameOverride` carries the latter for the CEC path; the
-        // createElement path has none and falls back to the lowercased host tag.
-        tagName: tagNameOverride ?? host.tagName.toLowerCase(),
-        idx: nextInstanceIdx++,
-        // The instance being rendered when this child is created is its parent —
-        // used to find the nearest errorCallback boundary up the component tree.
-        parent: getCurrentInstance() ?? undefined,
-        // The four class-level field-name Sets, memoized per Ctor and shared across
-        // instances (never mutated per-instance — see getInstanceFieldSets).
-        declaredProps: fieldSets.declaredProps,
-        trackedFields: fieldSets.trackedFields,
-        publicPropNames: fieldSets.publicPropNames,
-        plainFields: fieldSets.plainFields,
-    };
-
-    // Report shadow-mode usage to the profiling/reporting dispatcher (once per
-    // instance, at creation), but only for SHADOW components — light DOM is
-    // skipped. Vapor renders native shadow, so mode is always Native (0). Matches
-    // engine-core's report at vm creation.
-    if (!isLight && isReportingEnabled()) {
-        report('ShadowModeUsage', { tagName: instance.tagName, mode: 0 });
-    }
-
-    // Validate programmatic `static stylesheets` early (at instance creation, as
-    // engine-core does) so an invalid value (e.g. a string) logs a dev error
-    // before mount. Valid shapes: nullish, a factory function, or an array of
-    // factories (possibly nested).
-    const staticStylesheets = (Ctor as { stylesheets?: unknown }).stylesheets;
-    if (staticStylesheets !== undefined && !isValidStylesheetsValue(staticStylesheets)) {
-        logVaporError(
-            `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${instance.tagName}>`
-        );
-    }
-    // Dev: reassigning `Ctor.stylesheets` after the stylesheets were captured has
-    // no effect (they're injected once). Install a warn-on-set accessor on the
-    // constructor (once per ctor), matching engine-core's warnOnStylesheetsMutation
-    // — e.g. a `connectedCallback` that does `MyComponent.stylesheets = [...]`.
-    warnOnStylesheetsMutation(Ctor);
-
-    // Construct the component. We must set up the prototype chain so that field
-    // reads/writes on `this` are intercepted for reactivity. We do this by
-    // constructing the instance, then wrapping it in a reactive proxy that the
-    // template ($cmp) reads through.
-    const prevInstance = setCurrentInstance(instance);
-    const prevConstructing = constructingInstance;
-    constructingInstance = instance;
-    instance.isConstructing = true;
-    let rawComponent: LightningElement;
-    const profOn = isProfilingEnabled();
-    const [cName, cRm, cSm] = profOn ? profInfo(instance) : ['', 0, 0];
-    if (profOn) logOperationStart(OperationId.Constructor, cName, instance.idx, cRm, cSm);
-    try {
-        rawComponent = new Ctor();
-    } finally {
-        if (profOn) logOperationStop(OperationId.Constructor, cName, instance.idx, cRm, cSm);
-        instance.isConstructing = false;
-        constructingInstance = prevConstructing;
-        setCurrentInstance(prevInstance);
-    }
-
-    // A component constructor must return the LightningElement instance it was
-    // building (`this`). If it returns some other object (e.g. `return {}` or a
-    // DOM node), that value isn't a valid component — throw, matching engine-core.
-    // The Locker/Aura SecureBase mirror (`class Foo extends SecureBase`, where
-    // SecureBase is a `__circular__` function that calls
-    // `LightningElement.prototype.constructor.call(this)`) produces an instance
-    // whose prototype chain does NOT include LightningElement.prototype, so
-    // `instanceof` is false. In that case our init shim still wired the VM_SLOT
-    // onto the instance — accept that as proof the base ran (engine-core's
-    // function-based LightningElement brands `this` the same way).
-    const ranBaseInit =
-        rawComponent != null &&
-        (rawComponent as { [VM_SLOT]?: VaporInstance })[VM_SLOT] === instance;
-    const extendsLightningElement = rawComponent instanceof LightningElement || ranBaseInit;
-    // Strict validation (the default, unless DISABLE_STRICT_VALIDATION is set)
-    // additionally rejects a constructor that returns a native HTMLElement — even
-    // one branded via `LightningElement.call(elm)` — matching engine-core's
-    // invoker.ts, where `useStrictValidation && result instanceof HTMLElement` is
-    // treated as an invalid constructor. Legacy mode (flag on) accepts it.
-    const useStrictValidation = !getFeatureFlagValue('DISABLE_STRICT_VALIDATION');
-    if (
-        !extendsLightningElement ||
-        (useStrictValidation &&
-            typeof HTMLElement !== 'undefined' &&
-            rawComponent instanceof HTMLElement)
-    ) {
-        throw new TypeError(
-            'Invalid component constructor, the class should extend LightningElement.'
-        );
-    }
-
-    // Wire the VM slot non-enumerably so it never appears in Object.keys(cmp).
-    Object.defineProperty(rawComponent, VM_SLOT, {
-        value: instance,
-        enumerable: false,
-        writable: true,
-        configurable: true,
-    });
-
-    // Mark the component instance as a Locker "live" object (engine-core's
-    // markLockerLiveObject), so Locker can treat it as live to support expandos.
-    // The check is `hasOwnProperty(this, Symbol.for('@@lockerLiveValue'))`.
-    (rawComponent as unknown as Record<symbol, unknown>)[Symbol.for('@@lockerLiveValue')] =
-        undefined;
-
-    // Apply incoming public props.
-    if (props) {
-        for (const key of Object.keys(props)) {
-            (rawComponent as any)[key] = props[key];
-        }
-    }
-
-    // The reactive $cmp proxy: reads track, writes trigger + re-run effects.
-    // Object/array field values are wrapped with the deep membrane on read, so
-    // nested and in-place mutations (this.items.push(x), this.state.a.b = c) are
-    // reactive — matching LWC's reactivity membrane semantics.
-    instance.reactiveTarget = rawComponent;
-    // Dev-only: seed the mutation-logging path tracker with each `@track` object
-    // field's graph. Class-field initializers (`@track previousName = {...}`) run
-    // inside `new Ctor()` above — setting values DIRECTLY on the raw instance,
-    // BEFORE the $cmp proxy exists — so they never pass through the set-trap. Walk
-    // them once here so a later deep mutation (`this.previousName.suffix.short = x`)
-    // resolves to its human-readable path (`previousName.suffix.short`). A subsequent
-    // REASSIGNMENT of a @track field to a new object re-seeds via the set-trap (below).
-    // DCE'd in prod (getMutationProperties never reads these there). See mutation-logger.ts.
-    if (process.env.NODE_ENV !== 'production' && instance.trackedFields) {
-        for (const key of instance.trackedFields) {
-            const raw = (rawComponent as unknown as Record<string, unknown>)[key];
-            if (raw !== null && typeof raw === 'object') {
-                trackTargetForMutationLogging(key, raw);
-            }
-        }
-    }
-    const component = new Proxy(rawComponent, {
+/**
+ * Build the reactive `$cmp` proxy around a raw component instance and register it
+ * on `instance.component`. Extracted so it can run DURING construction (invoked
+ * from initLightningElementInstance / the base LightningElement constructor),
+ * which lets the base ctor RETURN this proxy. Per JS `[[Construct]]` semantics,
+ * a subclass's `this` after `super()` then becomes this proxy, so the identity a
+ * component observes in its constructor body is the SAME identity it observes in
+ * connectedCallback and every other lifecycle hook / method (bug W-XXXXXXXX: the
+ * lightning/utilsInternal `privateContext` idiom keys a WeakMap on `this` in the
+ * ctor and reads it in connectedCallback — a ctor/lifecycle identity split threw
+ * "Invalid `this`"). Field writes still route through the set-trap below, so
+ * reactivity is unaffected. Returns the proxy.
+ */
+function createComponentProxy(instance: VaporInstance, raw: LightningElement): LightningElement {
+    const proxy = new Proxy(raw, {
         get(obj, key, receiver) {
             const value = Reflect.get(obj, key, receiver);
             if (typeof key !== 'symbol') {
-                trackAccess(rawComponent, key);
+                trackAccess(raw, key);
             }
             // Bind PROTOTYPE METHODS so `this` inside them is the reactive proxy.
             // Only bind a function that is a real method (a function-valued DATA
@@ -3686,10 +3484,10 @@ function createComponentInstanceImpl(
                     // UNCONDITIONALLY here re-ran render() on every field write,
                     // looping a `renderedCallback(){ this.n++ }` and re-rendering on
                     // unused-field writes; the notify-time expansion avoids both.
-                    triggerUpdate(rawComponent, key);
+                    triggerUpdate(raw, key);
                     // Bump the per-component render epoch so every-render effects
                     // (`lwc:on`) re-evaluate, matching LWC's re-eval-each-render.
-                    triggerEpoch(rawComponent);
+                    triggerEpoch(raw);
                 }
             }
             return result;
@@ -3699,11 +3497,271 @@ function createComponentInstanceImpl(
     // Map the $cmp proxy back to the raw component so `toRaw($cmp) === rawComponent`
     // (the component proxy doesn't trap the RAW symbol). Lets epoch track/trigger
     // agree on identity for `lwc:on` every-render re-evaluation.
-    registerRaw(component, rawComponent);
+    registerRaw(proxy, raw);
     // Remember this $cmp proxy so the set-trap stores it AS-IS instead of unwrapping
     // to rawComponent (preserving a single membrane identity — see `componentProxies`).
-    componentProxies.add(component);
-    instance.component = component;
+    componentProxies.add(proxy);
+    instance.component = proxy;
+    return proxy;
+}
+
+function createComponentInstanceImpl(
+    Ctor: any,
+    host: HTMLElement,
+    props?: Record<string, unknown>,
+    slotset?: Record<string, () => unknown>,
+    mode?: 'open' | 'closed',
+    tagNameOverride?: string
+): VaporInstance {
+    const def = registeredComponents.get(Ctor) ?? {};
+
+    // Enforce a compile-time component feature flag: a component compiled with
+    // `componentFeatureFlagModulePath` whose flag resolves to false is disabled and
+    // throws on instantiation (engine-core's createComponentDef). (component/feature-flag)
+    const featureFlag = (def as ComponentMetadata).componentFeatureFlag;
+    if (featureFlag && featureFlag.value === false) {
+        const name = (Ctor && Ctor.name) || (def as ComponentMetadata).sel || 'Unknown';
+        throw new Error(
+            `Component ${name} is disabled by the feature flag at ${featureFlag.path}.`
+        );
+    }
+
+    const decorators = collectDecorators(Ctor);
+    const fieldSets = getInstanceFieldSets(Ctor, decorators);
+
+    // Establish the render root (shadow by default; light DOM if declared).
+    const renderMode = (Ctor as { renderMode?: string }).renderMode;
+    // Validate the static renderMode value (must be 'light' or 'shadow' if set).
+    if (renderMode !== undefined && renderMode !== 'light' && renderMode !== 'shadow') {
+        logVaporError(
+            `Invalid value for static property renderMode: '${renderMode}'. renderMode must be either 'light' or 'shadow'.`
+        );
+    }
+    // Validate `static shadowSupportMode` ONCE per ctor (engine-core validates at
+    // def creation, for perf). Invalid value → dev error; deprecated 'any' → dev
+    // warning. When reporting is enabled, emit ShadowSupportModeUsage for 'any'
+    // and 'native' (matching engine-core's def.ts).
+    validateShadowSupportModeOnce(Ctor);
+    const isLight = renderMode === 'light';
+    let renderRoot: ShadowRoot | HTMLElement;
+    if (isLight) {
+        renderRoot = host;
+    } else {
+        // Honor the createElement `mode` option ('open' | 'closed'); default open.
+        // `static delegatesFocus = true` on the component opts the shadow root into
+        // focus delegation (matching engine-core, which reads it from the def).
+        const delegatesFocus = (Ctor as { delegatesFocus?: boolean }).delegatesFocus === true;
+        // A pre-existing custom element may already host a shadow root (e.g. the
+        // element existed in the DOM before its component was defined). Re-attaching
+        // throws NotSupportedError; instead warn (LWC's "call hydrateComponent
+        // instead") and reuse the existing root. (CustomElementConstructor-getter test.)
+        if (host.shadowRoot) {
+            if (process.env.NODE_ENV !== 'production') {
+                // The test asserts an exact STRING arg to console.warn (not an Error),
+                // and the component class name (the base class `Child`, found by
+                // walking to the first named ctor in the chain).
+                let nm = (Ctor as { name?: string }).name;
+                let c: any = Ctor;
+                let g = 0;
+                while ((!nm || nm === '') && c && g++ < 20) {
+                    c = Object.getPrototypeOf(c);
+                    nm = (c as { name?: string })?.name;
+                }
+                // eslint-disable-next-line no-console
+                console.warn(
+                    `Found an existing shadow root for the custom element "${nm ?? host.tagName.toLowerCase()}". Call \`hydrateComponent\` instead.`
+                );
+            }
+            renderRoot = host.shadowRoot;
+            // Clear any pre-existing content so the rendered template replaces it.
+            renderRoot.textContent = '';
+        } else {
+            renderRoot = host.attachShadow({
+                mode: mode === 'closed' ? 'closed' : 'open',
+                delegatesFocus,
+            });
+        }
+        // Dev restriction: setting innerHTML/textContent on a shadow root is invalid.
+        applyShadowRootRestrictions(renderRoot);
+        // FORCE_SHADOW_MIGRATE_MODE: when the flag is on, a component that does NOT
+        // opt into true native shadow (`static shadowSupportMode = 'native'`) is
+        // rendered in a "synthetic-migrate" shadow — it stays a real native shadow
+        // root but CLAIMS to be synthetic (`shadowRoot.synthetic = true`) and lets
+        // global document styles penetrate (the synthetic-shadow style model), so
+        // existing synthetic components keep working when migrated to native shadow.
+        if (
+            getFeatureFlagValue('ENABLE_FORCE_SHADOW_MIGRATE_MODE') &&
+            (Ctor as { shadowSupportMode?: unknown }).shadowSupportMode !== 'native'
+        ) {
+            applyShadowMigrateMode(renderRoot as ShadowRoot);
+        }
+    }
+    // Dev restriction: setting innerHTML/outerHTML/textContent on the host element
+    // (the custom element) from outside is invalid in LWC.
+    applyHostRestrictions(host);
+
+    const instance: VaporInstance = {
+        host,
+        renderRoot,
+        component: null as unknown as LightningElement,
+        def,
+        ctor: Ctor,
+        decorators,
+        block: null,
+        isMounted: false,
+        isLight,
+        reactiveTarget: {},
+        cleanups: [],
+        // engine-dom's createElement passes the lowercased `sel`; its
+        // build-custom-element-constructor passes the raw host `this.tagName`
+        // (UPPERCASE). `tagNameOverride` carries the latter for the CEC path; the
+        // createElement path has none and falls back to the lowercased host tag.
+        tagName: tagNameOverride ?? host.tagName.toLowerCase(),
+        idx: nextInstanceIdx++,
+        // The instance being rendered when this child is created is its parent —
+        // used to find the nearest errorCallback boundary up the component tree.
+        parent: getCurrentInstance() ?? undefined,
+        // The four class-level field-name Sets, memoized per Ctor and shared across
+        // instances (never mutated per-instance — see getInstanceFieldSets).
+        declaredProps: fieldSets.declaredProps,
+        trackedFields: fieldSets.trackedFields,
+        publicPropNames: fieldSets.publicPropNames,
+        plainFields: fieldSets.plainFields,
+    };
+
+    // Report shadow-mode usage to the profiling/reporting dispatcher (once per
+    // instance, at creation), but only for SHADOW components — light DOM is
+    // skipped. Vapor renders native shadow, so mode is always Native (0). Matches
+    // engine-core's report at vm creation.
+    if (!isLight && isReportingEnabled()) {
+        report('ShadowModeUsage', { tagName: instance.tagName, mode: 0 });
+    }
+
+    // Validate programmatic `static stylesheets` early (at instance creation, as
+    // engine-core does) so an invalid value (e.g. a string) logs a dev error
+    // before mount. Valid shapes: nullish, a factory function, or an array of
+    // factories (possibly nested).
+    const staticStylesheets = (Ctor as { stylesheets?: unknown }).stylesheets;
+    if (staticStylesheets !== undefined && !isValidStylesheetsValue(staticStylesheets)) {
+        logVaporError(
+            `static stylesheets must be an array of CSS stylesheets. Found invalid stylesheets on <${instance.tagName}>`
+        );
+    }
+    // Dev: reassigning `Ctor.stylesheets` after the stylesheets were captured has
+    // no effect (they're injected once). Install a warn-on-set accessor on the
+    // constructor (once per ctor), matching engine-core's warnOnStylesheetsMutation
+    // — e.g. a `connectedCallback` that does `MyComponent.stylesheets = [...]`.
+    warnOnStylesheetsMutation(Ctor);
+
+    // Construct the component. We must set up the prototype chain so that field
+    // reads/writes on `this` are intercepted for reactivity. We do this by
+    // constructing the instance, then wrapping it in a reactive proxy that the
+    // template ($cmp) reads through.
+    const prevInstance = setCurrentInstance(instance);
+    const prevConstructing = constructingInstance;
+    constructingInstance = instance;
+    instance.isConstructing = true;
+    // bug-D FIX-2: `new Ctor()` now returns the reactive `$cmp` proxy (the base
+    // LightningElement constructor returns it, so a subclass's post-`super()` `this`
+    // becomes that proxy). `constructed` is therefore the PROXY; the raw instance is
+    // resolved below via `toRaw`.
+    let constructed: LightningElement;
+    const profOn = isProfilingEnabled();
+    const [cName, cRm, cSm] = profOn ? profInfo(instance) : ['', 0, 0];
+    if (profOn) logOperationStart(OperationId.Constructor, cName, instance.idx, cRm, cSm);
+    try {
+        constructed = new Ctor();
+    } finally {
+        if (profOn) logOperationStop(OperationId.Constructor, cName, instance.idx, cRm, cSm);
+        instance.isConstructing = false;
+        constructingInstance = prevConstructing;
+        setCurrentInstance(prevInstance);
+    }
+    // Resolve the raw instance behind the proxy for all the branding/validation
+    // below (VM_SLOT check, `instanceof` guards, Locker live-object mark, prop
+    // application) — these operate on the underlying object, not the membrane. A
+    // Locker/SecureBase mirror returns the raw `this` unchanged, and a user ctor that
+    // legitimately `return`s a non-component object flows through untouched, so
+    // `toRaw` is a no-op there and the existing invalid-constructor guard still fires.
+    const rawComponent = toRaw(constructed) as LightningElement;
+
+    // A component constructor must return the LightningElement instance it was
+    // building (`this`). If it returns some other object (e.g. `return {}` or a
+    // DOM node), that value isn't a valid component — throw, matching engine-core.
+    // The Locker/Aura SecureBase mirror (`class Foo extends SecureBase`, where
+    // SecureBase is a `__circular__` function that calls
+    // `LightningElement.prototype.constructor.call(this)`) produces an instance
+    // whose prototype chain does NOT include LightningElement.prototype, so
+    // `instanceof` is false. In that case our init shim still wired the VM_SLOT
+    // onto the instance — accept that as proof the base ran (engine-core's
+    // function-based LightningElement brands `this` the same way).
+    const ranBaseInit =
+        rawComponent != null &&
+        (rawComponent as { [VM_SLOT]?: VaporInstance })[VM_SLOT] === instance;
+    const extendsLightningElement = rawComponent instanceof LightningElement || ranBaseInit;
+    // Strict validation (the default, unless DISABLE_STRICT_VALIDATION is set)
+    // additionally rejects a constructor that returns a native HTMLElement — even
+    // one branded via `LightningElement.call(elm)` — matching engine-core's
+    // invoker.ts, where `useStrictValidation && result instanceof HTMLElement` is
+    // treated as an invalid constructor. Legacy mode (flag on) accepts it.
+    const useStrictValidation = !getFeatureFlagValue('DISABLE_STRICT_VALIDATION');
+    if (
+        !extendsLightningElement ||
+        (useStrictValidation &&
+            typeof HTMLElement !== 'undefined' &&
+            rawComponent instanceof HTMLElement)
+    ) {
+        throw new TypeError(
+            'Invalid component constructor, the class should extend LightningElement.'
+        );
+    }
+
+    // Wire the VM slot non-enumerably so it never appears in Object.keys(cmp).
+    Object.defineProperty(rawComponent, VM_SLOT, {
+        value: instance,
+        enumerable: false,
+        writable: true,
+        configurable: true,
+    });
+
+    // Mark the component instance as a Locker "live" object (engine-core's
+    // markLockerLiveObject), so Locker can treat it as live to support expandos.
+    // The check is `hasOwnProperty(this, Symbol.for('@@lockerLiveValue'))`.
+    (rawComponent as unknown as Record<symbol, unknown>)[Symbol.for('@@lockerLiveValue')] =
+        undefined;
+
+    // Apply incoming public props.
+    if (props) {
+        for (const key of Object.keys(props)) {
+            (rawComponent as any)[key] = props[key];
+        }
+    }
+
+    // The reactive $cmp proxy: reads track, writes trigger + re-run effects.
+    // Object/array field values are wrapped with the deep membrane on read, so
+    // nested and in-place mutations (this.items.push(x), this.state.a.b = c) are
+    // reactive — matching LWC's reactivity membrane semantics.
+    instance.reactiveTarget = rawComponent;
+    // Dev-only: seed the mutation-logging path tracker with each `@track` object
+    // field's graph. Class-field initializers (`@track previousName = {...}`) run
+    // inside `new Ctor()` above — setting values DIRECTLY on the raw instance,
+    // BEFORE the $cmp proxy exists — so they never pass through the set-trap. Walk
+    // them once here so a later deep mutation (`this.previousName.suffix.short = x`)
+    // resolves to its human-readable path (`previousName.suffix.short`). A subsequent
+    // REASSIGNMENT of a @track field to a new object re-seeds via the set-trap (below).
+    // DCE'd in prod (getMutationProperties never reads these there). See mutation-logger.ts.
+    if (process.env.NODE_ENV !== 'production' && instance.trackedFields) {
+        for (const key of instance.trackedFields) {
+            const raw = (rawComponent as unknown as Record<string, unknown>)[key];
+            if (raw !== null && typeof raw === 'object') {
+                trackTargetForMutationLogging(key, raw);
+            }
+        }
+    }
+    // The reactive $cmp proxy was created DURING construction (in
+    // initLightningElementInstance, so the base ctor could return it — see
+    // createComponentProxy). It is already registered on instance.component;
+    // downstream code (renderInstance, error boundaries) reads it from there.
 
     // Construct (but do not connect) @wire adapters NOW, at instance-create —
     // engine-core builds its wire connectors before mount, so an adapter's
@@ -4137,6 +4195,13 @@ function handleError(instance: VaporInstance | undefined, error: unknown): boole
 let boundaryRerenderCount = new WeakMap<VaporInstance, number>();
 let boundaryRerenderResetScheduled = false;
 const MAX_BOUNDARY_RERENDERS = 25;
+// Guard against RE-ENTRANT boundary rerenders: a boundary whose errorCallback
+// re-render itself throws (or synchronously triggers another child error) would
+// re-enter scheduleBoundaryRerender WHILE the first reRenderInstance is still on
+// the stack, recursing until "Maximum call stack size exceeded". Tracking the
+// in-flight boundary lets us DEFER a re-entrant rerender to a microtask instead
+// of recursing synchronously.
+const boundaryRerenderInFlight = new WeakSet<VaporInstance>();
 function scheduleBoundaryRerender(boundary: VaporInstance): void {
     const n = (boundaryRerenderCount.get(boundary) ?? 0) + 1;
     boundaryRerenderCount.set(boundary, n);
@@ -4153,7 +4218,21 @@ function scheduleBoundaryRerender(boundary: VaporInstance): void {
         return;
     }
     if (boundary.isMounted) {
-        reRenderInstance(boundary);
+        // If a rerender of this boundary is already on the stack, defer to a
+        // microtask rather than re-entering reRenderInstance synchronously (which
+        // would recurse into RangeError when the rerender itself keeps erroring).
+        if (boundaryRerenderInFlight.has(boundary)) {
+            queueMicrotask(() => {
+                if (boundary.isMounted) reRenderInstance(boundary);
+            });
+            return;
+        }
+        boundaryRerenderInFlight.add(boundary);
+        try {
+            reRenderInstance(boundary);
+        } finally {
+            boundaryRerenderInFlight.delete(boundary);
+        }
     } else {
         queueMicrotask(() => {
             if (boundary.isMounted) reRenderInstance(boundary);
@@ -4802,6 +4881,17 @@ export function unmountInstance(instance: VaporInstance): void {
     instance.domPreserved = true;
 }
 
+// Circuit breaker for a RUNAWAY re-render loop: a component whose render (or a
+// renderedCallback it schedules) synchronously invalidates a dependency it also
+// reads re-enters reRenderInstance without ever yielding to a macrotask. Unlike
+// the microtask-batched scheduler (which coalesces within a tick), a synchronous
+// re-render chain pins the CPU at 100% with no error surfaced. Cap the number of
+// re-renders of a single instance PER MACROTASK; the counter resets on a
+// setTimeout (macrotask) so legitimate high-frequency updates across ticks are
+// unaffected — only an unbounded synchronous loop trips the breaker.
+let instanceRerenderCount = new WeakMap<VaporInstance, number>();
+let instanceRerenderResetScheduled = false;
+const MAX_INSTANCE_RERENDERS_PER_MACROTASK = 100;
 /**
  * Re-render a mounted instance from scratch (used by hot-swap / HMR): tear down
  * the current block + render effects, then re-render with the (possibly swapped)
@@ -4809,6 +4899,28 @@ export function unmountInstance(instance: VaporInstance): void {
  */
 function reRenderInstance(instance: VaporInstance, keepRenderFn = false): void {
     if (!instance.isMounted) return;
+    // Runaway-loop circuit breaker (see MAX_INSTANCE_RERENDERS_PER_MACROTASK).
+    const rerenders = (instanceRerenderCount.get(instance) ?? 0) + 1;
+    instanceRerenderCount.set(instance, rerenders);
+    if (!instanceRerenderResetScheduled) {
+        instanceRerenderResetScheduled = true;
+        setTimeout(() => {
+            instanceRerenderResetScheduled = false;
+            instanceRerenderCount = new WeakMap();
+        });
+    }
+    if (rerenders > MAX_INSTANCE_RERENDERS_PER_MACROTASK) {
+        // Bail out of the synchronous loop. Dev-log so the offending component is
+        // discoverable rather than silently pinning the CPU.
+        if (process.env.NODE_ENV !== 'production') {
+            logVaporError(
+                `Aborting a runaway re-render loop on ${vmString(instance)} ` +
+                    `(exceeded ${MAX_INSTANCE_RERENDERS_PER_MACROTASK} synchronous re-renders). ` +
+                    `A render() or renderedCallback() is likely mutating state it also reads.`
+            );
+        }
+        return;
+    }
     // Tear down old render-effect scope + DOM.
     if (instance.scope) instance.scope.stop();
     if (instance.block) removeBlock(instance.block, instance.renderRoot);
