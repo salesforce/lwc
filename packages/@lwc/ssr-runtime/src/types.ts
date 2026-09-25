@@ -7,3 +7,9 @@
 
 export type Attributes = Record<string, string>;
 export type Properties = Record<string, unknown>;
+
+export interface Template {
+    (...args: never[]): unknown;
+    hasScopedStylesheets?: boolean;
+    stylesheetScopeToken?: string;
+}

@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
+import { toString } from '@lwc/shared';
 import {
     SYMBOL__DEFAULT_TEMPLATE,
     SYMBOL__GENERATE_MARKUP,
@@ -12,6 +13,7 @@ import {
 } from './lightning-element';
 import { mutationTracker } from './mutation-tracker';
 import { hasScopedStaticStylesheets } from './styles';
+import { isTemplateRegistered } from './register-template';
 import { connectContext, establishContextfulRelationship } from './wire';
 import { fallbackTmplNoYield } from './render';
 import { registerPublicProperties, type PUBLIC_PROPERTIES_KEY } from './register-public-properties';
@@ -22,18 +24,12 @@ import {
     renderAttrsNoYield,
     type GenerateMarkupAsyncYield,
 } from './render';
-import type { Attributes, Properties } from './types';
+import type { Attributes, Properties, Template } from './types';
 import type { CompilationMode } from '@lwc/shared';
 import type { LightningElement } from './lightning-element';
 import type { WireAdapterConstructor } from '@lwc/engine-core';
 
-interface Template {
-    (...args: never[]): unknown;
-    hasScopedStylesheets?: boolean;
-    stylesheetScopeToken?: string;
-}
-
-interface ComponentStaticInternals {
+export interface ComponentStaticInternals {
     [PUBLIC_PROPERTIES_KEY]?: Set<string>;
     [SYMBOL__DEFAULT_TEMPLATE]: Template;
 }
@@ -104,8 +100,19 @@ function createComponent<T extends Template>(
     // If a render() function is defined on the class or any of its superclasses, then that takes priority.
     // Next, if the class or any of its superclasses has an implicitly-associated template, then that takes
     // second priority (e.g. a foo.html file alongside a foo.js file). Finally, there is a fallback empty template.
-    const renderTemplate =
-        (instance.render?.() as T) ?? (Component[SYMBOL__DEFAULT_TEMPLATE] as T) ?? defaultTmpl;
+    let renderTemplate: T;
+    if (instance.render) {
+        renderTemplate = instance.render() as T;
+        if (!isTemplateRegistered(renderTemplate)) {
+            throw new TypeError(
+                `Invalid template returned by the render() method on ${tagName}. It must return ` +
+                    `an imported template (e.g.: \`import html from "./${Component.name}.html"\`), ` +
+                    `instead, it has returned: ${toString(renderTemplate)}.`
+            );
+        }
+    } else {
+        renderTemplate = (Component[SYMBOL__DEFAULT_TEMPLATE] as T) ?? defaultTmpl;
+    }
     const hostHasScopedStylesheets =
         renderTemplate.hasScopedStylesheets || hasScopedStaticStylesheets(Component);
     const hostScopeToken = hostHasScopedStylesheets
