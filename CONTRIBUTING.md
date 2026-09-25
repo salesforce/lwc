@@ -17,6 +17,7 @@ Before you start, familiarize yourself with [Lightning Web Components](https://l
 
 - [Node](https://nodejs.org/)
 - [Yarn](https://yarnpkg.com/)
+- On Windows: [Git for Windows](https://git-scm.com/download/win) with long paths enabled (see below)
 
 This project uses [Volta](https://volta.sh/) to ensure that all the contributors share the same version of `Node` and `Yarn` for development. If you are considering making frequent contributions to this project, we recommend installing this tool as well. Otherwise, check the `volta` field in `package.json` to see which versions to use.
 
@@ -28,6 +29,30 @@ This project uses [Volta](https://volta.sh/) to ensure that all the contributors
 
 ```bash
 git clone git@github.com:salesforce/lwc.git
+```
+
+#### Windows: enable long paths before cloning
+
+Some `@lwc/integration-wdio` accessibility fixtures use deeply nested directory names that exceed the default Windows `MAX_PATH` limit. Without long paths enabled, `git clone` can fail with `Filename too long` / `unable to checkout working tree`.
+
+Enable long paths **before** cloning (run Git Bash or PowerShell as Administrator for the `--system` form):
+
+```bash
+git config --system core.longpaths true
+```
+
+If you already cloned and checkout failed, enable long paths for the repo and restore the working tree:
+
+```bash
+cd lwc
+git config core.longpaths true
+git reset --hard HEAD
+```
+
+You may also need to enable long paths in Windows itself: **Settings → System → About → Advanced system settings → Performance Settings → Advanced → Environment Variables** is not required; use Group Policy **Enable Win32 long paths**, or:
+
+```powershell
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 ```
 
 ### 2) Install Dependencies
