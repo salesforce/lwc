@@ -3410,6 +3410,17 @@ function createComponentProxy(instance: VaporInstance, raw: LightningElement): L
                 const isGlobalHtmlProp = REFLECTIVE_GLOBAL_PROPERTY_SET.has(key);
                 if (!isTracked && !isPublicProp && !isGlobalHtmlProp) {
                     // fall through — no side-effect logging for plain fields
+                } else if (instance.isConstructing) {
+                    // Suppressed: field initialization inside the component's own
+                    // constructor (`this._src = ...`, `@api`/`@track` field defaults) is
+                    // NOT a render side effect — it's ordinary instance setup. Vapor's
+                    // GLOBAL globalIsUpdatingTemplate/globalIsInvokingRender flags stay
+                    // raised across a structural effect re-run (lwc:if/for:each) that
+                    // synchronously constructs a child (insertBlock → upgrade →
+                    // `new Ctor()`), so without this the child's ctor field-inits are
+                    // misreported as parent-template side effects. engine-core never
+                    // hits this: its render "describe" phase produces VNodes and defers
+                    // child construction to a later patch phase, outside the flag window.
                 } else if (globalSuppressSideEffectCheck > 0) {
                     // Suppressed: a normal parent→child prop application (applyChildProp),
                     // not a render/template side effect.

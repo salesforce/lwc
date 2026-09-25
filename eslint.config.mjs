@@ -377,6 +377,7 @@ export default tseslint.config(
         files: [
             'packages/@lwc/engine-vapor/src/__tests__/facade.spec.ts',
             'packages/@lwc/engine-vapor/src/__tests__/integration.spec.ts',
+            'packages/@lwc/engine-vapor/src/__tests__/side-effect-and-prop-regressions.spec.ts',
         ],
         rules: {
             '@typescript-eslint/no-implied-eval': 'off',

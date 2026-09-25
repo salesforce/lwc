@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 
-import { AriaPropNameToAttrNameMap } from '@lwc/shared';
+import { AriaPropNameToAttrNameMap, isGlobalHtmlAttribute } from '@lwc/shared';
 import {
     renderEffect,
     getCurrentOwner,
@@ -1450,6 +1450,14 @@ function applyChildProp(element: HTMLElement, key: string, value: unknown): void
         key !== 'key' &&
         key !== 'slot' &&
         key !== 'role' &&
+        // Global HTML attributes (`exportparts`, `part`, `id`, `title`, …) are valid on
+        // ANY element and reflect as attributes; they are never declared as `@api` props,
+        // so `key in element` is false and they'd otherwise be misreported as unknown.
+        // engine-core avoids this a different way: the standard template compiler buckets
+        // `exportparts` into `attrs` (parser/attribute.ts), so it never reaches its prop
+        // validator. The vapor compiler forwards it as a component prop, so we must fall
+        // through to attribute reflection here (setProp's `key in el ? prop : attr` rule).
+        !isGlobalHtmlAttribute(key) &&
         !(key in element) &&
         !(camel in element)
     ) {
