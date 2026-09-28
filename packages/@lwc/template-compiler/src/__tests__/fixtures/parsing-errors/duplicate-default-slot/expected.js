@@ -20,7 +20,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = [""];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-6euhmo37rlr";
-tmpl.legacyStylesheetToken = "x-duplicate-default-slot_duplicate-default-slot";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

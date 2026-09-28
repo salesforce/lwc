@@ -21,8 +21,6 @@ tmpl.slots = [""];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-6di869hpvmf";
-tmpl.legacyStylesheetToken =
-  "x-child-default-slot-content_child-default-slot-content";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

@@ -93,9 +93,7 @@ function createInlineStyleVNode(content: string): VNode {
     );
 }
 
-// TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
-// runtime flag has been removed, so the `legacy` argument is now always false).
-export function updateStylesheetToken(vm: VM, template: Template, legacy: boolean) {
+export function updateStylesheetToken(vm: VM, template: Template) {
     const {
         elm,
         context,
@@ -104,7 +102,7 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
         renderer: { getClassList, removeAttribute, setAttribute },
     } = vm;
     const { stylesheets: newStylesheets } = template;
-    const newStylesheetToken = legacy ? template.legacyStylesheetToken : template.stylesheetToken;
+    const newStylesheetToken = template.stylesheetToken;
     const { stylesheets: newVmStylesheets } = vm;
     const isSyntheticShadow =
         renderMode === RenderMode.Shadow && shadowMode === ShadowMode.Synthetic;
@@ -115,18 +113,9 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
     let newHasTokenInAttribute: boolean | undefined;
 
     // Reset the styling token applied to the host element.
-    let oldToken;
-    let oldHasTokenInClass;
-    let oldHasTokenInAttribute;
-    if (legacy) {
-        oldToken = context.legacyStylesheetToken;
-        oldHasTokenInClass = context.hasLegacyTokenInClass;
-        oldHasTokenInAttribute = context.hasLegacyTokenInAttribute;
-    } else {
-        oldToken = context.stylesheetToken;
-        oldHasTokenInClass = context.hasTokenInClass;
-        oldHasTokenInAttribute = context.hasTokenInAttribute;
-    }
+    const oldToken = context.stylesheetToken;
+    const oldHasTokenInClass = context.hasTokenInClass;
+    const oldHasTokenInAttribute = context.hasTokenInAttribute;
     if (!isUndefined(oldToken)) {
         if (oldHasTokenInClass) {
             getClassList(elm).remove(makeHostToken(oldToken));
@@ -163,15 +152,9 @@ export function updateStylesheetToken(vm: VM, template: Template, legacy: boolea
     }
 
     // Update the styling tokens present on the context object.
-    if (legacy) {
-        context.legacyStylesheetToken = newToken;
-        context.hasLegacyTokenInClass = newHasTokenInClass;
-        context.hasLegacyTokenInAttribute = newHasTokenInAttribute;
-    } else {
-        context.stylesheetToken = newToken;
-        context.hasTokenInClass = newHasTokenInClass;
-        context.hasTokenInAttribute = newHasTokenInAttribute;
-    }
+    context.stylesheetToken = newToken;
+    context.hasTokenInClass = newHasTokenInClass;
+    context.hasTokenInAttribute = newHasTokenInAttribute;
 }
 
 function evaluateStylesheetsContent(
@@ -313,17 +296,10 @@ function getNearestShadowComponent(vm: VM): VM | null {
  * this returns the unique token for that scoped stylesheet. Otherwise
  * it returns null.
  * @param owner
- * @param legacy
  */
-// TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
-// runtime flag has been removed, so the `legacy` argument is now always false).
-export function getScopeTokenClass(owner: VM, legacy: boolean): string | null {
+export function getScopeTokenClass(owner: VM): string | null {
     const { cmpTemplate, context } = owner;
-    return (
-        (context.hasScopedStyles &&
-            (legacy ? cmpTemplate?.legacyStylesheetToken : cmpTemplate?.stylesheetToken)) ||
-        null
-    );
+    return (context.hasScopedStyles && cmpTemplate?.stylesheetToken) || null;
 }
 
 function getNearestNativeShadowComponent(vm: VM): VM | null {

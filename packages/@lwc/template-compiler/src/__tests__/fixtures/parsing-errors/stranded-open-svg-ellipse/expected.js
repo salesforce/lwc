@@ -10,8 +10,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-4l5bd87bi6t";
-tmpl.legacyStylesheetToken =
-  "x-stranded-open-svg-ellipse_stranded-open-svg-ellipse";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

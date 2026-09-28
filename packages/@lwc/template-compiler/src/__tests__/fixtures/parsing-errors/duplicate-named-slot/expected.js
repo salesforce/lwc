@@ -26,7 +26,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["foo"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-3im0sh599q6";
-tmpl.legacyStylesheetToken = "x-duplicate-named-slot_duplicate-named-slot";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

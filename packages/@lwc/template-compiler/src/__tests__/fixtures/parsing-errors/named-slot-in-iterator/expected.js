@@ -25,7 +25,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["james"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-66hm9o8u2h";
-tmpl.legacyStylesheetToken = "x-named-slot-in-iterator_named-slot-in-iterator";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

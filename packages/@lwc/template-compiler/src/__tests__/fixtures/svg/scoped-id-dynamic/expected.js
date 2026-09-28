@@ -69,7 +69,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-72ju6ij1be7";
-tmpl.legacyStylesheetToken = "x-scoped-id-dynamic_scoped-id-dynamic";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

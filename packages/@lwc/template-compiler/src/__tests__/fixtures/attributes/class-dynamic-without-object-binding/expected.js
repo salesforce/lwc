@@ -20,8 +20,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-5euj2le4176";
-tmpl.legacyStylesheetToken =
-  "x-class-dynamic-without-object-binding_class-dynamic-without-object-binding";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

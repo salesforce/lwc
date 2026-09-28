@@ -128,7 +128,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["conditional-slot", "nested-slot", "outer-slot"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-7dlc9jkp653";
-tmpl.legacyStylesheetToken = "x-complex_complex";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

@@ -32,8 +32,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-52sd2331v5c";
-tmpl.legacyStylesheetToken =
-  "x-valid-hyphen-underscore_valid-hyphen-underscore";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

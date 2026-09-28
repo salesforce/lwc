@@ -44,8 +44,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-3s5q7c313i4";
-tmpl.legacyStylesheetToken =
-  "x-parent-mixed-slot-content_parent-mixed-slot-content";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

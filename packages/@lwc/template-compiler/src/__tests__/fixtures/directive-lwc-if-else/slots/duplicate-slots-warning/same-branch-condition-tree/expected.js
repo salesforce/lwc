@@ -39,8 +39,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["nested-slot"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-7498dhinp2o";
-tmpl.legacyStylesheetToken =
-  "x-same-branch-condition-tree_same-branch-condition-tree";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

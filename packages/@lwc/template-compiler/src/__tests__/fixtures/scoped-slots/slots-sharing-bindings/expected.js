@@ -48,7 +48,6 @@ tmpl.slots = ["", "slotname1", "slotname2"];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-26f7f538c7h";
-tmpl.legacyStylesheetToken = "x-slots-sharing-bindings_slots-sharing-bindings";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
