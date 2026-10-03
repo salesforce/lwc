@@ -4,7 +4,15 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { ArrayReduce, ArrayPush, isNull, isUndefined, ArrayFilter } from '@lwc/shared';
+import {
+    ArrayReduce,
+    ArrayPush,
+    isNull,
+    isUndefined,
+    ArrayFilter,
+    isFunction,
+    StringReplace,
+} from '@lwc/shared';
 
 import { arrayFromCollection } from '../shared/utils';
 import { getNodeKey, getNodeNearestOwnerKey, isNodeShadowed } from '../shared/node-ownership';
@@ -223,6 +231,24 @@ export function shadowRootQuerySelector(root: ShadowRoot, selector: string): Ele
     const elm = getHost(root);
     const nodeList = arrayFromCollection(querySelectorAll.call(elm, selector));
     return getFirstMatch(elm, nodeList);
+}
+
+// `getElementById` accepts any string, but `querySelector('#' + id)` would throw on ids that aren't
+// valid CSS identifiers. `CSS.escape` (baseline in every supported browser) bridges the two; the
+// fallback only guards exotic environments where it's missing.
+const cssEscape: (value: string) => string =
+    typeof CSS !== 'undefined' && isFunction(CSS.escape)
+        ? CSS.escape
+        : (value) => StringReplace.call(value, /[^\w-]/g, (ch) => '\\' + ch);
+
+export function shadowRootGetElementById(root: ShadowRoot, id: string): Element | null {
+    // Native `getElementById('')` matches nothing; `querySelector('#')` would throw.
+    if (id === '') {
+        return null;
+    }
+    // Delegating to `querySelector` inherits the shadow-tree ownership filtering and returns the
+    // first match in tree order — the same semantics as native `getElementById`.
+    return shadowRootQuerySelector(root, '#' + cssEscape(id));
 }
 
 export function shadowRootQuerySelectorAll(root: ShadowRoot, selector: string): Element[] {
