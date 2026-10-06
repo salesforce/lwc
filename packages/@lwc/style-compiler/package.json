@@ -53,7 +53,7 @@
     "dependencies": {
         "@lwc/shared": "9.4.3",
         "postcss": "~8.5.26",
-        "postcss-selector-parser": "~7.1.5",
+        "postcss-selector-parser": "~7.1.6",
         "postcss-value-parser": "~4.2.0"
     }
 }
