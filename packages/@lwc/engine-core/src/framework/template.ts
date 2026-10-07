@@ -430,15 +430,12 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                // `html.call(...)` reads a `call` property off the compiled template function. A
-                // component can shadow that property with an own value, causing the engine to invoke
-                // the component-supplied function (with the privileged template `api`) instead of
-                // `Function.prototype.call`. Invoking through the intrinsic `Reflect.apply` uses the
-                // function's internal call behavior and ignores any own `call` property. Gated behind
-                // a flag so the hardened path can be rolled out separately from the default behavior.
-                vnodes = lwcRuntimeFlags.ENABLE_INTRINSIC_TEMPLATE_INVOCATION
-                    ? Reflect.apply(html, undefined, [api, component, cmpSlots, context.tplCache])
-                    : html.call(undefined, api, component, cmpSlots, context.tplCache);
+                vnodes = Reflect.apply(html, undefined, [
+                    api,
+                    component,
+                    cmpSlots,
+                    context.tplCache,
+                ]);
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {
                     // It's important here not to mutate the underlying `vnodes` returned from the template invocation.
