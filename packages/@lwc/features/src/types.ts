@@ -113,12 +113,6 @@ export interface FeatureFlagMap {
     ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: FeatureFlagValue;
 
     /**
-     * If true, disables the check in `hydrateComponent(element)` that `element` is a custom element.
-     */
-    // Remove in 270
-    DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK: FeatureFlagValue;
-
-    /**
      * Kill-switch for the W-23680734 hardening. If true, reverts the sanitized-HTML brand check
      * used by `lwc:inner-html` to the legacy structural `sanitizedHtmlContentSymbol in value` /
      * `value[symbol]` behavior. If false or unset (default), the brand is verified by WeakMap
