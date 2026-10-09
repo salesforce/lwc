@@ -403,7 +403,7 @@ export const ParserDiagnostics = {
 
     UNEXPECTED_IF_MODIFIER: {
         code: 1084,
-        message: 'Unexpected if modifier {0}',
+        message: 'Unexpected if modifier {0}. Expected one of: true, false, strict-true',
         level: DiagnosticLevel.Error,
         url: '',
     },
