@@ -100,7 +100,7 @@ function validateImportedLwcDecoratorUsage(
         )
         .forEach(({ name, reference }) => {
             // Get the decorator from the identifier
-            // If the the decorator is:
+            // If the decorator is:
             //   - an identifier @track : the decorator is the parent of the identifier
             //   - a call expression @wire("foo") : the decorator is the grand-parent of the identifier
             const decorator = reference.parentPath!.isDecorator()
