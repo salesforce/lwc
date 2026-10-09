@@ -138,13 +138,6 @@ export interface FeatureFlagMap {
     ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
 
     /**
-     * If true, `rendererFactory` may only be invoked once per realm — during the engine's own bootstrap
-     * of the base `renderer`; any later invocation throws. When false or unset (default),
-     * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
-     */
-    ENABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
-
-    /**
      * Kill-switch: when true, native `ShadowRoot` `innerHTML`/`setHTMLUnsafe` writes bypass the
      * `sanitizeHtmlContent` hook they are otherwise routed through. Enable only to unblock a regression.
      */
