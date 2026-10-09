@@ -122,22 +122,6 @@ export interface FeatureFlagMap {
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: FeatureFlagValue;
 
     /**
-     * Opt-in flag for W-23814957. When true, the static-content optimization
-     * (`parseFragment` / `parseSVGFragment`) routes the exact markup it will assign to the
-     * underlying `<template>.innerHTML` through the `sanitizeHtmlContent` hook — the same hook that
-     * backs `lwc:inner-html` — before that markup becomes DOM, so both paths consult the hook
-     * consistently. If false or unset (default), the markup is not routed through the hook and the
-     * existing behavior is preserved.
-     *
-     * Only enable this in environments that install a `sanitizeHtmlContent` hook: when the flag is
-     * on and no hook is installed, the default hook throws, which fails rendering of every static
-     * fragment. The installed hook must also preserve the engine-generated scope tokens embedded in
-     * the markup (or scoped styles break), and — because the SVG variant is processed with its
-     * `<svg>` wrapper in place — must handle both HTML- and SVG-namespace fragments.
-     */
-    ENABLE_PARSE_FRAGMENT_SANITIZATION: FeatureFlagValue;
-
-    /**
      * Kill-switch: when true, native `ShadowRoot` `innerHTML`/`setHTMLUnsafe` writes bypass the
      * `sanitizeHtmlContent` hook they are otherwise routed through. Enable only to unblock a regression.
      */
