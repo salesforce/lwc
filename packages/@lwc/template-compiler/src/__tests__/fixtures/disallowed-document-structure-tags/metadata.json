@@ -1,0 +1,88 @@
+{
+    "warnings": [
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        },
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        },
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        },
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        },
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        },
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        },
+        {
+            "code": 1214,
+            "message": "LWC1214: The '<0>' tag is not allowed inside an LWC template and will not be rendered. '<html>', '<head>', '<body>', and doctype declarations are document-level constructs and have no meaning inside a component template.",
+            "level": 2,
+            "url": "",
+            "location": {
+                "line": 1,
+                "column": 11,
+                "start": 10,
+                "length": 75
+            }
+        }
+    ]
+}

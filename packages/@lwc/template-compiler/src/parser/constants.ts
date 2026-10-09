@@ -117,6 +117,8 @@ export const ATTRS_PROPS_TRANFORMS: { [attr: string]: string } = {
 
 export const DISALLOWED_HTML_TAGS = new Set(['base', 'link', 'meta', 'script', 'title']);
 
+export const DOCUMENT_STRUCTURE_TAGS_RE = /<!doctype[^>]*>|<\/?(?:html|head|body)(?:\s[^>]*)?>/gi;
+
 export const KNOWN_HTML_AND_SVG_ELEMENTS = new Set([...HTML_ELEMENTS, ...SVG_ELEMENTS]);
 
 export const HTML_TAG = {
