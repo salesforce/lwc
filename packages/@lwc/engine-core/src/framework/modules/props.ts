@@ -43,7 +43,7 @@ export function patchProps(
 
     const isFirstPatch = isNull(oldVnode);
     const { elm, sel } = vnode;
-    const { getProperty, setProperty } = renderer;
+    const { getProperty, setProperty, removeAttribute } = renderer;
 
     for (const key in props) {
         const cur = props[key];
@@ -65,6 +65,13 @@ export function patchProps(
                             key
                         )}", or the attribute does not exist in this browser or DOM implementation.`
                     );
+                }
+            }
+
+            if (isNull(cur) || isUndefined(cur)) {
+                const attrName = htmlPropertyToAttribute(key);
+                if (attrName) {
+                    removeAttribute(elm, attrName);
                 }
             }
             safelySetProperty(setProperty, elm!, key, cur);
