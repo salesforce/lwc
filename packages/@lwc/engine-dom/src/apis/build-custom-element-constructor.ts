@@ -26,8 +26,6 @@ import type { LightningElement, FormRestoreState, FormRestoreReason } from '@lwc
 type ComponentConstructor = typeof LightningElement;
 type HTMLElementConstructor = typeof HTMLElement;
 
-
-
 function clearNode(node: Node) {
     const childNodes = renderer.getChildNodes(node);
     for (let i = childNodes.length - 1; i >= 0; i--) {

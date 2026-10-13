@@ -31,5 +31,3 @@ This experimental API provides access to the component constructor, given an `HT
 ### isNodeFromTemplate()
 
 This experimental API enables the detection of whether a node was rendered from an LWC template.
-
-
