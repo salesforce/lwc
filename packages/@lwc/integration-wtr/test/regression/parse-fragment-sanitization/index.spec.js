@@ -16,17 +16,15 @@ const mockSanitize = mockFn((content) => {
 
 beforeAll(() => {
     originalSanitizeHtmlContent = getHooks().sanitizeHtmlContent;
-    setHooks({ sanitizeHtmlContent: mockSanitize });
 });
 
 beforeEach(() => {
     mockSanitize.mockReset();
+    setHooks({ sanitizeHtmlContent: mockSanitize });
 });
 
 afterEach(() => {
     setHooks({ sanitizeHtmlContent: originalSanitizeHtmlContent });
-    // Static fragments are cached by the (module-level) template literal, so a fragment parsed
-    // under one flag state would otherwise leak into the next test.
     resetFragmentCache();
     resetDOM();
 });
@@ -56,10 +54,6 @@ describe.skipIf(process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION)(
             // ...and the sanitized result is what reached the live DOM.
             expect(rect.hasAttribute(MARKER_BEFORE)).toBe(false);
             expect(rect.hasAttribute(MARKER_AFTER)).toBe(true);
-        });
-
-        it.skip('renders unmodified if no sanitize hook is set', () => {
-            // TO DO
         });
     }
 );

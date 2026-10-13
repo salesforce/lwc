@@ -15,7 +15,7 @@ import {
     isUndefined,
     KEY__SCOPED_CSS,
     keys,
-    sanitizeHtmlContent,
+    maybeSanitizeHtmlContent,
     StringCharAt,
     STATIC_PART_TOKEN_ID,
     toString,
@@ -325,12 +325,12 @@ function buildParseFragmentFn(
 // Note: at the moment this code executes, we don't have a renderer yet.
 export const parseFragment = buildParseFragmentFn((html, renderer) => {
     const { createFragment } = renderer;
-    return createFragment(sanitizeHtmlContent(html));
+    return createFragment(maybeSanitizeHtmlContent(html));
 });
 
 export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
     const { createFragment, getFirstChild } = renderer;
-    const fragment = createFragment(sanitizeHtmlContent('<svg>' + html + '</svg>'));
+    const fragment = createFragment(maybeSanitizeHtmlContent('<svg>' + html + '</svg>'));
     return getFirstChild(fragment);
 });
 

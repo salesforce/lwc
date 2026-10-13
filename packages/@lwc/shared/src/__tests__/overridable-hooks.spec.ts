@@ -17,19 +17,35 @@ describe('overridable-hooks', () => {
         mod = await import('../overridable-hooks');
     });
 
-    test('throws when sanitizeHtmlContent is called before setHooks', () => {
-        expect(() => mod.sanitizeHtmlContent('<p>hi</p>')).toThrow(
-            /sanitizeHtmlContent hook must be implemented/
-        );
+    describe('strict sanitization', () => {
+        test('throws when sanitizeHtmlContent is called before setHooks', () => {
+            expect(() => mod.sanitizeHtmlContent('<p>hi</p>')).toThrow(
+                /sanitizeHtmlContent hook must be implemented/
+            );
+        });
+
+        test('routes sanitizeHtmlContent through the registered hook', () => {
+            // vi.fn() retained so we can assert the hook was invoked with the raw input.
+            const impl = vi.fn((value: unknown) => `sanitized:${value}`);
+            mod.setHooks({ sanitizeHtmlContent: impl });
+
+            expect(mod.sanitizeHtmlContent('<p>hi</p>')).toBe('sanitized:<p>hi</p>');
+            expect(impl).toHaveBeenCalledWith('<p>hi</p>');
+        });
     });
 
-    test('routes sanitizeHtmlContent through the registered hook', () => {
-        // vi.fn() retained so we can assert the hook was invoked with the raw input.
-        const impl = vi.fn((value: unknown) => `sanitized:${value}`);
-        mod.setHooks({ sanitizeHtmlContent: impl });
+    describe('forgiving sanitization', () => {
+        test('leaves content unchanged before setHooks', () => {
+            expect(mod.maybeSanitizeHtmlContent('<p>hi</p>')).toBe('<p>hi</p>');
+        });
 
-        expect(mod.sanitizeHtmlContent('<p>hi</p>')).toBe('sanitized:<p>hi</p>');
-        expect(impl).toHaveBeenCalledWith('<p>hi</p>');
+        test('routes content through the registered hook', () => {
+            const impl = vi.fn((value: unknown) => `sanitized:${value}`);
+            mod.setHooks({ sanitizeHtmlContent: impl });
+
+            expect(mod.maybeSanitizeHtmlContent('<p>hi</p>')).toBe('sanitized:<p>hi</p>');
+            expect(impl).toHaveBeenCalledWith('<p>hi</p>');
+        });
     });
 
     test('throws when setHooks is called more than once', () => {
