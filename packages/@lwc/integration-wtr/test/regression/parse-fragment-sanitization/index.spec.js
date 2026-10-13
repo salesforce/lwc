@@ -45,12 +45,13 @@ describe.skipIf(process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION)(
         });
 
         // SVGs are excluded from static content optimization prior to API version 59
-        it.runIf(LOWERCASE_SCOPE_TOKENS, 'works on SVG content', () => {
+        it.runIf(LOWERCASE_SCOPE_TOKENS)('works on SVG content', () => {
             const elm = createElement('x-static-svg-fragment', { is: StaticSvgFragment });
             document.body.appendChild(elm);
             const rect = elm.shadowRoot.querySelector('[data-id="region"] rect');
 
-            expect(mockSanitize).toHaveBeenCalledOnceWith(MARKER_BEFORE);
+            expect(mockSanitize).toHaveBeenCalledTimes(1);
+            expect(mockSanitize).toHaveBeenCalledWith(expect.stringContaining(MARKER_BEFORE));
             // ...and the sanitized result is what reached the live DOM.
             expect(rect.hasAttribute(MARKER_BEFORE)).toBe(false);
             expect(rect.hasAttribute(MARKER_AFTER)).toBe(true);

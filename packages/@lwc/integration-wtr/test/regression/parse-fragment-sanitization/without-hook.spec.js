@@ -33,7 +33,7 @@ describe.skipIf(process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION)(
             expect(span.hasAttribute('data-sanitized')).toBe(false);
         });
 
-        it.runIf(LOWERCASE_SCOPE_TOKENS, 'renders SVG content unchanged', () => {
+        it.runIf(LOWERCASE_SCOPE_TOKENS)('renders SVG content unchanged', () => {
             const elm = createElement('x-static-svg-fragment', { is: StaticSvgFragment });
             document.body.appendChild(elm);
 
