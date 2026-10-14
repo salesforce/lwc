@@ -1,6 +1,6 @@
 /**
  * LWC only lets us call `setHooks` once. But we need to do it multiple times
- * for tests, so we implement
+ * for tests, so we implement a replaceable wrapper here.
  */
 import { setHooks as lwcSetHooks } from 'lwc';
 

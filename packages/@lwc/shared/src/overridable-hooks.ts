@@ -18,7 +18,7 @@ interface OverridableHooks {
 
 let hooksAreSet = false;
 
-let sanitizeHtmlContentImpl: SanitizeHtmlContentHook = (): string => {
+let sanitizeHtmlContentImpl: SanitizeHtmlContentHook = () => {
     // locker-service patches this function during runtime to sanitize HTML content.
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 };
@@ -32,6 +32,10 @@ let sanitizeHtmlContentImpl: SanitizeHtmlContentHook = (): string => {
 export const sanitizeHtmlContent: SanitizeHtmlContentHook = (value) => {
     return sanitizeHtmlContentImpl(value);
 };
+
+export function maybeSanitizeHtmlContent(value: string): string {
+    return hooksAreSet ? sanitizeHtmlContentImpl(value) : value;
+}
 
 export function setHooks(hooks: OverridableHooks) {
     assert.isFalse(hooksAreSet, 'Hooks are already overridden, only one definition is allowed.');
