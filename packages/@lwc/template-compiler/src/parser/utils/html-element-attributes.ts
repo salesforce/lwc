@@ -45,6 +45,7 @@ const HTML_ELEMENT_ATTRIBUTE_MAP = {
         'enterkeyhint',
         'hidden',
         'id',
+        'inert',
         'inputmode',
         'is',
         'itemid',
