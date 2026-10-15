@@ -5,9 +5,21 @@ import Switchable from 'x/switchable';
 import Unscoped from 'x/unscoped';
 import ShadowWithScoped from 'x/shadowWithScoped';
 import PseudoParent from 'x/pseudoParent';
+import Nested from 'x/nested';
 import { extractDataIds } from '../../../helpers/utils.js';
 
 describe('Light DOM scoped CSS', () => {
+    it('scopes nested selectors with leading combinators', () => {
+        const elm = createElement('x-nested', { is: Nested });
+        document.body.appendChild(elm);
+
+        expect(getComputedStyle(elm.querySelector('h2')).color).toEqual('rgb(255, 0, 0)');
+        expect(getComputedStyle(elm.querySelector('.child')).color).toEqual('rgb(0, 128, 0)');
+        expect(getComputedStyle(elm.querySelector('h3')).color).toEqual('rgb(0, 128, 0)');
+        expect(getComputedStyle(elm.querySelector('.sibling')).color).toEqual('rgb(0, 0, 255)');
+        expect(getComputedStyle(elm.querySelector('span')).marginLeft).toEqual('5px');
+    });
+
     it('should scope scoped CSS and allow unscoped CSS to leak out', () => {
         const basicElement = createElement('x-basic', { is: Basic });
         const otherElement = createElement('x-other', { is: Other });
