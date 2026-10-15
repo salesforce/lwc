@@ -70,11 +70,10 @@ export function patchProps(
 
             if (isNull(cur) || isUndefined(cur)) {
                 const attrName = htmlPropertyToAttribute(key);
-                if (attrName) {
-                    removeAttribute(elm, attrName);
-                }
+                removeAttribute(elm, attrName);
+            } else {
+                safelySetProperty(setProperty, elm!, key, cur);
             }
-            safelySetProperty(setProperty, elm!, key, cur);
         }
     }
 }
