@@ -1,15 +1,29 @@
 import { LightningElement } from 'lwc';
 
-// Injects a marker with an unscoped native id into its own shadow tree, like an analytics/RUM agent
-// inserting and later looking up its own node. Injected imperatively (not in the template) so
-// synthetic-shadow id scoping leaves the id alone. renderedCallback, not connectedCallback: the
+// Injects markers with unscoped native ids into its own shadow tree, like an analytics/RUM agent
+// inserting and later looking up its own nodes. Injected imperatively (not in the template) so
+// synthetic-shadow id scoping leaves the ids alone. renderedCallback, not connectedCallback: the
 // template isn't rendered yet at connect time, so `this.template.querySelector('div')` is null there.
 export default class Lookup extends LightningElement {
     renderedCallback() {
         const host = this.template.querySelector('div');
-        const marker = document.createElement('span');
-        marker.id = 'injected-marker';
-        marker.textContent = 'Injected Marker';
-        host.appendChild(marker);
+
+        // A plain lookup target.
+        host.appendChild(marker('injected-marker', 'Injected Marker'));
+
+        // An id that isn't a valid CSS identifier (leading digit, dot): `querySelector('#' + id)`
+        // would throw without CSS.escape, but `getElementById` must accept it.
+        host.appendChild(marker('2-weird.id', 'Weird Id'));
+
+        // Two elements sharing an id — getElementById must return the first in tree order.
+        host.appendChild(marker('dup', 'First'));
+        host.appendChild(marker('dup', 'Second'));
     }
+}
+
+function marker(id, text) {
+    const span = document.createElement('span');
+    span.id = id;
+    span.textContent = text;
+    return span;
 }

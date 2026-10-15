@@ -55,6 +55,7 @@ import { addShadowRootEventListener, removeShadowRootEventListener } from './eve
 import {
     shadowRootQuerySelector,
     shadowRootQuerySelectorAll,
+    shadowRootGetElementById,
     shadowRootChildNodes,
     isNodeOwnedBy,
     isSlotElement,
@@ -197,10 +198,6 @@ function containsPatched(this: ShadowRoot, otherNode: Node): boolean {
         (compareDocumentPosition.call(host, otherNode) & DOCUMENT_POSITION_CONTAINED_BY) !== 0 &&
         isNodeOwnedBy(host, otherNode)
     );
-}
-
-function disallowedGetElementById(this: ShadowRoot): never {
-    throw new Error(`Disallowed method "getElementById" on ShadowRoot.`);
 }
 
 const SyntheticShadowRootDescriptors = {
@@ -621,24 +618,18 @@ const ParentNodePatchDescriptors = {
             return children.item(children.length - 1) || null;
         },
     },
-    // An accessor, unlike the other stubs, so the flag is read at call time (not at import) and the
-    // setter preserves `root.getElementById = fn`. The flag exposes it as `undefined` so callers
-    // that value-detect it fall back to `querySelector`; default OFF keeps the throwing stub.
+    // Flag ON: a real implementation that searches this shadow tree, mirroring native
+    // `ShadowRoot.getElementById`. Default OFF preserves the long-standing throwing stub. The flag
+    // is read at call time (not at import) because runtime flags are set during app init.
     getElementById: {
+        writable: true,
         enumerable: true,
         configurable: true,
-        get(this: ShadowRoot): (() => never) | undefined {
-            return lwcRuntimeFlags.ENABLE_SHADOW_ROOT_UNDEFINED_GET_ELEMENT_BY_ID
-                ? undefined
-                : disallowedGetElementById;
-        },
-        set(this: ShadowRoot, value: unknown): void {
-            defineProperty(this, 'getElementById', {
-                writable: true,
-                enumerable: true,
-                configurable: true,
-                value,
-            });
+        value(this: ShadowRoot, id: string): Element | null {
+            if (lwcRuntimeFlags.ENABLE_SHADOW_ROOT_GET_ELEMENT_BY_ID) {
+                return shadowRootGetElementById(this, id);
+            }
+            throw new Error(`Disallowed method "getElementById" on ShadowRoot.`);
         },
     },
     querySelector: {
