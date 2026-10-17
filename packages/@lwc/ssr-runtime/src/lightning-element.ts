@@ -64,14 +64,24 @@ export class LightningElement implements PropsAvailableAtConstruction {
 
     // Using ! because these are defined by descriptors in ./reflection
     accessKey!: string;
+    autocapitalize!: string | null;
+    autofocus!: boolean;
+    contentEditable!: string;
     dir!: string;
     draggable!: boolean;
+    enterKeyHint!: string | null;
     hidden!: boolean;
     id!: string;
+    inert!: boolean;
+    inputMode!: string | null;
     lang!: string;
+    nonce!: string | null;
+    popover!: string | null;
     spellcheck!: boolean;
     tabIndex!: number;
     title!: string;
+    translate!: boolean;
+    writingSuggestions!: boolean;
 
     isConnected = false;
 

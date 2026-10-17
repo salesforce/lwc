@@ -14,7 +14,7 @@ const CAMEL_REGEX = /-([a-z])/g;
  * that supports them.
  */
 const BOOLEAN_ATTRIBUTES = /*@__PURE__@*/ new Map([
-    ['autofocus', /*@__PURE__@*/ new Set(['button', 'input', 'keygen', 'select', 'textarea'])],
+    ['autofocus', /*@__PURE__@*/ new Set()], // Global attribute
     ['autoplay', /*@__PURE__@*/ new Set(['audio', 'video'])],
     ['checked', /*@__PURE__@*/ new Set(['command', 'input'])],
     [
@@ -89,6 +89,7 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'tabindex',
     'title',
     'translate',
+    'writingsuggestions',
 ]);
 
 /**
@@ -110,29 +111,43 @@ export const SPECIAL_PROPERTY_ATTRIBUTE_MAPPING: Map<string, string> = /*@__PURE
     ['contentEditable', 'contenteditable'],
     ['crossOrigin', 'crossorigin'],
     ['dateTime', 'datetime'],
+    ['enterKeyHint', 'enterkeyhint'],
     ['formAction', 'formaction'],
+    ['inputMode', 'inputmode'],
     ['isMap', 'ismap'],
     ['maxLength', 'maxlength'],
     ['minLength', 'minlength'],
     ['noValidate', 'novalidate'],
     ['useMap', 'usemap'],
     ['htmlFor', 'for'],
+    ['writingSuggestions', 'writingsuggestions'],
 ]);
 
 // Global properties that this framework currently reflects. For CSR, the native
 // descriptors for these properties are added from HTMLElement.prototype to
 // LightningElement.prototype. For SSR, in order to match CSR behavior, this
 // list is used to determine which attributes to reflect.
+// See https://github.com/salesforce/lwc/issues/4998
 export const REFLECTIVE_GLOBAL_PROPERTY_SET: Set<string> = /*@__PURE__@*/ new Set([
     'accessKey',
+    'autocapitalize',
+    'autofocus',
+    'contentEditable',
     'dir',
     'draggable',
+    'enterKeyHint',
     'hidden',
     'id',
+    'inert',
+    'inputMode',
     'lang',
+    'nonce',
+    'popover',
     'spellcheck',
     'tabIndex',
     'title',
+    'translate',
+    'writingSuggestions',
 ]);
 
 /**
@@ -209,9 +224,12 @@ export const AMBIGUOUS_PROP_SET: Map<string, string> = /*@__PURE__@*/ new Map([
     ['bgcolor', 'bgColor'],
     ['accesskey', 'accessKey'],
     ['contenteditable', 'contentEditable'],
+    ['enterkeyhint', 'enterKeyHint'],
+    ['inputmode', 'inputMode'],
     ['tabindex', 'tabIndex'],
     ['maxlength', 'maxLength'],
     ['maxvalue', 'maxValue'],
+    ['writingsuggestions', 'writingSuggestions'],
 ]);
 
 /**
