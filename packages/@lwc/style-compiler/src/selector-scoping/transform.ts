@@ -8,10 +8,10 @@ import postCssSelectorParser from 'postcss-selector-parser';
 
 import { isDirPseudoClass } from '../utils/rtl';
 import { SHADOW_ATTRIBUTE, HOST_ATTRIBUTE } from '../utils/selectors-scoping';
-import { findNode, replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
+import { replaceNodeWith, trimNodeWhitespaces } from '../utils/selector-parser';
 
 import validateSelectors from './validate';
-import type { Selector, Root, Node, Pseudo, Tag } from 'postcss-selector-parser';
+import type { Selector, Root, Node, Pseudo } from 'postcss-selector-parser';
 import type { StyleCompilerCtx } from '../utils/error-recovery';
 
 type ChildNode = Exclude<Node, Selector>;
@@ -96,6 +96,61 @@ function scopeSelector(selector: Selector) {
     }
 }
 
+function getNodePath(root: Selector, node: Node): number[] {
+    const path: number[] = [];
+    let current: Node = node;
+    while (current !== root) {
+        const parent = current.parent;
+
+        if (!parent) {
+            throw new Error('Node is not a descendant of the root selector.');
+        }
+
+        path.push(parent.index(current));
+
+        if (parent === root) {
+            break;
+        }
+
+        current = parent as Node;
+    }
+    path.reverse();
+    return path;
+}
+
+function getNodeAtPath(root: Selector, path: number[]): Node {
+    let current: Node = root;
+
+    for (const index of path) {
+        if (!('nodes' in current) || !current.nodes) {
+            throw new Error('Invalid node path.');
+        }
+
+        const next: Node | undefined = current.nodes[index];
+
+        if (!next) {
+            throw new Error('Invalid node path.');
+        }
+
+        current = next;
+    }
+
+    return current;
+}
+
+function findHostPseudoClass(selector: Selector): Pseudo | undefined {
+    let hostNode: Pseudo | undefined;
+
+    selector.walkPseudos((node) => {
+        if (isHostPseudoClass(node)) {
+            hostNode = node;
+            return false;
+        }
+    });
+
+    return hostNode;
+}
+
 /**
  * Mark the :host selector with a placeholder. If the selector has a list of
  * contextual selector it will generate a rule for each of them.
@@ -105,11 +160,11 @@ function scopeSelector(selector: Selector) {
  */
 function transformHost(selector: Selector) {
     // Locate the first :host pseudo-class
-    const hostNode = findNode(selector, isHostPseudoClass);
+    const hostNode = findHostPseudoClass(selector);
 
     if (hostNode) {
         // Store the original location of the :host in the selector
-        const hostIndex = selector.index(hostNode);
+        const hostPath = getNodePath(selector, hostNode);
 
         // Swap the :host pseudo-class with the host scoping token
         const hostAttribute = postCssSelectorParser.attribute({
@@ -123,7 +178,7 @@ function transformHost(selector: Selector) {
         // to the :host
         const contextualSelectors = hostNode.nodes.map((contextSelectors) => {
             const clonedSelector = selector.clone({});
-            const clonedHostNode = clonedSelector.at(hostIndex) as Tag;
+            const clonedHostNode = getNodeAtPath(clonedSelector, hostPath) as ChildNode;
 
             // Add to the compound selector previously containing the :host pseudo class
             // the contextual selectors.
@@ -136,7 +191,12 @@ function transformHost(selector: Selector) {
         });
 
         // Replace the current selector with the different variants
-        replaceNodeWith(selector, ...contextualSelectors);
+        if (contextualSelectors.length) {
+            replaceNodeWith(selector, ...contextualSelectors);
+            contextualSelectors.forEach(transformHost);
+        } else {
+            transformHost(selector);
+        }
     }
 }
 
