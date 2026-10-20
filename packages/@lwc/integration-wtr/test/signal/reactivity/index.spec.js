@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Reactive from 'x/reactive';
 import NonReactive from 'x/nonReactive';
@@ -20,6 +20,14 @@ const createElementSignalAndInsertIntoDom = async (tagName, ctor, signalInitialV
 };
 
 describe('signal reaction in lwc', () => {
+    beforeAll(() => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
+    });
+
     it('should render signal value', async () => {
         const { elm } = await createElementSignalAndInsertIntoDom(
             'x-reactive',

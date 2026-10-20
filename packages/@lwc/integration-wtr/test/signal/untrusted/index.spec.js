@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Test from 'x/test';
 import { Signal } from 'x/signal';
@@ -16,6 +16,8 @@ const createElementSignalAndInsertIntoDom = async (object) => {
 describe('signal reaction in lwc', () => {
     let consoleSpy;
 
+    beforeAll(() => setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true));
+    afterAll(() => setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false));
     beforeEach(() => {
         consoleSpy = spyOn(console, 'warn');
     });

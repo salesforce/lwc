@@ -38,6 +38,7 @@ export function componentValueObserved(vm: VM, key: PropertyKey, target: any = {
     //  1. The template is currently being rendered (there is a template reactive observer)
     //  2. There was a call to a getter to access the signal (happens during vnode generation)
     if (
+        lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS &&
         isObject(target) &&
         !isNull(target) &&
         process.env.IS_BROWSER &&

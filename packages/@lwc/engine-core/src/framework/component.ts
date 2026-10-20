@@ -119,7 +119,9 @@ export function resetTemplateObserverAndUnsubscribe(vm: VM) {
     const { tro, component } = vm;
     tro.reset();
     // Unsubscribe every time the template reactive observer is reset.
-    unsubscribeFromSignals(component);
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        unsubscribeFromSignals(component);
+    }
 }
 
 export function renderComponent(vm: VM): VNodes {

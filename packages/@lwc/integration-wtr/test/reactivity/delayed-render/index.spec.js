@@ -1,4 +1,4 @@
-import { createElement } from 'lwc';
+import { createElement, setFeatureFlagForTest } from 'lwc';
 
 import Test from 'x/test';
 
@@ -7,6 +7,8 @@ import Test from 'x/test';
 // the "live" component property is accessed instead of via vm.cmpFields / vm.cmpProps.
 describe('Unobserved properties should NOT trigger additional re-renders', () => {
     it('when signals is enabled', async () => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+
         const elm = createElement('x-test', { is: Test });
         document.body.appendChild(elm);
         elm.switchToEmptyTemplate();
@@ -14,5 +16,21 @@ describe('Unobserved properties should NOT trigger additional re-renders', () =>
         setTimeout(() => {
             expect(elm.renderCount).toBe(2);
         });
+    });
+
+    it('when signals is disabled', async () => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
+
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        elm.switchToEmptyTemplate();
+
+        setTimeout(() => {
+            expect(elm.renderCount).toBe(2);
+        });
+    });
+
+    afterAll(() => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
     });
 });

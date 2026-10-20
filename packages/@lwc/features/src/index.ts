@@ -16,6 +16,7 @@ const features: FeatureFlagMap = {
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_FROZEN_TEMPLATE: null,
+    ENABLE_EXPERIMENTAL_SIGNALS: null,
     DISABLE_SYNTHETIC_SHADOW: null,
     DISABLE_STRICT_VALIDATION: null,
     // Remove in 270

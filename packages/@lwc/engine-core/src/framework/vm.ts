@@ -690,8 +690,10 @@ export function runConnectedCallback(vm: VM) {
         connectWireAdapters(vm);
     }
 
-    // Setup context before connected callback is executed
-    connectContext(vm);
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        // Setup context before connected callback is executed
+        connectContext(vm);
+    }
 
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
@@ -743,7 +745,9 @@ function runDisconnectedCallback(vm: VM) {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
 
-    disconnectContext(vm);
+    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
+        disconnectContext(vm);
+    }
 
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,

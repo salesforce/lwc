@@ -54,6 +54,12 @@ export interface FeatureFlagMap {
     ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
 
     /**
+     * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
+     * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
+     */
+    ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
+
+    /**
      * If true, ignore `@lwc/synthetic-shadow` even if it's loaded on the page. Instead, run all components in
      * native shadow mode.
      */
