@@ -91,10 +91,8 @@ export class LightningElement implements PropsAvailableAtConstruction {
         this.#props = props;
         this.#attrs = attrs;
 
-        if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
-            // Setup context before connected callback is executed
-            connectContext(this);
-        }
+        // Setup context before connected callback is executed
+        connectContext(this);
 
         // Class should be set explicitly to avoid it being overridden by connectedCallback classList mutation.
         if (attrs.class) {

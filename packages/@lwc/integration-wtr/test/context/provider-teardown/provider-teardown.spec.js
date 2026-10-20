@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import LeakyContextConsumer from 'x/leakyContextConsumer';
 import MultiContextConsumer from 'x/multiContextConsumer';
 import { initContext } from '../../../helpers/context.js';
@@ -28,11 +28,6 @@ function trackContextListeners(elm) {
 describe('context provider listener teardown', () => {
     beforeAll(() => {
         initContext();
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
-    });
-
-    afterAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
     });
 
     afterEach(resetDOM);

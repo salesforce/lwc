@@ -1,4 +1,4 @@
-import { describe, it, expect, afterEach, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { LightningElement, SYMBOL__SET_INTERNALS } from '../lightning-element';
 
 describe('SSR LightningElement', () => {
@@ -67,14 +67,8 @@ describe('SSR LightningElement', () => {
         });
     });
 
-    describe('with signals enabled', () => {
-        afterEach(() => {
-            delete (globalThis as any).lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS;
-        });
-
-        it('calls connectContext when signals are enabled', () => {
-            (globalThis as any).lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS = true;
-
+    describe('context', () => {
+        it('calls connectContext', () => {
             expect(() => {
                 createTestElement();
             }).not.toThrow();

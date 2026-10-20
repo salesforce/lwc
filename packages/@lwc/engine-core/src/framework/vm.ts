@@ -657,10 +657,7 @@ function flushRehydrationQueue() {
         try {
             // We want to prevent rehydration from occurring when nodes are detached from the DOM as this can trigger
             // unintended side effects, like lifecycle methods being called multiple times.
-            // For backwards compatibility, we use a flag to control the check.
-            // 1. When flag is off, always rehydrate (legacy behavior)
-            // 2. When flag is on, only rehydrate when the VM state is connected (fixed behavior)
-            if (!lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION || vm.state === VMState.connected) {
+            if (vm.state === VMState.connected) {
                 rehydrate(vm);
             }
         } catch (error) {
@@ -693,10 +690,8 @@ export function runConnectedCallback(vm: VM) {
         connectWireAdapters(vm);
     }
 
-    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
-        // Setup context before connected callback is executed
-        connectContext(vm);
-    }
+    // Setup context before connected callback is executed
+    connectContext(vm);
 
     const { connectedCallback } = vm.def;
     if (!isUndefined(connectedCallback)) {
@@ -748,9 +743,7 @@ function runDisconnectedCallback(vm: VM) {
         assert.isTrue(vm.state !== VMState.disconnected, `${vm} must be inserted.`);
     }
 
-    if (lwcRuntimeFlags.ENABLE_EXPERIMENTAL_SIGNALS) {
-        disconnectContext(vm);
-    }
+    disconnectContext(vm);
 
     if (isFalse(vm.isDirty)) {
         // this guarantees that if the component is reused/reinserted,

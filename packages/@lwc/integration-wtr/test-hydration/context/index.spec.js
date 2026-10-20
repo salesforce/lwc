@@ -10,7 +10,6 @@ export default {
             'Multiple contexts of the same variety were provided. Only the first context will be used.',
         ],
     },
-    requiredFeatureFlags: ['ENABLE_EXPERIMENTAL_SIGNALS'],
     snapshot(target) {
         const grandparent = target.shadowRoot.querySelector('x-grandparent');
         const detachedChild = target.shadowRoot.querySelector('x-child');

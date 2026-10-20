@@ -54,12 +54,6 @@ export interface FeatureFlagMap {
     ENABLE_FROZEN_TEMPLATE: FeatureFlagValue;
 
     /**
-     * EXPERIMENTAL FEATURE, DO NOT USE IN PRODUCTION
-     * If true, allows the engine to expose reactivity to signals as describe in @lwc/signals.
-     */
-    ENABLE_EXPERIMENTAL_SIGNALS: FeatureFlagValue;
-
-    /**
      * If true, ignore `@lwc/synthetic-shadow` even if it's loaded on the page. Instead, run all components in
      * native shadow mode.
      */
@@ -70,18 +64,6 @@ export interface FeatureFlagMap {
      * If true, use legacy constructor check (reference equality only).
      */
     DISABLE_STRICT_VALIDATION: FeatureFlagValue;
-
-    /**
-     * If true, skips rehydration of DOM elements that are not connected.
-     * Applies to rehydration performed while flushing the rehydration queue.
-     */
-    DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
-
-    /**
-     * If true, skips the guard that blocks native `attachShadow` on LWC component hosts that already use
-     * synthetic shadow. When false or unset, the guard is active (default).
-     */
-    DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
 
     /**
      * If true, the synthetic-shadow `NodeList`/`HTMLCollection` `item` method skips the receiver

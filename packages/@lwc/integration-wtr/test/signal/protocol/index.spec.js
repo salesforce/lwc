@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Reactive from 'x/reactive';
 import NonReactive from 'x/nonReactive';
 import Container from 'x/container';
@@ -15,14 +15,6 @@ import { fn as mockFn } from '@vitest/spy';
 import { resetDOM } from '../../../helpers/reset.js';
 
 describe('signal protocol', () => {
-    beforeAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
-    });
-
-    afterAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
-    });
-
     afterEach(resetDOM);
 
     describe('lwc engine subscribes template re-render callback when signal is bound to an LWC and used on a template', () => {
@@ -225,28 +217,5 @@ describe('signal protocol', () => {
         await Promise.resolve();
 
         expect(elm.shadowRoot.querySelector('h1').textContent).toBe('hello');
-    });
-});
-
-describe('ENABLE_EXPERIMENTAL_SIGNALS not set', () => {
-    beforeAll(() => {
-        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', false);
-    });
-
-    it('does not subscribe or unsubscribe if feature flag is disabled', async () => {
-        const elm = createElement('x-child', { is: Child });
-        const signal = new Signal('initial value');
-        elm.signal = signal;
-        document.body.appendChild(elm);
-        await Promise.resolve();
-
-        expect(signal.getSubscriberCount()).toBe(0);
-        expect(signal.getRemovedSubscriberCount()).toBe(0);
-
-        document.body.removeChild(elm);
-        await Promise.resolve();
-
-        expect(signal.getSubscriberCount()).toBe(0);
-        expect(signal.getRemovedSubscriberCount()).toBe(0);
     });
 });
