@@ -181,4 +181,79 @@ describe('reflection', () => {
         el.ariaHidden = 'false';
         expect(el.ariaHidden).toBe('false');
     });
+
+    test('inert reflection - boolean attribute', () => {
+        const el = createElement();
+
+        expect(el.inert).toBe(false);
+
+        el.inert = true;
+        expect(el.hasAttribute('inert')).toBe(true);
+        expect(el.inert).toBe(true);
+
+        el.inert = false;
+        expect(el.hasAttribute('inert')).toBe(false);
+        expect(el.inert).toBe(false);
+    });
+
+    test('autofocus reflection - boolean attribute', () => {
+        const el = createElement();
+
+        expect(el.autofocus).toBe(false);
+
+        el.autofocus = true;
+        expect(el.hasAttribute('autofocus')).toBe(true);
+        expect(el.autofocus).toBe(true);
+    });
+
+    test('contentEditable reflection - defaults to inherit', () => {
+        const el = createElement();
+
+        expect(el.contentEditable).toBe('inherit');
+
+        el.contentEditable = 'true';
+        expect(el.getAttribute('contenteditable')).toBe('true');
+        expect(el.contentEditable).toBe('true');
+
+        el.contentEditable = 'inherit';
+        expect(el.hasAttribute('contenteditable')).toBe(false);
+        expect(el.contentEditable).toBe('inherit');
+    });
+
+    test('translate reflection - yes/no attribute', () => {
+        const el = createElement();
+
+        expect(el.translate).toBe(true);
+
+        el.translate = false;
+        expect(el.getAttribute('translate')).toBe('no');
+        expect(el.translate).toBe(false);
+
+        el.translate = true;
+        expect(el.getAttribute('translate')).toBe('yes');
+        expect(el.translate).toBe(true);
+    });
+
+    test('enterKeyHint and inputMode string reflection', () => {
+        const el = createElement();
+
+        expect(el.enterKeyHint).toBe(null);
+        expect(el.inputMode).toBe(null);
+
+        el.enterKeyHint = 'search';
+        el.inputMode = 'email';
+        expect(el.getAttribute('enterkeyhint')).toBe('search');
+        expect(el.getAttribute('inputmode')).toBe('email');
+        expect(el.enterKeyHint).toBe('search');
+        expect(el.inputMode).toBe('email');
+    });
+
+    test('popover and autocapitalize string reflection', () => {
+        const el = createElement();
+
+        el.popover = 'auto';
+        el.autocapitalize = 'characters';
+        expect(el.getAttribute('popover')).toBe('auto');
+        expect(el.getAttribute('autocapitalize')).toBe('characters');
+    });
 });
