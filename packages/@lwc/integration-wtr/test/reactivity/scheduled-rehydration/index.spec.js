@@ -23,9 +23,8 @@ describe('detached rehydration', () => {
         // Use calls to the getters to determine if rehydration was processed.
         // Rehydration will invoke the tmpl function -> calls getters for values
         // Note that this means the entire diffing algo was traversed in the disconnected node
-        const expectedDetachedGetterCalls = 1;
         expect(children[0].called).toEqual(2);
-        expect(children[1].called).toEqual(expectedDetachedGetterCalls);
-        expect(children[2].called).toEqual(expectedDetachedGetterCalls);
+        expect(children[1].called).toEqual(1);
+        expect(children[2].called).toEqual(1);
     });
 });

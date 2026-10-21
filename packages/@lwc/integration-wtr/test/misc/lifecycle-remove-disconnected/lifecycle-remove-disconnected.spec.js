@@ -22,21 +22,6 @@ describe('vdom removes component while it is already disconnected', () => {
         await Promise.resolve();
         elm.showChild = false; // trigger removal while parent is disconnected
 
-        if (
-            !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE ||
-            process.env.NODE_ENV === 'production'
-        ) {
-            expect(spy).not.toHaveBeenCalled();
-        } else {
-            // expected since the engine calls appendChild to a disconnected DOM node
-            expect(spy).toHaveBeenCalledExactlyOnceWith(expect.any(Error));
-            expect(spy).toHaveBeenCalledExactlyOnceWith(
-                expect.objectContaining({
-                    message: expect.stringMatching(
-                        /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-                    ),
-                })
-            );
-        }
+        expect(spy).not.toHaveBeenCalled();
     });
 });

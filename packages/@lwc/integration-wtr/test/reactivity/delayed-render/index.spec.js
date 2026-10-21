@@ -6,6 +6,18 @@ import Test from 'x/test';
 // and this will cause undesired effects. This bug manifested due to context connection/disconnection erroneously accessing properties, but it could theoretically occur in any instance where
 // the "live" component property is accessed instead of via vm.cmpFields / vm.cmpProps.
 describe('Unobserved properties should NOT trigger additional re-renders', () => {
+    it('when signals is enabled and detached rehydration is skipped', async () => {
+        setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
+
+        const elm = createElement('x-test', { is: Test });
+        document.body.appendChild(elm);
+        elm.switchToEmptyTemplate();
+
+        setTimeout(() => {
+            expect(elm.renderCount).toBe(2);
+        });
+    });
+
     it('when signals is enabled', async () => {
         setFeatureFlagForTest('ENABLE_EXPERIMENTAL_SIGNALS', true);
 
