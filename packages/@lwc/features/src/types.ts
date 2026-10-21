@@ -72,18 +72,6 @@ export interface FeatureFlagMap {
     DISABLE_STRICT_VALIDATION: FeatureFlagValue;
 
     /**
-     * If true, skips rehydration of DOM elements that are not connected.
-     * Applies to rehydration performed while flushing the rehydration queue.
-     */
-    DISABLE_DETACHED_REHYDRATION: FeatureFlagValue;
-
-    /**
-     * If true, skips the guard that blocks native `attachShadow` on LWC component hosts that already use
-     * synthetic shadow. When false or unset, the guard is active (default).
-     */
-    DISABLE_HOST_ATTACH_SHADOW_GUARD: FeatureFlagValue;
-
-    /**
      * If true, the synthetic-shadow `NodeList`/`HTMLCollection` `item` method skips the receiver
      * check and returns `this[index]` for any receiver, as it did prior to 266.
      */
