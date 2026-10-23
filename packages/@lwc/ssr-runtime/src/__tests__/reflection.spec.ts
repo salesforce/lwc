@@ -65,9 +65,31 @@ describe('reflection', () => {
         el.tabIndex = 5;
         expect(el.tabIndex).toBe(5);
 
-        // Set invalid (should return -1 for non-finite)
+        // Non-finite values are converted to 0, as in the browser
         el.tabIndex = NaN as any;
-        expect(el.tabIndex).toBe(-1); // NaN is not finite
+        expect(el.getAttribute('tabindex')).toBe('0');
+        expect(el.tabIndex).toBe(0);
+    });
+
+    test('tabIndex reflection - writes the normalized value to the attribute', () => {
+        const el = createElement();
+
+        // Fractions are truncated, as in the browser
+        el.tabIndex = 1.5;
+        expect(el.getAttribute('tabindex')).toBe('1');
+        expect(el.tabIndex).toBe(1);
+
+        el.tabIndex = -1.9;
+        expect(el.getAttribute('tabindex')).toBe('-1');
+        expect(el.tabIndex).toBe(-1);
+
+        // Non-numeric values become 0 instead of being written verbatim
+        el.tabIndex = 'abc' as any;
+        expect(el.getAttribute('tabindex')).toBe('0');
+
+        el.tabIndex = -1;
+        el.tabIndex = null as any;
+        expect(el.getAttribute('tabindex')).toBe('0');
     });
 
     test('draggable reflection - explicit boolean', () => {
