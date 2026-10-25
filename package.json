@@ -54,7 +54,7 @@
         "@vitest/coverage-v8": "5.0.1",
         "@vitest/eslint-plugin": "1.6.27",
         "@vitest/spy": "5.0.1",
-        "@vitest/ui": "5.0.1",
+        "@vitest/ui": "5.0.5",
         "bytes": "^3.1.2",
         "es-module-lexer": "^2.3.2",
         "eslint": "9.39.2",
