@@ -6,6 +6,7 @@
  */
 import {
     ArrayFind,
+    ArrayFindIndex,
     ArrayIndexOf,
     ArrayReverse,
     ArraySlice,
@@ -175,6 +176,23 @@ function getTabbableSegments(host: HTMLElement): QuerySegments {
     const firstChild = inner[0];
     const lastChild = inner[inner.length - 1];
     const hostIndex = ArrayIndexOf.call(all, host);
+
+    if (hostIndex === -1 && inner.length === 0) {
+        // A negative-tabindex host with no sequentially focusable descendants has no
+        // index in `all`. Use its DOM position instead of slicing from -1/0, which
+        // would make forward navigation restart at the beginning of the document.
+        const nextIndex = ArrayFindIndex.call(all, (element: HTMLElement) => {
+            return (
+                (compareDocumentPosition.call(host, element) & DOCUMENT_POSITION_FOLLOWING) !== 0
+            );
+        });
+        const boundary = nextIndex === -1 ? all.length : nextIndex;
+        return {
+            prev: ArraySlice.call(all, 0, boundary),
+            inner,
+            next: ArraySlice.call(all, boundary),
+        };
+    }
 
     // Host element can show up in our "previous" section if its tabindex is 0
     // We want to filter that out here
