@@ -119,6 +119,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         shadowSupportMode: ctorShadowSupportMode,
         renderMode: ctorRenderMode,
         formAssociated: ctorFormAssociated,
+        shadowRootMode: ctorShadowRootMode,
     } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -159,6 +160,16 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         ) {
             logError(
                 `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
+            );
+        }
+
+        if (
+            !isUndefined(ctorShadowRootMode) &&
+            ctorShadowRootMode !== 'open' &&
+            ctorShadowRootMode !== 'closed'
+        ) {
+            logError(
+                `Invalid value for static property shadowRootMode: '${ctorShadowRootMode}'. shadowRootMode must be either 'open' or 'closed'.`
             );
         }
     }
