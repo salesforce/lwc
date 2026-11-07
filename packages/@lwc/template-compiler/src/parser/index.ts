@@ -1193,6 +1193,12 @@ function applyLwcInnerHtmlDirective(
         ]);
     }
 
+    if (isVoidElement(element.name, element.namespace)) {
+        ctx.throwOnNode(ParserDiagnostics.LWC_INNER_HTML_INVALID_VOID_ELEMENT, element, [
+            `<${element.name}>`,
+        ]);
+    }
+
     const { value: innerHTMLVal } = lwcInnerHtmlDirective;
 
     if (!ast.isStringLiteral(innerHTMLVal) && !ast.isExpression(innerHTMLVal)) {
