@@ -514,17 +514,20 @@ describe('event propagation', () => {
             const elm = createElement('x-container', { is: Container });
             elm.setAttribute('data-id', 'x-container');
 
-            const doAppend = () => fragment.appendChild(elm);
+            fragment.appendChild(elm);
 
-            doAppend();
-            expect(consoleSpy).toHaveBeenCalledTimes(4);
-            const warning = expect.objectContaining({
-                name: 'Error',
-                message: expect.stringMatching(
-                    /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-                ),
-            });
-            expect(consoleSpy.mock.calls).toEqual([[warning], [warning], [warning], [warning]]);
+            if (process.env.NODE_ENV === 'production') {
+                expect(consoleSpy).not.toHaveBeenCalled();
+            } else {
+                // Expected warnings, since we are working with disconnected nodes
+                const warning = expect.objectContaining({
+                    name: 'Error',
+                    message: expect.stringMatching(
+                        /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+                    ),
+                });
+                expect(consoleSpy.mock.calls).toEqual([[warning], [warning], [warning], [warning]]);
+            }
 
             const nodes = extractDataIds(elm);
             // Manually added because document fragments can't have attributes.

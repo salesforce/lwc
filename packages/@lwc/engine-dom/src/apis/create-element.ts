@@ -46,14 +46,7 @@ function callNodeSlot(node: Node, slot: WeakMap<any, NodeSlotCallback>): Node {
     return node; // for convenience
 }
 
-let monkeyPatched = false;
-
 function monkeyPatchDomAPIs() {
-    if (monkeyPatched) {
-        // don't double-patch
-        return;
-    }
-    monkeyPatched = true;
     // Monkey patching Node methods to be able to detect the insertions and removal of root elements
     // created via createElement.
     const { appendChild, insertBefore, removeChild, replaceChild } = _Node.prototype;
@@ -85,17 +78,13 @@ function monkeyPatchDomAPIs() {
     } as Pick<Node, 'appendChild' | 'insertBefore' | 'removeChild' | 'replaceChild'>);
 }
 
-if (process.env.NODE_ENV !== 'production') {
-    // In dev mode, we must eagerly patch these DOM APIs because `restrictions.ts` in `@lwc/engine-core` does
-    // its own monkey-patching, and the assumption is that its monkey patches will apply on top of our own.
-    // If we _don't_ eagerly monkey-patch, then APIs like `element.appendChild` could end up calling through
-    // directly to the native DOM APIs instead, which would bypass synthetic custom element lifecycle
-    // and cause rendering/`connectedCallback`/`disconnectedCallback` not to fire.
-    // In prod mode, we avoid global patching as a slight perf optimization and because it's good practice
-    // in general to avoid global patching.
-    // See issue #4242 for details.
-    monkeyPatchDomAPIs();
-}
+// These DOM APIs must be patched eagerly, before any root element is created. Patching lazily from
+// `createElement()` is not safe: in `document.body.appendChild(createElement(...))`, the unpatched
+// `appendChild` is looked up before `createElement()` runs, so the element would never connect.
+// In dev mode, eager patching is also required because `restrictions.ts` in `@lwc/engine-core` does
+// its own monkey-patching, and the assumption is that its monkey patches will apply on top of our own.
+// See issue #4242 for details.
+monkeyPatchDomAPIs();
 
 /**
  * Gets the public properties of a component class. If the `__lwc_public_property_types__` property
@@ -225,8 +214,6 @@ export function createElement<Component>(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
-        // Monkey-patch on-demand, to avoid global patching in prod mode until a root element is created.
-        monkeyPatchDomAPIs();
         ConnectingSlot.set(elm, connectRootElement);
         DisconnectingSlot.set(elm, disconnectRootElement);
     };
