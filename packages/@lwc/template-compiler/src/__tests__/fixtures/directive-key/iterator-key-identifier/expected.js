@@ -36,8 +36,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-mk60ujrh6t";
-tmpl.legacyStylesheetToken =
-  "x-iterator-key-identifier_iterator-key-identifier";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

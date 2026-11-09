@@ -6,3 +6,4 @@
  */
 
 import './polyfill';
+import './sanitize-native-sink';

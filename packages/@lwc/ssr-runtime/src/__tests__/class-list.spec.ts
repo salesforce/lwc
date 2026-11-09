@@ -32,6 +32,11 @@ describe('ClassList SSR Polyfill', () => {
         expect(mockElement.className).toBe('orange banana');
     });
 
+    it('does not duplicate a class when replacing with one that is already present', () => {
+        expect(classList.replace('apple', 'banana')).toBe(true);
+        expect(mockElement.className).toBe('banana');
+    });
+
     it('toggles a class on and off', () => {
         const isApplePresent = classList.toggle('apple');
         expect(isApplePresent).toBe(false);

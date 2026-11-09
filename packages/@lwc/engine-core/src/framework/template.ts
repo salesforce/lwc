@@ -15,7 +15,7 @@ import {
     isUndefined,
     KEY__SCOPED_CSS,
     keys,
-    sanitizeHtmlContent,
+    maybeSanitizeHtmlContent,
     StringCharAt,
     STATIC_PART_TOKEN_ID,
     toString,
@@ -53,10 +53,6 @@ export interface Template {
     stylesheets?: Stylesheets;
     /** The string used for synthetic shadow style scoping and light DOM style scoping. */
     stylesheetToken?: string;
-    /** Same as the above, but for legacy use cases (pre-LWC v3.0.0) */
-    // TODO [#3733]: remove this dead legacy-scope-token plumbing (the ENABLE_LEGACY_SCOPE_TOKENS
-    // runtime flag has been removed, so this token is no longer read at render time).
-    legacyStylesheetToken?: string;
     /** Render mode for the template. Could be light or undefined (which means it's shadow) */
     renderMode?: 'light';
     /** True if this template contains template refs, undefined or false otherwise */
@@ -326,31 +322,15 @@ function buildParseFragmentFn(
     };
 }
 
-// W-23814957: static-content markup is assembled here and assigned to `innerHTML` by
-// `createFragment` (see @lwc/engine-dom). The `lwc:inner-html` directive routes its markup through
-// the overridable `sanitizeHtmlContent` hook before it becomes DOM; the static-content path does
-// not. When the opt-in flag is enabled, route the exact string that will be assigned to `innerHTML`
-// through the same hook, so both paths are consistent. This is applied per fragment variant (rather
-// than once on the pre-assembled markup) so the SVG variant is processed with its `<svg>` wrapper in
-// place — i.e. in the same parsing context (namespace) `createFragment` will use. Off by default to
-// preserve existing behavior (and because enabling it requires a hook that preserves the
-// engine-generated scope tokens embedded in the markup).
-function sanitizeFragmentIfEnabled(html: string): string {
-    if (lwcRuntimeFlags.ENABLE_PARSE_FRAGMENT_SANITIZATION) {
-        return sanitizeHtmlContent(html);
-    }
-    return html;
-}
-
 // Note: at the moment this code executes, we don't have a renderer yet.
 export const parseFragment = buildParseFragmentFn((html, renderer) => {
     const { createFragment } = renderer;
-    return createFragment(sanitizeFragmentIfEnabled(html));
+    return createFragment(maybeSanitizeHtmlContent(html));
 });
 
 export const parseSVGFragment = buildParseFragmentFn((html, renderer) => {
     const { createFragment, getFirstChild } = renderer;
-    const fragment = createFragment(sanitizeFragmentIfEnabled('<svg>' + html + '</svg>'));
+    const fragment = createFragment(maybeSanitizeHtmlContent('<svg>' + html + '</svg>'));
     return getFirstChild(fragment);
 });
 
@@ -410,7 +390,7 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                     context.hasScopedStyles = computeHasScopedStyles(html, vm);
 
                     // Update the scoping token on the host element.
-                    updateStylesheetToken(vm, html, /* legacy */ false);
+                    updateStylesheetToken(vm, html);
 
                     // Evaluate, create stylesheet and cache the produced VNode for future
                     // re-rendering.
@@ -434,15 +414,12 @@ export function evaluateTemplate(vm: VM, html: Template): VNodes {
                 // Set the global flag that template is being updated
                 isUpdatingTemplate = true;
 
-                // `html.call(...)` reads a `call` property off the compiled template function. A
-                // component can shadow that property with an own value, causing the engine to invoke
-                // the component-supplied function (with the privileged template `api`) instead of
-                // `Function.prototype.call`. Invoking through the intrinsic `Reflect.apply` uses the
-                // function's internal call behavior and ignores any own `call` property. Gated behind
-                // a flag so the hardened path can be rolled out separately from the default behavior.
-                vnodes = lwcRuntimeFlags.ENABLE_INTRINSIC_TEMPLATE_INVOCATION
-                    ? Reflect.apply(html, undefined, [api, component, cmpSlots, context.tplCache])
-                    : html.call(undefined, api, component, cmpSlots, context.tplCache);
+                vnodes = Reflect.apply(html, undefined, [
+                    api,
+                    component,
+                    cmpSlots,
+                    context.tplCache,
+                ]);
                 const { styleVNodes } = context;
                 if (!isNull(styleVNodes)) {
                     // It's important here not to mutate the underlying `vnodes` returned from the template invocation.

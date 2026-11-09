@@ -21,8 +21,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-5pibivjbnss";
-tmpl.legacyStylesheetToken =
-  "x-nested-invalid-attributes_nested-invalid-attributes";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

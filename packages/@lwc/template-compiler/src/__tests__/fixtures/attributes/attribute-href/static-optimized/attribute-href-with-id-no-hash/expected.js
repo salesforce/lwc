@@ -30,8 +30,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-37mnkrd5rqc";
-tmpl.legacyStylesheetToken =
-  "x-attribute-href-with-id-no-hash_attribute-href-with-id-no-hash";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

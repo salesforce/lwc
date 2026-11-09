@@ -9,6 +9,7 @@ import { is } from 'estree-toolkit';
 import { generateScopeTokens } from '@lwc/template-compiler';
 import { builders as b } from 'estree-toolkit/dist/builders';
 import { esTemplate } from '../estemplate';
+import { bImportDeclaration } from '../estree/builders';
 import type { ExpressionStatement, Program, VariableDeclaration } from 'estree';
 
 const bStylesheetTokenDeclaration = esTemplate`
@@ -27,6 +28,10 @@ ${/* template */ is.identifier}.hasScopedStylesheets = hasScopedStylesheets;
 ${/* template */ 0}.stylesheetScopeToken = stylesheetScopeToken;
 `<ExpressionStatement[]>;
 
+const bRegisterTemplateCall = esTemplate`
+__lwcRegisterTemplate(${/* template */ is.identifier});
+`<ExpressionStatement>;
+
 export function addScopeTokenDeclarations(
     program: Program,
     filename: string,
@@ -37,8 +42,12 @@ export function addScopeTokenDeclarations(
 
     program.body.unshift(
         bStylesheetTokenDeclaration(b.literal(scopeToken)),
-        bHasScopedStylesheetsDeclaration()
+        bHasScopedStylesheetsDeclaration(),
+        bImportDeclaration({ registerTemplate: '__lwcRegisterTemplate' })
     );
 
-    program.body.push(...tmplAssignmentBlock(b.identifier('__lwcTmpl')));
+    program.body.push(
+        ...tmplAssignmentBlock(b.identifier('__lwcTmpl')),
+        bRegisterTemplateCall(b.identifier('__lwcTmpl'))
+    );
 }

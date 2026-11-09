@@ -71,7 +71,7 @@ export class ClassList implements DOMTokenList {
                 listOfClasses[idx] = newClassName;
             }
         });
-        this.el.className = listOfClasses.join(' ');
+        this.el.className = Array.from(new Set(listOfClasses)).join(' ');
         return classWasReplaced;
     }
 

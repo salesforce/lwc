@@ -34,8 +34,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["", "other"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-1o8q2pov2a0";
-tmpl.legacyStylesheetToken =
-  "x-definition-sibiling-slot_definition-sibiling-slot";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

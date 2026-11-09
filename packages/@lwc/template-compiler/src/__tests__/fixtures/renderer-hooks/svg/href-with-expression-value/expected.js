@@ -53,8 +53,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-4i58lt2008n";
-tmpl.legacyStylesheetToken =
-  "x-href-with-expression-value_href-with-expression-value";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

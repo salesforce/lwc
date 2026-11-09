@@ -20,8 +20,6 @@ tmpl.slots = [""];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-6rfp88tb4pb";
-tmpl.legacyStylesheetToken =
-  "x-child-default-slot-api-version-59_child-default-slot-api-version-59";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

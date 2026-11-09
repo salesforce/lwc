@@ -94,7 +94,7 @@ function attachShadowPatched(this: Element, options: ShadowRootInit): ShadowRoot
     // attachShadow would still succeed and attach a second (native) shadow tree,
     // which violates the one-shadow-per-element model this polyfill assumes and
     // leaves that subtree on a different patching path than synthetic shadow.
-    if (!lwcRuntimeFlags.DISABLE_HOST_ATTACH_SHADOW_GUARD && hasInternalSlot(this)) {
+    if (hasInternalSlot(this)) {
         throw new Error(nativeAttachShadowErrorMessage);
     }
     return originalAttachShadow.call(this, options);

@@ -52,7 +52,6 @@ export default registerTemplate(tmpl);
 tmpl.slots = ["", "footer", "header"];
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-4s8i697dbds";
-tmpl.legacyStylesheetToken = "x-mixed-1_mixed-1";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

@@ -32,6 +32,7 @@ const BOOLEAN_ATTRIBUTES = /*@__PURE__@*/ new Map([
     ],
     ['formnovalidate', /*@__PURE__@*/ new Set(['button'])], // button[type=submit]
     ['hidden', /*@__PURE__@*/ new Set()], // Global attribute
+    ['inert', /*@__PURE__@*/ new Set()], // Global attribute
     ['loop', /*@__PURE__@*/ new Set(['audio', 'bgsound', 'marquee', 'video'])],
     ['multiple', /*@__PURE__@*/ new Set(['input', 'select'])],
     ['muted', /*@__PURE__@*/ new Set(['audio', 'video'])],
@@ -70,6 +71,7 @@ const GLOBAL_ATTRIBUTE = /*@__PURE__*/ new Set([
     'exportparts',
     'hidden',
     'id',
+    'inert',
     'inputmode',
     'is',
     'itemid',

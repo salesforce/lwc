@@ -24,9 +24,7 @@ const stopTrackingMutations = noop;
  */
 export const renderer: RendererAPI = assign(
     // The base renderer will invoke the factory with null and assign additional properties that are
-    // shared across renderers. This is the factory's single expected invocation per realm; it marks
-    // the renderer as created so that, when ENABLE_RENDERER_FACTORY_GUARD is set, later invocations are
-    // rejected (see renderer-factory.ts).
+    // shared across renderers
     rendererFactory(null),
     // Properties that are either not required to be sandboxed or rely on a globally shared information
     {

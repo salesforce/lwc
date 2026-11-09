@@ -54,8 +54,6 @@ export default registerTemplate(tmpl);
 tmpl.hasRefs = true;
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-vgq39e7dj1";
-tmpl.legacyStylesheetToken =
-  "x-preserve-comments-off-with-parts_preserve-comments-off-with-parts";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

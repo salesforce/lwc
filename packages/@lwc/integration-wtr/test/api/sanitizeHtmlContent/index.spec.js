@@ -26,7 +26,7 @@ it('throws when not overridden', () => {
 });
 
 it('receives the right parameters', () => {
-    const spy = mockFn();
+    const spy = mockFn((v) => v);
     setSanitizeHtmlContentHook(spy);
 
     const elm = createElement('x-inner-html', { is: XInnerHtml });
@@ -37,7 +37,7 @@ it('receives the right parameters', () => {
 });
 
 it('does not call sanitizeHtmlContent when raw value does not change', async () => {
-    const spy = mockFn();
+    const spy = mockFn((v) => v);
     setSanitizeHtmlContentHook(spy);
 
     const elm = createElement('x-inner-html', { is: XInnerHtml });

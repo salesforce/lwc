@@ -1,0 +1,83 @@
+{
+    "root": {
+        "type": "Root",
+        "location": {
+            "startLine": 1,
+            "startColumn": 1,
+            "endLine": 3,
+            "endColumn": 12,
+            "start": 0,
+            "end": 44,
+            "startTag": {
+                "startLine": 1,
+                "startColumn": 1,
+                "endLine": 1,
+                "endColumn": 11,
+                "start": 0,
+                "end": 10
+            },
+            "endTag": {
+                "startLine": 3,
+                "startColumn": 1,
+                "endLine": 3,
+                "endColumn": 12,
+                "start": 33,
+                "end": 44
+            }
+        },
+        "directives": [],
+        "children": [
+            {
+                "type": "Element",
+                "name": "div",
+                "namespace": "http://www.w3.org/1999/xhtml",
+                "location": {
+                    "startLine": 2,
+                    "startColumn": 5,
+                    "endLine": 2,
+                    "endColumn": 22,
+                    "start": 15,
+                    "end": 32,
+                    "startTag": {
+                        "startLine": 2,
+                        "startColumn": 5,
+                        "endLine": 2,
+                        "endColumn": 16,
+                        "start": 15,
+                        "end": 26
+                    },
+                    "endTag": {
+                        "startLine": 2,
+                        "startColumn": 16,
+                        "endLine": 2,
+                        "endColumn": 22,
+                        "start": 26,
+                        "end": 32
+                    }
+                },
+                "attributes": [
+                    {
+                        "type": "Attribute",
+                        "name": "inert",
+                        "value": {
+                            "type": "Literal",
+                            "value": true
+                        },
+                        "location": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endLine": 2,
+                            "endColumn": 15,
+                            "start": 20,
+                            "end": 25
+                        }
+                    }
+                ],
+                "properties": [],
+                "directives": [],
+                "listeners": [],
+                "children": []
+            }
+        ]
+    }
+}

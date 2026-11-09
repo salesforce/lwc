@@ -73,8 +73,7 @@ export function hydrateComponent(
 
     if (
         // All custom elements must have a `-` in their tag name
-        !ElementDescriptors.tagName.get!.call(element).includes('-') &&
-        !lwcRuntimeFlags.DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK
+        !ElementDescriptors.tagName.get!.call(element).includes('-')
     ) {
         throw new TypeError(
             `"hydrateComponent" expects a custom element as the first parameter but instead received ${element.tagName}.`

@@ -316,11 +316,7 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
 
                 document.body.appendChild(elm);
 
-                const expected = ['parent:connectedCallback'];
-
-                if (lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION) {
-                    expected.push('parent:renderedCallback');
-                }
+                const expected = ['parent:connectedCallback', 'parent:renderedCallback'];
 
                 if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
                     expected.push('child:connectedCallback');
@@ -523,17 +519,6 @@ describe('child mutations - scheduled rehydration', () => {
                     'parent:renderedCallback',
                 ];
 
-                if (
-                    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
-                    !lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION
-                ) {
-                    // These are fired in the children of the disconnected child
-                    expected.push(
-                        'grand:child2:connectedCallback',
-                        'grand:child2:renderedCallback'
-                    );
-                }
-
                 expect(window.timingBuffer).toEqual(expected);
             });
 
@@ -554,17 +539,6 @@ describe('child mutations - scheduled rehydration', () => {
                     'grand:child1:disconnectedCallback',
                     'parent:renderedCallback',
                 ];
-
-                if (
-                    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE &&
-                    !lwcRuntimeFlags.DISABLE_DETACHED_REHYDRATION
-                ) {
-                    // These are fired in the children of the disconnected child
-                    expected.push(
-                        'grand:child2:connectedCallback',
-                        'grand:child2:renderedCallback'
-                    );
-                }
 
                 expect(window.timingBuffer).toEqual(expected);
             });

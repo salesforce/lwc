@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
 import * as assert from './assert';
+import { defineProperty, isUndefined } from './language';
+import { KEY__SANITIZE_HTML_CONTENT } from './keys';
 
 export interface SanitizeHtmlContentHook {
     (content: unknown): string;
@@ -16,7 +18,7 @@ interface OverridableHooks {
 
 let hooksAreSet = false;
 
-let sanitizeHtmlContentImpl: SanitizeHtmlContentHook = (): string => {
+let sanitizeHtmlContentImpl: SanitizeHtmlContentHook = () => {
     // locker-service patches this function during runtime to sanitize HTML content.
     throw new Error('sanitizeHtmlContent hook must be implemented.');
 };
@@ -31,8 +33,23 @@ export const sanitizeHtmlContent: SanitizeHtmlContentHook = (value) => {
     return sanitizeHtmlContentImpl(value);
 };
 
+export function maybeSanitizeHtmlContent(value: string): string {
+    return hooksAreSet ? sanitizeHtmlContentImpl(value) : value;
+}
+
 export function setHooks(hooks: OverridableHooks) {
     assert.isFalse(hooksAreSet, 'Hooks are already overridden, only one definition is allowed.');
     hooksAreSet = true;
     sanitizeHtmlContentImpl = hooks.sanitizeHtmlContent;
+
+    // Synthetic shadow and the runtime bundle with separate copies of @lwc/shared,
+    // so they can't directly share the sanitize set with `setHooks`.
+    // Set once at boot and left non-writable/non-configurable so the reference stays stable app-wide.
+    if (isUndefined((globalThis as any)[KEY__SANITIZE_HTML_CONTENT])) {
+        defineProperty(globalThis, KEY__SANITIZE_HTML_CONTENT, {
+            value: sanitizeHtmlContent,
+            writable: false,
+            configurable: false,
+        });
+    }
 }

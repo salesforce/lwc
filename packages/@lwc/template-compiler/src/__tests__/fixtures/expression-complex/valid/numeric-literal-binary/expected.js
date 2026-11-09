@@ -21,7 +21,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-6bhl2sst5pp";
-tmpl.legacyStylesheetToken = "x-numeric-literal-binary_numeric-literal-binary";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

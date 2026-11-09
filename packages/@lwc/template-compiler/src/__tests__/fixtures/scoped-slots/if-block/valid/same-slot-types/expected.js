@@ -51,7 +51,6 @@ tmpl.slots = ["slotname1"];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-70bcseng4gg";
-tmpl.legacyStylesheetToken = "x-same-slot-types_same-slot-types";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

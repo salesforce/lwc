@@ -69,7 +69,6 @@ function getFixtureConfig<T>(dirname: string): T | undefined {
  * @param config The config object
  * @param config.pattern The glob pattern to locate each individual fixture.
  * @param config.root The directory from where the pattern is executed.
- * @param config.expectedFailures Any tests that you expect to fail
  * @param testFn The test function executed for each fixture.
  * @throws On invalid input or output
  * @example
@@ -87,7 +86,6 @@ export function testFixtureDir<T>(
         pattern: string;
         root: string;
         ssrVersion: number;
-        expectedFailures?: Set<string>;
     },
     testFn: (options: {
         src: string;
@@ -123,9 +121,8 @@ export function testFixtureDir<T>(
                 : getFixtureConfig<T>(dirname);
         const relpath = path.relative(root, filename);
         const options = getTestOptions(dirname);
-        const fails = config.expectedFailures?.has(relpath);
 
-        test(relpath, { fails, ...options }, async ({ expect }) => {
+        test(relpath, options, async ({ expect }) => {
             const outputs = await testFn({
                 src,
                 filename,

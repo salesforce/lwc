@@ -15,7 +15,6 @@ const { tmpDir, styledComponents } = generateStyledComponents();
 
 const ENGINE_TYPE_TO_LWC_IMPORT = {
     dom: '@lwc/engine-dom',
-    server: '@lwc/engine-server',
     ssr: '@lwc/ssr-runtime',
 };
 
@@ -37,7 +36,7 @@ function createConfig(componentFile, engineType) {
                 // always run perf tests in prod mode
                 'process.env.NODE_ENV': JSON.stringify('production'),
             }),
-            // Replace `import { ... } from 'lwc'` with '@lwc/engine-server' / '@lwc/engine-dom' / '@lwc/ssr-runtime'
+            // Replace `import { ... } from 'lwc'` with '@lwc/engine-dom' / '@lwc/ssr-runtime'
             replace({
                 preventAssignment: true,
                 delimiters: ['', ''],
@@ -54,8 +53,8 @@ function createConfig(componentFile, engineType) {
             format: 'esm',
         },
         // These packages need to be external so that @lwc/perf-benchmarks can potentially swap them out
-        // (e.g. to allow them to run in server mode or DOM mode), and so that Tachometer can swap them out.
-        external: ['lwc', '@lwc/engine-server', '@lwc/engine-dom', '@lwc/ssr-runtime'],
+        // (e.g. to allow them to run in SSR mode or DOM mode), and so that Tachometer can swap them out.
+        external: ['lwc', '@lwc/engine-dom', '@lwc/ssr-runtime'],
         onwarn({ message, code }) {
             // We have circular dependencies due to the `tree` component recursively rendering itself.
             // We have unused imports because the `@lwc/ssr-compiler` currently imports `wire`/`api` from `'lwc'`
@@ -73,7 +72,7 @@ const components = [
     ...styledComponents,
 ];
 
-const config = ['server', 'dom', 'ssr']
+const config = ['dom', 'ssr']
     .map((engineType) => components.map((component) => createConfig(component, engineType)))
     .flat();
 

@@ -25,8 +25,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-7uuiq9sbjjh";
-tmpl.legacyStylesheetToken =
-  "x-assignment-inside-arrow_assignment-inside-arrow";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

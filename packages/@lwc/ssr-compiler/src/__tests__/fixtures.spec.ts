@@ -12,7 +12,6 @@ import lwcRollupPlugin from '@lwc/rollup-plugin';
 import { testFixtureDir, formatHTML, pluginVirtual } from '@lwc/test-utils-lwc-internals';
 import { serverSideRenderComponent } from '@lwc/ssr-runtime';
 import { DEFAULT_SSR_MODE, type CompilationMode } from '@lwc/shared';
-import { expectedFailures } from './utils/expected-failures';
 import type { LightningElementConstructor } from '@lwc/ssr-runtime';
 
 interface FixtureConfig {
@@ -109,8 +108,6 @@ describe.concurrent('fixtures', () => {
             root: path.resolve(import.meta.dirname, 'fixtures'),
             pattern: '**/config.json',
             ssrVersion: 2,
-            // TODO [#4815]: enable all SSR v2 tests
-            expectedFailures,
         },
         async ({ dirname, config }) => {
             const errorFile = config?.ssrFiles?.error ?? 'error.txt';

@@ -28,13 +28,7 @@ import type { Template } from './template';
 import type { Stylesheet, Stylesheets } from '@lwc/shared';
 
 // See @lwc/engine-core/src/framework/template.ts
-const TEMPLATE_PROPS = [
-    'slots',
-    'stylesheetToken',
-    'stylesheets',
-    'renderMode',
-    'legacyStylesheetToken',
-] as const;
+const TEMPLATE_PROPS = ['slots', 'stylesheetToken', 'stylesheets', 'renderMode'] as const;
 
 // Expandos that may be placed on a stylesheet factory function, and which are meaningful to LWC at runtime
 const STYLESHEET_PROPS = [KEY__SCOPED_CSS, KEY__NATIVE_ONLY_CSS] as const;

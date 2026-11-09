@@ -33,7 +33,6 @@ tmpl.slots = ["", "forwarded", "named"];
 tmpl.renderMode = "light";
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-2it5vhebv0i";
-tmpl.legacyStylesheetToken = "x-template_template";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

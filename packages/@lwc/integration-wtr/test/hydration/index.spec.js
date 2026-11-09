@@ -1,4 +1,4 @@
-import { hydrateComponent, setFeatureFlagForTest } from 'lwc';
+import { hydrateComponent } from 'lwc';
 import Simple from 'x/simple';
 
 it('throws error when hydrating non DOM element', () => {
@@ -15,15 +15,6 @@ it('throws error when hydrating non custom element (W-23722850)', () => {
     }).toThrowError(
         '"hydrateComponent" expects a custom element as the first parameter but instead received P.'
     );
-});
-
-it('preserves legacy hydration behavior (W-23722850)', () => {
-    try {
-        setFeatureFlagForTest('DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK', true);
-        expect(() => hydrateComponent(document.createElement('p'), Simple, {})).not.toThrow();
-    } finally {
-        setFeatureFlagForTest('DISABLE_HYDRATION_CUSTOM_ELEMENT_CHECK', false);
-    }
 });
 
 it.runIf(process.env.NATIVE_SHADOW)(

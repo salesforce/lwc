@@ -81,7 +81,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-cfdictrqeg";
-tmpl.legacyStylesheetToken = "x-mixed-props-attrs_mixed-props-attrs";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

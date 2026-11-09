@@ -32,9 +32,6 @@ export const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
     process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
 );
 
-/** Disable detached rehydation. I don't know what that means. */
-export const DISABLE_DETACHED_REHYDRATION = Boolean(process.env.DISABLE_DETACHED_REHYDRATION);
-
 /** Run hydration tests using `@lwc/engine-server` instead of SSR v2. */
 export const ENGINE_SERVER = Boolean(process.env.ENGINE_SERVER);
 
@@ -69,7 +66,6 @@ export const COVERAGE_DIR_FOR_OPTIONS =
         NODE_ENV_FOR_TEST,
         DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         ENGINE_SERVER,
-        DISABLE_DETACHED_REHYDRATION,
     })
         .filter(([, val]) => val)
         .map(([key, val]) => `${key}=${val}`)

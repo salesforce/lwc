@@ -1,4 +1,4 @@
-import { createElement, setFeatureFlagForTest } from 'lwc';
+import { createElement } from 'lwc';
 import Donor from 'x/donor';
 import Target from 'x/target';
 
@@ -24,7 +24,7 @@ function getDonorBridgeDescriptor(element, name) {
     return undefined;
 }
 
-describe('bridge property descriptor escape (W-23641816)', () => {
+describe('bridge property descriptor regression (W-23641816)', () => {
     let donor;
     let target;
 
@@ -38,7 +38,6 @@ describe('bridge property descriptor escape (W-23641816)', () => {
     afterEach(() => {
         document.body.removeChild(donor);
         document.body.removeChild(target);
-        setFeatureFlagForTest('DISABLE_BRIDGE_ELEMENT_PROPERTY_GUARD', false);
     });
 
     it('exposes public accessor/method descriptors on the donor (sanity check)', () => {
@@ -88,15 +87,5 @@ describe('bridge property descriptor escape (W-23641816)', () => {
         donor.pageReference = 'external-value';
         expect(donor.pageReference).toBe('external-value');
         expect(donor.donorMethod()).toBe('donor-method-result');
-    });
-
-    it('does not throw when the guard is disabled via feature flag (legacy behavior)', () => {
-        setFeatureFlagForTest('DISABLE_BRIDGE_ELEMENT_PROPERTY_GUARD', true);
-        const descriptor = getDonorBridgeDescriptor(donor, 'pageReference');
-
-        // With the guard off, the borrowed setter reaches the target's private accessor (the
-        // vulnerable pre-fix behavior). We assert the escape happens so the flag is a real kill switch.
-        expect(() => descriptor.set.call(target, 'attacker-controlled')).not.toThrow();
-        expect(target.privateSetterInvokedWith).toBe('attacker-controlled');
     });
 });

@@ -25,7 +25,6 @@ export default (options) => {
     const env = envify({
         ...pluck(options, [
             'API_VERSION',
-            'DISABLE_DETACHED_REHYDRATION',
             'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
             'DISABLE_STATIC_CONTENT_OPTIMIZATION',
             'ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL',
@@ -120,10 +119,7 @@ export default (options) => {
             <script type="module">
             globalThis.process = ${JSON.stringify({ env })};
             globalThis.lwcRuntimeFlags = ${JSON.stringify(
-                pluck(options, [
-                    'DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE',
-                    'DISABLE_DETACHED_REHYDRATION',
-                ])
+                pluck(options, ['DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE'])
             )};
 
             ${maybeImport('@lwc/synthetic-shadow', !options.NATIVE_SHADOW)}

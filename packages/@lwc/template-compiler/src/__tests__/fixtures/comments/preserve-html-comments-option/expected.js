@@ -13,8 +13,6 @@ function tmpl($api, $cmp, $slotset, $ctx) {
 export default registerTemplate(tmpl);
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-gaekmoo0tf";
-tmpl.legacyStylesheetToken =
-  "x-preserve-html-comments-option_preserve-html-comments-option";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }

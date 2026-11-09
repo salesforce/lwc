@@ -54,7 +54,6 @@ export default registerTemplate(tmpl);
 tmpl.hasRefs = true;
 tmpl.stylesheets = [];
 tmpl.stylesheetToken = "lwc-2ekql9nb2jd";
-tmpl.legacyStylesheetToken = "x-deep-data-combined_deep-data-combined";
 if (_implicitStylesheets) {
   tmpl.stylesheets.push.apply(tmpl.stylesheets, _implicitStylesheets);
 }
