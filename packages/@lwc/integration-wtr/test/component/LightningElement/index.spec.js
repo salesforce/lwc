@@ -5,10 +5,12 @@ import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
-import ReturningIframe from 'x/returningIframe';
-import ReturningEmbed from 'x/returningEmbed';
-import ReturningObject from 'x/returningObject';
-import ReturningScript from 'x/returningScript';
+import ElementAsComponent from 'x/elementAsComponent';
+
+afterEach(() => {
+    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
+    setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
+});
 
 it('should throw when trying to invoke the constructor manually', () => {
     const func = () => {
@@ -84,29 +86,21 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });
 
-const BLOCKLISTED_CASES = [
-    ['iframe', ReturningIframe, 'x-returning-iframe'],
-    ['embed', ReturningEmbed, 'x-returning-embed'],
-    ['object', ReturningObject, 'x-returning-object'],
-    ['script', ReturningScript, 'x-returning-script'],
-];
+it('should fail when the component returns an element', () => {
+    expect(() => createElement('x-element-as-component', { is: ElementAsComponent })).toThrow(
+        'LightningElement must be constructed.'
+    );
+});
 
-BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
-    it(`should fail when the constructor returns a blocklisted element (${tagName}) when DISABLE_STRICT_VALIDATION is false (strict)`, () => {
-        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
-        expect(() => {
-            createElement(tag, { is: Component });
-        }).toThrowError(
-            TypeError,
-            'Invalid component constructor, the class should extend LightningElement.'
-        );
-    });
+it('should fail when the component returns an element (Locker mode)', () => {
+    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
+    expect(() => createElement('x-element-as-component', { is: ElementAsComponent })).toThrow(
+        'Invalid component constructor, the class should extend LightningElement.'
+    );
+});
 
-    it('should succeed when the constructor returns a blocklisted element (${tagName}) when DISABLE_STRICT_VALIDATION is true (legacy check)', () => {
-        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', true);
-        expect(() => {
-            createElement(tag, { is: Component });
-        }).not.toThrow();
-        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
-    });
+it('should allow component as element with strict validation disabled (Locker mode)', () => {
+    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
+    setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', true);
+    expect(() => createElement('x-element-as-component', { is: ElementAsComponent })).not.toThrow();
 });
