@@ -21,9 +21,8 @@ it('should throw if a component tries to use a template that is not registered',
         document.body.appendChild(elm);
     };
 
-    // This will throw synchronously vs asynchronously depending on native vs synthetic lifecycle,
-    // unless we are running the v6 engine – then it will always throw synchronously because the component has no API
-    // version, and thus defaults to the oldest (i.e. synthetic custom element lifecycle events).
+    // createElement uses synthetic lifecycle, so connectedCallback (and thus the render error) runs
+    // synchronously within appendChild.
     expect(func).toThrowCallbackReactionError(
         TypeError,
         /Invalid template returned by the render\(\) method on x-test/

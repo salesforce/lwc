@@ -41,7 +41,7 @@ describe('Basic DOM manipulation cases', () => {
         const frag = document.createDocumentFragment();
         const callback = () => frag.appendChild(elm);
         // Expected warning, since we are working with disconnected nodes,
-        // and the Test element is manually constructed, so it will always run in synthetic lifecycle mode
+        // and the Test element is created via createElement, which always uses synthetic lifecycle
         expect(callback).toLogWarningDev(
             /fired a `connectedCallback` and rendered, but was not connected to the DOM/
         );

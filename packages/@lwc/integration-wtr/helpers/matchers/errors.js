@@ -7,7 +7,25 @@ function directErrorListener(callback) {
     }
 }
 
-// For errors we expect to be thrown in the connectedCallback() phase of a custom element,
+// Listen for errors using window.addEventListener('error'). Use this for hosts that rely on native
+// custom element callbacks (e.g. CustomElementConstructor), where errors are reported, not thrown.
+export function windowErrorListener(callback) {
+    let error;
+    function onError(event) {
+        event.preventDefault(); // don't log the error
+        error = event.error;
+    }
+
+    window.addEventListener('error', onError);
+    try {
+        callback();
+    } finally {
+        window.removeEventListener('error', onError);
+    }
+    return error;
+}
+
+// For errors we expect to be thrown in the connectedCallback() phase of a createElement() root,
 // the synthetic lifecycle means the error is thrown synchronously.
 export function customElementCallbackReactionErrorListener(callback) {
     return directErrorListener(callback);

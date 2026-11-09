@@ -355,7 +355,7 @@ describe('dispatchEvent from connectedCallback/disconnectedCallback', () => {
         document.removeEventListener('customdisconnected', onDisconnected);
     });
 
-    it('behaves the same regardless of native/synthetic lifecycle', () => {
+    it('dispatches events synchronously during connect and disconnect', () => {
         const elm = createElement('x-dispatch-events', { is: DispatchEvents });
 
         let connected = false;

@@ -48,19 +48,26 @@ scenarios.forEach(({ name, expectedValue, Ctor, tagName }) => {
     describe(name, () => {
         it('should render attr names with proper escaping', async () => {
             const elm = createElement(tagName, { is: Ctor });
-            document.body.appendChild(elm);
+            let directError;
+            try {
+                document.body.appendChild(elm);
+            } catch (err) {
+                // Synthetic lifecycle throws render errors synchronously from `appendChild`
+                directError = err;
+            }
 
             await Promise.resolve();
+            const caught = directError || caughtError;
             // Only fails in some browsers. If no errors were caught, assert against the attribute as normal.
-            if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION && caughtError) {
+            if (process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION && caught) {
                 expect(elm.shadowRoot.children.length).toBe(0); // does not render
-                expect(caughtError).not.toBeUndefined();
-                expect(caughtError.message).toMatch(
+                expect(caught).not.toBeUndefined();
+                expect(caught.message).toMatch(
                     /Failed to execute 'setAttribute' on 'Element'|Invalid qualified name|String contains an invalid character|The string contains invalid characters/
                 );
             } else {
                 expect(elm.shadowRoot.children[0].getAttribute('a`b`c')).toBe(expectedValue);
-                expect(caughtError).toBeUndefined();
+                expect(caught).toBeUndefined();
             }
         });
     });

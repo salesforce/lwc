@@ -261,9 +261,7 @@ describe('regression test (#3827)', () => {
                 'shadowSlot:connectedCallback',
                 `leaf:${currentLeafName}:connectedCallback`,
             ],
-            ifBlock: (currentLeafName) =>
-                process.env.NATIVE_SHADOW ? [] : [`leaf:${currentLeafName}:connectedCallback`],
-            elseIfBlock: (currentLeafName) =>
+            transitionBlock: (currentLeafName) =>
                 process.env.NATIVE_SHADOW ? [] : [`leaf:${currentLeafName}:connectedCallback`],
         },
         {
@@ -275,18 +273,14 @@ describe('regression test (#3827)', () => {
                 'lightSlot:connectedCallback',
                 `leaf:${currentLeafName}:connectedCallback`,
             ],
-            ifBlock: (currentLeafName) => [
-                `leaf:${currentLeafName}:connectedCallback`,
-                `leaf:${currentLeafName}:disconnectedCallback`,
-            ],
-            elseIfBlock: (currentLeafName) => [
+            transitionBlock: (currentLeafName) => [
                 `leaf:${currentLeafName}:connectedCallback`,
                 `leaf:${currentLeafName}:disconnectedCallback`,
             ],
         },
     ];
 
-    fixtures.forEach(({ fixtureName, tagName, ctor, ifBlock, elseBlock, elseIfBlock }) => {
+    fixtures.forEach(({ fixtureName, tagName, ctor, transitionBlock, elseBlock }) => {
         // #TODO[3827]: These regression tests can be removed once the bug is resolved.
         it(`${fixtureName} should maintain callback invocation order for duplicate slots across conditional branches when rerender triggered on conditional slot component`, async () => {
             const container = createElement(tagName, {
@@ -306,7 +300,7 @@ describe('regression test (#3827)', () => {
             await Promise.resolve();
 
             currentLeafName = container.getLeaf().name;
-            expect(window.timingBuffer).toEqual(ifBlock(currentLeafName));
+            expect(window.timingBuffer).toEqual(transitionBlock(currentLeafName));
 
             resetTimingBuffer();
 
@@ -317,7 +311,7 @@ describe('regression test (#3827)', () => {
             await Promise.resolve();
 
             currentLeafName = container.getLeaf().name;
-            expect(window.timingBuffer).toEqual(elseIfBlock(currentLeafName));
+            expect(window.timingBuffer).toEqual(transitionBlock(currentLeafName));
 
             // TODO [#4451]: synthetic shadow throws unhandled rejection errors
             // Remove the element and wait two macrotasks - this is when the unhandled rejections occur

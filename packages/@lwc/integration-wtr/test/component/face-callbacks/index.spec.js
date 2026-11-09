@@ -146,7 +146,6 @@ const testFaceLifecycleMethodsNotCallable = (createFace) => {
 };
 
 describe.runIf(typeof ElementInternals !== 'undefined')('ElementInternals', () => {
-    // native lifecycle enabled
     describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals/FACE enabled', () => {
         describe.runIf(process.env.NATIVE_SHADOW)('native shadow', () => {
             faceSanityTest('native-shadow', FormAssociated);
@@ -164,10 +163,10 @@ describe.runIf(typeof ElementInternals !== 'undefined')('ElementInternals', () =
 
     describe.skipIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals/FACE disabled', () => {
         [
-            { name: 'shadow DOM', tagName: 'synthetic-lifecycle-shadow', ctor: FormAssociated },
+            { name: 'shadow DOM', tagName: 'face-disabled-shadow', ctor: FormAssociated },
             {
                 name: 'light DOM',
-                tagName: 'synthetic-lifecycle-light',
+                tagName: 'face-disabled-light',
                 ctor: LightDomFormAssociated,
             },
         ].forEach(({ name, tagName, ctor }) => {

@@ -92,7 +92,7 @@ describe('signal protocol', () => {
 
     it('only the components referencing a signal should re-render', async () => {
         const container = createElement('x-container', { is: Container });
-        // append the container first to avoid error message with native lifecycle
+        // append the container first so it is connected before the child is added
         document.body.appendChild(container);
         await Promise.resolve();
 

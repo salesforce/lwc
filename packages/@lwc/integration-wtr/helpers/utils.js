@@ -125,7 +125,7 @@ export const expectConsoleCallsDev = createExpectConsoleCallsFunc(true);
 
 // Utility to handle unhandled rejections or errors without allowing Jasmine to handle them first.
 // Captures both onunhandledrejection and onerror events, since you might want both depending on
-// native vs synthetic lifecycle timing differences.
+// whether the error is thrown synchronously or asynchronously.
 export function catchUnhandledRejectionsAndErrors(onUnhandledRejectionOrError) {
     let originalOnError;
 

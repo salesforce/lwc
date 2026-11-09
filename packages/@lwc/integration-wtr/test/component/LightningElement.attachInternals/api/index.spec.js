@@ -8,10 +8,16 @@ import {
     ENABLE_ELEMENT_INTERNALS_AND_FACE,
     IS_SYNTHETIC_SHADOW_LOADED,
 } from '../../../../helpers/constants.js';
-import { customElementCallbackReactionErrorListener } from '../../../../helpers/matchers/errors.js';
+import {
+    customElementCallbackReactionErrorListener,
+    windowErrorListener,
+} from '../../../../helpers/matchers/errors.js';
 
-const testConnectedCallbackError = (elm, msg) => {
-    const error = customElementCallbackReactionErrorListener(() => {
+// createElement() roots use synthetic lifecycle (error thrown synchronously), whereas
+// CustomElementConstructor hosts use native callbacks (error reported to window 'error').
+const testConnectedCallbackError = (elm, msg, isCec) => {
+    const listener = isCec ? windowErrorListener : customElementCallbackReactionErrorListener;
+    const error = listener(() => {
         document.body.appendChild(elm);
     });
     expect(error).not.toBeUndefined();
@@ -86,10 +92,11 @@ describe.runIf(ENABLE_ELEMENT_INTERNALS_AND_FACE)('ElementInternals', () => {
             createElementsThroughLwcAndCustomElementConstructor(
                 'unsupported-env-component',
                 ShadowDomCmp
-            ).forEach((elm) => {
+            ).forEach((elm, i) => {
                 testConnectedCallbackError(
                     elm,
-                    'attachInternals API is not supported in this browser environment.'
+                    'attachInternals API is not supported in this browser environment.',
+                    i === 1
                 );
             });
         }

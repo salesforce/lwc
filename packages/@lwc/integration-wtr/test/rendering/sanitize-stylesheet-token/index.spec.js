@@ -3,22 +3,15 @@ import Component from 'x/component';
 import Scoping from 'x/scoping';
 import Indirect from 'x/indirect';
 import { spyOn } from '@vitest/spy';
-import { catchUnhandledRejectionsAndErrors } from '../../../helpers/utils.js';
 import { resetAlreadyLoggedMessages, resetFragmentCache } from '../../../helpers/reset.js';
 
-let caughtError;
 let logger;
-
-catchUnhandledRejectionsAndErrors((error) => {
-    caughtError = error;
-});
 
 beforeAll(() => {
     logger = spyOn(console, 'warn');
 });
 
 afterEach(() => {
-    caughtError = undefined;
     logger.mockReset();
 });
 
@@ -58,17 +51,16 @@ props.forEach((prop) => {
                     resetAlreadyLoggedMessages();
                 });
 
-                it('W-16614556 should not render arbitrary content via stylesheet token', async () => {
+                it('W-16614556 should not render arbitrary content via stylesheet token', () => {
                     const elm = createElement(tagName, { is: Ctor });
                     elm.propToUse = prop;
+                    let caughtError;
                     try {
                         document.body.appendChild(elm);
                     } catch (err) {
-                        // In synthetic custom element lifecycle, the error is thrown synchronously on `appendChild`
+                        // Synthetic lifecycle throws the error synchronously on `appendChild`
                         caughtError = err;
                     }
-
-                    await Promise.resolve();
 
                     expect(elm.shadowRoot.children.length).toBe(0); // does not render
 

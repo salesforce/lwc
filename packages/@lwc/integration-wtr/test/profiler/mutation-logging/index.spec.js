@@ -257,7 +257,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             await new Promise(requestAnimationFrame);
             expect(entries).toEqual(
                 arr(
-                    // synthetic lifecycle considers this one lwc-render event rather than two
+                    // synthetic lifecycle treats this as one lwc-render event rather than two
                     [obj({ name: 'lwc-render' })]
                 )
             );
