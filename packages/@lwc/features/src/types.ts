@@ -115,7 +115,7 @@ export interface FeatureFlagMap {
      */
     DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: FeatureFlagValue;
 
-    /** Allows direct calls to the LightningElement constructor for Legacy Locker. */
+    /** Set to `true` when LWC is running in an environment with legacy Locker enabled. */
     LEGACY_LOCKER_ENABLED: FeatureFlagValue;
 }
 
