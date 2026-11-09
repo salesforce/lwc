@@ -228,7 +228,7 @@ export interface LightningElement extends HTMLElementTheGoodParts, AccessibleEle
 export const LightningElement: LightningElementConstructor = function (
     this: LightningElement
 ): LightningElement {
-    if (!new.target) {
+    if (!new.target && !lwcRuntimeFlags.LEGACY_LOCKER_ENABLED) {
         throw new Error('LightningElement must be constructed.');
     }
     // This should be as performant as possible, while any initialization should be done lazily

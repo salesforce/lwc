@@ -10,6 +10,8 @@ import ReturningEmbed from 'x/returningEmbed';
 import ReturningObject from 'x/returningObject';
 import ReturningScript from 'x/returningScript';
 
+afterEach(() => setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false));
+
 it('should throw when trying to invoke the constructor manually', () => {
     const func = () => {
         new LightningElement();
@@ -67,6 +69,7 @@ it("should fail when the constructor doesn't invoke super()", () => {
 });
 
 it('should fail when the constructor return an instance of LightningElement', () => {
+    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
     expect(() => {
         createElement('x-not-returning-this', { is: NotReturningThis });
     }).toThrowError(
@@ -93,6 +96,7 @@ const BLOCKLISTED_CASES = [
 
 BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
     it(`should fail when the constructor returns a blocklisted element (${tagName}) when DISABLE_STRICT_VALIDATION is false (strict)`, () => {
+        setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
         setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
         expect(() => {
             createElement(tag, { is: Component });
@@ -103,6 +107,7 @@ BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
     });
 
     it('should succeed when the constructor returns a blocklisted element (${tagName}) when DISABLE_STRICT_VALIDATION is true (legacy check)', () => {
+        setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
         setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', true);
         expect(() => {
             createElement(tag, { is: Component });

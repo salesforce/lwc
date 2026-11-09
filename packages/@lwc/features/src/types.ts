@@ -169,6 +169,9 @@ export interface FeatureFlagMap {
      * `rendererFactory` stays freely re-invocable, as it was before this flag. (W-23814927)
      */
     ENABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
+
+    /** Allows direct calls to the LightningElement constructor for Legacy Locker. */
+    LEGACY_LOCKER_ENABLED: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
