@@ -4,10 +4,8 @@
  * SPDX-License-Identifier: MIT
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/MIT
  */
-import { isUndefined, isTrue } from '@lwc/shared';
+import { isUndefined } from '@lwc/shared';
 import {
-    connectRootElement,
-    disconnectRootElement,
     runFormAssociatedCallback,
     runFormDisabledCallback,
     runFormResetCallback,
@@ -16,7 +14,6 @@ import {
 import type { LifecycleCallback, FormRestoreState, FormRestoreReason } from '@lwc/engine-core';
 
 const cachedConstructors = new Map<string, CustomElementConstructor>();
-const nativeLifecycleElementsToUpgradedByLWC = new WeakMap<HTMLElement, boolean>();
 
 let elementBeingUpgradedByLWC = false;
 
@@ -31,15 +28,8 @@ function createBaseUpgradableConstructor() {
     // This class should be created once per tag name.
     // TODO [#2972]: this class should expose observedAttributes as necessary
     BaseUpgradableConstructor = class TheBaseUpgradableConstructor extends HTMLElement {
-        constructor(upgradeCallback: LifecycleCallback, useNativeLifecycle: boolean) {
+        constructor(upgradeCallback: LifecycleCallback) {
             super();
-
-            if (useNativeLifecycle) {
-                // When in native lifecycle mode, we need to keep track of instances that were created outside LWC
-                // (i.e. not created by `lwc.createElement()`). If the element uses synthetic lifecycle, then we don't
-                // need to track this.
-                nativeLifecycleElementsToUpgradedByLWC.set(this, elementBeingUpgradedByLWC);
-            }
 
             // If the element is not created using lwc.createElement(), e.g. `document.createElement('x-foo')`,
             // then elementBeingUpgradedByLWC will be false
@@ -48,20 +38,6 @@ function createBaseUpgradableConstructor() {
             }
             // TODO [#2970]: LWC elements cannot be upgraded via new Ctor()
             // Do we want to support this? Throw an error? Currently for backwards compat it's a no-op.
-        }
-
-        connectedCallback() {
-            // native `connectedCallback`/`disconnectedCallback` are only enabled in native lifecycle mode
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                connectRootElement(this);
-            }
-        }
-
-        disconnectedCallback() {
-            // native `connectedCallback`/`disconnectedCallback` are only enabled in native lifecycle mode
-            if (isTrue(nativeLifecycleElementsToUpgradedByLWC.get(this))) {
-                disconnectRootElement(this);
-            }
         }
 
         formAssociatedCallback(form: HTMLFormElement | null) {
@@ -93,7 +69,7 @@ const createUpgradableConstructor = (isFormAssociated: boolean) => {
     }
     // Using a BaseUpgradableConstructor superclass here is a perf optimization to avoid
     // re-defining the same logic (connectedCallback, disconnectedCallback, etc.) over and over.
-    class UpgradableConstructor extends BaseUpgradableConstructor! {}
+    class UpgradableConstructor extends (BaseUpgradableConstructor!) {}
 
     if (isFormAssociated) {
         // Perf optimization - the vast majority of components have formAssociated=false,
@@ -122,7 +98,6 @@ export function getUpgradableConstructor(tagName: string, isFormAssociated: bool
 export const createCustomElement = (
     tagName: string,
     upgradeCallback: LifecycleCallback,
-    useNativeLifecycle: boolean,
     isFormAssociated: boolean
 ) => {
     const UpgradableConstructor = getUpgradableConstructor(tagName, isFormAssociated);
@@ -135,7 +110,7 @@ export const createCustomElement = (
 
     elementBeingUpgradedByLWC = true;
     try {
-        return new UpgradableConstructor(upgradeCallback, useNativeLifecycle);
+        return new UpgradableConstructor(upgradeCallback);
     } finally {
         elementBeingUpgradedByLWC = false;
     }

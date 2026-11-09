@@ -210,9 +210,6 @@ export function createElement<Component>(
     // the following line guarantees that this does not leaks beyond this point.
     const tagName = StringToLowerCase.call(sel);
 
-    const useNativeCustomElementLifecycle =
-        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;
-
     const isFormAssociated = shouldBeFormAssociated(Ctor);
 
     // the custom element from the registry is expecting an upgrade callback
@@ -228,19 +225,11 @@ export function createElement<Component>(
             mode: options.mode !== 'closed' ? 'open' : 'closed',
             owner: null,
         });
-        if (!useNativeCustomElementLifecycle) {
-            // Monkey-patch on-demand, because `lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE` may be set to
-            // `true` lazily, after `@lwc/engine-dom` has finished initializing but before a component has rendered.
-            monkeyPatchDomAPIs();
-            ConnectingSlot.set(elm, connectRootElement);
-            DisconnectingSlot.set(elm, disconnectRootElement);
-        }
+        // Monkey-patch on-demand, to avoid global patching in prod mode until a root element is created.
+        monkeyPatchDomAPIs();
+        ConnectingSlot.set(elm, connectRootElement);
+        DisconnectingSlot.set(elm, disconnectRootElement);
     };
 
-    return createCustomElement(
-        tagName,
-        upgradeCallback,
-        useNativeCustomElementLifecycle,
-        isFormAssociated
-    );
+    return createCustomElement(tagName, upgradeCallback, isFormAssociated);
 }

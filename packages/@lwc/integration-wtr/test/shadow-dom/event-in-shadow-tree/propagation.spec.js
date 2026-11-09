@@ -503,120 +503,106 @@ describe('event propagation', () => {
         });
     });
 
-    // This test does not work with native custom element lifecycle because disconnected
-    // fragments cannot fire connectedCallback/disconnectedCallback events
-    describe.runIf(lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE)(
-        'dispatched within a disconnected tree',
-        () => {
-            let consoleSpy;
-            beforeAll(() => (consoleSpy = spyOn(console, 'warn').mockImplementation(() => {})));
-            afterEach(() => consoleSpy.mockReset());
-            afterAll(() => consoleSpy.mockRestore());
+    describe('dispatched within a disconnected tree', () => {
+        let consoleSpy;
+        beforeAll(() => (consoleSpy = spyOn(console, 'warn').mockImplementation(() => {})));
+        afterEach(() => consoleSpy.mockReset());
+        afterAll(() => consoleSpy.mockRestore());
 
-            function createDisconnectedTestElement() {
-                const fragment = document.createDocumentFragment();
-                const elm = createElement('x-container', { is: Container });
-                elm.setAttribute('data-id', 'x-container');
+        function createDisconnectedTestElement() {
+            const fragment = document.createDocumentFragment();
+            const elm = createElement('x-container', { is: Container });
+            elm.setAttribute('data-id', 'x-container');
 
-                const doAppend = () => fragment.appendChild(elm);
+            const doAppend = () => fragment.appendChild(elm);
 
-                if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-                    doAppend();
-                } else {
-                    doAppend();
-                    expect(consoleSpy).toHaveBeenCalledTimes(4);
-                    const warning = expect.objectContaining({
-                        name: 'Error',
-                        message: expect.stringMatching(
-                            /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-                        ),
-                    });
-                    expect(consoleSpy.mock.calls).toEqual([
-                        [warning],
-                        [warning],
-                        [warning],
-                        [warning],
-                    ]);
-                }
+            doAppend();
+            expect(consoleSpy).toHaveBeenCalledTimes(4);
+            const warning = expect.objectContaining({
+                name: 'Error',
+                message: expect.stringMatching(
+                    /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+                ),
+            });
+            expect(consoleSpy.mock.calls).toEqual([[warning], [warning], [warning], [warning]]);
 
-                const nodes = extractDataIds(elm);
-                // Manually added because document fragments can't have attributes.
-                nodes.fragment = fragment;
-                return nodes;
+            const nodes = extractDataIds(elm);
+            // Manually added because document fragments can't have attributes.
+            nodes.fragment = fragment;
+            return nodes;
+        }
+
+        it('{bubbles: true, composed: true}', () => {
+            const nodes = createDisconnectedTestElement();
+            const event = new CustomEvent('test', { bubbles: true, composed: true });
+
+            const composedPath = [
+                nodes.container_div,
+                nodes['x-container'].shadowRoot,
+                nodes['x-container'],
+                nodes.fragment,
+            ];
+            const expectedLogs = [
+                [nodes.container_div, nodes.container_div, composedPath],
+                [nodes['x-container'].shadowRoot, nodes.container_div, composedPath],
+                [nodes['x-container'], nodes['x-container'], composedPath],
+                [nodes.fragment, nodes['x-container'], composedPath],
+            ];
+
+            const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+
+        it('{bubbles: true, composed: false}', () => {
+            const nodes = createDisconnectedTestElement();
+            const event = new CustomEvent('test', { bubbles: true, composed: false });
+
+            const composedPath = [nodes.container_div, nodes['x-container'].shadowRoot];
+            const expectedLogs = [
+                [nodes.container_div, nodes.container_div, composedPath],
+                [nodes['x-container'].shadowRoot, nodes.container_div, composedPath],
+            ];
+
+            const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+
+        it('{bubbles: false, composed: true}', () => {
+            const nodes = createDisconnectedTestElement();
+            const event = new CustomEvent('test', { bubbles: false, composed: true });
+
+            const composedPath = [
+                nodes.container_div,
+                nodes['x-container'].shadowRoot,
+                nodes['x-container'],
+                nodes.fragment,
+            ];
+
+            let expectedLogs;
+            if (process.env.NATIVE_SHADOW) {
+                expectedLogs = [
+                    [nodes.container_div, nodes.container_div, composedPath],
+                    [nodes['x-container'], nodes['x-container'], composedPath],
+                ];
+            } else {
+                expectedLogs = [[nodes.container_div, nodes.container_div, composedPath]];
             }
 
-            it('{bubbles: true, composed: true}', () => {
-                const nodes = createDisconnectedTestElement();
-                const event = new CustomEvent('test', { bubbles: true, composed: true });
+            const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
+        });
 
-                const composedPath = [
-                    nodes.container_div,
-                    nodes['x-container'].shadowRoot,
-                    nodes['x-container'],
-                    nodes.fragment,
-                ];
-                const expectedLogs = [
-                    [nodes.container_div, nodes.container_div, composedPath],
-                    [nodes['x-container'].shadowRoot, nodes.container_div, composedPath],
-                    [nodes['x-container'], nodes['x-container'], composedPath],
-                    [nodes.fragment, nodes['x-container'], composedPath],
-                ];
+        it('{bubbles: false, composed: false}', () => {
+            const nodes = createDisconnectedTestElement();
+            const event = new CustomEvent('test', { bubbles: false, composed: false });
 
-                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
+            const composedPath = [nodes.container_div, nodes['x-container'].shadowRoot];
+            const expectedLogs = [[nodes.container_div, nodes.container_div, composedPath]];
 
-            it('{bubbles: true, composed: false}', () => {
-                const nodes = createDisconnectedTestElement();
-                const event = new CustomEvent('test', { bubbles: true, composed: false });
-
-                const composedPath = [nodes.container_div, nodes['x-container'].shadowRoot];
-                const expectedLogs = [
-                    [nodes.container_div, nodes.container_div, composedPath],
-                    [nodes['x-container'].shadowRoot, nodes.container_div, composedPath],
-                ];
-
-                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
-
-            it('{bubbles: false, composed: true}', () => {
-                const nodes = createDisconnectedTestElement();
-                const event = new CustomEvent('test', { bubbles: false, composed: true });
-
-                const composedPath = [
-                    nodes.container_div,
-                    nodes['x-container'].shadowRoot,
-                    nodes['x-container'],
-                    nodes.fragment,
-                ];
-
-                let expectedLogs;
-                if (process.env.NATIVE_SHADOW) {
-                    expectedLogs = [
-                        [nodes.container_div, nodes.container_div, composedPath],
-                        [nodes['x-container'], nodes['x-container'], composedPath],
-                    ];
-                } else {
-                    expectedLogs = [[nodes.container_div, nodes.container_div, composedPath]];
-                }
-
-                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
-
-            it('{bubbles: false, composed: false}', () => {
-                const nodes = createDisconnectedTestElement();
-                const event = new CustomEvent('test', { bubbles: false, composed: false });
-
-                const composedPath = [nodes.container_div, nodes['x-container'].shadowRoot];
-                const expectedLogs = [[nodes.container_div, nodes.container_div, composedPath]];
-
-                const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
-                expect(actualLogs).toEqual(expectedLogs);
-            });
-        }
-    );
+            const actualLogs = dispatchEventWithLog(nodes.container_div, nodes, event);
+            expect(actualLogs).toEqual(expectedLogs);
+        });
+    });
 });
 
 describe('declarative event listener', () => {

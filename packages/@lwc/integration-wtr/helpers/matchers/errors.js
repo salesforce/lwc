@@ -7,39 +7,10 @@ function directErrorListener(callback) {
     }
 }
 
-// Listen for errors using window.addEventListener('error')
-function windowErrorListener(callback) {
-    let error;
-    function onError(event) {
-        event.preventDefault(); // don't log the error
-        error = event.error;
-    }
-
-    // Prevent jasmine from handling the global error. There doesn't seem to be another
-    // way to disable this behavior: https://github.com/jasmine/jasmine/pull/1860
-    const originalOnError = window.onerror;
-    window.onerror = null;
-    window.addEventListener('error', onError);
-
-    try {
-        callback();
-    } finally {
-        window.onerror = originalOnError;
-        window.removeEventListener('error', onError);
-    }
-    return error;
-}
-
-// For errors we expect to be thrown in the connectedCallback() phase
-// of a custom element, there are two possibilities:
-// 1) We're using non-native lifecycle callbacks, so the error is thrown synchronously
-// 2) We're using native lifecycle callbacks, so the error is thrown asynchronously and can
-//    only be caught with window.addEventListener('error')
-//      - Note native lifecycle callbacks are all thrown asynchronously.
+// For errors we expect to be thrown in the connectedCallback() phase of a custom element,
+// the synthetic lifecycle means the error is thrown synchronously.
 export function customElementCallbackReactionErrorListener(callback) {
-    return lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-        ? directErrorListener(callback)
-        : windowErrorListener(callback);
+    return directErrorListener(callback);
 }
 
 function matchError(error, expectedErrorCtor, expectedMessage) {
@@ -128,12 +99,6 @@ export const registerErrorMatchers = (chai, utils) => {
             chai,
             utils,
             customElementCallbackReactionErrorListener,
-            true
-        ),
-        toThrowCallbackReactionErrorEvenInSyntheticLifecycleMode: errorMatcherFactory(
-            chai,
-            utils,
-            windowErrorListener,
             true
         ),
     };

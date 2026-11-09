@@ -166,53 +166,28 @@ describe('invocation order', () => {
 
                 let expected;
                 if (testName === 'shadow' && process.env.NATIVE_SHADOW) {
-                    if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-                        expected = [
-                            'foo-a:connectedCallback',
-                            'foo-internal-a:connectedCallback',
-                            'foo-internal-a:renderedCallback',
-                            'foo-a:renderedCallback',
-                            'foo-b:connectedCallback',
-                            'foo-internal-b:connectedCallback',
-                            'foo-internal-b:renderedCallback',
-                            'foo-b:renderedCallback',
-                            'foo-c:connectedCallback',
-                            'foo-internal-c:connectedCallback',
-                            'foo-internal-c:renderedCallback',
-                            'foo-c:renderedCallback',
-                            'foo-d:connectedCallback',
-                            'foo-internal-d:connectedCallback',
-                            'foo-internal-d:renderedCallback',
-                            'foo-d:renderedCallback',
-                            'foo-e:connectedCallback',
-                            'foo-internal-e:connectedCallback',
-                            'foo-internal-e:renderedCallback',
-                            'foo-e:renderedCallback',
-                        ];
-                    } else {
-                        expected = [
-                            'foo-a:connectedCallback',
-                            'foo-b:connectedCallback',
-                            'foo-c:connectedCallback',
-                            'foo-internal-c:connectedCallback',
-                            'foo-internal-c:renderedCallback',
-                            'foo-c:renderedCallback',
-                            'foo-internal-b:connectedCallback',
-                            'foo-internal-b:renderedCallback',
-                            'foo-b:renderedCallback',
-                            'foo-d:connectedCallback',
-                            'foo-internal-d:connectedCallback',
-                            'foo-internal-d:renderedCallback',
-                            'foo-d:renderedCallback',
-                            'foo-internal-a:connectedCallback',
-                            'foo-internal-a:renderedCallback',
-                            'foo-a:renderedCallback',
-                            'foo-e:connectedCallback',
-                            'foo-internal-e:connectedCallback',
-                            'foo-internal-e:renderedCallback',
-                            'foo-e:renderedCallback',
-                        ];
-                    }
+                    expected = [
+                        'foo-a:connectedCallback',
+                        'foo-b:connectedCallback',
+                        'foo-c:connectedCallback',
+                        'foo-internal-c:connectedCallback',
+                        'foo-internal-c:renderedCallback',
+                        'foo-c:renderedCallback',
+                        'foo-internal-b:connectedCallback',
+                        'foo-internal-b:renderedCallback',
+                        'foo-b:renderedCallback',
+                        'foo-d:connectedCallback',
+                        'foo-internal-d:connectedCallback',
+                        'foo-internal-d:renderedCallback',
+                        'foo-d:renderedCallback',
+                        'foo-internal-a:connectedCallback',
+                        'foo-internal-a:renderedCallback',
+                        'foo-a:renderedCallback',
+                        'foo-e:connectedCallback',
+                        'foo-internal-e:connectedCallback',
+                        'foo-internal-e:renderedCallback',
+                        'foo-e:renderedCallback',
+                    ];
                 } else {
                     // synthetic shadow or light DOM
                     expected = [
@@ -294,15 +269,10 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
 
                 document.body.appendChild(elm);
                 // TODO [#4057]: the child's renderedCallback should probably fire here if the parent's does
-                expect(window.timingBuffer).toEqual(
-                    !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                        ? [
-                              'parent:connectedCallback',
-                              'parent:renderedCallback',
-                              'child:connectedCallback',
-                          ]
-                        : ['parent:connectedCallback', 'parent:renderedCallback']
-                );
+                expect(window.timingBuffer).toEqual([
+                    'parent:connectedCallback',
+                    'parent:renderedCallback',
+                ]);
             });
 
             it('connect/mutate/disconnect/reconnect', async () => {
@@ -316,13 +286,10 @@ describe('connectedCallback/renderedCallback timing when reconnected', () => {
 
                 document.body.appendChild(elm);
 
-                const expected = ['parent:connectedCallback', 'parent:renderedCallback'];
-
-                if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-                    expected.push('child:connectedCallback');
-                }
-
-                expect(window.timingBuffer).toEqual(expected);
+                expect(window.timingBuffer).toEqual([
+                    'parent:connectedCallback',
+                    'parent:renderedCallback',
+                ]);
             });
         });
     });
@@ -356,15 +323,7 @@ describe('timing when reordering a list', () => {
 
                 expect(window.timingBuffer).toEqual(
                     // TODO [#4057]: the child's renderedCallback should probably fire here if the parent's does
-                    !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                        ? [
-                              'item-wrapper-1:disconnectedCallback',
-                              'item-1:disconnectedCallback',
-                              'item-wrapper-1:connectedCallback',
-                              'item-wrapper-1:renderedCallback',
-                              'item-1:connectedCallback',
-                          ]
-                        : []
+                    []
                 );
             });
         });

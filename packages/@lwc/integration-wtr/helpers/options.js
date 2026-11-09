@@ -27,11 +27,6 @@ export const DISABLE_STATIC_CONTENT_OPTIMIZATION = Boolean(
     process.env.DISABLE_STATIC_CONTENT_OPTIMIZATION
 );
 
-/** Set the runtime flag to use the synthetic custom element lifecycle instead of native. */
-export const DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE = Boolean(
-    process.env.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-);
-
 /** Run hydration tests using `@lwc/engine-server` instead of SSR v2. */
 export const ENGINE_SERVER = Boolean(process.env.ENGINE_SERVER);
 
@@ -64,7 +59,6 @@ export const COVERAGE_DIR_FOR_OPTIONS =
         FORCE_NATIVE_SHADOW_MODE_FOR_TEST,
         LEGACY_BROWSERS,
         NODE_ENV_FOR_TEST,
-        DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE,
         ENGINE_SERVER,
     })
         .filter(([, val]) => val)

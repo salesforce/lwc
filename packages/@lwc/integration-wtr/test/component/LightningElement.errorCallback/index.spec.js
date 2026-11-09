@@ -277,8 +277,7 @@ describe('errorCallback error caught by another errorCallback', () => {
 describe('errorCallback throws after value mutation', () => {
     let caughtError;
 
-    // Depending on whether native custom elements lifecycle is enabled or not, this may be an unhandled error or an
-    // unhandled rejection. This utility captures both.
+    // This may be an unhandled error or an unhandled rejection. This utility captures both.
     catchUnhandledRejectionsAndErrors((error) => {
         caughtError = error;
     });
@@ -287,7 +286,7 @@ describe('errorCallback throws after value mutation', () => {
         caughtError = undefined;
     });
 
-    function testStub(testcase, hostSelector, hostClass, expectAfterThrowingChildToExist) {
+    function testStub(testcase, hostSelector, hostClass) {
         it(`parent errorCallback throws after value mutation ${testcase}`, async () => {
             const throwElm = createElement(hostSelector, { is: hostClass });
             const noThrowElm = createElement('x-no-throw-on-mutate', { is: XNoThrowOnMutate });
@@ -304,13 +303,7 @@ describe('errorCallback throws after value mutation', () => {
                 /error in the parent error callback after value mutation/
             );
             // child after the throwing child is not rendered
-            // TODO [#3261]: strange observable difference between native vs synthetic lifecycle
-            const afterThrowingChild = throwElm.shadowRoot.querySelector('x-after-throwing-child');
-            if (expectAfterThrowingChildToExist) {
-                expect(afterThrowingChild).not.toBeNull();
-            } else {
-                expect(afterThrowingChild).toBeNull();
-            }
+            expect(throwElm.shadowRoot.querySelector('x-after-throwing-child')).toBeNull();
             // An unrelated element rendered after the throwing parent still renders. I.e. we didn't
             // give up rendering entirely just because one element threw in errorCallback.
             expect(noThrowElm.shadowRoot.querySelector('div').textContent).toEqual('shown');
@@ -320,25 +313,21 @@ describe('errorCallback throws after value mutation', () => {
     testStub(
         'when child throws in connectedCallback',
         'x-parent-throws-on-mutate-child-connected-throws',
-        XParentThrowsOnMutateChildConnectedThrows,
-        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+        XParentThrowsOnMutateChildConnectedThrows
     );
     testStub(
         'when child throws in constructor',
         'x-parent-throws-on-mutate-child-constructor-throws',
-        XParentThrowsOnMutateChildConstructorThrows,
-        false
+        XParentThrowsOnMutateChildConstructorThrows
     );
     testStub(
         'when child throws in render',
         'x-parent-throws-on-mutate-child-render-throws',
-        XParentThrowsOnMutateChildRenderThrows,
-        false
+        XParentThrowsOnMutateChildRenderThrows
     );
     testStub(
         'when child throws in renderedCallback',
         'x-parent-throws-on-mutate-child-rendered-throws',
-        XParentThrowsOnMutateChildRenderedThrows,
-        !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
+        XParentThrowsOnMutateChildRenderedThrows
     );
 });

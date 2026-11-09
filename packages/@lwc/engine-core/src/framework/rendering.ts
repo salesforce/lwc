@@ -330,14 +330,8 @@ function mountCustomElement(
     // compiler may generate tagnames with uppercase letters so - for backwards
     // compatibility, we lower case the tagname here.
     const normalizedTagname = sel.toLowerCase();
-    const useNativeLifecycle = !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE;
     const isFormAssociated = shouldBeFormAssociated(ctor);
-    const elm = createCustomElement(
-        normalizedTagname,
-        upgradeCallback,
-        useNativeLifecycle,
-        isFormAssociated
-    );
+    const elm = createCustomElement(normalizedTagname, upgradeCallback, isFormAssociated);
 
     vnode.elm = elm;
     vnode.vm = vm;
@@ -353,20 +347,12 @@ function mountCustomElement(
     insertNode(elm, parent, anchor, renderer);
 
     if (vm) {
-        if (process.env.IS_BROWSER) {
-            if (!useNativeLifecycle) {
-                if (process.env.NODE_ENV !== 'production') {
-                    // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
-                    // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
-                    assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
-                }
-                runConnectedCallback(vm);
-            }
-        } else {
-            // On the server, we don't have native custom element lifecycle callbacks, so we must
-            // manually invoke the connectedCallback for a child component.
-            runConnectedCallback(vm);
+        if (process.env.IS_BROWSER && process.env.NODE_ENV !== 'production') {
+            // With synthetic lifecycle callbacks, it's possible for elements to be removed without the engine
+            // noticing it (e.g. `appendChild` the same host element twice). This test ensures we don't regress.
+            assert.isTrue(vm.state === VMState.created, `${vm} cannot be recycled.`);
         }
+        runConnectedCallback(vm);
     }
 
     mountVNodes(vnode.children, elm, renderer, null);

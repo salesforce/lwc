@@ -162,76 +162,42 @@ describe.runIf(isUserTimingSupported && process.env.NODE_ENV !== 'production')(
                 },
             ]);
 
-            // Timing is slightly different with native custom element lifecycle callbacks
-            testNestedTree(
-                !lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                    ? [
-                          { label: '<x-parent> - constructor', children: [] },
-                          {
-                              label: 'lwc-render',
-                              children: [
-                                  { label: '<x-parent> - render', children: [] },
-                                  {
-                                      label: '<x-parent> - patch',
-                                      children: [
-                                          { label: '<x-child> - constructor', children: [] },
-                                          {
-                                              label: 'lwc-render',
-                                              children: [
-                                                  { label: '<x-child> - render', children: [] },
-                                                  { label: '<x-child> - patch', children: [] },
-                                              ],
-                                          },
-                                          { label: '<x-child> - constructor', children: [] },
-                                          {
-                                              label: 'lwc-render',
-                                              children: [
-                                                  { label: '<x-child> - render', children: [] },
-                                                  { label: '<x-child> - patch', children: [] },
-                                              ],
-                                          },
-                                      ],
-                                  },
-                              ],
-                          },
-                      ]
-                    : [
-                          {
-                              label: /<x-parent> - constructor/,
-                          },
-                          {
-                              label: /lwc-render/,
-                              children: [
-                                  {
-                                      label: /<x-parent> - render/,
-                                  },
-                                  {
-                                      label: /<x-parent> - patch/,
-                                      children: [
-                                          {
-                                              label: /<x-child> - constructor/,
-                                          },
-                                          {
-                                              label: /<x-child> - render/,
-                                          },
-                                          {
-                                              label: /<x-child> - patch/,
-                                          },
-                                          {
-                                              label: /<x-child> - constructor/,
-                                          },
-                                          {
-                                              label: /<x-child> - render/,
-                                          },
-                                          {
-                                              label: /<x-child> - patch/,
-                                          },
-                                      ],
-                                  },
-                              ],
-                          },
-                      ]
-            );
+            testNestedTree([
+                {
+                    label: /<x-parent> - constructor/,
+                },
+                {
+                    label: /lwc-render/,
+                    children: [
+                        {
+                            label: /<x-parent> - render/,
+                        },
+                        {
+                            label: /<x-parent> - patch/,
+                            children: [
+                                {
+                                    label: /<x-child> - constructor/,
+                                },
+                                {
+                                    label: /<x-child> - render/,
+                                },
+                                {
+                                    label: /<x-child> - patch/,
+                                },
+                                {
+                                    label: /<x-child> - constructor/,
+                                },
+                                {
+                                    label: /<x-child> - render/,
+                                },
+                                {
+                                    label: /<x-child> - patch/,
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ]);
 
             testNestedRerender([
                 {

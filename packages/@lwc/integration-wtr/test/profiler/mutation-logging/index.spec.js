@@ -258,9 +258,7 @@ describe.skipIf(process.env.NODE_ENV === 'production')('Perf measures in dev mod
             expect(entries).toEqual(
                 arr(
                     // synthetic lifecycle considers this one lwc-render event rather than two
-                    lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE
-                        ? [obj({ name: 'lwc-render' })]
-                        : [obj({ name: 'lwc-render' }), obj({ name: 'lwc-render' })]
+                    [obj({ name: 'lwc-render' })]
                 )
             );
             entries = []; // reset

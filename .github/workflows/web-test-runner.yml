@@ -28,7 +28,6 @@ jobs:
                 shadow_mode: [native, synthetic]
                 env:
                     - ''
-                    - DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
                     - ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=1
                     - NODE_ENV_FOR_TEST=production
@@ -44,8 +43,6 @@ jobs:
                     # Test modes for only synthetic or only native
                     - shadow_mode: synthetic
                       env: FORCE_NATIVE_SHADOW_MODE_FOR_TEST=1
-                    - shadow_mode: synthetic
-                      env: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
                     - shadow_mode: native
                       env: DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=1
                     - shadow_mode: native
@@ -105,7 +102,6 @@ jobs:
             - name: Sanity check env vars
               run: |
                   echo "API_VERSION=$API_VERSION"
-                  echo "DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=$DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE"
                   echo "DISABLE_STATIC_CONTENT_OPTIMIZATION=$DISABLE_STATIC_CONTENT_OPTIMIZATION"
                   echo "DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER=$DISABLE_SYNTHETIC_SHADOW_SUPPORT_IN_COMPILER"
                   echo "ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL=$ENABLE_ARIA_REFLECTION_GLOBAL_POLYFILL"
@@ -146,9 +142,6 @@ jobs:
                     - SHADOW_MODE_OVERRIDE=synthetic
                     - NODE_ENV_FOR_TEST=production
                     - DISABLE_STATIC_CONTENT_OPTIMIZATION=1
-                include:
-                    - engine_server: 1
-                      env: DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=1
 
         env:
             ENGINE_SERVER: ${{ matrix.engine_server }}
@@ -205,7 +198,6 @@ jobs:
               run: |
                   echo "SHADOW_MODE_OVERRIDE=$SHADOW_MODE_OVERRIDE"
                   echo "NODE_ENV_FOR_TEST=$NODE_ENV_FOR_TEST"
-                  echo "DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE=$DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE"
                   echo "DISABLE_STATIC_CONTENT_OPTIMIZATION=$DISABLE_STATIC_CONTENT_OPTIMIZATION"
                   echo "ENGINE_SERVER=$ENGINE_SERVER"
 

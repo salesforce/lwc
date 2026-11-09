@@ -12,14 +12,10 @@ describe('Node.isConnected', () => {
         const frag = document.createDocumentFragment();
         const doAppend = () => frag.appendChild(elm);
 
-        if (!lwcRuntimeFlags.DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE) {
-            doAppend();
-        } else {
-            // Expected warning, since we are working with disconnected nodes
-            expect(doAppend).toLogWarningDev(
-                /fired a `connectedCallback` and rendered, but was not connected to the DOM/
-            );
-        }
+        // Expected warning, since we are working with disconnected nodes
+        expect(doAppend).toLogWarningDev(
+            /fired a `connectedCallback` and rendered, but was not connected to the DOM/
+        );
 
         expect(elm.shadowRoot.isConnected).toBe(false);
 

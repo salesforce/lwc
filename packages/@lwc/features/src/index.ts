@@ -12,7 +12,6 @@ import type { FeatureFlagMap, FeatureFlagName, FeatureFlagValue } from './types'
 /** List of all feature flags available, with the default value `null`. */
 const features: FeatureFlagMap = {
     PLACEHOLDER_TEST_FLAG: null,
-    DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE: null,
     ENABLE_WIRE_SYNC_EMIT: null,
     DISABLE_LIGHT_DOM_UNSCOPED_CSS: null,
     ENABLE_FROZEN_TEMPLATE: null,
@@ -44,7 +43,7 @@ const flags: Partial<FeatureFlagMap> = (globalThis as any).lwcRuntimeFlags;
  * @param name Name of the feature flag to set
  * @param value Whether the feature flag should be enabled
  * @throws Will throw if a non-boolean value is provided when running in production.
- * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
+ * @example setFeatureFlag("ENABLE_WIRE_SYNC_EMIT", true)
  */
 export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): void {
     if (!isBoolean(value)) {
@@ -87,7 +86,7 @@ export function setFeatureFlag(name: FeatureFlagName, value: FeatureFlagValue): 
  * purposes. It is a no-op when invoked in production mode.
  * @param name Name of the feature flag to enable or disable
  * @param value Whether the feature flag should be enabled
- * @example setFeatureFlag("DISABLE_NATIVE_CUSTOM_ELEMENT_LIFECYCLE", true)
+ * @example setFeatureFlag("ENABLE_WIRE_SYNC_EMIT", true)
  */
 export function setFeatureFlagForTest(name: FeatureFlagName, value: FeatureFlagValue): void {
     // This may seem redundant, but `process.env.NODE_ENV === 'test-lwc-integration'` is replaced by Karma tests
