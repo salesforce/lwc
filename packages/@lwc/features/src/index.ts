@@ -29,6 +29,7 @@ const features: FeatureFlagMap = {
     ENABLE_LEGACY_ATTRIBUTE_CHANGED_CALLBACK: null,
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: null,
     DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: null,
+    LEGACY_LOCKER_ENABLED: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {

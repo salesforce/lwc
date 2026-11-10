@@ -114,6 +114,9 @@ export interface FeatureFlagMap {
      * `sanitizeHtmlContent` hook they are otherwise routed through. Enable only to unblock a regression.
      */
     DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: FeatureFlagValue;
+
+    /** Set to `true` when LWC is running in an environment with legacy Locker enabled. */
+    LEGACY_LOCKER_ENABLED: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;
