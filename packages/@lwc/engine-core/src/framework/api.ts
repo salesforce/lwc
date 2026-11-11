@@ -542,7 +542,7 @@ function co(text: string): VComment {
 
 // [d]ynamic text
 function d(value: any): string {
-    return value == null ? '' : String(value);
+    return value == null ? '' : toString(value);
 }
 
 // [b]ind function
