@@ -84,13 +84,16 @@ const specialHtmlMapping = [
     ['contentEditable', 'contenteditable'],
     ['crossOrigin', 'crossorigin'],
     ['dateTime', 'datetime'],
+    ['enterKeyHint', 'enterkeyhint'],
     ['formAction', 'formaction'],
+    ['inputMode', 'inputmode'],
     ['isMap', 'ismap'],
     ['maxLength', 'maxlength'],
     ['minLength', 'minlength'],
     ['noValidate', 'novalidate'],
     ['useMap', 'usemap'],
     ['htmlFor', 'for'],
+    ['writingSuggestions', 'writingsuggestions'],
 ] as StringPair[];
 
 const attrToProp = ([prop, attr]: StringPair) => [attr, prop];

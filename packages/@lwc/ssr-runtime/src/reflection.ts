@@ -74,6 +74,49 @@ const booleanAttributeDescriptor = (attrName: string): TypedPropertyDescriptor<b
 });
 
 /**
+ * Descriptor for `translate`, which reflects as `yes` / `no` and defaults to `true`.
+ */
+const translateDescriptor = (): TypedPropertyDescriptor<boolean> => ({
+    configurable: true,
+    enumerable: true,
+    get(this: LightningElement): boolean {
+        const value = this.getAttribute('translate');
+        return value === null ? true : value.toLowerCase() !== 'no';
+    },
+    set(this: LightningElement, newValue: boolean): void {
+        const currentValue = this.getAttribute('translate');
+        const normalizedValue = newValue ? 'yes' : 'no';
+        if (normalizedValue !== currentValue) {
+            this.setAttribute('translate', normalizedValue);
+        }
+    },
+});
+
+/**
+ * Descriptor for `contentEditable`, which defaults to `inherit` when the attribute is absent.
+ */
+const contentEditableDescriptor = (): TypedPropertyDescriptor<string> => ({
+    configurable: true,
+    enumerable: true,
+    get(this: LightningElement): string {
+        return this.getAttribute('contenteditable') ?? 'inherit';
+    },
+    set(this: LightningElement, newValue: string): void {
+        const currentValue = this.getAttribute('contenteditable');
+        const normalizedValue = String(newValue);
+        if (normalizedValue === 'inherit') {
+            if (currentValue !== null) {
+                this.removeAttribute('contenteditable');
+            }
+            return;
+        }
+        if (normalizedValue !== currentValue) {
+            this.setAttribute('contenteditable', normalizedValue);
+        }
+    },
+});
+
+/**
  * Descriptor for ARIA reflections, e.g. `ariaLabel` and `role`.
  */
 const ariaDescriptor = (attrName: string): TypedPropertyDescriptor<string | null> => ({
@@ -117,14 +160,24 @@ const tabIndexDescriptor = (): TypedPropertyDescriptor<number> => ({
 
 export const descriptors: Record<string, PropertyDescriptor> = {
     accessKey: stringDescriptor('accesskey'),
+    autocapitalize: stringDescriptor('autocapitalize'),
+    autofocus: booleanAttributeDescriptor('autofocus'),
+    contentEditable: contentEditableDescriptor(),
     dir: stringDescriptor('dir'),
     draggable: explicitBooleanDescriptor('draggable', true),
+    enterKeyHint: stringDescriptor('enterkeyhint'),
     hidden: booleanAttributeDescriptor('hidden'),
     id: stringDescriptor('id'),
+    inert: booleanAttributeDescriptor('inert'),
+    inputMode: stringDescriptor('inputmode'),
     lang: stringDescriptor('lang'),
+    nonce: stringDescriptor('nonce'),
+    popover: stringDescriptor('popover'),
     spellcheck: explicitBooleanDescriptor('spellcheck', false),
     tabIndex: tabIndexDescriptor(),
     title: stringDescriptor('title'),
+    translate: translateDescriptor(),
+    writingSuggestions: explicitBooleanDescriptor('writingsuggestions', true),
 };
 
 // Add descriptors for ARIA attributes
