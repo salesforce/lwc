@@ -470,7 +470,7 @@ function i(
                     const { tagName } = vmBeingRendered;
                     if (isString(key) || isNumber(key)) {
                         if (keyMap[key] === 1 && isUndefined(iterationError)) {
-                            iterationError = `Duplicated "key" attribute value in "<${tagName}>" for item number ${j}. A key with value "${key}" appears more than once in the iteration. Key values must be unique numbers or strings.`;
+                            iterationError = `Duplicated "key" attribute value in "<${tagName}>" for item number ${j}. A key with value "${key}" appears more than once in the iteration. Key values must be unique numbers or strings. THIS WILL CAUSE RENDERING ERRORS!`;
                         }
                         keyMap[key] = 1;
                     } else if (isUndefined(iterationError)) {
