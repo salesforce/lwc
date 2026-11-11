@@ -1027,4 +1027,12 @@ export const ParserDiagnostics = {
         level: DiagnosticLevel.Error,
         url: '',
     },
+
+    LWC_INNER_HTML_INVALID_VOID_ELEMENT: {
+        code: 1214,
+        message:
+            'Invalid lwc:inner-html usage on element "{0}". Void elements cannot have inner HTML content.',
+        level: DiagnosticLevel.Error,
+        url: '',
+    },
 } as const satisfies Record<string, LWCErrorInfo>;

@@ -1,0 +1,16 @@
+{
+    "warnings": [
+        {
+            "code": 1214,
+            "message": "LWC1214: Invalid lwc:inner-html usage on element \"<input>\". Void elements cannot have inner HTML content.",
+            "level": 1,
+            "location": {
+                "line": 2,
+                "column": 5,
+                "start": 15,
+                "length": 50
+            },
+            "url": ""
+        }
+    ]
+}
