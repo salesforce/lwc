@@ -379,6 +379,10 @@ function c(
     }
 
     const { key, slotAssignment } = data;
+    // The component author can opt into a closed shadow root by declaring
+    // `static shadowRootMode = 'closed'` on the component class. Default is 'open'
+    // to preserve backwards-compatible behavior. Closes #1294.
+    const shadowRootMode = Ctor.shadowRootMode === 'closed' ? 'closed' : 'open';
     const vnode: VCustomElement = {
         type: VNodeType.CustomElement,
         sel,
@@ -390,7 +394,7 @@ function c(
 
         ctor: Ctor,
         owner: vmBeingRendered,
-        mode: 'open', // TODO [#1294]: this should be defined in Ctor
+        mode: shadowRootMode,
         aChildren: undefined,
         vm: undefined,
     };
