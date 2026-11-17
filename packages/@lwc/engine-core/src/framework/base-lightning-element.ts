@@ -43,6 +43,7 @@ import {
     getWrappedComponentsListener,
     supportsSyntheticElementInternals,
 } from './component';
+import { isLockerModeComponent } from './locker-mode';
 import { isBeingConstructed, isInvokingRender, vmBeingConstructed } from './invoker';
 import { associateVM, getAssociatedVM, RenderMode, ShadowMode } from './vm';
 import { componentValueObserved } from './mutation-tracker';
@@ -233,6 +234,15 @@ export const LightningElement: LightningElementConstructor = function (
         // Thrown when doing something like `new LightningElement()` or
         // `class Foo extends LightningElement {}; new Foo()`
         throw new TypeError('Illegal constructor');
+    }
+
+    if (
+        !new.target &&
+        !lwcRuntimeFlags.LEGACY_LOCKER_ENABLED &&
+        // Even if Locker is disabled at a page level, some individual components still run in Locker mode
+        !isLockerModeComponent(vmBeingConstructed.def.ctor)
+    ) {
+        throw new Error('LightningElement must be constructed.');
     }
 
     // This is a no-op unless Lightning DevTools are enabled.

@@ -45,6 +45,7 @@ export { shouldBeFormAssociated } from './utils';
 
 // Experimental or Internal APIs
 export { getComponentConstructor } from './get-component-constructor';
+export { enableLockerMode, registerLockerModeComponent } from './locker-mode';
 
 // Types -------------------------------------------------------------------------------------------
 export type { RendererAPI, LifecycleCallback } from './renderer';

@@ -1,9 +1,21 @@
-import { createElement } from 'lwc';
+import {
+    createElement,
+    enableLockerMode,
+    registerLockerModeComponent,
+    setFeatureFlagForTest,
+} from 'lwc';
 
 import LockerIntegration from 'x/lockerIntegration';
 import LockerLiveComponent from 'x/lockerLiveComponent';
 import LockerHooks, { hooks } from 'x/lockerHooks';
 import { spyOn } from '@vitest/spy';
+
+beforeAll(() => {
+    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', true);
+});
+afterAll(() => {
+    setFeatureFlagForTest('LEGACY_LOCKER_ENABLED', false);
+});
 
 it('should support Locker integration which uses a wrapped LightningElement base class', () => {
     const elm = createElement('x-secure-parent', { is: LockerIntegration });
@@ -124,5 +136,37 @@ describe('Locker live objects', () => {
         const elm = createElement('x-live', { is: LockerLiveComponent });
         document.body.appendChild(elm);
         expect(elm.hasMarker()).toBe(true);
+    });
+});
+
+describe('Component-level Locker registration', () => {
+    // The page claims the authority once, before any component code runs (mirrors Aura bootstrap).
+    let authority;
+    beforeAll(() => {
+        authority = enableLockerMode();
+    });
+
+    it('rejects registration with a forged authority', () => {
+        expect(() => registerLockerModeComponent(LockerIntegration, Symbol('forged'))).toThrow(
+            'Cannot register a constructor without proper authority.'
+        );
+    });
+
+    it('rejects registration with a missing authority', () => {
+        expect(() => registerLockerModeComponent(LockerIntegration)).toThrow(
+            'Cannot register a constructor without proper authority.'
+        );
+    });
+
+    it('rejects registering a non-component constructor', () => {
+        expect(() => registerLockerModeComponent(class NotAComponent {}, authority)).toThrow(
+            'Cannot register a non-component constructor.'
+        );
+    });
+
+    it('rejects a second claim on the authority', () => {
+        expect(() => enableLockerMode()).toThrow(
+            'Legacy Locker restriction can only be instantiated once.'
+        );
     });
 });

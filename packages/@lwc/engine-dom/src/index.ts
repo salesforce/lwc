@@ -42,6 +42,8 @@ export {
     __unstable__ProfilerControl,
     __unstable__ReportingControl,
     SignalBaseClass,
+    enableLockerMode,
+    registerLockerModeComponent,
 } from '@lwc/engine-core';
 
 // Engine-core public types ------------------------------------------------------------------------
