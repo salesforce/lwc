@@ -36,3 +36,7 @@ This is a monorepo containing multiple packages under `packages/@lwc/`.
 ## Testing
 
 Tests are colocated with source code in `__tests__` directories within each package.
+
+## Deprecated Packages
+
+`@lwc/engine-server` is deprecated. Do not change it except for version bumps.

@@ -36,6 +36,12 @@ export function registerComponent(..._: unknown[]): never {
 export function registerDecorators(..._: unknown[]): never {
     throw new Error('registerDecorators cannot be used in SSR context.');
 }
+export function registerLockerModeComponent(..._: unknown[]): never {
+    throw new Error('registerLockerModeComponent cannot be used in SSR context.');
+}
+export function enableLockerMode(..._: unknown[]): never {
+    throw new Error('enableLockerMode cannot be used in SSR context.');
+}
 export function sanitizeAttribute(..._: unknown[]): never {
     throw new Error('sanitizeAttribute cannot be used in SSR context.');
 }

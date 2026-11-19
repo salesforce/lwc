@@ -1,14 +1,13 @@
-import { LightningElement, createElement, setFeatureFlagForTest } from 'lwc';
+import { LightningElement, createElement } from 'lwc';
 
 import NotInvokingSuper from 'x/notInvokingSuper';
 import NotReturningThis from 'x/notReturningThis';
 import ParentThrowingBeforeSuper from 'x/parentThrowingBeforeSuper';
 import DefinedComponent from 'x/definedComponent';
 import UndefinedComponent from 'x/undefinedComponent';
-import ReturningIframe from 'x/returningIframe';
-import ReturningEmbed from 'x/returningEmbed';
-import ReturningObject from 'x/returningObject';
-import ReturningScript from 'x/returningScript';
+import Recursive, { resetRecursing } from 'x/recursive';
+
+afterEach(resetRecursing);
 
 it('should throw when trying to invoke the constructor manually', () => {
     const func = () => {
@@ -84,29 +83,8 @@ it("[W-6981076] shouldn't throw when a component with an invalid child in unmoun
     expect(() => document.body.removeChild(elm)).not.toThrow();
 });
 
-const BLOCKLISTED_CASES = [
-    ['iframe', ReturningIframe, 'x-returning-iframe'],
-    ['embed', ReturningEmbed, 'x-returning-embed'],
-    ['object', ReturningObject, 'x-returning-object'],
-    ['script', ReturningScript, 'x-returning-script'],
-];
-
-BLOCKLISTED_CASES.forEach(([tagName, Component, tag]) => {
-    it(`should fail when the constructor returns a blocklisted element (${tagName}) when DISABLE_STRICT_VALIDATION is false (strict)`, () => {
-        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
-        expect(() => {
-            createElement(tag, { is: Component });
-        }).toThrowError(
-            TypeError,
-            'Invalid component constructor, the class should extend LightningElement.'
-        );
-    });
-
-    it('should succeed when the constructor returns a blocklisted element (${tagName}) when DISABLE_STRICT_VALIDATION is true (legacy check)', () => {
-        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', true);
-        expect(() => {
-            createElement(tag, { is: Component });
-        }).not.toThrow();
-        setFeatureFlagForTest('DISABLE_STRICT_VALIDATION', false);
-    });
+it('should fail when an element tries to recursively construct itself', () => {
+    expect(() => createElement('x-recursive', { is: Recursive })).toThrow(
+        'LightningElement must be constructed.'
+    );
 });

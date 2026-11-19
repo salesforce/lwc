@@ -20,9 +20,11 @@ describe('isomorphic package exports', () => {
             // Exports that intentionally only exist in @lwc/engine-dom
             '__unstable__ProfilerControl',
             '__unstable__ReportingControl',
+            'enableLockerMode',
             'getComponentConstructor',
             'hydrateComponent',
             'isNodeFromTemplate',
+            'registerLockerModeComponent',
             'rendererFactory',
             'setTrustedSignalSet',
         ]);

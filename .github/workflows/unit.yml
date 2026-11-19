@@ -22,7 +22,7 @@ env:
     NODE_VERSION: '24.11.1'
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
     run-unit-tests:
