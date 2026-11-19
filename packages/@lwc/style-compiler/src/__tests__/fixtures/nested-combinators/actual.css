@@ -1,0 +1,21 @@
+div {
+    > h2 {
+        color: red;
+    }
+    > .child,
+    > h3 {
+        color: green;
+    }
+    + p {
+        color: blue;
+    }
+    ~ span {
+        margin-left: 5px;
+    }
+    > ::before {
+        content: 'before';
+    }
+    & > a {
+        color: purple;
+    }
+}
