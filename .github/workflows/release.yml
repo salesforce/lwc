@@ -61,13 +61,13 @@ jobs:
                   echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v5.1.0
               with:
                   fetch-depth: 0
                   persist-credentials: false
 
             - name: Setup Node
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v6.5.0
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   registry-url: 'https://registry.npmjs.org'

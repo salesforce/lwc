@@ -30,7 +30,7 @@ jobs:
         runs-on: salesforce-Ubuntu
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.4.0
               with:
                   persist-credentials: false
 
@@ -70,7 +70,7 @@ jobs:
                   echo "BENCHMARK_REF=$previous" >> "$GITHUB_ENV"
 
             - name: Setup Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v4.4.0
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
@@ -97,7 +97,7 @@ jobs:
               run: yarn --silent test:format >> "$GITHUB_STEP_SUMMARY"
 
             - name: Upload unit test coverage report
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v4.6.2
               with:
                   name: benchmark-results
                   path: |

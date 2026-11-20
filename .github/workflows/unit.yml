@@ -29,11 +29,11 @@ jobs:
         runs-on: ubuntu-22.04
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v4.4.0
               with:
                   persist-credentials: false
             - name: Setup Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v4.4.0
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   cache: 'yarn'
@@ -61,7 +61,7 @@ jobs:
             - name: Run unit tests in production mode
               run: yarn test:production --no-watch
             - name: Upload unit test coverage report
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v4.6.2
               with:
                   name: test-coverage-report
                   path: coverage/
@@ -69,7 +69,7 @@ jobs:
             # Needed for perf smoke tests, matches the chromedriver version installed by tachometer (https://github.com/google/tachometer/blob/main/README.md#on-demand-dependencies)
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup chrome
-              uses: browser-actions/setup-chrome@v2
+              uses: browser-actions/setup-chrome@v2.2.0
               with:
                   chrome-version: ${{ env.CHROME_VERSION }}
               id: setup-chrome
