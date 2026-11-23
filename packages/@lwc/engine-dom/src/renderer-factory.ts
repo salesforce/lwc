@@ -36,6 +36,7 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * A factory function that produces a renderer.
  * Renderer encapsulates operations that are required to render an LWC component into the underlying
  * runtime environment. In the case of @lwc/enigne-dom, it is meant to be used in a DOM environment.
+ * A renderer can only be directly invoked once.
  * @param baseRenderer Either null or the base renderer imported from 'lwc'.
  * @returns The created renderer
  * @example
@@ -43,6 +44,13 @@ export type RendererAPIType<Type> = Type extends RendererAPI ? RendererAPI : San
  * const customRenderer = rendererFactory(renderer);
  */
 export function rendererFactory<T extends RendererAPI | null>(baseRenderer: T): RendererAPIType<T> {
+    if (typeof rendererFactory === 'function' && !lwcRuntimeFlags.DISABLE_RENDERER_FACTORY_GUARD) {
+        const seal = Symbol.for('@lwc/engine-dom:rendererFactory:sealed');
+        if (Object.prototype.hasOwnProperty.call(rendererFactory, seal)) {
+            throw new Error('Cannot call rendererFactory more than once.');
+        }
+        Object.defineProperty(rendererFactory, seal, { value: true });
+    }
     // Type assertion because this is replaced by rollup with an object, not a string.
     // See `injectInlineRenderer` in /scripts/rollup/rollup.config.js
     const renderer = process.env.RENDERER as unknown as RendererAPIType<T>;

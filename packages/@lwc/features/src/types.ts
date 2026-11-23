@@ -104,19 +104,24 @@ export interface FeatureFlagMap {
      * Kill-switch for the W-23680734 hardening. If true, reverts the sanitized-HTML brand check
      * used by `lwc:inner-html` to the legacy structural `sanitizedHtmlContentSymbol in value` /
      * `value[symbol]` behavior. If false or unset (default), the brand is verified by WeakMap
-     * identity, which does not depend on the object's own property semantics. Only enable this to
-     * unblock a regression; the default is the more secure behavior.
+     * identity, which does not depend on the object's own property semantics.
      */
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: FeatureFlagValue;
 
     /**
      * Kill-switch: when true, native `ShadowRoot` `innerHTML`/`setHTMLUnsafe` writes bypass the
-     * `sanitizeHtmlContent` hook they are otherwise routed through. Enable only to unblock a regression.
+     * `sanitizeHtmlContent` hook they are otherwise routed through.
      */
     DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: FeatureFlagValue;
 
     /** Set to `true` when LWC is running in an environment with legacy Locker enabled. */
     LEGACY_LOCKER_ENABLED: FeatureFlagValue;
+
+    /**
+     * Kill-switch: when true, `rendererFactory` can be invoked more than once. If false or unset
+     * (default), the original `rendererFactory` throws on every invocation after the first.
+     */
+    DISABLE_RENDERER_FACTORY_GUARD: FeatureFlagValue;
 }
 
 export type FeatureFlagName = keyof FeatureFlagMap;

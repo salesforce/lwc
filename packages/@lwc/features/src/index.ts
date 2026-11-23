@@ -30,6 +30,8 @@ const features: FeatureFlagMap = {
     DISABLE_SANITIZED_HTML_CONTENT_IDENTITY_CHECK: null,
     DISABLE_NATIVE_SHADOWROOT_SINK_SANITIZATION: null,
     LEGACY_LOCKER_ENABLED: null,
+    // Remove in 270
+    DISABLE_RENDERER_FACTORY_GUARD: null,
 };
 
 if (!(globalThis as any).lwcRuntimeFlags) {
