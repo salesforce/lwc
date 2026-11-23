@@ -43,7 +43,7 @@ Tests are colocated with source code in `__tests__` directories within each pack
 
 ## AI Agent Disclosure
 
-Applies to every AI agent that opens or comments on a pull request, issue, or discussion in this repository, whether acting autonomously or on behalf of a person. Maintainers enforce this. Undisclosed agent activity gets closed without review, and repeat offenders get blocked.
+Applies to every AI agent that opens or comments on a pull request, issue, or discussion in this repository, whether acting autonomously or on behalf of a person, when the accountable human is an external contributor. It does not apply to agents working on behalf of repository maintainers or Salesforce employees. Maintainers enforce this. Undisclosed agent activity from external contributors gets closed without review, and repeat offenders get blocked.
 
 Disclose all of the following in the pull request description (or the first comment of an issue or discussion), in your own words, before any other content:
 
