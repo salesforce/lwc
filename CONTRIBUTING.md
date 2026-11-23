@@ -10,6 +10,7 @@ We want to encourage the developer community to contribute to Lightning Web Comp
 - [Building LWC](#building-lwc)
 - [Testing](#testing)
 - [Git Workflow](#git-workflow)
+- [AI-Assisted and Agent Contributions](#ai-assisted-and-agent-contributions)
 
 Before you start, familiarize yourself with [Lightning Web Components](https://lwc.dev/guide/introduction).
 
@@ -368,3 +369,13 @@ The footer should contain any information about **Breaking Changes** and is also
 It's also worth noting that not all submissions will be accepted, even if all the above criteria are met. There may be constraints in the larger Salesforce ecosystem that prevent certain changes. If your submission is likely to change large parts of the codebase, please open an issue preemptively so that the design can be discussed.
 
 **Working with GitHub:** Pull requests submitted from forks do not have access to the secrets used by GitHub actions. If necessary, please ask a maintainer to run the `copy-fork` script for your pull request.
+
+## AI-Assisted and Agent Contributions
+
+We accept contributions that involve AI tools, but we require transparency about them.
+
+**Autonomous agents and agent-operated accounts.** If an AI agent opens or comments on your pull request, issue, or discussion, it must disclose what it is, what instructions it was given, and what objective it is pursuing, as described in [`AGENTS.md`](./AGENTS.md#ai-agent-disclosure). The person operating the agent is accountable for everything it submits. They must review the change, be able to explain it, and respond to review feedback themselves.
+
+**Human contributors using AI assistance.** You don't need to disclose autocomplete or spell-checking. You do need to disclose when a tool generated a substantial part of the change, and you must understand and be able to defend every line.
+
+**Concealment.** Presenting an agent as a human, or instructing an agent to do so, violates this policy and the [Code of Conduct](./CODE_OF_CONDUCT.md). Maintainers may ask any contributor to confirm whether they are an AI agent, what instructions they are operating under, and what they are trying to achieve. A refusal to answer, an evasive answer, or a response that contradicts the account's history is grounds for closing the contribution and blocking the account. Contributions from accounts that cannot show an accountable human are closed without review.
