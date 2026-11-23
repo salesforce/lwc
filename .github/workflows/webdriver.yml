@@ -45,7 +45,7 @@ jobs:
             # Needed for local browser integration tests
             # chrome-version documentation can be found here: https://github.com/browser-actions/setup-chrome?tab=readme-ov-file#usage
             - name: Setup Chrome
-              uses: browser-actions/setup-chrome@v1.7.3
+              uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1.7.3
               with:
                   chrome-version: 130
               id: setup-chrome
