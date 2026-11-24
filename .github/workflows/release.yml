@@ -61,14 +61,13 @@ jobs:
                   echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
             - name: Checkout
-              uses: actions/checkout@v5
+              uses: actions/checkout@v5.1.0
               with:
                   fetch-depth: 0
-                  token: ${{ secrets.WORKFLOW_PAT }}
-                  persist-credentials: true
+                  persist-credentials: false
 
             - name: Setup Node
-              uses: actions/setup-node@v6
+              uses: actions/setup-node@v6.5.0
               with:
                   node-version: ${{ env.NODE_VERSION }}
                   registry-url: 'https://registry.npmjs.org'
@@ -110,7 +109,7 @@ jobs:
 
             - name: Commit & push
               if: ${{ steps.resolve_input.outputs.resolved != 'prerelease' }}
-              uses: actions-js/push@v1.4
+              uses: actions-js/push@156f2b10c3aa000c44dbe75ea7018f32ae999772 # v1.4
               with:
                   github_token: ${{ secrets.WORKFLOW_PAT }}
                   branch: ${{ github.ref_name }}
@@ -139,8 +138,11 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  WORKFLOW_PAT: ${{ secrets.WORKFLOW_PAT }}
                   VERSION: ${{ steps.update_version.outputs.new_version }}
               run: |
                   git tag -a "v$VERSION" -m "Release v$VERSION"
-                  git push origin tag "v$VERSION"
+                  # The checkout stores no token, so this push carries the PAT itself,
+                  # in the URL form the "Commit & push" step already uses.
+                  git push "https://${GITHUB_ACTOR}:${WORKFLOW_PAT}@github.com/${GITHUB_REPOSITORY}.git" tag "v$VERSION"
                   gh release create "v$VERSION" --title "v$VERSION" --generate-notes
