@@ -41,10 +41,13 @@ function scopeSelector(selector: Selector) {
     // Split the selector per compound selector. Compound selectors are interleaved with combinator nodes.
     // https://drafts.csswg.org/selectors-4/#typedef-complex-selector
     selector.each((node) => {
+        const current = compoundSelectors[compoundSelectors.length - 1];
         if (postCssSelectorParser.isCombinator(node)) {
-            compoundSelectors.push([]);
+            // A leading combinator in a relative selector has no preceding compound to scope.
+            if (current.length > 0) {
+                compoundSelectors.push([]);
+            }
         } else {
-            const current = compoundSelectors[compoundSelectors.length - 1];
             current.push(node);
         }
     });
