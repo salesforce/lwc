@@ -119,6 +119,7 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         shadowSupportMode: ctorShadowSupportMode,
         renderMode: ctorRenderMode,
         formAssociated: ctorFormAssociated,
+        dynamicProps: ctorDynamicProps,
     } = Ctor;
 
     if (process.env.NODE_ENV !== 'production') {
@@ -159,6 +160,12 @@ function createComponentDef(Ctor: LightningElementConstructor): ComponentDef {
         ) {
             logError(
                 `Invalid value for static property renderMode: '${ctorRenderMode}'. renderMode must be either 'light' or 'shadow'.`
+            );
+        }
+
+        if (!isUndefined(ctorDynamicProps) && ctorDynamicProps !== true) {
+            logError(
+                `Invalid value for static property dynamicProps: '${ctorDynamicProps}'. dynamicProps must be 'true' or left unset.`
             );
         }
     }
