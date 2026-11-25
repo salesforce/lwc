@@ -109,7 +109,7 @@ const tabIndexDescriptor = (): TypedPropertyDescriptor<number> => ({
         const num = Number(newValue);
         const normalizedValue = isFinite(num) ? String(Math.trunc(num)) : '0';
         if (normalizedValue !== currentValue) {
-            this.setAttribute('tabindex', toString(newValue));
+            this.setAttribute('tabindex', normalizedValue);
         }
     },
 });
