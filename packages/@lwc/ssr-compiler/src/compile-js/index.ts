@@ -408,15 +408,6 @@ export default function compileJS(
 
     traverse(ast, visitors, state);
 
-    if (!state.isLWC) {
-        // If an `extends LightningElement` is not detected in the JS, the
-        // file in question is likely not an LWC. With this v1 implementation,
-        // we'll just return the original source.
-        return {
-            code: generate(ast, {}),
-        };
-    }
-
     // Register @api props on in-file base classes for the runtime union (W-23508928), reusing the
     // class nodes gathered during the main traversal above — no extra tree walk. `@api` decorators
     // survive on member nodes until `astring` drops them at `generate()`, so they remain readable.
@@ -429,6 +420,15 @@ export default function compileJS(
         ast.body.unshift(
             bImportDeclaration({ registerPublicProperties: REGISTER_PUBLIC_PROPERTIES })
         );
+    }
+
+    if (!state.isLWC) {
+        // If an `extends LightningElement` is not detected in the JS, the
+        // file in question is likely not an LWC. With this v1 implementation,
+        // we'll just return the original source.
+        return {
+            code: generate(ast, {}),
+        };
     }
 
     addGenerateMarkupFunction(ast, state, tagName, filename, compilationMode);

@@ -1,0 +1,6 @@
+{
+    "entry": "x/component",
+    "props": {
+        "foo": "hello"
+    }
+}
